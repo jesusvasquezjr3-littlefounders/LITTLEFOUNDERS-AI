@@ -1,0 +1,35 @@
+import type { NumberToleranceContext } from '../../v2AnswerShapes.js';
+import { RULER_MAX, RULER_UNITS } from './measure-model.js';
+
+export const READ_OBJECTS: readonly string[] = ['pencil', 'strip'];
+
+const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
+const record = (value: unknown): Record<string, unknown> | undefined => (typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : undefined);
+
+/** An object drawn against a ruler: its near end sits on mark `from` (not always 0) and its far end on mark `to`. */
+export interface ReadSetup { unit: string; object: string; from: number; to: number; max: number }
+
+export function readSetup(payload: unknown): ReadSetup | undefined {
+  const value = record(payload);
+  if (!value || typeof value.unit !== 'string' || !RULER_UNITS.includes(value.unit) || typeof value.object !== 'string' || !READ_OBJECTS.includes(value.object)) return undefined;
+  if (!whole(value.from) || !whole(value.to) || !whole(value.max) || value.max < 4 || value.max > RULER_MAX || value.from < 0 || value.to <= value.from || value.to > value.max) return undefined;
+  return { unit: value.unit, object: value.object, from: value.from, to: value.to, max: value.max };
+}
+
+/** The length the learner reads off the ruler: the far mark minus the near mark. */
+export const readLength = (setup: ReadSetup): number => setup.to - setup.from;
+
+export const readContext = (setup: ReadSetup): NumberToleranceContext => ({ minimum: '0', maximum: String(setup.max) });
+
+/** The length as the answer shape carries it: whole units, as text. */
+export const readResponse = (length: number): { value: string } => ({ value: String(length) });
+
+/** A key is sound only when its target is the length the drawing shows. */
+export function readKeyProblem(setup: ReadSetup, rubric: unknown): string | null {
+  const value = record(rubric);
+  if (!value || Object.keys(value).join() !== 'target') return 'a target only';
+  return value.target === String(readLength(setup)) ? null : 'a target that is the drawn length';
+}
+
+/** The board opens on 0, which no object measures: that is the start state, never a score. */
+export const readUntouched = (response: unknown): boolean => { const value = record(response); return !!value && Object.keys(value).join() === 'value' && value.value === '0'; };

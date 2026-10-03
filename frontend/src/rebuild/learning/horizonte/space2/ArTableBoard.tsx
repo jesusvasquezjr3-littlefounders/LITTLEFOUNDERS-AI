@@ -5,6 +5,7 @@ import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { DEFAULT_VIEW, SCENE_SIZE, projectPoint, type SolidView } from '../solids/projection.generated';
 import { AR_OBJECTS, arPilotGate, arVolumeMl, arWire, readArPayload, type ArObjectId, type ArPayload } from './ar.generated';
+import { ArLearnerAge } from './ar/ArLearnerAge';
 import { useArPilot, type ArSessionHandle } from './ar/arPilot';
 import { count, fill, objectLabel, spaceText } from './spaceText';
 import { TurnStage } from './TurnStage';
@@ -29,8 +30,8 @@ function WireSvg({ object, view, name }: { object: ArObjectId; view: SolidView; 
 
 /*
  * F4.9: the "see it on your table" pilot. Ungraded: there is no answer, no scorer and no verdict. Everyone gets a turnable
- * drawing of a real object with its true measurements in a table. Only when the pilot is open (flag on, learner 13 or older,
- * consent recorded; a guardian's for a minor) AND the browser has WebXR does the learner also get "See on table", and then
+ * drawing of a real object with its true measurements in a table. Only when the pilot is open (flag on, a learner whose real age
+ * is 13 or more, consent recorded; a guardian's for a minor) AND the browser has WebXR does the learner also get "See on table", and then
  * only an in-app consent panel comes first: the browser's own camera prompt appears only after the learner taps "Allow camera".
  * No frame is read, stored or sent, and there is no third-party SDK.
  */
@@ -38,7 +39,7 @@ function ArTableBoardView({ document, segment, payload, onBack, sequence }: Omit
   const { locale } = document;
   const t = spaceText(locale);
   const env = useArPilot();
-  const open = arPilotGate({ flag: env.flag, age: env.age ?? document.eligibility.minimum_age, consent: env.consent }) === 'open';
+  const open = arPilotGate({ flag: env.flag, age: env.age, consent: env.consent }) === 'open';
   const [view, setView] = useState<SolidView>(DEFAULT_VIEW);
   const [engaged, setEngaged] = useState(false);
   const [supported, setSupported] = useState<boolean | null>(null);
@@ -118,7 +119,11 @@ function ArTableBoardView({ document, segment, payload, onBack, sequence }: Omit
 }
 
 export default function ArTableBoard({ segment, document, onBack, sequence }: HorizonteBoardProps) {
+  const env = useArPilot();
   if (segment.type !== 'space.ar-table.v2') return null;
   const payload = readArPayload(segment.payload);
-  return payload ? <ArTableBoardView document={document} segment={segment} payload={payload} onBack={onBack} sequence={sequence} /> : null;
+  if (!payload) return null;
+  const view = <ArTableBoardView document={document} segment={segment} payload={payload} onBack={onBack} sequence={sequence} />;
+  // Only with the flag on and no age from the app is the learner's real age band read from Core; with the flag off nothing is asked.
+  return env.flag && env.age === undefined ? <ArLearnerAge base={env}>{view}</ArLearnerAge> : view;
 }

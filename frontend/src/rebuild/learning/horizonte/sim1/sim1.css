@@ -1,29 +1,29 @@
 /* F3.1 and F3.2 simulation boards: chance, Galton board and walk, coverage of intervals, bootstrap. Tokens only. */
 .lf-sim { display: grid; gap: var(--spacing-3); justify-items: start; }
-.lf-sim-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--ink); }
+.lf-sim-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-sim-chart text { fill: currentColor; font-size: 22px; font-weight: 700; }
 .lf-sim-chart .lf-sim-count { font-size: 18px; font-weight: 800; }
-.lf-sim-ticks line, .lf-sim-axis { stroke: var(--outline); stroke-width: 2; }
+.lf-sim-ticks line, .lf-sim-axis { stroke: var(--edge); stroke-width: 2; }
 .lf-sim-grid { stroke: var(--outline); stroke-width: 1; stroke-opacity: 0.6; }
 .lf-sim-band { fill: var(--mint-soft); pointer-events: none; }
 .lf-sim-chance { stroke: var(--accent-strong); stroke-width: 3; stroke-dasharray: 8 6; }
-.lf-sim-floor { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 2 6; }
+.lf-sim-floor { stroke: var(--content); stroke-width: 2; stroke-dasharray: 2 6; }
 .lf-sim-line { fill: none; stroke: var(--sky-strong); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
-.lf-sim-now { fill: var(--sky-strong); stroke: var(--ink); stroke-width: 2; }
-.lf-sim-bar { fill: var(--outline); }
+.lf-sim-now { fill: var(--sky-strong); stroke: var(--content); stroke-width: 2; }
+.lf-sim-bar { fill: var(--edge); }
 .lf-sim-bar--event, .lf-sim-bar--target { fill: var(--sky-strong); }
 .lf-sim-face--event { font-weight: 800; }
-.lf-sim-event-mark { stroke: var(--ink); stroke-width: 4; }
-.lf-sim-peg { fill: var(--ink); }
+.lf-sim-event-mark { stroke: var(--content); stroke-width: 4; }
+.lf-sim-peg { fill: var(--content); }
 .lf-sim-interval { stroke-width: 2; stroke-linecap: round; }
 .lf-sim-interval--cover { stroke: var(--mint-strong); }
 .lf-sim-interval--miss { stroke: var(--berry-strong); stroke-dasharray: 5 3; }
 .lf-sim-dot--cover { fill: var(--mint-strong); }
 .lf-sim-dot--miss { fill: var(--berry-strong); }
-.lf-sim-dot--data { fill: var(--sky-strong); stroke: var(--ink); stroke-width: 2; }
-.lf-sim-truth { stroke: var(--ink); stroke-width: 3; }
+.lf-sim-dot--data { fill: var(--sky-strong); stroke: var(--content); stroke-width: 2; }
+.lf-sim-truth { stroke: var(--content); stroke-width: 3; }
 .lf-sim-edge { stroke: var(--mint-strong); stroke-width: 4; }
-.lf-sim-ghost { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 5; stroke-opacity: 0.7; }
+.lf-sim-ghost { stroke: var(--content); stroke-width: 2; stroke-dasharray: 6 5; stroke-opacity: 0.7; }
 .lf-sim-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
 .lf-sim-legend li { display: flex; align-items: center; gap: var(--spacing-1); }
 .lf-sim-legend svg { inline-size: 2.5rem; block-size: 0.75rem; }

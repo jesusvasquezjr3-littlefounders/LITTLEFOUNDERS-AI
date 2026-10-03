@@ -3,9 +3,9 @@ import {
   asRecord, checkRubricCoverage, issue, registerSolvabilityChecker, result, type SolvabilityChecker, type SolvabilityIssue,
 } from '../solvability.js';
 import {
-  ALSO_TRUE, EULER_BOUNDS, PLATONIC_COUNTS, TARGET_IDS, VOLUME_BOUNDS, basketMeets, coinAnswer, coinProblem, cutShape, eulerSum,
+  ALSO_TRUE, EULER_COUNTS, TARGET_IDS, VOLUME_BOUNDS, basketMeets, coinAnswer, coinProblem, coneVolume, cutShape, eulerBounds, eulerSum,
   hiddenCount, matchingAngles, mostItems, pyramidVolume, readCoinPayload, readRotationPayload, readSolidSectionPayload,
-  readStallPayload, reachableTotals, rotationAnswer, rotationProblem, slotsToBasket, solidSectionProblem, stallAnswer,
+  readStallPayload, reachableTotals, rotationAnswer, rotationProblem, sectionCut, slotsToBasket, solidSectionProblem, stallAnswer,
   stallProblem,
   type CoinPayload, type RotationPayload, type SolidSectionPayload, type StallPayload,
 } from './space1Geometry.js';
@@ -13,7 +13,7 @@ import type { ForgeGuidance, ForgeHorizontePack } from './types.js';
 
 export const SPACE1_CAPABILITIES = {
   'geometry.mental-rotation.v2': ['visual.mental-rotation.v1', 'operation.turn-figure.v1', 'operation.pick-match.v1'],
-  'geometry.solid-section.v2': ['visual.solid-section.v1', 'operation.turn-solid.v1', 'operation.choose-and-type.v1'],
+  'geometry.solid-section.v2': ['visual.solid-section.v1', 'operation.turn-solid.v1', 'operation.choose-and-type.v1', 'operation.slide-plane.v1'],
   'money.market-stall.v2': ['visual.market-stall.v1', 'operation.buy-items.v1', 'operation.tap-place.v1'],
   'money.coin-stack.v2': ['visual.coin-stack.v1', 'operation.set-count.v1', 'operation.read-scale.v1'],
 } as const;
@@ -37,10 +37,11 @@ const SPACE1_GUIDANCE: readonly ForgeGuidance[] = [
   {
     type: SECTION,
     lines: [
-      `${SECTION}: ages 11-17 and adults. Three modes in payload.mode. section: { mode, solid, plane, options } with solid tetrahedron, cube or octahedron, plane { normal, offset } (three whole normal parts from -3 to 3, not all zero, and a whole offset from -16 to 16 in quarters: the plane is normal . p = offset / 4 with the solid centred on the origin and a cube's corners at plus or minus 1), and two to four distinct option shapes drawn from triangle, square, rectangle, rhombus, parallelogram, trapezoid, quadrilateral, pentagon, hexagon, polygon.`,
-      `${SECTION}: the plane must really cut through the solid. The options include the shape of the cut and no other option that is also true of it (a square is also a rectangle, a rhombus and a parallelogram, so never list a square with those). A cube cut across a corner region by normal [1, 1, 1] and offset 0 gives a hexagon; a tetrahedron cut halfway between two opposite edges (normal [1, 0, 0], offset 0) gives a square. The key is { pick } with the shape.`,
-      `${SECTION}: euler: { mode, solid, hide } with solid one of the five Platonic solids (tetrahedron 4, 6, 4; cube 8, 12, 6; octahedron 6, 12, 8; dodecahedron 20, 30, 12; icosahedron 12, 30, 20 as vertices, edges, faces) and hide one of vertices, edges or faces. The board shows the other two counts and V - E + F = 2; the key is { target } with the hidden count as digits in a string.`,
-      `${SECTION}: volume: { mode, side, height } with a square base side from 2 to 12 and a height from 1 to 12. The learner finds the pyramid's volume as a third of the prism with the same base and height, so side x side x height must divide by 3; the key is { target } with that volume as digits in a string. Never include a cone, a sphere, a cylinder section or an Archimedean solid. The prompt is at most two imperative sentences and never names the answer.`,
+      `${SECTION}: ages 11-17 and adults. Five modes in payload.mode. section: { mode, solid, plane, options } with solid tetrahedron, cube, octahedron or cylinder, plane { normal, offset } (three whole normal parts from -3 to 3, not all zero, and a whole offset from -16 to 16 in quarters: the plane is normal . p = offset / 4 with the solid centred on the origin, a cube's corners at plus or minus 1, and the cylinder of radius 1 and height 3 standing on the y axis), and two to four distinct option shapes drawn from triangle, square, rectangle, rhombus, parallelogram, trapezoid, quadrilateral, pentagon, hexagon, polygon, circle, ellipse.`,
+      `${SECTION}: the plane must really cut through the solid. The options include the shape of the cut and no other option that is also true of it (a square is also a rectangle, a rhombus and a parallelogram, and a circle is also an ellipse, so never list a square with those or a circle with an ellipse). A cube cut across a corner region by normal [1, 1, 1] and offset 0 gives a hexagon; a tetrahedron cut halfway between two opposite edges (normal [1, 0, 0], offset 0) gives a square. A cylinder cut by normal [0, 1, 0] (parallel to its flat ends) gives a circle while the offset stays under 6; by [1, 0, 0] (along its axis) a rectangle; by a slanted normal such as [1, 2, 0] an ellipse, but only while the cut stays clear of both flat ends (offset 7 or less there), because a cut that runs into an end cap is not a named shape and is refused. The key is { pick } with the shape.`,
+      `${SECTION}: euler: { mode, solid, hide } with solid one of the five Platonic solids (tetrahedron 4, 6, 4; cube 8, 12, 6; octahedron 6, 12, 8; dodecahedron 20, 30, 12; icosahedron 12, 30, 20 as vertices, edges, faces) or one of five Archimedean solids (truncated-tetrahedron 12, 18, 8; cuboctahedron 12, 24, 14; truncated-octahedron 24, 36, 14; icosidodecahedron 30, 60, 32; truncated-icosahedron 60, 90, 32) and hide one of vertices, edges or faces. The board shows the other two counts and V - E + F = 2; the key is { target } with the hidden count as digits in a string.`,
+      `${SECTION}: volume: { mode, side, height } with a square base side from 2 to 12 and a height from 1 to 12. The learner finds the pyramid's volume as a third of the prism with the same base and height, so side x side x height must divide by 3; the key is { target } with that volume as digits in a string. cone: { mode, radius, height } with a whole radius from 1 to 12 and a whole height from 1 to 12; the learner finds the cone's volume as a third of the cylinder with the same base and height, counted in pi, so radius x radius x height must divide by 3; the key is { target } with that number of pi as digits in a string (radius 3, height 4 gives 12).`,
+      `${SECTION}: slide: { mode, solid, normal, start, target } with solid tetrahedron, cube, octahedron or cylinder, normal three whole parts from -3 to 3 (not all zero), start the whole offset the plane begins at (from -16 to 16) and target the shape to find. The learner slides the plane along its normal (a slider with a keyboard alternative) and the key is { pick } with the target shape. The plane must make the target at some position, must not start on it, and the solid must not also make a shape that the target is a kind of (a square is a rectangle), or one position would be graded two ways. A cube with normal [1, 1, 1] makes a hexagon near offset 0 and a triangle near offset 10; a tetrahedron with normal [1, 0, 0] makes a square only at offset 0. Never include a sphere. The prompt is at most two imperative sentences and never names the answer.`,
     ],
   },
   {
@@ -111,22 +112,23 @@ const rotationChecker: SolvabilityChecker = (segment, context) => {
 };
 
 function sectionIssues(subject: string, payload: SolidSectionPayload, answerKey: unknown): SolvabilityIssue[] {
-  if (payload.mode === 'euler' && eulerSum(PLATONIC_COUNTS[payload.solid]) !== 2) return [issue('impossible-state', `${subject}: ${payload.solid} does not satisfy V - E + F = 2`)];
+  if (payload.mode === 'euler' && eulerSum(EULER_COUNTS[payload.solid]) !== 2) return [issue('impossible-state', `${subject}: ${payload.solid} does not satisfy V - E + F = 2`)];
   const problem = solidSectionProblem(payload);
   if (problem) {
     const shape = payload.mode === 'section' ? cutShape(payload) : null;
-    const ambiguous = payload.mode === 'section' && shape !== null && payload.options.some((option) => option !== shape && ALSO_TRUE[shape].includes(option));
-    return [issue(ambiguous ? 'ambiguous-solution' : 'no-solution', `${subject}: ${problem}`)];
+    const ambiguous = (payload.mode === 'section' && shape !== null && payload.options.some((option) => option !== shape && ALSO_TRUE[shape].includes(option))) || /graded two ways/.test(problem);
+    const silent = payload.mode === 'cone' || /must start|must not start/.test(problem);
+    return [issue(ambiguous ? 'ambiguous-solution' : silent ? 'impossible-state' : 'no-solution', `${subject}: ${problem}`)];
   }
   if (answerKey === undefined) return [];
   const record = asRecord(answerKey);
-  if (payload.mode === 'section') {
-    const shape = cutShape(payload)!;
+  if (payload.mode === 'section' || payload.mode === 'slide') {
+    const shape = payload.mode === 'slide' ? payload.target : cutShape(payload)!;
     if (!record || objectKeys(record).join() !== 'pick' || typeof record.pick !== 'string') return [issue('impossible-state', `${subject}: the rubric must be { pick } with the shape name`)];
     return checkRubricCoverage([shape], new Set([record.pick]), { subject, isSolution: (key) => key === shape });
   }
-  const target = payload.mode === 'euler' ? String(hiddenCount(payload)) : String(pyramidVolume(payload.side, payload.height));
-  const bounds = payload.mode === 'euler' ? EULER_BOUNDS : VOLUME_BOUNDS;
+  const target = payload.mode === 'euler' ? String(hiddenCount(payload)) : payload.mode === 'cone' ? String(coneVolume(payload.radius, payload.height)) : String(pyramidVolume(payload.side, payload.height));
+  const bounds = payload.mode === 'euler' ? eulerBounds(payload.solid) : VOLUME_BOUNDS;
   if (!record || objectKeys(record).join() !== 'target' || typeof record.target !== 'string') return [issue('impossible-state', `${subject}: the rubric must be { target } with the number as digits in a string`)];
   const issues = checkRubricCoverage([target], new Set([record.target]), { subject, isSolution: (key) => key === target });
   if (Number(target) > Number(bounds.maximum)) issues.push(issue('out-of-bounds', `${subject}: the answer ${target} is above the ${bounds.maximum} the box accepts`));
@@ -136,7 +138,7 @@ function sectionIssues(subject: string, payload: SolidSectionPayload, answerKey:
 const sectionChecker: SolvabilityChecker = (segment, context) => {
   const subject = `solid section ${segment.id}`;
   const payload = readSolidSectionPayload(segment.payload);
-  if (!payload) return result([issue('impossible-state', `${subject}: the payload must be a section, euler or volume question of the documented shape`)]);
+  if (!payload) return result([issue('impossible-state', `${subject}: the payload must be a section, euler, volume, cone or slide question of the documented shape`)]);
   return result(sectionIssues(subject, payload, context.answerKey));
 };
 
@@ -214,7 +216,7 @@ function space1Gates(document: { segments?: unknown }): GateProblem[] {
       else { const message = rotationProblem(payload); if (message) problem(`The mental rotation: ${message}`); }
     } else if (type === SECTION) {
       const payload = readSolidSectionPayload(segment.payload);
-      if (!payload) problem('The solid section payload must be a section, euler or volume question of the documented shape');
+      if (!payload) problem('The solid section payload must be a section, euler, volume, cone or slide question of the documented shape');
       else { const message = solidSectionProblem(payload); if (message) problem(`The solid section: ${message}`); }
     } else if (type === STALL) {
       const payload = readStallPayload(segment.payload);

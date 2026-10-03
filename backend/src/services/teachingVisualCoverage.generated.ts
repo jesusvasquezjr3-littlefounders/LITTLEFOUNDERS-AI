@@ -2,10 +2,10 @@
 export const TEACHING_VISUAL_COVERAGE = {
   "generated_at": "2026-10-03",
   "tap_alternative": {
-    "drag_interactions": 28,
+    "drag_interactions": 29,
     "pointer_handlers": 5,
-    "drag_place_hooks": 23,
-    "with_alternative": 28,
+    "drag_place_hooks": 24,
+    "with_alternative": 29,
     "share": 1,
     "missing": []
   },
@@ -26,9 +26,9 @@ export const TEACHING_VISUAL_COVERAGE = {
   },
   "horizonte": {
     "packs": 18,
-    "segment_types": 65,
-    "with_board": 65,
-    "with_contract": 65,
+    "segment_types": 68,
+    "with_board": 68,
+    "with_contract": 68,
     "share": 1,
     "missing": []
   }

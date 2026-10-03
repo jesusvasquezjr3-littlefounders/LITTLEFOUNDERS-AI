@@ -3,6 +3,7 @@ import { copyText } from '../copyText';
 import { PITCH_NAMES, type SolidView } from '../solids/projection.generated';
 import type { ArObjectId } from './ar.generated';
 import { SPACE2_COPY } from './copy';
+import { ratDecimal, type DecimalMark, type Rat, type SpokenWords } from './field.generated';
 import type { PlaceId } from './globe.generated';
 import { xAxis, yAxis, type SurfaceSpec } from './surface.generated';
 
@@ -67,4 +68,20 @@ export const viewState = (t: SpaceText, view: SolidView): string => `${viewLabel
 export function degrees(t: SpaceText, value: number, axis: 'lat' | 'lon'): string {
   const letter = axis === 'lat' ? (value >= 0 ? t.dirNorth : t.dirSouth) : (value >= 0 ? t.dirEast : t.dirWest);
   return `${Math.abs(Math.round(value))}° ${letter}`;
+}
+
+/** The decimal mark the notation and the spoken reading use: pt-BR writes the comma, the other two locales the point. */
+export const formulaMark = (locale: Locale): DecimalMark => (locale === 'pt-BR' ? ',' : '.');
+
+/** The words a formula is read aloud with, in the learner's language. */
+export const formulaWords = (t: SpaceText): SpokenWords => ({
+  plus: t.spokenPlus, minus: t.spokenMinus, times: t.spokenTimes, over: t.spokenOver, power: t.spokenPower,
+  open: t.spokenOpen, close: t.spokenClose, negative: t.spokenNegative,
+});
+
+/** An exact value as the learner reads it: up to 3 decimals in the locale's own mark, with a leading "≈" when it was rounded. */
+export function ratShow(value: Rat, locale: Locale): string {
+  const { text, exact } = ratDecimal(value, 3);
+  const shown = new Intl.NumberFormat(locale, { maximumFractionDigits: 3 }).format(Number(text));
+  return exact ? shown : `≈ ${shown}`;
 }

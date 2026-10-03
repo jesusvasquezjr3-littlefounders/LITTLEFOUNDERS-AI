@@ -2,16 +2,16 @@
 
 Two teaching pieces that share one pack and one answer shape: the learner builds a set of whole-number points on a lattice. F2.7 is a
 rubber band on a geoboard and shaded squares inside an outline; F2.8 is the image of a figure under a move, and copies of a tile
-slid across a floor. Procedure: [RECIPE.md](./RECIPE.md). Exemplar: [golden.md](./golden.md).
+slid, turned or flipped across a floor. Procedure: [RECIPE.md](./RECIPE.md). Exemplar: [golden.md](./golden.md).
 
 | Item | Value |
 |---|---|
 | Catalogue rows | F2.7: E02 (geoplano), E22 (area by squares); F2.8: E06 (tessellations), E07 (reflection and symmetry), E09 (rotation), E10 (translation and dilation); `cat-math.md` |
 | Segment types | `math.geoboard.v2` and `math.area-squares.v2` (F2.7), `math.transform.v2` and `math.tessellation.v2` (F2.8) |
 | Visuals | F2.7 `geoboard`, `area-squares`; F2.8 `transform-plane`, `symmetry-mirror`, `tessellation` |
-| Ages | F2.7 8 to 12 (`{ ages: [8, 12], adult: false }`); F2.8 8 to 15 (`{ ages: [8, 15], adult: false }`); the dilation and the bump-tile fixtures are offered only at 13 to 17 |
+| Ages | F2.7 8 to 12 (`{ ages: [8, 12], adult: false }`); F2.8 8 to 15 (`{ ages: [8, 15], adult: false }`); every fixture sits inside the Core scope for its type (see Fix round) |
 | ICAP level | Constructive, both pieces |
-| Answer shape | point set (F0.3), always `{ points: { x, y }[] }` of whole numbers: geoboard the band's pegs in order; area-squares the shaded cells; transform the image's vertices in figure order; tessellation the anchor of each placed copy |
+| Answer shape | point set (F0.3), `{ points: { x, y }[] }` of whole numbers: geoboard the band's pegs in order; area-squares the shaded cells; transform the image's vertices in figure order; tessellation the anchor of each placed copy, plus `motions` (`slide`, `turn` or `flip` for each copy) only when the floor offers more than a slide |
 | Rendering | the shared Plano SVG plane (F0.2) with the points, polylines, regions and handles layers; one pure model per type, no third-party code |
 | Capabilities | geoboard `visual.geoboard.v1`, `operation.tap-pegs.v1`; area-squares `visual.area-squares.v1`, `operation.shade-cells.v1`; transform `visual.transform-plane.v1`, `visual.symmetry-mirror.v1`, `operation.drag-point.v1`; tessellation `visual.tessellation.v1`, `operation.place-tile.v1` |
 | Chunk budget | 12 KB gzipped declared for each of the four boards; not yet measured (see Known issues) |
@@ -54,20 +54,21 @@ whole-number area (a right triangle with legs 4 and 2 is `area2 = 8`, four squar
 
 **F2.8 tessellations (`math.tessellation.v2`).**
 
-- The payload is `{ floor, tile }`: a floor of cells (at most 24 copies' worth) and a connected tile of 2 to 6 cells that is only slid, never
-  turned. Whether a cover exists is checked when the lesson is published.
+- The payload is `{ floor, tile, moves? }`: a floor of cells (at most 24 copies' worth), a connected tile of 2 to 6 cells and, optionally,
+  the moves on offer (see Fix round). Without `moves` the tile is only slid. Whether a cover exists with the offered moves is checked when
+  the lesson is published.
 - A cursor handle names the anchor, the translation applied to the tile. Tap a cell, or press Enter or Space on the cursor ("Place tile"),
   to put a copy there. Tapping a cell that a copy already covers removes that copy ("Remove last" and "Reset" also work). The cursor tile
   is previewed as an outline.
 - A copy that leaves the floor or overlaps another is refused with a sentence ("That tile does not fit there"), never accepted silently.
-- Check sends the anchors. The floor is covered when every cell is under a copy.
+- Check sends the anchors, and the move of each copy when the floor offers more than a slide. The floor is covered when every cell is under a copy.
 - **Equivalent.** The status line says how many copies are placed and how many cells are left; "Show as table" lists each copy with its anchor.
 
 ## Scorer ladder
 
 | Verdict | Geoboard | Area squares | Transform | Tessellation |
 |---|---|---|---|---|
-| `invalid` | malformed response or extra fields; a peg off the board or repeated; a band that crosses itself; with a rubric, a malformed key | not a set of distinct cells on the grid; with a rubric, a key that is not the squares inside the outline | not distinct whole-number points on the plane; with a rubric, a key that is not the image under the move | a copy that leaves the floor or overlaps another; with a rubric, a key whose copy count does not match the floor |
+| `invalid` | malformed response or extra fields; a peg off the board or repeated; a band that crosses itself; with a rubric, a malformed key | not a set of distinct cells on the grid; with a rubric, a key that is not the squares inside the outline | not distinct whole-number points on the plane; with a rubric, a key that is not the image under the move | a copy that leaves the floor or overlaps another, a move the floor does not offer; with a rubric, a key whose copy count does not match the floor |
 | `valid` | no band yet, and (without a rubric, as in the browser) any well-formed band | nothing shaded, and any well-formed shading without a rubric | the corners left on the figure, and any well-formed answer without a rubric | no copy placed, and any legal placement without a rubric |
 | `review` | a band that is not the key; diagnostic `value` (area wrong) or `miss` (area right, figure wrong) | `miss`, `false_alarm`, `partial` or `value` from the point-set grader | `miss`, `false_alarm`, `partial` or `value` from the point-set grader | legal copies that leave part of the floor open; diagnostic `partial` |
 | `met` | the right area, and the named figure when the task names one; score 100, diagnostic `none` | exactly the squares inside the outline | exactly the image | every floor cell covered |
@@ -77,7 +78,7 @@ The browser has no rubric, so its generated scorer can say only `valid` or `inva
 ## Files
 
 Backend `backend/src/services/horizonte/geom2/`: `geometry.ts` (lattice points, area in half squares, simple-polygon test, corner-based
-shape matching), `geoboardModel.ts`, `areaModel.ts`, `transformModel.ts`, `tessellationModel.ts` (translation-only solver),
+shape matching), `geoboardModel.ts`, `areaModel.ts`, `transformModel.ts`, `tessellationModel.ts` (copies by slide, half-turn or flip; exact-cover solver),
 `contract.ts` (strict Zod payloads, rubrics, age scope), `scorer.ts`, `fixtures.ts`, `capabilities.ts`, `index.ts`. Test:
 `backend/src/__tests__/horizonte/geom2.test.ts`, which runs `assertScorerContract` for all four types.
 
@@ -90,8 +91,8 @@ Forge `coursegen/src/v2/horizonte/geom2.ts` (capabilities, authoring guidance fo
 `coursegen/src/__tests__/horizonte/geom2.test.ts`.
 
 Fixtures: geoboard `geoboard-area-six`, `geoboard-right-triangle`; area `area-l-shape`, `area-staircase`; transform `reflect-triangle`,
-`translate-parallelogram`, `rotate-quarter`, `mirror-half`, `dilate-center` (13 to 17); tessellation `tile-domino`, `tile-l`, `tile-bump`
-(13 to 17). Preview: `?screen=fixture&seg=hz:geom2:geoboard-area-six&age=6-9`.
+`translate-parallelogram`, `rotate-quarter`, `mirror-half`, `dilate-center` (10 to 12); tessellation `tile-domino` (6 to 9), `tile-l`,
+`tile-bump`, `tile-turn`, `tile-flip` (10 to 12). Preview: `?screen=fixture&seg=hz:geom2:geoboard-area-six&age=6-9`.
 
 ## Decisions
 
@@ -107,8 +108,7 @@ Fixtures: geoboard `geoboard-area-six`, `geoboard-right-triangle`; area `area-l-
   matched by its corners, so a rectangle drawn from any starting peg counts.
 - **Transform corners start on the figure.** A response that leaves every corner where the figure is stays `valid`, so an untouched board
   never grades as a wrong answer; the learner moves each corner to the image.
-- **Translation-only tessellations.** A copy is slid, never turned or flipped, so the answer is just the list of anchors and the solver
-  is an exact cover by translations. Turning and flipping tiles is a possible follow-up; it needs a richer answer than `{ points }`.
+- **Tessellation pairings.** The first version was translation-only. The Fix round replaced it with per-copy moves; see Fix round.
 - **Tap rounding.** A tap on a cell uses floor (the cell the finger is in); a tap for a peg or a corner uses round (the nearest lattice
   point). Taps are `click` events on the plot read through `getBoundingClientRect`, as in Plano.
 - **Keyboard and tap alternatives.** Plano handles are `role="slider"` with arrow-key movement, so a drag is never the only way. Enter or
@@ -141,8 +141,84 @@ Fixtures: geoboard `geoboard-area-six`, `geoboard-right-triangle`; area `area-l-
 - Hit size is declared and enforced in CSS but jsdom cannot measure layout; a real-browser check of the 64 px handles and of the four
   drawings belongs to the coordinator's audit pass. No screenshot was taken in this lane.
 - The chunk budgets (12 KB gzipped each) are declared, not measured; `npm --prefix frontend run build` gives the real sizes.
-- Tessellations are translation-only (see Decisions); a tile that needs a turn or a flip to cover a floor is not expressible yet.
+- Tessellation moves are slide, half turn and left-to-right flip; see Fix round for what that leaves out.
 - `cat-math.md` is the owner's catalogue and is not in this repository; the rows are cited by id.
 - `fixtureCoverage.test.tsx` fails on `feat/horizonte-visual` for reasons outside this lane: the F0.2 `plano/` folder has an `index.ts`, so the test
   counts it as a pack that must register fixtures. geom2's own fixtures and `audit.json` were checked separately (the audit ids and ages match
-  the fixtures, and all 12 load in en-US, es-MX and pt-BR).
+  the fixtures, and all load in en-US, es-MX and pt-BR; 14 after the Fix round).
+
+## Fix round
+
+Two defects were reported against the merged pack: fixtures offered outside the Core age scope, and tessellations that could only
+translate. Both are fixed on this branch.
+
+### Age scope
+
+- **Cause.** `dilate-center` and `tile-bump` were audited and offered at band 13-17. Core scopes `math.transform.v2` and `math.tessellation.v2`
+  to ages 8 to 15, and `horizonteAgeScopeProblem` requires the band to overlap the fixture's eligibility, so a fixture could not be both
+  13-17 and inside the scope.
+- **Fix.** Both fixtures moved to band 10-12 with eligibility 10 to 12, in the fixtures and in `audit.json` (the audit `age` must equal the
+  fixture's `ageBand`). A band is a coarse label and cannot be narrower than the ages it names, so a fixture that must stay under 15 cannot
+  carry 13-17.
+- **Convention, stated once.** Eligibility is the Core gate and the band is a coarse label of it. The 6-9 fixtures carry eligibility 8 to 9
+  because the scope starts at 8; num-b uses the same convention.
+- **Pinned by a test.** `geom2.test.ts` checks, for every fixture, that the eligibility lies inside the Core scope of its segment type, that
+  the top of its band does not pass the scope maximum and that `horizonteScopeProblem` returns null. The other ten fixtures were checked
+  against the same map (geoboard and area-squares 8 to 12, transform and tessellation 8 to 15) and needed no change.
+- The capability maps in Core, the browser and Forge were not touched and the parity check stays green.
+
+### F2.8 tessellations with half-turn and flip pairings
+
+- **Idea.** In an Escher-style tiling a tile edge is paired with a neighbour by a translation, a half-turn or a glide reflection. A copy is
+  now the tile made by one of three moves and then slid to its anchor: `slide` (as it is), `turn` (half a turn about the middle of the tile's
+  bounding box) or `flip` (a left-to-right mirror image about the same box). Which pairings a floor uses follows from which moves it needs.
+- **Payload.** `{ floor, tile, moves? }`. `moves` is slide first and then turn, flip or both, each once, so it has 2 or 3 entries. Without it
+  the floor is slide-only and every earlier payload and plan still validates unchanged.
+- **Response.** `{ points }` as before, and `{ points, motions }` only when `moves` offers more than a slide. `motions` has one entry per
+  point; a missing `motions` means every copy is slid. A motion that is not offered, a `motions` list of the wrong length or a `motions` field
+  on a slide-only floor is `invalid`. The key is still `{ copies }`, the number of copies an exact cover takes, so the rubric did not change.
+- **Model** (`tessellationModel.ts`, regenerated into the browser). `orientTile`, `copyCells`, `readCopies`, `placeCopies`, `solveCover`
+  (fills the first open cell in x-then-y order trying each distinct oriented shape, 60,000 steps) and `floorFromCopies`. `placeTiles` and
+  `solveTiling` remain as the slide-only forms. The tile still starts at the origin and the floor is whole copies, at most 24, inside 12 by 12.
+- **Scorer.** `gradeTessellation` reads the copies and places them (`invalid` if one leaves the floor, overlaps another or uses a move not on
+  offer), then grades the covered cells with the point-set diagnostics as before. The sample answer is the solver's cover and carries `motions`
+  only when the floor offers more than a slide. The browser scorer copy has no rubric and still says only `valid` or `invalid`.
+- **Board.** When the floor offers more than a slide, a "Move" group of 64 px choice chips appears (Slide, Half turn, Flip, `aria-pressed`,
+  starting on Slide). The tile preview and the placed copies are drawn in the chosen orientation. A tap names the square the oriented tile's
+  first square (leftmost, then lowest) lands on, so a copy does not depend on its bounding-box corner being free or being a hole in the tile. The
+  keyboard cursor and the Place tile button use the same rule. A copy that does not fit gets the existing refusal sentence, which clears when
+  the move changes. Reset returns to Slide. The status line adds the move and the table gains a Move column. Slide-only floors show no chips and
+  submit exactly what they did before.
+- **Copy.** New keys `tsMotion`, `colMove`, `moveSlide`, `moveTurn`, `moveFlip`, `tsMove` and `tsHintMoves` in en-US, es-MX and pt-BR, each
+  with a `data-copy-role` and written to the strictest (6-9) budget.
+- **Forge.** `geom2.ts` guidance now says the prompt must name what may be done to the tile and that `moves` is listed only when the floor
+  needs them. The gate accepts `moves` and refuses a bad list ("The moves are slide first and then turn, flip or both, each once") and a floor
+  the listed moves cannot cover, however it was built ("The tile cannot cover the floor by the moves listed").
+- **Fixtures.** `tile-turn` (L-tromino, moves slide and turn, 4 copies on a 4 by 3 floor) and `tile-flip` (S-tetromino, moves slide and
+  flip, 3 copies on an 8 by 2 floor), both band 10-12 with eligibility 10 to 12 and a ladder of `invalid` (overlapping copies), `valid`
+  (nothing placed) and `met` (the cover, with `motions`). The bump, L and domino fixtures keep their slide-only payloads. Neither new floor
+  can be covered by sliding alone, so the extra move is what makes it solvable.
+- **Tests.** Backend `geom2.test.ts` (the motion model, the scorer ladder for each move, the age-scope check; 37 tests), the board tests in
+  `geom2Boards.test.tsx` (chips only when the floor offers a move, a half turn, a flip, a refused turned copy, a keyboard placement, the table
+  with its Move column, removal on tap, reset; 30 tests) and Forge `geom2.test.ts` (guidance, accepted and refused floors, every shape of bad
+  `moves`; 16 tests).
+
+### Decisions in this round
+
+- **Per-copy moves, not a per-floor mode.** A cover may mix slides, turns and flips, which is what an edge pairing is. A single mode could not
+  express a floor that needs a flip on one copy and a slide on the rest.
+- **The wire stays additive.** `motions` appears only when it carries information, so no route, schema or plan changed and a slide-only answer
+  is exactly the old one. The route still takes `answer: z.unknown()` and the scorer owns validation.
+- **Where a fixture sits.** A fixture goes in the band whose ages sit inside the Core scope, not at the nearest label.
+
+### Known limits after this round
+
+- No real-browser check and no screenshot in this round either: jsdom cannot measure the 64 px hit size of the new chips or the drawing of a
+  turned tile. The coordinator's audit pass should look at `tile-turn` and `tile-flip` in light and dark at 360 and 1280 px.
+- The chunk budgets are still declared, not measured. `TessellationBoard` grew by the move group and the orientation code.
+- `solveCover` stops after 60,000 steps and then reports no cover, so a large 24-copy floor with three moves could in principle be refused at
+  publish time although a cover exists. The Forge gate repeats the same search with the same budget; no fixture comes near it.
+- The flip is left to right only. A top-to-bottom mirror image is a flip followed by a half turn, which one copy cannot combine: the learner
+  picks one move for each copy.
+- The Atlas audit showed low-contrast samples (about 2.3 light and 2.7 dark) on Undo, Reset and Check. That is outside this unit and is left
+  to the audit pass.

@@ -4,7 +4,7 @@ import { fill, money, spokenMoney } from '../fin1/format';
 import { PITCH_NAMES, type SolidView } from '../solids/projection.generated';
 import { SPACE1_COPY } from './copy';
 import type { CoinPiece, ReferenceId } from './coins.generated';
-import type { CountName, PlatonicId, SectionShape } from './polyhedra.generated';
+import type { CountName, EulerSolid, SectionShape, SectionSolid } from './polyhedra.generated';
 import type { StallId } from './stall.generated';
 import { TARGET_IDS, type Cell, type RotationAxis, type TargetId } from './voxels.generated';
 
@@ -36,13 +36,16 @@ export function spokenLength(mm: number, locale: Locale): string {
 
 const SOLID_KEYS = {
   tetrahedron: 'solidTetrahedron', cube: 'solidCube', octahedron: 'solidOctahedron', dodecahedron: 'solidDodecahedron', icosahedron: 'solidIcosahedron',
-} as const;
-export const solidName = (t: Space1Text, solid: PlatonicId): string => t[SOLID_KEYS[solid]];
+  'truncated-tetrahedron': 'solidTruncatedTetrahedron', cuboctahedron: 'solidCuboctahedron', 'truncated-octahedron': 'solidTruncatedOctahedron',
+  icosidodecahedron: 'solidIcosidodecahedron', 'truncated-icosahedron': 'solidTruncatedIcosahedron', cylinder: 'solidCylinder',
+} as const satisfies Record<EulerSolid | SectionSolid, keyof typeof SPACE1_COPY>;
+export const solidName = (t: Space1Text, solid: EulerSolid | SectionSolid): string => t[SOLID_KEYS[solid]];
 
 const SHAPE_KEYS = {
   triangle: 'shapeTriangle', square: 'shapeSquare', rectangle: 'shapeRectangle', rhombus: 'shapeRhombus', parallelogram: 'shapeParallelogram',
   trapezoid: 'shapeTrapezoid', quadrilateral: 'shapeQuadrilateral', pentagon: 'shapePentagon', hexagon: 'shapeHexagon', polygon: 'shapePolygon',
-} as const;
+  circle: 'shapeCircle', ellipse: 'shapeEllipse',
+} as const satisfies Record<SectionShape, keyof typeof SPACE1_COPY>;
 export const shapeName = (t: Space1Text, shape: SectionShape): string => t[SHAPE_KEYS[shape]];
 
 const ITEM_KEYS = {

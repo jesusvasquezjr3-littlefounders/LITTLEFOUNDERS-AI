@@ -2,9 +2,9 @@ import { gradeNumberTolerance, sampleArrangement } from '../../v2AnswerShapes.js
 import type { V2Grade } from '../../v2VisualScorer.js';
 import type { HorizonteScorer } from '../types.js';
 import { coinAnswer, coinProblem, readCoinPayload } from './coins.js';
-import { prismVolume, type SectionShape } from './polyhedra.js';
+import { cylinderVolume, prismVolume, slideRange, type SectionShape } from './polyhedra.js';
 import { readRotationPayload, rotationAnswer } from './rotationRules.js';
-import { EULER_BOUNDS, VOLUME_BOUNDS, readSolidSectionPayload, solidSectionAnswer } from './sectionRules.js';
+import { VOLUME_BOUNDS, eulerBounds, readSolidSectionPayload, slideCut, solidSectionAnswer } from './sectionRules.js';
 import { basketCount, basketMeets, goalTotal, mostItems, basketCost, slotsToBasket, stallContext, readStallPayload } from './stall.js';
 import { TARGET_IDS, isAngle, isTargetId } from './voxels.js';
 
@@ -42,9 +42,11 @@ function rotationGrade(segment: Segment, response: unknown, rubric: unknown): V2
 const WHOLE = /^(0|[1-9]\d{0,3})$/;
 
 /**
- * invalid: malformed, a shape the question does not list, or a typed number outside the whole numbers it can be. valid: nothing
- * chosen or typed yet. met: the shape the plane cuts, the hidden count, or the pyramid's volume. A volume typed as the whole
- * prism is review "structure": the one-third was left out.
+ * invalid: malformed, a shape the question does not list, a plane off the slider, or a typed number outside the whole numbers it
+ * can be. valid: nothing chosen or typed yet, or the plane still where it started. met: the shape the plane cuts (named, or made
+ * by sliding the plane), the hidden count, or the volume of the pyramid or the cone in pi. A volume typed as the whole prism or
+ * cylinder is review "structure": the one-third was left out. A slide that makes another shape is review "value"; one that
+ * makes no clean cut is review "miss".
  */
 function sectionGrade(segment: Segment, response: unknown, rubric: unknown): V2Grade {
   const payload = readSolidSectionPayload(segment?.payload);
@@ -59,8 +61,20 @@ function sectionGrade(segment: Segment, response: unknown, rubric: unknown): V2G
     if (pick === '') return VALID;
     return pick === answer.pick ? MET : review('value');
   }
+  if (payload.mode === 'slide') {
+    if (!hasKeys(response, ['offset']) || typeof response.offset !== 'number' || !Number.isInteger(response.offset)) return INVALID;
+    const { offset } = response;
+    const { min, max } = slideRange(payload.solid, payload.normal);
+    if (offset < min || offset > max) return INVALID;
+    if (rubric === undefined) return VALID;
+    if (!isRecord(rubric) || !hasKeys(rubric, ['pick']) || rubric.pick !== payload.target) return INVALID;
+    if (offset === payload.start) return VALID;
+    const shape = slideCut(payload, offset);
+    if (shape === payload.target) return MET;
+    return review(shape === null ? 'miss' : 'value');
+  }
   if (!hasKeys(response, ['value']) || typeof response.value !== 'string') return INVALID;
-  const bounds = payload.mode === 'euler' ? EULER_BOUNDS : VOLUME_BOUNDS;
+  const bounds = payload.mode === 'euler' ? eulerBounds(payload.solid) : VOLUME_BOUNDS;
   const { value } = response;
   if (value !== '' && (!WHOLE.test(value) || gradeNumberTolerance({ value }, undefined, bounds).verdict === 'invalid')) return INVALID;
   if (rubric === undefined) return VALID;
@@ -68,7 +82,8 @@ function sectionGrade(segment: Segment, response: unknown, rubric: unknown): V2G
   if (!answer || !('target' in answer) || !isRecord(rubric) || !hasKeys(rubric, ['target']) || rubric.target !== answer.target) return INVALID;
   if (value === '') return VALID;
   if (gradeNumberTolerance({ value }, { target: answer.target }, bounds).verdict === 'met') return MET;
-  return review(payload.mode === 'volume' && Number(value) === prismVolume(payload.side, payload.height) ? 'structure' : 'value');
+  const whole = payload.mode === 'volume' ? prismVolume(payload.side, payload.height) : payload.mode === 'cone' ? cylinderVolume(payload.radius, payload.height) : null;
+  return review(whole !== null && Number(value) === whole ? 'structure' : 'value');
 }
 
 /**
@@ -128,6 +143,7 @@ export const SPACE1_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
     grade: sectionGrade as HorizonteScorer['grade'],
     sample: ((segment: Segment) => {
       const payload = readSolidSectionPayload(segment.payload);
+      if (payload?.mode === 'slide') return { offset: payload.start };
       return payload && payload.mode !== 'section' ? { value: '' } : { pick: '' };
     }) as HorizonteScorer['sample'],
   },

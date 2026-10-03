@@ -6,7 +6,7 @@ import { GEOM2_CAPABILITIES } from '../../services/horizonte/geom2/capabilities.
 import { areaCells, isAreaSquaresPayload } from '../../services/horizonte/geom2/areaModel.js';
 import { findBand, isGeoboardRubric, readBand } from '../../services/horizonte/geom2/geoboardModel.js';
 import { area2, cellsInside, cornersOf, isOrthogonal, isSimplePolygon, matchesShape, segmentsMeet, type Lattice } from '../../services/horizonte/geom2/geometry.js';
-import { floorFrom, isTessellationPayload, placeTiles, solveTiling } from '../../services/horizonte/geom2/tessellationModel.js';
+import { copyCells, floorFrom, floorFromCopies, isMotionList, isTessellationPayload, offeredMotions, orientTile, placeCopies, placeTiles, readCopies, solveCover, solveTiling, type TileCopy, type TileMotion } from '../../services/horizonte/geom2/tessellationModel.js';
 import { applyMove, imageOf, isMirrorSetup, isTransformMove, isTransformPayload } from '../../services/horizonte/geom2/transformModel.js';
 import { horizonteGrade, horizonteSampleVerdict, horizonteScopeProblem } from '../../services/horizonte/index.js';
 import { gradeV2Visual, v2PublicLessonSchema, validateV2LessonForGrading } from '../../services/v2LessonDocument.js';
@@ -226,8 +226,14 @@ describe('geom2 pack: F2.7 geoboard and area by squares, F2.8 transformations an
   });
 
   describe('F2.8 tessellations (E06)', () => {
-    const domino = fixture('tile-domino').segment('en-US').payload as { floor: Lattice[]; tile: Lattice[] };
-    const bump = fixture('tile-bump').segment('en-US').payload as { floor: Lattice[]; tile: Lattice[] };
+    type Tess = { floor: Lattice[]; tile: Lattice[]; moves?: TileMotion[] };
+    const payloadOf = (id: string) => fixture(id).segment('en-US').payload as Tess;
+    const domino = payloadOf('tile-domino');
+    const bump = payloadOf('tile-bump');
+    const turnFloor = payloadOf('tile-turn');
+    const flipFloor = payloadOf('tile-flip');
+    const copy = (x: number, y: number, motion: TileMotion): TileCopy => ({ anchor: at(x, y), motion });
+    const tessellations = GEOM2_FIXTURES.filter((candidate) => candidate.segment('en-US').type === 'math.tessellation.v2');
 
     it('accepts a floor that is whole copies of a connected tile and nothing looser', () => {
       expect(isTessellationPayload(domino)).toBe(true);
@@ -243,23 +249,95 @@ describe('geom2 pack: F2.7 geoboard and area by squares, F2.8 transformations an
       expect(isTessellationPayload({ ...domino, answer: [] })).toBe(false);
     });
 
-    it('slides copies and reports an overlap, a copy off the floor or the cells covered', () => {
+    it('lists the offered motions as slide first and then a turn, a flip or both', () => {
+      expect(isMotionList(['slide', 'turn'])).toBe(true);
+      expect(isMotionList(['slide', 'flip'])).toBe(true);
+      expect(isMotionList(['slide', 'turn', 'flip'])).toBe(true);
+      for (const bad of [['slide'], [], ['turn', 'slide'], ['slide', 'flip', 'turn'], ['slide', 'slide'], ['turn', 'flip'], ['slide', 'spin'], 'slide', null]) expect(isMotionList(bad)).toBe(false);
+      expect(isTessellationPayload({ ...domino, moves: ['slide', 'turn'] })).toBe(true);
+      expect(isTessellationPayload({ ...domino, moves: ['slide'] })).toBe(false);
+      expect(isTessellationPayload({ ...domino, moves: ['turn', 'flip'] })).toBe(false);
+      expect(offeredMotions(domino)).toEqual(['slide']);
+      expect(offeredMotions(turnFloor)).toEqual(['slide', 'turn']);
+    });
+
+    it('turns half a turn about the middle of the tile and flips it left to right, keeping the lower-left corner', () => {
+      const ell = pts([0, 0], [1, 0], [0, 1]);
+      expect(orientTile(ell, 'slide')).toEqual(pts([0, 0], [0, 1], [1, 0]));
+      expect(orientTile(ell, 'turn')).toEqual(pts([0, 1], [1, 0], [1, 1]));
+      expect(orientTile(ell, 'flip')).toEqual(pts([0, 0], [1, 0], [1, 1]));
+      const zig = pts([1, 0], [2, 0], [0, 1], [1, 1]);
+      expect(orientTile(zig, 'turn')).toEqual(orientTile(zig, 'slide'));
+      expect(orientTile(zig, 'flip')).toEqual(pts([0, 0], [1, 0], [1, 1], [2, 1]));
+      for (const tile of [ell, zig, bump.tile]) {
+        for (const motion of ['turn', 'flip'] as const) {
+          const made = orientTile(tile, motion);
+          expect(orientTile(made, motion), motion).toEqual(orientTile(tile, 'slide'));
+          expect({ x: Math.min(...made.map((cell) => cell.x)), y: Math.min(...made.map((cell) => cell.y)) }).toEqual({ x: 0, y: 0 });
+        }
+      }
+      expect(copyCells(ell, copy(3, 2, 'turn'))).toEqual(pts([3, 3], [4, 2], [4, 3]));
+    });
+
+    it('places copies by slide, turn or flip and reports an overlap, a copy off the floor or the cells covered', () => {
       expect(placeTiles(domino, pts([0, 0], [2, 0]))).toEqual({ kind: 'placed', covered: 4 });
       expect(placeTiles(domino, pts([0, 0], [1, 0]))).toEqual({ kind: 'broken' });
       expect(placeTiles(domino, pts([3, 0]))).toEqual({ kind: 'broken' });
       expect(placeTiles(domino, [])).toEqual({ kind: 'placed', covered: 0 });
+      expect(placeCopies(turnFloor, [copy(0, 0, 'slide'), copy(0, 1, 'turn')])).toEqual({ kind: 'placed', covered: 6 });
+      expect(placeCopies(turnFloor, [copy(0, 0, 'slide'), copy(0, 1, 'slide')])).toEqual({ kind: 'broken' });
+      expect(placeCopies(turnFloor, [copy(0, 0, 'flip')])).toEqual({ kind: 'broken' });
+      expect(placeCopies(flipFloor, [copy(0, 0, 'slide'), copy(2, 0, 'slide'), copy(5, 0, 'flip')])).toEqual({ kind: 'placed', covered: 12 });
+      expect(placeCopies(flipFloor, [copy(5, 0, 'slide')])).toEqual({ kind: 'broken' });
+      expect(placeCopies(flipFloor, [copy(0, 0, 'turn')])).toEqual({ kind: 'broken' });
+    });
+
+    it('reads a response as anchors and, when more than a slide is offered, one motion for each', () => {
+      expect(readCopies(domino, { points: pts([0, 0]) })).toEqual([copy(0, 0, 'slide')]);
+      expect(readCopies(domino, { points: pts([0, 0]), motions: ['slide'] })).toBeNull();
+      expect(readCopies(turnFloor, { points: pts([0, 0], [0, 1]), motions: ['slide', 'turn'] })).toEqual([copy(0, 0, 'slide'), copy(0, 1, 'turn')]);
+      expect(readCopies(turnFloor, { points: pts([0, 0], [0, 1]) })).toEqual([copy(0, 0, 'slide'), copy(0, 1, 'slide')]);
+      expect(readCopies(turnFloor, { points: pts([0, 0], [0, 1]), motions: ['slide'] })).toBeNull();
+      expect(readCopies(turnFloor, { points: pts([0, 0]), motions: ['flip'] })).toBeNull();
+      expect(readCopies(turnFloor, { points: pts([0, 0]), motions: ['spin'] })).toBeNull();
+      expect(readCopies(turnFloor, { points: pts([0, 0]), motions: 'turn' })).toBeNull();
+      expect(readCopies(turnFloor, { points: pts([0, 0]), motions: ['turn'], extra: 1 })).toBeNull();
+      expect(readCopies(turnFloor, { motions: ['turn'] })).toBeNull();
+      expect(readCopies(turnFloor, { points: [{ x: 0.5, y: 0 }] })).toBeNull();
+      expect(readCopies(turnFloor, { points: pts([0, 0], [0, 1], [2, 0], [2, 1], [4, 0]) })).toBeNull();
+      expect(readCopies(turnFloor, [])).toBeNull();
     });
 
     it('solves the floor an author built and says so when no cover exists', () => {
-      for (const entry of GEOM2_FIXTURES.filter((candidate) => candidate.segment('en-US').type === 'math.tessellation.v2')) {
-        const payload = entry.segment('en-US').payload as { floor: Lattice[]; tile: Lattice[] };
-        const anchors = solveTiling(payload);
-        expect(anchors, entry.id).not.toBeNull();
-        expect(placeTiles(payload, anchors!), entry.id).toEqual({ kind: 'placed', covered: payload.floor.length });
-        expect(anchors!.length, entry.id).toBe((entry.rubric as { copies: number }).copies);
+      for (const entry of tessellations) {
+        const payload = payloadOf(entry.id);
+        const cover = solveCover(payload);
+        expect(cover, entry.id).not.toBeNull();
+        expect(placeCopies(payload, cover!), entry.id).toEqual({ kind: 'placed', covered: payload.floor.length });
+        expect(cover!.length, entry.id).toBe((entry.rubric as { copies: number }).copies);
+        expect(solveCover(payload), entry.id).toEqual(cover);
       }
       expect(solveTiling({ floor: pts([0, 0], [2, 0]), tile: pts([0, 0], [1, 0]) })).toBeNull();
       expect(solveTiling({ floor: pts([0, 0], [1, 0], [2, 0], [3, 0]), tile: bump.tile })).toBeNull();
+      expect(solveTiling(domino)).toHaveLength(6);
+    });
+
+    it('needs the turn on the turn floor and the flip on the flip floor, and no other motion will do', () => {
+      const under = (payload: Tess, moves?: TileMotion[]) => solveCover({ floor: payload.floor, tile: payload.tile, ...(moves ? { moves } : {}) });
+      expect(under(turnFloor)).toBeNull();
+      expect(under(turnFloor, ['slide', 'flip'])).toBeNull();
+      expect(under(turnFloor, ['slide', 'turn'])).toHaveLength(4);
+      expect(under(flipFloor)).toBeNull();
+      expect(under(flipFloor, ['slide', 'turn'])).toBeNull();
+      expect(under(flipFloor, ['slide', 'flip'])).toHaveLength(3);
+      expect(under(flipFloor, ['slide', 'turn', 'flip'])).toHaveLength(3);
+    });
+
+    it('builds a floor from copies, whatever the motion', () => {
+      const ell = pts([0, 0], [1, 0], [0, 1]);
+      const floor = floorFromCopies(ell, [copy(0, 0, 'slide'), copy(0, 1, 'turn')]);
+      expect(floor).toEqual(pts([0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]));
+      expect(isTessellationPayload({ floor, tile: ell, moves: ['slide', 'turn'] })).toBe(true);
     });
 
     it('grades a partial cover as review, a full one as met and a broken one as invalid', () => {
@@ -276,9 +354,36 @@ describe('geom2 pack: F2.7 geoboard and area by squares, F2.8 transformations an
       expect(run('tile-l', { points: pts([0, 0], [1, 1], [2, 2], [3, 3]) }).verdict).toBe('met');
     });
 
+    it('grades turned and flipped copies the same way, and refuses a motion the floor does not offer', () => {
+      const turned = { points: pts([0, 0], [0, 1], [2, 0], [2, 1]), motions: ['slide', 'turn', 'slide', 'turn'] };
+      expect(run('tile-turn', turned).verdict).toBe('met');
+      expect(run('tile-turn', { points: pts([2, 1], [0, 0], [2, 0], [0, 1]), motions: ['turn', 'slide', 'slide', 'turn'] }).verdict).toBe('met');
+      expect(run('tile-turn', { points: pts([0, 0], [0, 1]), motions: ['slide', 'turn'] })).toEqual({ verdict: 'review', diagnostic: 'partial' });
+      expect(run('tile-turn', { points: [], motions: [] }).verdict).toBe('valid');
+      expect(run('tile-turn', { points: pts([0, 0], [0, 1], [2, 0], [2, 1]) }).verdict).toBe('invalid');
+      expect(run('tile-turn', { points: pts([0, 0], [0, 1], [2, 0], [2, 1]), motions: ['slide', 'turn', 'slide', 'flip'] }).verdict).toBe('invalid');
+      expect(run('tile-turn', { points: pts([0, 0]), motions: ['slide', 'turn'] }).verdict).toBe('invalid');
+      expect(run('tile-turn', { ...turned, extra: 1 }).verdict).toBe('invalid');
+      const flipped = { points: pts([0, 0], [2, 0], [5, 0]), motions: ['slide', 'slide', 'flip'] };
+      expect(run('tile-flip', flipped).verdict).toBe('met');
+      expect(run('tile-flip', { points: pts([0, 0], [2, 0]), motions: ['slide', 'slide'] })).toEqual({ verdict: 'review', diagnostic: 'partial' });
+      expect(run('tile-flip', { points: pts([0, 0], [2, 0], [5, 0]), motions: ['slide', 'slide', 'turn'] }).verdict).toBe('invalid');
+      expect(run('tile-flip', { points: pts([0, 0], [2, 0], [5, 0]) }).verdict).toBe('invalid');
+      expect(run('tile-domino', { points: pts([0, 0]), motions: ['slide'] }).verdict).toBe('invalid');
+      expect(run('tile-domino', { points: pts([0, 0]), motions: ['turn'] }).verdict).toBe('invalid');
+      expect(advisory('tile-flip', flipped).verdict).toBe('valid');
+    });
+
+    it('keeps a slide-only response working on a floor that also offers a motion', () => {
+      expect(run('tile-turn', { points: pts([0, 0], [2, 0]) })).toEqual({ verdict: 'review', diagnostic: 'partial' });
+      expect(run('tile-turn', { points: pts([0, 0], [0, 1]) }).verdict).toBe('invalid');
+      expect(run('tile-flip', { points: pts([0, 0], [2, 0]) })).toEqual({ verdict: 'review', diagnostic: 'partial' });
+    });
+
     it('refuses a key that is not the copy count and never says met without one', () => {
       expect(run('tile-domino', { points: pts([0, 0]) }, { copies: 5 }).verdict).toBe('invalid');
       expect(run('tile-domino', { points: pts([0, 0]) }, { copies: 6, extra: 1 }).verdict).toBe('invalid');
+      expect(run('tile-turn', { points: pts([0, 0]), motions: ['slide'] }, { copies: 3 }).verdict).toBe('invalid');
       expect(advisory('tile-domino', { points: pts([0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]) }).verdict).toBe('valid');
     });
 
@@ -287,6 +392,21 @@ describe('geom2 pack: F2.7 geoboard and area by squares, F2.8 transformations an
       const segment = { id: 'tile-gap', type: 'math.tessellation.v2', grading: 'server', visual: { type: 'tessellation' }, prompt: 'Cover the floor.', payload };
       expect(horizonteSampleVerdict(segment, { copies: 1 })).toBe('invalid');
       expect(horizonteSampleVerdict(fixture('tile-bump').segment('en-US') as { type: string }, fixture('tile-bump').rubric)).toBe('met');
+      for (const id of ['tile-turn', 'tile-flip']) {
+        expect(horizonteSampleVerdict(fixture(id).segment('en-US') as { type: string }, fixture(id).rubric), id).toBe('met');
+      }
+      const slidOnly = { ...fixture('tile-turn').segment('en-US'), payload: { floor: turnFloor.floor, tile: turnFloor.tile } };
+      expect(horizonteSampleVerdict(slidOnly as unknown as { type: string }, { copies: 4 })).toBe('invalid');
+    });
+
+    it('carries the offered motions in the public payload and parses them in every locale', () => {
+      for (const id of ['tile-turn', 'tile-flip']) {
+        for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
+          expect(v2PublicLessonSchema.safeParse(lesson(fixture(id), locale)).success, `${id} ${locale}`).toBe(true);
+        }
+      }
+      const badMoves = { ...lesson(fixture('tile-turn')), segments: [{ ...fixture('tile-turn').segment('en-US'), payload: { ...turnFloor, moves: ['turn', 'slide'] } }] };
+      expect(v2PublicLessonSchema.safeParse(badMoves).success).toBe(false);
     });
   });
 
@@ -305,6 +425,18 @@ describe('geom2 pack: F2.7 geoboard and area by squares, F2.8 transformations an
       expect(scope(type, '13-17', 13, 17)).not.toBeNull();
       expect(scope(type, '6-9', 6, 9)).not.toBeNull();
       expect(scope(type, 'adult', 18, 99)).not.toBeNull();
+    }
+  });
+
+  it('offers no fixture outside the age scope Core declares for its kind', () => {
+    const top: Record<string, number> = { '6-9': 9, '10-12': 12, '13-17': 17 };
+    for (const entry of GEOM2_FIXTURES) {
+      const segment = entry.segment('en-US');
+      const scope = geom2.ageScope[segment.type as string]!;
+      expect(entry.eligibility.minimum_age, entry.id).toBeGreaterThanOrEqual(scope.ages[0]);
+      expect(entry.eligibility.maximum_age, entry.id).toBeLessThanOrEqual(scope.ages[1]);
+      expect(top[entry.ageBand]!, entry.id).toBeLessThanOrEqual(scope.ages[1]);
+      expect(horizonteScopeProblem({ type: segment.type as string }, { age_band: entry.ageBand, eligibility: entry.eligibility }), entry.id).toBeNull();
     }
   });
 
