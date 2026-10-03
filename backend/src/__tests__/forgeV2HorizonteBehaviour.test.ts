@@ -277,7 +277,7 @@ describe('the pieces the visual merge added to the behaviour space', () => {
     }
     const ruler = fixtureById('measure-pencil');
     const space = spaceOf(ruler)!;
-    const length = Number(Object.values(ruler.ladder.met)[0]);
+    const length = Number(Object.values(ruler.ladder.met as Record<string, unknown>)[0]);
     for (const spelling of [String(length), `${length}.0`, `${length * 2}/2`]) expect(space.expectMet!({ value: spelling } as never), spelling).toBe(true);
     expect(space.expectMet!({ value: `${length + 1}` } as never)).toBe(false);
   });
@@ -322,5 +322,127 @@ describe('the pieces the visual merge added to the behaviour space', () => {
     expect(spaceOf(slope, (segment) => { segment.payload.task = null; })).toBeNull();
     const walk = fixtureById('downhill-walk');
     expect(spaceOf(walk, (segment) => { segment.payload.task.below = -50; })).toBeNull();
+  });
+});
+
+describe('the solid nets the second merge added to the behaviour space', () => {
+  const nets = modelled.filter((fixture) => segmentOf(fixture).type === 'geometry.solid-net.v2');
+  const diagnosticsOf = (fixture: HorizonteFixture): Set<string | null | undefined> => {
+    const space = spaceOf(fixture)!;
+    return new Set(space.inRange.filter((state) => !space.expectMet!(state as never)).map((state) => space.expectDiagnostic!(state as never)));
+  };
+
+  it('models the cube-net area and every mode of the solid net, and each authored fixture builds a space', () => {
+    expect(horizonteBehaviourKinds()).toContain('geometry.solid-net.v2');
+    expect([...new Set(nets.map((fixture) => segmentOf(fixture).payload.mode))].sort()).toEqual(['area', 'complete', 'label']);
+    expect(nets).toHaveLength(9);
+    for (const fixture of nets) expect(spaceOf(fixture), fixture.id).not.toBeNull();
+    const cube = fixtureById('area-of-the-cube');
+    expect(segmentOf(cube).payload.mode).toBe('area');
+    expect(spaceOf(cube)).not.toBeNull();
+  });
+
+  it('keeps the exact surface areas of the cube, the box, the prism and the pyramid', () => {
+    for (const [id, target] of [['area-of-the-cube', '54'], ['area-of-the-box', '52'], ['area-of-the-prism', '72'], ['area-of-the-pyramid', '96']] as const) {
+      const space = spaceOf(fixtureById(id))!;
+      for (const spelling of [target, `${target}.0`, `${Number(target) * 2}/2`]) expect(space.expectMet!({ value: spelling } as never), `${id} ${spelling}`).toBe(true);
+      for (const spelling of [String(Number(target) + 1), String(Number(target) - 1), '', 'abc']) expect(space.expectMet!({ value: spelling } as never), `${id} ${spelling}`).toBe(false);
+      expect(space.invalid.length, id).toBeGreaterThan(3);
+    }
+  });
+
+  it('gives the area answers the diagnostics Core stores: one face too many, some faces, any other value', () => {
+    const box = fixtureById('area-of-the-box');
+    const space = spaceOf(box)!;
+    for (const [value, diagnostic] of [['64', 'false_alarm'], ['60', 'false_alarm'], ['32', 'miss'], ['12', 'miss'], ['53', 'value'], ['1', 'value']] as const) {
+      expect(space.expectDiagnostic!({ value } as never), value).toBe(diagnostic);
+      expect(diagnosticOf(box, { value }), value).toBe(diagnostic);
+    }
+    const cube = fixtureById('area-of-the-cube');
+    for (const [value, diagnostic] of [['63', 'false_alarm'], ['27', 'miss'], ['55', 'value']] as const) {
+      expect(spaceOf(cube)!.expectDiagnostic!({ value } as never), value).toBe(diagnostic);
+      expect(diagnosticOf(cube, { value }), value).toBe(diagnostic);
+    }
+  });
+
+  it('models the labelling by the panels Core stores, and agrees with Core on every partial answer', () => {
+    for (const id of ['name-the-box', 'name-the-prism', 'name-the-pyramid']) {
+      const fixture = fixtureById(id);
+      const space = spaceOf(fixture)!;
+      expect(space.expectMet!(fixture.ladder.met as never), id).toBe(true);
+      expect(space.expectMet!(fixture.ladder.valid as never), id).toBe(false);
+      expect(space.invalid.length, id).toBeGreaterThan(1);
+      for (const state of space.inRange) {
+        if (!space.expectMet!(state as never)) expect(space.expectDiagnostic!(state as never), `${id} ${JSON.stringify(state)}`).toBe(diagnosticOf(fixture, state));
+      }
+    }
+    const prism = fixtureById('name-the-prism');
+    const slots = { panel2: ['slope'] };
+    expect(diagnosticOf(prism, { slots: { ...slots, panel0: ['back'] } })).toBe('miss');
+    expect(diagnosticOf(prism, { slots: { ...slots, panel0: ['back'], panel1: ['left'] } })).toBe('partial');
+    expect(diagnosticOf(prism, { slots: { ...slots, panel0: ['left'] } })).toBe('value');
+  });
+
+  it('agrees with Core on every state of every completion, and reaches all three diagnostics', () => {
+    const seen = new Set<string | null | undefined>();
+    for (const id of ['finish-the-box-net', 'finish-the-prism-net', 'finish-the-pyramid-net']) {
+      const fixture = fixtureById(id);
+      const space = spaceOf(fixture)!;
+      expect(space.expectMet!(fixture.ladder.met as never), id).toBe(true);
+      expect(space.expectMet!(fixture.ladder.valid as never), id).toBe(false);
+      expect(space.inRange.length, id).toBeGreaterThan(10);
+      expect(space.invalid.length, id).toBeGreaterThan(3);
+      for (const state of space.inRange) {
+        if (!space.expectMet!(state as never)) expect(space.expectDiagnostic!(state as never), `${id} ${JSON.stringify(state)}`).toBe(diagnosticOf(fixture, state));
+      }
+      for (const entry of diagnosticsOf(fixture)) seen.add(entry);
+    }
+    expect([...seen].filter((entry) => entry !== null).sort()).toEqual(['miss', 'structure', 'value']);
+  });
+
+  it('is caught by the model when the scorer drifts: a wider sheet, other dimensions', () => {
+    const box = fixtureById('finish-the-box-net');
+    const model = { segment: lessonOf(box).segment, rubric: box.rubric };
+    expect(disagreements(model, { fixture: box, rubric: box.rubric, edit: () => undefined })).toBe(0);
+    const wider = lessonOf(box, 'en-US', box.rubric, (segment) => { segment.payload.sheet = { width: 60, height: 60 }; }).segment;
+    expect(disagreements({ segment: wider, rubric: box.rubric }, { fixture: box, rubric: box.rubric, edit: () => undefined })).toBeGreaterThan(0);
+
+    const area = fixtureById('area-of-the-box');
+    const areaModel = { segment: lessonOf(area).segment, rubric: area.rubric };
+    expect(disagreements(areaModel, { fixture: area, rubric: area.rubric, edit: () => undefined })).toBe(0);
+    expect(disagreements(areaModel, { fixture: area, rubric: { target: '66' }, edit: (segment) => { segment.payload.solid.dims = [4, 3, 3]; } })).toBeGreaterThan(0);
+
+    const cube = fixtureById('area-of-the-cube');
+    const cubeModel = { segment: lessonOf(cube).segment, rubric: cube.rubric };
+    expect(disagreements(cubeModel, { fixture: cube, rubric: cube.rubric, edit: () => undefined })).toBe(0);
+    expect(disagreements(cubeModel, { fixture: cube, rubric: { target: '96' }, edit: (segment) => { segment.payload.edge = 4; } })).toBeGreaterThan(0);
+  });
+
+  it('fails closed on a solid net it cannot model', () => {
+    const box = fixtureById('finish-the-box-net');
+    expect(spaceOf(box, (segment) => { segment.payload.mode = 'fold'; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.solid.kind = 'torus'; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.solid.dims = [4, 3]; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.sheet = { width: 2, height: 11 }; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.sheet = { width: 3, height: 3 }; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.fixed = []; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.fixed = [{ parent: 'bottom', child: 'bottom' }]; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.fixed = [{ parent: 'front', child: 'back' }]; })).toBeNull();
+    expect(spaceOf(box, (segment) => { segment.payload.root = 'lid'; })).toBeNull();
+
+    const prism = fixtureById('name-the-prism');
+    expect(spaceOf(prism, undefined, { solutions: [] })).toBeNull();
+    expect(spaceOf(prism, undefined, {})).toBeNull();
+    expect(spaceOf(prism, undefined, { solutions: [{ panel0: ['back'], panel1: ['bottom'], panel2: ['bottom'], panel3: ['left'], panel4: ['right'] }] })).toBeNull();
+    expect(spaceOf(prism, undefined, { solutions: [{ panel0: ['back'], panel1: ['bottom'], panel2: ['left'], panel3: ['slope'], panel4: ['right'] }] })).toBeNull();
+    expect(spaceOf(prism, (segment) => { segment.payload.fixed = 'slope'; })).toBeNull();
+
+    const area = fixtureById('area-of-the-prism');
+    expect(spaceOf(area, (segment) => { segment.payload.solid.dims = [3, 5, 6]; })).toBeNull();
+    expect(spaceOf(area, (segment) => { segment.payload.solid.dims = [0, 4, 5]; })).toBeNull();
+    expect(spaceOf(area, (segment) => { segment.payload.solid = null; })).toBeNull();
+
+    const cube = fixtureById('area-of-the-cube');
+    for (const edge of [0, 41, 1.5, '3']) expect(spaceOf(cube, (segment) => { segment.payload.edge = edge; }), String(edge)).toBeNull();
   });
 });

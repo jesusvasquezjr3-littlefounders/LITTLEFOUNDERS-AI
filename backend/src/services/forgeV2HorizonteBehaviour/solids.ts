@@ -1,6 +1,7 @@
 import { arrangement, nextOf, shuffle, type Frame, type Next, type Slots } from './arrange.js';
 import { eq, fromDecimal, q, type Q } from './rational.js';
 import { even, range, unique, type HzBuilder, type Json } from './shared.js';
+import { cubeNetArea, SOLIDNET_BEHAVIOUR } from './solidnets.js';
 
 type Cell = readonly [number, number];
 
@@ -207,7 +208,7 @@ function completeNet(p: Json): ReturnType<HzBuilder> {
   };
 }
 
-const net: HzBuilder = (p) => (p.mode === 'label' ? nameFaces(p) : p.mode === 'complete' ? completeNet(p) : null);
+const net: HzBuilder = (p, r, segment) => (p.mode === 'label' ? nameFaces(p) : p.mode === 'complete' ? completeNet(p) : p.mode === 'area' ? cubeNetArea(p, r, segment) : null);
 
 /* ── geometry.cube-stack.v2 ── */
 
@@ -306,4 +307,5 @@ export const SOLIDS_BEHAVIOUR: Readonly<Record<string, HzBuilder>> = {
   'geometry.solid-viewer.v2': viewer,
   'geometry.cube-net.v2': net,
   'geometry.cube-stack.v2': stack,
+  ...SOLIDNET_BEHAVIOUR,
 };
