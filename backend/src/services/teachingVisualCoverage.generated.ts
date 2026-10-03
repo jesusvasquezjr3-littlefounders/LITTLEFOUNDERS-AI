@@ -26,9 +26,9 @@ export const TEACHING_VISUAL_COVERAGE = {
   },
   "horizonte": {
     "packs": 18,
-    "segment_types": 67,
-    "with_board": 67,
-    "with_contract": 67,
+    "segment_types": 68,
+    "with_board": 68,
+    "with_contract": 68,
     "share": 1,
     "missing": []
   }
