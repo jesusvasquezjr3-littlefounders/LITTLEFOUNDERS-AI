@@ -154,3 +154,47 @@ use `age=13-17`. `audit.json` lists all 10 so the audit lane finds them.
 - Have a native reader review the es-MX and pt-BR copy.
 - Decide whether the 10-12 band should open for the grid and the schedule in lessons (the pieces allow it from age 12).
 - Accept the pieces in `REQUIREMENTS.md` only after the browser pass; this lane records implementation only.
+
+## Fix round
+
+A completion round on the three fin2 boards (F2.13, F2.14, F2.15) after the Atlas audit. Scope is the pack's own files; no shared design file, token,
+aggregator or capability map changed.
+
+### Narrow screen (375 px, a 311 px lesson slot)
+
+- **Symptom.** With the table open, `fin2/grid-two-by-two-ideas` (+15 px), `fin2/grid-decision-spot` (+60 px) and `fin2/plan-gantt-opening` (+7 px)
+  were wider than the slot.
+- **Cause.** `.lf-slotboard` is a one-column grid whose implicit `auto` track grows to the widest item's min-content. The data table is the widest
+  item, so it widened the track; the SVG charts (`inline-size: 100%`) then scaled up to the widened track and the slot overflowed.
+- **Fix.** `slotBoard.css` gives the board a `minmax(0, 1fr)` column, so the track can no longer exceed the slot. `slotBoard.tsx` wraps the table in
+  `.lf-slotboard-tablewrap`, a scroll box with `overflow-x: auto` and `min-inline-size: 0`. The box is a labelled region (`role="region"`, named by
+  the table caption) with `tabindex="0"`, so a keyboard user can scroll it and a screen reader announces it. Under 40 rem the cell inline padding drops to
+  `--spacing-1`. Text size is unchanged. The wrapper lives in the shared slot-board shell, so all three boards get it.
+- **Desktop.** Unchanged: the new rules only cap overflow, and the padding rule applies below 40 rem.
+- **Targets.** No target changed. The drag handles stay at `--hz-hit` (64 px); the table toggle is the 48 px `Button size="sm"`.
+- **Test.** `Fin2Boards.test.tsx` has a new case: the opened table sits inside a focusable region named by its caption.
+
+### Dark mode
+
+- A search of every fin2 stylesheet and component for `var(--ink)`, hex and rgb literals, `white`, `black` and `currentColor` found none. The pack
+  was already on theme-flipping tokens (`--content`, `--content-muted`, `--surface`, `--sunken`, `--outline`), so there was no fixed-colour surface to
+  repair.
+- One contrast change, found while checking both themes: `--sky` is not redefined for dark and measures about 2.98:1 against a white surface, under the
+  3:1 a meaningful graphic needs. `.lf-grid-score` (decision-matrix score bars) and `.lf-stmt-bar--assets` (statement holdings bars) now use
+  `--sky-strong` (about 5.4:1 on white), which does flip.
+- **Not a pack defect.** The disabled `Move to`, `Reset` and `Check` buttons come from the shared `segmentKit` (`MoveToChoice`, `GradedFoot`) and
+  measure about 2.3:1 in light and 2.7:1 in dark. They are disabled controls, so WCAG does not require the ratio, but they read weak. They are shared
+  components outside this pack and were not touched.
+- No token is missing; `tokens.css` was not edited.
+
+### Not verified
+
+- Layout was measured with a headless-Chrome probe over the ten audit fixtures (es-MX), at a 311 px slot, with the table opened the way the Atlas does.
+  Before the fix it reproduced overflow on the three boards; after, the page overflow is 0 on all ten fixtures and the table scrolls inside its box.
+  It is a probe, not the Atlas audit, not a browser gate and not the real lesson layer, which may add its own container rules.
+- Dark mode was checked in the same probe for contrast of the changed fills and by reading the CSS. The full audit over both themes has not run.
+- At 311 px the table cells wrap tightly and the table scrolls sideways. That is usable but not roomy; a card layout for the rows would be a design
+  decision, not a fix.
+- The charts are a 320-unit-wide SVG scaled to the slot, so their text renders slightly under its nominal size below 320 px; this is the
+  existing chart behaviour and the round did not change it.
+- Acceptance and release are untouched; the pieces stay at implementation status.

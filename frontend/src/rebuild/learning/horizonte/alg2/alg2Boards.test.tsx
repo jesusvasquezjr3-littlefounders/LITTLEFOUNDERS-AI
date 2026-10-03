@@ -6,6 +6,7 @@ import { assertBoardContract } from '../harness/boardContract';
 import { horizonteFixture, horizonteFixtureDocument } from '../previewDocument';
 import { ALG2_COPY } from './copy';
 import { ALG2_SCORERS } from './scorer.generated';
+import { decimalMarkOf, fmt, pairText } from './shared';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
@@ -112,6 +113,29 @@ describe('alg2 boards (F2.4, F2.5, F2.6)', () => {
     });
   });
 
+  describe('locale decimal mark', () => {
+    it('follows the locale: a comma in pt-BR, a point in en-US and es-MX', () => {
+      expect(decimalMarkOf('pt-BR')).toBe(',');
+      expect(decimalMarkOf('en-US')).toBe('.');
+      expect(decimalMarkOf('es-MX')).toBe('.');
+      expect(fmt('pt-BR', 1.5)).toBe('1,5');
+      expect(fmt('en-US', 1.5)).toBe('1.5');
+    });
+
+    it('splits a point with a semicolon where the mark is a comma, so it never reads as one number', () => {
+      expect(pairText('pt-BR', 0.5, 1.5)).toBe('(0,5; 1,5)');
+      expect(pairText('en-US', 0.5, 1.5)).toBe('(0.5, 1.5)');
+      expect(pairText('es-MX', 2, -1)).toBe('(2, -1)');
+    });
+
+    it('writes the curve of a graph with the locale mark', async () => {
+      show('graph-growth-curve', 'review', 'pt-BR');
+      await screen.findAllByRole('slider');
+      expect(status()).toHaveTextContent('1,5^x');
+      expect(status().textContent).not.toContain('1.5');
+    });
+  });
+
   describe('line system (D19)', () => {
     it('lists each marker with how many lines it is on', async () => {
       show('system-cross-two-lines');
@@ -203,10 +227,45 @@ describe('alg2 boards (F2.4, F2.5, F2.6)', () => {
       expect(screen.getByText('Write an expression here, with no equals sign.')).toBeTruthy();
       line('Line 1', 'x+y');
       expect(screen.getByText('Use numbers, the letter x and signs like + and ^.')).toBeTruthy();
-      line('Line 1', '0,5x');
-      expect(screen.getByText('Write decimals with a point, like 0.5.')).toBeTruthy();
+      line('Line 1', '1,5,2');
+      expect(screen.getByText(ALG2_COPY.stepNumber['en-US'])).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
       line('Line 1', '0.5x+1');
-      expect(screen.queryByText('Write decimals with a point, like 0.5.')).toBeNull();
+      expect(screen.queryByText(ALG2_COPY.stepNumber['en-US'])).toBeNull();
+    });
+
+    it('reads a decimal comma like a decimal point and rejects a comma between lists', async () => {
+      show('expression-expand-product');
+      await readyLine('Line 1');
+      for (const written of ['0,5x', '1,25', '1.5', '0,5x+1,25']) {
+        line('Line 1', written);
+        expect(screen.queryByText(ALG2_COPY.stepNumber['en-US']), written).toBeNull();
+        expect(screen.getByRole('button', { name: 'Check' }), written).toBeEnabled();
+      }
+      for (const written of ['1,5,2', '1,5.2', '1.5,2', '2,x', ',5', '5,', '1, 5']) {
+        line('Line 1', written);
+        expect(screen.getByRole('button', { name: 'Check' }), written).toBeDisabled();
+      }
+    });
+
+    it('sends the decimal comma as typed and speaks it with the locale mark', async () => {
+      const grade = show('expression-solve-isolate', 'review', 'pt-BR');
+      await readyLine('Linha 1');
+      line('Linha 1', '0,5x=7,5');
+      const typed = document.querySelector('[data-line-state="same"], [data-line-state="differs"]') as HTMLElement;
+      const spoken = within(typed).getByRole('img').getAttribute('aria-label') ?? '';
+      expect(spoken).toContain('0,5');
+      expect(spoken).not.toContain('0.5');
+      fireEvent.click(screen.getByRole('button', { name: 'Conferir' }));
+      await waitFor(() => expect(grade).toHaveBeenCalledWith({ steps: ['0,5x=7,5'] }, 'expression-solve-isolate', expect.anything()));
+    });
+
+    it.each([['en-US', 'Line 1'], ['es-MX', 'Línea 1']] as const)('speaks the same number with a point in %s', async (locale, name) => {
+      show('expression-solve-isolate', 'review', locale);
+      await readyLine(name);
+      line(name, '0,5x=7,5');
+      const typed = document.querySelector('[data-line-state="same"], [data-line-state="differs"]') as HTMLElement;
+      expect(within(typed).getByRole('img').getAttribute('aria-label') ?? '').toContain('0.5');
     });
 
     it('asks for an equation on a solve task', async () => {

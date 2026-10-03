@@ -21,6 +21,8 @@ const triangle = pts([1, 1], [3, 1], [1, 4]);
 const reflect = { extent: 5, figure: triangle, move: { kind: 'reflect', across: 'vertical', at: 0 } };
 const bump = { floor: pts([0, 0], [1, 0], [2, 0], [1, 1], [4, 0], [5, 0], [6, 0], [5, 1], [2, 1], [3, 1], [4, 1], [3, 2], [6, 1], [7, 1], [8, 1], [7, 2]), tile: pts([0, 0], [1, 0], [2, 0], [1, 1]) };
 const domino = { floor: pts([0, 0], [1, 0], [2, 0], [3, 0]), tile: pts([0, 0], [1, 0]) };
+const turned = { floor: pts([0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2], [1, 2], [2, 2], [3, 2]), tile: pts([0, 0], [1, 0], [0, 1]) };
+const flipped = { floor: pts([1, 0], [2, 0], [0, 1], [1, 1], [3, 0], [4, 0], [2, 1], [3, 1], [5, 0], [6, 0], [6, 1], [7, 1]), tile: pts([1, 0], [2, 0], [0, 1], [1, 1]) };
 
 describe('geom2 pack in the Forge (F2.7 geoboard and area, F2.8 transformations and tessellations)', () => {
   it('declares the capability literal and the emitter map spreads it', () => {
@@ -34,7 +36,7 @@ describe('geom2 pack in the Forge (F2.7 geoboard and area, F2.8 transformations 
   it('adds authoring guidance only when the skeleton uses a type', () => {
     expect(horizonteGuidanceFor([GEOBOARD]).join('\n')).toMatch(/ages 8-12 only/);
     expect(horizonteGuidanceFor([TRANSFORM]).join('\n')).toMatch(/symmetry-mirror/);
-    expect(horizonteGuidanceFor([TESSELLATION]).join('\n')).toMatch(/slid, never turned/);
+    expect(horizonteGuidanceFor([TESSELLATION]).join('\n')).toMatch(/slid only, or also turned half a turn or flipped/);
     expect(horizonteGuidanceFor([AREA]).join('\n')).toMatch(/lower-left corner/);
     expect(horizonteGuidanceFor(['money.allocation.v2'])).toEqual([]);
   });
@@ -123,6 +125,30 @@ describe('geom2 pack in the Forge (F2.7 geoboard and area, F2.8 transformations 
       expect(messages(doc(TESSELLATION, 'tessellation', domino), { copies: 3 })[0]).toMatch(/number of copies/);
       expect(messages(doc(TESSELLATION, 'tessellation', domino), { copies: 2, extra: 1 })[0]).toMatch(/number of copies/);
       expect(gate(doc(TESSELLATION, 'tessellation', { ...domino, answer: [] }))).toHaveLength(1);
+    });
+
+    it('accepts a floor that needs a half turn or a flip when the moves are listed', () => {
+      expect(gate(doc(TESSELLATION, 'tessellation', { ...turned, moves: ['slide', 'turn'] }), { copies: 4 })).toEqual([]);
+      expect(gate(doc(TESSELLATION, 'tessellation', { ...turned, moves: ['slide', 'turn', 'flip'] }), { copies: 4 })).toEqual([]);
+      expect(gate(doc(TESSELLATION, 'tessellation', { ...flipped, moves: ['slide', 'flip'] }), { copies: 3 })).toEqual([]);
+      expect(gate(doc(TESSELLATION, 'tessellation', { ...domino, moves: ['slide', 'flip'] }), { copies: 2 })).toEqual([]);
+    });
+
+    it('refuses a floor the listed moves cannot cover, however it was built', () => {
+      expect(messages(doc(TESSELLATION, 'tessellation', turned))[0]).toMatch(/cannot cover the floor by sliding alone/);
+      expect(messages(doc(TESSELLATION, 'tessellation', { ...turned, moves: ['slide', 'flip'] }))[0]).toMatch(/cannot cover the floor by the moves listed/);
+      expect(messages(doc(TESSELLATION, 'tessellation', { ...flipped, moves: ['slide', 'turn'] }))[0]).toMatch(/cannot cover the floor by the moves listed/);
+    });
+
+    it('refuses a moves list that is not slide first and then turn, flip or both once each', () => {
+      for (const moves of [[], ['slide'], ['turn', 'slide'], ['flip', 'turn'], ['slide', 'flip', 'turn'], ['slide', 'slide'], ['slide', 'spin'], ['slide', 'turn', 'flip', 'slide'], 'turn', null]) {
+        expect(messages(doc(TESSELLATION, 'tessellation', { ...turned, moves }))[0], JSON.stringify(moves)).toMatch(/slide first and then turn, flip or both, each once/);
+      }
+    });
+
+    it('still names the payload keys it accepts', () => {
+      expect(messages(doc(TESSELLATION, 'tessellation', { floor: domino.floor }))[0]).toMatch(/floor and the tile.*optionally the moves/);
+      expect(messages(doc(TESSELLATION, 'tessellation', { ...domino, moves: ['slide', 'turn'], extra: 1 }))[0]).toMatch(/floor and the tile.*optionally the moves/);
     });
   });
 

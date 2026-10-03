@@ -1239,7 +1239,8 @@
         "operation.tap-cells.v1",
         "operation.drag-chips.v1",
         "operation.number-input.v1",
-        "visual.fraction-wall.v1"
+        "visual.fraction-wall.v1",
+        "visual.fraction-circles.v1"
       ],
       "segments": [
         {
@@ -1271,6 +1272,42 @@
             ],
             "denominator": 6
           }
+        },
+        {
+          "id": "circles-show",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Cut the circle to show three quarters.",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "show",
+            "fraction": [
+              3,
+              4
+            ]
+          }
+        },
+        {
+          "id": "circles-compare",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Shade both circles. Which is more, three eighths or five eighths?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "compare",
+            "left": [
+              3,
+              8
+            ],
+            "right": [
+              5,
+              8
+            ]
+          }
         }
       ]
     },
@@ -1281,6 +1318,14 @@
       "wall-equivalent": {
         "n": 3,
         "d": 6
+      },
+      "circles-show": {
+        "n": 3,
+        "d": 4
+      },
+      "circles-compare": {
+        "n": 5,
+        "d": 8
       }
     }
   },
@@ -1312,7 +1357,8 @@
         "operation.tap-cells.v1",
         "operation.drag-chips.v1",
         "operation.number-input.v1",
-        "visual.fraction-wall.v1"
+        "visual.fraction-wall.v1",
+        "visual.fraction-circles.v1"
       ],
       "segments": [
         {
@@ -1344,6 +1390,42 @@
             ],
             "denominator": 6
           }
+        },
+        {
+          "id": "circles-show",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Corta el círculo para mostrar tres cuartos.",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "show",
+            "fraction": [
+              3,
+              4
+            ]
+          }
+        },
+        {
+          "id": "circles-compare",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Sombrea los dos círculos. ¿Qué es más, tres octavos o cinco octavos?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "compare",
+            "left": [
+              3,
+              8
+            ],
+            "right": [
+              5,
+              8
+            ]
+          }
         }
       ]
     },
@@ -1354,6 +1436,14 @@
       "wall-equivalent": {
         "n": 3,
         "d": 6
+      },
+      "circles-show": {
+        "n": 3,
+        "d": 4
+      },
+      "circles-compare": {
+        "n": 5,
+        "d": 8
       }
     }
   },
@@ -1385,7 +1475,8 @@
         "operation.tap-cells.v1",
         "operation.drag-chips.v1",
         "operation.number-input.v1",
-        "visual.fraction-wall.v1"
+        "visual.fraction-wall.v1",
+        "visual.fraction-circles.v1"
       ],
       "segments": [
         {
@@ -1417,6 +1508,42 @@
             ],
             "denominator": 6
           }
+        },
+        {
+          "id": "circles-show",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Corte o círculo para mostrar três quartos.",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "show",
+            "fraction": [
+              3,
+              4
+            ]
+          }
+        },
+        {
+          "id": "circles-compare",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Pinte os dois círculos. O que é mais, três oitavos ou cinco oitavos?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "compare",
+            "left": [
+              3,
+              8
+            ],
+            "right": [
+              5,
+              8
+            ]
+          }
         }
       ]
     },
@@ -1427,6 +1554,14 @@
       "wall-equivalent": {
         "n": 3,
         "d": 6
+      },
+      "circles-show": {
+        "n": 3,
+        "d": 4
+      },
+      "circles-compare": {
+        "n": 5,
+        "d": 8
       }
     }
   },
@@ -1456,7 +1591,9 @@
       "required_capabilities": [
         "visual.ratio-line.v1",
         "operation.drag-chips.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.fraction-circles.v1",
+        "operation.tap-cells.v1"
       ],
       "segments": [
         {
@@ -1485,12 +1622,68 @@
             "met": "You kept both lines in the same proportion.",
             "not_yet": "Compare the two lines again, one step at a time."
           }
+        },
+        {
+          "id": "circles-add",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Join one eighth and three eighths in one circle. What is the sum?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "add",
+            "left": [
+              1,
+              8
+            ],
+            "right": [
+              3,
+              8
+            ]
+          },
+          "feedback": {
+            "met": "You joined parts of the same size.",
+            "not_yet": "Count the shaded parts of the work circle again."
+          }
+        },
+        {
+          "id": "circles-subtract",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Take three tenths from seven tenths. What is left?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "subtract",
+            "left": [
+              7,
+              10
+            ],
+            "right": [
+              3,
+              10
+            ]
+          },
+          "feedback": {
+            "met": "You took away parts of the same size.",
+            "not_yet": "Count the parts left in the work circle again."
+          }
         }
       ]
     },
     "answer_keys": {
       "double-line-scale": {
         "value": 24
+      },
+      "circles-add": {
+        "n": 1,
+        "d": 2
+      },
+      "circles-subtract": {
+        "n": 2,
+        "d": 5
       }
     }
   },
@@ -1520,7 +1713,9 @@
       "required_capabilities": [
         "visual.ratio-line.v1",
         "operation.drag-chips.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.fraction-circles.v1",
+        "operation.tap-cells.v1"
       ],
       "segments": [
         {
@@ -1549,12 +1744,68 @@
             "met": "Mantuviste las dos líneas en la misma proporción.",
             "not_yet": "Compara las dos líneas otra vez, un paso a la vez."
           }
+        },
+        {
+          "id": "circles-add",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Junta un octavo y tres octavos en un círculo. ¿Cuál es la suma?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "add",
+            "left": [
+              1,
+              8
+            ],
+            "right": [
+              3,
+              8
+            ]
+          },
+          "feedback": {
+            "met": "Juntaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes sombreadas del círculo de trabajo."
+          }
+        },
+        {
+          "id": "circles-subtract",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Quita tres décimos de siete décimos. ¿Cuánto queda?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "subtract",
+            "left": [
+              7,
+              10
+            ],
+            "right": [
+              3,
+              10
+            ]
+          },
+          "feedback": {
+            "met": "Quitaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes que quedan en el círculo de trabajo."
+          }
         }
       ]
     },
     "answer_keys": {
       "double-line-scale": {
         "value": 24
+      },
+      "circles-add": {
+        "n": 1,
+        "d": 2
+      },
+      "circles-subtract": {
+        "n": 2,
+        "d": 5
       }
     }
   },
@@ -1584,7 +1835,9 @@
       "required_capabilities": [
         "visual.ratio-line.v1",
         "operation.drag-chips.v1",
-        "operation.number-input.v1"
+        "operation.number-input.v1",
+        "visual.fraction-circles.v1",
+        "operation.tap-cells.v1"
       ],
       "segments": [
         {
@@ -1613,12 +1866,68 @@
             "met": "Você manteve as duas linhas na mesma proporção.",
             "not_yet": "Compare as duas linhas de novo, um passo de cada vez."
           }
+        },
+        {
+          "id": "circles-add",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Junte um oitavo e três oitavos em um círculo. Qual é a soma?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "add",
+            "left": [
+              1,
+              8
+            ],
+            "right": [
+              3,
+              8
+            ]
+          },
+          "feedback": {
+            "met": "Você juntou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes pintadas do círculo de trabalho."
+          }
+        },
+        {
+          "id": "circles-subtract",
+          "type": "math.fraction-circles.v2",
+          "grading": "server",
+          "prompt": "Tire três décimos de sete décimos. Quanto sobra?",
+          "visual": {
+            "type": "fraction-circles"
+          },
+          "payload": {
+            "op": "subtract",
+            "left": [
+              7,
+              10
+            ],
+            "right": [
+              3,
+              10
+            ]
+          },
+          "feedback": {
+            "met": "Você tirou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes que sobram no círculo de trabalho."
+          }
         }
       ]
     },
     "answer_keys": {
       "double-line-scale": {
         "value": 24
+      },
+      "circles-add": {
+        "n": 1,
+        "d": 2
+      },
+      "circles-subtract": {
+        "n": 2,
+        "d": 5
       }
     }
   },

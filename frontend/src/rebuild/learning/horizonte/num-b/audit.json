@@ -8,5 +8,9 @@
   { "fixture": "bars-add", "age": "10-12" },
   { "fixture": "bars-subtract", "age": "10-12" },
   { "fixture": "product-grid", "age": "10-12" },
-  { "fixture": "measure-fit", "age": "10-12" }
+  { "fixture": "measure-fit", "age": "10-12" },
+  { "fixture": "circles-show", "age": "6-9" },
+  { "fixture": "circles-compare", "age": "6-9" },
+  { "fixture": "circles-add", "age": "10-12" },
+  { "fixture": "circles-subtract", "age": "10-12" }
 ]

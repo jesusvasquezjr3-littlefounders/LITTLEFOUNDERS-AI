@@ -9,5 +9,5 @@
 .lf-grid-point--placed { fill: var(--sky-strong); }
 .lf-grid-chart .lf-grid-point-number { font-weight: 800; }
 .lf-grid-point--placed + .lf-grid-point-number { fill: var(--surface); }
-.lf-grid-score { fill: var(--sky); }
+.lf-grid-score { fill: var(--sky-strong); }
 .lf-grid-chart .lf-grid-weight { fill: var(--content-muted); }

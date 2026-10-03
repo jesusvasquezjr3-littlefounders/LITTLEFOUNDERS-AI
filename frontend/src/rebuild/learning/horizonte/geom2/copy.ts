@@ -77,5 +77,12 @@ export const GEOM2_COPY = {
   colTile: { role: 'data', 'en-US': 'Tile', 'es-MX': 'Baldosa', 'pt-BR': 'Ladrilho' },
   tileName: { role: 'data', 'en-US': 'Tile {n}', 'es-MX': 'Baldosa {n}', 'pt-BR': 'Ladrilho {n}' },
   metTiles: { role: 'body', 'en-US': 'The tiles cover the whole floor.', 'es-MX': 'Las baldosas cubren todo el piso.', 'pt-BR': 'Os ladrilhos cobrem todo o piso.' },
+  tsMotion: { role: 'data', 'en-US': 'Move', 'es-MX': 'Movimiento', 'pt-BR': 'Movimento' },
+  colMove: { role: 'data', 'en-US': 'Move', 'es-MX': 'Movimiento', 'pt-BR': 'Movimento' },
+  moveSlide: { role: 'option', 'en-US': 'Slide', 'es-MX': 'Deslizar', 'pt-BR': 'Deslizar' },
+  moveTurn: { role: 'option', 'en-US': 'Half turn', 'es-MX': 'Media vuelta', 'pt-BR': 'Meia volta' },
+  moveFlip: { role: 'option', 'en-US': 'Flip', 'es-MX': 'Voltear', 'pt-BR': 'Virar' },
+  tsMove: { role: 'data', 'en-US': 'Move: {move}.', 'es-MX': 'Movimiento: {move}.', 'pt-BR': 'Movimento: {move}.' },
+  tsHintMoves: { role: 'body', 'en-US': 'Arrows move the cursor. Pick a move, then Enter.', 'es-MX': 'Las flechas mueven el cursor. Elige un movimiento y pulsa Enter.', 'pt-BR': 'As setas movem o cursor. Escolha um movimento e tecle Enter.' },
   hintTiles: { role: 'body', 'en-US': 'Not yet. Fill every gap with no overlaps.', 'es-MX': 'Aún no. Llena cada hueco sin encimar.', 'pt-BR': 'Ainda não. Preencha cada lacuna sem sobrepor.' },
 } as const satisfies HorizonteCopy;

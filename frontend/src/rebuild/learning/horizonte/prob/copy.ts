@@ -36,6 +36,7 @@ export const PROB_COPY = {
 
   bayesName: { role: 'data', 'en-US': 'Natural frequencies', 'es-MX': 'Frecuencias naturales', 'pt-BR': 'Frequências naturais' },
   inAll: { role: 'data', 'en-US': '{n} in all', 'es-MX': '{n} en total', 'pt-BR': '{n} no total' },
+  gridScale: { role: 'data', 'en-US': 'Each square holds {n}', 'es-MX': 'Cada cuadro tiene {n}', 'pt-BR': 'Cada quadrado tem {n}' },
   outlinePos: { role: 'data', 'en-US': 'Outlined: people who test positive', 'es-MX': 'Con borde: personas que dan positivo', 'pt-BR': 'Com borda: pessoas que testam positivo' },
   outlineNeg: { role: 'data', 'en-US': 'Outlined: people who test negative', 'es-MX': 'Con borde: personas que dan negativo', 'pt-BR': 'Com borda: pessoas que testam negativo' },
   chanceLabel: { role: 'body', 'en-US': 'Chance they have it', 'es-MX': 'Probabilidad de que lo tenga', 'pt-BR': 'Chance de ter' },
