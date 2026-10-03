@@ -40,7 +40,7 @@
     "narration:check": "node agent/tools/check-narration-parity.mjs",
     "content:gates": "npm --prefix coursegen run content:gates --",
     "forge:release-gates:check": "node agent/tools/check-forge-release-gate-parity.mjs",
-    "forge:v2:dry-run": "npm --prefix coursegen run v2:emit -- --out runs/v2-emit/latest && npm --prefix backend run forge-v2:check -- ../coursegen/runs/v2-emit/latest/documents.json",
+    "forge:v2:dry-run": "npm --prefix coursegen run v2:emit -- --out runs/v2-emit/latest && npm --prefix backend run forge-v2:check -- ../coursegen/runs/v2-emit/latest/documents.json && npm --prefix coursegen run v2:emit -- --horizonte --out runs/v2-emit/horizonte && npm --prefix backend run forge-v2:check -- ../coursegen/runs/v2-emit/horizonte/documents.json",
     "deps:check": "bash agent/tools/check-dep-drift.sh",
     "git:diff-check": "bash agent/tools/check-clean-tree.sh",
     "release:readiness": "bash agent/tools/release-readiness.sh",

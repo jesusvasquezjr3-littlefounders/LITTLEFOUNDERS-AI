@@ -237,6 +237,8 @@ notation without its spoken text, and stray copy in a neutral kind.
 - Decide whether to promote the Horizonte plans into the shared `fixtures/plans/` and `emitted.json`. The behaviour gate no longer blocks it (the
   five seeded simulations have a space, 240 of 240 graded segments pass), but the move changes the fixture that Core's own backend suites read.
   The `coverage-one-half` fixture was trivially met (since fixed in the pedagogy lane); it is not in the emitted file.
+  Default taken at the release round: the plans stay in their own directory, and the root `forge:v2:dry-run` now emits and Core-checks both
+  directories, so the release-readiness run covers every Horizonte type without enlarging the file Core's suites read.
 - Run `forge:v2:dry-run` and `forge:release-gates:check` once, at the push gate, on the final tree.
 - Have the pack lanes replace fixture copy with authored lessons, and have a native reader review es-MX and pt-BR.
 - Decide whether findings should keep riding gate 1 with the `solvability/<code>:` prefix or get a dedicated gate. A dedicated gate (gate 20)
