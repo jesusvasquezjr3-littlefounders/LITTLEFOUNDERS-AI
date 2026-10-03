@@ -77,7 +77,10 @@
 .lf-poly-hinge { cursor: pointer; outline: none; }
 .lf-poly-hinge-hit { stroke: transparent; stroke-linecap: round; }
 .lf-poly-hinge-line { stroke: var(--primary-strong); stroke-linecap: round; }
-.lf-poly-hinge:focus-visible .lf-poly-hinge-hit, .lf-poly-hinge[data-drop-armed='true'] .lf-poly-hinge-hit { stroke: var(--sky-soft); }
+.lf-poly-hinge[data-drop-armed='true'] .lf-poly-hinge-hit { stroke: var(--sky-soft); }
+/* Focus is a solid focus-colour bar with a surface core, so it reads against the pale armed halo in both themes. */
+.lf-poly-hinge:focus-visible .lf-poly-hinge-hit { stroke: var(--focus-color); }
+.lf-poly-hinge:focus-visible .lf-poly-hinge-line { stroke: var(--surface); }
 
 /* The fold preview: the net hinged up into its solid, drawn in a fixed corner view, shaded by how a panel faces the light. */
 .lf-fold { max-inline-size: 24rem; }
