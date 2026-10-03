@@ -73,14 +73,15 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
   const labels: Tags = [];
   const drawing = table || reading ? null : draw(kind, data, id, locale, labels);
   const word = (text: string) => (reading ? readingCell(locale, text) : text);
+  const heading = (column: string) => (reading ? readingWord(locale, column) : column);
   return <figure className="lf-chart" data-chart-kind={kind}>
     <figcaption className="lf-chart-head"><span data-copy-role="heading">{title}</span>
       {embedded ? null : <Button onClick={() => setTable((value) => !value)}>{table ? t.showChart : t.showTable}</Button>}</figcaption>
     {table ? <table className="lf-learning-table lf-chart-table" aria-label={t.table}>
-      <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{model.columns.map((column) => <th key={column} scope="col" data-copy-role="data">{reading ? readingWord(locale, column) : column}</th>)}</tr></thead>
+      <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{model.columns.map((column) => <th key={column} scope="col" data-copy-role="data">{heading(column)}</th>)}</tr></thead>
       <tbody>{model.rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => index === 0
-        ? <th key={index} scope="row" data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</th>
-        : <td key={index} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</td>)}</tr>)}</tbody>
+        ? <th key={index} scope="row" data-label={t.category} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</th>
+        : <td key={index} data-label={heading(model.columns[index - 1] ?? '')} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</td>)}</tr>)}</tbody>
     </table> : reading ? <Suspense fallback={<div className="lf-chart-plot" aria-busy="true" data-copy-role="data"><div className="lf-chart-canvas" /></div>}>
       <ReadingPlot kind={kind as ReadingChartKind} data={data} title={title} locale={locale} id={id} description={facts} />
     </Suspense> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
@@ -96,10 +97,11 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
 
 const SHIFT = { start: '0%', middle: '-50%', end: '-100%', top: '0%', bottom: '-100%' } as const;
 
-export function ChartLabel({ label }: { label: ChartTag }) {
+/** `height` is the viewBox height the label's y is measured in (a reading chart is only as tall as its content). */
+export function ChartLabel({ label, height = H }: { label: ChartTag; height?: number }) {
   const align = label.align ?? 'middle'; const valign = label.valign ?? 'middle';
   const style: CSSProperties = {
-    left: `${label.x / W * 100}%`, top: `${label.y / H * 100}%`, maxInlineSize: `${Math.max(0, label.room) / W * 100}%`,
+    left: `${label.x / W * 100}%`, top: `${label.y / height * 100}%`, maxInlineSize: `${Math.max(0, label.room) / W * 100}%`,
     transform: `translate(${SHIFT[align]}, ${valign === 'middle' ? '-50%' : SHIFT[valign]})`,
   };
   return <span className={`lf-chart-tag${label.edge ? ' lf-chart-tag--edge' : ''}`} data-copy-role="data" data-align={align}
@@ -111,6 +113,9 @@ export function ChartLabel({ label }: { label: ChartTag }) {
  * word is wider than its room, that needs more lines than its room holds, that
  * leaves the drawing or that lands on an earlier label is hidden
  * (`data-fit="no"`). Re-measured on resize and when the web fonts arrive.
+ * A `lf-chart-canvas--fit` host also learns how far its shown labels hang past
+ * its top and bottom edge (px, `--lf-chart-over-top` and `--lf-chart-over-bottom`),
+ * so the room under the drawing is the room the words need and no more.
  */
 export function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
   useLayoutEffect(() => {
@@ -122,7 +127,7 @@ export function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
       const box = host.getBoundingClientRect();
       if (box.width === 0) return;
       const placed: DOMRect[] = [];
-      let dropped = 0;
+      let dropped = 0; let above = 0; let below = 0;
       for (const element of host.querySelectorAll<HTMLElement>('.lf-chart-tag')) {
         const rect = element.getBoundingClientRect();
         const lineHeight = parseFloat(getComputedStyle(element).lineHeight) || 16;
@@ -134,9 +139,13 @@ export function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
         const fits = element.scrollWidth <= element.clientWidth + 1 && inked <= rect.width + 0.25 && rect.height <= lines * lineHeight + 1
           && rect.left >= box.left - 1 && rect.right <= box.right + 1
           && !placed.some((other) => rect.left < other.right && rect.right > other.left && rect.top < other.bottom && rect.bottom > other.top);
-        if (fits) { placed.push(rect); element.removeAttribute('data-fit'); } else { element.dataset.fit = 'no'; dropped += 1; }
+        if (fits) { placed.push(rect); element.removeAttribute('data-fit'); above = Math.max(above, box.top - rect.top); below = Math.max(below, rect.bottom - box.bottom); } else { element.dataset.fit = 'no'; dropped += 1; }
       }
       host.dataset.labelsDropped = String(dropped);
+      if (host.classList.contains('lf-chart-canvas--fit')) {
+        host.style.setProperty('--lf-chart-over-top', `${Math.ceil(above)}px`);
+        host.style.setProperty('--lf-chart-over-bottom', `${Math.ceil(below)}px`);
+      }
     };
     fit();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
