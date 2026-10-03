@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { assertScorerContract } from '../../services/horizonte/harness/scorerContract.js';
 import { alg2 } from '../../services/horizonte/alg2/index.js';
@@ -306,6 +308,75 @@ describe('alg2 pack: F2.4, F2.5, F2.6', () => {
       expect(p('x^7')).toMatchObject({ ok: false, error: 'bad-exponent' });
       expect(p('x^2^2')).toMatchObject({ ok: false });
       expect(p('1.5.2')).toMatchObject({ ok: false });
+    });
+
+    it('reads a decimal comma as a point and never as a list separator', () => {
+      expect(same('0,5x', '0.5x')).toBe(true);
+      expect(same('0,5x', 'x/2')).toBe(true);
+      expect(same('1,25', '5/4')).toBe(true);
+      expect(same('1,25x+0,75', '5x/4+3/4')).toBe(true);
+      expect(same('1.5', '3/2')).toBe(true);
+      expect(same('1,5', '1.5')).toBe(true);
+      expect(same('2,5x=7,5', 'x=3')).toBe(true);
+      expect(same('x=0,50', 'x=0.5')).toBe(true);
+      expect(same('0,5x', '0,6x')).toBe(false);
+      expect(p('0,5x')).toMatchObject({ ok: true, kind: 'expression' });
+      expect(p('(1,5)x')).toMatchObject({ ok: true, kind: 'expression' });
+      for (const text of ['1,5,2', '1,5.2', '1.5,2', '1.5.2', '1,5,', '1,,5', ',5', '.5', '5,', '5.', '1, 5', '1 ,5', 'x,5', '2,x', '1,5x,2', '(1,5,2)', '3,', ',', '..', '0,5,0,5']) {
+        expect(p(text), text).toMatchObject({ ok: false, error: 'bad-number' });
+      }
+      expect(p('1,5,2')).toMatchObject({ ok: false, error: 'bad-number', at: 3 });
+      expect(p('x=1,5,2')).toMatchObject({ ok: false, error: 'bad-number' });
+      expect(p('1,0000000000')).toMatchObject({ ok: false, error: 'bad-number' });
+      expect(p('1,12345678').ok).toBe(true);
+      expect(p('x^2,5')).toMatchObject({ ok: false, error: 'bad-exponent' });
+      expect(p('x^2,')).toMatchObject({ ok: false, error: 'bad-number' });
+    });
+
+    it('writes the locale decimal mark in the notation and the spoken reading, from the tree alone', () => {
+      const words = { plus: 'plus', minus: 'minus', times: 'times', over: 'over', power: 'to the power', equals: 'equals', open: 'open', close: 'close', negative: 'negative' };
+      const parsed = p('0,5x+1,25');
+      expect(toLatex(parsed, 'x')).toBe('0.5x+1.25');
+      expect(toLatex(parsed, 'x', '.')).toBe('0.5x+1.25');
+      expect(toLatex(parsed, 'x', ',')).toBe('0{,}5x+1{,}25');
+      expect(toLatex(p('1,5=x/2'), 'x', ',')).toBe('1{,}5=\\frac{x}{2}');
+      expect(toLatex(p('2*0,5'), 'x', ',')).toBe('2\\cdot 0{,}5');
+      expect(toSpoken(parsed, 'x', words)).toBe('0.5 times x plus 1.25');
+      expect(toSpoken(parsed, 'x', words, ',')).toBe('0,5 times x plus 1,25');
+      expect(toLatex(p('7,5'), 'x', 'comma' as never)).toBe('7.5');
+      expect(toLatex(p('12'), 'x', ',')).toBe('12');
+      for (const text of ['0,5x', '1,25', '3x=4,5', '(0,5+1,5)x', '2,5/0,5']) {
+        for (const mark of ['.', ','] as const) {
+          const tex = toLatex(p(text), 'x', mark);
+          expect(tex, text).toMatch(/^[0-9a-z+\-=^{}().,\\ ]*$/);
+          expect(tex.replace(/\{,\}/g, ''), text).not.toContain(',');
+        }
+      }
+    });
+
+    it('holds the safety bounds: no evaluation, no regular expression over learner text, bounded work', () => {
+      const source = readFileSync(fileURLToPath(new URL('../../services/horizonte/alg2/expression.ts', import.meta.url)), 'utf8');
+      for (const banned of [/\beval\s*\(/, /new\s+Function/, /\bFunction\s*\(/, /\bRegExp\b/, /\.match\s*\(/, /\.matchAll\s*\(/, /\.exec\s*\(/, /\.test\s*\(/, /\.replace\s*\(\s*\//, /\.split\s*\(\s*\//, /\bimport\s*\(/, /\brequire\s*\(/]) {
+        expect(source, String(banned)).not.toMatch(banned);
+      }
+      let seed = 7;
+      const next = (modulo: number) => { seed = (seed * 48271) % 2147483647; return seed % modulo; };
+      const alphabet = '0123456789,.x+-*/^()= 29x,,,..';
+      const started = Date.now();
+      for (let round = 0; round < 400; round += 1) {
+        const text = Array.from({ length: 1 + next(64) }, () => alphabet[next(alphabet.length)]).join('');
+        const parsed = parseExpression(text, 'x');
+        expect(JSON.stringify(parseExpression(text, 'x'), (_k, v) => (typeof v === 'bigint' ? v.toString() : v)), text).toBe(JSON.stringify(parsed, (_k, v) => (typeof v === 'bigint' ? v.toString() : v)));
+        if (parsed.ok) {
+          expect(() => sameParsed(parsed, parsed), text).not.toThrow();
+          expect(() => toLatex(parsed, 'x', ','), text).not.toThrow();
+        }
+      }
+      for (const worst of ['9'.repeat(8) + ',' + '9'.repeat(1), '('.repeat(12) + 'x' + ')'.repeat(12), '(((x^6)^6)^6)^6', '99999999*99999999*99999999*99999999*99999999*99999999*99999999', 'x^6*x^6*x^6*x^6*x^6*x^6', '(x+1)^6*(x+1)^6*(x+1)^6']) {
+        const parsed = parseExpression(worst, 'x');
+        if (parsed.ok) { expect(() => sameParsed(parsed, parsed), worst).not.toThrow(); expect(() => toPolynomial(parsed.kind === 'expression' ? parsed.expr : parsed.left), worst).not.toThrow(); }
+      }
+      expect(Date.now() - started).toBeLessThan(15000);
     });
 
     it('stays total on adversarial input and never evaluates text', () => {

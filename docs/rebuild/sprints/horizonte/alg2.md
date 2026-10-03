@@ -39,7 +39,7 @@ segment with no reachable answer does not parse.
   table of the lines and the markers as the text equivalent.
 - **Expression editor.** Up to 8 lines; each line is parsed and compared with the line above. The board draws the notation under every line
   that reads (KaTeX, spoken in words through `MathExpression`) and writes "same value as the line above" or "not the same" beside it, or
-  the one sentence that says why a line cannot be read (brackets, power, symbols, decimal comma, two equals signs, too long). Check stays off
+  the one sentence that says why a line cannot be read (brackets, power, symbols, a misplaced decimal mark, two equals signs, too long). Check stays off
   until every non-blank line reads. The board submits the non-blank trimmed lines, never the given.
 
 ## The expression shape and the engine
@@ -63,7 +63,7 @@ The `expression` shape lives in the alg2 scorer (`alg2/expression.ts`), not in t
   variable terms on one side, a plain number on the other).
 - **Notation.** `toLatex` and `toSpoken` are built only from the parsed tree, never from the learner's text, so an unreadable line draws
   nothing. Spoken words come from the pack copy in all three locales.
-- **Decimals.** The decimal separator is a point. A comma gives `bad-number`, and the board says so in the learner's language.
+- **Decimals.** A point or a comma, once per number (see the Fix round at the end). Anything else gives `bad-number`, and the board says so in the learner's language.
 
 ## Scorer ladder
 
@@ -149,8 +149,7 @@ not looked at.
   the chosen tokens and the spoken math have not been seen or heard.
 - **Chunk sizes are not measured.** The budgets (14, 14 and 16 KB gzipped) are declared in the contract metadata. A build with a size report
   has to confirm them.
-- **Decimal comma is not accepted.** A pt-BR or es-MX learner who types `0,5x` gets a message that says to use a point. Accepting the comma
-  needs a locale-aware parser and a decision about `1,5` against a list separator.
+- **Decimal comma.** Accepted since the Fix round (below).
 - **One variable, bounded grammar.** One lowercase letter, whole exponents 0 to 6, the operators `+ - * / ^` and brackets, at most 64
   characters and 8 lines. Functions (`sqrt`, `sin`), roots, inequalities and systems typed in the editor are out of scope.
 - **Undecidable is not the same.** When fewer than 8 sample points are defined on both sides, the board says "not the same". That is safe, but
@@ -167,6 +166,58 @@ not looked at.
 - Build the frontend with a size report and compare the three chunks with their budgets.
 - Have a native speaker review the es-MX and pt-BR strings (they are native-written, not machine copies, but not reviewed).
 - Decide whether the `expression` shape is promoted to the shared answer-shape registry.
-- Decide whether the editor accepts a decimal comma in es-MX and pt-BR.
+- Decided in the Fix round: the editor accepts a decimal comma in every locale.
 - Fix the `plano` entry in `harness/fixtureCoverage.test.tsx` (shared, so not changed in this lane).
 - Accept and release the three pieces (F2.4, F2.5, F2.6) in the sprint record.
+
+## Fix round
+
+Scope: a decimal comma for es-MX and pt-BR learners, a safety review of the expression parser, and the dark-mode ink of the three boards. Core,
+the browser copies and the Forge copies stay in step (`sync-v2-horizonte.mjs --check`, the capability parity gate and the Forge byte pin are green).
+
+### What changed
+
+- **Decimal comma, in the pure tokenizer.** A number is `digits`, or `digits` then one `.` or `,` then `digits`. The comma is turned into a
+  point inside `expression.ts`, so the parse tree, the grader (`scorer.ts`) and the equivalence sampling only ever see the point. The browser
+  copy and the Forge copy follow through the sync tool and the byte copy. `0,5x`, `1,25` and `1.5` read. `1,5,2`, `1,5.2`, `1.5,2`, `,5`,
+  `5,`, `1, 5`, `2,x` and `x,5` are `bad-number`: a comma is never a list separator, and nothing else in the grammar uses it.
+- **No injection path.** A comma never reaches the output as text. `toLatex` and `toSpoken` are built from the tree; the only comma they can write is
+  the fixed `{,}` KaTeX token (LaTeX) or the locale mark in the spoken words, chosen by a two-value type (`DecimalMark`), never by learner text.
+- **Locale-formatted readouts.** The notation and the spoken reading of the editor take the locale mark (pt-BR writes `0,5`, en-US and es-MX
+  write `0.5`, following CLDR through `Intl`). Point labels on the graph read `(0,5; 1,5)` where the mark is a comma, so a pair never looks like
+  one number. Slider values and the status line already used `Intl`.
+- **Editor message.** The unreadable-number sentence now says to use one decimal mark per number, like `0.5` or `0,5` (es-MX: `0.5 o 0,5`,
+  pt-BR: `0,5 ou 0.5`).
+- **Forge.** The prompt-leak check reads `0,5` and `0.5` as the same numeral, so a prompt cannot hide the reference answer behind the other
+  mark. The authoring guidance still tells the Forge to write a point in the given and the reference, and says the board also reads a comma.
+- **Dark mode.** The boards drew their text with `--ink`, which is the same dark navy in both themes (`tokens.css`). The readout now uses
+  `--content`, and the line-state outlines use `--edge` and `--content`, all of which flip under `data-theme="dark"`. The shared `Plano` and the
+  shared controls already used the flipping tokens.
+
+### Parser safety review (no change needed beyond the tests)
+
+- No `eval`, no `Function`, no dynamic `import`, no `RegExp` built from or run over learner text. A test scans the engine source for them.
+- The tokenizer walks character codes in one pass, so there is no backtracking. The 64 character check runs before tokenizing.
+- The recursive-descent parser has a node budget (64) and a depth budget (12). Exact BigInt rationals are capped at 4096 bits, digits at 9,
+  exponents at 0 to 6 and the polynomial degree at 12. A fuzz test and a time ceiling pin the bounds on adversarial text (long runs of
+  brackets, commas, signs, carets and digits).
+- The regular expressions left in `model.ts` run on author-written or short, bounded strings, are anchored and have no nested quantifiers.
+
+### What is still limited
+
+- **`1,000` is one, not a thousand.** In en-US the comma is also a thousands mark, so `1,000` reads as `1.000`, which is 1. Teaching material
+  that writes thousands with a comma in en-US must write the number without it. Digit grouping is not accepted in any locale.
+- **es-MX shows a point.** CLDR gives es-MX a point as the decimal mark, so the notation and the readouts show `0.5` there. The learner can still
+  type `0,5`. If the owner wants a comma shown in es-MX, `decimalMarkOf` is the single place to change.
+- **Sliders and steppers are not text inputs.** They take no typed number, so the editor is the only field that needed the comma.
+- **Disabled Check and Reset contrast.** In dark mode the disabled buttons measure between 2.3 and 2.7 against the surface. They are the shared
+  `Button`, so this lane did not change them.
+- **The Forge still authors a point.** It does not write a comma in the given or the reference; it only accepts one.
+
+### What is not verified
+
+- No real browser, no screenshot, no screen reader and no dark-mode visual check. The dark-mode fix is a token swap that was audited in the CSS
+  and in jsdom, and was not looked at.
+- The new es-MX and pt-BR strings were written by the lane and have not been reviewed by a native speaker.
+- The new tests: backend `alg2.test.ts` (46), frontend `alg2Boards.test.tsx` (32) and Forge `alg2.test.ts` (19) pass. No full suite, browser
+  gate or build ran in this lane.
