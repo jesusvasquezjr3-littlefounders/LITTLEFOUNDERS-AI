@@ -221,3 +221,28 @@ the browser copies and the Forge copies stay in step (`sync-v2-horizonte.mjs --c
 - The new es-MX and pt-BR strings were written by the lane and have not been reviewed by a native speaker.
 - The new tests: backend `alg2.test.ts` (46), frontend `alg2Boards.test.tsx` (32) and Forge `alg2.test.ts` (19) pass. No full suite, browser
   gate or build ran in this lane.
+
+## Solvability round
+
+`math.line-system.v2` now has a Forge solvability checker (`coursegen/src/v2/horizonte/solvability-plane.ts`, registered from
+`solvabilityPacks.ts`). `math.function-graph.v2` and `math.expression-editor.v2` were already covered and are unchanged. Tests:
+`solvability-plane.test.ts` (43, shared with the other two packs).
+
+| Type | Proven | Stays unproven |
+|---|---|---|
+| `math.line-system.v2` | **Solvable and unique:** a scan of every point of the grid in the window, in doubled coordinates so a half step is exact, counts the points that lie on two or more lines; that count equals the number of markers, so there is one set of spots that is the answer. **Not already solved:** the markers do not start on the crossings (`impossible-state`). **No dead end:** every crossing is a point of the grid inside the window, so a marker can be put on it. **Budget:** one node per grid point of the window, `budget-exceeded` when the context budget is smaller. **Key:** exactly `{ required: [{ x, y }, ...] }`; a required spot that is not a crossing is `rubric-accepts-invalid`, a missing or a repeated crossing is `rubric-gap`, a key the start already meets is `impossible-state`. | the crossings themselves, see below; prompt wording; the window, grid and marker layout; the marker picker and steppers as a keyboard path |
+
+**Findings the system checker can raise.** The pack's own payload reader refuses first, and its message is classed: two copies of a line
+(`ambiguous-solution`), a crossing count that differs from the markers (`ambiguous-solution` when there are more crossings than markers,
+`no-solution` when fewer), two markers on one spot (`overlap`), a marker, crossing or window edge off the grid or the window
+(`out-of-bounds`), and any other refusal (`impossible-state`). The scan then raises `no-solution` or `ambiguous-solution` if it finds a
+different number of crossings from the markers.
+
+**What this does not prove.**
+- The crossings are fixed by the lines, and the pack's reader already derives them exactly. The lattice scan confirms that count and that each
+  crossing is on the grid; it is a second derivation, not an independent source of truth about what the board shows.
+- Prompt wording and locale. The line-system checker does not read the segment's `prompt` (it is optional in the engine), so a prompt that
+  names the wrong lines is not caught.
+- Layout, label collisions at narrow widths, the 64 px hit size, contrast, motion and the screen reader: no browser was started.
+- Timing: how long a learner takes to place several markers is not measured.
+- The Oracle context schema is unchanged and the checker reads nothing about the child.

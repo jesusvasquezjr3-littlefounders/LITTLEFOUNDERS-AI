@@ -435,7 +435,7 @@ function fin1Gates(document: { segments?: unknown }, answerKeys?: Record<string,
   return problems;
 }
 
-/* ── Solvability (F0.4): the two puzzle pieces. The rate-return piece is a typed number, so it has no search to prove. ── */
+/* ── Solvability (F0.4): the two puzzle pieces. The rate-return piece is checked in solvability-plane.ts. ── */
 
 export const compoundChecker: SolvabilityChecker = (segment, context) => {
   const subject = `compound interest ${segment.id}`;

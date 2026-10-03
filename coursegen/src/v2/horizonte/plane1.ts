@@ -86,8 +86,8 @@ const record = (value: unknown): value is Record<string, unknown> => typeof valu
 const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
   record(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 
-type Solved<Answer> = { answer: Answer; message?: undefined } | { answer?: undefined; message: string };
-const solved = <Answer>(answer: Answer): Solved<Answer> => ({ answer });
+export type Solved<Answer> = { answer: Answer; message?: undefined } | { answer?: undefined; message: string };
+const solved =<Answer>(answer: Answer): Solved<Answer> => ({ answer });
 const broken = (message: string): Solved<never> => ({ message });
 
 type Grid = { xMax: number; yMin: number; yMax: number };
@@ -105,7 +105,7 @@ function pointOf(value: unknown, grid: Grid): Point | null {
   return hasOnly(value, ['x', 'y']) && inRange(value.x, 0, grid.xMax) && inRange(value.y, grid.yMin, grid.yMax) ? { x: value.x, y: value.y } : null;
 }
 
-function solveSlope(payload: Record<string, unknown>): Solved<number> {
+export function solveSlope(payload: Record<string, unknown>): Solved<number> {
   if (!hasOnly(payload, ['grid', 'line', 'run', 'start'])) return broken('The payload is a grid, a line, a run and a start');
   const grid = gridOf(payload.grid);
   if (!grid) return broken(GRID_RULE);
@@ -124,7 +124,7 @@ function solveSlope(payload: Record<string, unknown>): Solved<number> {
   return payload.start === rise ? broken('The triangle starts away from the answer') : solved(rise);
 }
 
-function solveRate(payload: Record<string, unknown>): Solved<number> {
+export function solveRate(payload: Record<string, unknown>): Solved<number> {
   if (!hasOnly(payload, ['grid', 'origin', 'rate', 'at', 'start'])) return broken('The payload is a grid, an origin, a rate, a step and a start');
   const grid = gridOf(payload.grid);
   if (!grid) return broken(GRID_RULE);
@@ -139,9 +139,9 @@ function solveRate(payload: Record<string, unknown>): Solved<number> {
   return start === reached ? broken('The value starts away from the answer') : solved(reached);
 }
 
-type LineFit = { m: number; b: number };
+export type LineFit = { m: number; b: number };
 
-function solveLinked(payload: Record<string, unknown>): Solved<LineFit> {
+export function solveLinked(payload: Record<string, unknown>): Solved<LineFit> {
   if (!hasOnly(payload, ['grid', 'given', 'start'])) return broken('The payload is a grid, two given points and a start');
   const grid = gridOf(payload.grid);
   if (!grid) return broken(GRID_RULE);
@@ -160,7 +160,7 @@ function solveLinked(payload: Record<string, unknown>): Solved<LineFit> {
   return start.m === m && start.b === b ? broken('The line starts away from the answer') : solved({ m, b });
 }
 
-function solveBreakEven(payload: Record<string, unknown>): Solved<number> {
+export function solveBreakEven(payload: Record<string, unknown>): Solved<number> {
   if (!hasOnly(payload, ['fixed', 'price', 'unit', 'maxUnits', 'start'])) return broken('The payload is a fixed cost, a price, a cost per unit, a unit limit and a start');
   const { fixed, price, unit, maxUnits, start } = payload;
   if (!inRange(fixed, 1, 1000)) return broken('The fixed cost is a whole number from 1 to 1000');
@@ -173,7 +173,7 @@ function solveBreakEven(payload: Record<string, unknown>): Solved<number> {
   return start === units ? broken('The units start away from the answer') : solved(units);
 }
 
-function solveCost(payload: Record<string, unknown>): Solved<number> {
+export function solveCost(payload: Record<string, unknown>): Solved<number> {
   if (!hasOnly(payload, ['fixed', 'variable', 'maxUnits', 'goal', 'start'])) return broken('The payload is a fixed cost, a variable cost, a unit limit, a goal and a start');
   const { fixed, variable, maxUnits, goal, start } = payload;
   if (!inRange(fixed, 1, 1000)) return broken('The fixed cost is a whole number from 1 to 1000');
@@ -188,7 +188,7 @@ function solveCost(payload: Record<string, unknown>): Solved<number> {
   return start === units ? broken('The units start away from the answer') : solved(units);
 }
 
-function solveMarkup(payload: Record<string, unknown>): Solved<number> {
+export function solveMarkup(payload: Record<string, unknown>): Solved<number> {
   if (!hasOnly(payload, ['cost', 'basis', 'percent', 'maxPrice', 'start'])) return broken('The payload is a cost, a basis, a percent, a price limit and a start');
   const { cost, basis, percent, maxPrice, start } = payload;
   if (!inRange(cost, 1, 100)) return broken('The cost is a whole number from 1 to 100');
@@ -219,7 +219,9 @@ function clearing(demand: Demand, supply: Supply): number | null {
   return gap % slope === 0 ? gap / slope : null;
 }
 
-function solveMarket(payload: Record<string, unknown>): Solved<{ direction: 'up' | 'down'; price: number }> {
+export type MarketFit = { direction: 'up' | 'down'; price: number };
+
+export function solveMarket(payload: Record<string, unknown>): Solved<MarketFit> {
   if (!hasOnly(payload, ['pMax', 'qMax', 'demand', 'supply', 'shift', 'start'])) return broken('The payload is a price limit, a quantity limit, demand, supply, a shift and a start');
   const { pMax, qMax, shift, start } = payload;
   if (!inRange(pMax, 4, 60)) return broken('The price limit is 4 to 60');
@@ -243,7 +245,7 @@ function solveMarket(payload: Record<string, unknown>): Solved<{ direction: 'up'
   return solved({ direction: price > first ? 'up' : 'down', price });
 }
 
-function solveElastic(payload: Record<string, unknown>): Solved<number> {
+export function solveElastic(payload: Record<string, unknown>): Solved<number> {
   if (!hasOnly(payload, ['pMax', 'demand', 'goal', 'start'])) return broken('The payload is a price limit, demand, a goal and a start');
   const { pMax, goal, start } = payload;
   if (!inRange(pMax, 4, 60)) return broken('The price limit is 4 to 60');
@@ -259,7 +261,7 @@ function solveElastic(payload: Record<string, unknown>): Solved<number> {
   return start === price ? broken('The price starts away from the answer') : solved(price);
 }
 
-const namesNumber = (prompt: unknown, value: unknown): boolean =>
+export const namesNumber = (prompt: unknown, value: unknown): boolean =>
   typeof prompt === 'string' && whole(value) && new RegExp(`(?<![\\d.,])${value}(?!\\d|[.,]\\d)`).test(prompt);
 
 type Report = (message: string) => void;
@@ -282,28 +284,42 @@ function visit(document: { segments?: unknown }, answerKeys: Record<string, unkn
 }
 
 /** A gate for a type whose answer is one whole number: the payload solves, the key is that number, the prompt writes the numbers the learner needs. */
-function numberGate(label: string, solve: (payload: Record<string, unknown>) => Solved<number>, named: (payload: Record<string, unknown>, answer: number) => unknown[]): Check {
+function numberGate(label: string, solve: (payload: Record<string, unknown>) => Solved<number>, named: Named): Check {
   return (segment, payload, key, report) => {
     const result = solve(payload);
     if (result.message !== undefined) return report(result.message);
-    if (!named(payload, result.answer).every((value) => namesNumber(segment.prompt, value))) report(`The ${label} prompt must write its numbers in digits`);
+    if (!named(payload).every((value) => namesNumber(segment.prompt, value))) report(`The ${label} prompt must write its numbers in digits`);
     if (key === undefined) return;
     if (key?.target !== result.answer) report(`The ${label} target must be ${result.answer}`);
   };
 }
 
+type Named = (payload: Record<string, unknown>) => unknown[];
+
 const field = (payload: Record<string, unknown>, name: string): Record<string, unknown> => (record(payload[name]) ? (payload[name] as Record<string, unknown>) : {});
 
-const slopeGate = numberGate('slope triangle', solveSlope, (payload) => [payload.run]);
-const rateGate = numberGate('rate of change', solveRate, (payload) => [payload.rate, payload.at]);
-const breakEvenGate = numberGate('break-even', solveBreakEven, (payload) => [payload.fixed, payload.price, payload.unit]);
-const costGate = numberGate('cost structure', solveCost, (payload) => [payload.fixed, payload.variable, field(payload, 'goal').average]);
-const elasticityGate = numberGate('elasticity', solveElastic, (payload) => [field(payload, 'goal').num, field(payload, 'goal').den]);
+/** The numbers each prompt must write in digits, shared by the pack gate and the solvability checkers. */
+export const PLANE1_NAMED = {
+  [SLOPE]: (payload) => [payload.run],
+  [RATE]: (payload) => [payload.rate, payload.at],
+  [LINKED]: (payload) => (Array.isArray(payload.given) ? payload.given.flatMap((point: unknown) => (record(point) ? [point.x, point.y] : [undefined])) : []),
+  [BREAK_EVEN]: (payload) => [payload.fixed, payload.price, payload.unit],
+  [COST]: (payload) => [payload.fixed, payload.variable, field(payload, 'goal').average],
+  [MARKUP]: (payload) => [payload.cost, payload.percent],
+  [MARKET]: (payload) => [Math.abs(field(payload, 'shift').by as number)],
+  [ELASTICITY]: (payload) => [field(payload, 'goal').num, field(payload, 'goal').den],
+} as const satisfies Record<string, Named>;
+
+const slopeGate = numberGate('slope triangle', solveSlope, PLANE1_NAMED[SLOPE]);
+const rateGate = numberGate('rate of change', solveRate, PLANE1_NAMED[RATE]);
+const breakEvenGate = numberGate('break-even', solveBreakEven, PLANE1_NAMED[BREAK_EVEN]);
+const costGate = numberGate('cost structure', solveCost, PLANE1_NAMED[COST]);
+const elasticityGate = numberGate('elasticity', solveElastic, PLANE1_NAMED[ELASTICITY]);
 
 const markupGate: Check = (segment, payload, key, report) => {
   const result = solveMarkup(payload);
   if (result.message !== undefined) return report(result.message);
-  if (!namesNumber(segment.prompt, payload.cost) || !namesNumber(segment.prompt, payload.percent)) report('The markup prompt must write the cost and the percent in digits');
+  if (!PLANE1_NAMED[MARKUP](payload).every((value) => namesNumber(segment.prompt, value))) report('The markup prompt must write the cost and the percent in digits');
   if (key === undefined) return;
   if (key?.target !== result.answer) report(`The markup target must be ${result.answer}`);
 };
@@ -311,8 +327,7 @@ const markupGate: Check = (segment, payload, key, report) => {
 const linkedGate: Check = (segment, payload, key, report) => {
   const result = solveLinked(payload);
   if (result.message !== undefined) return report(result.message);
-  const given = payload.given as Array<Record<string, unknown>>;
-  if (!given.every((point) => namesNumber(segment.prompt, point.x) && namesNumber(segment.prompt, point.y))) report('The linked views prompt must write both points in digits');
+  if (!PLANE1_NAMED[LINKED](payload).every((value) => namesNumber(segment.prompt, value))) report('The linked views prompt must write both points in digits');
   if (key === undefined) return;
   const target = key?.target;
   if (!record(target) || target.m !== result.answer.m || target.b !== result.answer.b) report(`The linked views target must be slope ${result.answer.m} and intercept ${result.answer.b}`);
@@ -321,8 +336,7 @@ const linkedGate: Check = (segment, payload, key, report) => {
 const marketGate: Check = (segment, payload, key, report) => {
   const result = solveMarket(payload);
   if (result.message !== undefined) return report(result.message);
-  const shift = field(payload, 'shift');
-  if (!namesNumber(segment.prompt, Math.abs(shift.by as number))) report('The market prompt must write the size of the shift in digits');
+  if (!PLANE1_NAMED[MARKET](payload).every((value) => namesNumber(segment.prompt, value))) report('The market prompt must write the size of the shift in digits');
   if (key === undefined) return;
   const target = key?.target;
   if (!record(target) || target.direction !== result.answer.direction || target.price !== result.answer.price) {

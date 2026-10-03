@@ -203,3 +203,54 @@ and the copy are unchanged.
 
 Still limited: the dark rendering has been checked by contrast arithmetic from `tokens.css`, not yet re-run through the Atlas audit or looked at in a browser.
 The two light-mode low-contrast items the audit lists for every fixture (the Reset and Check buttons at 2.3:1) come from the shared button styles, not from this pack.
+
+## Behaviour round
+
+Core's interactive-behaviour gate now has a behaviour space for the four sim1 kinds (`math.chance-sim.v2`, `math.galton-sim.v2`, `stats.coverage-sim.v2`,
+`stats.bootstrap-sim.v2`). Before this round they were the "no behaviour space defined for this kind" failures: 12 of the 15 left after the fix round. The model,
+the scorer, the fixtures and the copy are unchanged. The spaces live in `backend/src/services/forgeV2HorizonteBehaviour/seeded.ts`.
+
+- **How the gate grades a seeded kind.** The gate supplies its own attempt, a fixed synthetic seed held in `forgeV2Behaviour.ts` (`GATE_ATTEMPT`). It is not derived
+  from `LESSON_ATTEMPT_SECRET`, is used only in the gate's own `gradeV2Visual` calls (through the optional last argument that already existed), and never
+  reaches a response, a token or a stored value. Every response the gate builds carries that seed, as a real run's response carries Core's.
+- **Run kinds (chance, Galton, bootstrap).** One permitted state per stop of the run-length slider. The chance and Galton targets are derived from the payload
+  (the machine and event, or the rows, the bias and the bin) and must equal the key, or no space is built. The verdict is an integer test of the replayed hits
+  against that target, so the gate does not trust the scorer's own tolerance code. The bootstrap edges come from an independent exact DP over the data, read at the
+  sorted-sum rank of the level. A too-short run (below the floor) and a run that misses the tolerance at full length are review states; the full run is met.
+- **Coverage.** Every level and size pair except the untouched start is a permitted state, met iff the seeded 100 intervals cover the truth at least `goal.covered`
+  times. The key must equal `solveCoverage` and be above the start level. The start itself, an off-list level, an off-list size and a missing field are refused.
+- **Refused and hostile states.** Refused (must grade invalid): a run not started, a run length off the stops, a wrong seed (another seed, the reversed seed, the
+  publish sample), a malformed seed (case, length, whitespace, a non-hex tail), a missing or extra field. Hostile (never met, never a throw): `null`, scalars,
+  arrays, a null-prototype object, a `__proto__` key, a 100,000-character seed, and each field dropped, nulled, wrapped in an array or object, turned into a
+  string, `Infinity`, `NaN`, `Number.MAX_VALUE`, negative or fractional.
+- **All-met rule kept.** A space where every state is met fails the gate. Under the gate seed the emitted sim1 boards have 2 of 5 met (chance, Galton), 9 of 15
+  (coverage) and 3 of 5 (bootstrap).
+- **Fail-closed unchanged.** A seeded kind graded without an attempt is still `invalid` (the staff preview, a caller that holds no token). The gate asserts this
+  itself on the first met response of every seeded space, and `horizonteBehaviourSpace` returns nothing when it is given no attempt.
+- **Finding, not fixed.** `coverage-one-half` is trivially met: its lowest offered level (90) covers the truth about 90 times in 100, so a goal of 85 is reached at
+  every offered choice under the gate seed and under the fixture's own seed. The gate reports it as "the rubric is trivially met", which is correct, and a
+  test pins that. It is not in `emitted-horizonte.json`, so the 240 of 240 result is unaffected, but Forge cannot emit it as authored. The fix is content: a
+  higher goal or a lower first level. That changes `fixtures.ts` and the generated frontend copy, so it is left to the sim1 owner.
+
+Result on `emitted-horizonte.json`: `forge-v2:check` reports 240 of 240 graded segments passing, 64,341 states scored.
+
+Still limited: the gate seed was chosen once, and that every emitted board is met at full length under it was measured, not proved. No page ran.
+
+## Solvability round
+
+Forge now registers a real F0.4 checker for all four types (`coursegen/src/v2/horizonte/solvability-sims.ts`, imported by `solvabilityPacks.ts`; tests in
+`coursegen/src/__tests__/horizonte/solvability-sims.test.ts`). The checkers reuse the pack's pure functions (`sim1.ts` only gained `export` keywords; the gate,
+the seed protocol and the scorers are untouched) and read the public payload alone for everything it fixes. The key is compared only when `answerKey` is present.
+Core grades these types against a seeded run the gate never has, so the checkers prove what the payload and the exact model determine, never the learner's run.
+Every slider and stop here is reversible, so no state can be a dead end and none is searched for. Findings ride gate 1 as `solvability/<code>:`.
+
+| Type | Solvable | Unique | Not already solved | No dead end | Budget | Stays unproven |
+| --- | --- | --- | --- | --- | --- | --- |
+| `math.chance-sim.v2` | The chance is rebuilt from the machine and event (5% to 95%); a run at the last stop must clear the pack's 5 sigma rule and an exact binomial miss of at most 1e-4, else `no-solution` (a chance outside the band is `out-of-bounds`). | One derived answer, the exact reduced fraction: a wrong key is `rubric-gap` plus `rubric-accepts-invalid`, a malformed key `impossible-state`. The stop just below the floor must not already be reliable, else `ambiguous-solution` (the floor would not be what separates a right run). | The floor is a stop and never the first, so a run short of it always exists and the untouched start (no run) can never be met; a malformed floor is `impossible-state`. | Reset and Run are always available; nothing to search. | One unit per trial of the last stop and of the stop below the floor (at most about 10,000), else `budget-exceeded`. | The learner's actual seeded run, any stop between the floor and the last, the prompt writing the tolerance in digits (pack gate), and whether the tolerance is pedagogically fair. |
+| `math.galton-sim.v2` | The bin chance is the exact binomial (`binChance`); same last-stop rule as chance. | Same: exact reduced fraction key, floor must bind. | Same: floor is a non-first stop, so the start can never be met. | Reset and Drop are always available. | Same units, at most about 6,000 (stops up to 3000). | The seeded run, the prompt naming the bin and the tolerance (pack gate), the board and walk rendering. |
+| `stats.coverage-sim.v2` | `solveCoverage` must find a level that reaches the goal at some size with probability of at least 1 - 1e-5, else `no-solution`. | The key must be exactly that lowest level. Any cell that covers the goal is met by design, so a lower cell that the board accepts on at least 99% of seeds is only a `review` `ambiguous-solution` (it would otherwise fail the committed fixtures, which have such cells). | The answer must sit above the start level, and the start cell must not reach the goal on 99% of seeds or more, else `impossible-state`. | Sliders are reversible. | Twice the grid: levels times the sum of (size + 100), at most about 25,000. | The learner's seeded 100 intervals, lower cells that reach the goal on between 1 - 1e-5 and 99% of seeds (accepted, not flagged), and the prompt naming the goal. |
+| `stats.bootstrap-sim.v2` | The exact edges come from every possible resample (exact sum table); the last stop must settle both edges within the tolerance with probability of at least 1 - 1e-5 (`bootstrapSolvable`), else `no-solution`. | The key must be the exact `{ low, high }`; the stop below the floor must not already settle both edges, else `ambiguous-solution`. | The floor is a stop of at least 50 and never the first; the start has no resamples. | Reset and Resample are always available. | Five sum tables (data times its top total) plus the last and below stops, at most about 56,000. | The seeded run, the pack's rank rule at very small resample counts, the prompt writing the floor and the level. |
+
+Decisions: the floor-binds rule is stricter than the pack gate on purpose (a floor that separates nothing tells a correct learner they are wrong with no reason);
+`tests` compare the checker with the pack gate over a grid and assert it never accepts what the pack refuses, and refuses what the pack accepts only for the
+codes above. All 15 committed emitted segments of these four types and the authored examples pass with and without their keys.
