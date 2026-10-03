@@ -1,6 +1,7 @@
 import { ALG1_BEHAVIOUR } from './alg1.js';
 import { ALG2_BEHAVIOUR } from './alg2.js';
 import { BALANCE_BEHAVIOUR } from './balance.js';
+import { COM_BEHAVIOUR } from './com.js';
 import { FIN_BEHAVIOUR } from './fin.js';
 import { FIN2_BEHAVIOUR } from './fin2.js';
 import { GEOM2_BEHAVIOUR } from './geom2.js';
@@ -22,6 +23,7 @@ const BUILDERS: Readonly<Record<string, HzBuilder>> = {
   ...FIN2_BEHAVIOUR,
   ...GEOM2_BEHAVIOUR,
   ...PROB_BEHAVIOUR,
+  ...COM_BEHAVIOUR,
 };
 
 export const horizonteBehaviourKinds = (): string[] => Object.keys(BUILDERS).sort();
