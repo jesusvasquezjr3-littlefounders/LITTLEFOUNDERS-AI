@@ -5,6 +5,8 @@ const text = (en: string, es: string, pt: string): Record<HorizonteLocale, strin
 
 const CHOICE_LADDER = (met: string) => ({ invalid: { choice: 'z' }, valid: { choice: '' }, met: { choice: met } });
 
+const ANSWER_LADDER = (boxes: number, invalid: string[], met: string[]) => ({ invalid: { answer: invalid }, valid: { answer: Array.from({ length: boxes }, () => '') }, met: { answer: met } });
+
 export const SPACE2_FIXTURES: readonly HorizonteFixture[] = [
   {
     id: 'time-beats-rate',
@@ -99,6 +101,86 @@ export const SPACE2_FIXTURES: readonly HorizonteFixture[] = [
     }),
     rubric: { choice: 'b' },
     ladder: CHOICE_LADDER('b'),
+  },
+  {
+    id: 'slope-two-ways',
+    title: text('How steep, which way?', '¿Qué tan empinado, hacia dónde?', 'Quão inclinado, para onde?'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-slope-two-ways', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Stand on the dot and face along x. How steep is the surface there?',
+        'Párate en el punto y mira a lo largo de x. ¿Qué tan empinada es la superficie ahí?',
+        'Fique no ponto e olhe ao longo de x. Qual é a inclinação da superfície ali?',
+      )[locale],
+      payload: {
+        window: { xMin: -3, xMax: 3, yMin: -3, yMax: 3 },
+        task: { kind: 'slope', expression: 'x^2+2xy', axis: 'x', at: { x: 1, y: 2 } },
+      },
+    }),
+    rubric: { key: ['6'] },
+    ladder: ANSWER_LADDER(1, ['abc'], ['6']),
+  },
+  {
+    id: 'gradient-at-a-point',
+    title: text('Both slopes at once', 'Las dos pendientes a la vez', 'As duas inclinações juntas'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-gradient-at-a-point', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Find both slopes at the dot: the x slope first, then the y slope.',
+        'Halla las dos pendientes en el punto: primero la de x y luego la de y.',
+        'Ache as duas inclinações no ponto: primeiro a de x, depois a de y.',
+      )[locale],
+      payload: {
+        window: { xMin: -3, xMax: 3, yMin: -3, yMax: 3 },
+        task: { kind: 'gradient', expression: 'x^2+3y-xy', at: { x: 2, y: 1 } },
+      },
+    }),
+    rubric: { key: ['3', '1'] },
+    ladder: ANSWER_LADDER(2, ['x', 'y'], ['3', '1']),
+  },
+  {
+    id: 'downhill-walk',
+    title: text('Walk downhill', 'Camina cuesta abajo', 'Caminhe morro abaixo'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-downhill-walk', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Walk downhill from the dot, a tenth of the slope each step. How many steps until the height is 3 or lower?',
+        'Baja desde el punto, un décimo de la pendiente en cada paso. ¿Cuántos pasos hasta que la altura sea 3 o menos?',
+        'Desça a partir do ponto, um décimo da inclinação a cada passo. Quantos passos até a altura ser 3 ou menos?',
+      )[locale],
+      payload: {
+        window: { xMin: -3, xMax: 3, yMin: -3, yMax: 3 },
+        task: { kind: 'walk', expression: 'x^2+y^2', at: { x: 3, y: 2 }, rate: { n: 1, d: 10 }, below: 3, maxSteps: 8 },
+      },
+    }),
+    rubric: { key: ['4'] },
+    ladder: ANSWER_LADDER(1, ['four steps'], ['4']),
+  },
+  {
+    id: 'build-a-surface',
+    title: text('Build a surface', 'Construye una superficie', 'Construa uma superfície'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-build-a-surface', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Type a formula for z whose surface passes through all three dots.',
+        'Escribe una fórmula para z cuya superficie pase por los tres puntos.',
+        'Digite uma fórmula para z cuja superfície passe pelos três pontos.',
+      )[locale],
+      payload: {
+        window: { xMin: -2, xMax: 2, yMin: -2, yMax: 2 },
+        task: { kind: 'build', through: [{ x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 3 }, { x: 0, y: 1, z: 0 }] },
+      },
+    }),
+    rubric: { reference: '1+2x-y' },
+    ladder: ANSWER_LADDER(1, ['sin(x)'], ['z = 1 + 2x - y']),
   },
   {
     id: 'object-on-the-table',
