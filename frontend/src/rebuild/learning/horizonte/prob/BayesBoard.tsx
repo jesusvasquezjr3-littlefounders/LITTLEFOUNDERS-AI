@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type CSSProperties } from 'react';
 import { TextField } from '../../../design/controls';
 import type { Locale } from '../../../design/copyBudget';
 import { BoardShell, GradedFoot, playerCopy, useSegmentGrade } from '../../segmentKit';
@@ -7,6 +7,7 @@ import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
 import { PROB_COPY } from './copy';
 import { readChance, treeBasis, treeCounts, type TreeCounts } from './model.generated';
+import { GRID_PAD, GRID_VIEW_W, planGrid } from './bayesGrid';
 import { TableToggle, fmt, people, slots } from './shared';
 import '../horizonte.css';
 import './prob.css';
@@ -14,8 +15,6 @@ import './prob.css';
 type BayesSegment = Extract<HorizonteSegment, { type: 'prob.bayes.v2' }>;
 type Group = 'hasPos' | 'hasNeg' | 'lacksPos' | 'lacksNeg';
 
-const VIEW_W = 640;
-const PAD = 28;
 const GROUPS: readonly Group[] = ['hasPos', 'hasNeg', 'lacksPos', 'lacksNeg'];
 const GROUP_NAME = { hasPos: 'slotHasPos', hasNeg: 'slotHasNeg', lacksPos: 'slotLacksPos', lacksNeg: 'slotLacksNeg' } as const satisfies Record<Group, keyof typeof PROB_COPY>;
 const ASKED = { positive: ['hasPos', 'lacksPos'], negative: ['hasNeg', 'lacksNeg'] } as const satisfies Record<'positive' | 'negative', readonly Group[]>;
@@ -57,10 +56,7 @@ function Bayes({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
   const pattern = `lf-prob-cells-${useId().replace(/:/g, '')}`;
 
   const amount: Readonly<Record<Group, number>> = { hasPos: counts.hasPos, hasNeg: counts.hasNeg, lacksPos: counts.lacksPos, lacksNeg: counts.lacksNeg };
-  const columns = Math.ceil(Math.sqrt(population * 2));
-  const rows = Math.ceil(population / columns);
-  const cell = (VIEW_W - 2 * PAD) / columns;
-  const height = rows * cell + 2 * PAD;
+  const { rows, cell, tile, perSquare, height, heavy } = planGrid(population);
   const asked: readonly Group[] = ASKED[ask];
   let cursor = 0;
   const layout = GROUPS.map((group) => {
@@ -79,21 +75,22 @@ function Bayes({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
     foot={<GradedFoot locale={locale} grading={grading} canCheck={reading !== null && !locked} sequence={sequence} feedback={segment.feedback}
       named={{ met: t.metBayes, hint: t.hintBayes }} onCheck={() => { if (reading !== null) grading.check({ value: reading }); }} />}>
     <section className="lf-learning-board lf-prob" aria-label={t.bayesName}>
-      <svg className="lf-prob-chart" viewBox={`0 0 ${VIEW_W} ${height}`} role="img" aria-label={t.bayesName} focusable="false" data-copy-role="data">
+      <svg className="lf-prob-chart" viewBox={`0 0 ${GRID_VIEW_W} ${height}`} role="img" aria-label={t.bayesName} focusable="false" data-copy-role="data" style={{ '--lf-prob-heavy': `${heavy.toFixed(2)}px` } as CSSProperties}>
         <defs>
-          <pattern id={pattern} x={PAD} y={PAD} width={cell} height={cell} patternUnits="userSpaceOnUse"><path className="lf-prob-gridline" d={`M${cell} 0V${cell}M0 ${cell}H${cell}`} /></pattern>
+          <pattern id={pattern} x={GRID_PAD} y={GRID_PAD} width={tile} height={tile} patternUnits="userSpaceOnUse"><path className="lf-prob-gridline" d={`M${tile} 0V${tile}M0 ${tile}H${tile}`} /></pattern>
         </defs>
         {layout.map(({ group, shapes }) => <g key={group} className={`lf-prob-group lf-prob-group--${group}${asked.includes(group) ? ' lf-prob-group--asked' : ''}`}>
           {shapes.map((shape, index) => {
-            const path = `${shape.map(([x, y], at) => `${at === 0 ? 'M' : 'L'}${(PAD + x * cell).toFixed(2)} ${(PAD + y * cell).toFixed(2)}`).join('')}Z`;
+            const path = `${shape.map(([x, y], at) => `${at === 0 ? 'M' : 'L'}${(GRID_PAD + x * cell).toFixed(2)} ${(GRID_PAD + y * cell).toFixed(2)}`).join('')}Z`;
             return <g key={index}>
               <path className="lf-prob-block" d={path} />
-              {cell >= 5 ? <path className="lf-prob-cells" d={path} fill={`url(#${pattern})`} /> : null}
+              <path className="lf-prob-cells" d={path} fill={`url(#${pattern})`} />
             </g>;
           })}
         </g>)}
       </svg>
       <p className="lf-prob-total" data-copy-role="data">{slots(t.inAll, { n: people(locale, population, t) })}</p>
+      {perSquare > 1 ? <p className="lf-prob-scale" data-copy-role="data">{slots(t.gridScale, { n: people(locale, perSquare, t) })}</p> : null}
       <ul className="lf-prob-legend" data-hz-text-equivalent="">
         {GROUPS.map((group) => <li key={group} className={asked.includes(group) ? 'lf-prob-legend-item lf-prob-legend-item--asked' : 'lf-prob-legend-item'} data-copy-role="data">
           <span className={`lf-prob-swatch lf-prob-swatch--${group}`} aria-hidden="true" />

@@ -5,6 +5,6 @@
 .lf-stmt-bar--earned { fill: var(--sky-strong); }
 .lf-stmt-bar--passive { fill: var(--mint-strong); }
 .lf-stmt-bar--expenses { fill: var(--berry-strong); }
-.lf-stmt-bar--assets { fill: var(--sky); }
+.lf-stmt-bar--assets { fill: var(--sky-strong); }
 .lf-stmt-bar--liabilities { fill: var(--berry); }
 .lf-stmt-goal { stroke: var(--content); stroke-width: 2; stroke-dasharray: 4 3; }

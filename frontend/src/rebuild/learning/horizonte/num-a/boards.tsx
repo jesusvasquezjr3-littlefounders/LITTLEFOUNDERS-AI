@@ -9,4 +9,6 @@ export const NUM_A_BOARDS: HorizonteBoards = {
   'math.clock.v2': { board: lazy(() => import('./ClockBoard')), icap: 'active', chunkBudgetKb: 24 },
   'math.ruler.v2': { board: lazy(() => import('./RulerBoard')), icap: 'active', chunkBudgetKb: 24 },
   'math.pan-balance.v2': { board: lazy(() => import('./PanBalanceBoard')), icap: 'active', chunkBudgetKb: 24 },
+  'math.number-line.order.v2': { board: lazy(() => import('./OrderLineBoard')), icap: 'active', chunkBudgetKb: 24 },
+  'math.ruler.measure.v2': { board: lazy(() => import('./RulerMeasureBoard')), icap: 'active', chunkBudgetKb: 24 },
 };

@@ -5,7 +5,7 @@ import { isAreaSquaresPayload, AREA_MAX_CELLS, AREA_MAX_SIDE, AREA_MIN_SIDE } fr
 import { GEOBOARD_MAX_SIZE, GEOBOARD_MIN_SIZE, maxArea2 } from './geoboardModel.js';
 import { FIGURE_SHAPES, GEOM2_COORDINATE_LIMIT } from './geometry.js';
 import { isMirrorSetup, isTransformPayload, MIRROR_LINES, TRANSFORM_MAX_EXTENT, TRANSFORM_MAX_VERTICES, TRANSFORM_MIN_EXTENT } from './transformModel.js';
-import { isTessellationPayload, TESSELLATION_MAX_COPIES, TESSELLATION_MAX_TILE, TESSELLATION_MIN_TILE } from './tessellationModel.js';
+import { isTessellationPayload, TESSELLATION_MAX_COPIES, TESSELLATION_MAX_TILE, TESSELLATION_MIN_TILE, TILE_MOTIONS } from './tessellationModel.js';
 
 const lattice = z.object({ x: z.number().int().min(-GEOM2_COORDINATE_LIMIT).max(GEOM2_COORDINATE_LIMIT), y: z.number().int().min(-GEOM2_COORDINATE_LIMIT).max(GEOM2_COORDINATE_LIMIT) }).strict();
 const latticeList = (minimum: number, maximum: number) => z.array(lattice).min(minimum).max(maximum);
@@ -32,11 +32,12 @@ export const transformPayload = z.object({
   extent: z.number().int().min(TRANSFORM_MIN_EXTENT).max(TRANSFORM_MAX_EXTENT), figure: latticeList(3, TRANSFORM_MAX_VERTICES), move,
 }).strict();
 
-/** F2.8: a floor of cells and one tile that is only slid; the learner places copies until the floor is covered. */
+/** F2.8: a floor of cells and one tile that is slid, and when `moves` says so also turned half a turn or flipped over; the learner places copies until the floor is covered. */
 export const tessellationPayload = z.object({
   floor: latticeList(TESSELLATION_MIN_TILE, TESSELLATION_MAX_TILE * TESSELLATION_MAX_COPIES), tile: latticeList(TESSELLATION_MIN_TILE, TESSELLATION_MAX_TILE),
+  moves: z.array(z.enum(TILE_MOTIONS)).min(2).max(TILE_MOTIONS.length).optional(),
 }).strict().superRefine((value, ctx) => {
-  if (!isTessellationPayload(value)) ctx.addIssue({ code: 'custom', message: 'The tile is a connected set of 2 to 6 cells starting at the origin, and the floor is whole copies of it, at most 24, within a 12 by 12 grid' });
+  if (!isTessellationPayload(value)) ctx.addIssue({ code: 'custom', message: 'The tile is a connected set of 2 to 6 cells starting at the origin, the floor is whole copies of it, at most 24, within a 12 by 12 grid, and moves, when given, is slide first and then turn, flip or both' });
 });
 
 export const GEOM2_SEGMENTS = [

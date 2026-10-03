@@ -8,6 +8,7 @@ import { TableToggle, pressable } from './boardKit';
 import { REKENREK_BEADS, REKENREK_BLOCK, beadTotal, blocksOf, sameBeads, tapBead } from './beads-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './Rekenrek.css';
 
 type RekenrekSegment = Extract<HorizonteSegment, { type: 'math.rekenrek.v2' }>;

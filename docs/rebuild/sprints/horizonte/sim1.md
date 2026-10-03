@@ -183,3 +183,23 @@ Not verified: no real browser, no screenshot, no layout measurement. Nothing bel
 - Review the es-MX and pt-BR strings with a native speaker (they are native-written, not machine copies, but not reviewed).
 - Decide whether the staff preview should grade seeded segments (it needs a preview seed) and whether `checkV2Behaviour` should learn the
   Horizonte kinds.
+
+## Fix round
+
+Dark-mode contrast fix for the F3.1 and F3.2 boards (chance, Galton board and walk, coverage, bootstrap). The seeded protocol, the model, the scorer
+and the copy are unchanged.
+
+- **Defect.** `sim1.css` painted the chart text, the markers, the pegs, the floor and the ghost line with `var(--ink)`. `--ink` is a constant (`#11132a`) and
+  does not flip under `.lf-rebuild[data-theme="dark"]`, so the axis labels and place names sat on the dark `--sunken` ground at about 1.1:1 (the Atlas audit
+  at 1280 px: 8 to 27 low-contrast elements per fixture in dark against 2 in light).
+- **Fix.** Every `var(--ink)` in the board (the chart `color`, which `currentColor` text inherits, and eight stroke and fill rules) is now `var(--content)`,
+  the same theme-flipping foreground that `charts/TeachingChart` uses. The chart ground stays `--sunken`, which also flips, so both sides now flip together.
+- **Faint non-text marks.** The non-target bars, the axis and the tick marks used `--outline` (1.2:1 on `--sunken` in light, 1.5:1 in dark, under the 3:1 that
+  graphical marks need). They now use `--edge` (3.05:1 light, 3.38:1 dark). The grid stays on `--outline` because it is a faint guide, not information.
+- **Re-read.** No other hex, `rgb()`, `hsl()`, `white`, `black` or inline style exists in the pack's CSS or TSX. Every board keeps its show-as-table
+  (`data-hz-table`) and its `role="status"` text equivalent. Motion is a CSS-only transition behind `prefers-reduced-motion: no-preference`; no timer or
+  animation frame drives the board.
+- **Guard.** `sim1Boards.test.tsx` now fails if `sim1.css` contains `var(--ink)`, a hex colour, `rgb()`, `hsl()`, `white` or `black`.
+
+Still limited: the dark rendering has been checked by contrast arithmetic from `tokens.css`, not yet re-run through the Atlas audit or looked at in a browser.
+The two light-mode low-contrast items the audit lists for every fixture (the Reset and Check buttons at 2.3:1) come from the shared button styles, not from this pack.

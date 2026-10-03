@@ -3,5 +3,6 @@
 .lf-geom-stage { inline-size: 100%; max-inline-size: 30rem; }
 .lf-geom-hint { color: var(--content-muted); }
 .lf-geom-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); align-items: center; }
+.lf-geom-moves { display: flex; flex-wrap: wrap; gap: var(--spacing-2); align-items: center; }
 .lf-geom-status { font-weight: 800; }
 .lf-geom .lf-hz-table { max-inline-size: 36rem; }

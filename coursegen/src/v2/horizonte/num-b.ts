@@ -6,11 +6,13 @@ export const NUM_B_CAPABILITIES = {
   'math.array-area.v2': ['visual.array-area.v1', 'operation.tap-cells.v1', 'operation.drag-chips.v1', 'operation.number-input.v1'],
   'math.ratio-line.v2': ['visual.ratio-line.v1', 'operation.drag-chips.v1', 'operation.number-input.v1'],
   'math.fraction-wall.v2': ['visual.fraction-wall.v1', 'operation.tap-cells.v1', 'operation.drag-chips.v1', 'operation.number-input.v1'],
+  'math.fraction-circles.v2': ['visual.fraction-circles.v1', 'operation.tap-cells.v1', 'operation.number-input.v1'],
 } as const;
 
 const ARRAY_AREA = 'math.array-area.v2';
 const RATIO_LINE = 'math.ratio-line.v2';
 const FRACTION_WALL = 'math.fraction-wall.v2';
+const FRACTION_CIRCLES = 'math.fraction-circles.v2';
 
 const RATIO_UNITS = ['coins', 'pencils', 'tickets', 'cups', 'minutes', 'pages', 'stickers', 'boxes'];
 const WALL_DENOMINATORS = [2, 3, 4, 5, 6, 8, 10, 12];
@@ -39,6 +41,14 @@ const NUM_B_GUIDANCE: readonly ForgeGuidance[] = [
       `${FRACTION_WALL}: one payload per operation, each with its own visual. "equivalent" (visual fraction-wall, ages 8-12): {op, fraction: [n, d], denominator}, a proper fraction over ${WALL_DENOMINATORS.join(', ')} and a larger denominator that is a multiple of d.`,
       `${FRACTION_WALL}: ages 10-12 only for the rest, all with {op, left: [n, d], right: [n, d]} and proper fractions. "add" and "subtract" (fraction-bars) use denominators ${WALL_DENOMINATORS.join(', ')}. "multiply" (fraction-product) uses denominators 2 to 6. "divide" (fraction-measure) uses denominators 2 to 8. For subtract and divide the left fraction is larger than the right.`,
       `${FRACTION_WALL}: the private key is {"n": N, "d": D}, both whole numbers from 1 to 999. For "equivalent" it is the exact form over the asked denominator; for the other operations any form that equals the result works, and lowest terms is the convention. The prompt never states the result.`,
+    ],
+  },
+  {
+    type: FRACTION_CIRCLES,
+    lines: [
+      `${FRACTION_CIRCLES}: circles cut into equal parts, always with visual type fraction-circles. Every fraction is proper and its denominator is one of ${WALL_DENOMINATORS.join(', ')}. "show" (ages 8-12): {op, fraction: [n, d]}, the learner cuts one circle and shades n parts. "compare" (ages 8-12): {op, left: [a, d], right: [c, d]}, one denominator and a different numerator on each side; the learner shades both circles and picks the one with more.`,
+      `${FRACTION_CIRCLES}: "add" and "subtract" (ages 10-12 only): {op, left: [a, d], right: [c, d]}, one denominator. For add, a + c is at most d, so the join never passes one whole. For subtract, a is larger than c. The learner shades a work circle and types the result.`,
+      `${FRACTION_CIRCLES}: the private key is {"n": N, "d": D}, both whole numbers from 1 to 999. For "show" it is the exact form {n, d} of the fraction. For "compare" it is the larger fraction. For "add" and "subtract" it is the result, and any equal form works, with lowest terms the convention. The prompt never states the answer.`,
     ],
   },
 ];
@@ -134,6 +144,33 @@ function fractionAnswer(payload: unknown): { n: number; d: number } | null {
   return { n: n / divisor, d: den / divisor };
 }
 
+const CIRCLE_VISUAL = 'fraction-circles';
+type CircleOp = 'show' | 'compare' | 'add' | 'subtract';
+
+function circleOp(payload: unknown): CircleOp | null {
+  if (!record(payload) || typeof payload.op !== 'string') return null;
+  const circle = (value: unknown): value is Fraction => properFraction(value, (d) => WALL_DENOMINATORS.includes(d));
+  if (payload.op === 'show') return keysAre(payload, 'op', 'fraction') && circle(payload.fraction) ? 'show' : null;
+  if (payload.op !== 'compare' && payload.op !== 'add' && payload.op !== 'subtract') return null;
+  if (!keysAre(payload, 'op', 'left', 'right') || !circle(payload.left) || !circle(payload.right) || payload.left[1] !== payload.right[1]) return null;
+  const [a, d] = payload.left;
+  const c = payload.right[0];
+  if (payload.op === 'compare') return a !== c ? 'compare' : null;
+  return (payload.op === 'add' ? a + c <= d : a > c) ? payload.op : null;
+}
+
+function circleAnswer(payload: unknown): { n: number; d: number } | null {
+  const op = circleOp(payload);
+  if (op === null) return null;
+  const value = payload as { fraction: Fraction; left: Fraction; right: Fraction };
+  if (op === 'show') return { n: value.fraction[0], d: value.fraction[1] };
+  const [a, d] = value.left;
+  const c = value.right[0];
+  const n = op === 'compare' ? Math.max(a, c) : op === 'add' ? a + c : a - c;
+  const divisor = gcd(n, d);
+  return { n: n / divisor, d: d / divisor };
+}
+
 const NARROW = ['10-12'];
 const WIDE = ['6-9', '10-12'];
 
@@ -144,7 +181,7 @@ function numBGates(document: V2DocumentLike, answerKeys?: Record<string, unknown
   const band = typeof document.age_band === 'string' ? document.age_band : null;
   for (const segment of segments) {
     const type = segment.type;
-    if (type !== ARRAY_AREA && type !== RATIO_LINE && type !== FRACTION_WALL) continue;
+    if (type !== ARRAY_AREA && type !== RATIO_LINE && type !== FRACTION_WALL && type !== FRACTION_CIRCLES) continue;
     const segmentId = typeof segment.id === 'string' ? segment.id : '(segment)';
     const problem = (message: string) => problems.push({ gate: 4, segmentId, message });
     const visual = (segment.visual as { type?: unknown } | undefined)?.type;
@@ -160,6 +197,11 @@ function numBGates(document: V2DocumentLike, answerKeys?: Record<string, unknown
       kind = ratioKind(payload);
       if (kind === null) { problem('The ratio payload is not a solvable double number line or ratio tape'); continue; }
       allowed = NARROW;
+    } else if (type === FRACTION_CIRCLES) {
+      const op = circleOp(payload);
+      if (op === null) { problem('The circles payload is not a solvable circles task (check the operation, one shared denominator, the sum within one whole and the order for subtract)'); continue; }
+      kind = CIRCLE_VISUAL;
+      if (op === 'add' || op === 'subtract') allowed = NARROW;
     } else {
       const op = fractionOp(payload);
       kind = op === null ? null : VISUALS[op];
@@ -169,6 +211,14 @@ function numBGates(document: V2DocumentLike, answerKeys?: Record<string, unknown
     if (visual !== kind) problem(`The visual type must be ${kind} for this payload`);
     if (band !== null && !allowed.includes(band)) problem(`This ${kind} piece is for age band ${allowed.join(' and ')}, not ${band}`);
     if (key === undefined) continue;
+    if (type === FRACTION_CIRCLES) {
+      const expected = circleAnswer(payload)!;
+      const given = key.given;
+      if (!record(given) || !keysAre(given, 'n', 'd') || !between(given.n, 1, FRACTION_PART_MAX) || !between(given.d, 1, FRACTION_PART_MAX)) { problem('The fraction key must be {n, d}, both whole numbers from 1 to 999'); continue; }
+      const same = circleOp(payload) === 'show' ? given.n === expected.n && given.d === expected.d : given.n * expected.d === expected.n * given.d;
+      if (!same) problem('The fraction key is not the result the payload determines');
+      continue;
+    }
     if (type === FRACTION_WALL) {
       const expected = fractionAnswer(payload)!;
       const given = key.given;

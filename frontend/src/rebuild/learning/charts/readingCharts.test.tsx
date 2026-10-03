@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { checkCopy, type Locale } from '../../design/copyBudget';
 import { chartDataSchema, chartProblem, chartReads, READING_CHART_KINDS, type ChartData, type ReadingChartKind } from './chartModel.generated';
 import { readingCopy } from './readingCopy';
-import { chartCopy, TeachingChart } from './TeachingChart';
+import { longestWord } from './readingGeometry';
+import { chartCopy, TeachingChart, W } from './TeachingChart';
 
 /*
  * Horizonte F1.0 (Bible 05 V1, V3, V4, V6): the twelve reading charts draw one
@@ -204,5 +205,193 @@ describe('reading charts: motion', () => {
     expect(outside).not.toMatch(/transition|animation/);
     expect(block![0]).toContain('var(--dur-component)');
     expect(css).not.toMatch(/spring|cubic-bezier|overshoot/);
+  });
+});
+
+/*
+ * Fix round (layout): a plot is as tall as its content, so the legend sits under
+ * the marks. jsdom has no layout, so these tests read the geometry the chart
+ * hands to the browser: the viewBox, the drawn shapes and the label anchors.
+ */
+
+interface Box { x0: number; y0: number; x1: number; y1: number }
+const numbers = (text: string | null) => (text?.match(/-?[0-9]+(?:[.][0-9]+)?/g) ?? []).map(Number);
+
+/** The bounding box of what an SVG draws; `ink` leaves out the invisible tap areas and highlight bands. */
+function extent(svg: Element, ink: boolean): Box {
+  const box: Box = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+  const add = (x: number, y: number) => { box.x0 = Math.min(box.x0, x); box.x1 = Math.max(box.x1, x); box.y0 = Math.min(box.y0, y); box.y1 = Math.max(box.y1, y); };
+  const num = (element: Element, name: string) => Number(element.getAttribute(name));
+  for (const element of svg.querySelectorAll('line, rect, circle, polygon, polyline, path, text')) {
+    if (element.closest('defs')) continue;
+    if (ink && (element.classList.contains('lf-chart-hit') || element.classList.contains('lf-chart-pick'))) continue;
+    switch (element.tagName.toLowerCase()) {
+      case 'line': add(num(element, 'x1'), num(element, 'y1')); add(num(element, 'x2'), num(element, 'y2')); break;
+      case 'rect': add(num(element, 'x'), num(element, 'y')); add(num(element, 'x') + num(element, 'width'), num(element, 'y') + num(element, 'height')); break;
+      case 'circle': add(num(element, 'cx') - num(element, 'r'), num(element, 'cy') - num(element, 'r')); add(num(element, 'cx') + num(element, 'r'), num(element, 'cy') + num(element, 'r')); break;
+      case 'polygon': case 'polyline': { const points = numbers(element.getAttribute('points')); for (let i = 0; i + 1 < points.length; i += 2) add(points[i]!, points[i + 1]!); break; }
+      case 'path': {
+        const d = element.getAttribute('d') ?? ''; const [x, y, r] = numbers(d);
+        if (d.includes('a')) { add(x!, y! - r!); add(x! + 2 * r!, y! + r!); } else { const points = numbers(d); for (let i = 0; i + 1 < points.length; i += 2) add(points[i]!, points[i + 1]!); }
+        break;
+      }
+      default: add(num(element, 'x'), num(element, 'y'));
+    }
+  }
+  return box;
+}
+
+const canvasOf = (container: HTMLElement) => container.querySelector<HTMLElement>('.lf-chart-canvas--fit')!;
+const heightOf = (container: HTMLElement) => numbers(canvasOf(container).querySelector('svg')!.getAttribute('viewBox'))[3]!;
+const tags = (container: HTMLElement) => [...container.querySelectorAll<HTMLElement>('.lf-chart-tag')];
+const roomOf = (tag: HTMLElement) => parseFloat(tag.style.maxInlineSize) * W / 100;
+
+/** Opens a kind with data other than the shared sample (the schema still has the last word). */
+async function openWith(kind: ReadingChartKind, data: Record<string, unknown>, locale: Locale = 'en-US') {
+  const parsed = chartDataSchema.parse({ unit: 'coins', ...data });
+  expect(chartProblem(kind, parsed), kind).toBeNull();
+  const view = render(<TeachingChart kind={kind} data={parsed} title={`Chart ${kind}`} locale={locale} />);
+  await screen.findByRole('img', { name: `Chart ${kind}` });
+  return view;
+}
+
+describe('reading charts: layout', () => {
+  afterEach(() => { vi.restoreAllMocks(); });
+
+  it('sizes every plot from its content: viewBox, aspect ratio, marks inside, no dead band, in every locale', async () => {
+    for (const locale of LOCALES) {
+      for (const kind of READING_CHART_KINDS) {
+        const { container, unmount } = await open(kind, locale);
+        const where = `${locale} ${kind}`;
+        const canvas = canvasOf(container); const svg = canvas.querySelector('svg')!;
+        const height = heightOf(container);
+        expect(svg.getAttribute('viewBox'), where).toBe(`0 0 ${W} ${height}`);
+        expect(height, where).toBeGreaterThanOrEqual(40);
+        expect(height, where).toBeLessThanOrEqual(180);
+        expect(canvas.style.aspectRatio.replace(/\s/g, ''), where).toBe(`${W}/${height}`);
+        expect(parseFloat(canvas.style.maxInlineSize), where).toBeCloseTo(Math.min((W * 16) / 9, (320 * W) / height), 0);
+
+        const all = extent(svg, false); const ink = extent(svg, true);
+        for (const [name, value, low, high] of [['left', all.x0, 0, W], ['right', all.x1, 0, W], ['top', all.y0, 0, height], ['bottom', all.y1, 0, height]] as const) {
+          expect(value, `${where} ${name} edge of the drawing`).toBeGreaterThanOrEqual(low - 0.5);
+          expect(value, `${where} ${name} edge of the drawing`).toBeLessThanOrEqual(high + 0.5);
+        }
+        expect(ink.y0, `${where} blank band above the marks`).toBeLessThanOrEqual(24);
+        expect(height - ink.y1, `${where} blank band under the marks`).toBeLessThanOrEqual(20);
+
+        for (const tag of tags(container)) {
+          expect(parseFloat(tag.style.left), `${where} "${tag.textContent}"`).toBeGreaterThanOrEqual(0);
+          expect(parseFloat(tag.style.left), `${where} "${tag.textContent}"`).toBeLessThanOrEqual(100);
+          expect(parseFloat(tag.style.top), `${where} "${tag.textContent}"`).toBeGreaterThanOrEqual(0);
+          expect(parseFloat(tag.style.top), `${where} "${tag.textContent}"`).toBeLessThanOrEqual(100);
+        }
+        unmount();
+      }
+    }
+  });
+
+  it('keeps the heatmap and the timeline short: the legend sits right under the marks', async () => {
+    for (const [kind, ceiling] of [['xy-heatmap', 100], ['timeline', 120]] as const) {
+      const { container, unmount } = await open(kind);
+      expect(heightOf(container), kind).toBeLessThanOrEqual(ceiling);
+      const [canvas, description, legend] = [...canvasOf(container).parentElement!.children];
+      expect(canvas, kind).toBe(canvasOf(container));
+      expect(description!.className, kind).toContain('lf-visually-hidden');
+      expect(legend!.className, kind).toBe('lf-chart-legend');
+      unmount();
+    }
+    const css = readFileSync(resolve(__dirname, 'charts.css'), 'utf8');
+    expect(css).toMatch(/\.lf-chart-canvas--fit \{\s*margin-block: var\(--lf-chart-over-top, 0px\) calc\(var\(--lf-chart-over-bottom, var\(--spacing-4\)\) \+ var\(--spacing-2\)\);/);
+  });
+
+  it('grows the heatmap with its rows and gives a long row label the room of its longest word', async () => {
+    const rows = ['Allowance', 'Pocket money', 'Chores', 'Gifts'].map((label, i) => ({ id: `row-${i}`, label }));
+    const base = (picked: typeof rows) => ({ categories: cats('Mon', 'Tue', 'Wed'), rows: picked,
+      cells: picked.flatMap((row, r) => ['cat-000', 'cat-100', 'cat-200'].map((col, c) => ({ row: row.id, col, value: r + c + 1 }))) });
+    const two = await openWith('xy-heatmap', base(rows.slice(0, 2)));
+    const short = heightOf(two.container); two.unmount();
+    const four = await openWith('xy-heatmap', base(rows));
+    expect(heightOf(four.container)).toBeGreaterThan(short);
+    for (const tag of tags(four.container).filter((node) => rows.some((row) => row.label === node.textContent))) {
+      expect(roomOf(tag), tag.textContent!).toBeGreaterThanOrEqual(longestWord(tag.textContent!) - 0.1);
+    }
+    four.unmount();
+  });
+
+  it('gives a timeline label the room of its longest word and keeps a crowded timeline inside the box', async () => {
+    const labels = ['Allowance day', 'Birthday money', 'Bike bought', 'Piggy bank full', 'School trip', 'Lemonade stand', 'Garage sale', 'Goal reached'];
+    const events = labels.map((label, i) => ({ id: `ev-${i}00`, label, date: `2026-09-${String(3 + i * 3).padStart(2, '0')}`, ...(i % 3 === 1 ? { end: `2026-09-${String(5 + i * 3).padStart(2, '0')}` } : {}) }));
+    const { container, unmount } = await openWith('timeline', { events });
+    const height = heightOf(container);
+    expect(height).toBeLessThanOrEqual(180);
+    for (const tag of tags(container)) expect(roomOf(tag), tag.textContent!).toBeGreaterThanOrEqual(longestWord(tag.textContent!) - 0.1);
+    const all = extent(canvasOf(container).querySelector('svg')!, false);
+    expect(all.y0).toBeGreaterThanOrEqual(-0.5);
+    expect(all.y1).toBeLessThanOrEqual(height + 0.5);
+    unmount();
+  });
+
+  it('gives each end label of a parallel-coordinates axis the room of its longest word', async () => {
+    const { container, unmount } = await openWith('parallel-coordinates', { categories: cats('Allowance', 'Savings', 'Chores'),
+      records: [{ id: 'rec-100', label: 'Plan A', values: [10, 7, 5] }, { id: 'rec-200', label: 'Plan B', values: [4, 9, 8] }] });
+    const ends = tags(container).filter((tag) => ['Allowance', 'Chores'].includes(tag.textContent!));
+    expect(ends).toHaveLength(2);
+    for (const tag of ends) expect(roomOf(tag), tag.textContent!).toBeGreaterThanOrEqual(longestWord(tag.textContent!) - 0.1);
+    unmount();
+  });
+
+  it('keeps the most rows a row chart takes a label tall apart and inside the box', async () => {
+    const six = Array.from({ length: 6 }, (_, i) => ({ id: `cat-${i}00`, label: `Item ${i + 1}` }));
+    const values = six.map((_, i) => 100 - i * 15);
+    const sets = [['dot-plot', { categories: six, series: [line('Week', values)] }], ['dumbbell', { categories: six, series: [line('Before', values), { ...line('After', values.map((v) => v - 5)), id: 'series-b' }] }],
+      ['funnel', { categories: six, series: [line('People', values)] }]] as const;
+    for (const [kind, data] of sets) {
+      const { container, unmount } = await openWith(kind, data);
+      const height = heightOf(container);
+      const tops = tags(container).filter((tag) => /^Item /.test(tag.textContent!)).map((tag) => parseFloat(tag.style.top) * height / 100);
+      expect(tops, kind).toHaveLength(6);
+      for (let i = 1; i < tops.length; i += 1) expect(tops[i]! - tops[i - 1]!, `${kind} row ${i}`).toBeGreaterThanOrEqual(16);
+      expect(height, kind).toBeLessThanOrEqual(180);
+      expect(extent(canvasOf(container).querySelector('svg')!, false).y1, kind).toBeLessThanOrEqual(height + 0.5);
+      unmount();
+    }
+  });
+
+  it('keeps a wide heatmap and a many-category error-bar chart inside the box', async () => {
+    const columns = Array.from({ length: 10 }, (_, i) => ({ id: `cat-${i}00`, label: `Day ${i + 1}` }));
+    const rows = Array.from({ length: 6 }, (_, i) => ({ id: `row-${i}`, label: `Habit ${i + 1}` }));
+    const heat = await openWith('xy-heatmap', { categories: columns, rows, cells: rows.flatMap((row, r) => columns.map((col, c) => ({ row: row.id, col: col.id, value: r * 3 + c }))) });
+    const wide = heightOf(heat.container);
+    expect(wide).toBeLessThanOrEqual(180);
+    expect(extent(canvasOf(heat.container).querySelector('svg')!, false).y1).toBeLessThanOrEqual(wide + 0.5);
+    heat.unmount();
+    const twelve = Array.from({ length: 12 }, (_, i) => ({ id: `cat-${String(i).padStart(2, '0')}0`, label: `Week ${i + 1}` }));
+    const bars = await openWith('error-bars', { categories: twelve, series: [line('Saved', twelve.map((_, i) => 20 + i * 3), { error: twelve.map(() => 2) })] });
+    const tall = heightOf(bars.container);
+    expect(tall).toBeLessThanOrEqual(180);
+    expect(extent(canvasOf(bars.container).querySelector('svg')!, false).x1).toBeLessThanOrEqual(W + 0.5);
+    bars.unmount();
+  });
+
+  it('measures how far the shown labels hang past the drawing and gives that room to the canvas', async () => {
+    const rect = (left: number, top: number, width: number, height: number) => ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      if (this.classList.contains('lf-chart-canvas')) return rect(0, 0, 320, 100);
+      const host = this.closest('.lf-chart-canvas');
+      const index = host ? [...host.querySelectorAll('.lf-chart-tag')].indexOf(this) : -1;
+      if (index === 0) return rect(10, 95, 30, 16);
+      if (index === 1) return rect(60, -8, 30, 16);
+      return rect(110 + index * 40, 40, 30, 16);
+    });
+    const { container } = await open('dot-plot');
+    const canvas = canvasOf(container);
+    expect(canvas.style.getPropertyValue('--lf-chart-over-bottom')).toBe('11px');
+    expect(canvas.style.getPropertyValue('--lf-chart-over-top')).toBe('8px');
+    expect(canvas.dataset.labelsDropped).toBe('0');
+  });
+
+  it('leaves the margins of a canvas that is not measured yet to the stylesheet fallback', async () => {
+    const { container } = await open('dot-plot');
+    expect(canvasOf(container).style.getPropertyValue('--lf-chart-over-bottom')).toBe('');
   });
 });

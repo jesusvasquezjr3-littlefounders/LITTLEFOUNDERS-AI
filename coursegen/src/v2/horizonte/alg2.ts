@@ -34,7 +34,7 @@ const ALG2_GUIDANCE: readonly ForgeGuidance[] = [
   {
     type: EXPRESSION,
     lines: [
-      `${EXPRESSION}: ages 13-17 and adults. A rewrite task starts from an expression and asks for its expanded or factored form; a solve task starts from an equation and asks for the variable alone (isolated) or a term in the variable against a plain number (separated). One lowercase variable letter, a given of at most 64 characters made of digits, the variable, + - * / ^ and brackets, with whole exponents 0 to 6.`,
+      `${EXPRESSION}: ages 13-17 and adults. A rewrite task starts from an expression and asks for its expanded or factored form; a solve task starts from an equation and asks for the variable alone (isolated) or a term in the variable against a plain number (separated). One lowercase variable letter, a given of at most 64 characters made of digits, the variable, + - * / ^ and brackets, with whole exponents 0 to 6. Write decimals in the given and the reference with a point (0.5); the board also reads a decimal comma (0,5) from the learner, one mark per number.`,
       `${EXPRESSION}: the given must not already have the finished form. The key is {reference}: the finished line written the way a learner would type it, equal in value to the given. The board states the goal from the form, so the prompt sets the scene and never writes the reference.`,
     ],
   },
@@ -66,6 +66,16 @@ function numeralsIn(text: unknown): Set<string> {
 }
 
 const withoutSpaces = (text: string): string => text.split(/\s+/).join('');
+
+/** A comma between two digits is a decimal mark: "x=0,5" is the reference "x=0.5". Any other comma stays. */
+function commaToPoint(text: string): string {
+  let out = '';
+  for (let at = 0; at < text.length; at += 1) {
+    const between = text[at] === ',' && at > 0 && isDigit(text.charCodeAt(at - 1)) && isDigit(text.charCodeAt(at + 1));
+    out += between ? '.' : text[at];
+  }
+  return out;
+}
 
 type Report = (message: string) => void;
 /** `key` is null when the caller holds no key for the segment; otherwise its value, whatever that is. */
@@ -149,7 +159,7 @@ const expressionGate: Check = (segment, payload, key, report) => {
   const reference = expressionReferenceProblem(task, rubric.reference);
   if (reference) return report(reference);
   const written = typeof rubric.reference === 'string' ? withoutSpaces(rubric.reference) : '';
-  if (written.length >= 3 && typeof segment.prompt === 'string' && withoutSpaces(segment.prompt).includes(written)) report('The prompt must not write the reference answer');
+  if (written.length >= 3 && typeof segment.prompt === 'string' && commaToPoint(withoutSpaces(segment.prompt)).includes(commaToPoint(written))) report('The prompt must not write the reference answer');
 };
 
 /** Gate 4 (solvability), over the shared model and engine (copied from Core, pinned by a test): every key is one answer the payload allows. */

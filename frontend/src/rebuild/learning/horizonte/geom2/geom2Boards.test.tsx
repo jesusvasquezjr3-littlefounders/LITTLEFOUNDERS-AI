@@ -14,7 +14,7 @@ vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div da
 
 type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 const CSS = ['geom2/geom2.css'];
-const FIXTURES = ['geoboard-area-six', 'geoboard-right-triangle', 'area-l-shape', 'area-staircase', 'reflect-triangle', 'translate-parallelogram', 'rotate-quarter', 'mirror-half', 'dilate-center', 'tile-domino', 'tile-l', 'tile-bump'];
+const FIXTURES = ['geoboard-area-six', 'geoboard-right-triangle', 'area-l-shape', 'area-staircase', 'reflect-triangle', 'translate-parallelogram', 'rotate-quarter', 'mirror-half', 'dilate-center', 'tile-domino', 'tile-l', 'tile-bump', 'tile-turn', 'tile-flip'];
 
 const show = (fixture: string, locale: Locale = 'en-US') => {
   const grade = vi.fn(() => ({ verdict: 'review' as const }));
@@ -46,11 +46,11 @@ describe('geom2 boards (F2.7 geoboard and area, F2.8 transformations and tessell
   });
 
   it('meets the board contract for one fixture of each board in every locale', async () => {
-    for (const fixtureId of ['geoboard-area-six', 'area-l-shape', 'reflect-triangle', 'tile-domino']) await assertBoardContract({ pack: 'geom2', fixtureId, copy: GEOM2_COPY, css: CSS });
+    for (const fixtureId of ['geoboard-area-six', 'area-l-shape', 'reflect-triangle', 'tile-domino', 'tile-turn']) await assertBoardContract({ pack: 'geom2', fixtureId, copy: GEOM2_COPY, css: CSS });
   }, 120000);
 
   it('meets the board contract for the rest', async () => {
-    for (const fixtureId of ['geoboard-right-triangle', 'area-staircase', 'translate-parallelogram', 'rotate-quarter', 'mirror-half', 'dilate-center', 'tile-l', 'tile-bump']) {
+    for (const fixtureId of ['geoboard-right-triangle', 'area-staircase', 'translate-parallelogram', 'rotate-quarter', 'mirror-half', 'dilate-center', 'tile-l', 'tile-bump', 'tile-turn', 'tile-flip']) {
       await assertBoardContract({ pack: 'geom2', fixtureId, copy: GEOM2_COPY, css: CSS, locales: ['en-US'] });
     }
   }, 120000);
@@ -272,6 +272,99 @@ describe('geom2 boards (F2.7 geoboard and area, F2.8 transformations and tessell
       fireEvent.click(button('Remove last'));
       expect(status()).toHaveTextContent('Tiles placed: 0.');
       expect(button('Remove last')).toBeDisabled();
+    });
+
+    it('offers a move only when the floor offers one, and starts on a slide', async () => {
+      show('tile-domino');
+      await ready('Tile cursor');
+      expect(screen.queryByRole('group', { name: 'Move' })).toBeNull();
+      expect(status()).not.toHaveTextContent('Move:');
+      cleanup();
+      show('tile-turn');
+      await ready('Tile cursor');
+      const group = screen.getByRole('group', { name: 'Move' });
+      expect(within(group).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Slide', 'Half turn']);
+      expect(within(group).getByRole('button', { name: 'Slide' })).toHaveAttribute('aria-pressed', 'true');
+      expect(status()).toHaveTextContent('Move: Slide.');
+      cleanup();
+      show('tile-flip');
+      await ready('Tile cursor');
+      expect(within(screen.getByRole('group', { name: 'Move' })).getAllByRole('button').map((chip) => chip.textContent)).toEqual(['Slide', 'Flip']);
+    });
+
+    it('turns the tile half a turn, lets a tap name the square its first square lands on and submits each move', async () => {
+      const grade = show('tile-turn');
+      await ready('Tile cursor');
+      const at = square(4, 3);
+      for (const [move, x, y] of [['Slide', 0, 0], ['Half turn', 0, 2], ['Slide', 2, 0], ['Half turn', 2, 2]] as const) {
+        fireEvent.click(button(move));
+        expect(button(move)).toHaveAttribute('aria-pressed', 'true');
+        at(x, y);
+      }
+      expect(status()).toHaveTextContent('Tiles placed: 4. Squares left: 0.');
+      expect(status()).toHaveTextContent('Move: Half turn.');
+      check();
+      await waitFor(() => expect(grade).toHaveBeenCalledWith(
+        { points: pts([0, 0], [0, 1], [2, 0], [2, 1]), motions: ['slide', 'turn', 'slide', 'turn'] }, 'tile-turn', expect.anything(),
+      ));
+    });
+
+    it('refuses a turned copy that does not fit and clears the refusal when the move changes', async () => {
+      show('tile-turn');
+      await ready('Tile cursor');
+      const at = square(4, 3);
+      at(0, 0);
+      fireEvent.click(button('Half turn'));
+      at(3, 2);
+      expect(status()).toHaveTextContent('The tile does not fit here.');
+      expect(status()).toHaveTextContent('Tiles placed: 1.');
+      fireEvent.click(button('Slide'));
+      expect(status()).not.toHaveTextContent('The tile does not fit here.');
+    });
+
+    it('flips the tile over, places it with the keyboard and lists each move in the table', async () => {
+      const grade = show('tile-flip');
+      await ready('Tile cursor');
+      press('Tile cursor', 'Enter');
+      press('Tile cursor', 'ArrowRight', 2);
+      press('Tile cursor', 'Enter');
+      fireEvent.click(button('Flip'));
+      press('Tile cursor', 'ArrowRight', 3);
+      press('Tile cursor', 'Enter');
+      expect(status()).toHaveTextContent('Tiles placed: 3. Squares left: 0. Cursor: 5, 0. Move: Flip.');
+      fireEvent.click(button('Show as table'));
+      const table = within(screen.getByRole('table', { name: 'Placed tiles' }));
+      expect(table.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['Tile', 'Move', 'x', 'y']);
+      expect(table.getAllByRole('row').slice(1).map((row) => row.textContent)).toEqual(['Tile 1Slide00', 'Tile 2Slide20', 'Tile 3Flip50']);
+      check();
+      await waitFor(() => expect(grade).toHaveBeenCalledWith(
+        { points: pts([0, 0], [2, 0], [5, 0]), motions: ['slide', 'slide', 'flip'] }, 'tile-flip', expect.anything(),
+      ));
+    });
+
+    it('takes a placed copy back on a tap and clears the move on reset', async () => {
+      show('tile-flip');
+      await ready('Tile cursor');
+      const at = square(8, 2);
+      at(0, 1);
+      fireEvent.click(button('Flip'));
+      at(5, 0);
+      expect(status()).toHaveTextContent('Tiles placed: 2.');
+      at(5, 0);
+      expect(status()).toHaveTextContent('Tiles placed: 1.');
+      fireEvent.click(button('Reset'));
+      expect(status()).toHaveTextContent('Tiles placed: 0.');
+      expect(status()).toHaveTextContent('Move: Slide.');
+      expect(button('Slide')).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('keeps a slide-only floor submitting only the anchors', async () => {
+      const grade = show('tile-bump');
+      await ready('Tile cursor');
+      const at = square(9, 3);
+      for (const [x, y] of [[0, 0], [4, 0], [2, 1], [6, 1]] as const) at(x, y);
+      check();
+      await waitFor(() => expect(grade).toHaveBeenCalledWith({ points: pts([0, 0], [4, 0], [2, 1], [6, 1]) }, 'tile-bump', expect.anything()));
     });
 
     it('lists the placed tiles as a table and resets the floor', async () => {

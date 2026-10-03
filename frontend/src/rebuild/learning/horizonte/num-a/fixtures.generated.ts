@@ -146,4 +146,64 @@ export const NUM_A_FIXTURES: readonly HorizonteFixture[] = [
     rubric: { target: 2 },
     ladder: { invalid: { pans: [1, 1] }, valid: { pans: [0, 0, 0] }, met: { pans: [2, 0, 1] } },
   },
+  {
+    id: 'order-tens', title: text('Order on the line', 'Ordena en la recta', 'Ordene na reta'), ...young,
+    segment: (locale) => ({
+      id: 'order-tens', type: 'math.number-line.order.v2', grading: 'server', visual: { type: 'order-number-line' },
+      prompt: text('Put 70, 30, 90 and 50 on the line.', 'Pon 70, 30, 90 y 50 en la recta.', 'Ponha 70, 30, 90 e 50 na reta.')[locale],
+      payload: { scale: 0, low: 0, step: 10, count: 10, values: [70, 30, 90, 50] },
+    }),
+    rubric: { solutions: [{ 'm-3': ['n-30'], 'm-5': ['n-50'], 'm-7': ['n-70'], 'm-9': ['n-90'] }] },
+    ladder: { invalid: { slots: { 'm-99': ['n-30'] } }, valid: { slots: {} }, met: { slots: { 'm-3': ['n-30'], 'm-5': ['n-50'], 'm-7': ['n-70'], 'm-9': ['n-90'] } } },
+  },
+  {
+    id: 'order-teens', title: text('Where do they go?', '¿Dónde van?', 'Onde ficam?'), ...young,
+    segment: (locale) => ({
+      id: 'order-teens', type: 'math.number-line.order.v2', grading: 'server', visual: { type: 'order-number-line' },
+      prompt: text('Put 14, 7 and 19 on the line from 0 to 20.', 'Pon 14, 7 y 19 en la recta del 0 al 20.', 'Ponha 14, 7 e 19 na reta de 0 a 20.')[locale],
+      payload: { scale: 0, low: 0, step: 1, count: 20, values: [14, 7, 19] },
+    }),
+    rubric: { solutions: [{ 'm-7': ['n-7'], 'm-14': ['n-14'], 'm-19': ['n-19'] }] },
+    ladder: { invalid: { slots: { 'm-7': ['n-8'] } }, valid: { slots: {} }, met: { slots: { 'm-7': ['n-7'], 'm-14': ['n-14'], 'm-19': ['n-19'] } } },
+  },
+  {
+    id: 'order-tenths', title: text('Tenths on the line', 'Décimas en la recta', 'Décimos na reta'), ...older,
+    segment: (locale) => ({
+      id: 'order-tenths', type: 'math.number-line.order.v2', grading: 'server', visual: { type: 'order-number-line' },
+      prompt: text('Put 0.7, 0.2 and 0.5 on the line from 0 to 1.', 'Pon 0.7, 0.2 y 0.5 en la recta del 0 al 1.', 'Ponha 0,7, 0,2 e 0,5 na reta de 0 a 1.')[locale],
+      payload: { scale: 1, low: 0, step: 1, count: 10, values: [7, 2, 5] },
+    }),
+    rubric: { solutions: [{ 'm-2': ['n-2'], 'm-5': ['n-5'], 'm-7': ['n-7'] }] },
+    ladder: { invalid: { slots: { 'm-11': ['n-7'] } }, valid: { slots: {} }, met: { slots: { 'm-2': ['n-2'], 'm-5': ['n-5'], 'm-7': ['n-7'] } } },
+  },
+  {
+    id: 'order-hundredths', title: text('Close decimals', 'Decimales cercanos', 'Decimais próximos'), ...older,
+    segment: (locale) => ({
+      id: 'order-hundredths', type: 'math.number-line.order.v2', grading: 'server', visual: { type: 'order-number-line' },
+      prompt: text('Put 0.45, 0.32, 0.4 and 0.37 on the line from 0.3 to 0.5.', 'Pon 0.45, 0.32, 0.4 y 0.37 en la recta del 0.3 al 0.5.', 'Ponha 0,45, 0,32, 0,4 e 0,37 na reta de 0,3 a 0,5.')[locale],
+      payload: { scale: 2, low: 30, step: 1, count: 20, values: [45, 32, 40, 37] },
+    }),
+    rubric: { solutions: [{ 'm-2': ['n-32'], 'm-7': ['n-37'], 'm-10': ['n-40'], 'm-15': ['n-45'] }] },
+    ladder: { invalid: { slots: { 'm-2': ['n-33'] } }, valid: { slots: {} }, met: { slots: { 'm-2': ['n-32'], 'm-7': ['n-37'], 'm-10': ['n-40'], 'm-15': ['n-45'] } } },
+  },
+  {
+    id: 'measure-pencil', title: text('How long is it?', '¿Cuánto mide?', 'Quanto mede?'), ...young,
+    segment: (locale) => ({
+      id: 'measure-pencil', type: 'math.ruler.measure.v2', grading: 'server', visual: { type: 'ruler-measure' },
+      prompt: text('How long is the pencil? Use the ruler.', '¿Cuánto mide el lápiz? Usa la regla.', 'Quanto mede o lápis? Use a régua.')[locale],
+      payload: { unit: 'cm', object: 'pencil', from: 0, to: 7, max: 10 },
+    }),
+    rubric: { target: '7' },
+    ladder: { invalid: { value: '11' }, valid: { value: '0' }, met: { value: '7' } },
+  },
+  {
+    id: 'measure-strip', title: text('Start at a mark', 'Empieza en una marca', 'Comece em uma marca'), ...older,
+    segment: (locale) => ({
+      id: 'measure-strip', type: 'math.ruler.measure.v2', grading: 'server', visual: { type: 'ruler-measure' },
+      prompt: text('How long is the strip? Mind where it starts.', '¿Cuánto mide la tira? Fíjate dónde empieza.', 'Quanto mede a tira? Observe onde ela começa.')[locale],
+      payload: { unit: 'in', object: 'strip', from: 2, to: 8, max: 11 },
+    }),
+    rubric: { target: '6' },
+    ladder: { invalid: { value: '12' }, valid: { value: '0' }, met: { value: '6' } },
+  },
 ];
