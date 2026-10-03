@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { axisShare, bandwidth, densities, densityAt, heatShade, lineEnds, lorenzPoints, markerPath, niceTicks, scaleLinear, timelineLayout } from './readingGeometry';
+import { axisShare, bandwidth, densities, densityAt, estimateLines, GLYPH, HEAT_CEILING, heatShade, lineEnds, longestWord, lorenzPoints, markerPath, niceTicks, scaleLinear, timelineLayout } from './readingGeometry';
 
 /* Horizonte F1.0: the pure geometry of the reading charts. */
 
@@ -61,13 +61,38 @@ describe('reading chart geometry', () => {
     expect(new Set(spread.map((mark) => mark.row)).size).toBe(1);
   });
 
-  it('shades a heat cell from a visible floor to full ink', () => {
+  it('shades a heat cell from a visible floor to a ceiling that keeps the cell text readable', () => {
     expect(heatShade(0, [0, 10])).toBeCloseTo(0.14);
-    expect(heatShade(10, [0, 10])).toBeCloseTo(1);
-    expect(heatShade(5, [0, 10])).toBeCloseTo(0.57);
-    expect(heatShade(99, [0, 10])).toBeCloseTo(1);
+    expect(heatShade(10, [0, 10])).toBeCloseTo(HEAT_CEILING);
+    expect(heatShade(5, [0, 10])).toBeCloseTo((0.14 + HEAT_CEILING) / 2);
+    expect(heatShade(99, [0, 10])).toBeCloseTo(HEAT_CEILING);
     expect(heatShade(-4, [0, 10])).toBeCloseTo(0.14);
-    expect(heatShade(3, [3, 3])).toBeCloseTo(1);
+    expect(heatShade(3, [3, 3])).toBeCloseTo(HEAT_CEILING);
+    expect(HEAT_CEILING).toBeLessThan(1);
+  });
+
+  it('estimates how many lines a label wraps to, and never splits a word', () => {
+    expect(estimateLines('Save', 100)).toBe(1);
+    expect(estimateLines('Pocket money', 80)).toBe(2);
+    expect(estimateLines('Pocket money', 100)).toBe(1);
+    expect(estimateLines('Graduation', 20)).toBe(1);
+    expect(estimateLines('A B C D E F', 30)).toBeGreaterThan(2);
+    expect(estimateLines('', 50)).toBe(1);
+    expect(longestWord('Pocket money')).toBeCloseTo(6 * GLYPH);
+    expect(longestWord('')).toBe(0);
+  });
+
+  it('keeps a timeline stem from crossing a nearer label, and lays out events given in any order', () => {
+    const marks = timelineLayout([{ start: 0 }, { start: 3 }, { start: 6 }, { start: 9 }, { start: 100 }], 10, 300, 60, [0, 320]);
+    const near = marks.filter((mark) => Math.abs(mark.row) === 1);
+    for (const far of marks.filter((mark) => Math.abs(mark.row) === 2)) {
+      for (const label of near.filter((mark) => Math.sign(mark.row) === Math.sign(far.row))) {
+        expect(far.centre < label.labelX - 32 || far.centre > label.labelX + 32, `stem at ${far.centre} crosses a label at ${label.labelX}`).toBe(true);
+      }
+    }
+    const shuffled = timelineLayout([{ start: 100 }, { start: 0 }, { start: 50 }], 10, 300, 40, [0, 320]);
+    expect(shuffled.map((mark) => mark.x0)).toEqual([310, 10, 160]);
+    expect(new Set(shuffled.map((mark) => mark.row)).size).toBe(1);
   });
 
   it('places a value along a parallel axis, a flat axis in the middle', () => {
