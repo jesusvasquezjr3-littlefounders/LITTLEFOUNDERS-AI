@@ -8,6 +8,7 @@ import { GEOM2_BEHAVIOUR } from './geom2.js';
 import { NUMBER_BEHAVIOUR } from './numbers.js';
 import { PLANE_BEHAVIOUR } from './plane.js';
 import { PROB_BEHAVIOUR } from './prob.js';
+import { SOLIDS_BEHAVIOUR } from './solids.js';
 import { SPACE_LIMIT, type HzBuilder, type HzSpace, type Json } from './shared.js';
 import { STATS_BEHAVIOUR } from './stats.js';
 
@@ -24,6 +25,7 @@ const BUILDERS: Readonly<Record<string, HzBuilder>> = {
   ...GEOM2_BEHAVIOUR,
   ...PROB_BEHAVIOUR,
   ...COM_BEHAVIOUR,
+  ...SOLIDS_BEHAVIOUR,
 };
 
 export const horizonteBehaviourKinds = (): string[] => Object.keys(BUILDERS).sort();
