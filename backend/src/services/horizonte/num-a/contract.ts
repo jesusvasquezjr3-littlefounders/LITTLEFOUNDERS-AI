@@ -1,9 +1,11 @@
 import { z } from 'zod';
-import { hzBase, hzServer, hzVisual } from '../shared.js';
+import { hzBase, hzId, hzServer, hzVisual } from '../shared.js';
 import type { HorizonteAgeScope } from '../types.js';
 import { ABACUS_MAX_DIGIT, ABACUS_MAX_RODS, REKENREK_BEADS } from './beads-model.js';
 import { JUMP_SIZES, LINE_MAX, MAX_JUMPS, MAX_SIZES, MIN_SIZES, ZOOM_MAX_DEPTH, ZOOM_MAX_SPAN } from './line-model.js';
 import { BALANCE_MAX_FIXED, BALANCE_MAX_LOOSE, BALANCE_MAX_WEIGHT, CLOCK_MINUTES, CLOCK_STEPS, RULER_MAX, RULER_UNITS } from './measure-model.js';
+import { ORDER_MAX_COUNT, ORDER_MAX_UNITS, ORDER_MAX_VALUES, ORDER_MIN_COUNT, ORDER_MIN_VALUES, ORDER_SCALES, orderSetup } from './order-model.js';
+import { READ_OBJECTS, readSetup } from './read-model.js';
 
 const beadCount = z.number().int().min(0).max(REKENREK_BEADS);
 const rekenrekCounts = z.tuple([beadCount, beadCount]);
@@ -40,6 +42,19 @@ export const rulerPayload = z.object({ unit: rulerUnit, from: z.number().int().m
 export const panBalancePayload = z.object({
   left: z.array(weight).max(BALANCE_MAX_FIXED), right: z.array(weight).max(BALANCE_MAX_FIXED), weights: z.array(weight).min(1).max(BALANCE_MAX_LOOSE),
 }).strict();
+/** F1.3: a line of equal gaps and the given numbers to place on its marks; the payload never carries where each belongs. */
+export const orderLinePayload = z.object({
+  scale: z.number().int().refine((scale) => ORDER_SCALES.includes(scale), 'A whole, tenths or hundredths scale'),
+  low: z.number().int().min(0).max(ORDER_MAX_UNITS),
+  step: z.number().int().min(1).max(ORDER_MAX_UNITS),
+  count: z.number().int().min(ORDER_MIN_COUNT).max(ORDER_MAX_COUNT),
+  values: z.array(z.number().int().min(0).max(ORDER_MAX_UNITS)).min(ORDER_MIN_VALUES).max(ORDER_MAX_VALUES),
+}).strict().refine((value) => orderSetup(value) !== undefined, 'Distinct numbers that each sit on a mark of the line');
+/** F1.7: an object drawn from one mark to another against a ruler, to be read by the learner. */
+export const rulerReadPayload = z.object({
+  unit: rulerUnit, object: z.string().refine((object) => READ_OBJECTS.includes(object), 'An allowed object'),
+  from: z.number().int().min(0).max(RULER_MAX - 1), to: z.number().int().min(1).max(RULER_MAX), max: z.number().int().min(4).max(RULER_MAX),
+}).strict().refine((value) => readSetup(value) !== undefined, 'An object that sits on the ruler');
 
 export const NUM_A_SEGMENTS = [
   z.object({ ...hzBase, type: z.literal('math.rekenrek.v2'), grading: hzServer, visual: hzVisual('rekenrek'), payload: rekenrekPayload }).strict(),
@@ -49,7 +64,11 @@ export const NUM_A_SEGMENTS = [
   z.object({ ...hzBase, type: z.literal('math.clock.v2'), grading: hzServer, visual: hzVisual('analog-clock'), payload: clockPayload }).strict(),
   z.object({ ...hzBase, type: z.literal('math.ruler.v2'), grading: hzServer, visual: hzVisual('ruler'), payload: rulerPayload }).strict(),
   z.object({ ...hzBase, type: z.literal('math.pan-balance.v2'), grading: hzServer, visual: hzVisual('pan-balance'), payload: panBalancePayload }).strict(),
+  z.object({ ...hzBase, type: z.literal('math.number-line.order.v2'), grading: hzServer, visual: hzVisual('order-number-line'), payload: orderLinePayload }).strict(),
+  z.object({ ...hzBase, type: z.literal('math.ruler.measure.v2'), grading: hzServer, visual: hzVisual('ruler-measure'), payload: rulerReadPayload }).strict(),
 ] as const;
+
+const orderSolution = z.record(hzId, z.array(hzId).length(1));
 
 export const NUM_A_RUBRICS = {
   'math.rekenrek.v2': z.object({ target: rekenrekCounts }).strict(),
@@ -59,6 +78,8 @@ export const NUM_A_RUBRICS = {
   'math.clock.v2': z.object({ target: minutes }).strict(),
   'math.ruler.v2': z.object({ target: z.number().int().min(1).max(RULER_MAX) }).strict(),
   'math.pan-balance.v2': z.object({ target: z.number().int().min(-BALANCE_MAX_WEIGHT * 10).max(BALANCE_MAX_WEIGHT * 10) }).strict(),
+  'math.number-line.order.v2': z.object({ solutions: z.array(orderSolution).length(1) }).strict(),
+  'math.ruler.measure.v2': z.object({ target: z.string().regex(/^[1-9][0-9]?$/) }).strict(),
 } as const;
 
 export const NUM_A_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
@@ -69,4 +90,6 @@ export const NUM_A_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
   'math.clock.v2': { ages: [6, 12], adult: false },
   'math.ruler.v2': { ages: [6, 12], adult: false },
   'math.pan-balance.v2': { ages: [6, 12], adult: false },
+  'math.number-line.order.v2': { ages: [6, 12], adult: false },
+  'math.ruler.measure.v2': { ages: [6, 12], adult: false },
 };

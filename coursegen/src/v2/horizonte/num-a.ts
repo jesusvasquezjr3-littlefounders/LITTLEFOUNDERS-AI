@@ -9,6 +9,8 @@ export const NUM_A_CAPABILITIES = {
   'math.clock.v2': ['visual.analog-clock.v1', 'operation.set-hands.v1'],
   'math.ruler.v2': ['visual.ruler.v1', 'operation.stretch-bar.v1'],
   'math.pan-balance.v2': ['visual.pan-balance.v1', 'operation.drag-chips.v1', 'operation.move-menu.v1'],
+  'math.number-line.order.v2': ['visual.order-number-line.v1', 'operation.place-numbers.v1', 'operation.drag-chips.v1', 'operation.move-menu.v1'],
+  'math.ruler.measure.v2': ['visual.ruler-measure.v1', 'operation.read-length.v1'],
 } as const;
 
 const NUM_A_GUIDANCE: readonly ForgeGuidance[] = [
