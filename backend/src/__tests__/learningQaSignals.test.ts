@@ -48,7 +48,7 @@ describe('learning QA signals', () => {
     expect(coverage?.locale_rendering.share).toBe(1);
     expect(coverage?.tap_alternative.missing).toEqual([]);
     expect(coverage?.chart_kinds).toMatchObject({ kinds: 58, reading: 12, reading_missing: [] });
-    expect(coverage?.horizonte).toMatchObject({ packs: 18, segment_types: 68, missing: [] });
+    expect(coverage?.horizonte).toMatchObject({ packs: 18, segment_types: 69, missing: [] });
     expect(loadTeachingVisualCoverage({ generated_at: '2026-09-28' })).toBeNull();
   });
 
