@@ -1,5 +1,4 @@
 import type { KeyboardEvent } from 'react';
-import type { useDragPlace } from '../../segmentKit';
 import { centroidOf, measureMarks, pathOf, viewBoxOf, type Frame } from './netFrame';
 import type { Measure, Pt } from './polynet.generated';
 
@@ -11,8 +10,8 @@ const TEXT_PX = 13;
 
 const round = (value: number): number => Math.round(value * 1000) / 1000;
 
-/** What `useDragPlace(...).target(id)` hands back: the drop-target attributes and, while something is carried, the tap that places it. */
-export type DropProps = ReturnType<ReturnType<typeof useDragPlace<string>>['target']>;
+/** What the drag-place hook's target function hands back: the drop-target attributes and, while something is carried, the tap that places it. */
+export interface DropProps { 'data-drop-target': string; 'data-drop-selected': string; 'data-drop-armed': string; onClick?: () => void }
 
 export interface FigurePanel {
   id: string;

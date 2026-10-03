@@ -60,7 +60,8 @@
 .lf-net-face[data-covered='true'][data-pair='tb'] { fill: color-mix(in srgb, var(--berry) 45%, var(--surface)); }
 
 /* The flat nets of the box, the prism and the pyramid (and the cube net when its area is asked): panels drawn from the model, text in net units. */
-.lf-poly-svg { display: block; max-inline-size: 100%; border-radius: var(--rounded-md); background: var(--sunken); }
+/* letter-spacing is reset: an inherited spacing in px would be read in net units and spread a name across its panel. */
+.lf-poly-svg { display: block; max-inline-size: 100%; border-radius: var(--rounded-md); background: var(--sunken); letter-spacing: 0; }
 .lf-poly-face { fill: var(--surface); stroke: var(--content); stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .lf-poly-face[data-state='named'], .lf-poly-face[data-state='added'], .lf-poly-face[data-state='plain'] { fill: var(--sky-soft); }
 .lf-poly-face[data-state='given'] { fill: var(--mint-soft); }

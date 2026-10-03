@@ -361,12 +361,22 @@ parity (`check-v2-lesson-capability-parity.mjs`). The browser scorer copies were
 
 ### Not verified
 
-- No real browser or screenshot check of the new boards (label, complete, area, fold) or of the dark-mode fix. Tests run in jsdom, so
-  layout, 64 px hit areas, text fit and contrast are unmeasured. A person must look at them at 360 px, 768 px and 1280 px, in light and
-  dark, with reduced motion on and off.
+- Only a spot check in a headless browser (seven captures with `capture-learn-preview.mjs`: `name-the-box` at 375 px in light and dark,
+  `finish-the-box-net` at 375 px light and 1280 px dark, `area-of-the-prism`, `name-the-pyramid` and `area-of-the-cube` at 375 px). It
+  showed the panels, the fold preview, the chips and the buttons flipping with the theme, and it found one defect that is fixed: the
+  page's inherited `letter-spacing` was read in net units and spread a face name across its panel, so it collided with the lengths
+  (`.lf-poly-svg` now resets it). The fix was re-captured for `finish-the-box-net` and `name-the-pyramid` only. Tests run in jsdom, so
+  64 px hit areas, text fit and contrast are unmeasured. The 768 px width, the reduced-motion states, the `finish-the-prism-net`,
+  `finish-the-pyramid-net` and area-of-the-box boards in the browser, and the 3D viewer were not looked at. A person must look at all of
+  them at 360 px, 768 px and 1280 px, in light and dark, with reduced motion on and off.
 - The first-view word budget and the browser text-fit, proportion and Copy Budget audits were not run. Copy parity and the Copy Budget
   of the strings were checked by `check-horizonte-copy.mjs` only.
-- `chunkBudgetKb` is declared, not measured: cube net 26 (was 18), solid net 30, the viewer 16 and the stack 14.
+- Chunk sizes were measured once with `vite build` on the merged tree (own chunk, gzipped, as RECIPE.md defines the budget): solid net
+  board 3.7 KB, cube net board 3.6 KB, viewer board 3.0 KB, stack board 2.6 KB. A net board also pulls the pack's shared chunks (the
+  area and fold code 4.1 KB and the engine chunk 5.9 KB gzipped), about 13.7 KB for the solid net in all. `chunkBudgetKb` for the two net
+  boards was lowered from the declared 26 and 30 to 12 (the recipe default); the viewer and the stack keep their first-round
+  declarations. The three.js chunk (734 KB, 190 KB gzipped) loads only from the viewer board. Nothing enforces these budgets
+  automatically; they were read from the build output by hand.
 - Native-speaker review of the new es-MX and pt-BR strings (net, panel, hinge, fold, area) is pending.
 - Nothing here is accepted against the SPEC or released. `COVERAGE.md`, the requirement rows and `SPRINTS.md` are not edited by this
   unit; the coverage snapshot was regenerated and its segment-type pin moved by one.
