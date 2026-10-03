@@ -492,7 +492,7 @@ const arEnv = (over: Partial<ArPilotEnvironment> = {}, supported = true) => {
   const ends: Array<() => void> = [];
   const end = vi.fn();
   const start = vi.fn(async ({ onEnd }: ArStartInput) => { ends.push(onEnd); return { end }; });
-  const env: ArPilotEnvironment = { flag: true, consent: { learner: true, guardian: true }, xr: () => xr, start, ...over };
+  const env: ArPilotEnvironment = { flag: true, consent: { learner: true, guardian: true }, age: 15, xr: () => xr, start, ...over };
   return { env, requestSession, isSessionSupported, start, ends, end };
 };
 const seeOnTable = () => screen.queryByRole('button', { name: 'See on table' });
@@ -530,7 +530,7 @@ describe('F4.9 AR table pilot gate', () => {
 
   it('keeps every AR module free of anything that could read, keep or send a frame', () => {
     const forbidden = ['getUserMedia', 'fetch(', 'sendBeacon', 'toDataURL', 'toBlob', 'localStorage', 'sessionStorage', 'indexedDB', 'MediaRecorder', 'XMLHttpRequest', 'WebSocket', 'captureStream', 'readPixels', 'camera-access', 'getImageData', 'ImageCapture'];
-    for (const file of ['./ArTableBoard.tsx', './ar/arPilot.ts', './ar/arSession.ts', './ar.generated.ts']) {
+    for (const file of ['./ArTableBoard.tsx', './ar/arPilot.ts', './ar/arSession.ts', './ar/arAge.ts', './ar/ArLearnerAge.tsx', './ar.generated.ts']) {
       const source = here(file);
       for (const word of forbidden) expect(source, `${file} must not use ${word}`).not.toContain(word);
     }
@@ -538,7 +538,7 @@ describe('F4.9 AR table pilot gate', () => {
   });
 
   it('keeps the 3D renderer import inside the reserved ar folder and nowhere else in the pack', () => {
-    for (const file of ['./ArTableBoard.tsx', './SurfaceBoard.tsx', './FormulaBoard.tsx', './field.generated.ts', './GlobeBoard.tsx', './TurnStage.tsx', './boards.tsx', './ar.generated.ts', './ar/arPilot.ts']) {
+    for (const file of ['./ArTableBoard.tsx', './SurfaceBoard.tsx', './FormulaBoard.tsx', './field.generated.ts', './GlobeBoard.tsx', './TurnStage.tsx', './boards.tsx', './ar.generated.ts', './ar/arPilot.ts', './ar/arAge.ts', './ar/ArLearnerAge.tsx']) {
       expect(here(file), `${file} must not import three`).not.toMatch(/from 'three'|import\('three'\)/);
     }
     expect(here('./ar/arSession.ts')).toMatch(/from 'three'/);
@@ -588,7 +588,7 @@ describe('F4.9 AR table pilot board', () => {
     expect(isSessionSupported).not.toHaveBeenCalled();
   });
 
-  it('uses the learner age the app supplies, and the lesson age floor when it supplies none', async () => {
+  it('uses the real learner age the app supplies, and never falls back to the lesson age when there is none', async () => {
     const adultOnly = { learner: true, guardian: false };
     const young = arEnv({ age: 12 });
     show('object-on-the-table', undefined, 'en-US', young.env);
@@ -597,11 +597,18 @@ describe('F4.9 AR table pilot board', () => {
     expect(young.isSessionSupported).not.toHaveBeenCalled();
     cleanup();
 
-    const floor = arEnv({ consent: adultOnly });
-    show('object-on-the-table', undefined, 'en-US', floor.env);
+    const unknown = arEnv({ age: null });
+    show('object-on-the-table', undefined, 'en-US', unknown.env);
     await screen.findByRole('group', { name: 'One litre box' });
     expect(seeOnTable()).toBeNull();
-    expect(floor.isSessionSupported).not.toHaveBeenCalled();
+    expect(unknown.isSessionSupported).not.toHaveBeenCalled();
+    cleanup();
+
+    const minor = arEnv({ consent: adultOnly, age: 15 });
+    show('object-on-the-table', undefined, 'en-US', minor.env);
+    await screen.findByRole('group', { name: 'One litre box' });
+    expect(seeOnTable()).toBeNull();
+    expect(minor.isSessionSupported).not.toHaveBeenCalled();
     cleanup();
 
     const adult = arEnv({ consent: adultOnly, age: 30 });
