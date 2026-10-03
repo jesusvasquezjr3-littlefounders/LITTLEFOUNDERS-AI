@@ -265,3 +265,5 @@ dark mode. No segment type was added; the new behaviour is new modes and enum me
 - Run the audit lane over `space1/audit.json` (23 fixtures) at 375 px, in light and dark, at 6-9, 10-12 and 13-17.
 - Read the section board's chunk from the first Vite build against the 24 KB budget (esbuild approximation: 16.7 KB). Lower the ceiling to 20 if it agrees.
 - Have a native reader review the new es-MX and pt-BR strings.
+
+Retry check (merge of feat/horizonte-visual at 0d5acad7): the merge was clean, the capability parity gate and the Horizonte pack sync check pass, the 57 space1 frontend tests pass and the frontend type-check passes. The 375 px fit of the three market-stall boards, the slide-plane pointer drag and the dark-mode contrast are still not seen in a browser.
