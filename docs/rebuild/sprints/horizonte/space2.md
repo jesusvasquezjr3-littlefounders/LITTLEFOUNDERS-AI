@@ -41,11 +41,10 @@ Safeguards built into the board (`ArTableBoard.tsx`, `ar/arPilot.ts`, `ar/arSess
 only ones in the pack allowed to import the 3D renderer (OD-32 names `horizonte/space2/ar/` in `SOLIDS_BRIDGE_PREFIXES`), and a test pins
 that no other file in the pack imports `three`:
 
-- Default environment: flag from the build variable, consent `null`, age `null`. **Nothing records consent yet**, so a production build
-  cannot open the gate even with the flag on. Consent and the learner's age are injected through `ArPilotContext`
-  (`ArPilotEnvironment.consent` and `.age`). When no age is supplied the board gates on the lesson's age floor
-  (`eligibility.minimum_age`, 13 or more for this step), which is never above the learner's real age: that can only keep the gate closed
-  (a minor needs guardian consent, so an adult with only their own consent stays closed until the app supplies the age).
+- Default environment: flag from the build variable, consent `null`. **Nothing records consent yet**, so a production build cannot open
+  the gate even with the flag on. Consent and the learner's age come through `ArPilotContext` (`ArPilotEnvironment.consent` and `.age`).
+  The age is real since the fix round (see "Fix round" below): the lesson-age fallback this paragraph used to describe is gone, and an
+  unknown age keeps the gate closed.
 - The browser's camera permission is asked only after an explicit in-app consent panel ("See on table", then a panel with "Allow camera"
   and a decline). Before that no `navigator.xr.requestSession` call is made; a test fails the board if `start` or `requestSession` runs
   before the learner allows it.
@@ -217,7 +216,8 @@ NOT verified, NOT accepted, NOT released:
 ## Known limits
 
 - One gazetteer of 16 places and a catalogue of four objects; no free text place, no custom object, no measured AR size.
-- Surfaces have two inputs and one output on a grid of at most 6 by 7; no free-form function and no third axis control.
+- Surfaces have two inputs and one output on a grid of at most 6 by 7 and no third axis control. A free-form `z = f(x, y)` exists only in
+  the separate formula surface (`math.surface-formula.v2`, see "Fix round"), with the limits listed there.
 - The globe is a fixed 110 m coastline; no borders, no labels for countries, no night side.
 - The AR pilot places one object on one horizontal surface; there is no multi-object scene, no anchors that persist, and no recording of any kind.
 
@@ -237,3 +237,92 @@ NOT verified, NOT accepted, NOT released:
    The space2 pack is registered in `fixtures.ts`, has an `audit.json` in step with its five fixtures, and passes every check the
    harness runs for it. See the solids lane doc, owner follow-up 1.
 7. After acceptance, update the sprint record and the requirement rows (not touched here).
+
+## Fix round (F4.7 completion, F4.9 gate wiring, narrow screens, dark mode)
+
+A completion round on the merged pack. What changed, what is still limited, and what nobody has looked at yet.
+
+### What changed
+
+**F4.7 free-form surface: a new segment type `math.surface-formula.v2`** (ages 15 and up, 13-17 and adult bands, `grading: 'server'`).
+The learner, or the author in Forge, types `z = f(x, y)` as text. Four task kinds, each with its own scorer and rubric:
+
+| Task | The learner does | Private key |
+|---|---|---|
+| `slope` | reads the slope along x or y at a dot | `{ key: ['6'] }` |
+| `gradient` | gives both slopes at a dot, x first | `{ key: ['3', '1'] }` |
+| `walk` | steps downhill (each step moves by a rate times the slope) and counts the steps until the height is at or below a line | `{ key: ['4'] }` |
+| `build` | types a formula whose surface passes through 2 or 3 given dots | `{ reference: '1+2x-y' }` |
+
+- **The parser is safe and pure** (`backend/src/services/horizonte/space2/field.ts`): a hand-written tokenizer and parser, no `eval`, no
+  `Function`, no `innerHTML`, no dependency. Limits: 48 characters, 48 nodes, depth 10, numbers of at most 6 digits, one power per
+  `^` with a whole exponent from 0 to 6 (never chained), 400 evaluations per request (`Meter`). Allowed: `x`, `y`, numbers, `+ - * / ^` and
+  brackets; `2x`, `xy` and `2(x+1)` multiply; a leading `z =` is allowed. Anything else (a name, a call, a symbol, `__proto__`,
+  a NUL, a bidi override) is refused in plain words, and nothing is ever run as code. alg2 has a parser of its own and no shared pure
+  place exists, so this one is a minimal duplicate on purpose.
+- **Exact arithmetic.** Values are exact bigint rationals, and every evaluation is a dual number, so a value and both partial derivatives
+  come out of one pass with no numerical differencing. The gradient at a point and the gradient-descent walk therefore have exact answers,
+  and the scorer compares exact rationals, not floats.
+- **Decimal comma.** `0,5` and `0.5` are the same number in every numeric box and inside a typed formula (a comma between digits is a
+  decimal point). The board shows what it read ("Reads as 0.5", "Lido como 0,5") before the learner checks.
+- **Scorer ladder** (`scorer.ts`): invalid, valid, review (with a diagnostic of partial, structure, miss or value) and met. The browser
+  copy has no rubric and never says met; Core's scorer, with the private key, does.
+- **Board** (`FormulaBoard.tsx`, lazy, 28 KB declared): a turnable mesh with the held line along the asked axis and the dot; a stepped walk
+  by buttons and by the arrow keys and Home; a build board with numbered dots that turn "chosen" live as the typed surface passes
+  through them. 64 px handles, a table for every view (heights only, never the slope; the walk table grows only as the learner steps),
+  reduced motion, tokens only, `data-copy-role` on every string, and copy in en-US, es-MX and pt-BR (about 51 new strings).
+- **Forge** (`coursegen/src/v2/horizonte/space2.ts`, `space2Formula.ts`): guidance for the payload, the four tasks, the grammar and limits
+  and the key shapes; gate 4 reads the payload with the same engine; the solvability checker reports `no-solution` for a walk that never
+  reaches the line, `impossible-state` for a malformed or undefined task, and `rubric-accepts-invalid` when a build reference misses a dot;
+  a prompt-leak gate refuses a prompt that writes the key or the reference. `space2Formula.ts` is a pinned byte copy of the backend
+  `field.ts` (the sync tool only feeds the browser). A fourth fixture plan (`85-v2-hz-space2-13-17-15-17-formula.json`) carries the four tasks.
+- **Fixtures and tests:** four fixtures in `fixtures.ts` (`slope-two-ways`, `gradient-at-a-point`, `downhill-walk`, `build-a-surface`),
+  an engine suite with adversarial expressions (`space2Formula.test.ts`), the scorer and contract suites, the browser suite
+  (15 formula tests) and the Forge suite.
+- **Capability literals** `visual.surface-formula.v1`, `operation.read-partials.v1` and `operation.walk-gradient.v1` are in parity in the
+  backend, frontend and coursegen maps (checked with `check-v2-lesson-capability-parity.mjs`). The browser copies
+  (`field.generated.ts`, `contract.generated.ts`, `scorer.generated.ts`, `fixtures.generated.ts`) come from `sync-v2-horizonte.mjs`.
+
+**F4.9 AR pilot: the gate now reads real inputs, and it is still off everywhere.**
+
+- `ArPilotEnvironment.age` is real. With the flag on and no age supplied by the app, `ArTableBoard` mounts `ar/ArLearnerAge.tsx`, which
+  reads the signed-in learner's band from Core's existing `GET /auth/age-screen` and gives the gate the **lowest age the band allows**
+  (`ar/arAge.ts`: `adult` is 18, `13_to_17` is 13). A 13-17 learner is therefore a minor and needs a guardian's consent too. Under 13, not
+  screened, a failed call, no token and no signed-in learner all read as no age, and no age keeps the gate closed while it loads.
+- The lesson-age fallback is removed: an unknown age used to read as the lesson's age floor (13), now it reads as no age.
+- With the flag off (the default, and the only value any deployed build has) the age is never requested, and neither is anything else.
+- `ArPilotEnvironment.consent` still comes only from the environment (`ArPilotContext`). **No consent record exists in Core**, so it
+  is `null` and the gate cannot open in any build. A guardian's consent for a minor has nowhere to be recorded yet (owner follow-up 2).
+- The camera is never touched for a minor by default: the flag, the age, the consent and the in-app "Allow camera" panel all come before
+  the browser's own prompt, and `isSessionSupported` (no prompt) runs only when the gate is open. Tests cover each closed reason through the
+  board with a mocked Core (`ar/arAge.test.tsx`), and the source scan now covers the two new files.
+- The flag was not enabled anywhere, and no environment file, workflow or deploy setting was touched.
+
+**Narrow screens (a 375 px phone gives a 311 px slot).** The four boards `time-beats-rate`, `price-and-units`, `nearest-route` and
+`cheapest-corridor` could force the slot wider than its column. The board and strip grids now use `minmax(0, 1fr)` tracks, children may
+shrink (`min-inline-size: 0`), and every table sits in a keyboard-focusable scroll region (`ScrollRegion.tsx`, a labelled region with a
+visible focus ring), so a wide table scrolls inside the slot and never widens the page. The formula board uses the same pieces.
+
+**Dark mode.** The strokes and fills in `space2.css` that used the constant `var(--ink)` now use the theme-flipping `--content`
+(`--ink` stays dark on a dark surface). `tokens.css` and the shared design files were not touched.
+
+### Still limited
+
+- The formula surface has one variable pair, whole-number windows from -9 to 9 and answers a learner can type exactly (at most 3 decimals,
+  never above 100000). There is no implicit differentiation, no second derivative and no third axis. A walk never takes more than 12 steps.
+- The parser is deliberately small: no functions (no `sin`, no `sqrt`), no chained powers, no negative or fractional exponent, no names.
+- The gate reads a band, so it can never tell 13 from 17 or an exact adult age. That is on purpose (it can only keep the gate closed).
+- Forge's `forge-v2:check` in the backend reports "no behaviour space defined" for every Horizonte kind, the new one included. This is how
+  the base branch already behaves; it was not changed here.
+
+### Not verified
+
+- **None of the visual work was looked at in a browser** (no Playwright, no dev server, by the lane rules): not the new formula board, not
+  the 311 px fix, not the dark-mode token change. jsdom proves the structure, the roles, the text and the keys; it proves nothing about
+  overflow, contrast or layout. A person must look at all five boards at 311 px, 360 px, 768 px and 1280 px, in light and dark, with
+  reduced motion on and off.
+- The chunk budget of the formula board (28 KB) is a declaration; no production build measured it.
+- The es-MX and pt-BR strings of the formula board have not been read by a native speaker.
+- The age read in `ArLearnerAge` was tested against a mocked Core only; it has not run against a real session.
+- Still not run, by the rules of this round: the full test suites, the audits and the verification tools. Only focused tests, the
+  capability parity check, the sync check and one type-check per touched service were run.
