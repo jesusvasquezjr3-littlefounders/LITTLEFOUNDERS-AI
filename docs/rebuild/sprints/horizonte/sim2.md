@@ -160,3 +160,19 @@ Dark-mode contrast fix for the F3.3 life-simulation board. The seeded protocol, 
 
 Still limited: checked by contrast arithmetic from `tokens.css`, not yet re-run through the Atlas audit or looked at in a browser. The Reset and Check
 buttons at 2.3:1 in the light audit come from the shared button styles, not from this pack.
+
+## Solvability round
+
+Forge now registers a real F0.4 checker for `money.life-sim.v2` (`coursegen/src/v2/horizonte/solvability-sims.ts`, imported by `solvabilityPacks.ts`; tests in
+`coursegen/src/__tests__/horizonte/solvability-sims.test.ts`). It reuses the pack's pure functions: `sim2.ts` only gained `export` keywords, and `analyse` was split
+into an exported `analyseChoices` plus the same `analyse` (same behaviour, same problem order), so the gate, the seed protocol and the scorer are untouched. The
+public payload alone fixes everything but the key, which is compared only when `answerKey` is present. Core grades against a seeded run the gate never has, so the
+checker proves what the payload and the exact model determine, never the learner's run. Findings ride gate 1 as `solvability/<code>:`.
+
+| Type | Solvable | Unique | Not already solved | No dead end | Budget | Stays unproven |
+| --- | --- | --- | --- | --- | --- | --- |
+| `money.life-sim.v2` | Every history of every choice is enumerated (8 outcomes per chapter, 8^chapters histories) and the 100 futures are summed exactly; at least one choice must reach the goal with probability of at least 1 - 1e-5 under the scenario rule (highest, lowest or all), else `no-solution`. | A choice that reaches the goal with probability between 1e-4 and 1 - 1e-5 is neither an answer nor a clear miss, `ambiguous-solution`. The key must be exactly the answer list in the order of the choices: a wrong set is `rubric-gap` and `rubric-accepts-invalid`, a wrong order or shape `impossible-state`. | The start choice must not be an answer, else `impossible-state`. | The slider is reversible and every chapter is replayed from the same start, so there is no state to get stuck in. | One unit per chapter state expanded into its 8 outcomes: per choice the sum of 8^k for k below the chapters, so the largest board (8 choices, 5 chapters) costs 37,448 units; a smaller `nodeBudget` is `budget-exceeded`. | The learner's seeded 100 futures (the replay decides `met` or `review`), whether the money model is realistic, the prompt writing the goal in digits (pack gate), and the spacing of the choices. |
+
+Decisions: an unreadable payload is reported as `impossible-state` with the pack's own sentence, and the key is skipped whenever the payload already has a blocking
+problem. The tests compare the checker with the pack gate over a grid of 64 boards and assert it agrees exactly, and the four authored boards plus the three emitted
+life segments pass with and without their keys.
