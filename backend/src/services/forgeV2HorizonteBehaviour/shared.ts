@@ -1,3 +1,5 @@
+import type { HorizonteAttempt } from '../horizonte/seed/protocol.js';
+
 export type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Same shape as the Space of forgeV2Behaviour.ts: the states a learner can reach, the ones Core must refuse, and the rubric's own verdict. */
@@ -7,10 +9,14 @@ export interface HzSpace {
   initial?: unknown;
   expectMet?: (response: Json) => boolean;
   expectDiagnostic?: (response: Json) => string | null;
+  /** Set only by a seeded kind: the gate grades every state of this space under this attempt. */
+  attempt?: HorizonteAttempt;
+  /** Malformed or hostile responses: each must grade invalid or review, never met, and never throw. */
+  hostile?: unknown[];
 }
 
 /** One builder per Horizonte kind: the payload and the private rubric in, the space out; null when the payload is not a mode the model covers. */
-export type HzBuilder = (payload: Json, rubric: Json, segment: Json) => HzSpace | null;
+export type HzBuilder = (payload: Json, rubric: Json, segment: Json, attempt?: HorizonteAttempt) => HzSpace | null;
 
 export const SPACE_LIMIT = 3_000;
 

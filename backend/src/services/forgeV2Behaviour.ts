@@ -16,22 +16,42 @@
 //   - off-grid, out-of-range and conservation-breaking states are refused;
 //   - the board's initial state (where the payload declares one) is not met;
 //   - where the rubric names a closed diagnostic for a wrong state (L1 card
-//     roles, GAP-FIX-R3), every such state stores exactly that code.
+//     roles, GAP-FIX-R3), every such state stores exactly that code;
+//   - a hostile response is never met and never throws; a seeded simulation
+//     graded without an attempt is refused (it fails closed).
 // A document that fails blocks review; the report carries the pass rate.
 
 import { gradeV2Visual, type V2PublicLesson } from './v2LessonDocument.js';
 import { selectionDiagnostic } from './v2VisualScorer.js';
 import { amortizationSchedule } from './v2ConceptBoards.js';
 import { horizonteBehaviourSpace } from './forgeV2HorizonteBehaviour/index.js';
+import type { HorizonteAttempt } from './horizonte/seed/protocol.js';
 import { longArithmeticSteps, placeValueScorerPayload, SCHEMA_KINDS, SCHEMA_SLOTS, type PlaceValuePayload } from './v2SegmentFamilies.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const MAX_STATES = 20_000;
 
+/**
+ * The attempt this gate grades the five seeded simulations under. It is fixed and synthetic, never derived from
+ * LESSON_ATTEMPT_SECRET, and it is used only in this module's own grading calls: no response, token or stored value carries it.
+ */
+const GATE_ATTEMPT: HorizonteAttempt = Object.freeze({ seed: '3d5b9e5ed9bd4fd6653f82409e7386dca415b98406b795e53461c6ab6fb4f07f' });
+
 interface Space {
   inRange: unknown[]; invalid: unknown[]; initial?: unknown; expectMet?: (response: Json) => boolean;
   /** The diagnostic a wrong state must store (null: not checked for this state). */
   expectDiagnostic?: (response: Json) => string | null;
+  /** Seeded simulations only: every state of the space is graded under this attempt. */
+  attempt?: HorizonteAttempt;
+  /** Malformed or hostile responses: invalid or review is fine, met or a throw is a gate failure. */
+  hostile?: unknown[];
+}
+
+/** A response for a problem message: the gate's seed is abbreviated so the informative part of the 120 characters survives. */
+function shown(response: unknown, attempt?: HorizonteAttempt): string {
+  let text: string;
+  try { text = JSON.stringify(response) ?? String(response); } catch { text = '[unprintable]'; }
+  return (attempt ? text.split(attempt.seed).join('<seed>') : text).slice(0, 120);
 }
 
 const range = (from: number, to: number, step = 1): number[] => {
@@ -551,7 +571,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange: product([range(0, p.max_price_minor, p.price_step_minor), range(0, p.max_cups)]).map(([price, cups]) => ({ price, cups })),
         invalid: [{ price: p.max_price_minor + p.price_step_minor, cups: 0 }, { price: 0, cups: p.max_cups + 1 }], initial: { price: 0, cups: 0 } };
     default:
-      return horizonteBehaviourSpace(segment, rubric);
+      return horizonteBehaviourSpace(segment, rubric, GATE_ATTEMPT);
   }
 }
 
@@ -569,32 +589,43 @@ export function checkV2Behaviour(document: V2PublicLesson, answerKeys: Record<st
     const rubric = answerKeys[segment.id] as Json;
     const space = behaviourSpace(segment as unknown as Json, rubric);
     if (!space) { reports.push({ segmentId: segment.id, type: segment.type, states: 0, ok: false, problems: ['no behaviour space defined for this kind'] }); continue; }
+    const attempt = space.attempt;
     const verdict = (response: unknown): 'met' | 'review' | 'invalid' | 'threw' => {
       try {
-        const graded = gradeV2Visual(document, answerKeys, segment.id, response);
+        const graded = gradeV2Visual(document, answerKeys, segment.id, response, attempt);
         return graded === null ? 'invalid' : graded.correct ? 'met' : 'review';
       } catch { return 'threw'; }
     };
-    let met = 0; let review = 0;
+    let met = 0; let review = 0; let firstMet: unknown;
     for (const response of space.inRange) {
       const result = verdict(response);
-      if (result === 'threw') { problems.push(`a permitted state threw: ${JSON.stringify(response).slice(0, 120)}`); break; }
-      if (result === 'invalid') { problems.push(`a permitted state was refused: ${JSON.stringify(response).slice(0, 120)}`); break; }
-      if (result === 'met') met += 1; else review += 1;
+      if (result === 'threw') { problems.push(`a permitted state threw: ${shown(response, attempt)}`); break; }
+      if (result === 'invalid') { problems.push(`a permitted state was refused: ${shown(response, attempt)}`); break; }
+      if (result === 'met') { met += 1; firstMet ??= response; } else review += 1;
       if (space.expectMet && space.expectMet(response as Json) !== (result === 'met')) {
-        problems.push(`the met set differs from the rubric's accepted answers at ${JSON.stringify(response).slice(0, 120)}`); break;
+        problems.push(`the met set differs from the rubric's accepted answers at ${shown(response, attempt)}`); break;
       }
       const wanted = result === 'review' ? space.expectDiagnostic?.(response as Json) ?? null : null;
       if (wanted !== null) {
-        const stored = gradeV2Visual(document, answerKeys, segment.id, response)?.diagnostic;
-        if (stored !== wanted) { problems.push(`the diagnostic ${String(stored)} differs from the rubric's ${wanted} at ${JSON.stringify(response).slice(0, 120)}`); break; }
+        const stored = gradeV2Visual(document, answerKeys, segment.id, response, attempt)?.diagnostic;
+        if (stored !== wanted) { problems.push(`the diagnostic ${String(stored)} differs from the rubric's ${wanted} at ${shown(response, attempt)}`); break; }
       }
     }
     if (met === 0) problems.push('the target is unreachable: no permitted state is met');
     if (review === 0 && !ALL_MET_ALLOWED.has(segment.type)) problems.push('the rubric is trivially met: every permitted state is met');
     for (const response of space.invalid) {
       const result = verdict(response);
-      if (result !== 'invalid') problems.push(`an off-grid or impossible state was not refused (${result}): ${JSON.stringify(response).slice(0, 120)}`);
+      if (result !== 'invalid') problems.push(`an off-grid or impossible state was not refused (${result}): ${shown(response, attempt)}`);
+    }
+    for (const response of space.hostile ?? []) {
+      const result = verdict(response);
+      if (result === 'met' || result === 'threw') problems.push(`a hostile response was ${result === 'met' ? 'graded met' : 'not contained (it threw)'}: ${shown(response, attempt)}`);
+    }
+    if (attempt && firstMet !== undefined) {
+      // The fail-closed rule: a seeded kind graded without an attempt (the staff preview) is refused, even for a response that is met.
+      let bare: unknown;
+      try { bare = gradeV2Visual(document, answerKeys, segment.id, firstMet); } catch { bare = 'threw'; }
+      if (bare !== null) problems.push('a seeded response was graded without an attempt: the fail-closed rule is broken');
     }
     if (space.initial !== undefined && verdict(space.initial) === 'met') problems.push('the initial board state is already met');
     reports.push({ segmentId: segment.id, type: segment.type, states: space.inRange.length, ok: problems.length === 0, problems });
