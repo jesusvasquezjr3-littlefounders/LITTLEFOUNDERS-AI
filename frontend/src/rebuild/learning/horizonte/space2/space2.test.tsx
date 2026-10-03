@@ -25,6 +25,7 @@ vi.mock('./landLoader', () => ({
 type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 const BANDS: Record<string, '10-12' | '13-17'> = {
   'time-beats-rate': '13-17', 'price-and-units': '13-17', 'nearest-route': '10-12', 'cheapest-corridor': '13-17', 'object-on-the-table': '13-17',
+  'slope-two-ways': '13-17', 'gradient-at-a-point': '13-17', 'downhill-walk': '13-17', 'build-a-surface': '13-17',
 };
 const show = (fixture: string, grade = vi.fn(() => ({ verdict: 'review' as const })), locale: Locale = 'en-US', env?: ArPilotEnvironment) => {
   const view = <LessonDocumentView raw={horizonteFixtureDocument('space2', fixture, locale)} locale={locale} ageBand={BANDS[fixture]!} onBack={() => {}} onGradeAny={grade} />;
@@ -158,6 +159,219 @@ describe('F4.7 surface', () => {
     expect(await screen.findByRole('group', { name: 'Superficie de valores' })).toBeTruthy();
     expect(button('Mostrar como tabla')).toBeTruthy();
     expect(button('Fijar el plazo')).toBeTruthy();
+  });
+});
+
+describe('F4.7 formula surface', () => {
+  const stage = () => screen.findByRole('group', { name: 'Surface from a formula' });
+  const box = (name: string) => screen.getByRole('textbox', { name });
+  const type = (name: string, value: string) => fireEvent.change(box(name), { target: { value } });
+
+  it('meets the board contract for the four formula tasks', async () => {
+    for (const fixtureId of ['slope-two-ways', 'gradient-at-a-point', 'downhill-walk', 'build-a-surface']) {
+      await assertBoardContract({ pack: 'space2', fixtureId, copy: SPACE2_COPY, css });
+    }
+  }, 180_000);
+
+  it('draws the mesh, the held line along the asked axis and the dot, and reads the formula aloud', async () => {
+    show('slope-two-ways');
+    await stage();
+    expect(document.querySelectorAll('.lf-s2-cell')).toHaveLength(36);
+    expect(document.querySelectorAll('.lf-s2-held')).toHaveLength(1);
+    expect(document.querySelectorAll('.lf-s2-dot-at')).toHaveLength(1);
+    expect(screen.getByRole('img', { name: /^z equals x to the power of 2 plus 2 times x times y$/ })).toBeTruthy();
+    expect(document.querySelector('.lf-s2-note')).toHaveTextContent('The dot is at x = 1, y = 2.');
+    expect(screen.getByRole('textbox', { name: 'Slope along x' })).toBeTruthy();
+    expect(screen.queryByRole('textbox', { name: 'Slope along y' })).toBeNull();
+  });
+
+  it('turns the surface with the arrow keys like the other surfaces', async () => {
+    show('slope-two-ways');
+    const group = await stage();
+    expect(readout()).toHaveTextContent('Surface from a formula. Corner view. Turn 1 of 4');
+    fireEvent.keyDown(group, { key: 'ArrowRight' });
+    expect(readout()).toHaveTextContent('Corner view. Turn 2 of 4');
+  });
+
+  it('keeps Check off until the number reads, then submits the canonical text and never says met itself', async () => {
+    const grade = show('slope-two-ways');
+    await stage();
+    expect(button('Check')).toBeDisabled();
+    type('Slope along x', 'six');
+    expect(button('Check')).toBeDisabled();
+    type('Slope along x', '12/2');
+    expect(screen.getByText('Reads as 6')).toBeTruthy();
+    expect(button('Check')).toBeEnabled();
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ answer: ['6'] }, 'formula-slope-two-ways', expect.anything()));
+    expect(screen.queryByText('You worked it out from the formula.')).toBeNull();
+  });
+
+  it('accepts a decimal comma and a decimal point in every locale', async () => {
+    const grade = show('slope-two-ways');
+    await stage();
+    type('Slope along x', '0,5');
+    expect(screen.getByText('Reads as 0.5')).toBeTruthy();
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ answer: ['0.5'] }, 'formula-slope-two-ways', expect.anything()));
+    type('Slope along x', '0.5');
+    expect(screen.getByText('Reads as 0.5')).toBeTruthy();
+    type('Slope along x', '-1,25');
+    expect(screen.getByText('Reads as -1.25')).toBeTruthy();
+    cleanup();
+    show('slope-two-ways', undefined, 'pt-BR');
+    await screen.findByRole('group', { name: 'Superfície de uma fórmula' });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inclinação ao longo de x' }), { target: { value: '0,5' } });
+    expect(screen.getByText('Lido como 0,5')).toBeTruthy();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Inclinação ao longo de x' }), { target: { value: '0.5' } });
+    expect(screen.getByText('Lido como 0,5')).toBeTruthy();
+  });
+
+  it('asks for both slopes of a gradient and submits them in order', async () => {
+    const grade = show('gradient-at-a-point');
+    await stage();
+    expect(document.querySelectorAll('.lf-s2-held')).toHaveLength(2);
+    type('Slope along x', '3');
+    expect(button('Check')).toBeDisabled();
+    type('Slope along y', '1,0');
+    expect(button('Check')).toBeEnabled();
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ answer: ['3', '1'] }, 'formula-gradient-at-a-point', expect.anything()));
+  });
+
+  it('never prints the slope: the table has heights only, with the dot marked', async () => {
+    show('slope-two-ways');
+    await stage();
+    fireEvent.click(button('Show as table'));
+    const table = screen.getByRole('table', { name: 'Height at every point' });
+    expect(within(table).getAllByRole('row')).toHaveLength(8);
+    expect(within(table).getAllByText(/\(dot\)/)).toHaveLength(1);
+    expect(within(table).getByText('5 (dot)')).toBeTruthy();
+    expect(screen.queryByRole('table', { name: 'The walk, step by step' })).toBeNull();
+    fireEvent.click(button('Hide table'));
+    expect(screen.queryByRole('table')).toBeNull();
+  });
+
+  it('steps a walk downhill with buttons and arrow keys and shows only the steps taken', async () => {
+    const grade = show('downhill-walk');
+    await stage();
+    const status = () => document.querySelector('.lf-s2-walk .lf-s2-status') as HTMLElement;
+    const walk = screen.getByRole('group', { name: 'Walk downhill' });
+    expect(status()).toHaveTextContent('Step 0 of 8. Height 13.');
+    expect(button('Step back')).toBeDisabled();
+    fireEvent.click(button('Step downhill'));
+    expect(status()).toHaveTextContent('Step 1 of 8. Height 8.32.');
+    fireEvent.keyDown(walk, { key: 'ArrowRight' });
+    fireEvent.keyDown(walk, { key: 'ArrowDown' });
+    fireEvent.keyDown(walk, { key: 'ArrowRight' });
+    expect(status()).toHaveTextContent('Step 4 of 8. Height ≈ 2.181. At or below the line.');
+    expect(document.querySelectorAll('.lf-s2-walk-dot')).toHaveLength(5);
+    fireEvent.keyDown(walk, { key: 'ArrowLeft' });
+    expect(status()).toHaveTextContent('Step 3 of 8.');
+    expect(status()).not.toHaveTextContent('At or below');
+    fireEvent.keyDown(walk, { key: 'Home' });
+    expect(status()).toHaveTextContent('Step 0 of 8.');
+    for (let step = 0; step < 12; step += 1) fireEvent.keyDown(walk, { key: 'ArrowRight' });
+    expect(status()).toHaveTextContent('Step 8 of 8.');
+    expect(button('Step downhill')).toBeDisabled();
+    type('Number of steps', '4');
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ answer: ['4'] }, 'formula-downhill-walk', expect.anything()));
+  });
+
+  it('lists the walk as a table that grows only as the learner steps', async () => {
+    show('downhill-walk');
+    await stage();
+    fireEvent.click(button('Show as table'));
+    const steps = () => screen.getByRole('table', { name: 'The walk, step by step' });
+    expect(within(steps()).getAllByRole('row')).toHaveLength(2);
+    expect(rowTexts(steps())[1]).toContain('13');
+    fireEvent.click(button('Step downhill'));
+    fireEvent.click(button('Step downhill'));
+    expect(within(steps()).getAllByRole('row')).toHaveLength(4);
+    expect(within(screen.getByRole('table', { name: 'Height at every point' })).getAllByText(/\(dot\)/)).toHaveLength(1);
+  });
+
+  it('builds a surface through numbered dots, checks the dots live and submits the trimmed formula', async () => {
+    const grade = show('build-a-surface');
+    await stage();
+    expect(document.querySelectorAll('.lf-s2-pin')).toHaveLength(3);
+    expect(document.querySelectorAll('.lf-s2-cell')).toHaveLength(0);
+    expect(screen.getByText('Dot 2: x = 1, y = 0, height 3')).toBeTruthy();
+    expect(button('Check')).toBeDisabled();
+    type('Your formula for z', 'x');
+    expect(document.querySelectorAll('.lf-s2-cell')).toHaveLength(16);
+    expect(screen.getByText('Your surface passes through 1 of 3 dots.')).toBeTruthy();
+    expect(screen.getByRole('img', { name: /^z equals x$/ })).toBeTruthy();
+    type('Your formula for z', ' 1+2x-y ');
+    expect(screen.getByText('Your surface passes through 3 of 3 dots.')).toBeTruthy();
+    expect(document.querySelectorAll('.lf-s2-pin[data-chosen="true"]')).toHaveLength(3);
+    fireEvent.click(button('Show as table'));
+    const dots = screen.getByRole('table', { name: 'The dots' });
+    expect(within(dots).getAllByRole('row')).toHaveLength(4);
+    expect(rowTexts(dots)[2]).toContain('3');
+    fireEvent.click(button('Check'));
+    await waitFor(() => expect(grade).toHaveBeenCalledWith({ answer: ['1+2x-y'] }, 'formula-build-a-surface', expect.anything()));
+    expect(screen.queryByText('You worked it out from the formula.')).toBeNull();
+  });
+
+  it('accepts a decimal comma inside a typed formula', async () => {
+    show('build-a-surface');
+    await stage();
+    type('Your formula for z', '1+2x-y+0,5-0.5');
+    expect(screen.getByText('Your surface passes through 3 of 3 dots.')).toBeTruthy();
+    expect(button('Check')).toBeEnabled();
+  });
+
+  it('refuses hostile or malformed formulas in plain words without running any of them', async () => {
+    show('build-a-surface');
+    await stage();
+    const refused = (value: string, message: string) => {
+      type('Your formula for z', value);
+      expect(screen.getByText(message), value).toBeTruthy();
+      expect(button('Check'), value).toBeDisabled();
+      expect(document.querySelectorAll('.lf-s2-cell'), value).toHaveLength(0);
+    };
+    refused('alert(1)', 'Use x, y, numbers and + - * / ^ ( ) only.');
+    refused('constructor', 'Use x, y, numbers and + - * / ^ ( ) only.');
+    refused('__proto__', 'Use x, y, numbers and + - * / ^ ( ) only.');
+    refused('x^7', 'A power is a whole number from 0 to 6.');
+    refused('x^2.5', 'A power is a whole number from 0 to 6.');
+    refused('x^99999999999', 'Check the numbers. Decimals use a point or a comma.');
+    refused('(x+y', 'Check the brackets and the signs.');
+    refused('x'.repeat(200), 'That formula is too long.');
+    refused('1'.repeat(40), 'Check the numbers. Decimals use a point or a comma.');
+    refused('('.repeat(20) + 'x' + ')'.repeat(20), 'That formula is too long.');
+    refused('('.repeat(30) + 'x' + ')'.repeat(30), 'That formula is too long.');
+  });
+
+  it('resets the stepping, the text and the view', async () => {
+    show('downhill-walk');
+    await stage();
+    expect(button('Reset')).toBeDisabled();
+    fireEvent.click(button('Step downhill'));
+    type('Number of steps', '3');
+    fireEvent.click(button('Reset'));
+    expect(document.querySelector('.lf-s2-walk .lf-s2-status')).toHaveTextContent('Step 0 of 8.');
+    expect(box('Number of steps')).toHaveValue('');
+    expect(button('Reset')).toBeDisabled();
+  });
+
+  it('never evaluates text as code', () => {
+    const source = here('./FormulaBoard.tsx') + here('./field.generated.ts');
+    for (const word of ['eval(', 'new Function', 'Function(', 'dangerouslySetInnerHTML', 'innerHTML', 'document.write']) expect(source, word).not.toContain(word);
+  });
+
+  it('speaks in Spanish and Portuguese', async () => {
+    show('downhill-walk', undefined, 'es-MX');
+    expect(await screen.findByRole('group', { name: 'Superficie de una fórmula' })).toBeTruthy();
+    expect(button('Bajar un paso')).toBeTruthy();
+    expect(screen.getByRole('textbox', { name: 'Número de pasos' })).toBeTruthy();
+    cleanup();
+    show('build-a-surface', undefined, 'pt-BR');
+    expect(await screen.findByRole('group', { name: 'Superfície de uma fórmula' })).toBeTruthy();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Sua fórmula para z' }), { target: { value: 'x' } });
+    expect(screen.getByText('Sua superfície passa por 1 de 3 pontos.')).toBeTruthy();
   });
 });
 
@@ -324,7 +538,7 @@ describe('F4.9 AR table pilot gate', () => {
   });
 
   it('keeps the 3D renderer import inside the reserved ar folder and nowhere else in the pack', () => {
-    for (const file of ['./ArTableBoard.tsx', './SurfaceBoard.tsx', './GlobeBoard.tsx', './TurnStage.tsx', './boards.tsx', './ar.generated.ts', './ar/arPilot.ts']) {
+    for (const file of ['./ArTableBoard.tsx', './SurfaceBoard.tsx', './FormulaBoard.tsx', './field.generated.ts', './GlobeBoard.tsx', './TurnStage.tsx', './boards.tsx', './ar.generated.ts', './ar/arPilot.ts']) {
       expect(here(file), `${file} must not import three`).not.toMatch(/from 'three'|import\('three'\)/);
     }
     expect(here('./ar/arSession.ts')).toMatch(/from 'three'/);

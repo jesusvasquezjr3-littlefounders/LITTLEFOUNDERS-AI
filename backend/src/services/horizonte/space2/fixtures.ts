@@ -149,7 +149,7 @@ export const SPACE2_FIXTURES: readonly HorizonteFixture[] = [
     segment: (locale) => ({
       id: 'formula-downhill-walk', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
       prompt: text(
-        'Walk downhill from the dot, a tenth of the slope each step. How many steps until the height is 3 or lower?',
+        'Walk downhill a tenth of the slope each step. How many steps until the height is 3 or lower?',
         'Baja desde el punto, un décimo de la pendiente en cada paso. ¿Cuántos pasos hasta que la altura sea 3 o menos?',
         'Desça a partir do ponto, um décimo da inclinação a cada passo. Quantos passos até a altura ser 3 ou menos?',
       )[locale],
