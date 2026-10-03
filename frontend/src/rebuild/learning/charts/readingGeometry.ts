@@ -74,21 +74,57 @@ export function timelineLayout(events: ReadonlyArray<{ start: number; end?: numb
   const at = scaleLinear([first, last], [left, left + width]);
   const rows = [-1, 1, -2, 2];
   const used = new Map<number, number>(rows.map((row) => [row, -Infinity]));
-  return events.map((event) => {
+  const near = new Map<number, Array<[number, number]>>([[-1, []], [1, []]]);
+  const far = new Map<number, number[]>([[-1, []], [1, []]]);
+  const marks = events.map((event) => {
     const x0 = at(event.start);
     const x1 = at(event.end ?? event.start);
     const centre = (x0 + x1) / 2;
-    const labelX = Math.min(bounds[1] - room / 2, Math.max(bounds[0] + room / 2, centre));
-    const free = rows.find((row) => used.get(row)! <= labelX - room / 2 - 3);
-    const row = free ?? rows.reduce((best, candidate) => (used.get(candidate)! < used.get(best)! ? candidate : best), rows[0]!);
-    used.set(row, labelX + room / 2);
-    return { x0, x1, centre, labelX, row };
+    return { x0, x1, centre, labelX: Math.min(bounds[1] - room / 2, Math.max(bounds[0] + room / 2, centre)), row: -1 };
   });
+  const clear = (row: number, mark: { centre: number; labelX: number }) => {
+    const side = Math.sign(row);
+    if (Math.abs(row) === 2) return !near.get(side)!.some(([a, b]) => mark.centre >= a - 2 && mark.centre <= b + 2);
+    return !far.get(side)!.some((stem) => stem >= mark.labelX - room / 2 - 2 && stem <= mark.labelX + room / 2 + 2);
+  };
+  // Left to right, so a row's last label is its right-most; a stem to a far row never crosses a nearer label.
+  [...marks.keys()].sort((a, b) => marks[a]!.centre - marks[b]!.centre).forEach((index) => {
+    const mark = marks[index]!;
+    const free = rows.find((row) => used.get(row)! <= mark.labelX - room / 2 - 3 && clear(row, mark));
+    const open = rows.filter((row) => clear(row, mark));
+    const row = free ?? (open.length > 0 ? open : rows).reduce((best, candidate) => (used.get(candidate)! < used.get(best)! ? candidate : best));
+    used.set(row, mark.labelX + room / 2);
+    if (Math.abs(row) === 1) near.get(row)!.push([mark.labelX - room / 2, mark.labelX + room / 2]); else far.get(Math.sign(row))!.push(mark.centre);
+    mark.row = row;
+  });
+  return marks;
 }
 
-/** How strongly a heatmap cell is inked: a floor so the lowest cell still shows, then linear in the value. */
+/** Caption-size words are about this wide per character (bold, 14 px): the drawing sizes its room from it. */
+export const GLYPH = 7.4;
+
+/** The width, in px, of the longest word of a label: the least room a label needs before it is hidden. */
+export function longestWord(text: string): number {
+  return Math.max(0, ...text.split(/\s+/).map((word) => word.length)) * GLYPH;
+}
+
+/** How many lines a label wraps to within a room (a word never breaks, so an over-long word still takes one line). */
+export function estimateLines(text: string, room: number): number {
+  let lines = 1;
+  let line = 0;
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const width = word.length * GLYPH;
+    if (line > 0 && line + GLYPH + width > room) { lines += 1; line = width; } else line += (line > 0 ? GLYPH : 0) + width;
+  }
+  return lines;
+}
+
+/** The deepest a heat cell is inked: with the text on top it keeps 4.5 to 1 in light and in dark. */
+export const HEAT_CEILING = 0.76;
+
+/** How strongly a heatmap cell is inked: a floor so the lowest cell still shows, then linear in the value up to the ceiling. */
 export function heatShade(value: number, [low, high]: Domain): number {
-  return 0.14 + 0.86 * (high === low ? 1 : Math.min(1, Math.max(0, (value - low) / (high - low))));
+  return 0.14 + (HEAT_CEILING - 0.14) * (high === low ? 1 : Math.min(1, Math.max(0, (value - low) / (high - low))));
 }
 
 /** Where a value sits on a parallel-coordinates axis, 0 at the axis' lowest value and 1 at its highest (a flat axis sits in the middle). */

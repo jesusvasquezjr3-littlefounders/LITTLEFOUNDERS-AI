@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { checkCopy } from '../../design/copyBudget';
-import { CHART_KINDS, chartDataSchema, chartProblem, type ChartKind } from './chartModel.generated';
+import { CHART_KINDS, CORE_CHART_KINDS, READING_CHART_KINDS, SITUATIONAL_CHART_KINDS, chartDataSchema, chartProblem, chartTable, type ChartKind } from './chartModel.generated';
 import { chartCopy, TeachingChart } from './TeachingChart';
 
 /*
@@ -110,8 +110,101 @@ describe('teaching charts', () => {
   it('keeps chart words inside the Copy Budget in three locales', () => {
     for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
       expect(checkCopy(chartCopy[locale].showTable, 'action', { locale, ageBand: '6-9', surface: 'app' })).toEqual([]);
+      expect(checkCopy(chartCopy[locale].label, 'data', { locale, ageBand: '6-9', surface: 'app' })).toEqual([]);
       expect(checkCopy(chartCopy[locale].showChart, 'action', { locale, ageBand: '6-9', surface: 'app' })).toEqual([]);
       expect(checkCopy(chartCopy[locale].each('10'), 'body', { locale, ageBand: '6-9', surface: 'app' })).toEqual([]);
+    }
+  });
+});
+
+/*
+ * Fix round: all 58 kinds, one by one. Each is a named image whose SVG is hidden
+ * from assistive tech and described by real text, draws finite numbers, and has
+ * a table fallback with a header per column and a data-label on every cell (the
+ * stacked narrow-width table reads its labels from them).
+ */
+describe('every chart kind: drawing, description and table fallback', () => {
+  it('covers 58 kinds: 25 core, 21 situational and 12 reading', () => {
+    expect(CORE_CHART_KINDS).toHaveLength(25);
+    expect(SITUATIONAL_CHART_KINDS).toHaveLength(21);
+    expect(READING_CHART_KINDS).toHaveLength(12);
+    expect(CHART_KINDS).toHaveLength(58);
+    expect(new Set(CHART_KINDS).size).toBe(58);
+  });
+
+  for (const kind of CHART_KINDS) {
+    it(`${kind}: SVG with a name and a description, and a table that matches the model`, async () => {
+      const data = chartDataSchema.parse(sample(kind));
+      const { container } = render(<TeachingChart kind={kind} data={data} title={`Chart ${kind}`} locale="en-US" />);
+      const image = await screen.findByRole('img', { name: `Chart ${kind}` });
+
+      const svg = container.querySelector('svg')!;
+      expect(svg, kind).toBeTruthy();
+      expect(svg.getAttribute('aria-hidden')).toBe('true');
+      expect(svg.getAttribute('viewBox')).toMatch(/^0 0 320 [0-9]+(?:[.][0-9]+)?$/);
+      expect(svg.childElementCount, kind).toBeGreaterThan(1);
+      expect(svg.outerHTML, `${kind} draws a non-finite number`).not.toMatch(/NaN|undefined|Infinity/);
+
+      const description = image.getAttribute('aria-describedby')!;
+      const described = container.querySelector(`[id="${description}"]`);
+      expect(described, `${kind} has no description element`).toBeTruthy();
+      expect(described!.textContent!.trim().length, `${kind} description is empty`).toBeGreaterThan(8);
+      expect(described!.textContent, kind).not.toMatch(/NaN|undefined|~/);
+
+      const model = chartTable(kind, data);
+      expect(model.rows.length, kind).toBeGreaterThan(0);
+      fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+      const table = screen.getByRole('table', { name: 'Chart data' });
+      expect(container.querySelector('svg'), `${kind} keeps the SVG beside its table`).toBeNull();
+      const head = within(table).getAllByRole('columnheader');
+      expect(head, kind).toHaveLength(Math.max(model.columns.length + 1, ...model.rows.map((row) => row.cells.length)));
+      const body = table.querySelectorAll('tbody tr');
+      expect(body, kind).toHaveLength(model.rows.length);
+      for (const row of body) {
+        expect(row.children, kind).toHaveLength(head.length);
+        for (const cell of row.children) {
+          expect(cell.getAttribute('data-label'), `${kind} cell "${cell.textContent}"`).toBeTruthy();
+          expect(cell.textContent, kind).not.toMatch(/^~|NaN|undefined/);
+        }
+      }
+      expect(table.textContent, kind).not.toContain('~');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show chart' }));
+      expect(await screen.findByRole('img', { name: `Chart ${kind}` })).toBeTruthy();
+      expect(container.querySelector('svg'), kind).toBeTruthy();
+    });
+  }
+
+  it('describes a diagram, which has no numbers, by its structure', async () => {
+    const description = async (kind: ChartKind) => {
+      const { container, unmount } = render(<TeachingChart kind={kind} data={chartDataSchema.parse(sample(kind))} title={`Chart ${kind}`} locale="en-US" />);
+      const image = await screen.findByRole('img', { name: `Chart ${kind}` });
+      const text = container.querySelector(`[id="${image.getAttribute('aria-describedby')}"]`)!.textContent;
+      unmount();
+      return text;
+    };
+    expect(await description('flowchart')).toBe('Income → Save (yes); Income → Spend (no)');
+    expect(await description('org-chart')).toBe('Income; Income → Save; Income → Spend');
+    expect(await description('swimlane')).toBe('Ask (Save) → Approve; Approve (Spend) → Buy; Buy (Save)');
+  });
+
+  it('labels every table cell with its column in three locales', async () => {
+    for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) {
+      for (const kind of READING_CHART_KINDS) {
+        const data = chartDataSchema.parse(sample(kind));
+        const { container, unmount } = render(<TeachingChart kind={kind} data={data} title={`Chart ${kind}`} locale={locale} />);
+        await screen.findByRole('img', { name: `Chart ${kind}` });
+        fireEvent.click(screen.getByRole('button', { name: chartCopy[locale].showTable }));
+        const heads = [...container.querySelectorAll('thead th')].map((node) => node.textContent);
+        for (const row of container.querySelectorAll('tbody tr')) {
+          [...row.children].forEach((cell, index) => {
+            expect(cell.getAttribute('data-label'), `${locale} ${kind}`).toBe(heads[index]);
+            expect(cell.textContent, `${locale} ${kind}`).not.toMatch(/~/);
+          });
+        }
+        expect(container.querySelector('table')!.textContent, `${locale} ${kind}`).not.toContain('~');
+        unmount();
+      }
     }
   });
 });
