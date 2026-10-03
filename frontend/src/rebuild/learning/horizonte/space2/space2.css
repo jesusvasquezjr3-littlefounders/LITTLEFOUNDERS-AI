@@ -1,6 +1,10 @@
-/* Horizonte space2 pack: the surface board, the globe board and the AR table pilot. Tokens only, neutral board, hues sky, mint and berry. */
-.lf-s2-board { display: grid; gap: var(--spacing-4); justify-items: start; }
-.lf-s2-strip { display: grid; gap: var(--spacing-3); justify-items: start; }
+/* Horizonte space2 pack: the surface board, the formula surface board, the globe board and the AR table pilot. Tokens only, neutral board, hues sky, mint and berry. */
+.lf-s2-board { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-4); justify-items: start; }
+.lf-s2-strip { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); justify-items: start; }
+.lf-s2-board > *, .lf-s2-strip > * { min-inline-size: 0; max-inline-size: 100%; }
+.lf-s2-scroll { inline-size: 100%; min-inline-size: 0; overflow-x: auto; }
+.lf-s2-scroll:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-s2-scroll .lf-hz-table { overflow-wrap: normal; }
 .lf-s2-strip h2 { font-size: 1rem; }
 
 .lf-s2-turn { display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 24rem; }
@@ -26,14 +30,29 @@
 .lf-s2-cell[data-shade='3'] { fill: color-mix(in srgb, var(--sky) 70%, var(--surface)); }
 .lf-s2-held { stroke: var(--berry-strong); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .lf-s2-zero { fill: none; stroke: var(--content-muted); stroke-width: 1.2; stroke-dasharray: 4 4; }
-.lf-s2-pin circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.6; }
+.lf-s2-pin circle { fill: var(--surface); stroke: var(--content); stroke-width: 1.6; }
 .lf-s2-pin[data-chosen='true'] circle { fill: var(--mint-soft); stroke: var(--primary-strong); stroke-width: 3; }
-.lf-s2-pin text { font-size: 11px; font-weight: 800; fill: var(--ink); }
+.lf-s2-pin text { font-size: 11px; font-weight: 800; fill: var(--content); }
 .lf-s2-chart { display: block; inline-size: 100%; max-inline-size: 24rem; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-s2-curve { stroke: var(--primary-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .lf-s2-dot { fill: var(--surface); stroke: var(--primary-strong); stroke-width: 2; }
 .lf-s2-zero-line { stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 4; }
-.lf-s2-pin-label { font-size: 11px; font-weight: 800; fill: var(--ink); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
+.lf-s2-pin-label { font-size: 11px; font-weight: 800; fill: var(--content); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
+
+/* Formula surface */
+.lf-s2-floor { fill: color-mix(in srgb, var(--sunken) 70%, var(--surface)); stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.lf-s2-dot-at { fill: var(--berry-strong); stroke: var(--surface); stroke-width: 2; }
+.lf-s2-walk-line { stroke: var(--primary-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.lf-s2-walk-dot { fill: var(--surface); stroke: var(--primary-strong); stroke-width: 2; }
+.lf-s2-walk-dot[data-current='true'] { fill: var(--mint-soft); stroke-width: 3; }
+.lf-s2-formula { margin: 0; max-inline-size: 100%; font-size: 1.15rem; overflow-wrap: anywhere; }
+.lf-s2-dots { display: grid; gap: var(--spacing-1); margin: 0; padding-inline-start: 1.5rem; font-weight: 700; }
+.lf-s2-strip .lf-number-answer { inline-size: 100%; max-inline-size: 24rem; }
+.lf-s2-walk { display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 24rem; box-sizing: border-box; padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-lg); }
+.lf-s2-walk:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-s2-walk-pad { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+/* The step buttons and the turn buttons are the keyboard and touch way to move: give them the 64 px handle. */
+.lf-s2-walk-pad .lf-button, .lf-s2-pad .lf-button { min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); }
 
 /* Globe */
 .lf-s2-sea { fill: color-mix(in srgb, var(--sky) 16%, var(--surface)); stroke: var(--outline); stroke-width: 1; }
@@ -41,25 +60,26 @@
 .lf-s2-land { fill: color-mix(in srgb, var(--mint) 40%, var(--surface)); stroke: var(--content-muted); stroke-width: 0.5; }
 .lf-s2-arc { fill: none; stroke: var(--berry-strong); stroke-width: 2; stroke-linecap: round; }
 .lf-s2-arc[data-chosen='true'] { stroke: var(--primary-strong); stroke-width: 4; }
-.lf-s2-place { fill: var(--ink); stroke: var(--surface); stroke-width: 1.5; }
-.lf-s2-place-label { font-size: 10px; font-weight: 800; fill: var(--ink); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
+.lf-s2-place { fill: var(--content); stroke: var(--surface); stroke-width: 1.5; }
+.lf-s2-place-label { font-size: 10px; font-weight: 800; fill: var(--content); stroke: var(--surface); stroke-width: 3px; paint-order: stroke; }
 .lf-s2-route-tag circle { fill: var(--surface); stroke: var(--berry-strong); stroke-width: 1.6; }
 .lf-s2-route-tag[data-chosen='true'] circle { fill: var(--mint-soft); stroke: var(--primary-strong); stroke-width: 3; }
-.lf-s2-route-tag text { font-size: 11px; font-weight: 800; fill: var(--ink); }
+.lf-s2-route-tag text { font-size: 11px; font-weight: 800; fill: var(--content); }
 .lf-s2-routes { display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 24rem; }
 .lf-s2-route { display: grid; gap: var(--spacing-1); text-align: start; }
 .lf-s2-route-fee { color: var(--content-muted); font-weight: 600; }
 
 /* AR table pilot */
-.lf-s2-wire-edge { stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+.lf-s2-wire-edge { stroke: var(--content); stroke-width: 1.6; stroke-linecap: round; }
 .lf-s2-tag { display: inline-block; padding: var(--spacing-1) var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content-muted); font-weight: 800; }
-.lf-s2-panel { display: grid; gap: var(--spacing-2); justify-items: start; padding: var(--spacing-4); border: 1px solid var(--outline); border-radius: var(--rounded-lg); background: var(--surface); max-inline-size: 24rem; }
+.lf-s2-panel { display: grid; inline-size: 100%; box-sizing: border-box; gap: var(--spacing-2); justify-items: start; padding: var(--spacing-4); border: 1px solid var(--outline); border-radius: var(--rounded-lg); background: var(--surface); max-inline-size: 24rem; }
 .lf-s2-panel h2 { font-size: 1rem; }
 .lf-s2-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-s2-ar { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-s2-ar { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-4); justify-items: start; }
 
 @media (prefers-reduced-motion: no-preference) {
   .lf-s2-pin circle { transition: stroke-width var(--dur-component) var(--ease-standard); }
   .lf-s2-arc { transition: stroke-width var(--dur-component) var(--ease-standard); }
   .lf-s2-route-tag circle { transition: stroke-width var(--dur-component) var(--ease-standard); }
+  .lf-s2-walk-dot { transition: stroke-width var(--dur-component) var(--ease-standard); }
 }
