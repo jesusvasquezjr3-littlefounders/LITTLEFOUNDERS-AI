@@ -69,14 +69,14 @@ Backend `backend/src/services/horizonte/prob/`: `rational.ts` (exact fractions),
 line in tenths, least squares), `contract.ts`, `scorer.ts`, `fixtures.ts`, `capabilities.ts`, `index.ts`. Test: `backend/src/__tests__/horizonte/prob.test.ts`.
 
 Browser `frontend/src/rebuild/learning/horizonte/prob/`: generated `contract|rational|model|regression|scorer|fixtures.generated.ts` (never hand-edited),
-`capabilities.ts`, `copy.ts`, `boards.tsx`, `shared.tsx`, `TreeBoard.tsx`, `BayesBoard.tsx`, `RegressionBoard.tsx`, `prob.css`, `audit.json`,
-`probBoards.test.tsx`.
+`capabilities.ts`, `copy.ts`, `boards.tsx`, `shared.tsx`, `bayesGrid.ts` (drawing plan of the Bayes grid, hand-written), `TreeBoard.tsx`, `BayesBoard.tsx`,
+`RegressionBoard.tsx`, `prob.css`, `audit.json`, `probBoards.test.tsx`, `gridOutlines.test.tsx`.
 
 Forge `coursegen/src/v2/horizonte/prob.ts` (capabilities, authoring guidance, gate-4 solvability checks hand-mirrored from Core); test
 `coursegen/src/__tests__/horizonte/prob.test.ts`.
 
-Fixtures (9, all ages 13-17): `tree-screening`, `tree-filter`, `tree-survey`, `bayes-screening`, `bayes-filter`, `bayes-checkup` (asks about the negative
-result), `regression-climb`, `regression-gentle`, `regression-fall`. Preview: `?screen=fixture&seg=hz:prob:<fixture>&age=13-17`.
+Fixtures (10, all ages 13-17): `tree-screening`, `tree-filter`, `tree-survey`, `bayes-screening`, `bayes-filter`, `bayes-checkup` (asks about the negative
+result), `bayes-city` (10000 people), `regression-climb`, `regression-gentle`, `regression-fall`. Preview: `?screen=fixture&seg=hz:prob:<fixture>&age=13-17`.
 
 ## Decisions
 
@@ -116,9 +116,7 @@ Not verified: no real browser, no screenshot, no layout measurement. Everything 
   residual squares at the plot edge, the 64 px hit size and the contrast of the chosen tokens have not been seen in a browser. jsdom cannot measure layout.
 - **Tree labels shrink with the viewport.** The SVG scales down, so the edge labels and the counts inside branches get small on a phone; the status
   line, the tray and the table carry the same numbers.
-- **Large populations.** The Bayes grid fills column by column in a fixed 2 to 1 shape. Past about 6700 people a cell is under 5 units of the 640 wide
-  drawing and the cell lines are dropped (the group blocks and the legend remain); a population of 10000 gives cells near 4 units. Populations up to
-  10000 are valid in the contract.
+- **Large populations.** The Bayes grid fills column by column in a fixed 2 to 1 shape and draws its cell lines at a step that keeps them 12 units apart at any population up to the 10000 the contract allows (see the Fix round).
 - **Whole people only.** A share that would split a person does not parse, so authors pick populations that divide cleanly and need six different counts.
 - **One tree.** There is no second answer for the tree (for example swapping the two result branches of one side); the arrangement is unique by construction.
 - **Regression range.** Slope is -3 to 3 and intercept -5 to 15 in steps of a tenth; points sit on a grid of at most 20 by 20 with 4 to 12 points. A line
@@ -139,3 +137,41 @@ Not verified: no real browser, no screenshot, no layout measurement. Everything 
   and "Têm" as the name of the branch of people who have it.
 - Decide whether `plano` should be excluded from the fixtureCoverage pack scan (a harness fix outside this lane).
 - Accept and release the two pieces (F2.9, F2.10) in the sprint record.
+
+## Fix round
+
+What changed after the Atlas audit:
+
+- **The Bayes grid keeps its cell lines at every population (10000 included).** The layout and line spacing now come from one pure drawing plan
+  (`prob/bayesGrid.ts`, hand-written, not a generated copy of the Core model). A person is drawn exactly as before (the group blocks are still
+  person-exact), but the cell lines are drawn at a step: every person while a person is at least 12 of 640 units wide (up to about 1180 people),
+  then every 2 by 2 people (2000), then every 3 by 3 (10000). When a square holds more than one person the board writes it ("Each square holds 9
+  people", `gridScale`, role `data`, three native strings, plural by the locale). The old cut-off at 5 units, which dropped the lines past about
+  6700 people, is gone. The heavy outline round the asked people is thinned with the width of a person (`--lf-prob-heavy`, never wider than 60%
+  of a person) so a group of a few dozen people is not drawn as a solid bar at 10000.
+- **The scorer never sees the drawing.** The verdict reads only the payload (population, shares, ask) and the typed chance; `bayesGrid.ts` is not
+  imported by the model, the scorer or the generated copies. A Core test grades the same chance at populations 1000 to 10000 and gets the same
+  verdicts, and the largest author population (10000) is solvable.
+- **A fixture for the top of the range.** `bayes-city` (10000 people, prior 1 in 50, hit 4 in 5, alarm 1 in 20, ask positive, key 16/65) joins the
+  nine fixtures so the audit and the board tests draw the largest grid (10 fixtures now, all ages 13-17). Preview:
+  `?screen=fixture&seg=hz:prob:bayes-city&age=13-17`.
+- **Tests that fail if the outlines go.** `prob/gridOutlines.test.tsx` checks, for every population in the author range, that the plan keeps the lines at
+  least 12 units apart; renders the board at 1000, 2000, 4000, 7000 and 10000 people and requires a cell layer (with a resolvable pattern whose
+  lines run both ways and are at least 12 units apart) on every block of every group; and reads `prob.css` to require a visible stroke on the
+  blocks, grid lines, squares, frame, edges and branch slots, and that the cell layer is never hidden.
+- **Dark mode.** The charts set their text, frame, point, block and swatch strokes with `var(--ink)`, a constant (`#11132a`) that does not flip
+  under `data-theme="dark"`, so on the dark ground the tick labels, edge labels and node counts were about 1.1 to 1. Every use in this pack now
+  uses `var(--content)`, which flips with the theme (`.lf-prob-chart` sets `color: var(--content)`; the SVG text follows through `currentColor`).
+  No hex, rgb or colour keyword is left in `prob.css`; a test pins it. The Atlas records for the three tree boards (22 low-contrast items in dark
+  against 3 in light) and the three regression boards (20 to 24 against 2) were this defect; the bayes boards have no chart text and were already
+  at the 2 disabled-button items of light mode.
+
+Still limited, not verified:
+
+- No browser was opened in this round: the new line spacing, the thinned outline, the scale note and the dark-mode contrast were reasoned from
+  tokens and jsdom, not looked at. The Atlas should be re-run on `bayes-city` (10000) and a 2000-person grid at 375 and 1280.
+- A square of lines is aligned to the top-left of the grid, so at a step above 1 the squares at the bottom and right edges, and any square that
+  straddles two groups, hold fewer than the stated people or a mix; the note says what a full square holds.
+- At 10000 people a group of a few dozen people is a column of cells four units wide; it is outlined and listed in the legend and the table, but
+  it is small. The counts, not the drawing, are what the learner reads the chance from.
+- The disabled Reset and Check buttons (2.3 in light, 2.7 in dark) are a shared control matter, not this pack.
