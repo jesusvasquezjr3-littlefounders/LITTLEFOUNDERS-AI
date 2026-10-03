@@ -1,4 +1,5 @@
 import type { GateProblem } from '../../pipeline/gates.js';
+import { commaToPoint, withoutSpaces } from './answerLeak.js';
 import { expressionReferenceProblem, expressionTaskProblem, isExpressionTask, type ExpressionTask } from './alg2Expression.js';
 import {
   formatDecimal, fromStandard, isCrossing, onSliders, passesThrough, pointKey, readGraphPayload, readStandard, readSystemPayload, responseNames, sameSpots, sameStandard, toStandard,
@@ -63,18 +64,6 @@ function numeralsIn(text: unknown): Set<string> {
     at = end;
   }
   return found;
-}
-
-const withoutSpaces = (text: string): string => text.split(/\s+/).join('');
-
-/** A comma between two digits is a decimal mark: "x=0,5" is the reference "x=0.5". Any other comma stays. */
-function commaToPoint(text: string): string {
-  let out = '';
-  for (let at = 0; at < text.length; at += 1) {
-    const between = text[at] === ',' && at > 0 && isDigit(text.charCodeAt(at - 1)) && isDigit(text.charCodeAt(at + 1));
-    out += between ? '.' : text[at];
-  }
-  return out;
 }
 
 type Report = (message: string) => void;

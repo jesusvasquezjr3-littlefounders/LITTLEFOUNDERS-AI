@@ -1,5 +1,6 @@
 import type { V2DocumentLike } from '../gates.js';
 import type { GateProblem } from '../../pipeline/gates.js';
+import { answerLeakGates } from './answerLeak.js';
 import { golden } from './golden.js';
 import { numA } from './num-a.js';
 import { numB } from './num-b.js';
@@ -42,6 +43,8 @@ export const HORIZONTE_FORGE_CAPABILITIES = {
   ...space2.capabilities,
 } as const;
 
+const HORIZONTE_TYPES: ReadonlySet<string> = new Set(Object.keys(HORIZONTE_FORGE_CAPABILITIES));
+
 /** Authoring guidance lines for the segment types a lesson skeleton uses. */
 export function horizonteGuidanceFor(types: readonly string[]): string[] {
   const used = new Set(types);
@@ -50,5 +53,6 @@ export function horizonteGuidanceFor(types: readonly string[]): string[] {
 
 /** Every pack's piece gates over one document and its private keys. */
 export function horizontePieceGates(document: V2DocumentLike, answerKeys?: Record<string, unknown>): GateProblem[] {
-  return HORIZONTE_FORGE_PACKS.flatMap((pack) => (pack.gates as (document: V2DocumentLike, answerKeys?: Record<string, unknown>) => GateProblem[])(document, answerKeys));
+  const packs = HORIZONTE_FORGE_PACKS.flatMap((pack) => (pack.gates as (document: V2DocumentLike, answerKeys?: Record<string, unknown>) => GateProblem[])(document, answerKeys));
+  return [...packs, ...answerLeakGates(document, answerKeys, HORIZONTE_TYPES)];
 }
