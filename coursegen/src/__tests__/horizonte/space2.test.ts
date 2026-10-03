@@ -321,8 +321,8 @@ describe('F4.7 formula surface in the Forge (a free-form z = f(x, y), read by a 
       const hostile: unknown[] = [
         'alert(1)', 'constructor', '__proto__', 'process.exit()', 'this', 'globalThis', 'x.constructor', 'x["a"]', 'x;y', 'x=y', 'x,y', '`x`', '${x}', '<script>', 'x//y',
         'eval("1")', 'Function("return 1")()', 'x^7', 'x^-1', 'x^y', 'x^x', 'x^2^2', 'x^2.5', 'x^99999999999', '1'.repeat(40), '9'.repeat(7), '1e999', '0x1f', '1_000',
-        '(((((((((((x)))))))))))', '('.repeat(30) + 'x' + ')'.repeat(30), 'x'.repeat(49), 'x+'.repeat(40), '((x', 'x)', '()', '', '   ', '.', ',', '1.', '1,,2', 'x y',
-        'x\n+y', '‮x+y', 'ｘ+ｙ', 'x'.repeat(100_000), `${'x*'.repeat(30)}x`, '2^6^6', 'x/0', '--x', '+-x', null, undefined, 7, {}, [], ['x'],
+        '(((((((((((x)))))))))))', '('.repeat(30) + 'x' + ')'.repeat(30), 'x'.repeat(49), 'x+'.repeat(40), '((x', 'x)', '()', '', '   ', '.', ',', '1.', '1,,2', 'x\u0000y',
+        'x\n+y', '\u202ex+y', 'ｘ+ｙ', 'x'.repeat(100_000), `${'x*'.repeat(30)}x`, '2^6^6', 'x/0', '--x', '+-x', null, undefined, 7, {}, [], ['x'],
       ];
       for (const input of hostile) {
         let parsed: ReturnType<typeof parseFormula> | undefined;
