@@ -1,7 +1,7 @@
 import { Suspense, lazy, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Locale } from '../../design/copyBudget';
 import { Button } from '../../design/controls';
-import { chartFacts, chartReads, chartTable, chartTree, hierarchyValue, isReadingChart, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind, type ReadingChartKind } from './chartModel.generated';
+import { chartFacts, chartReads, chartTable, chartTree, hierarchyValue, isReadingChart, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind, type ChartTableModel, type ReadingChartKind } from './chartModel.generated';
 import { readingCell, readingDescription, readingWord } from './readingWords';
 import './charts.css';
 
@@ -40,10 +40,10 @@ export interface ChartTag {
 type Tags = ChartTag[];
 const tag = (out: Tags, value: ChartTag): null => { out.push(value); return null; };
 
-export const chartCopy: Record<Locale, { showTable: string; showChart: string; table: string; category: string; value: string; target: string; delta: string; total: string; from: string; to: string; each: (n: string) => string }> = {
-  'en-US': { showTable: 'Show as table', showChart: 'Show chart', table: 'Chart data', category: 'Item', value: 'Value', target: 'Goal', delta: 'Change', total: 'Total', from: 'From', to: 'To', each: (n) => `Each icon is ${n}` },
-  'es-MX': { showTable: 'Ver tabla', showChart: 'Ver gráfica', table: 'Datos de la gráfica', category: 'Elemento', value: 'Valor', target: 'Meta', delta: 'Cambio', total: 'Total', from: 'De', to: 'A', each: (n) => `Cada ícono vale ${n}` },
-  'pt-BR': { showTable: 'Ver tabela', showChart: 'Ver gráfico', table: 'Dados do gráfico', category: 'Item', value: 'Valor', target: 'Meta', delta: 'Mudança', total: 'Total', from: 'De', to: 'Para', each: (n) => `Cada ícone vale ${n}` },
+export const chartCopy: Record<Locale, { showTable: string; showChart: string; table: string; category: string; value: string; target: string; delta: string; total: string; from: string; to: string; label: string; each: (n: string) => string }> = {
+  'en-US': { showTable: 'Show as table', showChart: 'Show chart', table: 'Chart data', category: 'Item', value: 'Value', target: 'Goal', delta: 'Change', total: 'Total', from: 'From', to: 'To', label: 'Label', each: (n) => `Each icon is ${n}` },
+  'es-MX': { showTable: 'Ver tabla', showChart: 'Ver gráfica', table: 'Datos de la gráfica', category: 'Elemento', value: 'Valor', target: 'Meta', delta: 'Cambio', total: 'Total', from: 'De', to: 'A', label: 'Etiqueta', each: (n) => `Cada ícono vale ${n}` },
+  'pt-BR': { showTable: 'Ver tabela', showChart: 'Ver gráfico', table: 'Dados do gráfico', category: 'Item', value: 'Valor', target: 'Meta', delta: 'Mudança', total: 'Total', from: 'De', to: 'Para', label: 'Rótulo', each: (n) => `Cada ícone vale ${n}` },
 };
 
 export const HUES = ['var(--sky-strong)', 'var(--mint-strong)', 'var(--berry-strong)'];
@@ -59,6 +59,16 @@ export function Patterns({ prefix }: { prefix: string }) {
 }
 export const fillOf = (prefix: string, index: number) => `url(#${prefix}-${index % 3})`;
 
+/** A diagram has no numbers to read out, so its description is its structure: each step and where it leads. */
+function diagramFacts(kind: ChartKind, { rows }: ChartTableModel): string {
+  return rows.map(({ cells }) => {
+    const [first = '', second = '', third = ''] = cells.map(String);
+    if (kind === 'swimlane') return `${first}${second ? ` (${second})` : ''}${third ? ` → ${third}` : ''}`;
+    if (kind === 'flowchart' || kind === 'decision-tree' || kind === 'tree') return `${first} → ${second}${third ? ` (${third})` : ''}`;
+    return second ? `${second} → ${first}` : first;
+  }).join('; ');
+}
+
 /** `embedded`: the chart sits inside a board that already offers its own table, so it drops its own toggle (one "Show as table" per board). */
 export function TeachingChart({ kind, data, title, locale, embedded = false }: { kind: ChartKind; data: ChartData; title: string; locale: Locale; embedded?: boolean }) {
   const t = chartCopy[locale];
@@ -66,22 +76,25 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
   const id = useId().replace(/:/g, '');
   const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
   const reading = isReadingChart(kind);
-  const facts = reading ? readingDescription(locale, chartReads(kind, data), number.format) : chartFacts(kind, data).map((fact) => `${fact.label}: ${number.format(fact.value)}`).join('; ');
   const model = chartTable(kind, data);
+  const facts = reading ? readingDescription(locale, chartReads(kind, data), number.format)
+    : chartFacts(kind, data).map((fact) => `${fact.label}: ${number.format(fact.value)}`).join('; ') || diagramFacts(kind, model);
   const canvas = useRef<HTMLDivElement>(null);
   useFittedTags(canvas);
   const labels: Tags = [];
   const drawing = table || reading ? null : draw(kind, data, id, locale, labels);
   const word = (text: string) => (reading ? readingCell(locale, text) : text);
   const heading = (column: string) => (reading ? readingWord(locale, column) : column);
+  // A link's own label is a cell without a model column: it gets a header, and shorter rows are padded, so every cell has a column.
+  const columns = [...model.columns.map(heading), ...Array.from({ length: Math.max(0, ...model.rows.map((row) => row.cells.length - 1 - model.columns.length)) }, () => t.label)];
   return <figure className="lf-chart" data-chart-kind={kind}>
     <figcaption className="lf-chart-head"><span data-copy-role="heading">{title}</span>
       {embedded ? null : <Button onClick={() => setTable((value) => !value)}>{table ? t.showChart : t.showTable}</Button>}</figcaption>
     {table ? <table className="lf-learning-table lf-chart-table" aria-label={t.table}>
-      <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{model.columns.map((column) => <th key={column} scope="col" data-copy-role="data">{heading(column)}</th>)}</tr></thead>
-      <tbody>{model.rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => index === 0
+      <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{columns.map((column, index) => <th key={index} scope="col" data-copy-role="data">{column}</th>)}</tr></thead>
+      <tbody>{model.rows.map((row) => <tr key={row.id}>{Array.from({ length: columns.length + 1 }, (_, index) => row.cells[index] ?? '').map((cell, index) => index === 0
         ? <th key={index} scope="row" data-label={t.category} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</th>
-        : <td key={index} data-label={heading(model.columns[index - 1] ?? '')} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</td>)}</tr>)}</tbody>
+        : <td key={index} data-label={columns[index - 1]} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</td>)}</tr>)}</tbody>
     </table> : reading ? <Suspense fallback={<div className="lf-chart-plot" aria-busy="true" data-copy-role="data"><div className="lf-chart-canvas" /></div>}>
       <ReadingPlot kind={kind as ReadingChartKind} data={data} title={title} locale={locale} id={id} description={facts} />
     </Suspense> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
