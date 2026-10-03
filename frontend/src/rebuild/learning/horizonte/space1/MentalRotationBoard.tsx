@@ -7,6 +7,7 @@ import { readRotationPayload, type RotationPayload } from './rotationRules.gener
 import { VoxelFigure } from './VoxelFigure';
 import { axisNote, cellsText, fill, space1Text, targetId, targetLetter } from './space1Text';
 import { ANGLES, isAngle, turnFigure, type Angle, type TargetId } from './voxels.generated';
+import { TableScroll } from './TableScroll';
 import '../horizonte.css';
 import './space1.css';
 
@@ -83,7 +84,7 @@ function MentalRotation({ document, segment, payload, onBack, sequence, onGrade 
       <p data-copy-role="body">{axisNote(t, axis)}</p>
       <p className="lf-rot-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.rotStatus, { angle, picked })}</p>
       {table ? <>
-        <table className="lf-hz-table" data-hz-table="">
+        <TableScroll label={t.rotTableCaption}><table className="lf-hz-table" data-hz-table="">
           <caption data-copy-role="heading">{t.rotTableCaption}</caption>
           <thead><tr>
             <th scope="col" data-copy-role="data">{t.rotColShape}</th><th scope="col" data-copy-role="data">{t.rotColCubes}</th>
@@ -97,7 +98,7 @@ function MentalRotation({ document, segment, payload, onBack, sequence, onGrade 
               <td data-copy-role="data">{cells.length}</td><td data-copy-role="data">{cellsText(cells)}</td>
             </tr>)}
           </tbody>
-        </table>
+        </table></TableScroll>
         <p data-copy-role="body">{t.rotCoords}</p>
       </> : null}
     </section>
