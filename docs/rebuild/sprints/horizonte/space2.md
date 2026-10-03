@@ -61,7 +61,8 @@ that no other file in the pack imports `three`:
   Where the gate is closed, or the device has no AR, the learner sees the fallback and nothing else; the "See on table" button does not
   appear.
 - Leaving AR (the browser's own control, the learner's end, or unmounting the board) ends the session, stops the animation loop and
-  releases every GPU resource.
+  releases every GPU resource. A start that fails after the browser has opened the session (no WebGL, no XR layer, no viewer space or
+  hit-test source) ends that session and releases what was built before the board shows the failure, so the camera view never outlives it.
 - Nothing from this pack reaches the Oracle context: the `.strict()` 14-field context is untouched.
 
 ## Segment contracts
