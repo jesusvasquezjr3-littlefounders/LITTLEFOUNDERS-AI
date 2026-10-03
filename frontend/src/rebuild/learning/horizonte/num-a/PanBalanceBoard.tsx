@@ -8,6 +8,7 @@ import { TableToggle } from './boardKit';
 import { PAN_LEFT, PAN_RIGHT, PAN_TRAY, balanceSetup, panDifference, panTotals, untouchedPans } from './measure-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './Measure.css';
 
 type BalanceSegment = Extract<HorizonteSegment, { type: 'math.pan-balance.v2' }>;

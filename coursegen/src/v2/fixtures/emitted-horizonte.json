@@ -193,7 +193,11 @@
         "operation.set-hands.v1",
         "visual.ruler.v1",
         "operation.stretch-bar.v1",
-        "visual.pan-balance.v1"
+        "visual.pan-balance.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -293,6 +297,43 @@
               3
             ]
           }
+        },
+        {
+          "id": "order-tens",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Put each number on the line.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 0,
+            "low": 0,
+            "step": 10,
+            "count": 10,
+            "values": [
+              70,
+              30,
+              90,
+              50
+            ]
+          }
+        },
+        {
+          "id": "measure-pencil",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "How long is the pencil in cm?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "cm",
+            "object": "pencil",
+            "from": 0,
+            "to": 7,
+            "max": 10
+          }
         }
       ]
     },
@@ -320,6 +361,27 @@
       },
       "balance-it": {
         "target": 0
+      },
+      "order-tens": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "measure-pencil": {
+        "target": "7"
       }
     }
   },
@@ -358,7 +420,11 @@
         "operation.set-hands.v1",
         "visual.ruler.v1",
         "operation.stretch-bar.v1",
-        "visual.pan-balance.v1"
+        "visual.pan-balance.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -458,6 +524,43 @@
               3
             ]
           }
+        },
+        {
+          "id": "order-tens",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Pon cada número en la recta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 0,
+            "low": 0,
+            "step": 10,
+            "count": 10,
+            "values": [
+              70,
+              30,
+              90,
+              50
+            ]
+          }
+        },
+        {
+          "id": "measure-pencil",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "¿Cuánto mide el lápiz en cm?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "cm",
+            "object": "pencil",
+            "from": 0,
+            "to": 7,
+            "max": 10
+          }
         }
       ]
     },
@@ -485,6 +588,27 @@
       },
       "balance-it": {
         "target": 0
+      },
+      "order-tens": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "measure-pencil": {
+        "target": "7"
       }
     }
   },
@@ -523,7 +647,11 @@
         "operation.set-hands.v1",
         "visual.ruler.v1",
         "operation.stretch-bar.v1",
-        "visual.pan-balance.v1"
+        "visual.pan-balance.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -623,6 +751,43 @@
               3
             ]
           }
+        },
+        {
+          "id": "order-tens",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Coloque cada número na reta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 0,
+            "low": 0,
+            "step": 10,
+            "count": 10,
+            "values": [
+              70,
+              30,
+              90,
+              50
+            ]
+          }
+        },
+        {
+          "id": "measure-pencil",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "Quanto mede o lápis em cm?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "cm",
+            "object": "pencil",
+            "from": 0,
+            "to": 7,
+            "max": 10
+          }
         }
       ]
     },
@@ -650,6 +815,27 @@
       },
       "balance-it": {
         "target": 0
+      },
+      "order-tens": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "measure-pencil": {
+        "target": "7"
       }
     }
   },
@@ -679,7 +865,13 @@
       "required_capabilities": [
         "visual.zoom-number-line.v1",
         "operation.zoom-in.v1",
-        "operation.place-point.v1"
+        "operation.place-point.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "operation.drag-chips.v1",
+        "operation.move-menu.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -700,12 +892,74 @@
             "met": "You read the scale and put it where it belongs.",
             "not_yet": "Zoom in on the scale again and check its marks."
           }
+        },
+        {
+          "id": "order-tenths",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Put each decimal where it belongs on the line.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 1,
+            "low": 0,
+            "step": 1,
+            "count": 10,
+            "values": [
+              7,
+              2,
+              5
+            ]
+          },
+          "feedback": {
+            "met": "Every decimal sits where it belongs.",
+            "not_yet": "Read the numbered ends again and count the steps."
+          }
+        },
+        {
+          "id": "measure-strip",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "How long is the paper strip in inches?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "in",
+            "object": "strip",
+            "from": 2,
+            "to": 8,
+            "max": 11
+          },
+          "feedback": {
+            "met": "You read the length of the strip.",
+            "not_yet": "Check where the strip starts before you read its end."
+          }
         }
       ]
     },
     "answer_keys": {
       "zoom-tenths": {
         "target": 34
+      },
+      "order-tenths": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "measure-strip": {
+        "target": "6"
       }
     }
   },
@@ -735,7 +989,13 @@
       "required_capabilities": [
         "visual.zoom-number-line.v1",
         "operation.zoom-in.v1",
-        "operation.place-point.v1"
+        "operation.place-point.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "operation.drag-chips.v1",
+        "operation.move-menu.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -756,12 +1016,74 @@
             "met": "Leíste la escala y lo pusiste donde corresponde.",
             "not_yet": "Acércate a la escala otra vez y revisa sus marcas."
           }
+        },
+        {
+          "id": "order-tenths",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Pon cada decimal donde le toca en la recta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 1,
+            "low": 0,
+            "step": 1,
+            "count": 10,
+            "values": [
+              7,
+              2,
+              5
+            ]
+          },
+          "feedback": {
+            "met": "Cada decimal está donde le toca.",
+            "not_yet": "Lee de nuevo los extremos con número y cuenta los pasos."
+          }
+        },
+        {
+          "id": "measure-strip",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "¿Cuántas pulgadas mide la tira de papel?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "in",
+            "object": "strip",
+            "from": 2,
+            "to": 8,
+            "max": 11
+          },
+          "feedback": {
+            "met": "Leíste la longitud de la tira.",
+            "not_yet": "Mira dónde empieza la tira antes de leer su final."
+          }
         }
       ]
     },
     "answer_keys": {
       "zoom-tenths": {
         "target": 34
+      },
+      "order-tenths": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "measure-strip": {
+        "target": "6"
       }
     }
   },
@@ -791,7 +1113,13 @@
       "required_capabilities": [
         "visual.zoom-number-line.v1",
         "operation.zoom-in.v1",
-        "operation.place-point.v1"
+        "operation.place-point.v1",
+        "visual.order-number-line.v1",
+        "operation.place-numbers.v1",
+        "operation.drag-chips.v1",
+        "operation.move-menu.v1",
+        "visual.ruler-measure.v1",
+        "operation.read-length.v1"
       ],
       "segments": [
         {
@@ -812,12 +1140,74 @@
             "met": "Você leu a escala e colocou no lugar certo.",
             "not_yet": "Aproxime a escala de novo e confira as marcas."
           }
+        },
+        {
+          "id": "order-tenths",
+          "type": "math.number-line.order.v2",
+          "grading": "server",
+          "prompt": "Coloque cada decimal no lugar certo da reta.",
+          "visual": {
+            "type": "order-number-line"
+          },
+          "payload": {
+            "scale": 1,
+            "low": 0,
+            "step": 1,
+            "count": 10,
+            "values": [
+              7,
+              2,
+              5
+            ]
+          },
+          "feedback": {
+            "met": "Cada decimal está no lugar certo.",
+            "not_yet": "Leia de novo as pontas com número e conte os passos."
+          }
+        },
+        {
+          "id": "measure-strip",
+          "type": "math.ruler.measure.v2",
+          "grading": "server",
+          "prompt": "Quantas polegadas mede a tira de papel?",
+          "visual": {
+            "type": "ruler-measure"
+          },
+          "payload": {
+            "unit": "in",
+            "object": "strip",
+            "from": 2,
+            "to": 8,
+            "max": 11
+          },
+          "feedback": {
+            "met": "Você leu o comprimento da tira.",
+            "not_yet": "Veja onde a tira começa antes de ler o fim dela."
+          }
         }
       ]
     },
     "answer_keys": {
       "zoom-tenths": {
         "target": 34
+      },
+      "order-tenths": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "measure-strip": {
+        "target": "6"
       }
     }
   },

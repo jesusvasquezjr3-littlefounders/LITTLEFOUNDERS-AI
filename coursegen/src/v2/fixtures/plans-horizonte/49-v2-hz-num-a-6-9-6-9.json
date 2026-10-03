@@ -205,6 +205,84 @@
           "prompt": "Equilibre os dois pratos."
         }
       }
+    },
+    {
+      "id": "order-tens",
+      "type": "math.number-line.order.v2",
+      "grading": "server",
+      "visual": {
+        "type": "order-number-line"
+      },
+      "payload": {
+        "scale": 0,
+        "low": 0,
+        "step": 10,
+        "count": 10,
+        "values": [
+          70,
+          30,
+          90,
+          50
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-70"
+            ],
+            "m-3": [
+              "n-30"
+            ],
+            "m-9": [
+              "n-90"
+            ],
+            "m-5": [
+              "n-50"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each number on the line."
+        },
+        "es-MX": {
+          "prompt": "Pon cada número en la recta."
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada número na reta."
+        }
+      }
+    },
+    {
+      "id": "measure-pencil",
+      "type": "math.ruler.measure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ruler-measure"
+      },
+      "payload": {
+        "unit": "cm",
+        "object": "pencil",
+        "from": 0,
+        "to": 7,
+        "max": 10
+      },
+      "rubric": {
+        "target": "7"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How long is the pencil in cm?"
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto mide el lápiz en cm?"
+        },
+        "pt-BR": {
+          "prompt": "Quanto mede o lápis em cm?"
+        }
+      }
     }
   ]
 }

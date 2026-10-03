@@ -8,6 +8,7 @@ import { TableToggle } from './boardKit';
 import { clockMinutes, clockParts, clockSetup, clockText, handAngles, minuteAtAngle } from './measure-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './Measure.css';
 
 type ClockSegment = Extract<HorizonteSegment, { type: 'math.clock.v2' }>;
