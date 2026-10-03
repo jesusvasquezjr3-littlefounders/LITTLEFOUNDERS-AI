@@ -115,7 +115,7 @@ describe('algebra cards (D06)', () => {
     const left = await screen.findByRole('group', { name: 'Left side' });
     const right = screen.getByRole('group', { name: 'Right side' });
     expect(screen.getByRole('button', { name: 'Check' })).toBeDisabled();
-    expect(status()).toHaveTextContent('Left side: Mystery box, Coins: 3. Right side: Coins: 7');
+    expect(status()).toHaveTextContent('Left side: Unknown box, Coins: 3. Right side: Coins: 7');
     press('Debt: 3');
     press('Debt: 3: Move to');
     fireEvent.click(await screen.findByRole('menuitem', { name: 'Both sides' }));
@@ -123,7 +123,7 @@ describe('algebra cards (D06)', () => {
     expect(within(right).getByRole('button', { name: 'Debt: 3' })).toBeTruthy();
     fireEvent.click(within(left).getByRole('button', { name: 'Coins: 3' }));
     fireEvent.click(within(left).getByRole('button', { name: 'Debt: 3' }));
-    expect(status()).toHaveTextContent('Left side: Mystery box. Right side: Coins: 7, Debt: 3');
+    expect(status()).toHaveTextContent('Left side: Unknown box. Right side: Coins: 7, Debt: 3');
     check();
     await waitFor(() => expect(grade).toHaveBeenCalledWith(
       { slots: { left: ['left-1'], right: ['right-1', 'supply-1-b'], bin: ['left-2', 'supply-1-a'] } }, 'cards-box-picture', expect.anything(),
@@ -165,7 +165,7 @@ describe('algebra cards (D06)', () => {
     await screen.findByRole('group', { name: 'Left side' });
     press('Show as table');
     const table = screen.getByRole('table', { name: 'Cards on each side' });
-    expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['SideCards', 'Left sideMystery box, Coins: 3', 'Right sideCoins: 7', 'Cancelledempty']);
+    expect(within(table).getAllByRole('row').map((row) => row.textContent)).toEqual(['SideCards', 'Left sideUnknown box, Coins: 3', 'Right sideCoins: 7', 'Cancelledempty']);
   });
 
   it('speaks the same piece in Spanish and Portuguese', async () => {

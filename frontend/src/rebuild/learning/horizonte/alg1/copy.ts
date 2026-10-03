@@ -28,7 +28,7 @@ export const ALG1_COPY = {
   metTiles: { role: 'body', band: '10-12', 'en-US': 'You set every zero pair aside.', 'es-MX': 'Apartaste todos los pares cero.', 'pt-BR': 'Você separou todos os pares zero.' },
   hintTiles: { role: 'body', band: '10-12', 'en-US': 'Not yet. Match each tile with its opposite.', 'es-MX': 'Aún no. Junta cada ficha con su opuesta.', 'pt-BR': 'Ainda não. Junte cada peça com a oposta.' },
 
-  boxName: { role: 'option', band: '10-12', 'en-US': 'Mystery box', 'es-MX': 'Caja misteriosa', 'pt-BR': 'Caixa misteriosa' },
+  boxName: { role: 'option', band: '10-12', 'en-US': 'Unknown box', 'es-MX': 'Caja desconocida', 'pt-BR': 'Caixa desconhecida' },
   boxDebt: { role: 'option', band: '10-12', 'en-US': 'Box debt', 'es-MX': 'Deuda de caja', 'pt-BR': 'Dívida de caixa' },
   coins: { role: 'option', band: '10-12', 'en-US': 'Coins: {n}', 'es-MX': 'Monedas: {n}', 'pt-BR': 'Moedas: {n}' },
   debt: { role: 'option', band: '10-12', 'en-US': 'Debt: {n}', 'es-MX': 'Deuda: {n}', 'pt-BR': 'Dívida: {n}' },
