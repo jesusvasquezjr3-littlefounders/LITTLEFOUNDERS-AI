@@ -39,12 +39,12 @@ const PROB_GUIDANCE: readonly ForgeGuidance[] = [
 ];
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isSafeInteger(value);
-const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
-const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
+export const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
   record(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 
-type Frac = { n: bigint; d: bigint };
+export type Frac = { n: bigint; d: bigint };
 
 const gcd = (a: bigint, b: bigint): bigint => {
   let x = a < 0n ? -a : a;
@@ -52,12 +52,12 @@ const gcd = (a: bigint, b: bigint): bigint => {
   while (y !== 0n) [x, y] = [y, x % y];
   return x;
 };
-const frac = (n: bigint, d: bigint): Frac => {
+export const frac = (n: bigint, d: bigint): Frac => {
   const g = gcd(n, d) || 1n;
   const sign = d < 0n ? -1n : 1n;
   return { n: (sign * n) / g, d: (sign * d) / g };
 };
-const compare = (a: Frac, b: Frac): number => {
+export const compare = (a: Frac, b: Frac): number => {
   const left = a.n * b.d;
   const right = b.n * a.d;
   return left < right ? -1 : left > right ? 1 : 0;
@@ -66,7 +66,7 @@ const compare = (a: Frac, b: Frac): number => {
 const DECIMAL = /^-?(0|[1-9]\d{0,14})(\.\d{1,12})?$/;
 const FRACTION = /^-?(0|[1-9]\d{0,14})\/[1-9]\d{0,14}$/;
 
-function readNumber(text: unknown): Frac | null {
+export function readNumber(text: unknown): Frac | null {
   if (typeof text !== 'string' || text.length > 32) return null;
   const negative = text.startsWith('-');
   const body = negative ? text.slice(1) : text;
@@ -82,11 +82,11 @@ function readNumber(text: unknown): Frac | null {
   return null;
 }
 
-const ZERO: Frac = { n: 0n, d: 1n };
+export const ZERO: Frac = { n: 0n, d: 1n };
 
-type Ratio = { part: number; whole: number };
-type Basis = { population: number; prior: Ratio; hit: Ratio; alarm: Ratio };
-type Counts = { has: number; lacks: number; hasPos: number; hasNeg: number; lacksPos: number; lacksNeg: number };
+export type Ratio = { part: number; whole: number };
+export type Basis = { population: number; prior: Ratio; hit: Ratio; alarm: Ratio };
+export type Counts = { has: number; lacks: number; hasPos: number; hasNeg: number; lacksPos: number; lacksNeg: number };
 
 const ratioOf = (value: unknown): Ratio | null =>
   hasOnly(value, ['part', 'whole']) && inRange(value.whole, 2, 1000) && inRange(value.part, 1, value.whole - 1) ? { part: value.part, whole: value.whole } : null;
@@ -113,8 +113,8 @@ function countsOf(basis: Basis): Counts | null {
   return { has, lacks, hasPos, hasNeg: has - hasPos, lacksPos, lacksNeg: lacks - lacksPos };
 }
 
-const valuesOf = (counts: Counts): number[] => [counts.has, counts.lacks, counts.hasPos, counts.hasNeg, counts.lacksPos, counts.lacksNeg];
-const SLOTS = ['has', 'lacks', 'has-pos', 'has-neg', 'lacks-pos', 'lacks-neg'] as const;
+export const valuesOf = (counts: Counts): number[] => [counts.has, counts.lacks, counts.hasPos, counts.hasNeg, counts.lacksPos, counts.lacksNeg];
+export const SLOTS = ['has', 'lacks', 'has-pos', 'has-neg', 'lacks-pos', 'lacks-neg'] as const;
 
 type Report = (message: string) => void;
 type Check = (payload: Record<string, unknown>, key: unknown, hasKey: boolean, report: Report) => void;
@@ -135,27 +135,29 @@ function visit(document: { segments?: unknown }, answerKeys: Record<string, unkn
   return problems;
 }
 
-/** The tree a payload grows, or null after reporting why it cannot grow one. */
-function growable(payload: Record<string, unknown>, extra: readonly string[], report: Report): { basis: Basis; counts: Counts } | null {
+/** The tree a payload grows, or why it cannot: the field list, the population and shares, whole people, or six counts that tie. */
+export type Growth = { basis: Basis; counts: Counts } | { problem: 'fields' | 'basis' | 'whole' | 'ties'; message: string };
+
+export function growthOf(payload: Record<string, unknown>, extra: readonly string[]): Growth {
   if (!Object.keys(payload).every((name) => ['population', 'prior', 'hit', 'alarm', ...extra].includes(name))) {
-    report(`The payload carries only the population, the three shares and ${extra.join(', ')}`);
-    return null;
+    return { problem: 'fields', message: `The payload carries only the population, the three shares and ${extra.join(', ')}` };
   }
   const basis = basisOf(payload);
-  if (!basis) {
-    report('The population is 100 to 10000 and each share is a part in a whole, with the part below the whole');
-    return null;
-  }
+  if (!basis) return { problem: 'basis', message: 'The population is 100 to 10000 and each share is a part in a whole, with the part below the whole' };
   const counts = countsOf(basis);
-  if (!counts) {
-    report('Every share must land on whole people');
-    return null;
-  }
-  if (new Set(valuesOf(counts)).size !== SLOTS.length) {
-    report('The six counts must all differ, so each count has one branch');
-    return null;
-  }
+  if (!counts) return { problem: 'whole', message: 'Every share must land on whole people' };
+  if (new Set(valuesOf(counts)).size !== SLOTS.length) return { problem: 'ties', message: 'The six counts must all differ, so each count has one branch' };
   return { basis, counts };
+}
+
+/** The tree a payload grows, or null after reporting why it cannot grow one. */
+function growable(payload: Record<string, unknown>, extra: readonly string[], report: Report): { basis: Basis; counts: Counts } | null {
+  const grown = growthOf(payload, extra);
+  if ('problem' in grown) {
+    report(grown.message);
+    return null;
+  }
+  return grown;
 }
 
 const treeGate: Check = (payload, key, hasKey, report) => {
@@ -196,19 +198,33 @@ const bayesGate: Check = (payload, key, hasKey, report) => {
   if (!near || compare(near, met) <= 0 || compare(near, frac(1n, 10n)) > 0) report('The Bayes review band is wider than the tolerance and at most 0.1');
 };
 
-type Point = { x: number; y: number };
+export type Point = { x: number; y: number };
 
-function pointsOf(payload: Record<string, unknown>): { size: number; points: Point[] } | null {
+/** The slider ranges of the line, in tenths. */
+export const SLOPE_TENTHS = { min: -30, max: 30 } as const;
+export const INTERCEPT_TENTHS = { min: -50, max: 150 } as const;
+
+/** The points a payload plots, or why it cannot plot them: the grid or the count, a point off the grid, a repeated point, or too few x values. */
+export type Plotted = { size: number; points: Point[] } | { problem: 'size' | 'count' | 'range' | 'repeat' | 'spread'; message: string };
+
+export function plotOf(payload: Record<string, unknown>): Plotted {
   const { size, points } = payload;
-  if (!inRange(size, 6, 20) || !Array.isArray(points) || points.length < 4 || points.length > 12) return null;
-  if (!points.every((point) => hasOnly(point, ['x', 'y']) && inRange(point.x, 0, size) && inRange(point.y, 0, size))) return null;
+  if (!inRange(size, 6, 20)) return { problem: 'size', message: 'The grid size is a whole number from 6 to 20' };
+  if (!Array.isArray(points) || points.length < 4 || points.length > 12) return { problem: 'count', message: 'The plot has 4 to 12 points' };
+  if (!points.every((point) => hasOnly(point, ['x', 'y']) && inRange(point.x, 0, size) && inRange(point.y, 0, size))) return { problem: 'range', message: `Every point is a pair of whole numbers from 0 to ${size}` };
   const list = points as Point[];
-  if (new Set(list.map((point) => `${point.x},${point.y}`)).size !== list.length || new Set(list.map((point) => point.x)).size < 3) return null;
+  if (new Set(list.map((point) => `${point.x},${point.y}`)).size !== list.length) return { problem: 'repeat', message: 'The points must all be different' };
+  if (new Set(list.map((point) => point.x)).size < 3) return { problem: 'spread', message: 'At least 3 points must sit at different x' };
   return { size, points: list };
 }
 
-/** The least squares line in tenths, when both numbers are exact tenths inside the slider ranges. */
-function fitTenths(points: readonly Point[]): { slope: number; intercept: number } | null {
+function pointsOf(payload: Record<string, unknown>): { size: number; points: Point[] } | null {
+  const plotted = plotOf(payload);
+  return 'problem' in plotted ? null : plotted;
+}
+
+/** The exact least squares line, or null when every x is the same. */
+export function exactFit(points: readonly Point[]): { slope: Frac; intercept: Frac } | null {
   const n = points.length;
   const sx = points.reduce((sum, point) => sum + point.x, 0);
   const sy = points.reduce((sum, point) => sum + point.y, 0);
@@ -218,13 +234,22 @@ function fitTenths(points: readonly Point[]): { slope: number; intercept: number
   if (denominator === 0) return null;
   const slope = frac(BigInt(n * sxy - sx * sy), BigInt(denominator));
   const intercept = frac(BigInt(sy) * slope.d - slope.n * BigInt(sx), BigInt(n) * slope.d);
-  const tenth = (value: Frac): number | null => {
-    const scaled = frac(value.n * 10n, value.d);
-    return scaled.d === 1n && scaled.n >= -1000n && scaled.n <= 1000n ? Number(scaled.n) : null;
-  };
-  const slopeTenths = tenth(slope);
-  const interceptTenths = tenth(intercept);
-  if (slopeTenths === null || interceptTenths === null || !inRange(slopeTenths, -30, 30) || !inRange(interceptTenths, -50, 150)) return null;
+  return { slope, intercept };
+}
+
+/** A fraction in tenths, when it is an exact whole number of tenths (within a sane bound). */
+export function asTenths(value: Frac): number | null {
+  const scaled = frac(value.n * 10n, value.d);
+  return scaled.d === 1n && scaled.n >= -1000n && scaled.n <= 1000n ? Number(scaled.n) : null;
+}
+
+/** The least squares line in tenths, when both numbers are exact tenths inside the slider ranges. */
+export function fitTenths(points: readonly Point[]): { slope: number; intercept: number } | null {
+  const fit = exactFit(points);
+  if (!fit) return null;
+  const slopeTenths = asTenths(fit.slope);
+  const interceptTenths = asTenths(fit.intercept);
+  if (slopeTenths === null || interceptTenths === null || !inRange(slopeTenths, SLOPE_TENTHS.min, SLOPE_TENTHS.max) || !inRange(interceptTenths, INTERCEPT_TENTHS.min, INTERCEPT_TENTHS.max)) return null;
   return { slope: slopeTenths, intercept: interceptTenths };
 }
 
@@ -233,7 +258,7 @@ const regressionGate: Check = (payload, key, hasKey, report) => {
   const grid = pointsOf(payload);
   if (!grid) return report('The points are 4 to 12 different whole points on a grid of 6 to 20, at least 3 of them at different x');
   const start = payload.start;
-  if (!hasOnly(start, ['slope', 'intercept']) || !inRange(start.slope, -30, 30) || !inRange(start.intercept, -50, 150)) return report('The start line is a slope from -30 to 30 and an intercept from -50 to 150, both in tenths');
+  if (!hasOnly(start, ['slope', 'intercept']) || !inRange(start.slope, SLOPE_TENTHS.min, SLOPE_TENTHS.max) || !inRange(start.intercept, INTERCEPT_TENTHS.min, INTERCEPT_TENTHS.max)) return report('The start line is a slope from -30 to 30 and an intercept from -50 to 150, both in tenths');
   const fit = fitTenths(grid.points);
   if (!fit) return report('The best line must have its slope and intercept on the tenths grid, inside the slider ranges');
   if (grid.points.every((point) => 10 * point.y - fit.slope * point.x - fit.intercept === 0)) return report('The points must not all lie on one line');
