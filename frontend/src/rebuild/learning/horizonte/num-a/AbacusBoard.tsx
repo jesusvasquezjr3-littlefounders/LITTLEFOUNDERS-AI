@@ -4,7 +4,7 @@ import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } f
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
-import { TableToggle, pressable } from './boardKit';
+import { TableToggle, hitSpan, pressable } from './boardKit';
 import { ABACUS_MAX_DIGIT, REKENREK_BLOCK, abacusValue, rodBeads, sameBeads, tapFive, tapOne } from './beads-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
@@ -19,7 +19,9 @@ const BEAM = 92;
 const HEIGHT = 300;
 const ONES = REKENREK_BLOCK - 1;
 const fiveY = (active: boolean) => (active ? BEAM - 26 : BEAM - 56);
-const oneY = (index: number, active: boolean) => BEAM + 26 + index * 36 + (active ? 0 : 22);
+const ONE_PITCH = 36;
+const FIVE_HIT = 40;
+const oneY = (index: number, active: boolean) => BEAM + 26 + index * ONE_PITCH + (active ? 0 : 22);
 
 const MOVES = { 'add-1': 1, 'take-1': -1, 'add-5': REKENREK_BLOCK, 'take-5': -REKENREK_BLOCK } as const;
 type Move = keyof typeof MOVES;
@@ -63,7 +65,7 @@ function Abacus({ document, segment, onBack, sequence, onGrade }: Omit<Horizonte
       named={{ met: t.metAbacus, hint: t.hintAbacus }} onCheck={() => grading.check({ digits })} />}>
     <section className="lf-learning-board lf-num-board" aria-label={t.abacus}>
       <div className="lf-num-scroll">
-        <svg className="lf-aba" viewBox={`0 0 ${width} ${HEIGHT}`} role="group" aria-label={t.abacus} focusable="false">
+        <svg className="lf-aba lf-hz-hit-sized" style={hitSpan(width, ONE_PITCH)} viewBox={`0 0 ${width} ${HEIGHT}`} role="group" aria-label={t.abacus} focusable="false">
           <rect className="lf-aba-frame" x={2} y={2} width={width - 4} height={HEIGHT - 36} rx={12} />
           <line className="lf-aba-beam" x1={PAD / 2} x2={width - PAD / 2} y1={BEAM} y2={BEAM} />
           {digits.map((digit, rod) => {
@@ -74,14 +76,14 @@ function Abacus({ document, segment, onBack, sequence, onGrade }: Omit<Horizonte
               <line className="lf-aba-wire" x1={cx} x2={cx} y1={10} y2={HEIGHT - 42} />
               <g className={`lf-aba-bead lf-aba-bead--five${five ? ' lf-aba-bead--on' : ''}`} aria-label={`${placeName(rod)}, ${t.fiveBead}: ${five ? t.counted : t.notCounted}`} aria-pressed={five}
                 {...pressable(() => { if (!drag.carried) set(rod, tapFive(digit)); }, locked)}>
-                <rect className="lf-aba-hit" x={cx - ROD_W / 2 + 8} y={fiveY(five) - 20} width={ROD_W - 16} height={40} />
+                <rect className="lf-aba-hit" x={cx - ROD_W / 2 + 8} y={fiveY(five) - FIVE_HIT / 2} width={ROD_W - 16} height={FIVE_HIT} />
                 <ellipse className="lf-aba-disc" cx={cx} cy={fiveY(five)} rx={30} ry={16} />
               </g>
               {Array.from({ length: ONES }, (_, index) => {
                 const on = index < ones;
                 return <g key={index} className={`lf-aba-bead${on ? ' lf-aba-bead--on' : ''}`} aria-label={`${placeName(rod)}, ${fillSlot(t.oneBead, index + 1)}: ${on ? t.counted : t.notCounted}`} aria-pressed={on}
                   {...pressable(() => { if (!drag.carried) set(rod, tapOne(digit, index)); }, locked)}>
-                  <rect className="lf-aba-hit" x={cx - ROD_W / 2 + 8} y={oneY(index, on) - 18} width={ROD_W - 16} height={36} />
+                  <rect className="lf-aba-hit" x={cx - ROD_W / 2 + 8} y={oneY(index, on) - ONE_PITCH / 2} width={ROD_W - 16} height={ONE_PITCH} />
                   <ellipse className="lf-aba-disc" cx={cx} cy={oneY(index, on)} rx={26} ry={15} />
                 </g>;
               })}

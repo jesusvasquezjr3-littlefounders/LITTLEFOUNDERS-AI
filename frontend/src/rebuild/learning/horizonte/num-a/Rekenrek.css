@@ -1,5 +1,4 @@
 /* A05 rekenrek and A06 abacus: SVG beads on wires and rods, drawn in the sky and mint series hues. Tokens only. */
-.lf-rek { display: block; inline-size: 100%; min-inline-size: 28rem; max-inline-size: 44rem; }
 .lf-rek-lane { fill: var(--sunken); stroke: transparent; stroke-width: 2; }
 .lf-rek-row[data-drop-armed='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: 6 4; }
 .lf-rek-row[data-drop-selected='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: none; }
@@ -16,7 +15,6 @@
 .lf-rek-bead--b.lf-rek-bead--slid .lf-rek-disc { fill: var(--sky-soft); }
 .lf-rek-row--mint .lf-rek-bead--b.lf-rek-bead--slid .lf-rek-disc { fill: var(--mint-soft); }
 
-.lf-aba { display: block; inline-size: 100%; min-inline-size: 16rem; max-inline-size: 30rem; }
 .lf-aba-frame { fill: var(--surface); stroke: var(--outline); stroke-width: 3; }
 .lf-aba-beam { stroke: var(--content-muted); stroke-width: 5; }
 .lf-aba-lane { fill: transparent; stroke: transparent; stroke-width: 2; }

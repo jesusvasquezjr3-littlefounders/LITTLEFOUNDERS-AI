@@ -1,4 +1,4 @@
-import type { KeyboardEvent, MouseEvent } from 'react';
+import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react';
 import { Button } from '../../../design/controls';
 import type { Locale } from '../../../design/copyBudget';
 
@@ -14,7 +14,10 @@ export const pressable = (action: () => void, disabled = false) => ({
   onKeyDown: (event: KeyboardEvent) => { if (!disabled && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); action(); } },
 });
 
-export const decimalText = (locale: Locale, value: number, digits: number): string =>
+/** The `--hz-hit-span` of an `.lf-hz-hit-sized` drawing: its viewBox width over the shorter side of its smallest tap target, rounded up so that target never renders under the base tier. */
+export const hitSpan = (viewWidth: number, hitUnits: number): CSSProperties => ({ '--hz-hit-span': Math.ceil((viewWidth / hitUnits) * 100) / 100 }) as CSSProperties;
+
+export const decimalText =(locale: Locale, value: number, digits: number): string =>
   new Intl.NumberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
 
 /** Where a pointer landed across an element, 0 at its start edge and 1 at its end edge; 0 when it has no measured width. */

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { HorizonteCopy } from '../boardTypes';
 import { HORIZONTE_BOARDS } from '../registry';
-import { assertCopyContract, handleRuleProblems, motionProblems } from './boardContract';
+import { assertCopyContract, handleRuleProblems, hitSizedRuleProblems, motionProblems, svgHitProblems, tapTargetCssProblems } from './boardContract';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
@@ -35,6 +35,41 @@ describe('board contract: 64 px handle rule', () => {
   it('refuses a smaller hit size and a handle rule that ignores it', () => {
     expect(handleRuleProblems(good.replace('64px', '44px'))).toHaveLength(1);
     expect(handleRuleProblems(good.replace('min-block-size: var(--hz-hit)', 'min-block-size: 20px'))).toHaveLength(1);
+  });
+});
+
+describe('board contract: SVG tap targets', () => {
+  const svgOf = (style: string, hit: string, className = 'lf-hz-hit-sized') => {
+    const host = document.createElement('div');
+    host.innerHTML = `<svg class="${className}" style="${style}" viewBox="0 0 240 300"><g role="button" aria-label="bead"><rect ${hit} /></g></svg>`;
+    return host.firstElementChild!;
+  };
+  const rule = '.lf-hz-hit-sized { min-inline-size: calc(var(--hz-hit-span) * var(--target-base)); max-inline-size: calc(var(--hz-hit-span) * var(--target-lg)); }';
+
+  it('accepts the shared rule and refuses one that leaves the width free of the hit size', () => {
+    expect(hitSizedRuleProblems(rule)).toEqual([]);
+    expect(hitSizedRuleProblems('.lf-hz-hit-sized { min-inline-size: 16rem; }')).toHaveLength(2);
+    expect(hitSizedRuleProblems('')).toHaveLength(2);
+  });
+
+  it('accepts a drawing whose smallest hit renders at the base tier and refuses a smaller one', () => {
+    expect(svgHitProblems(svgOf('--hz-hit-span: 6.67', 'width="88" height="36"'))).toEqual([]);
+    expect(svgHitProblems(svgOf('--hz-hit-span: 6.67', 'width="88" height="20"'))).toHaveLength(1);
+    expect(svgHitProblems(svgOf('--hz-hit-span: 3', 'width="88" height="36"'))).toHaveLength(1);
+  });
+
+  it('refuses a drawing that does not size itself from its hit', () => {
+    expect(svgHitProblems(svgOf('', 'width="88" height="36"'))).toHaveLength(1);
+    expect(svgHitProblems(svgOf('--hz-hit-span: 6.67', 'width="88" height="36"', 'lf-aba'))).toHaveLength(1);
+  });
+
+  it('flags a literal minimum under 56 px on a named control and lets tokens and other selectors through', () => {
+    const selectors = ['.cell', '.cell button'];
+    expect(tapTargetCssProblems('.cell { min-block-size: 2.75rem; }', selectors)).toHaveLength(1);
+    expect(tapTargetCssProblems('.cell button { min-inline-size: 44px; }', selectors)).toHaveLength(1);
+    expect(tapTargetCssProblems('.a, .cell { grid-template-columns: auto repeat(3, minmax(2.75rem, 4rem)); }', selectors)).toHaveLength(1);
+    expect(tapTargetCssProblems('.cell { min-block-size: var(--target-base); min-inline-size: 3.5rem; }', selectors)).toEqual([]);
+    expect(tapTargetCssProblems('.other { min-block-size: 1rem; } .cell { grid-template-rows: 1.5rem; }', selectors)).toEqual([]);
   });
 });
 

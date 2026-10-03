@@ -1,7 +1,9 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
-import { assertBoardContract } from '../harness/boardContract';
+import { assertBoardContract, hitSizedRuleProblems, svgHitProblems } from '../harness/boardContract';
 import { horizonteFixtureDocument } from '../previewDocument';
 import { NUM_A_COPY } from './copy';
 
@@ -15,6 +17,7 @@ const show = (fixture: string, grade = vi.fn((): { verdict: 'met' | 'review' } =
   render(<LessonDocumentView raw={horizonteFixtureDocument('num-a', fixture, locale)} locale={locale} ageBand="6-9" onBack={() => {}} onGradeAny={grade} />);
   return grade;
 };
+const sizedSvg = (selector: string) => document.querySelector(selector) as SVGSVGElement;
 const status = () => document.querySelector('[data-hz-text-equivalent]') as HTMLElement;
 const bead = (row: number, index: number, state: 'counted' | 'not counted') => screen.getByRole('button', { name: `Row ${row}, bead ${index}: ${state}` });
 const oneBead = (place: string, index: number, state: 'counted' | 'not counted') => screen.getByRole('button', { name: `${place}, one bead ${index}: ${state}` });
@@ -23,6 +26,16 @@ describe('num-a board: rekenrek (A05)', () => {
   it('meets the board contract for both fixtures', async () => {
     await assertBoardContract({ pack: 'num-a', fixtureId: 'rekenrek-seven', copy: NUM_A_COPY, css: ['num-a/Rekenrek.css'] });
     await assertBoardContract({ pack: 'num-a', fixtureId: 'rekenrek-ten', copy: NUM_A_COPY, css: ['num-a/Rekenrek.css'], locales: ['en-US'] });
+  });
+
+  it('sizes the drawing so every bead is a tap target of at least the base tier', async () => {
+    expect(hitSizedRuleProblems(readFileSync(resolve(__dirname, '../horizonte.css'), 'utf8'))).toEqual([]);
+    for (const fixture of ['rekenrek-seven', 'rekenrek-ten']) {
+      show(fixture);
+      await screen.findByRole('group', { name: 'Rekenrek' });
+      expect(svgHitProblems(sizedSvg('svg.lf-rek'))).toEqual([]);
+      cleanup();
+    }
   });
 
   it('slides beads by tapping them and submits the count slid in each row', async () => {
@@ -132,6 +145,15 @@ describe('num-a board: abacus (A06)', () => {
   it('meets the board contract for both fixtures', async () => {
     await assertBoardContract({ pack: 'num-a', fixtureId: 'abacus-forty-seven', copy: NUM_A_COPY, css: ['num-a/Rekenrek.css'] });
     await assertBoardContract({ pack: 'num-a', fixtureId: 'abacus-add-twenty', copy: NUM_A_COPY, css: ['num-a/Rekenrek.css'], locales: ['en-US'] });
+  });
+
+  it('sizes the drawing so every bead is a tap target of at least the base tier', async () => {
+    for (const fixture of ['abacus-forty-seven', 'abacus-add-twenty']) {
+      show(fixture);
+      await screen.findByRole('group', { name: 'Abacus' });
+      expect(svgHitProblems(sizedSvg('svg.lf-aba'))).toEqual([]);
+      cleanup();
+    }
   });
 
   it('shows the number by tapping beads and submits one digit per rod', async () => {

@@ -6,3 +6,5 @@
 .lf-hz-table { inline-size: 100%; border-collapse: collapse; }
 .lf-hz-table caption { text-align: start; font-weight: 800; padding-block-end: var(--spacing-2); }
 .lf-hz-table th, .lf-hz-table td { padding: var(--spacing-2); border-block-end: 1px solid var(--outline); text-align: start; }
+/* An SVG board whose beads or cells are the tap targets: its width stays between the base and large tiers for the smallest hit, however many rods or slots it draws. */
+.lf-hz-hit-sized { display: block; inline-size: 100%; min-inline-size: calc(var(--hz-hit-span) * var(--target-base)); max-inline-size: calc(var(--hz-hit-span) * var(--target-lg)); }

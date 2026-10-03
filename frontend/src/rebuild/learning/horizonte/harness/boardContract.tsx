@@ -67,6 +67,59 @@ export function handleRuleProblems(css: string): string[] {
   return problems;
 }
 
+/** The smallest side a tap target inside a drawing may render at: `target-base` in tokens.css. */
+export const HZ_MIN_TAP_PX = 56;
+const TARGET_BASE_PX = 56;
+const MIN_SIZE_PROPERTIES = /^(?:min-inline-size|min-block-size|min-width|min-height|grid-template-columns)$/;
+
+/** The shared `.lf-hz-hit-sized` rule keeps an SVG board between `target-base` and `target-lg` for its smallest hit, from `--hz-hit-span`. */
+export function hitSizedRuleProblems(css: string): string[] {
+  const rule = /\.lf-hz-hit-sized\s*\{([^}]*)\}/.exec(css.replace(/\/\*[\s\S]*?\*\//g, ''))?.[1] ?? '';
+  const problems: string[] = [];
+  if (!/min-inline-size:\s*calc\(\s*var\(--hz-hit-span\)\s*\*\s*var\(--target-base\)\s*\)/.test(rule)) problems.push('.lf-hz-hit-sized must set min-inline-size from var(--hz-hit-span) * var(--target-base)');
+  if (!/max-inline-size:\s*calc\(\s*var\(--hz-hit-span\)\s*\*\s*var\(--target-lg\)\s*\)/.test(rule)) problems.push('.lf-hz-hit-sized must set max-inline-size from var(--hz-hit-span) * var(--target-lg)');
+  return problems;
+}
+
+/**
+ * An SVG board whose taps are drawn shapes (a bead, a cell) is `.lf-hz-hit-sized` and declares `--hz-hit-span`, its viewBox width over the
+ * shorter side of its smallest hit rect. At the narrowest width the stylesheet allows, every `role="button"` hit rect renders at least
+ * `target-base` on its short side; `[data-hz-handle]` never sees these shapes.
+ */
+export function svgHitProblems(svg: Element, minPx: number = HZ_MIN_TAP_PX): string[] {
+  const span = Number(/--hz-hit-span:\s*([\d.]+)/.exec(svg.getAttribute('style') ?? '')?.[1]);
+  const width = Number((svg.getAttribute('viewBox') ?? '').split(/[\s,]+/)[2]);
+  if (!svg.classList.contains('lf-hz-hit-sized') || !(span > 0) || !(width > 0)) return ['the drawing is not .lf-hz-hit-sized with a --hz-hit-span and a viewBox'];
+  const pxPerUnit = (span * TARGET_BASE_PX) / width;
+  const problems: string[] = [];
+  for (const target of svg.querySelectorAll('[role="button"]')) {
+    const hit = target.matches('rect') ? target : target.querySelector('rect');
+    if (!hit) { problems.push(`${target.getAttribute('aria-label') ?? 'a tap target'} has no hit rect`); continue; }
+    const side = Math.min(Number(hit.getAttribute('width')), Number(hit.getAttribute('height')));
+    if (side * pxPerUnit < minPx - 0.01) problems.push(`${target.getAttribute('aria-label') ?? 'a tap target'} renders ${(side * pxPerUnit).toFixed(1)} px`);
+  }
+  return problems;
+}
+
+/** Literal lengths below `minPx` in the minimum sizes and columns of the named interactive selectors; a token (`var(--target-base)`) is never flagged. */
+export function tapTargetCssProblems(css: string, selectors: readonly string[], minPx: number = HZ_MIN_TAP_PX): CssProblem[] {
+  const problems: CssProblem[] = [];
+  const text = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const [, prelude, body] of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const named = prelude!.split(',').map((selector) => selector.trim()).filter((selector) => selectors.includes(selector));
+    if (named.length === 0) continue;
+    for (const declaration of body!.split(';')) {
+      const [property, ...rest] = declaration.split(':');
+      if (!MIN_SIZE_PROPERTIES.test(property!.trim())) continue;
+      for (const [, amount, unit] of rest.join(':').matchAll(/(\d*\.?\d+)(rem|px)\b/g)) {
+        const px = unit === 'rem' ? Number(amount) * 16 : Number(amount);
+        if (px < minPx) problems.push({ rule: `${named.join(', ')} { ${declaration.trim()} }`, problem: `${amount}${unit} is under ${minPx} px (use var(--target-base))` });
+      }
+    }
+  }
+  return problems;
+}
+
 function accessibleName(element: Element): string {
   const labelled = element.getAttribute('aria-labelledby');
   const byId = labelled ? labelled.split(/\s+/).map((id) => element.ownerDocument.getElementById(id)?.textContent ?? '').join(' ') : '';
