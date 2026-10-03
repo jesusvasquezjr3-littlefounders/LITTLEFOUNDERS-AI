@@ -60,6 +60,8 @@ const factor = doc(EXPRESSION, 'expression-editor', 'Factor the expression. Writ
 const isolate = doc(EXPRESSION, 'expression-editor', 'Solve for x. Write each step on its own line.', { task: 'solve', given: '3x+5=20', form: 'isolated', variable: 'x' });
 const separate = doc(EXPRESSION, 'expression-editor', 'Gather the x terms on one side. Write each step on its own line.', { task: 'solve', given: '5x-4=2x+8', form: 'separated', variable: 'x' });
 
+const decimals = doc(EXPRESSION, 'expression-editor', 'Expand the product. Write each step on its own line.', { task: 'rewrite', given: '(x+0.5)(x+2)', form: 'expanded', variable: 'x' });
+
 const root = (name: string) => fileURLToPath(new URL(`../../../../backend/src/services/horizonte/alg2/${name}`, import.meta.url));
 const lf = (text: string) => text.replace(/\r\n/g, '\n');
 
@@ -229,6 +231,23 @@ describe('alg2 pack in the Forge (F2.4, F2.5, F2.6)', () => {
     expect(messages(withPrompt(isolate, 'Show that x=5.'), { reference: 'x=5' })).toEqual(['The prompt must not write the reference answer']);
     expect(messages(withPrompt(isolate, 'Solve for x.'), { reference: 'x=5' })).toEqual([]);
     expect(messages(withPrompt(expand, 'Expand it to x^2+5x+6.'))).toEqual([]);
+  });
+
+  it('reads a decimal comma like a point in a key, a given and the prompt, and refuses a comma between numbers', () => {
+    expect(messages(decimals, { reference: 'x^2+2.5x+1' })).toEqual([]);
+    expect(messages(decimals, { reference: 'x^2+2,5x+1' })).toEqual([]);
+    expect(messages(withPayload(decimals, { given: '(x+0,5)(x+2)' }), { reference: 'x^2+2.5x+1' })).toEqual([]);
+    expect(messages(decimals, { reference: 'x^2+2,5x+2' })[0]).toMatch(/not equivalent/);
+    expect(messages(decimals, { reference: 'x^2+2,5,1x' })[0]).toMatch(/does not parse/);
+    expect(messages(decimals, { reference: 'x^2+2,5.1x' })[0]).toMatch(/does not parse/);
+    expect(messages(withPayload(decimals, { given: '(x+0,5,1)(x+2)' }))[0]).toBeTruthy();
+  });
+
+  it('finds the reference in the prompt whichever decimal mark either side uses', () => {
+    const leak = ['The prompt must not write the reference answer'];
+    expect(messages(withPrompt(decimals, 'Expand it to x^2+2,5x+1.'), { reference: 'x^2+2.5x+1' })).toEqual(leak);
+    expect(messages(withPrompt(decimals, 'Expand it to x^2+2.5x+1.'), { reference: 'x^2+2,5x+1' })).toEqual(leak);
+    expect(messages(withPrompt(decimals, 'Expand it, then check 2,5 against 2.5.'), { reference: 'x^2+2.5x+1' })).toEqual([]);
   });
 
   it('copies the Core model and expression engine byte for byte', () => {
