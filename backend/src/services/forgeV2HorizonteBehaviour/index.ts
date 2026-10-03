@@ -1,3 +1,4 @@
+import { ALG1_BEHAVIOUR } from './alg1.js';
 import { BALANCE_BEHAVIOUR } from './balance.js';
 import { FIN_BEHAVIOUR } from './fin.js';
 import { FIN2_BEHAVIOUR } from './fin2.js';
@@ -9,6 +10,7 @@ import { STATS_BEHAVIOUR } from './stats.js';
 /** The seeded simulations (sim1, sim2) are graded against an attempt the gate never has, so they stay fail-closed here. */
 const BUILDERS: Readonly<Record<string, HzBuilder>> = {
   ...NUMBER_BEHAVIOUR,
+  ...ALG1_BEHAVIOUR,
   ...BALANCE_BEHAVIOUR,
   ...STATS_BEHAVIOUR,
   ...PLANE_BEHAVIOUR,
