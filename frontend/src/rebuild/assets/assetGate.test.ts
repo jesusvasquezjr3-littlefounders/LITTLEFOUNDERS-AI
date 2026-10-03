@@ -109,7 +109,8 @@ afterAll(() => {
   rmSync(target, { recursive: true, force: true });
 });
 
-describe('rebuild asset gate', { timeout: 90_000 }, () => {
+// Each mutation case gates a freshly copied tree, and the gate's first read of 1,300+ new files costs 9-25 s on a Windows host with a file-scanning AV (0.25 s once cached), so five cases in one test outgrow 90 s.
+describe('rebuild asset gate', { timeout: 300_000 }, () => {
   it('passes the real manifest and refuses every draft in a release build', async () => {
     const dir = tree();
     const ok = await runWithOcr(dir);
