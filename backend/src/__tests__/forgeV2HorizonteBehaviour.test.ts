@@ -204,3 +204,123 @@ describe('an authored key that disagrees with its board', () => {
     expect(disagreements(eulerModel, { fixture: euler, rubric: { target: '8' }, edit: (segment) => { segment.payload.hide = 'vertices'; } })).toBeGreaterThan(0);
   });
 });
+
+const spaceOf = (fixture: HorizonteFixture, edit?: (segment: Segment) => void, rubric: unknown = fixture.rubric) => {
+  const { segment } = lessonOf(fixture, 'en-US', rubric, edit);
+  return horizonteBehaviourSpace(segment as never, rubric as never);
+};
+const diagnosticOf = (fixture: HorizonteFixture, response: unknown): string | null | undefined => {
+  const { parsed, keys, segment } = lessonOf(fixture);
+  return gradeV2Visual(parsed!, keys, segment.id, response as never)?.diagnostic;
+};
+
+describe('the pieces the visual merge added to the behaviour space', () => {
+  const added = ['geometry.solid-section.v2', 'math.number-line.order.v2', 'math.ruler.measure.v2', 'math.surface-formula.v2', 'math.tessellation.v2'];
+
+  it('has a model for each of them, and every authored fixture of them builds a space', () => {
+    for (const type of added) {
+      expect(horizonteBehaviourKinds(), type).toContain(type);
+      const fixtures = modelled.filter((fixture) => segmentOf(fixture).type === type);
+      expect(fixtures.length, type).toBeGreaterThan(1);
+      for (const fixture of fixtures) expect(spaceOf(fixture), `${type} ${fixture.id}`).not.toBeNull();
+    }
+  });
+
+  it('reads the motions a tessellation allows from its payload', () => {
+    const states = (id: string) => spaceOf(fixtureById(id))!.inRange as Array<{ motions?: string[] }>;
+    expect(states('tile-domino').every((state) => state.motions === undefined)).toBe(true);
+    expect(states('tile-turn').some((state) => state.motions?.includes('turn'))).toBe(true);
+    expect(states('tile-flip').some((state) => state.motions?.includes('flip'))).toBe(true);
+    expect(states('tile-turn').some((state) => state.motions?.includes('flip'))).toBe(false);
+    expect(states('tile-flip').some((state) => state.motions?.includes('turn'))).toBe(false);
+  });
+
+  it('catches a tessellation model that allows a motion the scorer does not', () => {
+    const turn = fixtureById('tile-turn');
+    const same = { segment: lessonOf(turn).segment, rubric: turn.rubric };
+    expect(disagreements(same, { fixture: turn, rubric: turn.rubric, edit: () => undefined })).toBe(0);
+    const wider = lessonOf(turn, 'en-US', turn.rubric, (segment) => { segment.payload.moves = ['slide', 'turn', 'flip']; }).segment;
+    expect(disagreements({ segment: wider, rubric: turn.rubric }, { fixture: turn, rubric: turn.rubric, edit: () => undefined })).toBeGreaterThan(0);
+  });
+
+  it('models every mode of the solid section, and returns a space only for a slide that can reach its target', () => {
+    const sections = modelled.filter((fixture) => segmentOf(fixture).type === 'geometry.solid-section.v2');
+    const modes = new Set(sections.map((fixture) => segmentOf(fixture).payload.mode));
+    expect([...modes].sort()).toEqual(['cone', 'euler', 'section', 'slide', 'volume']);
+    for (const fixture of sections) expect(spaceOf(fixture), fixture.id).not.toBeNull();
+    const slide = fixtureById('slide-cube-hexagon');
+    const space = spaceOf(slide)!;
+    const start = segmentOf(slide).payload.start;
+    expect(space.initial).toEqual({ offset: start });
+    expect(space.inRange.some((state) => (state as { offset: number }).offset === start)).toBe(false);
+    expect(space.inRange.length).toBeGreaterThan(10);
+    expect(spaceOf(slide, (segment) => { segment.payload.target = 'pentagon'; })).toBeNull();
+    expect(spaceOf(slide, (segment) => { segment.payload.start = 99; })).toBeNull();
+  });
+
+  it('keeps the Euler and cone answers of the larger solids exact', () => {
+    for (const id of ['truncated-icosahedron-faces', 'cuboctahedron-edges', 'cone-third']) {
+      const fixture = fixtureById(id);
+      const space = spaceOf(fixture)!;
+      expect(space.expectMet!(fixture.ladder.met as never), id).toBe(true);
+      expect(space.expectMet!(fixture.ladder.valid as never), id).toBe(false);
+    }
+  });
+
+  it('models the order and the ruler reading by their own rules', () => {
+    for (const id of ['order-tens', 'order-tenths']) {
+      const fixture = fixtureById(id);
+      const space = spaceOf(fixture)!;
+      expect(space.expectMet!(fixture.ladder.met as never), id).toBe(true);
+      expect(space.expectMet!(fixture.ladder.valid as never), id).toBe(false);
+      expect(space.invalid.length, id).toBeGreaterThan(3);
+    }
+    const ruler = fixtureById('measure-pencil');
+    const space = spaceOf(ruler)!;
+    const length = Number(Object.values(ruler.ladder.met)[0]);
+    for (const spelling of [String(length), `${length}.0`, `${length * 2}/2`]) expect(space.expectMet!({ value: spelling } as never), spelling).toBe(true);
+    expect(space.expectMet!({ value: `${length + 1}` } as never)).toBe(false);
+  });
+
+  it('models every kind of surface-formula task, with the diagnostics Core stores', () => {
+    for (const id of ['slope-two-ways', 'gradient-at-a-point', 'downhill-walk', 'build-a-surface']) {
+      const fixture = fixtureById(id);
+      const space = spaceOf(fixture)!;
+      expect(space.expectMet!(fixture.ladder.met as never), id).toBe(true);
+      expect(space.expectMet!(fixture.ladder.valid as never), id).toBe(false);
+    }
+    const gradient = fixtureById('gradient-at-a-point');
+    const space = spaceOf(gradient)!;
+    for (const [answer, diagnostic] of [[['3', '9'], 'partial'], [['1', '3'], 'structure'], [['5', '5'], 'value']] as const) {
+      expect(space.expectDiagnostic!({ answer } as never), answer.join()).toBe(diagnostic);
+      expect(diagnosticOf(gradient, { answer }), answer.join()).toBe(diagnostic);
+    }
+    const slope = fixtureById('slope-two-ways');
+    expect(spaceOf(slope)!.expectDiagnostic!({ answer: ['2'] } as never)).toBe(diagnosticOf(slope, { answer: ['2'] }));
+    const build = fixtureById('build-a-surface');
+    for (const text of ['z = 1 + 2x - y', '1+2x', '5', 'x^2']) {
+      expect(spaceOf(build)!.expectMet!({ answer: [text] } as never), text).toBe(text === 'z = 1 + 2x - y');
+    }
+    expect(spaceOf(build)!.expectDiagnostic!({ answer: ['1+2x'] } as never)).toBe(diagnosticOf(build, { answer: ['1+2x'] }));
+  });
+
+  it('is caught by the model when the surface-formula scorer drifts: a changed expression or walk rate', () => {
+    const slope = fixtureById('slope-two-ways');
+    const model = { segment: lessonOf(slope).segment, rubric: slope.rubric };
+    expect(disagreements(model, { fixture: slope, rubric: slope.rubric, edit: () => undefined })).toBe(0);
+    expect(disagreements(model, { fixture: slope, rubric: { key: ['8'] }, edit: (segment) => { segment.payload.task.expression = 'x^2+3xy'; } })).toBeGreaterThan(0);
+    const walk = fixtureById('downhill-walk');
+    const walkModel = { segment: lessonOf(walk).segment, rubric: walk.rubric };
+    expect(disagreements(walkModel, { fixture: walk, rubric: walk.rubric, edit: () => undefined })).toBe(0);
+    expect(disagreements(walkModel, { fixture: walk, rubric: { key: ['2'] }, edit: (segment) => { segment.payload.task.rate = { n: 1, d: 5 }; } })).toBeGreaterThan(0);
+  });
+
+  it('fails closed on a surface-formula task it cannot model', () => {
+    const slope = fixtureById('slope-two-ways');
+    expect(spaceOf(slope, (segment) => { segment.payload.task.expression = 'x^y'; })).toBeNull();
+    expect(spaceOf(slope, (segment) => { segment.payload.task.kind = 'curl'; })).toBeNull();
+    expect(spaceOf(slope, (segment) => { segment.payload.task = null; })).toBeNull();
+    const walk = fixtureById('downhill-walk');
+    expect(spaceOf(walk, (segment) => { segment.payload.task.below = -50; })).toBeNull();
+  });
+});
