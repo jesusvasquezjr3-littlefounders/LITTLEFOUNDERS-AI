@@ -11002,7 +11002,8 @@
       "required_capabilities": [
         "visual.solid-section.v1",
         "operation.turn-solid.v1",
-        "operation.choose-and-type.v1"
+        "operation.choose-and-type.v1",
+        "operation.slide-plane.v1"
       ],
       "segments": [
         {
@@ -11069,7 +11070,8 @@
       "required_capabilities": [
         "visual.solid-section.v1",
         "operation.turn-solid.v1",
-        "operation.choose-and-type.v1"
+        "operation.choose-and-type.v1",
+        "operation.slide-plane.v1"
       ],
       "segments": [
         {
@@ -11136,7 +11138,8 @@
       "required_capabilities": [
         "visual.solid-section.v1",
         "operation.turn-solid.v1",
-        "operation.choose-and-type.v1"
+        "operation.choose-and-type.v1",
+        "operation.slide-plane.v1"
       ],
       "segments": [
         {

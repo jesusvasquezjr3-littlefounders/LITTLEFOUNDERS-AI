@@ -5,6 +5,7 @@ import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } f
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { basketCost, basketCount, basketToSlots, readStallPayload, type Basket, type StallGoal, type StallId, type StallPayload } from './stall.generated';
+import { TableScroll } from './TableScroll';
 import { fill, itemName, money, space1Text, spokenMoney, type Space1Text } from './space1Text';
 import '../horizonte.css';
 import './space1.css';
@@ -104,7 +105,7 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
           </li>)}
         </ul>}
       </div>
-      {table ? <table className="lf-hz-table" data-hz-table="">
+      {table ? <TableScroll label={t.stlTableCaption}><table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.stlTableCaption}</caption>
         <thead><tr>
           <th scope="col" data-copy-role="data">{t.stlColItem}</th><th scope="col" data-copy-role="data">{t.stlColPrice}</th><th scope="col" data-copy-role="data">{t.stlColStock}</th>
@@ -117,7 +118,7 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
           </tr>)}
           <tr><th scope="row" data-copy-role="data">{t.stlTotal}</th><td data-copy-role="data" /><td data-copy-role="data" /><td data-copy-role="data">{count}</td><td data-copy-role="data">{money(cost, locale)}</td></tr>
         </tbody>
-      </table> : null}
+      </table></TableScroll> : null}
     </section>
     <section className="lf-learning-control-strip" aria-label={t.stlShelfHeading}>
       <h2 data-copy-role="heading">{t.stlShelfHeading}</h2>
