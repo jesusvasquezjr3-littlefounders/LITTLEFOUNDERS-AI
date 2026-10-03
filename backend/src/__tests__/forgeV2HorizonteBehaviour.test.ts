@@ -24,6 +24,8 @@ import { SPACE2_FIXTURES } from '../services/horizonte/space2/fixtures.js';
 import { STATS1_FIXTURES } from '../services/horizonte/stats1/fixtures.js';
 import type { HorizonteFixture, HorizonteLocale } from '../services/horizonte/types.js';
 import { gradeV2Visual, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
+import { gradeStaffPreview } from '../services/staffLessonPreview.js';
+import type { LessonDocumentRow } from '../services/supabaseRest.js';
 
 /*
  * Core's interactive-behaviour gate fails closed on a kind it has no behaviour space for. These tests hold the Horizonte
@@ -52,7 +54,7 @@ function lessonOf(fixture: HorizonteFixture, locale: HorizonteLocale = 'en-US', 
     title: fixture.title[locale], required_capabilities: [...(CAPABILITIES.get(segment.type) ?? [])], segments: [segment],
   };
   const keys = { [segment.id]: rubric };
-  return { segment, keys, parsed: validateV2LessonForGrading(document, keys, { lessonId: document.lesson_id, locale }) };
+  return { segment, keys, document, parsed: validateV2LessonForGrading(document, keys, { lessonId: document.lesson_id, locale }) };
 }
 
 const SEEDED_KINDS = ['math.chance-sim.v2', 'math.galton-sim.v2', 'money.life-sim.v2', 'stats.bootstrap-sim.v2', 'stats.coverage-sim.v2'];
@@ -551,6 +553,13 @@ describe('the five seeded simulations under Core\'s gate', () => {
     expect(horizonteBehaviourSpace(segment as never, fixture.rubric as never, undefined)).toBeNull();
     expect(gradeV2Visual(parsed!, keys, segment.id, fixture.ladder.met as never)).toBeNull();
     expect(gradeV2Visual(parsed!, keys, segment.id, fixture.ladder.met as never, undefined)).toBeNull();
+  });
+
+  it.each(seededNames)('stays fail-closed in the staff preview, which has no attempt of its own: %s', (_name, fixture) => {
+    const { document, keys, segment, parsed } = lessonOf(fixture);
+    expect(parsed, 'the document is deliverable, so a refusal is the missing attempt and not an unplayable lesson').not.toBeNull();
+    const row = { document_version_id: 'rev-1', lesson_id: document.lesson_id, locale: 'en-US', schema_version: 2, document, answer_keys: keys, audio: {}, updated_at: 'x' } as unknown as LessonDocumentRow;
+    expect(gradeStaffPreview(row, document.lesson_id, segment.id, fixture.ladder.met)).toEqual({ status: 'invalid' });
   });
 
   it.each(seededNames.filter(([, fixture]) => RUN_FIELD[segmentOf(fixture).type]))('walks the run-length slider: too short, not started, off the stops: %s', (_name, fixture) => {
