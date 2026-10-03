@@ -100,8 +100,19 @@ const inner = (a: Point, b: Point): Q => add(add(mul(a[0], b[0]), mul(a[1], b[1]
 const flat = (a: Point): boolean => a.every(isZero);
 const asFloat = (value: Q): number => Number(value.n) / Number(value.d);
 
+/** A cylinder of radius 1 and half-height 1.5 on the y axis, cut by formula in whole numbers; null when the plane misses, touches, or runs into an end cap. */
+function cylinderCut(normal: number[], offset: number): string | null {
+  const [a, b, c] = normal as [number, number, number];
+  const across = a * a + c * c;
+  if (a === 0 && c === 0) return Math.abs(offset) < 6 * Math.abs(b) ? 'circle' : null;
+  if (b === 0) return offset * offset < 16 * across ? 'rectangle' : null;
+  const room = 6 * Math.abs(b) - Math.abs(offset);
+  return room > 0 && 16 * across < room * room ? 'ellipse' : null;
+}
+
 /** The shape the plane 4 n.p = offset cuts from a solid, by exact arithmetic on the edges it crosses; null when it only touches or misses. */
 function cutShape(solid: string, normal: number[], offset: number): string | null {
+  if (solid === 'cylinder') return cylinderCut(normal, offset);
   const body = SOLIDS[solid];
   if (!body) return null;
   const side = body.vertices.map((vertex) => 4 * vertex.reduce((sum, part, axis) => sum + part * normal[axis]!, 0) - offset);
@@ -145,7 +156,9 @@ function cutShape(solid: string, normal: number[], offset: number): string | nul
   return parallel[0] || parallel[1] ? 'trapezoid' : 'quadrilateral';
 }
 
-const SHAPES = ['triangle', 'square', 'rectangle', 'rhombus', 'parallelogram', 'trapezoid', 'quadrilateral', 'pentagon', 'hexagon', 'polygon'];
+const SHAPES = ['triangle', 'square', 'rectangle', 'rhombus', 'parallelogram', 'trapezoid', 'quadrilateral', 'pentagon', 'hexagon', 'polygon', 'circle', 'ellipse'];
+
+const PLATONIC = ['tetrahedron', 'cube', 'octahedron', 'dodecahedron', 'icosahedron'];
 
 const COUNTS: Readonly<Record<string, { vertices: number; edges: number; faces: number }>> = {
   tetrahedron: { vertices: 4, edges: 6, faces: 4 },
@@ -153,6 +166,11 @@ const COUNTS: Readonly<Record<string, { vertices: number; edges: number; faces: 
   octahedron: { vertices: 6, edges: 12, faces: 8 },
   dodecahedron: { vertices: 20, edges: 30, faces: 12 },
   icosahedron: { vertices: 12, edges: 30, faces: 20 },
+  'truncated-tetrahedron': { vertices: 12, edges: 18, faces: 8 },
+  cuboctahedron: { vertices: 12, edges: 24, faces: 14 },
+  'truncated-octahedron': { vertices: 24, edges: 36, faces: 14 },
+  icosidodecahedron: { vertices: 30, edges: 60, faces: 32 },
+  'truncated-icosahedron': { vertices: 60, edges: 90, faces: 32 },
 };
 
 function typed(answer: number, top: number, structure: number | null): HzSpace {
@@ -188,14 +206,44 @@ const section: HzBuilder = (p) => {
   if (p.mode === 'euler') {
     const counts = COUNTS[p.solid];
     if (!counts || counts.vertices - counts.edges + counts.faces !== 2 || !(p.hide in counts)) return null;
-    return typed(counts[p.hide as 'vertices' | 'edges' | 'faces'], 30, null);
+    return typed(counts[p.hide as 'vertices' | 'edges' | 'faces'], PLATONIC.includes(p.solid) ? 30 : 90, null);
   }
   if (p.mode === 'volume') {
     const prism = p.side * p.side * p.height;
     if (prism % 3 !== 0) return null;
     return typed(prism / 3, 1728, prism);
   }
+  if (p.mode === 'cone') {
+    const cylinder = p.radius * p.radius * p.height;
+    if (cylinder % 3 !== 0) return null;
+    return typed(cylinder / 3, 1728, cylinder);
+  }
+  if (p.mode === 'slide') return slide(p);
   return null;
+};
+
+/** The offsets a plane with this normal can take and still be on the slider: just past the solid on both sides, within the 16 the plane allows. */
+function slideRange(solid: string, normal: number[]): { min: number; max: number } {
+  if (solid === 'cylinder') {
+    const reach = 4 * Math.hypot(normal[0]!, normal[2]!) + 6 * Math.abs(normal[1]!);
+    return { min: Math.max(-16, Math.floor(-reach + 1e-9) - 1), max: Math.min(16, Math.ceil(reach - 1e-9) + 1) };
+  }
+  const along = SOLIDS[solid]!.vertices.map((vertex) => vertex.reduce((sum, part, axis) => sum + part * normal[axis]!, 0));
+  return { min: Math.max(-16, 4 * Math.min(...along) - 1), max: Math.min(16, 4 * Math.max(...along) + 1) };
+}
+
+const slide = (p: Json): HzSpace | null => {
+  if (!Object.hasOwn(SOLIDS, p.solid) && p.solid !== 'cylinder') return null;
+  const { min, max } = slideRange(p.solid, p.normal);
+  const offsets = range(min, max).filter((offset) => offset !== p.start);
+  if (p.start < min || p.start > max || !offsets.some((offset) => cutShape(p.solid, p.normal, offset) === p.target)) return null;
+  return {
+    inRange: offsets.map((offset) => ({ offset })),
+    invalid: [{ offset: min - 1 }, { offset: max + 1 }, { offset: 99 }, { offset: 0.5 }, { offset: String(p.start) }, { offset: null }, { offset: p.start, extra: 1 }, { pick: p.target }, {}, null, [], 'x'],
+    initial: { offset: p.start },
+    expectMet: (response) => cutShape(p.solid, p.normal, response.offset) === p.target,
+    expectDiagnostic: (response) => (cutShape(p.solid, p.normal, response.offset) === null ? 'miss' : 'value'),
+  };
 };
 
 /* ── money.market-stall.v2 ── */
