@@ -94,7 +94,7 @@ Backend `backend/src/services/horizonte/space1/`: `voxels.ts` (figure, turns, mi
 Browser `frontend/src/rebuild/learning/horizonte/space1/`: generated `contract|voxels|polyhedra|rotationRules|sectionRules|stall|coins|scorer|fixtures.generated.ts`,
 `capabilities.ts`, `copy.ts` (en-US, es-MX, pt-BR, `data-copy-role` on every string), `space1Text.ts` (live text and `spokenText`),
 `VoxelFigure.tsx`, `PolyStage.tsx` (shared SVG drawing), `MentalRotationBoard.tsx`, `SolidSectionBoard.tsx`, `MarketStallBoard.tsx`,
-`CoinStackBoard.tsx`, `space1.css`, `boards.tsx` (four lazy chunks), `audit.json`, `index.ts`, `space1.test.tsx` (51 after the fix round, runs `assertBoardContract`
+`CoinStackBoard.tsx`, `space1.css`, `boards.tsx` (four lazy chunks), `audit.json`, `index.ts`, `space1.test.tsx` (57 after the fix round, runs `assertBoardContract`
 on all 23 fixtures; `cutFacts.ts` describes a cut without naming it).
 
 Forge `coursegen/src/v2/horizonte/space1.ts` (capabilities, guidance, gate-4 `space1Gates`, the four F0.4 checkers `rotationChecker`,
@@ -224,8 +224,15 @@ dark mode. No segment type was added; the new behaviour is new modes and enum me
   uses `--content` or `--content-muted`, which flip. `tokens.css` and the shared design files were not touched. No `var(--ink)` remains under `space1/`.
 - **Chunk budget.** `geometry.solid-section.v2` moved from 18 to 24 KB gzipped in `boards.tsx`. The estimate is the minified, gzipped sum of the board's
   source set (about 19.2 KB: board 4.0, `cutFacts` 0.6, `PolyStage` 1.1, `polyhedra` 4.5, `sectionRules` 1.7, `space1Text` 1.2, `copy` 6.5), rounded up with headroom.
-- **Tests.** Core 39 (`space1.test.ts`, `assertScorerContract`), Forge 29, browser 51 (`assertBoardContract` on all 23 fixtures, plus the cone, cylinder,
+- **Tests.** Core 39 (`space1.test.ts`, `assertScorerContract`), Forge 29, browser 57 (`assertBoardContract` on all 23 fixtures, plus the cone, cylinder,
   Archimedean and slide behaviour including es-MX).
+- **Guards (second pass).** `space1.test.tsx` now fails if `space1.css` brings back `var(--ink)`, a hex or `rgb()` colour or a `white` or `black` keyword (none
+  flip on the dark ground), if any width in it is a fixed 300 px or more, if `.lf-sp-scroll` loses `min-inline-size: 0` and `overflow-x: auto`, if the grid
+  tracks lose `minmax(0, 1fr)`, or if the table of the stall, the coin stack or the section board is not inside a focusable named scroll region.
+- **Chunk size, measured.** An esbuild bundle (minified, gzip level 9) of each board with only its own folder and `solids/` inlined and React, the design
+  system and `segmentKit` external gives 16.7 KB for `SolidSectionBoard`, 10.4 for the rotation board, 10.0 for the stall and 10.3 for the coin stack. That
+  is under the old 18 KB, so the 24 KB ceiling (the figure `num-a` also uses) has headroom and is not the cause of any budget failure. It is not a Vite
+  build: shared code can split differently there.
 
 ### Still limited
 
@@ -246,7 +253,7 @@ dark mode. No segment type was added; the new behaviour is new modes and enum me
   or contrast. The three stall fixtures were not re-measured at 311 px.
 - The slide board and the curved cylinder were not seen: the handle's position on the track, the strip ring, the cut over the solid and the table
   at 311 px are untested visually.
-- The 24 KB chunk budget is an estimate from a minified gzip of the sources, not a build measurement.
+- The chunk sizes come from an esbuild approximation, not from the Vite build the budget gate reads.
 - The berry, sky and mint constants do not flip in dark mode; a calculation puts them near 3:1 against the dark surface, which was not measured on a render.
 - The full gates did not run (`test:all`, `tools:test`, `verify:*`, `audit:*`, `spec:check`). What ran: the focused suites above, the capability parity
   script, the copy check, `sync-v2-horizonte --check`, and one type-check per touched service.
@@ -256,5 +263,5 @@ dark mode. No segment type was added; the new behaviour is new modes and enum me
 
 - Other packs still use `var(--ink)` and have the same dark-mode defect: alg1, alg2, com, num-b, plane1, prob, sim1, sim2, solids, space2, stats1.
 - Run the audit lane over `space1/audit.json` (23 fixtures) at 375 px, in light and dark, at 6-9, 10-12 and 13-17.
-- Measure the section board's chunk at the first build against the 24 KB budget.
+- Read the section board's chunk from the first Vite build against the 24 KB budget (esbuild approximation: 16.7 KB). Lower the ceiling to 20 if it agrees.
 - Have a native reader review the new es-MX and pt-BR strings.

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
@@ -588,5 +590,39 @@ describe('F4.6 coin stack', () => {
   it('speaks in Spanish and Portuguese', async () => {
     show('coins-as-tall-as-a-phone', undefined, 'es-MX');
     expect(await screen.findByRole('slider', { name: 'Cantidad de monedas' })).toBeTruthy();
+  });
+});
+
+describe('space1 on a narrow screen and on the dark ground', () => {
+  const stylesheet = () => readFileSync(resolve(__dirname, 'space1.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+
+  it('sets no text or mark in the constant ink, a literal colour or a keyword colour, none of which flip on the dark ground', () => {
+    expect(stylesheet()).not.toMatch(/var\(--ink\b|#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?)\(|(?<![-\w])(white|black)(?![-\w])/);
+  });
+
+  it('sizes nothing in the board stylesheet to a fixed width of 300 px or more', () => {
+    expect(stylesheet()).not.toMatch(/(?:inline-size|min-inline-size|width|min-width)\s*:\s*\d{3,}px/);
+  });
+
+  it('lets a board shrink inside the slot and scroll a wide table inside its own region', () => {
+    const css = stylesheet();
+    expect(css).toMatch(/\.lf-sp-scroll\s*\{[^}]*min-inline-size:\s*0[^}]*overflow-x:\s*auto/);
+    expect(css).toMatch(/\.lf-stl[^{]*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  });
+
+  it.each([
+    ['exact-basket', 'Items and prices', 'Show as table'],
+    ['coins-as-tall-as-a-phone', 'Stacks you can build', 'Show as table'],
+    ['cube-hexagon', null, 'Show as table'],
+  ])('keeps the table of %s inside a focusable scrolling region', async (fixture, caption, toggle) => {
+    show(fixture);
+    await waitFor(() => button(toggle));
+    fireEvent.click(button(toggle));
+    const table = caption === null ? screen.getAllByRole('table')[0]! : screen.getByRole('table', { name: caption });
+    const region = table.closest('.lf-sp-scroll') as HTMLElement | null;
+    expect(region).not.toBeNull();
+    expect(region).toHaveAttribute('role', 'region');
+    expect(region).toHaveAttribute('tabindex', '0');
+    expect(region!.getAttribute('aria-label')).toBeTruthy();
   });
 });
