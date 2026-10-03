@@ -1,9 +1,4 @@
 /* A05 rekenrek and A06 abacus: SVG beads on wires and rods, drawn in the sky and mint series hues. Tokens only. */
-.lf-num-board { display: grid; gap: var(--spacing-4); justify-items: start; min-inline-size: 0; }
-.lf-num-scroll { inline-size: 100%; overflow-x: auto; }
-.lf-num-status { font-weight: 800; }
-.lf-num-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-
 .lf-rek { display: block; inline-size: 100%; min-inline-size: 28rem; max-inline-size: 44rem; }
 .lf-rek-lane { fill: var(--sunken); stroke: transparent; stroke-width: 2; }
 .lf-rek-row[data-drop-armed='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: 6 4; }

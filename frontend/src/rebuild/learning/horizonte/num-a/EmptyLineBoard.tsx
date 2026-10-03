@@ -8,6 +8,7 @@ import { TableToggle } from './boardKit';
 import { LINE_MAX, landing } from './line-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './NumberLine.css';
 
 type EmptyLineSegment = Extract<HorizonteSegment, { type: 'math.number-line.empty.v2' }>;

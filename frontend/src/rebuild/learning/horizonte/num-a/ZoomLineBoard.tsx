@@ -9,6 +9,7 @@ import { TableToggle, decimalText, fractionAcross } from './boardKit';
 import { zoomCanIn, zoomCanOut, zoomIn, zoomInitial, zoomMove, zoomOut, zoomScale, zoomSetup, zoomStartUnits, zoomStep, zoomWindow } from './line-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './NumberLine.css';
 
 type ZoomSegment = Extract<HorizonteSegment, { type: 'math.number-line.zoom.v2' }>;
