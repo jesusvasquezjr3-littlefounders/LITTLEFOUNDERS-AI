@@ -12190,5 +12190,569 @@
       ]
     },
     "answer_keys": {}
+  },
+  {
+    "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+    "locale": "en-US",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "horizonte-space2",
+      "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+      "version_id": "forge-fixture",
+      "locale": "en-US",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 15,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-hz-space2"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Slopes from a formula",
+      "required_capabilities": [
+        "visual.surface-formula.v1",
+        "operation.read-partials.v1",
+        "operation.walk-gradient.v1"
+      ],
+      "segments": [
+        {
+          "id": "formula-slope",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Stand on the dot and face along x. How steep is the surface there?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "slope",
+              "expression": "x^2+2xy",
+              "axis": "x",
+              "at": {
+                "x": 1,
+                "y": 2
+              }
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        {
+          "id": "formula-gradient",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Find both slopes at the dot: the x slope first, then the y slope.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "gradient",
+              "expression": "x^2+3y-xy",
+              "at": {
+                "x": 2,
+                "y": 1
+              }
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        {
+          "id": "formula-walk",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Walk downhill a tenth of the slope each step. How many steps until the height is 3 or lower?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "walk",
+              "expression": "x^2+y^2",
+              "at": {
+                "x": 3,
+                "y": 2
+              },
+              "rate": {
+                "n": 1,
+                "d": 10
+              },
+              "below": 3,
+              "maxSteps": 8
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        {
+          "id": "formula-build",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Type a formula for z whose surface passes through all three dots.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -2,
+              "xMax": 2,
+              "yMin": -2,
+              "yMax": 2
+            },
+            "task": {
+              "kind": "build",
+              "through": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "z": 3
+                },
+                {
+                  "x": 0,
+                  "y": 1,
+                  "z": 0
+                }
+              ]
+            }
+          },
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "formula-slope": {
+        "key": [
+          "6"
+        ]
+      },
+      "formula-gradient": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "formula-walk": {
+        "key": [
+          "4"
+        ]
+      },
+      "formula-build": {
+        "reference": "1+2x-y"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+    "locale": "es-MX",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "horizonte-space2",
+      "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+      "version_id": "forge-fixture",
+      "locale": "es-MX",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 15,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-hz-space2"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Pendientes desde una fórmula",
+      "required_capabilities": [
+        "visual.surface-formula.v1",
+        "operation.read-partials.v1",
+        "operation.walk-gradient.v1"
+      ],
+      "segments": [
+        {
+          "id": "formula-slope",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Párate en el punto y mira a lo largo de x. ¿Qué tan empinada es la superficie ahí?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "slope",
+              "expression": "x^2+2xy",
+              "axis": "x",
+              "at": {
+                "x": 1,
+                "y": 2
+              }
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        {
+          "id": "formula-gradient",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Halla las dos pendientes en el punto: primero la de x y luego la de y.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "gradient",
+              "expression": "x^2+3y-xy",
+              "at": {
+                "x": 2,
+                "y": 1
+              }
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        {
+          "id": "formula-walk",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Baja desde el punto, un décimo de la pendiente en cada paso. ¿Cuántos pasos hasta que la altura sea 3 o menos?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "walk",
+              "expression": "x^2+y^2",
+              "at": {
+                "x": 3,
+                "y": 2
+              },
+              "rate": {
+                "n": 1,
+                "d": 10
+              },
+              "below": 3,
+              "maxSteps": 8
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        {
+          "id": "formula-build",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Escribe una fórmula para z cuya superficie pase por los tres puntos.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -2,
+              "xMax": 2,
+              "yMin": -2,
+              "yMax": 2
+            },
+            "task": {
+              "kind": "build",
+              "through": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "z": 3
+                },
+                {
+                  "x": 0,
+                  "y": 1,
+                  "z": 0
+                }
+              ]
+            }
+          },
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "formula-slope": {
+        "key": [
+          "6"
+        ]
+      },
+      "formula-gradient": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "formula-walk": {
+        "key": [
+          "4"
+        ]
+      },
+      "formula-build": {
+        "reference": "1+2x-y"
+      }
+    }
+  },
+  {
+    "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+    "locale": "pt-BR",
+    "schema_version": 2,
+    "version_id": "forge-fixture",
+    "document": {
+      "schema_version": 2,
+      "course_id": "financial-education",
+      "pathway_id": "financial-13-17",
+      "chapter_id": "horizonte-space2",
+      "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+      "version_id": "forge-fixture",
+      "locale": "pt-BR",
+      "age_band": "13-17",
+      "eligibility": {
+        "minimum_age": 15,
+        "maximum_age": 17
+      },
+      "knowledge_component_ids": [
+        "kc-hz-space2"
+      ],
+      "adventure_scene_id": "diorama-a",
+      "title": "Inclinações a partir de uma fórmula",
+      "required_capabilities": [
+        "visual.surface-formula.v1",
+        "operation.read-partials.v1",
+        "operation.walk-gradient.v1"
+      ],
+      "segments": [
+        {
+          "id": "formula-slope",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Fique no ponto e olhe ao longo de x. Qual é a inclinação da superfície ali?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "slope",
+              "expression": "x^2+2xy",
+              "axis": "x",
+              "at": {
+                "x": 1,
+                "y": 2
+              }
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        },
+        {
+          "id": "formula-gradient",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Ache as duas inclinações no ponto: primeiro a de x, depois a de y.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "gradient",
+              "expression": "x^2+3y-xy",
+              "at": {
+                "x": 2,
+                "y": 1
+              }
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        },
+        {
+          "id": "formula-walk",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Desça a partir do ponto, um décimo da inclinação a cada passo. Quantos passos até a altura ser 3 ou menos?",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -3,
+              "xMax": 3,
+              "yMin": -3,
+              "yMax": 3
+            },
+            "task": {
+              "kind": "walk",
+              "expression": "x^2+y^2",
+              "at": {
+                "x": 3,
+                "y": 2
+              },
+              "rate": {
+                "n": 1,
+                "d": 10
+              },
+              "below": 3,
+              "maxSteps": 8
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        },
+        {
+          "id": "formula-build",
+          "type": "math.surface-formula.v2",
+          "grading": "server",
+          "prompt": "Digite uma fórmula para z cuja superfície passe pelos três pontos.",
+          "visual": {
+            "type": "surface-formula"
+          },
+          "payload": {
+            "window": {
+              "xMin": -2,
+              "xMax": 2,
+              "yMin": -2,
+              "yMax": 2
+            },
+            "task": {
+              "kind": "build",
+              "through": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "z": 3
+                },
+                {
+                  "x": 0,
+                  "y": 1,
+                  "z": 0
+                }
+              ]
+            }
+          },
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        }
+      ]
+    },
+    "answer_keys": {
+      "formula-slope": {
+        "key": [
+          "6"
+        ]
+      },
+      "formula-gradient": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "formula-walk": {
+        "key": [
+          "4"
+        ]
+      },
+      "formula-build": {
+        "reference": "1+2x-y"
+      }
+    }
   }
 ]

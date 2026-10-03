@@ -3,9 +3,11 @@ import type { ArConsent, ArObjectId } from '../ar.generated';
 
 /*
  * F4.9: what the AR pilot depends on, injected so a test (and, later, the app) can supply it. The default is closed on every
- * count: the flag is off unless the build sets VITE_HORIZONTE_AR_PILOT=true, and no consent is wired yet, so a production build
- * can never open the gate. Wiring verified-guardian consent into `consent` is an owner follow-up, and the pilot must not be
- * enabled before the legal and pediatric review (docs/rebuild/sprints/horizonte/space2.md).
+ * count: the flag is off unless the build sets VITE_HORIZONTE_AR_PILOT=true, and no consent record exists yet, so a production
+ * build can never open the gate. The age is real: with the flag on and no age supplied, the board reads the learner's age band
+ * from Core (ar/ArLearnerAge.tsx), and an unknown age keeps the pilot closed. Consent comes from this environment only; recording
+ * a verified guardian's consent in Core is an owner follow-up, and the pilot must not be enabled before the legal and pediatric
+ * review (docs/rebuild/sprints/horizonte/space2.md).
  */
 
 /** The part of a WebXR session the pilot touches. Structural on purpose: no SDK, and no global type is required to compile. */
@@ -34,9 +36,12 @@ export interface ArSessionHandle { end(): void }
 export interface ArPilotEnvironment {
   /** The feature flag. Off by default. */
   flag: boolean;
-  /** Recorded consent, or null when none is recorded (always null until guardian consent is wired in). */
+  /** Recorded consent, or null when none is recorded (always null until Core can record a verified guardian's consent). */
   consent: ArConsent | null;
-  /** The learner's age in whole years when the app knows it; absent, the board uses the lesson's age floor, which is never above it. */
+  /**
+   * The learner's age in whole years when the app already knows it. Absent, the board asks Core for the learner's age band
+   * (only when the flag is on); null means no usable age, and the pilot stays closed. There is no fallback to the lesson's age.
+   */
   age?: number | null;
   /** The browser's WebXR system, or null where there is none. Read lazily, only when the gate is open. */
   xr: () => ArXrSystem | null;
@@ -53,7 +58,6 @@ export const arSessionInit = (): { requiredFeatures: string[]; optionalFeatures:
 export const defaultArPilot: ArPilotEnvironment = {
   flag: import.meta.env.VITE_HORIZONTE_AR_PILOT === 'true',
   consent: null,
-  age: null,
   xr: () => (typeof navigator === 'undefined' ? null : (navigator as unknown as { xr?: ArXrSystem }).xr ?? null),
   start: (input) => import('./arSession').then((module) => module.startArSession(input)),
 };
