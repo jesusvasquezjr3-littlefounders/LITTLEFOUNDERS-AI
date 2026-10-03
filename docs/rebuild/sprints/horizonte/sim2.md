@@ -144,3 +144,19 @@ code and jsdom.
 - Deploy Core before any browser that serves this type, and keep Forge from publishing it until Core is live (the same order as every seeded type).
 - Decide whether insurance should also show the expected cost per choice as a number (the catalogue mentions expected value; the board shows the
   futures and the count, and the cost table lists the outcomes, but not the average).
+
+## Fix round
+
+Dark-mode contrast fix for the F3.3 life-simulation board. The seeded protocol, the model, the scorer and the copy are unchanged.
+
+- **Defect.** `LifeSimBoard.css` set the chart `color` and the floor mark to `var(--ink)`, a constant (`#11132a`) that does not flip under
+  `.lf-rebuild[data-theme="dark"]`. The money axis labels sat on the dark `--sunken` ground at about 1.1:1 (the Atlas audit at 1280 px: 13 to 27 low-contrast
+  elements per fixture in dark against 2 in light).
+- **Fix.** Both uses are now `var(--content)`, the theme-flipping foreground that `charts/TeachingChart` uses. The tick marks moved from `--outline`
+  (1.5:1 in dark) to `--edge` (3.38:1 dark, 3.05:1 light); the grid stays on `--outline` as a faint guide.
+- **Re-read.** No other hex, `rgb()`, `hsl()`, `white`, `black` or inline style exists in the pack's CSS or TSX. The board keeps its futures table
+  (`data-hz-table`) and its `role="status"` text equivalent. Motion is a CSS-only stroke transition behind `prefers-reduced-motion: no-preference`.
+- **Guard.** `sim2Boards.test.tsx` now fails if `LifeSimBoard.css` contains `var(--ink)`, a hex colour, `rgb()`, `hsl()`, `white` or `black`.
+
+Still limited: checked by contrast arithmetic from `tokens.css`, not yet re-run through the Atlas audit or looked at in a browser. The Reset and Check
+buttons at 2.3:1 in the light audit come from the shared button styles, not from this pack.
