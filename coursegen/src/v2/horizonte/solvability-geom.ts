@@ -4,8 +4,8 @@ import {
 } from '../solvability.js';
 import { PROOF_FORMULAS, PROOF_PAYLOAD_KEYS, proofPayloadFault, proofValueText, type ProofVisual } from './balance.js';
 import {
-  GEOM2_MAX_CELLS, GEOM2_SHAPES, area2, cellsInside, corners, coverSearch, distinct, imageOf, inPlane, isPoint, isPoints, isShape, moveProblem,
-  movesProblem, pointKey, sameSet, simple, tileProblem, type LatticePoint,
+  GEOM2_COVER_BUDGET, GEOM2_MAX_CELLS, GEOM2_SHAPES, area2, cellsInside, corners, coverSearch, distinct, geoboardBandCount, geoboardBands, imageOf, inPlane,
+  isPoint, isPoints, isShape, moveProblem, movesProblem, pointKey, sameSet, simple, tileProblem, type LatticePoint,
 } from './geom2.js';
 
 /*
@@ -70,7 +70,7 @@ const FAMILIES: readonly Family[] = ['triangle', 'right-triangle', 'rectangle', 
 const STRICTER: Readonly<Partial<Record<Family, Family>>> = { triangle: 'right-triangle', rectangle: 'square', parallelogram: 'rectangle' };
 
 interface Reach {
-  /** Areas (half squares) of some simple band, whatever its shape. */
+  /** Areas (half squares) of some simple band the pack and Core can build, whatever its shape. */
   any: ReadonlySet<number>;
   /** Areas of a band that is each named figure. */
   figure: Readonly<Record<Family, ReadonlySet<number>>>;
@@ -78,72 +78,30 @@ interface Reach {
   wide: Readonly<Record<Family, ReadonlySet<number>>>;
 }
 
-const reachCost = (size: number): number => (2 * (size - 1) + 1) ** 4 + 2 * (size - 1) ** 2;
-
-/**
- * A simple band of exactly `area` half squares on a board `size` pegs a side, for any 1 <= area <= 2(size-1)^2: a column strip w wide whose
- * top is the line y = top, with the two outer columns shortened to heights left and right so left + right is the leftover area. It is built,
- * not searched, and the caller proves it with the pack's own `simple` and `area2`.
- */
-function anyBand(size: number, area: number): LatticePoint[] | null {
-  const top = size - 1;
-  const width = Math.ceil(area / (2 * top));
-  if (width < 1 || width > top) return null;
-  const rest = area - 2 * (width - 1) * top;
-  const left = Math.min(top, rest);
-  const right = rest - left;
-  const band: LatticePoint[] = [{ x: 0, y: 0 }, { x: width, y: 0 }];
-  if (right > 0) band.push({ x: width, y: right });
-  for (let x = width - 1; x >= 1; x -= 1) band.push({ x, y: top });
-  band.push({ x: 0, y: left });
-  return band;
-}
-
-const spanOf = (values: readonly number[]): number => Math.max(...values) - Math.min(...values);
 const reachBySize = new Map<number, Reach>();
 
 /**
- * Every figure and area a board holds, keyless. A triangle is the origin and two vectors; a parallelogram is those two vectors and their sum;
- * both are translated to the board's corner, so the vector pairs whose box fits are exactly the figures that fit. The shape of each is judged
- * by the pack's own `isShape`, and any-shape areas by a constructive band proven with `simple` and `area2`.
+ * Every figure and area a board holds, keyless. The bands are the pack's own `geoboardBands` (axis-anchored figures with a flat base), the very
+ * family the pack gate's `bandExists` and Core's `findBand` search, so the three agree on which keys are solvable: a tilted band is a band the
+ * grader would accept but that no publish-time sample can produce, and a key only it could meet is refused here like there. The shape of each
+ * band is judged by the pack's own `isShape`.
  */
 function reachOf(size: number): Reach {
   const cached = reachBySize.get(size);
   if (cached) return cached;
-  const top = size - 1;
+  const any = new Set<number>();
   const figure = Object.fromEntries(FAMILIES.map((family) => [family, new Set<number>()])) as Record<Family, Set<number>>;
   const wide = Object.fromEntries(FAMILIES.map((family) => [family, new Set<number>()])) as Record<Family, Set<number>>;
-  for (let ux = -top; ux <= top; ux += 1) {
-    for (let uy = -top; uy <= top; uy += 1) {
-      for (let vx = -top; vx <= top; vx += 1) {
-        for (let vy = -top; vy <= top; vy += 1) {
-          if (ux * vy - uy * vx === 0) continue;
-          if (spanOf([0, ux, vx]) <= top && spanOf([0, uy, vy]) <= top) {
-            const band = [{ x: 0, y: 0 }, { x: ux, y: uy }, { x: vx, y: vy }];
-            const a = area2(band);
-            figure.triangle.add(a);
-            if (isShape(band, 'right-triangle')) figure['right-triangle'].add(a);
-            else wide.triangle.add(a);
-          }
-          if (spanOf([0, ux, ux + vx, vx]) <= top && spanOf([0, uy, uy + vy, vy]) <= top) {
-            const band = [{ x: 0, y: 0 }, { x: ux, y: uy }, { x: ux + vx, y: uy + vy }, { x: vx, y: vy }];
-            const a = area2(band);
-            figure.parallelogram.add(a);
-            if (!isShape(band, 'rectangle')) wide.parallelogram.add(a);
-            else {
-              figure.rectangle.add(a);
-              if (isShape(band, 'square')) figure.square.add(a);
-              else wide.rectangle.add(a);
-            }
-          }
-        }
-      }
+  for (const band of geoboardBands(size)) {
+    if (!simple(band)) continue;
+    const a = area2(band);
+    any.add(a);
+    for (const family of FAMILIES) {
+      if (!isShape(band, family)) continue;
+      figure[family].add(a);
+      const stricter = STRICTER[family];
+      if (stricter !== undefined && !isShape(band, stricter)) wide[family].add(a);
     }
-  }
-  const any = new Set<number>();
-  for (let a = 1; a <= 2 * top * top; a += 1) {
-    const band = anyBand(size, a);
-    if (band !== null && simple(band) && area2(band) === a) any.add(a);
   }
   const reach: Reach = { any, figure, wide };
   reachBySize.set(size, reach);
@@ -158,7 +116,7 @@ function geoboardKeyIssues(subject: string, size: number, reach: Reach, answerKe
   if (rubric.area2 > maxArea) return [issue('out-of-bounds', `${subject}: area2 ${rubric.area2} is larger than the biggest band a ${size}-peg board holds (${maxArea} half squares)`)];
   const area = rubric.area2;
   if (rubric.shape === undefined) {
-    return reach.any.has(area) ? [] : [issue('no-solution', `${subject}: no simple band on a ${size}-peg board has ${area} half squares, so the learner cannot succeed`)];
+    return reach.any.has(area) ? [] : [issue('no-solution', `${subject}: no band on a ${size}-peg board has ${area} half squares (the pack and Core build axis-anchored bands, so a tilted one never counts), so the learner cannot succeed`)];
   }
   const shape = rubric.shape;
   if (typeof shape !== 'string' || !(GEOM2_SHAPES as readonly string[]).includes(shape)) {
@@ -186,15 +144,11 @@ const geoboardChecker: SolvabilityChecker = (segment, context) => {
   const size = payload.size;
   if (!whole(size)) return result([issue('impossible-state', `${subject}: size must be a whole number of pegs a side`)]);
   if (size < MIN_SIZE || size > MAX_SIZE) return result([issue('out-of-bounds', `${subject}: a board of ${size} pegs a side is outside the ${MIN_SIZE} to ${MAX_SIZE} pegs the geoboard draws`)]);
-  const cost = reachCost(size);
+  const cost = geoboardBandCount(size);
   if (cost > context.nodeBudget) return result([budgetIssue(subject, context.nodeBudget, 'which figures and areas the board reaches')]);
   const reach = reachOf(size);
   const stats = { nodes: cost, areas: reach.any.size, triangles: reach.figure.triangle.size, parallelograms: reach.figure.parallelogram.size };
-  const issues: SolvabilityIssue[] = [];
-  const maxArea = 2 * (size - 1) ** 2;
-  if (reach.any.size !== maxArea) issues.push(issue('no-solution', `${subject}: only ${reach.any.size} of the ${maxArea} areas from 1 to the full board are reachable by a simple band`));
-  if (context.answerKey !== undefined) issues.push(...geoboardKeyIssues(subject, size, reach, context.answerKey));
-  return result(issues, stats);
+  return result(context.answerKey === undefined ? [] : geoboardKeyIssues(subject, size, reach, context.answerKey), stats);
 };
 
 /* ---------- math.area-squares.v2 ---------- */
@@ -308,7 +262,8 @@ const tessellationChecker: SolvabilityChecker = (segment, context) => {
     return result([issue('no-solution', `${subject}: ${cells.length} floor cells cannot be whole copies of a ${tile.length}-cell tile, so no cover exists`)]);
   }
   const motions = Array.isArray(payload.moves) ? (payload.moves as string[]) : ['slide'];
-  const search = coverSearch(cells, tile, motions, context.nodeBudget);
+  // The pack gate and Core stop at the pack budget, so a floor they cannot finish is refused here too, whatever node budget the run allows.
+  const search = coverSearch(cells, tile, motions, Math.min(context.nodeBudget, GEOM2_COVER_BUDGET));
   const stats = { nodes: search.steps, copies: search.copies };
   if (!search.covered) {
     return result([search.exhausted

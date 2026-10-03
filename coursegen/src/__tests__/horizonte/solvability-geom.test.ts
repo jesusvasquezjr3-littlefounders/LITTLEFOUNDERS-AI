@@ -2,9 +2,9 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { FIXTURE_EMITTED_HORIZONTE } from '../../v2/cli.js';
 import { horizontePieceGates } from '../../v2/horizonte/index.js';
-import { area2, isShape } from '../../v2/horizonte/geom2.js';
+import { GEOM2_COVER_BUDGET, area2, geoboardBandCount, geoboardBands, isShape, simple } from '../../v2/horizonte/geom2.js';
 import '../../v2/solvabilityPacks.js';
-import { registeredSolvabilityTypes, runSolvabilityGate } from '../../v2/solvability.js';
+import { DEFAULT_NODE_BUDGET, registeredSolvabilityTypes, runSolvabilityGate } from '../../v2/solvability.js';
 
 const GEOBOARD = 'math.geoboard.v2';
 const AREA = 'math.area-squares.v2';
@@ -143,20 +143,45 @@ describe('geom2 and balance F0.4 checkers', () => {
       expect(findings(geoboard(5), { area2: 12, shape: 'rectangle' })).toEqual([]);
     });
 
-    it('reaches every area from 1 to the full board on every size, without a key and with each key', () => {
+    it('reaches, on every size, exactly the areas an axis-anchored band has, without a key and with each key', () => {
       for (let size = 3; size <= 8; size += 1) {
-        const top = 2 * (size - 1) ** 2;
+        const top = size - 1;
+        const reached = new Set<number>();
+        for (let a = 1; a <= top; a += 1) for (let b = 1; b <= top; b += 1) reached.add(a * b).add(2 * a * b);
         expect(codes(geoboard(size)), `size ${size}`).toEqual([]);
-        for (let a = 1; a <= top; a += 1) expect(codes(geoboard(size), { area2: a }), `size ${size} area ${a}`).toEqual([]);
-        expect(kinds(geoboard(size), { area2: top + 1 })).toEqual(['out-of-bounds']);
+        for (let a = 1; a <= 2 * top ** 2; a += 1) expect(codes(geoboard(size), { area2: a }), `size ${size} area ${a}`).toEqual(reached.has(a) ? [] : ['no-solution']);
+        expect(kinds(geoboard(size), { area2: 2 * top ** 2 + 1 })).toEqual(['out-of-bounds']);
       }
     });
 
-    it('agrees with a brute force over every peg of the board, for each named figure and area', () => {
+    it('refuses a key only a tilted band can meet, because the pack gate and Core build axis-anchored bands alone', () => {
+      // The tilted diamond is a simple square of 4 half squares a grader would accept, but no band the pack or Core can sample is one.
+      const diamond = pts([1, 0], [2, 1], [1, 2], [0, 1]);
+      expect([simple(diamond), area2(diamond), isShape(diamond, 'square')]).toEqual([true, 4, true]);
+      expect(kinds(geoboard(3), { area2: 4, shape: 'square' })).toEqual(['no-solution']);
+      expect(pack(geoboard(3), { area2: 4, shape: 'square' })).not.toEqual([]);
+      for (const area of [3, 5, 6, 7]) {
+        expect(kinds(geoboard(3), { area2: area }), `area ${area}`).toEqual(['no-solution']);
+        expect(pack(geoboard(3), { area2: area }), `area ${area} pack gate`).not.toEqual([]);
+      }
+      expect(findings(geoboard(3), { area2: 4, shape: 'rectangle' })).toEqual([]);
+    });
+
+    it('agrees with the pack gate in both directions on every key of every board', () => {
+      for (let size = 3; size <= 8; size += 1) {
+        for (let a = 1; a <= 2 * (size - 1) ** 2; a += 1) {
+          for (const shape of [undefined, 'triangle', 'right-triangle', 'rectangle', 'square', 'parallelogram']) {
+            const key = shape === undefined ? { area2: a } : { area2: a, shape };
+            expect(kinds(geoboard(size), key).includes('no-solution'), `size ${size} ${JSON.stringify(key)}`).toBe(pack(geoboard(size), key).length > 0);
+          }
+        }
+      }
+    });
+
+    it('never accepts a key that no band at all meets, brute-forced over every peg of the board', () => {
       const families = ['triangle', 'right-triangle', 'rectangle', 'square', 'parallelogram'] as const;
-      type Family = (typeof families)[number];
-      const narrower: Partial<Record<Family, Family>> = { triangle: 'right-triangle', rectangle: 'square', parallelogram: 'rectangle' };
-      for (let size = 3; size <= 6; size += 1) {
+      let tiltedOnly = 0;
+      for (let size = 3; size <= 5; size += 1) {
         const pegs: P[] = [];
         for (let x = 0; x < size; x += 1) for (let y = 0; y < size; y += 1) pegs.push(p(x, y));
         const bands: P[][] = [];
@@ -175,29 +200,20 @@ describe('geom2 and balance F0.4 checkers', () => {
             }
           }
         }
-        const reach = Object.fromEntries(families.map((family) => [family, new Set<number>()])) as Record<Family, Set<number>>;
-        for (const band of bands) for (const family of families) if (isShape(band, family)) reach[family].add(area2(band));
-        const maxArea = 2 * (size - 1) ** 2;
         for (const family of families) {
-          for (let a = 1; a <= maxArea; a += 1) {
-            const stricter = narrower[family];
-            const wide = stricter !== undefined && [...bands].some((band) => isShape(band, family) && !isShape(band, stricter) && area2(band) === a);
-            const expected = !reach[family].has(a) ? ['no-solution'] : stricter !== undefined && !wide ? ['ambiguous-solution'] : [];
-            expect(codes(geoboard(size), { area2: a, shape: family }), `size ${size} ${family} ${a}`).toEqual(expected);
+          for (let a = 1; a <= 2 * (size - 1) ** 2; a += 1) {
+            const met = bands.some((band) => isShape(band, family) && area2(band) === a);
+            const refused = kinds(geoboard(size), { area2: a, shape: family }).includes('no-solution');
+            if (!met) expect(refused, `size ${size} ${family} ${a}`).toBe(true);
+            if (met && refused) tiltedOnly += 1;
           }
         }
       }
+      expect(tiltedOnly).toBeGreaterThan(0);
     });
 
-    it('never calls a key unsolvable that the pack gate accepts', () => {
-      for (let size = 3; size <= 6; size += 1) {
-        for (let a = 1; a <= 2 * (size - 1) ** 2; a += 1) {
-          for (const shape of [undefined, 'triangle', 'right-triangle', 'rectangle', 'square', 'parallelogram']) {
-            const key = shape === undefined ? { area2: a } : { area2: a, shape };
-            if (pack(geoboard(size), key).length === 0) expect(kinds(geoboard(size), key), `size ${size} ${JSON.stringify(key)}`).not.toContain('no-solution');
-          }
-        }
-      }
+    it('counts the bands the pack enumerates without building them', () => {
+      for (let size = 3; size <= 8; size += 1) expect([...geoboardBands(size)].length, `size ${size}`).toBe(geoboardBandCount(size));
     });
   });
 
@@ -458,12 +474,14 @@ describe('geom2 and balance F0.4 checkers', () => {
   describe('budget', () => {
     it('reports a budget issue, fast, when the geoboard reach would need more than the node budget', () => {
       const started = performance.now();
-      const found = findings(geoboard(8), undefined, 1000);
+      const found = findings(geoboard(8), undefined, 100);
       expect(found.map((finding) => finding.code)).toEqual(['budget-exceeded']);
       expect(found[0]!.severity).toBe('block');
       expect(codes(geoboard(5), { area2: 12 }, 100)).toEqual(['budget-exceeded']);
       expect(performance.now() - started).toBeLessThan(500);
-      expect(codes(geoboard(3), { area2: 5 }, 2000)).toEqual([]);
+      expect(codes(geoboard(3), { area2: 4 }, 2000)).toEqual([]);
+      expect(codes(geoboard(8), undefined, geoboardBandCount(8))).toEqual([]);
+      expect(codes(geoboard(8), undefined, geoboardBandCount(8) - 1)).toEqual(['budget-exceeded']);
     });
 
     it('reports a budget issue, not no-solution, when the cover search runs out of steps', () => {
@@ -472,6 +490,24 @@ describe('geom2 and balance F0.4 checkers', () => {
       expect(codes(tess(bump), { copies: 4 }, 3)).toEqual(['budget-exceeded']);
       expect(performance.now() - started).toBeLessThan(500);
       expect(codes(tess({ ...turned, moves: ['slide', 'turn'] }), { copies: 4 })).toEqual([]);
+    });
+
+    it('refuses a floor only a search past the pack budget covers, whatever node budget the run allows', () => {
+      const parity = JSON.parse(readFileSync(new URL('../../v2/fixtures/horizonte-solvability-parity.json', import.meta.url), 'utf8')) as {
+        tessellation: Array<{ floor: P[]; tile: P[]; moves?: string[]; steps?: number }>;
+      };
+      const board = parity.tessellation.find((entry) => entry.steps !== undefined)!;
+      const target = tess({ floor: board.floor, tile: board.tile, moves: board.moves });
+      const key = { copies: board.floor.length / board.tile.length };
+      expect(board.steps!).toBeGreaterThan(GEOM2_COVER_BUDGET);
+      expect(board.steps!).toBeLessThan(DEFAULT_NODE_BUDGET);
+      expect(pack(target, key).length).toBeGreaterThan(0);
+      for (const budget of [undefined, DEFAULT_NODE_BUDGET, 10 * DEFAULT_NODE_BUDGET]) {
+        const found = findings(target, key, budget);
+        expect(found.map((finding) => finding.code), String(budget)).toEqual(['budget-exceeded']);
+        expect(found[0]!.severity).toBe('block');
+      }
+      expect(codes(target, undefined, 10 * DEFAULT_NODE_BUDGET)).toEqual(['budget-exceeded']);
     });
 
     it('proves no cover inside a small budget as no-solution, never as budget-exceeded', () => {

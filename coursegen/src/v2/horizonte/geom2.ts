@@ -103,15 +103,25 @@ function isShape(points: readonly Point[], shape: string) {
   return shape === 'rectangle' || (a.x - b.x) ** 2 + (a.y - b.y) ** 2 === (b.x - d.x) ** 2 + (b.y - d.y) ** 2;
 }
 
-function bandExists(size: number, area: number, shape: unknown) {
+/** The bands a geoboard key can be solved with: axis-anchored figures with a flat base. Core's findBand searches this same family; a tilted band is outside it. */
+function* geoboardBands(size: number): Generator<Point[]> {
   const top = size - 1;
   for (let a = 1; a <= top; a += 1) {
     for (let b = 1; b <= top; b += 1) {
-      const bands: Point[][] = [[{ x: 0, y: 0 }, { x: a, y: 0 }, { x: a, y: b }, { x: 0, y: b }], [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: 0, y: b }]];
-      for (let skew = 0; a + skew <= top; skew += 1) bands.push([{ x: 0, y: 0 }, { x: a, y: 0 }, { x: a + skew, y: b }, { x: skew, y: b }], [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: skew, y: b }]);
-      if (bands.some((band) => simple(band) && area2(band) === area && (typeof shape !== 'string' || isShape(band, shape)))) return true;
+      yield [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: a, y: b }, { x: 0, y: b }];
+      yield [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: 0, y: b }];
+      for (let skew = 0; a + skew <= top; skew += 1) {
+        yield [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: a + skew, y: b }, { x: skew, y: b }];
+        yield [{ x: 0, y: 0 }, { x: a, y: 0 }, { x: skew, y: b }];
+      }
     }
   }
+}
+/** The number of bands geoboardBands(size) yields, without building them. */
+const geoboardBandCount = (size: number) => 2 * (size - 1) ** 2 + 2 * (size - 1) * ((size - 1) * size) / 2;
+
+function bandExists(size: number, area: number, shape: unknown) {
+  for (const band of geoboardBands(size)) if (simple(band) && area2(band) === area && (typeof shape !== 'string' || isShape(band, shape))) return true;
   return false;
 }
 
@@ -320,7 +330,7 @@ function geom2Gates(document: { segments?: unknown }, answerKeys?: Record<string
 /* The pure lattice, move and cover functions the Forge solvability checker (solvability-geom.ts) reuses; the pack gates above are unchanged. */
 export {
   BUDGET as GEOM2_COVER_BUDGET, MAX_CELLS as GEOM2_MAX_CELLS, MIRRORS as GEOM2_MIRRORS, SHAPES as GEOM2_SHAPES,
-  area2, bounds, cellsInside, connected, corners, coverSearch, distinct, floorProblem, imageOf, inPlane, isPoint, isPoints, isShape,
+  area2, bounds, cellsInside, connected, corners, coverSearch, distinct, floorProblem, geoboardBandCount, geoboardBands, imageOf, inPlane, isPoint, isPoints, isShape,
   key as pointKey, moveProblem, movesProblem, oriented, sameSet, simple, tileProblem,
 };
 export type { CoverSearch, Point as LatticePoint };
