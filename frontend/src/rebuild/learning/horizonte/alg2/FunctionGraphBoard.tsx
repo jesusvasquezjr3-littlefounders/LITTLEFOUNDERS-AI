@@ -10,7 +10,7 @@ import {
   curveFunction, formatDecimal, parseSliderNumber, passesThrough, readGraphPayload, responseNames, sliderNames, toStandard,
   type Dec, type GraphFamily, type GraphForm, type ReadGraph,
 } from './model.generated';
-import { equationText, fmt, slots, stepOf, textAt, trackOf, type Track } from './shared';
+import { equationText, fmt, pairText, slots, stepOf, textAt, trackOf, type Track } from './shared';
 import '../horizonte.css';
 import './alg2.css';
 
@@ -73,7 +73,7 @@ function FunctionGraph({ document, segment, onBack, sequence, onGrade, graph }: 
       <Plano label={t.graphName} domain={graph.window} xLabel="x" yLabel="y" digits={3}
         layers={{
           curves: fn ? [{ id: 'curve', fn, label: t.curveName, series: 1 }] : [],
-          points: graph.marks.map((mark, index) => ({ id: `dot-${index}`, x: mark.x, y: mark.y, label: `(${fmt(locale, mark.x)}, ${fmt(locale, mark.y)})`, series: 3 as const })),
+          points: graph.marks.map((mark, index) => ({ id: `dot-${index}`, x: mark.x, y: mark.y, label: pairText(locale, mark.x, mark.y), series: 3 as const })),
         }} />
       <p className="lf-alg2-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
         {equationText(locale, graph.curve, graph.form, texts)}

@@ -1,4 +1,4 @@
-/* A14 clock, A15 ruler and A16 pan balance: SVG faces and scales in the sky, mint and berry series hues. Tokens only. */
+/* A14 clock, A15 ruler, A16 pan balance and F1.7 ruler reading: SVG faces and scales in the sky, mint and berry series hues. Tokens only. */
 .lf-clock { display: block; inline-size: 100%; min-inline-size: 14rem; max-inline-size: 20rem; }
 .lf-clock-face { fill: var(--surface); stroke: var(--content-muted); stroke-width: 4; }
 .lf-clock-mark { stroke: var(--outline); stroke-width: 2; }
@@ -36,3 +36,8 @@
 .lf-pan-region h3 { font: var(--type-label); }
 .lf-pan-fixed { display: flex; flex-wrap: wrap; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; }
 .lf-pan-fixed li { display: grid; place-items: center; min-inline-size: var(--spacing-8); min-block-size: var(--spacing-8); padding-inline: var(--spacing-2); border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); font-weight: 800; }
+
+.lf-read-body { fill: var(--berry-soft); stroke: var(--berry-strong); stroke-width: 3; }
+.lf-read-eraser { fill: var(--berry-strong); }
+.lf-read-tip { fill: var(--sunken); stroke: var(--content-muted); stroke-width: 3; stroke-linejoin: round; }
+.lf-read-strip { fill: var(--mint-soft); stroke: var(--mint-strong); stroke-width: 3; }

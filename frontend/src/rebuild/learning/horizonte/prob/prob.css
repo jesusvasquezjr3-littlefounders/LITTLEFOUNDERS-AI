@@ -1,17 +1,17 @@
 /* F2.9 and F2.10 probability boards: the tree, natural frequencies and the regression with residual squares. Tokens only. */
 .lf-prob { display: grid; gap: var(--spacing-3); justify-items: start; }
-.lf-prob-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--ink); }
+.lf-prob-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-prob-chart text { pointer-events: none; fill: currentColor; }
 .lf-prob-facts { display: grid; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; font-weight: 700; }
 .lf-prob-status { font-weight: 800; }
-.lf-prob-total, .lf-prob-outline { font-weight: 700; }
+.lf-prob-total, .lf-prob-outline, .lf-prob-scale { font-weight: 700; }
 
 .lf-prob-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); padding: var(--spacing-2); border: 2px dashed transparent; border-radius: var(--rounded-sm); }
 .lf-prob-tray[data-drop-armed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 
 .lf-prob-edge { stroke: var(--outline); stroke-width: 3; }
 .lf-prob-edge-label { font-size: 18px; font-weight: 800; paint-order: stroke; stroke: var(--sunken); stroke-width: 6; stroke-linejoin: round; }
-.lf-prob-root { fill: var(--surface); stroke: var(--ink); stroke-width: 3; }
+.lf-prob-root { fill: var(--surface); stroke: var(--content); stroke-width: 3; }
 .lf-prob-root-label { font-size: 24px; font-weight: 800; }
 .lf-prob-slot { fill: var(--sunken); stroke-width: 3; stroke-dasharray: 8 6; }
 .lf-prob-slot--has { stroke: var(--berry-strong); }
@@ -25,18 +25,18 @@
 .lf-prob-node-value { font-size: 28px; font-weight: 800; }
 .lf-prob-node-value--empty { opacity: 0.5; }
 
-.lf-prob-block { stroke: var(--ink); stroke-opacity: 0.35; stroke-width: 1.5; stroke-linejoin: round; }
+.lf-prob-block { stroke: var(--content); stroke-opacity: 0.35; stroke-width: 1.5; stroke-linejoin: round; }
 .lf-prob-cells { pointer-events: none; stroke: none; }
-.lf-prob-gridline { fill: none; stroke: var(--ink); stroke-opacity: 0.18; stroke-width: 1; }
+.lf-prob-gridline { fill: none; stroke: var(--content); stroke-opacity: 0.18; stroke-width: 1; }
 .lf-prob-group--hasPos .lf-prob-block { fill: var(--berry-strong); }
 .lf-prob-group--hasNeg .lf-prob-block { fill: var(--berry-soft); }
 .lf-prob-group--lacksPos .lf-prob-block { fill: var(--sky-strong); }
 .lf-prob-group--lacksNeg .lf-prob-block { fill: var(--sky-soft); }
-.lf-prob-group--asked .lf-prob-block { stroke-opacity: 1; stroke-width: 5; }
+.lf-prob-group--asked .lf-prob-block { stroke-opacity: 1; stroke-width: var(--lf-prob-heavy, 5px); }
 .lf-prob-legend { display: grid; gap: var(--spacing-1); margin: 0; padding: 0; list-style: none; }
 .lf-prob-legend-item { display: flex; align-items: center; gap: var(--spacing-2); }
 .lf-prob-legend-item--asked { font-weight: 800; }
-.lf-prob-swatch { flex: none; inline-size: 1.25rem; block-size: 1.25rem; border: 2px solid var(--ink); border-radius: var(--rounded-sm); }
+.lf-prob-swatch { flex: none; inline-size: 1.25rem; block-size: 1.25rem; border: 2px solid var(--content); border-radius: var(--rounded-sm); }
 .lf-prob-swatch--hasPos { background: var(--berry-strong); }
 .lf-prob-swatch--hasNeg { background: var(--berry-soft); }
 .lf-prob-swatch--lacksPos { background: var(--sky-strong); }
@@ -45,10 +45,10 @@
 .lf-prob-axis line { stroke: var(--outline); stroke-width: 2; }
 .lf-prob-axis text { font-size: 18px; font-weight: 700; }
 .lf-prob-grid { stroke: var(--outline); stroke-width: 1; stroke-opacity: 0.6; }
-.lf-prob-frame { fill: none; stroke: var(--ink); stroke-width: 2; }
+.lf-prob-frame { fill: none; stroke: var(--content); stroke-width: 2; }
 .lf-prob-square { fill: var(--berry-soft); stroke: var(--berry-strong); stroke-width: 2; }
 .lf-prob-line { fill: none; stroke: var(--sky-strong); stroke-width: 5; stroke-linecap: round; }
-.lf-prob-point { fill: var(--ink); stroke: var(--sunken); stroke-width: 2; }
+.lf-prob-point { fill: var(--content); stroke: var(--sunken); stroke-width: 2; }
 .lf-prob-equation { display: block; font-weight: 800; }
 
 @media (prefers-reduced-motion: no-preference) {

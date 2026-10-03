@@ -9,6 +9,7 @@ const REGRESSION_AGES = { ageBand: '13-17', eligibility: { minimum_age: 14, maxi
 const SCREENING = { population: 1000, prior: { part: 1, whole: 100 }, hit: { part: 9, whole: 10 }, alarm: { part: 1, whole: 10 } };
 const FILTER = { population: 1000, prior: { part: 1, whole: 5 }, hit: { part: 9, whole: 10 }, alarm: { part: 1, whole: 20 } };
 const SURVEY = { population: 2000, prior: { part: 3, whole: 100 }, hit: { part: 4, whole: 5 }, alarm: { part: 1, whole: 20 } };
+const CITY = { population: 10000, prior: { part: 1, whole: 50 }, hit: { part: 4, whole: 5 }, alarm: { part: 1, whole: 20 } };
 const CHECKUP = { population: 1000, prior: { part: 4, whole: 10 }, hit: { part: 3, whole: 4 }, alarm: { part: 1, whole: 5 } };
 
 const BUILD = text(
@@ -118,6 +119,17 @@ export const PROB_FIXTURES: readonly HorizonteFixture[] = [
     }),
     rubric: chance('5/29'),
     ladder: { invalid: { value: 'abc' }, valid: { value: '' }, met: { value: '0.17' } },
+  },
+  {
+    id: 'bayes-city',
+    title: text('Positive result in a big city', 'Resultado positivo en una ciudad grande', 'Resultado positivo em uma cidade grande'),
+    ...TREE_AGES,
+    segment: (locale) => ({
+      id: 'bayes-city', type: 'prob.bayes.v2', grading: 'server', visual: { type: 'natural-frequencies' }, prompt: CHANCE_POSITIVE[locale],
+      payload: { ...CITY, ask: 'positive' },
+    }),
+    rubric: chance('16/65'),
+    ladder: { invalid: { value: '3' }, valid: { value: '' }, met: { value: '0.25' } },
   },
   {
     id: 'regression-climb',

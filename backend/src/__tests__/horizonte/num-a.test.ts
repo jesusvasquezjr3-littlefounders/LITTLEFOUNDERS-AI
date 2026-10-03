@@ -12,6 +12,10 @@ import {
   balanceSetup, balanceTargetReachable, beamLean, clockMinutes, clockParts, clockSetup, clockText, handAngles, isClockMinutes, isPans, isRulerEnd, minuteAtAngle, panDifference, panTotals, reachableDifferences,
   rulerSetup, rulerTargetReachable, untouchedPans,
 } from '../../services/horizonte/num-a/measure-model.js';
+import {
+  ORDER_MAX_COUNT, orderContext, orderKeyProblem, orderLabelled, orderMarkUnits, orderOccupant, orderPieceId, orderPlace, orderRemove, orderResponse, orderSetup, orderSlotId, orderTruth, orderUntouched,
+} from '../../services/horizonte/num-a/order-model.js';
+import { readContext, readKeyProblem, readLength, readResponse, readSetup, readUntouched } from '../../services/horizonte/num-a/read-model.js';
 import { horizonteGrade, horizonteSampleVerdict, horizonteScopeProblem } from '../../services/horizonte/index.js';
 import { gradeV2Visual, v2PublicLessonSchema, validateV2LessonForGrading } from '../../services/v2LessonDocument.js';
 
@@ -31,7 +35,7 @@ function lesson(id: string, locale: 'en-US' | 'es-MX' | 'pt-BR' = 'en-US') {
   };
 }
 
-describe('num-a pack: F1.2 rekenrek and abacus, F1.3 number lines, F1.7 clock, ruler and pan balance', () => {
+describe('num-a pack: F1.2 rekenrek and abacus, F1.3 number lines, F1.7 clock, ruler, ruler reading and pan balance', () => {
   it('meets the scorer contract', () => {
     expect(() => assertScorerContract(numA, NUM_A_FIXTURES)).not.toThrow();
   });
@@ -342,5 +346,172 @@ describe('num-a pack: F1.2 rekenrek and abacus, F1.3 number lines, F1.7 clock, r
     expect(v2PublicLessonSchema.safeParse({ ...zoom, age_band: '6-9', eligibility: { minimum_age: 6, maximum_age: 9 } }).success).toBe(false);
     const clock = lesson('clock-half-past');
     expect(v2PublicLessonSchema.safeParse({ ...clock, segments: [{ ...(clock.segments[0] as Record<string, unknown>), payload: { start: 0, step: 7 } }] }).success).toBe(false);
+  });
+
+  it('keeps the order model total', () => {
+    const setup = orderSetup({ scale: 1, low: 0, step: 1, count: 10, values: [7, 2, 5] })!;
+    expect(setup).toBeDefined();
+    expect(orderMarkUnits(setup, 4)).toBe(4);
+    expect(orderSetup({ scale: 2, low: 30, step: 1, count: 20, values: [45, 32] })).toBeDefined();
+    expect(orderSetup({ scale: 3, low: 0, step: 1, count: 10, values: [1, 2] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 1, count: 3, values: [1, 2] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 1, count: ORDER_MAX_COUNT + 1, values: [1, 2] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 10, count: 10, values: [15, 20] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 10, count: 10, values: [20, 20] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 10, count: 10, values: [20] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 10, count: 10, values: [10, 20, 30, 40, 50, 60, 70] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 10, count: 10, values: [20, 110] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 50000, step: 5000, count: 20, values: [50000, 55000] })).toBeUndefined();
+    expect(orderSetup({ scale: 0, low: 0, step: 1, count: 10, values: [1.5, 2] })).toBeUndefined();
+    expect(orderSetup(null)).toBeUndefined();
+    expect(orderSetup([])).toBeUndefined();
+    expect(orderTruth(setup)).toEqual({ 'm-2': ['n-2'], 'm-5': ['n-5'], 'm-7': ['n-7'] });
+    expect(orderContext(setup).slotIds).toHaveLength(11);
+    expect(orderContext(setup).pieceIds).toEqual(['n-7', 'n-2', 'n-5']);
+    expect(orderPieceId(35)).toBe('n-35');
+    expect(orderSlotId(0)).toBe('m-0');
+    expect(orderKeyProblem(setup, [orderTruth(setup)])).toBeNull();
+    expect(orderKeyProblem(setup, [{ 'm-2': ['n-2'], 'm-5': ['n-5'], 'm-8': ['n-7'] }])).not.toBeNull();
+    expect(orderKeyProblem(setup, [{ 'm-2': ['n-2'], 'm-5': ['n-5'] }])).not.toBeNull();
+    expect(orderKeyProblem(setup, [orderTruth(setup), orderTruth(setup)])).not.toBeNull();
+    expect(orderKeyProblem(setup, [])).not.toBeNull();
+    expect(orderKeyProblem(setup, 'x')).not.toBeNull();
+    expect(orderUntouched(setup, { slots: {} })).toBe(true);
+    expect(orderUntouched(setup, { slots: { 'm-3': [] } })).toBe(true);
+    expect(orderUntouched(setup, { slots: { 'm-3': ['n-2'] } })).toBe(false);
+    expect(orderUntouched(setup, { slots: { 'm-30': [] } })).toBe(false);
+    expect(orderUntouched(setup, { slots: {}, extra: 1 })).toBe(false);
+    expect(orderUntouched(setup, null)).toBe(false);
+    expect([0, 1, 5, 9, 10].map((index) => orderLabelled(setup, index))).toEqual([true, false, true, false, true]);
+    expect(orderLabelled(orderSetup({ scale: 0, low: 0, step: 1, count: 5, values: [1, 2] })!, 2)).toBe(false);
+  });
+
+  it('moves numbers on the line without losing one or sharing a mark', () => {
+    const one = orderPlace({}, 7, 3);
+    expect(one).toEqual({ 7: 3 });
+    expect(orderOccupant(one, 3)).toBe(7);
+    expect(orderOccupant(one, 4)).toBeUndefined();
+    expect(orderPlace(one, 7, 5)).toEqual({ 7: 5 });
+    const two = orderPlace(one, 2, 6);
+    expect(two).toEqual({ 7: 3, 2: 6 });
+    expect(orderPlace(two, 7, 6)).toEqual({ 7: 6, 2: 3 });
+    expect(orderPlace(one, 2, 3)).toEqual({ 2: 3 });
+    expect(orderPlace(two, 7, 3)).toEqual(two);
+    expect(orderRemove(two, 7)).toEqual({ 2: 6 });
+    expect(orderRemove(two, 99)).toEqual(two);
+    expect(orderResponse(two)).toEqual({ slots: { 'm-3': ['n-7'], 'm-6': ['n-2'] } });
+    expect(orderResponse({})).toEqual({ slots: {} });
+  });
+
+  it('keeps the ruler reading model total', () => {
+    const setup = readSetup({ unit: 'cm', object: 'pencil', from: 0, to: 7, max: 10 })!;
+    expect(setup).toBeDefined();
+    expect(readLength(setup)).toBe(7);
+    expect(readLength(readSetup({ unit: 'in', object: 'strip', from: 2, to: 8, max: 11 })!)).toBe(6);
+    expect(readSetup({ unit: 'mm', object: 'pencil', from: 0, to: 7, max: 10 })).toBeUndefined();
+    expect(readSetup({ unit: 'cm', object: 'pen', from: 0, to: 7, max: 10 })).toBeUndefined();
+    expect(readSetup({ unit: 'cm', object: 'pencil', from: 7, to: 7, max: 10 })).toBeUndefined();
+    expect(readSetup({ unit: 'cm', object: 'pencil', from: 0, to: 11, max: 10 })).toBeUndefined();
+    expect(readSetup({ unit: 'cm', object: 'pencil', from: 0, to: 3, max: 3 })).toBeUndefined();
+    expect(readSetup({ unit: 'cm', object: 'pencil', from: 0.5, to: 3, max: 10 })).toBeUndefined();
+    expect(readSetup(null)).toBeUndefined();
+    expect(readContext(setup)).toEqual({ minimum: '0', maximum: '10' });
+    expect(readResponse(7)).toEqual({ value: '7' });
+    expect(readKeyProblem(setup, { target: '7' })).toBeNull();
+    expect(readKeyProblem(setup, { target: '8' })).not.toBeNull();
+    expect(readKeyProblem(setup, { target: 7 })).not.toBeNull();
+    expect(readKeyProblem(setup, { target: '7', tolerance: { absolute: '1' } })).not.toBeNull();
+    expect(readKeyProblem(setup, null)).not.toBeNull();
+    expect(readUntouched({ value: '0' })).toBe(true);
+    expect(readUntouched({ value: '7' })).toBe(false);
+    expect(readUntouched({ value: '0', extra: 1 })).toBe(false);
+    expect(readUntouched(null)).toBe(false);
+  });
+
+  it('grades the ordering line against the private marks', () => {
+    const tens = (placed: Record<string, string>) => ({ slots: Object.fromEntries(Object.entries(placed).map(([mark, piece]) => [mark, [piece]])) });
+    expect(verdict('order-tens', tens({ 'm-3': 'n-30', 'm-5': 'n-50', 'm-7': 'n-70', 'm-9': 'n-90' }))).toBe('met');
+    expect(verdict('order-tens', tens({ 'm-3': 'n-50', 'm-5': 'n-30', 'm-7': 'n-70', 'm-9': 'n-90' }))).toBe('review');
+    expect(verdict('order-tens', tens({ 'm-3': 'n-30', 'm-5': 'n-50' }))).toBe('review');
+    expect(verdict('order-tens', tens({ 'm-3': 'n-30' }))).toBe('review');
+    expect(verdict('order-tens', tens({ 'm-4': 'n-30' }))).toBe('review');
+    expect(verdict('order-tens', { slots: {} })).toBe('valid');
+    expect(verdict('order-tens', { slots: { 'm-3': [] } })).toBe('valid');
+    expect(verdict('order-tens', tens({ 'm-3': 'n-31' }))).toBe('invalid');
+    expect(verdict('order-tens', tens({ 'm-99': 'n-30' }))).toBe('invalid');
+    expect(verdict('order-tens', { slots: { 'm-3': ['n-30', 'n-50'] } })).toBe('invalid');
+    expect(verdict('order-tens', tens({ 'm-3': 'n-30', 'm-5': 'n-30' }))).toBe('invalid');
+    expect(verdict('order-tens', { slots: { 'm-3': ['n-30'] }, extra: 1 })).toBe('invalid');
+    expect(verdict('order-teens', tens({ 'm-7': 'n-7', 'm-14': 'n-14', 'm-19': 'n-19' }))).toBe('met');
+    expect(verdict('order-teens', tens({ 'm-7': 'n-7', 'm-14': 'n-14', 'm-18': 'n-19' }))).toBe('review');
+    expect(verdict('order-tenths', tens({ 'm-2': 'n-2', 'm-5': 'n-5', 'm-7': 'n-7' }))).toBe('met');
+    expect(verdict('order-hundredths', tens({ 'm-2': 'n-32', 'm-7': 'n-37', 'm-10': 'n-40', 'm-15': 'n-45' }))).toBe('met');
+    expect(verdict('order-hundredths', tens({ 'm-2': 'n-32', 'm-7': 'n-37', 'm-10': 'n-45', 'm-15': 'n-40' }))).toBe('review');
+    const type = 'math.number-line.order.v2';
+    expect(grade(type)(segmentOf('order-hundredths'), tens({ 'm-2': 'n-32', 'm-7': 'n-37', 'm-10': 'n-40', 'm-15': 'n-45' }), fixture('order-hundredths').rubric)).toEqual({ verdict: 'met', diagnostic: 'none' });
+    expect(grade(type)(segmentOf('order-tens'), tens({ 'm-3': 'n-30' }), fixture('order-tens').rubric).verdict).toBe('review');
+  });
+
+  it('grades a reading of the ruler against the drawn length', () => {
+    expect(verdict('measure-pencil', { value: '7' })).toBe('met');
+    expect(verdict('measure-pencil', { value: '7.0' })).toBe('met');
+    expect(verdict('measure-pencil', { value: '6' })).toBe('review');
+    expect(verdict('measure-pencil', { value: '10' })).toBe('review');
+    expect(verdict('measure-pencil', { value: '0' })).toBe('valid');
+    expect(verdict('measure-pencil', { value: '11' })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '-1' })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: 'seven' })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: 7 })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '7', extra: 1 })).toBe('invalid');
+    expect(verdict('measure-strip', { value: '6' })).toBe('met');
+    expect(verdict('measure-strip', { value: '8' })).toBe('review');
+    expect(verdict('measure-strip', { value: '12' })).toBe('invalid');
+    expect(grade('math.ruler.measure.v2')(segmentOf('measure-strip'), { value: '8' }, fixture('measure-strip').rubric)).toEqual({ verdict: 'review', diagnostic: 'value' });
+  });
+
+  it('refuses a key that disagrees with the drawing', () => {
+    const at = { slots: { 'm-3': ['n-30'] } };
+    const key = (fixture('order-tens').rubric as { solutions: unknown[] }).solutions;
+    expect(verdict('order-tens', at, { solutions: [{ 'm-3': ['n-50'], 'm-5': ['n-30'], 'm-7': ['n-70'], 'm-9': ['n-90'] }] })).toBe('invalid');
+    expect(verdict('order-tens', at, { solutions: [{ 'm-3': ['n-30'] }] })).toBe('invalid');
+    expect(verdict('order-tens', at, { solutions: [] })).toBe('invalid');
+    expect(verdict('order-tens', at, { solutions: [...key, ...key] })).toBe('invalid');
+    expect(verdict('order-tens', at, { solutions: key, ordered: true })).toBe('invalid');
+    expect(verdict('order-tens', at, { target: 3 })).toBe('invalid');
+    expect(verdict('order-tens', { slots: {} }, null)).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '7' }, { target: '6' })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '7' }, { target: 7 })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '7' }, { target: '7', tolerance: { absolute: '2' } })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '0' }, { target: '0' })).toBe('invalid');
+    expect(verdict('measure-pencil', { value: '7' }, null)).toBe('invalid');
+  });
+
+  it('refuses an ordering line or a ruler reading that breaks a rule of its piece', () => {
+    const bad = (id: string, payload: unknown, response: unknown) => grade(segmentOf(id).type as string)({ ...segmentOf(id), payload }, response, fixture(id).rubric).verdict;
+    const place = { slots: { 'm-3': ['n-30'] } };
+    expect(bad('order-tens', { scale: 0, low: 0, step: 10, count: 10, values: [15, 30] }, place)).toBe('invalid');
+    expect(bad('order-tens', { scale: 0, low: 0, step: 10, count: 10, values: [30] }, place)).toBe('invalid');
+    expect(bad('order-tens', { scale: 0, low: 0, step: 10, count: 2, values: [10, 20] }, place)).toBe('invalid');
+    expect(bad('measure-pencil', { unit: 'cm', object: 'pencil', from: 5, to: 5, max: 10 }, { value: '7' })).toBe('invalid');
+    expect(bad('measure-pencil', { unit: 'cm', object: 'brick', from: 0, to: 7, max: 10 }, { value: '7' })).toBe('invalid');
+    expect(bad('measure-pencil', { unit: 'cm', object: 'pencil', from: 0, to: 7 }, { value: '7' })).toBe('invalid');
+  });
+
+  it('never says met for the ordering line or the ruler reading in the browser, which holds no rubric', () => {
+    const full = { slots: { 'm-3': ['n-30'], 'm-5': ['n-50'], 'm-7': ['n-70'], 'm-9': ['n-90'] } };
+    expect(verdict('order-tens', full, undefined)).toBe('valid');
+    expect(verdict('order-tens', { slots: { 'm-3': ['n-31'] } }, undefined)).toBe('invalid');
+    expect(verdict('order-tens', { slots: {} }, undefined)).toBe('valid');
+    expect(verdict('measure-pencil', { value: '7' }, undefined)).toBe('valid');
+    expect(verdict('measure-pencil', { value: '11' }, undefined)).toBe('invalid');
+  });
+
+  it('opens the ordering line and the ruler reading to ages 6 to 12 only', () => {
+    for (const type of ['math.number-line.order.v2', 'math.ruler.measure.v2']) {
+      expect(NUM_A_AGE_SCOPE[type]).toEqual({ ages: [6, 12], adult: false });
+    }
+    expect(horizonteScopeProblem({ type: 'math.number-line.order.v2' }, { age_band: '6-9', eligibility: { minimum_age: 6, maximum_age: 9 } })).toBeNull();
+    expect(horizonteScopeProblem({ type: 'math.ruler.measure.v2' }, { age_band: '10-12', eligibility: { minimum_age: 10, maximum_age: 12 } })).toBeNull();
+    expect(horizonteScopeProblem({ type: 'math.ruler.measure.v2' }, { age_band: '13-17', eligibility: { minimum_age: 13, maximum_age: 17 } })).not.toBeNull();
   });
 });

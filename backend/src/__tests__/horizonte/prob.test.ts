@@ -40,7 +40,7 @@ describe('prob pack: F2.9 probability tree and Bayes, F2.10 regression with resi
     const types = Object.keys(PROB_CAPABILITIES).sort();
     expect(types).toEqual(['prob.bayes.v2', 'prob.regression.v2', 'prob.tree.v2']);
     for (const type of types) expect(PROB_FIXTURES.some((entry) => entry.segment('en-US').type === type), type).toBe(true);
-    expect(PROB_FIXTURES).toHaveLength(9);
+    expect(PROB_FIXTURES).toHaveLength(10);
   });
 
   it('grows the tree in whole people', () => {
@@ -165,6 +165,26 @@ describe('prob pack: F2.9 probability tree and Bayes, F2.10 regression with resi
     expect(verdictOf('bayes-screening', { value: '0.08' }, { target: '1/12' })).toBe('invalid');
     expect(verdictOf('bayes-screening', { value: '0.08' }, { target: '1/12', tolerance: { relative_bps: 100 } })).toBe('invalid');
     expect(verdictOf('bayes-screening', { value: '0.08' }, { ...rubric('1/12'), extra: 1 })).toBe('invalid');
+  });
+
+  it('grades the same chance the same way at every population, however small the people are drawn', () => {
+    const base = segmentOf('bayes-screening') as { payload: Record<string, unknown> };
+    const rubric = fixture('bayes-screening').rubric;
+    for (const population of [1000, 2000, 5000, 6000, 7000, 8000, 9000, 10_000]) {
+      const segment = { ...base, payload: { ...base.payload, population } };
+      const verdict = (value: string) => (grade('prob.bayes.v2') as Grade)(segment, { value }, rubric).verdict;
+      expect(verdict('1/12')).toBe('met');
+      expect(verdict('0.5')).toBe('review');
+      expect(verdict('')).toBe('valid');
+    }
+  });
+
+  it('keeps the largest author population solvable and its fixture scorable', () => {
+    const counts = treeCounts({ population: 10_000, prior: { part: 1, whole: 50 }, hit: { part: 4, whole: 5 }, alarm: { part: 1, whole: 20 } })!;
+    expect(counts).toEqual({ has: 200, lacks: 9800, hasPos: 160, hasNeg: 40, lacksPos: 490, lacksNeg: 9310 });
+    expect(verdictOf('bayes-city', { value: '16/65' })).toBe('met');
+    expect(verdictOf('bayes-city', { value: '0.25' })).toBe('met');
+    expect(verdictOf('bayes-city', { value: '0.5' })).toBe('review');
   });
 
   it('fits the least squares line exactly', () => {

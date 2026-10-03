@@ -30,7 +30,7 @@ const rowTexts = (table: HTMLElement) => within(table).getAllByRole('row').map((
 describe('probability boards (F2.9, F2.10)', () => {
   it('meets the board contract for every fixture', async () => {
     for (const fixtureId of ['tree-screening', 'bayes-screening', 'regression-climb']) await assertBoardContract({ pack: 'prob', fixtureId, copy: PROB_COPY, css: CSS });
-    for (const fixtureId of ['tree-filter', 'tree-survey', 'bayes-filter', 'bayes-checkup', 'regression-gentle', 'regression-fall']) {
+    for (const fixtureId of ['tree-filter', 'tree-survey', 'bayes-filter', 'bayes-checkup', 'bayes-city', 'regression-gentle', 'regression-fall']) {
       await assertBoardContract({ pack: 'prob', fixtureId, copy: PROB_COPY, css: CSS, locales: ['en-US'] });
     }
   }, 90000);

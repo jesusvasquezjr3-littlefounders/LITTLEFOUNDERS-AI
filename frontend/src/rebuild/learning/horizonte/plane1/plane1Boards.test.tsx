@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { RebuildRoot } from '../../../design/controls';
@@ -369,6 +371,36 @@ describe('plane1 boards (F1.9, F1.11, F1.12)', () => {
       expect(status()).toHaveTextContent('Price: 1.');
       press('Price marker', 'End');
       expect(status()).toHaveTextContent('Price: 20.');
+    });
+  });
+
+  describe('narrow figures and the dark ground', () => {
+    const mark = () => document.querySelector('.lf-plano-point') as HTMLElement;
+
+    it('puts a point label on the left once its mark is past the middle of the plane', async () => {
+      show('market-shift-supply');
+      await ready('Price marker');
+      expect(mark()).toHaveAttribute('data-flip');
+    });
+
+    it('keeps a label on the right while its mark is in the left half', async () => {
+      show('market-shift-demand');
+      await ready('Price marker');
+      expect(mark()).not.toHaveAttribute('data-flip');
+    });
+
+    it('keeps the flip when the plane is shown as a table and back', async () => {
+      show('market-shift-supply');
+      await ready('Price marker');
+      fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+      expect(mark()).toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'Show graph' }));
+      await waitFor(() => expect(mark()).toHaveAttribute('data-flip'));
+    });
+
+    it('sets no text of the board in the constant ink, which does not flip on the dark ground', () => {
+      const css = readFileSync(resolve(__dirname, 'plane1.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      expect(css).not.toMatch(/var\(--ink\b|#[0-9a-fA-F]{3,8}\b|\brgba?\(|(?<![-\w])(white|black)(?![-\w])/);
     });
   });
 

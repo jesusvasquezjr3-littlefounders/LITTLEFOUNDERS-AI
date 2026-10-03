@@ -63,6 +63,104 @@
           }
         }
       }
+    },
+    {
+      "id": "order-tenths",
+      "type": "math.number-line.order.v2",
+      "grading": "server",
+      "visual": {
+        "type": "order-number-line"
+      },
+      "payload": {
+        "scale": 1,
+        "low": 0,
+        "step": 1,
+        "count": 10,
+        "values": [
+          7,
+          2,
+          5
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each decimal where it belongs on the line.",
+          "feedback": {
+            "met": "Every decimal sits where it belongs.",
+            "not_yet": "Read the numbered ends again and count the steps."
+          }
+        },
+        "es-MX": {
+          "prompt": "Pon cada decimal donde le toca en la recta.",
+          "feedback": {
+            "met": "Cada decimal está donde le toca.",
+            "not_yet": "Lee de nuevo los extremos con número y cuenta los pasos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada decimal no lugar certo da reta.",
+          "feedback": {
+            "met": "Cada decimal está no lugar certo.",
+            "not_yet": "Leia de novo as pontas com número e conte os passos."
+          }
+        }
+      }
+    },
+    {
+      "id": "measure-strip",
+      "type": "math.ruler.measure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ruler-measure"
+      },
+      "payload": {
+        "unit": "in",
+        "object": "strip",
+        "from": 2,
+        "to": 8,
+        "max": 11
+      },
+      "rubric": {
+        "target": "6"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How long is the paper strip in inches?",
+          "feedback": {
+            "met": "You read the length of the strip.",
+            "not_yet": "Check where the strip starts before you read its end."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas pulgadas mide la tira de papel?",
+          "feedback": {
+            "met": "Leíste la longitud de la tira.",
+            "not_yet": "Mira dónde empieza la tira antes de leer su final."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas polegadas mede a tira de papel?",
+          "feedback": {
+            "met": "Você leu o comprimento da tira.",
+            "not_yet": "Veja onde a tira começa antes de ler o fim dela."
+          }
+        }
+      }
     }
   ]
 }

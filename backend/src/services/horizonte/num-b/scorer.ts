@@ -4,6 +4,7 @@ import {
   arrayAreaAnswer, arrayAreaKind, standArray, standAreaDivision, standAreaModel,
   type AreaDivisionPayload, type AreaModelPayload, type ArrayAreaStanding, type ArrayPayload,
 } from './arrayAreaModel.js';
+import { circleKeyProblem, isCirclePayload, standCircle } from './fractionCirclesModel.js';
 import { fractionVisual, isFractionPayload, keyProblem, standFraction } from './fractionWallModel.js';
 import { ratioAnswer, ratioKind, standRatio } from './ratioLineModel.js';
 
@@ -59,6 +60,16 @@ function gradeFractionWall(segment: Segment, response: unknown, rubric: unknown)
   return verdictOf(standing);
 }
 
+function gradeFractionCircles(segment: Segment, response: unknown, rubric: unknown): V2Grade {
+  const payload = segment?.payload;
+  if (!isCirclePayload(payload) || segment.visual?.type !== 'fraction-circles') return INVALID;
+  const standing = standCircle(payload, response);
+  if (standing === 'invalid') return INVALID;
+  if (rubric === undefined) return VALID;
+  if (circleKeyProblem(payload, rubric) !== null) return INVALID;
+  return verdictOf(standing);
+}
+
 export const NUM_B_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
   'math.array-area.v2': {
     grade: gradeArrayArea as HorizonteScorer['grade'],
@@ -73,6 +84,10 @@ export const NUM_B_SCORERS: Readonly<Record<string, HorizonteScorer>> = {
   },
   'math.fraction-wall.v2': {
     grade: gradeFractionWall as HorizonteScorer['grade'],
+    sample: (() => ({ n: 0, d: 0 })) as HorizonteScorer['sample'],
+  },
+  'math.fraction-circles.v2': {
+    grade: gradeFractionCircles as HorizonteScorer['grade'],
     sample: (() => ({ n: 0, d: 0 })) as HorizonteScorer['sample'],
   },
 };

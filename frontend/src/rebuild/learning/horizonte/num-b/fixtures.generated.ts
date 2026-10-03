@@ -6,6 +6,7 @@ const text = (en: string, es: string, pt: string): Record<HorizonteLocale, strin
 const ARRAY = 'math.array-area.v2';
 const RATIO = 'math.ratio-line.v2';
 const WALL = 'math.fraction-wall.v2';
+const CIRCLES = 'math.fraction-circles.v2';
 
 export const NUM_B_FIXTURES: readonly HorizonteFixture[] = [
   {
@@ -145,5 +146,57 @@ export const NUM_B_FIXTURES: readonly HorizonteFixture[] = [
     }),
     rubric: { n: 5, d: 2 },
     ladder: { invalid: { n: 5, d: 1000 }, valid: { n: 0, d: 0 }, met: { n: 5, d: 2 } },
+  },
+  {
+    id: 'circles-show',
+    title: text('Cut a circle', 'Corta un círculo', 'Corte um círculo'),
+    ageBand: '6-9',
+    eligibility: { minimum_age: 8, maximum_age: 9 },
+    segment: (locale) => ({
+      id: 'circles-show', type: CIRCLES, grading: 'server', visual: { type: 'fraction-circles' },
+      prompt: text('Cut the circle to show three quarters.', 'Corta el círculo para mostrar tres cuartos.', 'Corte o círculo para mostrar três quartos.')[locale],
+      payload: { op: 'show', fraction: [3, 4] },
+    }),
+    rubric: { n: 3, d: 4 },
+    ladder: { invalid: { n: 3, d: 1000 }, valid: { n: 0, d: 0 }, met: { n: 3, d: 4 } },
+  },
+  {
+    id: 'circles-compare',
+    title: text('Which is more', 'Cuál es más', 'Qual é mais'),
+    ageBand: '6-9',
+    eligibility: { minimum_age: 8, maximum_age: 9 },
+    segment: (locale) => ({
+      id: 'circles-compare', type: CIRCLES, grading: 'server', visual: { type: 'fraction-circles' },
+      prompt: text('Shade both circles. Which is more, three eighths or five eighths?', 'Sombrea los dos círculos. ¿Qué es más, tres octavos o cinco octavos?', 'Pinte os dois círculos. O que é mais, três oitavos ou cinco oitavos?')[locale],
+      payload: { op: 'compare', left: [3, 8], right: [5, 8] },
+    }),
+    rubric: { n: 5, d: 8 },
+    ladder: { invalid: { n: -1, d: 8 }, valid: { n: 0, d: 0 }, met: { n: 5, d: 8 } },
+  },
+  {
+    id: 'circles-add',
+    title: text('Join circle parts', 'Junta partes de círculo', 'Junte partes de círculo'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'circles-add', type: CIRCLES, grading: 'server', visual: { type: 'fraction-circles' },
+      prompt: text('Join one eighth and three eighths in one circle. What is the sum?', 'Junta un octavo y tres octavos en un círculo. ¿Cuál es la suma?', 'Junte um oitavo e três oitavos em um círculo. Qual é a soma?')[locale],
+      payload: { op: 'add', left: [1, 8], right: [3, 8] },
+    }),
+    rubric: { n: 1, d: 2 },
+    ladder: { invalid: { n: 4, d: 1000 }, valid: { n: 0, d: 0 }, met: { n: 4, d: 8 } },
+  },
+  {
+    id: 'circles-subtract',
+    title: text('Take circle parts away', 'Quita partes de círculo', 'Tire partes de círculo'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'circles-subtract', type: CIRCLES, grading: 'server', visual: { type: 'fraction-circles' },
+      prompt: text('Take three tenths from seven tenths. What is left?', 'Quita tres décimos de siete décimos. ¿Cuánto queda?', 'Tire três décimos de sete décimos. Quanto sobra?')[locale],
+      payload: { op: 'subtract', left: [7, 10], right: [3, 10] },
+    }),
+    rubric: { n: 2, d: 5 },
+    ladder: { invalid: { n: -1, d: 10 }, valid: { n: 0, d: 0 }, met: { n: 2, d: 5 } },
   },
 ];

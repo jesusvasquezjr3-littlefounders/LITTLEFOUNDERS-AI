@@ -1,16 +1,16 @@
 /* F3.3 life simulation board: a fan of 100 seeded futures under one slider choice. Tokens only. */
 .lf-life { display: grid; gap: var(--spacing-3); justify-items: start; }
-.lf-life-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--ink); }
+.lf-life-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-life-chart text { fill: currentColor; font-size: 22px; font-weight: 700; }
 .lf-life-chart .lf-life-axis { font-size: 18px; font-weight: 800; }
-.lf-life-ticks line { stroke: var(--outline); stroke-width: 2; }
+.lf-life-ticks line { stroke: var(--edge); stroke-width: 2; }
 .lf-life-grid { stroke: var(--outline); stroke-width: 1; stroke-opacity: 0.6; }
 .lf-life-path { fill: none; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
 .lf-life-path--yes { stroke: var(--mint-strong); stroke-opacity: 0.8; }
 .lf-life-path--no { stroke: var(--berry-strong); stroke-opacity: 0.8; stroke-dasharray: 5 3; }
 .lf-life-mark { stroke-width: 3; }
 .lf-life-mark--finish { stroke: var(--accent-strong); stroke-dasharray: 8 6; }
-.lf-life-mark--floor { stroke: var(--ink); stroke-dasharray: 2 6; }
+.lf-life-mark--floor { stroke: var(--content); stroke-dasharray: 2 6; }
 .lf-life-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
 .lf-life-legend li { display: flex; align-items: center; gap: var(--spacing-1); }
 .lf-life-legend svg { inline-size: 2.5rem; block-size: 0.75rem; }

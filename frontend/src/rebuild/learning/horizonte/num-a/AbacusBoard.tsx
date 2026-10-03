@@ -8,6 +8,7 @@ import { TableToggle, pressable } from './boardKit';
 import { ABACUS_MAX_DIGIT, REKENREK_BLOCK, abacusValue, rodBeads, sameBeads, tapFive, tapOne } from './beads-model.generated';
 import { NUM_A_COPY } from './copy';
 import '../horizonte.css';
+import './NumShared.css';
 import './Rekenrek.css';
 
 type AbacusSegment = Extract<HorizonteSegment, { type: 'math.abacus.v2' }>;

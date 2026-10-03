@@ -119,3 +119,15 @@ Not verified: no real browser, no screenshot, no layout measurement. Everything 
 - Decide whether the mean of draws should become a seeded simulation (the learner draws samples) or stay exact.
 - Review the es-MX and pt-BR strings with a native speaker (they are native-written, not machine copies, but not reviewed).
 - Accept and release the two pieces (F1.13, F1.14) in the sprint record.
+
+## Fix round
+
+- **Dark mode.** The stats charts set their text (axis ticks, edge labels), the moved-dot ring and the beam with `var(--ink)`, a constant
+  (`#11132a`) that does not flip under `data-theme="dark"`. On the dark chart ground (`--sunken`) the contrast was about 1.1 to 1 (the Atlas counted
+  9 to 14 low-contrast items per stats board in dark against 2 to 3 in light, and the beam was invisible). The three uses in `stats1.css` now use
+  `var(--content)`, the theme-flipping foreground the other rebuild charts use (`.lf-stats-chart` sets `color: var(--content)`; SVG text follows
+  through `currentColor`). No hex, rgb or colour keyword is left in `stats1.css`; a test in `stats1Boards.test.tsx` pins both.
+- Series and marker hues (`--sky-strong`, `--mint-strong`, `--accent-strong`, `--primary-strong`) already flip with the theme and are unchanged.
+
+Still limited, not verified: no browser was opened, so the new contrast was reasoned from the token values, not seen; the Atlas should be re-run on
+the eight stats1 fixtures in dark at 1280 and 375. The disabled Reset, Check and Move to buttons keep their shared-control contrast (2.3 in light).
