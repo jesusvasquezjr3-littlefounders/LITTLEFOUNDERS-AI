@@ -249,8 +249,16 @@ function allowanceAt(band: Band, target: Q): Q {
   return qCmp(relative, band.absolute) > 0 ? relative : band.absolute;
 }
 
-const RATE_FAILURE: Record<RateCase['kind'], SolvabilityCode> = { effective: 'impossible-state', card: 'no-solution', npv: 'out-of-bounds', irr: 'no-solution' };
 const RATE_STEPS = { effective: 1, npv: 2, irr: 40 } as const;
+
+function failureCode(rate: RateCase): SolvabilityCode {
+  switch (rate.kind) {
+    case 'effective': return 'impossible-state';
+    case 'card': return 'no-solution';
+    case 'npv': return 'out-of-bounds';
+    case 'irr': return rate.flows.reduce((sum, cents) => sum + cents, 0) > rate.outlay ? 'out-of-bounds' : 'no-solution';
+  }
+}
 
 function shortcuts(rate: RateCase): Array<{ name: string; value: Q }> {
   switch (rate.kind) {
@@ -272,7 +280,7 @@ export const rateReturnChecker: SolvabilityChecker = (segment, context) => {
   const steps = rate.kind === 'card' ? (rate.ask === 'interest' ? 2 : 1) * 600 : RATE_STEPS[rate.kind];
   if (!budget.spend(steps)) return result([budgetIssue(subject, budget.limit, 'the model answer of the case')]);
   const answer = rateAnswer(rate);
-  if (typeof answer === 'string') return result([issue(RATE_FAILURE[rate.kind], `${subject}: ${answer}`)]);
+  if (typeof answer === 'string') return result([issue(failureCode(rate), `${subject}: ${answer}`)]);
   const figure = parseQ(answer.text)!;
   const isMonths = rate.kind === 'card' && rate.ask === 'months';
   const keyed = context.answerKey !== undefined;
