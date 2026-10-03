@@ -197,6 +197,10 @@ function balanceGates(document: { segments?: unknown }, answerKeys?: Record<stri
   });
 }
 
+/* The pure proof tables and derivations the Forge solvability checker (solvability-geom.ts) reuses; the pack gates above are unchanged. */
+export { FORMULAS as PROOF_FORMULAS, PAYLOAD_KEYS as PROOF_PAYLOAD_KEYS, isVisual as isProofVisual, proofPayloadFault, proofValueText };
+export type { Visual as ProofVisual };
+
 export const balance = {
   id: 'balance',
   capabilities: BALANCE_CAPABILITIES,

@@ -196,29 +196,34 @@ function oriented(tile: readonly Point[], motion: string): Point[] {
   const cells = tile.map((cell) => (motion === 'turn' ? { x: span.minX + span.maxX - cell.x, y: span.minY + span.maxY - cell.y } : motion === 'flip' ? { x: span.minX + span.maxX - cell.x, y: cell.y } : { x: cell.x, y: cell.y }));
   return cells.sort((a, b) => a.x - b.x || a.y - b.y);
 }
-function solvable(floor: readonly Point[], tile: readonly Point[], motions: readonly string[]) {
+/** What an exact-cover search proved: a cover (and its copy count), no cover, or that the step budget ran out before either. */
+interface CoverSearch { covered: boolean; exhausted: boolean; steps: number; copies: number }
+function coverSearch(floor: readonly Point[], tile: readonly Point[], motions: readonly string[], limit: number): CoverSearch {
   const order = (a: Point, b: Point) => a.x - b.x || a.y - b.y;
   const cells = [...floor].sort(order);
   const shapes = [...new Map(motions.map((motion) => oriented(tile, motion)).map((shape) => [shape.map(key).join(';'), shape])).values()];
-  const open = new Set(cells.map(key)); let budget = BUDGET;
-  const search = (from: number): boolean => {
+  const open = new Set(cells.map(key)); let budget = limit; let exhausted = false; let copies = 0;
+  const search = (from: number, placed: number): boolean => {
     let index = from;
     while (index < cells.length && !open.has(key(cells[index]!))) index += 1;
-    if (index === cells.length) return true;
+    if (index === cells.length) { copies = placed; return true; }
     for (const shape of shapes) {
-      if (budget <= 0) return false;
+      if (budget <= 0) { exhausted = true; return false; }
       budget -= 1;
       const dx = cells[index]!.x - shape[0]!.x; const dy = cells[index]!.y - shape[0]!.y;
       const used = shape.map((c) => key({ x: c.x + dx, y: c.y + dy }));
       if (!used.every((k) => open.has(k))) continue;
       for (const k of used) open.delete(k);
-      if (search(index + 1)) return true;
+      if (search(index + 1, placed + 1)) return true;
       for (const k of used) open.add(k);
     }
     return false;
   };
-  return search(0);
+  const covered = search(0, 0);
+  return { covered, exhausted: !covered && exhausted, steps: limit - budget, copies };
 }
+/** The pack gate: a cover found inside the fixed BUDGET; running out of steps counts as no cover (the Core publish check does the same). */
+const solvable = (floor: readonly Point[], tile: readonly Point[], motions: readonly string[]) => coverSearch(floor, tile, motions, BUDGET).covered;
 
 type Add = (message: string) => void;
 type KeyOf = () => Record<string, unknown> | null | undefined;
@@ -311,6 +316,14 @@ function geom2Gates(document: { segments?: unknown }, answerKeys?: Record<string
   }
   return problems;
 }
+
+/* The pure lattice, move and cover functions the Forge solvability checker (solvability-geom.ts) reuses; the pack gates above are unchanged. */
+export {
+  BUDGET as GEOM2_COVER_BUDGET, MAX_CELLS as GEOM2_MAX_CELLS, MIRRORS as GEOM2_MIRRORS, SHAPES as GEOM2_SHAPES,
+  area2, bounds, cellsInside, connected, corners, coverSearch, distinct, floorProblem, imageOf, inPlane, isPoint, isPoints, isShape,
+  key as pointKey, moveProblem, movesProblem, oriented, sameSet, simple, tileProblem,
+};
+export type { CoverSearch, Point as LatticePoint };
 
 export const geom2 = {
   id: 'geom2',
