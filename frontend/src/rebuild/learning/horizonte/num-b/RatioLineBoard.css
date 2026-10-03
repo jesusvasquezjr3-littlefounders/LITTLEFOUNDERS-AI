@@ -1,11 +1,11 @@
 /* F1.5 double number line and ratio tape: step columns that scale together, and a tape of equal boxes. Tokens only. */
 .lf-line-scroll { max-inline-size: 100%; overflow-x: auto; }
-.lf-line { display: grid; grid-template-columns: auto repeat(var(--steps), minmax(2.75rem, 3.5rem)); align-items: stretch; gap: var(--spacing-1); }
+.lf-line { display: grid; grid-template-columns: auto repeat(var(--steps), minmax(var(--target-base), 4rem)); align-items: stretch; gap: var(--spacing-1); }
 .lf-line-names { display: grid; align-content: space-between; padding-block: var(--spacing-1); font-weight: 800; }
 .lf-line-col { display: grid; border-radius: var(--rounded-sm); outline: 2px solid transparent; }
 .lf-line-col[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
 .lf-line-col[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
-.lf-line-step { display: grid; grid-template-rows: 1.5rem 3rem 1.5rem; justify-items: center; align-items: center; min-inline-size: 2.75rem; padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--sky-strong); cursor: pointer; }
+.lf-line-step { display: grid; grid-template-rows: 1.5rem 3rem 1.5rem; justify-items: center; align-items: center; min-inline-size: var(--target-base); padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--sky-strong); cursor: pointer; }
 .lf-line-step[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-line-step:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
 .lf-line-step:disabled { cursor: default; }

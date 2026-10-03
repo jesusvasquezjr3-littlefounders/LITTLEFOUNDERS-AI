@@ -1,6 +1,6 @@
 /* F1.4 arrays and area models: rows of dots to count, a box to cut, a rectangle to take apart. Tokens only. */
 .lf-arr-rows { display: grid; gap: var(--spacing-1); justify-items: start; }
-.lf-arr-row { display: inline-flex; align-items: center; min-block-size: 2.75rem; padding: var(--spacing-1) var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--sky-strong); cursor: pointer; }
+.lf-arr-row { display: inline-flex; align-items: center; min-block-size: var(--target-base); padding: var(--spacing-1) var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--sky-strong); cursor: pointer; }
 .lf-arr-row[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-arr-row:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
 .lf-arr-row:disabled { cursor: default; }
@@ -16,7 +16,7 @@
 .lf-area-tick { border-radius: var(--rounded-sm); outline: 2px solid transparent; }
 .lf-area-tick[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
 .lf-area-tick[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
-.lf-area-tick button { min-inline-size: 2.75rem; min-block-size: 2.75rem; padding: 0 var(--spacing-2); border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-weight: 800; cursor: pointer; }
+.lf-area-tick button { min-inline-size: var(--target-base); min-block-size: var(--target-base); padding: 0 var(--spacing-2); border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-weight: 800; cursor: pointer; }
 .lf-area-tick button[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 .lf-area-tick button:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
 .lf-area-tick button:disabled { cursor: default; }

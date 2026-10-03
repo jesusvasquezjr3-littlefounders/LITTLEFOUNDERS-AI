@@ -1,8 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import type { AgeBand } from '../../../design/copyBudget';
 import { LessonDocumentView } from '../../LessonDocumentView';
-import { assertBoardContract } from '../harness/boardContract';
+import { assertBoardContract, tapTargetCssProblems } from '../harness/boardContract';
 import { horizonteFixtureDocument } from '../previewDocument';
 import { NUM_B_COPY } from './copy';
 
@@ -13,6 +15,7 @@ vi.mock('../../../../tutor-scene/quality', () => ({
 vi.mock('../../../../tutor-scene/TutorStage', () => ({ TutorStage: () => <div data-testid="tutor-stage" /> }));
 
 const CSS = ['num-b/numB.css', 'num-b/ArrayAreaBoard.css', 'num-b/RatioLineBoard.css', 'num-b/FractionWallBoard.css', 'num-b/FractionCirclesBoard.css'];
+const TAP_TARGETS = ['.lf-fcell', '.lf-fcell--button', '.lf-wall', '.lf-grid-line', '.lf-grid-strip', '.lf-grid-cell', '.lf-arr-row', '.lf-area-tick button', '.lf-line', '.lf-line-step'];
 const BANDS: Record<string, AgeBand> = { 'array-rows-columns': '6-9', 'wall-equivalent': '6-9', 'circles-show': '6-9', 'circles-compare': '6-9' };
 const FIXTURES = [
   'array-rows-columns', 'area-box', 'area-division', 'double-line-scale', 'tape-share', 'wall-equivalent', 'bars-add', 'bars-subtract', 'product-grid', 'measure-fit',
@@ -32,6 +35,10 @@ describe('num-b boards: contract', () => {
   it('meets the board contract for every fixture in three locales', async () => {
     for (const fixtureId of FIXTURES) await assertBoardContract({ pack: 'num-b', fixtureId, copy: NUM_B_COPY, css: CSS });
   }, 240000);
+
+  it('sizes every tappable cell, row and step from the base target token, never under 56 px', () => {
+    for (const file of CSS) expect(tapTargetCssProblems(readFileSync(resolve(__dirname, '..', file), 'utf8'), TAP_TARGETS), file).toEqual([]);
+  });
 
   it('keeps every string in three locales', () => {
     for (const [key, entry] of Object.entries(NUM_B_COPY)) for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) expect(entry[locale].length, `${key} ${locale}`).toBeGreaterThan(0);
