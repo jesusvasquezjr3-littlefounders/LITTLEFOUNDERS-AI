@@ -131,3 +131,27 @@ Not verified: no real browser, no screenshot, no layout measurement. Everything 
 
 Still limited, not verified: no browser was opened, so the new contrast was reasoned from the token values, not seen; the Atlas should be re-run on
 the eight stats1 fixtures in dark at 1280 and 375. The disabled Reset, Check and Move to buttons keep their shared-control contrast (2.3 in light).
+
+## Solvability round
+
+F0.4 solvability checkers for the five stats1 pieces, registered in `coursegen/src/v2/horizonte/solvability-stats.ts` and imported from
+`coursegen/src/v2/solvabilityPacks.ts`. Each one reads the public payload alone for everything the payload fixes and compares with the answer
+key only when `context.answerKey` is present. The checkers reuse the pack's pure helpers by import (`dotAxis`, `dotsOf`, `measureMet`,
+`reachable`, `solveNormal`, `onGrid`, `solveBinomial`, `curveAxis`, `inRange`, `sum`, now exported from `stats1.ts`, plus a new
+`measureValue`) and check them against an independent search, so a bug in either side shows up as an "encodings disagree" finding instead of
+passing quietly. The pack gates did not change; what they accept is the same, except where the table marks a tightening.
+
+| Type | Proven from the payload alone | Proven against the key | Not proven, and why |
+|---|---|---|---|
+| `stats.dot-plot.v2` | The axis, dots, measure and move cap are valid; no dot is off the axis (`out-of-bounds`); walking every arrangement within the move cap (state-space search, depth = moves) finds at least one whole value of the measure other than the start's, else `no-solution`. | The target is a whole number on the axis, the start does not already meet it (`impossible-state`), and the pack's `reachable()` reaches it in the cap, else `no-solution`. | Uniqueness: several arrangements meet one target by design (the grade is the measure, not the arrangement), so the accepted set is "the arrangements within the cap whose measure is the target", which `reachable()` enumerates. Dead ends: the cap counts dots moved from the start, so every move can be undone and no arrangement is stuck; a back-edge search would cost about 58 thousand moves on the largest plot for a result that follows from that symmetry. The payload alone cannot name the one target, only the set of reachable targets. |
+| `stats.balance-point.v2` | A pivot search over every whole position finds exactly one where the pulls on the two sides cancel (a different statement from the mean the pack uses): none is `no-solution` (a non-whole mean), more than one is `ambiguous-solution`. The pivot starts on the axis and not on the balance point. | The key is `{ target }` only, a whole position on the axis, and equals the balance point (`rubric-gap` or `rubric-accepts-invalid` otherwise). | Dead ends: the pivot is a slider over whole positions with no cap, so a wrong move is undone by another. |
+| `stats.normal.v2` | The axis, `sdMax`, start and band are valid and on the axis. A search over every mean and spread the sliders offer finds exactly one curve with the band edges `rule` spreads either side of the mean (`no-solution` or `ambiguous-solution`), and the pack's `solveNormal` must agree. The start is not already the answer. | The key is `{ target: { mean, sd } }` with whole numbers inside the sliders and equals the one curve. | Dead ends: both sliders move over whole steps with no cap and nothing is spent. |
+| `stats.binomial.v2` | `nMax`, start and goal are valid, the start sits on the 5 step grid. A search over every count and every percent on the grid finds exactly one pair with the goal mean and variance, else `no-solution` (a variance at or above the mean is named) or `ambiguous-solution`; the pack's `solveBinomial` must agree. The bars do not start on the answer. | The key is `{ target: { n, pct } }`, inside the sliders, and equals the one pair. | Dead ends: count and percent are independent sliders with no cap. |
+| `stats.clt.v2` | The weights, `nMax`, start and shrink factor are valid. The spread of one draw is computed in whole numbers (`T*S2 - S1^2`, value i+1 per weight); shrinking the spread of the mean by k takes n = k squared, and the search over 1 to `nMax` finds exactly one n, else `no-solution` (k squared above `nMax`). The start is not already n. | The key is `{ target: { n } }`, inside 1 to `nMax`, and equals the one n. | Dead ends: the sample size is one slider with no cap. **Tightening:** a population with all its weight on one value has no spread, so every n "shrinks" it and the answer is not one n; the checker returns `ambiguous-solution` where the pack gate accepts it. |
+
+Budget: every search spends `context.nodeBudget` per candidate and reports `budgetIssue(...)` on overflow. The largest dot plot (axis 0 to 20,
+12 dots, 2 moves) stays under the default 200 000 nodes; a budget of 2 000 returns the budget finding in well under two seconds. The tests are in
+`coursegen/src/__tests__/horizonte/solvability-stats.test.ts`: the committed fixtures through `runSolvabilityGate` with and without the key,
+at least three adversarial mutations per type refused with the right code, a budget path, and the registry check.
+
+Still limited, not verified: the checkers prove the payload and the key, not the rendering; no browser was opened in this round.
