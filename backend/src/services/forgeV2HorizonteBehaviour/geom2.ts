@@ -255,50 +255,59 @@ const geoboard: HzBuilder = (p, r) => {
   };
 };
 
+type Motion = 'slide' | 'turn' | 'flip';
+interface Copy { anchor: Pt; motion: Motion }
+
+const copyKey = (copy: Copy): string => `${copy.motion}@${key(copy.anchor)}`;
+
 const tessellation: HzBuilder = (p) => {
   const floor = p.floor as Pt[];
   const tile = p.tile as Pt[];
+  const moves = (Array.isArray(p.moves) ? p.moves : ['slide']) as Motion[];
   const open = keysOf(floor);
-  const cellsOf = (anchor: Pt): string[] => tile.map((cell) => key(at(cell.x + anchor.x, cell.y + anchor.y)));
-  const fits = (anchor: Pt): boolean => cellsOf(anchor).every((cell) => open.has(cell));
-  const anchors = unique(floor.flatMap((cell) => tile.map((part) => at(cell.x - part.x, cell.y - part.y)))).filter(fits);
-  const covering = new Map<string, Pt[]>();
-  for (const anchor of anchors) for (const cell of cellsOf(anchor)) covering.set(cell, [...(covering.get(cell) ?? []), anchor]);
-  const clash = (a: Pt, b: Pt): boolean => { const mine = new Set(cellsOf(a)); return cellsOf(b).some((cell) => mine.has(cell)); };
+  const width = Math.max(...tile.map((cell) => cell.x));
+  const height = Math.max(...tile.map((cell) => cell.y));
+  const shapes = new Map<Motion, Pt[]>(moves.map((motion) => [motion, tile.map((cell) => (motion === 'turn' ? at(width - cell.x, height - cell.y) : motion === 'flip' ? at(width - cell.x, cell.y) : cell))]));
+  const cellsOf = (copy: Copy): string[] => shapes.get(copy.motion)!.map((cell) => key(at(cell.x + copy.anchor.x, cell.y + copy.anchor.y)));
+  const fits = (copy: Copy): boolean => cellsOf(copy).every((cell) => open.has(cell));
+  const candidates: Copy[] = moves.flatMap((motion) => unique(floor.flatMap((cell) => shapes.get(motion)!.map((part) => at(cell.x - part.x, cell.y - part.y)))).map((anchor): Copy => ({ anchor, motion }))).filter(fits);
+  const covering = new Map<string, Copy[]>();
+  for (const copy of candidates) for (const cell of cellsOf(copy)) covering.set(cell, [...(covering.get(cell) ?? []), copy]);
+  const clash = (a: Copy, b: Copy): boolean => { const mine = new Set(cellsOf(a)); return cellsOf(b).some((cell) => mine.has(cell)); };
   const sorted = [...floor].sort((a, b) => a.x - b.x || a.y - b.y).map(key);
 
-  const covers: Pt[][] = [];
+  const covers: Copy[][] = [];
   let budget = 200_000;
-  const search = (free: Set<string>, chosen: Pt[]): void => {
+  const search = (free: Set<string>, chosen: Copy[]): void => {
     if (covers.length >= 60 || budget <= 0) return;
     budget -= 1;
     const next = sorted.find((cell) => free.has(cell));
     if (next === undefined) { covers.push([...chosen]); return; }
-    for (const anchor of covering.get(next) ?? []) {
-      const cells = cellsOf(anchor);
+    for (const copy of covering.get(next) ?? []) {
+      const cells = cellsOf(copy);
       if (!cells.every((cell) => free.has(cell))) continue;
       const rest = new Set(free);
       cells.forEach((cell) => rest.delete(cell));
-      search(rest, [...chosen, anchor]);
+      search(rest, [...chosen, copy]);
     }
   };
   search(new Set(sorted), []);
 
-  const rand = lcg(floor.length * 7 + tile.length);
-  const packings: Pt[][] = [];
+  const rand = lcg(floor.length * 7 + tile.length + moves.length);
+  const packings: Copy[][] = [];
   for (let draw = 0; draw < 150; draw += 1) {
-    const order = [...anchors];
+    const order = [...candidates];
     for (let index = order.length - 1; index > 0; index -= 1) { const swap = rand(index + 1); [order[index], order[swap]] = [order[swap]!, order[index]!]; }
-    const packed: Pt[] = [];
-    const halves: Pt[][] = [];
-    for (const anchor of order) if (packed.every((other) => !clash(anchor, other))) { packed.push(anchor); if (packed.length === Math.ceil(floor.length / tile.length / 2)) halves.push([...packed]); }
+    const packed: Copy[] = [];
+    const halves: Copy[][] = [];
+    for (const copy of order) if (packed.every((other) => !clash(copy, other))) { packed.push(copy); if (packed.length === Math.ceil(floor.length / tile.length / 2)) halves.push([...packed]); }
     packings.push(packed, ...halves);
   }
-  const pairs: Pt[][] = [];
-  for (let i = 0; i < anchors.length; i += 1) for (let j = i + 1; j < anchors.length; j += 1) if (!clash(anchors[i]!, anchors[j]!)) pairs.push([anchors[i]!, anchors[j]!]);
+  const pairs: Copy[][] = [];
+  for (let i = 0; i < candidates.length; i += 1) for (let j = i + 1; j < candidates.length; j += 1) if (!clash(candidates[i]!, candidates[j]!)) pairs.push([candidates[i]!, candidates[j]!]);
 
-  const states: Pt[][] = [
-    ...anchors.map((anchor) => [anchor]), ...even(pairs, 400),
+  const states: Copy[][] = [
+    ...candidates.map((copy) => [copy]), ...even(pairs, 400),
     ...covers, ...covers.map((cover) => [...cover].reverse()),
     ...covers.slice(0, 6).flatMap((cover) => cover.slice(1).map((_, index) => cover.slice(0, index + 1))),
     ...covers.slice(0, 10).flatMap((cover) => cover.map((_, index) => cover.filter((__, position) => position !== index))),
@@ -306,25 +315,46 @@ const tessellation: HzBuilder = (p) => {
   ];
   const frameX = Math.max(1, ...floor.map((cell) => cell.x));
   const frameY = Math.max(1, ...floor.map((cell) => cell.y));
-  const spill = [];
-  for (let x = 0; x <= frameX; x += 1) for (let y = 0; y <= frameY; y += 1) if (!fits(at(x, y))) spill.push(at(x, y));
-  const overlap = anchors.flatMap((a) => anchors.filter((b) => key(a) !== key(b) && clash(a, b)).map((b) => [a, b])).slice(0, 1);
+  const spill: Copy[] = [];
+  for (const motion of moves) {
+    let found = 0;
+    for (let x = 0; x <= frameX && found < 1; x += 1) for (let y = 0; y <= frameY && found < 1; y += 1) if (!fits({ anchor: at(x, y), motion })) { spill.push({ anchor: at(x, y), motion }); found += 1; }
+  }
+  const overlap: Copy[][] = [];
+  for (let i = 0; i < candidates.length && overlap.length === 0; i += 1) for (let j = 0; j < candidates.length && overlap.length === 0; j += 1) if (i !== j && clash(candidates[i]!, candidates[j]!)) overlap.push([candidates[i]!, candidates[j]!]);
   const copies = floor.length / tile.length;
+  const withMotions = (list: Copy[]): Json => ({ points: list.map((copy) => ({ x: copy.anchor.x, y: copy.anchor.y })), motions: list.map((copy) => copy.motion) });
+  const plain = (list: Copy[]): Json => wrap(list.map((copy) => copy.anchor));
+  const respond = (list: Copy[]): Json[] => (moves.length === 1 ? [plain(list)] : list.every((copy) => copy.motion === 'slide') ? [withMotions(list), plain(list)] : [withMotions(list)]);
+  const stray = moves.length === 1 ? [] : [
+    { ...withMotions(candidates.slice(0, 1)), motions: ['spin'] },
+    { ...withMotions(candidates.slice(0, 1)), motions: [] },
+    { ...withMotions(candidates.slice(0, 1)), motions: [3] },
+    { ...withMotions(candidates.slice(0, 1)), motions: 'slide' },
+    ...(['turn', 'flip'] as Motion[]).filter((motion) => !moves.includes(motion)).map((motion) => ({ ...withMotions(candidates.slice(0, 1)), motions: [motion] })),
+  ];
+  const extra = moves.length === 1 ? [{ ...withMotions(candidates.slice(0, 1)), motions: ['slide'] }] : [];
+  const first = candidates[0]!;
   return {
-    inRange: unique(states.filter((list) => list.length > 0 && list.length <= copies).map(wrap)),
+    inRange: unique(states.filter((list) => list.length > 0 && list.length <= copies).flatMap(respond)),
     invalid: [
-      ...malformed(anchors[0]!, at(frameX + 1, 0)), wrap([at(-1, 0)]),
-      ...spill.slice(0, 1).map((anchor) => wrap([anchor])), ...overlap.map(wrap),
-      ...(covers[0] ? [wrap([...covers[0], anchors.find((anchor) => !keysOf(covers[0]!).has(key(anchor))) ?? at(frameX + 1, frameY + 1)])] : []),
+      ...malformed(first.anchor, at(frameX + 1, 0)), wrap([at(-1, 0)]),
+      ...spill.flatMap((copy) => respond([copy])), ...overlap.flatMap(respond), ...stray, ...extra,
+      ...(covers[0] ? [withMotions([...covers[0], candidates.find((copy) => !covers[0]!.some((other) => copyKey(other) === copyKey(copy))) ?? { anchor: at(frameX + 1, frameY + 1), motion: 'slide' }])] : []),
     ],
     initial: wrap([]),
     expectMet: (response) => {
       const got = readPoints(response);
       if (!got) return false;
       const used = new Set<string>();
-      for (const anchor of got) for (const cell of cellsOf(anchor)) { if (!open.has(cell) || used.has(cell)) return false; used.add(cell); }
+      for (const [index, anchor] of got.entries()) {
+        const motion = (Array.isArray(response.motions) ? response.motions[index] : 'slide') as Motion;
+        if (!shapes.has(motion)) return false;
+        for (const cell of cellsOf({ anchor, motion })) { if (!open.has(cell) || used.has(cell)) return false; used.add(cell); }
+      }
       return used.size === floor.length;
     },
+    expectDiagnostic: () => 'partial',
   };
 };
 
