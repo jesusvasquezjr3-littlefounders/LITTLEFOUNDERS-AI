@@ -1,4 +1,5 @@
 import type { GateProblem } from '../../pipeline/gates.js';
+import type { V2DocumentLike } from '../gates.js';
 import type { ForgeGuidance, ForgeHorizontePack } from './types.js';
 
 export const NUM_A_CAPABILITIES = {
@@ -63,6 +64,21 @@ const NUM_A_GUIDANCE: readonly ForgeGuidance[] = [
       'math.pan-balance.v2: up to four fixed weights on each pan and one to six loose weights of 1 to 20. The target is the left total minus the right total (0 is balanced) and must be reachable from the loose weights.',
     ],
   },
+  {
+    type: 'math.number-line.order.v2',
+    lines: [
+      'math.number-line.order.v2: ages 6-12. The prompt asks to put the given numbers on the line in one imperative sentence of at most 12 words, never the marks to use.',
+      'math.number-line.order.v2: scale 0 is whole numbers, 1 is tenths and 2 is hundredths; use 1 or 2 only for ages 10-12. Every number is a whole count of the finest grid (0.45 is 45 at scale 2). The line has count equal gaps (4 to 20) of step grid units from low, and only its ends and middle are labelled.',
+      'math.number-line.order.v2: give two to six distinct numbers that each sit on a mark, listed out of ascending order so the tray does not hand over the answer. The private key is { solutions: [slotMap] } with exactly one solution: mark m-i holds the piece n-<units> whose value sits i gaps from low.',
+    ],
+  },
+  {
+    type: 'math.ruler.measure.v2',
+    lines: [
+      'math.ruler.measure.v2: ages 6-12. The prompt asks how long the drawn object is in one question or imperative sentence of at most 10 words that names the object and the unit, never the marks it touches.',
+      'math.ruler.measure.v2: an object of pencil or strip drawn from a near mark to a far mark of a ruler of at most 12 marks, in cm or in. Start the object at 0 for the youngest readers; later start it on another mark so the length is the far mark minus the near mark. The private key is { target: "<length>" }, a whole number as text.',
+    ],
+  },
 ];
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
@@ -76,6 +92,8 @@ const JUMP_SIZES = [1, 2, 5, 10, 20, 50, 100];
 const CLOCK_STEPS = [1, 5, 15, 30];
 const RULER_MAX = 12;
 const MAX_WEIGHT = 20;
+const ORDER_MAX_UNITS = 100000;
+const READ_OBJECTS = ['pencil', 'strip'];
 
 /** Every number a jump list within the cap can end on, by breadth-first search over the allowed sizes. */
 function reachableLandings(start: number, sizes: readonly number[], max: number): Set<number> {
@@ -105,12 +123,22 @@ function reachableDifferences(base: number, weights: readonly number[]): Set<num
 const sum = (list: readonly number[]): number => list.reduce((total, weight) => total + weight, 0);
 const weightList = (value: unknown, min: number, max: number): value is number[] => Array.isArray(value) && value.length >= min && value.length <= max && value.every((weight) => inRange(weight, 1, MAX_WEIGHT));
 
+/** The marks and numbers of an ordering line when the payload is sound: every number sits on a mark of the window. */
+function orderParts(payload: Record<string, unknown> | undefined): { scale: number; low: number; step: number; count: number; values: number[] } | undefined {
+  if (!payload || !inRange(payload.scale, 0, 2) || !inRange(payload.low, 0, ORDER_MAX_UNITS) || !inRange(payload.step, 1, ORDER_MAX_UNITS) || !inRange(payload.count, 4, 20) || !Array.isArray(payload.values)) return undefined;
+  const { scale, low, step, count } = payload as { scale: number; low: number; step: number; count: number };
+  const values = payload.values as unknown[];
+  if (low + count * step > ORDER_MAX_UNITS || values.length < 2 || values.length > 6 || new Set(values).size !== values.length) return undefined;
+  if (!values.every((value) => inRange(value, low, low + count * step) && (value - low) % step === 0)) return undefined;
+  return { scale, low, step, count, values: values as number[] };
+}
+
 interface Check {
   visual: string;
-  /** A message when the public payload breaks a rule of the piece. */
-  payload: (payload: Record<string, unknown> | undefined) => string | undefined;
-  /** A message when the private target is malformed, unreachable or no change. */
-  target: (payload: Record<string, unknown>, target: unknown) => string | undefined;
+  /** A message when the public payload breaks a rule of the piece; `band` is the document's age band when it names one. */
+  payload: (payload: Record<string, unknown> | undefined, band: string | null) => string | undefined;
+  /** A message when the private key is malformed, unreachable or no change; `target` is `key.target` and `key` is the whole key. */
+  target: (payload: Record<string, unknown>, target: unknown, key: unknown) => string | undefined;
 }
 
 const CHECKS: Readonly<Record<string, Check>> = {
@@ -190,23 +218,52 @@ const CHECKS: Readonly<Record<string, Check>> = {
       return reachableDifferences(base, payload.weights as number[]).has(target) ? undefined : 'The pan balance target cannot be made with those loose weights';
     },
   },
+  'math.number-line.order.v2': {
+    visual: 'order-number-line',
+    payload: (payload, band) => {
+      const parts = orderParts(payload);
+      if (!parts) return 'The order line needs a scale of 0, 1 or 2, four to twenty equal gaps, and two to six distinct numbers that each sit on a mark of the window';
+      if (parts.values.every((value, index) => index === 0 || value > parts.values[index - 1]!)) return 'The order line must list its numbers out of ascending order';
+      return parts.scale > 0 && band === '6-9' ? 'Order lines with tenths or hundredths are for ages 10-12 only' : undefined;
+    },
+    target: (payload, _target, key) => {
+      const parts = orderParts(payload)!;
+      const solutions = record(key)?.solutions;
+      if (!Array.isArray(solutions) || solutions.length !== 1) return 'The order line key must hold exactly one solution';
+      const given = record(solutions[0]);
+      const truth = Object.fromEntries(parts.values.map((units) => [`m-${(units - parts.low) / parts.step}`, `n-${units}`]));
+      const agrees = !!given && Object.keys(given).length === Object.keys(truth).length
+        && Object.entries(truth).every(([slot, piece]) => Array.isArray(given[slot]) && given[slot].length === 1 && given[slot][0] === piece);
+      return agrees ? undefined : 'The order line key must put every given number on the mark that holds its value and nothing else';
+    },
+  },
+  'math.ruler.measure.v2': {
+    visual: 'ruler-measure',
+    payload: (payload) => {
+      const fine = (payload?.unit === 'cm' || payload?.unit === 'in') && typeof payload.object === 'string' && READ_OBJECTS.includes(payload.object) && inRange(payload.max, 4, RULER_MAX)
+        && inRange(payload.from, 0, (payload.max as number) - 1) && inRange(payload.to, (payload.from as number) + 1, payload.max as number);
+      return fine ? undefined : 'The ruler reading needs a unit of cm or in, an object of pencil or strip, and an object whose far mark is after its near mark on a ruler of at most 12 marks';
+    },
+    target: (payload, target) => (target === String((payload.to as number) - (payload.from as number)) ? undefined : 'The ruler reading target must be the length of the object as text: the far mark minus the near mark'),
+  },
 };
 
 /** Gate 4 (solvability): the public payload obeys its piece, the visual matches, and the private target is reachable and is a change. */
-function numAGates(document: { segments?: unknown }, answerKeys?: Record<string, unknown>): GateProblem[] {
+function numAGates(document: V2DocumentLike, answerKeys?: Record<string, unknown>): GateProblem[] {
   const problems: GateProblem[] = [];
   const segments = Array.isArray(document.segments) ? (document.segments as Array<Record<string, unknown>>) : [];
+  const band = typeof document.age_band === 'string' ? document.age_band : null;
   for (const segment of segments) {
     const check = typeof segment.type === 'string' && Object.hasOwn(CHECKS, segment.type) ? CHECKS[segment.type]! : undefined;
     if (!check) continue;
     const segmentId = typeof segment.id === 'string' ? segment.id : '(segment)';
     const payload = record(segment.payload);
-    const broken = check.payload(payload);
+    const broken = check.payload(payload, band);
     if (broken !== undefined) { problems.push({ gate: 4, segmentId, message: broken }); continue; }
     if ((segment.visual as { type?: unknown } | undefined)?.type !== check.visual) problems.push({ gate: 4, segmentId, message: `The ${String(segment.type)} visual must be ${check.visual}` });
     const key = answerKeys && Object.hasOwn(answerKeys, segmentId) ? (answerKeys[segmentId] as { target?: unknown } | null) : undefined;
     if (key === undefined) continue;
-    const message = check.target(payload!, key?.target);
+    const message = check.target(payload!, key?.target, key);
     if (message !== undefined) problems.push({ gate: 4, segmentId, message });
   }
   return problems;
