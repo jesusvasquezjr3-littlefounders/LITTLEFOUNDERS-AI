@@ -235,3 +235,10 @@ end). Nothing is pushed, accepted or released. No new lane doc, no COVERAGE.md e
 - Real browser behaviour: nothing here ran a page. The sim1 and sim2 kinds have no behaviour space and were not exercised by the gate.
 - `forge:release-gates:check`, `forge:v2:dry-run` and the push gate were not run. No requirement row or sprint entry is closed.
 - Fixture copy is still synthesized, not authored or natively reviewed.
+
+## Behaviour round (supersedes the five fail-closed statements above)
+
+Core's behaviour gate now has a space for the five seeded simulations (`math.chance-sim.v2`, `math.galton-sim.v2`, `stats.coverage-sim.v2`, `stats.bootstrap-sim.v2`,
+`money.life-sim.v2`). On `emitted-horizonte.json`, `forge-v2:check` reports 240 of 240 graded segments passing (64,341 states), not 225 of 240, and every Horizonte graded
+kind has a space. The earlier statements that the five kinds are left fail-closed, and that the file cannot join the shared `emitted.json` for that reason, no longer hold.
+A seeded kind graded without an attempt is still `invalid`. See `behav.md`.

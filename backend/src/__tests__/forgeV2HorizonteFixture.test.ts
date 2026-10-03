@@ -5,12 +5,14 @@ import { describe, expect, it } from 'vitest';
 import { horizonteBehaviourKinds } from '../services/forgeV2HorizonteBehaviour/index.js';
 import { checkForgeV2Rows, forgeV2BehaviourPassRate } from '../services/forgeV2Rows.js';
 import { isSeededHorizonteType } from '../services/horizonte/index.js';
+import { gradeV2Visual, validateV2LessonForGrading } from '../services/v2LessonDocument.js';
 
 /*
  * The rows Forge emitted for the Horizonte build, run through Core's own validator. The JSON is read by relative path, so
  * the two packages stay independent: no import crosses the service boundary, and a checkout without the file skips the suite.
- * The seeded simulations (sim1, sim2) are graded against an attempt the gate never has, so they stay fail-closed here on
- * purpose; every other kind must pass the contract, the feedback rules and the interactive-behaviour gate.
+ * Every graded segment, the five seeded simulations included, must pass the contract, the feedback rules and the
+ * interactive-behaviour gate. The gate grades the seeded kinds under its own synthetic attempt; graded without one they
+ * are still refused.
  */
 
 type Row = { lesson_id: string; locale: string; schema_version: number; version_id: string; document: Record<string, any>; answer_keys: Record<string, any> }; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -23,6 +25,8 @@ const rows = (): Row[] => (loaded ??= JSON.parse(readFileSync(file, 'utf8')) as 
 let checked: string[] | null = null;
 const problems = (): string[] => (checked ??= checkForgeV2Rows(rows()));
 const rowWith = (type: string): Row => structuredClone(rows().find((row) => row.locale === 'en-US' && row.document.segments.some((segment: { type: string }) => segment.type === type))!);
+
+const parseRow = (row: Row) => validateV2LessonForGrading(row.document, row.answer_keys, { lessonId: row.lesson_id, locale: row.locale });
 
 const GATE = 'interactive-behaviour gate';
 const SEEDED = ['math.chance-sim.v2', 'math.galton-sim.v2', 'money.life-sim.v2', 'stats.bootstrap-sim.v2', 'stats.coverage-sim.v2'];
@@ -39,36 +43,37 @@ describe.skipIf(!present)('the Horizonte rows Forge emitted, under Core\'s valid
     expect(problems().filter((problem) => !problem.includes(GATE))).toEqual([]);
   });
 
-  it('fails the behaviour gate only on the seeded simulations, which stay fail-closed on purpose', () => {
-    const failing = problems().filter((problem) => problem.includes(GATE));
-    const kinds = new Map<string, number>();
-    for (const problem of failing) {
-      const match = /\((\w[\w.-]*\.v2)\): no behaviour space defined for this kind/.exec(problem);
-      expect(match, problem).not.toBeNull();
-      kinds.set(match![1]!, (kinds.get(match![1]!) ?? 0) + 1);
-    }
-    expect([...kinds.keys()].sort()).toEqual(SEEDED);
-    for (const [kind, count] of kinds) {
-      expect(isSeededHorizonteType(kind), kind).toBe(true);
-      expect(count, kind).toBe(3);
-    }
+  it('passes the behaviour gate on every graded segment, the seeded simulations included', () => {
+    expect(problems().filter((problem) => problem.includes(GATE))).toEqual([]);
   });
 
-  it('models every other graded kind the file carries', () => {
+  it('models every graded kind the file carries', () => {
     const graded = new Set<string>();
     for (const row of rows()) for (const segment of row.document.segments) if (segment.grading === 'server') graded.add(segment.type);
     expect(graded.size).toBeGreaterThan(50);
+    for (const type of SEEDED) expect(graded.has(type), type).toBe(true);
     const left = [...graded].filter((type) => !horizonteBehaviourKinds().includes(type)).sort();
-    expect(left).toEqual(SEEDED);
+    expect(left).toEqual([]);
+    for (const type of SEEDED) expect(isSeededHorizonteType(type), type).toBe(true);
   });
 
-  it('reports the gate pass rate over the graded segments', () => {
+  it('reports a pass rate of 100% over the graded segments', () => {
     const rate = forgeV2BehaviourPassRate(rows());
     expect(rate.segments).toBeGreaterThan(200);
-    expect(rate.segments - rate.passed).toBe(SEEDED.length * 3);
-    expect(rate.passRate).toBeGreaterThan(0.9);
-    expect(rate.passRate).toBeLessThan(1);
+    expect(rate.passed).toBe(rate.segments);
+    expect(rate.passRate).toBe(1);
     expect(rate.states).toBeGreaterThan(50_000);
+  });
+
+  it.each(SEEDED)('keeps %s fail-closed when it is graded without an attempt', (type) => {
+    const row = rowWith(type);
+    expect(checkForgeV2Rows([row])).toEqual([]);
+    const segment = row.document.segments.find((candidate: { type: string }) => candidate.type === type);
+    const parsed = parseRow(row);
+    expect(parsed).not.toBeNull();
+    for (const response of [{ seed: '0'.repeat(64) }, { seed: '0'.repeat(64), trials: 100 }, {}, null]) {
+      expect(gradeV2Visual(parsed!, row.answer_keys, segment.id, response as never), JSON.stringify(response)).toBeNull();
+    }
   });
 
   it('refuses a wrong schema version, a duplicate row and a version id that does not match', () => {
