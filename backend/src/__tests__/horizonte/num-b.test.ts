@@ -5,6 +5,7 @@ import { NUM_B_FIXTURES } from '../../services/horizonte/num-b/fixtures.js';
 import {
   arrayAreaAnswer, arrayAreaKind, isAreaDivisionPayload, isAreaModelPayload, isArrayPayload, readWholeText, standArray, standAreaDivision, standAreaModel,
 } from '../../services/horizonte/num-b/arrayAreaModel.js';
+import { circleAnswer, circleKeyProblem, circleOp, circlePayloadProblem, isCirclePayload, standCircle } from '../../services/horizonte/num-b/fractionCirclesModel.js';
 import { fractionAnswer, isFractionPayload, keyProblem, standFraction } from '../../services/horizonte/num-b/fractionWallModel.js';
 import { isDoubleLinePayload, isRatioTapePayload, ratioAnswer, ratioKind, standRatio } from '../../services/horizonte/num-b/ratioLineModel.js';
 import { horizonteGrade, horizonteSampleVerdict, horizonteScopeProblem } from '../../services/horizonte/index.js';
@@ -27,10 +28,10 @@ function lesson(id: string, locale: 'en-US' | 'es-MX' | 'pt-BR' = 'en-US') {
   };
 }
 
-describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ratio tape, F1.6 fraction wall', () => {
+describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ratio tape, F1.6 fraction wall and circles', () => {
   it('meets the scorer contract for every fixture of every type', () => {
     expect(() => assertScorerContract(numB, NUM_B_FIXTURES)).not.toThrow();
-    expect(Object.keys(numB.capabilities).sort()).toEqual(['math.array-area.v2', 'math.fraction-wall.v2', 'math.ratio-line.v2']);
+    expect(Object.keys(numB.capabilities).sort()).toEqual(['math.array-area.v2', 'math.fraction-circles.v2', 'math.fraction-wall.v2', 'math.ratio-line.v2']);
   });
 
   it('keeps the array and area model total and exact', () => {
@@ -142,6 +143,55 @@ describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ra
     expect(keyProblem(sum, { n: 0, d: 6 })).not.toBeNull();
   });
 
+  it('keeps the fraction-circles model exact for every operation', () => {
+    expect(circleAnswer({ op: 'show', fraction: [3, 4] })).toEqual({ n: 3, d: 4 });
+    expect(circleAnswer({ op: 'show', fraction: [2, 4] })).toEqual({ n: 2, d: 4 });
+    expect(circleAnswer({ op: 'compare', left: [3, 8], right: [5, 8] })).toEqual({ n: 5, d: 8 });
+    expect(circleAnswer({ op: 'compare', left: [6, 8], right: [5, 8] })).toEqual({ n: 3, d: 4 });
+    expect(circleAnswer({ op: 'add', left: [1, 8], right: [3, 8] })).toEqual({ n: 1, d: 2 });
+    expect(circleAnswer({ op: 'add', left: [2, 5], right: [3, 5] })).toEqual({ n: 1, d: 1 });
+    expect(circleAnswer({ op: 'subtract', left: [7, 10], right: [3, 10] })).toEqual({ n: 2, d: 5 });
+    expect(circleOp({ op: 'show', fraction: [3, 4] })).toBe('show');
+    expect(circleOp({ op: 'multiply' })).toBeNull();
+    expect(circleOp(null)).toBeNull();
+    expect(isCirclePayload({ op: 'show', fraction: [4, 4] })).toBe(false);
+    expect(isCirclePayload({ op: 'show', fraction: [1, 7] })).toBe(false);
+    expect(isCirclePayload({ op: 'show', fraction: [1, 2], extra: 1 })).toBe(false);
+    expect(isCirclePayload({ op: 'compare', left: [3, 8], right: [3, 8] })).toBe(false);
+    expect(isCirclePayload({ op: 'compare', left: [1, 4], right: [1, 8] })).toBe(false);
+    expect(isCirclePayload({ op: 'add', left: [3, 4], right: [2, 4] })).toBe(false);
+    expect(isCirclePayload({ op: 'subtract', left: [1, 4], right: [2, 4] })).toBe(false);
+    expect(isCirclePayload({ op: 'subtract', left: [2, 4], right: [2, 4] })).toBe(false);
+    expect(isCirclePayload({ op: 'add', left: [1, 4], right: [1, 4], n: 1 })).toBe(false);
+    expect(circlePayloadProblem({ op: 'add', left: [1, 4], right: [1, 4] })).toBeNull();
+    expect(circlePayloadProblem(undefined)).not.toBeNull();
+    expect(circleAnswer(null)).toBeNull();
+  });
+
+  it('asks the exact form for show and any equal form for the other circle operations', () => {
+    const show = { op: 'show', fraction: [2, 4] };
+    expect(standCircle(show, { n: 2, d: 4 })).toBe('right');
+    expect(standCircle(show, { n: 1, d: 2 })).toBe('wrong');
+    expect(standCircle(show, { n: 0, d: 4 })).toBe('incomplete');
+    expect(standCircle(show, { n: 0, d: 0 })).toBe('incomplete');
+    expect(standCircle(show, { n: 2, d: 1000 })).toBe('invalid');
+    expect(standCircle(show, { n: 2 })).toBe('invalid');
+    expect(standCircle(show, { n: 2, d: 4, extra: 1 })).toBe('invalid');
+    expect(standCircle(show, null)).toBe('invalid');
+    expect(standCircle({ op: 'show', fraction: [9, 4] }, { n: 2, d: 4 })).toBe('invalid');
+    const add = { op: 'add', left: [1, 8], right: [3, 8] };
+    expect(standCircle(add, { n: 1, d: 2 })).toBe('right');
+    expect(standCircle(add, { n: 4, d: 8 })).toBe('right');
+    expect(standCircle(add, { n: 3, d: 8 })).toBe('wrong');
+    expect(standCircle({ op: 'compare', left: [3, 8], right: [5, 8] }, { n: 3, d: 8 })).toBe('wrong');
+    expect(circleKeyProblem(show, { n: 2, d: 4 })).toBeNull();
+    expect(circleKeyProblem(show, { n: 1, d: 2 })).not.toBeNull();
+    expect(circleKeyProblem(add, { n: 4, d: 8 })).toBeNull();
+    expect(circleKeyProblem(add, { n: 0, d: 8 })).not.toBeNull();
+    expect(circleKeyProblem(add, { n: 1, d: 2, extra: 1 })).not.toBeNull();
+    expect(circleKeyProblem({ op: 'add', left: [3, 4], right: [3, 4] }, { n: 1, d: 1 })).not.toBeNull();
+  });
+
   it('grades every fixture: met, review, valid and invalid', () => {
     expect(run('array-rows-columns', { value: '12' }).verdict).toBe('met');
     expect(run('array-rows-columns', { value: '7' })).toEqual({ verdict: 'review', diagnostic: 'value' });
@@ -164,6 +214,16 @@ describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ra
     expect(run('product-grid', { n: 6, d: 12 }).verdict).toBe('met');
     expect(run('measure-fit', { n: 5, d: 2 }).verdict).toBe('met');
     expect(run('measure-fit', { n: 2, d: 5 }).verdict).toBe('review');
+    expect(run('circles-show', { n: 3, d: 4 }).verdict).toBe('met');
+    expect(run('circles-show', { n: 6, d: 8 }).verdict).toBe('review');
+    expect(run('circles-show', { n: 0, d: 4 }).verdict).toBe('valid');
+    expect(run('circles-compare', { n: 5, d: 8 }).verdict).toBe('met');
+    expect(run('circles-compare', { n: 3, d: 8 })).toEqual({ verdict: 'review', diagnostic: 'value' });
+    expect(run('circles-add', { n: 1, d: 2 }).verdict).toBe('met');
+    expect(run('circles-add', { n: 4, d: 8 }).verdict).toBe('met');
+    expect(run('circles-add', { n: 3, d: 8 }).verdict).toBe('review');
+    expect(run('circles-subtract', { n: 4, d: 10 }).verdict).toBe('met');
+    expect(run('circles-subtract', { n: 3, d: 10 }).verdict).toBe('review');
   });
 
   it('refuses a key nobody can reach, even for an untouched response', () => {
@@ -175,6 +235,9 @@ describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ra
     expect(run('wall-equivalent', { n: 0, d: 6 }, { n: 1, d: 2 }).verdict).toBe('invalid');
     expect(run('bars-add', { n: 0, d: 0 }, { n: 5, d: 7 }).verdict).toBe('invalid');
     expect(run('bars-add', { n: 0, d: 0 }, { n: 5, d: 6, extra: 1 }).verdict).toBe('invalid');
+    expect(run('circles-show', { n: 0, d: 0 }, { n: 1, d: 2 }).verdict).toBe('invalid');
+    expect(run('circles-compare', { n: 0, d: 0 }, { n: 3, d: 8 }).verdict).toBe('invalid');
+    expect(run('circles-add', { n: 0, d: 0 }, { n: 1, d: 2, extra: 1 }).verdict).toBe('invalid');
   });
 
   it('never says met in the browser, which holds no rubric', () => {
@@ -199,6 +262,9 @@ describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ra
     expect(scope('math.array-area.v2', '10-12', 10, 12)).toBeNull();
     expect(scope('math.fraction-wall.v2', '6-9', 8, 9)).toBeNull();
     expect(scope('math.fraction-wall.v2', '6-9', 6, 9)).not.toBeNull();
+    expect(scope('math.fraction-circles.v2', '6-9', 8, 9)).toBeNull();
+    expect(scope('math.fraction-circles.v2', '6-9', 6, 9)).not.toBeNull();
+    expect(scope('math.fraction-circles.v2', '10-12', 10, 12)).toBeNull();
     expect(scope('math.ratio-line.v2', '10-12', 10, 12)).toBeNull();
     expect(scope('math.ratio-line.v2', '6-9', 8, 9)).not.toBeNull();
     for (const type of Object.keys(numB.capabilities)) {
@@ -238,5 +304,11 @@ describe('num-b pack: F1.4 arrays and area model, F1.5 double number line and ra
     const wallSegment = wall.segments[0] as Record<string, unknown>;
     expect(v2PublicLessonSchema.safeParse({ ...wall, segments: [{ ...wallSegment, visual: { type: 'fraction-wall' } }] }).success).toBe(false);
     expect(v2PublicLessonSchema.safeParse({ ...wall, segments: [{ ...wallSegment, payload: { op: 'add', left: [1, 2], right: [1, 3], n: 5, d: 6 } }] }).success).toBe(false);
+    const circles = lesson('circles-add');
+    const circleSegment = circles.segments[0] as Record<string, unknown>;
+    expect(v2PublicLessonSchema.safeParse({ ...circles, segments: [{ ...circleSegment, visual: { type: 'fraction-wall' } }] }).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse({ ...circles, segments: [{ ...circleSegment, payload: { op: 'add', left: [1, 8], right: [3, 8], n: 1, d: 2 } }] }).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse({ ...circles, segments: [{ ...circleSegment, payload: { op: 'add', left: [3, 4], right: [2, 4] } }] }).success).toBe(false);
+    expect(v2PublicLessonSchema.safeParse({ ...circles, segments: [{ ...circleSegment, payload: { op: 'add', left: [1, 4], right: [1, 8] } }] }).success).toBe(false);
   });
 });
