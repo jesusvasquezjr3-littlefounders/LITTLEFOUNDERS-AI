@@ -16,6 +16,8 @@ export const NET_SQUARES = 6;
 export const NET_PIECE = 'square';
 export const NET_GRID = { minCols: 3, maxCols: 5, minRows: 3, maxRows: 4 } as const;
 export const NET_EDGE_LIMIT = 20;
+/** Core accepts an edge of 1; the Forge asks for 2 or more because the face names no longer fit on a square of that size on the board. */
+export const CUBE_EDGE_MIN = 2;
 export const VIEWER_COUNT_LIMIT = 12;
 export const LABEL_FIXED = { min: 1, max: 3 } as const;
 export const COMPLETE_FIXED = { min: 2, max: 5 } as const;
@@ -57,7 +59,10 @@ function readCells(value: unknown, minimum: number, maximum: number): Cell[] | n
 
 export interface LabelNet { mode: 'label'; cells: Cell[]; fixed: Array<{ cell: number; name: FaceName }>; edge: number }
 export interface CompleteNet { mode: 'complete'; grid: { cols: number; rows: number }; fixed: Cell[]; edge: number }
-export type NetPayload = LabelNet | CompleteNet;
+/** The learner works out the surface area of the cube from the six squares and the edge printed on each. */
+export interface AreaNet { mode: 'area'; cells: Cell[]; edge: number }
+export type NetPayload = LabelNet | CompleteNet | AreaNet;
+export const surfaceArea = (edge: number): number => 6 * edge * edge;
 
 export function readNet(value: unknown): NetPayload | string {
   if (!isRecord(value)) return 'the net payload is an object with a mode';
@@ -82,7 +87,12 @@ export function readNet(value: unknown): NetPayload | string {
     if (!fixed || !fixed.every((cell) => cell[0] < (grid.cols as number) && cell[1] < (grid.rows as number))) return `a complete net gives ${COMPLETE_FIXED.min} to ${COMPLETE_FIXED.max} different squares inside the grid in fixed`;
     return { mode: 'complete', grid: { cols: grid.cols as number, rows: grid.rows as number }, fixed, edge: value.edge };
   }
-  return 'the net mode is label or complete';
+  if (value.mode === 'area') {
+    const cells = readCells(value.cells, NET_SQUARES, NET_SQUARES);
+    if (!exactKeys(value, ['mode', 'cells', 'edge']) || !cells || !whole(value.edge, 1, NET_EDGE_LIMIT)) return `an area net is exactly mode, cells (six different [column, row] squares) and edge (1 to ${NET_EDGE_LIMIT})`;
+    return { mode: 'area', cells, edge: value.edge };
+  }
+  return 'the net mode is label, complete or area';
 }
 
 type V = [number, number, number];

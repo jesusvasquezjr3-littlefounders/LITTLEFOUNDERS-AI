@@ -4,9 +4,10 @@ import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } f
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { FoldedCube } from './FoldedCube';
-import { NetArea } from './NetArea';
+import { FoldPlayer } from './FoldPlayer';
 import { NET_PIECE, NET_SQUARES, cellKey, gridSlotId, parseGridSlot, type NetCell } from './net.generated';
 import { PAIR_OF, foldOf } from './netFold';
+import { cellFoldPanels } from './polyFold';
 import type { CompleteNet } from './rules.generated';
 import { fill, solidsText } from './solidsText';
 import '../horizonte.css';
@@ -31,6 +32,7 @@ export function NetCompleteBoard({ document, segment, payload, onBack, sequence,
   const keys = new Set(squares.map(cellKey));
   const full = squares.length >= NET_SQUARES;
   const fold = useMemo(() => foldOf(squares), [squares]);
+  const motion = useMemo(() => cellFoldPanels(squares, payload.edge), [squares, payload.edge]);
   const pairAt = new Map(squares.map((square, index) => [cellKey(square), fold.faces[index] ?? null] as const));
   const foldText = { join: t.foldJoin, overlap: t.foldOverlap, more: t.foldMore, ok: t.foldOk }[fold.state];
   const where = (col: number, row: number) => ({ c: col + 1, r: row + 1 });
@@ -76,7 +78,7 @@ export function NetCompleteBoard({ document, segment, payload, onBack, sequence,
       </div>
       <p className="lf-solid-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.squaresCount, { n: squares.length })}. {foldText}</p>
       <FoldedCube t={t} faces={fold.faces} />
-      <NetArea t={t} edge={payload.edge} locale={document.locale} />
+      <FoldPlayer t={t} panels={fold.state === 'ok' ? motion : null} />
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.gridName}</caption>
         <thead><tr>

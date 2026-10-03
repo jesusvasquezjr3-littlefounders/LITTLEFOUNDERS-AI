@@ -1,10 +1,11 @@
-import { useState, type CSSProperties } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { Button, ChoiceChip } from '../../../design/controls';
 import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
-import { NetArea } from './NetArea';
+import { FoldPlayer } from './FoldPlayer';
 import { FACE_NAMES, isFaceName, netBounds, netSlotId, type FaceName } from './net.generated';
+import { cellFoldPanels } from './polyFold';
 import { fixedNames, type LabelNet } from './rules.generated';
 import { faceLabel, fill, solidsText } from './solidsText';
 import '../horizonte.css';
@@ -26,6 +27,7 @@ export function NetLabelBoard({ document, segment, payload, onBack, sequence, on
   const grading = useSegmentGrade(segment.id, onGrade);
   const locked = grading.pending || grading.met;
   const { cols } = netBounds(payload.cells);
+  const fold = useMemo(() => cellFoldPanels(payload.cells, payload.edge), [payload.cells, payload.edge]);
   const named = Object.keys(names).length;
   const used = new Set(Object.values(names));
   const tray = FACE_NAMES.filter((name) => !used.has(name));
@@ -72,7 +74,7 @@ export function NetLabelBoard({ document, segment, payload, onBack, sequence, on
         })}
       </div>
       <p className="lf-solid-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.namedCount, { n: named })}</p>
-      <NetArea t={t} edge={payload.edge} locale={document.locale} />
+      <FoldPlayer t={t} panels={fold} />
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.netCaption}</caption>
         <thead><tr>

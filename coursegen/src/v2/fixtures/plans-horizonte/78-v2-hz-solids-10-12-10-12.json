@@ -105,6 +105,211 @@
           }
         }
       }
+    },
+    {
+      "id": "solid-net-name-box",
+      "type": "geometry.solid-net.v2",
+      "grading": "server",
+      "visual": {
+        "type": "solid-net"
+      },
+      "payload": {
+        "mode": "label",
+        "solid": {
+          "kind": "rect-prism",
+          "dims": [
+            4,
+            3,
+            2
+          ]
+        },
+        "net": "cross",
+        "fixed": [
+          {
+            "panel": 1,
+            "name": "front"
+          },
+          {
+            "panel": 4,
+            "name": "left"
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "panel0": [
+              "top"
+            ],
+            "panel1": [
+              "front"
+            ],
+            "panel2": [
+              "back"
+            ],
+            "panel3": [
+              "right"
+            ],
+            "panel4": [
+              "left"
+            ],
+            "panel5": [
+              "bottom"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "This box net has two named faces. Name the other four.",
+          "feedback": {
+            "met": "You matched every face to its place in the fold.",
+            "not_yet": "Fold the net in your mind and see which faces touch."
+          }
+        },
+        "es-MX": {
+          "prompt": "Esta plantilla de caja tiene dos caras con nombre. Nombra las otras cuatro.",
+          "feedback": {
+            "met": "Ubicaste cada cara en su lugar del doblez.",
+            "not_yet": "Dobla la plantilla en tu mente y mira qué caras se tocan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esta planificação de caixa tem duas faces com nome. Nomeie as outras quatro.",
+          "feedback": {
+            "met": "Você pôs cada face no lugar dela na dobra.",
+            "not_yet": "Dobre a planificação na mente e veja quais faces se tocam."
+          }
+        }
+      }
+    },
+    {
+      "id": "solid-net-finish-box",
+      "type": "geometry.solid-net.v2",
+      "grading": "server",
+      "visual": {
+        "type": "solid-net"
+      },
+      "payload": {
+        "mode": "complete",
+        "solid": {
+          "kind": "rect-prism",
+          "dims": [
+            4,
+            3,
+            2
+          ]
+        },
+        "root": "bottom",
+        "fixed": [
+          {
+            "parent": "bottom",
+            "child": "front"
+          },
+          {
+            "parent": "bottom",
+            "child": "left"
+          },
+          {
+            "parent": "bottom",
+            "child": "right"
+          }
+        ],
+        "sheet": {
+          "width": 9,
+          "height": 11
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "bottom-back": [
+              "back"
+            ],
+            "bottom-right": [
+              "right"
+            ],
+            "bottom-front": [
+              "front"
+            ],
+            "bottom-left": [
+              "left"
+            ],
+            "top-front": [
+              "top"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three sides are folded out of the bottom. Attach the back and the top so the net fits the sheet.",
+          "feedback": {
+            "met": "You joined every face and the net fits the sheet.",
+            "not_yet": "Check which edges touch, and keep the net inside the sheet."
+          }
+        },
+        "es-MX": {
+          "prompt": "Tres lados salen del fondo. Une la cara de atrás y la tapa para que la plantilla quepa en la hoja.",
+          "feedback": {
+            "met": "Uniste cada cara y la plantilla cabe en la hoja.",
+            "not_yet": "Mira qué aristas se tocan y deja la plantilla dentro de la hoja."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Três lados saem do fundo. Una a face de trás e a tampa para que a planificação caiba na folha.",
+          "feedback": {
+            "met": "Você uniu cada face e a planificação cabe na folha.",
+            "not_yet": "Veja quais arestas se tocam e mantenha a planificação dentro da folha."
+          }
+        }
+      }
+    },
+    {
+      "id": "solid-net-area-prism",
+      "type": "geometry.solid-net.v2",
+      "grading": "server",
+      "visual": {
+        "type": "solid-net"
+      },
+      "payload": {
+        "mode": "area",
+        "solid": {
+          "kind": "tri-prism",
+          "dims": [
+            3,
+            4,
+            5
+          ]
+        },
+        "net": "row"
+      },
+      "rubric": {
+        "target": "72"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The net has three rectangles and two triangles. What is the surface area of the prism?",
+          "feedback": {
+            "met": "You added every panel to find the whole surface.",
+            "not_yet": "Find the area of each panel first, then add them."
+          }
+        },
+        "es-MX": {
+          "prompt": "La plantilla tiene tres rectángulos y dos triángulos. ¿Cuál es el área total del prisma?",
+          "feedback": {
+            "met": "Sumaste cada panel y hallaste toda la superficie.",
+            "not_yet": "Halla primero el área de cada panel y luego súmalas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A planificação tem três retângulos e dois triângulos. Qual é a área total do prisma?",
+          "feedback": {
+            "met": "Você somou cada painel e achou a superfície toda.",
+            "not_yet": "Ache primeiro a área de cada painel e depois some."
+          }
+        }
+      }
     }
   ]
 }

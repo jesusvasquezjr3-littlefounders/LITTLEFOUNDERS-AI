@@ -3,6 +3,16 @@
   { "fixture": "nine-edges", "age": "10-12" },
   { "fixture": "name-the-faces", "age": "6-9" },
   { "fixture": "finish-the-net", "age": "10-12" },
+  { "fixture": "area-of-the-cube", "age": "6-9" },
+  { "fixture": "name-the-box", "age": "10-12" },
+  { "fixture": "name-the-prism", "age": "10-12" },
+  { "fixture": "name-the-pyramid", "age": "6-9" },
+  { "fixture": "finish-the-box-net", "age": "10-12" },
+  { "fixture": "finish-the-prism-net", "age": "10-12" },
+  { "fixture": "finish-the-pyramid-net", "age": "10-12" },
+  { "fixture": "area-of-the-box", "age": "10-12" },
+  { "fixture": "area-of-the-prism", "age": "10-12" },
+  { "fixture": "area-of-the-pyramid", "age": "10-12" },
   { "fixture": "staircase", "age": "10-12" },
   { "fixture": "two-by-two", "age": "6-9" }
 ]

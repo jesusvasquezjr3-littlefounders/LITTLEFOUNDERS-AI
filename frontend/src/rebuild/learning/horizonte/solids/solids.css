@@ -49,7 +49,6 @@
 .lf-net-name { font-size: 0.85rem; line-height: 1.1; text-align: center; overflow-wrap: anywhere; }
 .lf-net-tag { display: block; font-size: 0.7rem; font-weight: 600; color: var(--content-muted); }
 .lf-net-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
-.lf-net-area { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-2); font-weight: 800; }
 .lf-net-previews { display: grid; gap: var(--spacing-2); }
 .lf-net-fold { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
 .lf-net-folded { display: grid; gap: var(--spacing-1); inline-size: 11rem; }
@@ -59,6 +58,41 @@
 .lf-net-face[data-covered='true'][data-pair='fb'] { fill: color-mix(in srgb, var(--sky) 45%, var(--surface)); }
 .lf-net-face[data-covered='true'][data-pair='lr'] { fill: color-mix(in srgb, var(--mint) 45%, var(--surface)); }
 .lf-net-face[data-covered='true'][data-pair='tb'] { fill: color-mix(in srgb, var(--berry) 45%, var(--surface)); }
+
+/* The flat nets of the box, the prism and the pyramid (and the cube net when its area is asked): panels drawn from the model, text in net units. */
+.lf-poly-svg { display: block; max-inline-size: 100%; border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-poly-face { fill: var(--surface); stroke: var(--content); stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-poly-face[data-state='named'], .lf-poly-face[data-state='added'], .lf-poly-face[data-state='plain'] { fill: var(--sky-soft); }
+.lf-poly-face[data-state='given'] { fill: var(--mint-soft); }
+.lf-poly-guide { stroke: var(--content-muted); stroke-width: 1; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; pointer-events: none; }
+.lf-poly-len { fill: var(--content-muted); font-weight: 700; pointer-events: none; }
+.lf-poly-name { fill: var(--content); font-weight: 800; stroke: var(--surface); stroke-width: 0.18em; paint-order: stroke; stroke-linejoin: round; pointer-events: none; }
+.lf-poly-sheet { fill: none; stroke: var(--primary-strong); stroke-width: 1.5; stroke-dasharray: 7 5; vector-effect: non-scaling-stroke; pointer-events: none; }
+.lf-poly-button { cursor: pointer; outline: none; }
+.lf-poly-button[aria-disabled='true'] { cursor: default; }
+.lf-poly-button:focus-visible .lf-poly-face { stroke: var(--primary-strong); stroke-width: 3.5; }
+.lf-poly[data-drop-armed='true'] .lf-poly-face { stroke: var(--primary-strong); stroke-width: 2.5; stroke-dasharray: 6 4; }
+.lf-poly[data-drop-selected='true'] .lf-poly-face { stroke: var(--primary-strong); stroke-width: 3.5; }
+.lf-poly-hinge { cursor: pointer; outline: none; }
+.lf-poly-hinge-hit { stroke: transparent; stroke-linecap: round; }
+.lf-poly-hinge-line { stroke: var(--primary-strong); stroke-linecap: round; }
+.lf-poly-hinge:focus-visible .lf-poly-hinge-hit, .lf-poly-hinge[data-drop-armed='true'] .lf-poly-hinge-hit { stroke: var(--sky-soft); }
+
+/* The fold preview: the net hinged up into its solid, drawn in a fixed corner view, shaded by how a panel faces the light. */
+.lf-fold { max-inline-size: 24rem; }
+.lf-fold h3 { font-size: 1rem; }
+.lf-fold-svg { display: block; inline-size: 100%; border-radius: var(--rounded-md); background: var(--sunken); }
+.lf-fold-panel { stroke: var(--content); stroke-width: 1.2; stroke-linejoin: round; vector-effect: non-scaling-stroke; fill: color-mix(in srgb, var(--sky) 22%, var(--surface)); }
+.lf-fold-panel[data-shade='1'] { fill: color-mix(in srgb, var(--sky) 38%, var(--surface)); }
+.lf-fold-panel[data-shade='2'] { fill: color-mix(in srgb, var(--sky) 54%, var(--surface)); }
+.lf-fold-panel[data-shade='3'] { fill: color-mix(in srgb, var(--sky) 70%, var(--surface)); }
+.lf-fold-panel[data-outside='false'] { fill: color-mix(in srgb, var(--mint) 22%, var(--surface)); }
+.lf-fold-panel[data-outside='false'][data-shade='1'] { fill: color-mix(in srgb, var(--mint) 38%, var(--surface)); }
+.lf-fold-panel[data-outside='false'][data-shade='2'] { fill: color-mix(in srgb, var(--mint) 54%, var(--surface)); }
+.lf-fold-panel[data-outside='false'][data-shade='3'] { fill: color-mix(in srgb, var(--mint) 70%, var(--surface)); }
+.lf-fold-tag { fill: var(--content); font-weight: 800; pointer-events: none; }
+.lf-fold-controls { display: grid; gap: var(--spacing-2); justify-items: start; }
+.lf-fold-scrub { inline-size: 100%; max-inline-size: 18rem; }
 
 .lf-stack { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-stack-scene { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
