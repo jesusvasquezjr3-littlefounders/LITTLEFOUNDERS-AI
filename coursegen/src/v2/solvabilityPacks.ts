@@ -7,5 +7,6 @@ import './horizonte/solids.js';
 import './horizonte/solvability-alg2.js';
 import './horizonte/solvability-balance.js';
 import './horizonte/solvability-plane.js';
+import './horizonte/solvability-sims.js';
 import './horizonte/space1.js';
 import './horizonte/space2.js';
