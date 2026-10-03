@@ -16,10 +16,18 @@ import { barModelPilotDocument } from '@/rebuild/learning/BarModelBoard';
 import { schemaDiagramPilotDocument } from '@/rebuild/learning/SchemaDiagramBoard';
 import { cpaFadingPilotDocument } from '@/rebuild/learning/CpaFadingBoard';
 import { decideJustifyPilotDocument } from '@/rebuild/learning/DecisionReasonsBoard';
+import { HORIZONTE_FIXTURES } from '@/rebuild/learning/horizonte/fixtures';
+import { horizonteFixtureDocument } from '@/rebuild/learning/horizonte/previewDocument';
 import { trackInsight } from '@/lib/insights';
 import { paintApprovedStill } from '@/rebuild/mentor/__tests__/paintApprovedStill';
 
 const mockNavigate = vi.fn();
+/* A Horizonte pack downloads when a lesson names it; alg1's download is made to fail here, golden's is the real one. */
+const packDownload = vi.hoisted(() => ({ alg1Down: false }));
+vi.mock('@/rebuild/learning/horizonte/alg1/index', async (importOriginal) => {
+  if (packDownload.alg1Down) throw new Error('Failed to fetch dynamically imported module: alg1');
+  return importOriginal();
+});
 const { mockGetToken } = vi.hoisted(() => ({ mockGetToken: vi.fn<() => Promise<string | null>>() }));
 
 /*
@@ -781,6 +789,40 @@ describe('LessonRoute', () => {
     window.dispatchEvent(new Event('online'));
     expect(await screen.findByRole('button', { name: 'Save: Add' })).toBeInTheDocument();
     expect(mockedApi).toHaveBeenCalledTimes(4);
+  });
+
+  it('BUD-1: reads a Horizonte lesson only after its pack has downloaded, then pins the run', async () => {
+    const document = horizonteFixtureDocument('golden', HORIZONTE_FIXTURES['golden']![0]!.id, 'en-US');
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { code: 'LESSON_LOCKED', message: 'locked' } });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    // A document the player could not read yet would never ask Core for a run: reaching the run is the proof it was read as ready.
+    expect(await screen.findByRole('heading', { name: 'Opens later' })).toBeInTheDocument();
+    expect(mockedApi.mock.calls[1]?.[0]).toBe('/learn/lessons/lesson-1/v2-runs');
+  });
+
+  it('BUD-1: a Horizonte pack that does not download is a retry screen, never a half-played piece', async () => {
+    const document = horizonteFixtureDocument('alg1', HORIZONTE_FIXTURES['alg1']![0]!.id, 'en-US');
+    packDownload.alg1Down = true;
+    mockedApi
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document, audio: {} }, error: null })
+      .mockResolvedValueOnce({ data: null, error: { code: 'LESSON_LOCKED', message: 'locked' } });
+    renderLessonRoute(['/learn/lesson/lesson-1']);
+
+    expect(await screen.findByRole('heading', { name: 'Lesson unavailable' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Update the app' })).toBeNull();
+    expect(mockedApi).toHaveBeenCalledTimes(1);;
+    expect(screen.queryByRole('heading', { name: 'Update the app' })).toBeNull();
+    expect(mockedApi).toHaveBeenCalledTimes(1);
+
+    // The pack coming back is picked up by the retry: the lesson is read and its run requested.
+    packDownload.alg1Down = false;
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByRole('heading', { name: 'Opens later' })).toBeInTheDocument();
+    expect(mockedApi).toHaveBeenCalledTimes(3);
   });
 
   it('W2L.3: a v2 run Core refuses is said as the refusal, and one it cannot sign yet offers a retry', async () => {

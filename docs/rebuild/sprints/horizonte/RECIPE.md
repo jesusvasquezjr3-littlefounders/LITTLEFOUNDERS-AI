@@ -171,8 +171,16 @@ nothing until a segment is on screen:
   fixture or CSS of an off-screen piece reaches the player bundle. Fixtures are imported only by preview, audit and tests.
 - A board's declared `chunkBudgetKb` is the gzipped size of its own chunk, shared code excluded. Default budget 12 KB, hard
   ceiling 60 KB (the harness enforces the range). A piece that needs more (KaTeX, d3-geo) loads that module lazily too.
-- Whole pack at rest: the `*.generated.ts` scorers and contracts are small pure code (a few KB per pack); the player pays for
-  them once because they validate the document. Keep models free of large tables.
+- A pack's generated contract, scorer, model and age scope are not in the player. `horizonte/contract.ts` keeps only the
+  capability literals (the imports-free `capabilities.ts`), the type-to-pack table and one dynamic `import()` per pack. A pack
+  loads when a document names one of its types: the lesson route awaits `loadHorizontePacksFor(document)` before reading it, and
+  the views use `useHorizonteReadiness(raw)`. Until its pack is loaded a Horizonte document reads as "upgrade required" (fail
+  closed), so an ordinary lesson downloads none of the 18 packs. Tests and the preview stage any piece, so they call
+  `loadHorizontePacks` or `loadAllHorizontePacks` first (`assertBoardContract` already does). Never import a pack's `index.ts`
+  or `*.generated` files statically from player code; `playerImports.test.ts` walks the static graph and fails on it.
+- Measured (2026-10-02): `LessonLayer` is 110.6 KB gzip with the packs loaded on demand and was 210.4 KB with all 18 eager
+  (about 100 KB of generated code that no board budget sees). Each pack is its own 1 to 10 KB raw chunk. `npm run build` runs
+  `scripts/check-lesson-layer-budget.mjs` and fails above 125 KB gzip; raise that ceiling only in a commit that says what grew.
 - The one 3D viewer (`solids`) reuses the tutor-scene canvas, adaptive quality and the Mentor budget (OD-32); it is a separate
   lazy chunk and never loads for a flat piece.
 - Measure with `npm --prefix frontend run build` and read the chunk sizes; record the figure in the pack doc.
@@ -193,6 +201,7 @@ nothing until a segment is on screen:
 - [ ] The capability literal is identical in Core, browser and Forge; parity script green.
 - [ ] `sync-v2-horizonte.mjs --check` is green; no generated file was edited by hand.
 - [ ] The board is a lazy chunk with a declared ICAP level and `chunkBudgetKb`; nothing imports it eagerly.
+- [ ] Nothing in the player statically imports the pack's `index.ts` or `*.generated` files (`playerImports.test.ts` is green).
 - [ ] `assertBoardContract` passes in three locales: keyboard path, 64 px handles with Move to, table or text equivalent,
       reduced motion, data-copy-role on every string.
 - [ ] Copy is real and native in `en-US`, `es-MX`, `pt-BR` and within the Copy Budget; `check-horizonte-copy.mjs` is green.

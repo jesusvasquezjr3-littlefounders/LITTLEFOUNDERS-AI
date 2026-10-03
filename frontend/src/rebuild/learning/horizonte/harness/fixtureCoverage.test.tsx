@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { loadLessonClientDocument } from '../../lessonDocument';
+import { loadAllHorizontePacks } from '../contract';
 import { HORIZONTE_FIXTURES } from '../fixtures';
 import { horizonteFixtureDocument } from '../previewDocument';
 import { HZ_LOCALES } from './boardContract';
@@ -28,7 +29,8 @@ describe('every pack keeps its fixtures, audit entries and preview documents in 
     }
   });
 
-  it('loads each fixture as a valid lesson in all three locales, at its own age only', () => {
+  it('loads each fixture as a valid lesson in all three locales, at its own age only', async () => {
+    await loadAllHorizontePacks();
     for (const pack of packs) {
       for (const fixture of HORIZONTE_FIXTURES[pack]!) {
         for (const locale of HZ_LOCALES) {

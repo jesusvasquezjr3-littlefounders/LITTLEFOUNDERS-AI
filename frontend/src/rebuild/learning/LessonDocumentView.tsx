@@ -35,6 +35,7 @@ import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoa
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 import { ApproachChoiceBoard } from './ApproachChoiceBoard';
 import { AttemptSeedProvider } from './horizonte/attemptSeed';
+import { useHorizonteReadiness } from './horizonte/useHorizonteReadiness';
 import { canRenderHorizonte, HorizonteSegmentView, isHorizonteSegment } from './horizonte/registry';
 import { v2ApproachOf, v2SegmentsForApproach } from './v2SegmentFamilies.generated';
 
@@ -132,6 +133,9 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   /** F3.0: the seeds Core issued with this run's attempts, segment id to seed; a seeded Horizonte board never runs without its own. */
   attemptSeeds?: Readonly<Record<string, string>>;
 }) {
+  // A Horizonte piece's pack downloads when a document names it; until then there is nothing true to draw.
+  const readiness = useHorizonteReadiness(raw);
+  if (readiness === 'loading') return <div className="lf-hz-loading" aria-busy="true" />;
   const loaded = loadLessonClientDocument(raw);
   if (loaded.status !== 'ready') return loaded.status === 'upgrade-required' ? <UpdateRequired locale={locale} onBack={onBack} /> : unavailable(locale, onBack, 'invalid');
   const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny));

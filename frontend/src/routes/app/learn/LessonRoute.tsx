@@ -21,7 +21,7 @@ import { REGISTERS } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { learnCopy } from '@/rebuild/learning/learnCopy';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
 import { clientScorerVerdict } from '@/rebuild/learning/clientScorerVerdict';
-import { isSeededHorizonteType } from '@/rebuild/learning/horizonte/contract';
+import { isSeededHorizonteType, loadHorizontePacksFor } from '@/rebuild/learning/horizonte/contract';
 import { isAttemptSeed } from '@/rebuild/learning/horizonte/seed/protocol.generated';
 import { createTimeOnTask, watchTimeOnTask, type TimeOnTaskClock } from '@/rebuild/learning/timeOnTask';
 import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
@@ -194,6 +194,12 @@ function LessonRouteSession() {
       const servedSlug = typeof data.lesson?.course_slug === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(data.lesson.course_slug) ? data.lesson.course_slug : null;
       const ready = { document: data.document, locale: data.locale, narrationAudio: data.narration_audio, mentorStage: data.mentor_stage, adventureTheme: data.adventure_theme,
         recall: parseNarrativeRecall(data.narrative_recall), courseSlug: servedSlug };
+      // The document's Horizonte packs download before it is read; a pack that does not arrive is the retry screen, never a half-played piece.
+      try { await loadHorizontePacksFor(data.document); } catch (packError) {
+        if (!cancelled) setState({ status: 'error', code: 'LESSON_PACK_UNAVAILABLE', offline: isOfflineError(packError as { message?: string }) });
+        return;
+      }
+      if (cancelled) return;
       const clientDocument = loadLessonClientDocument(data.document);
       // GAP-FIX-R1 (OD-17): every playable v2 lesson pins a run, graded or not;
       // non-scored steps complete through Core's view receipts.

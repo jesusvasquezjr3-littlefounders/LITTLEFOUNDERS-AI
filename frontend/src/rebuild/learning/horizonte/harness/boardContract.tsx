@@ -5,6 +5,7 @@ import { expect } from 'vitest';
 import { checkCopy, type AgeBand, type CopyRole, type Locale } from '../../../design/copyBudget';
 import { LessonDocumentView } from '../../LessonDocumentView';
 import type { HorizonteCopy, IcapLevel } from '../boardTypes';
+import { horizontePackIdOf, loadHorizontePacks } from '../contract';
 import { HORIZONTE_BOARDS } from '../registry';
 import { horizonteFixture, horizonteFixtureDocument, horizonteFixtureSeeds } from '../previewDocument';
 
@@ -97,6 +98,10 @@ export async function assertBoardContract(options: BoardContractOptions): Promis
   const fixture = horizonteFixture(options.pack, options.fixtureId);
   expect(fixture, `${options.pack}/${options.fixtureId}: no such fixture`).not.toBeNull();
   const type = String(fixture!.segment('en-US').type);
+  // A piece's pack loads when a document names it; the harness stands in for the player and loads it first.
+  const packId = horizontePackIdOf(type);
+  expect(packId, `${type}: no pack serves this type`).toBeTruthy();
+  await loadHorizontePacks([packId!]);
   const entry = HORIZONTE_BOARDS[type];
   expect(entry, `${type}: no board registered`).toBeTruthy();
   expect(ICAP, `${type}: declared ICAP level`).toContain(entry!.icap);

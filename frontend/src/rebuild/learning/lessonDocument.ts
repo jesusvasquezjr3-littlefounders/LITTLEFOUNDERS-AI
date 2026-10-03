@@ -5,7 +5,7 @@ import { autonomyOfferForBand } from '../design/learnerRegisterPolicy.generated'
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 import { lineUnits } from './v2VisualScorer.generated';
-import { HORIZONTE_CAPABILITIES, HORIZONTE_SEGMENTS, horizonteScopeProblem } from './horizonte/contract';
+import { HORIZONTE_CAPABILITIES, horizonteScopeProblem, horizonteSegmentGate, missingHorizontePacks } from './horizonte/contract';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
@@ -342,7 +342,7 @@ const chartSegment = z.object({
   if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question' });
 });
 
-const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments, ...v2ConceptSegments, ...HORIZONTE_SEGMENTS]);
+const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments, ...v2ConceptSegments, horizonteSegmentGate]);
 type SegmentType = z.infer<typeof segment>['type'];
 export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
@@ -573,6 +573,8 @@ export function loadLessonClientDocument(raw: unknown, capabilities: readonly st
   if (Array.isArray(candidate.segments) && candidate.segments.some((value) => typeof value === 'object' && value !== null
     && !knownTypes.has(String((value as Record<string, unknown>).type)))) return { status: 'upgrade-required', reason: 'Unsupported segment type' };
   if (Array.isArray(candidate.segments) && candidate.segments.some(hasUnknownChartKind)) return { status: 'upgrade-required', reason: 'Unsupported chart kind' };
+  // A Horizonte pack that never arrived cannot vouch for its segments: an update, never a pass.
+  if (missingHorizontePacks(candidate).length > 0) return { status: 'upgrade-required', reason: 'Horizonte pack not loaded' };
   const parsed = lessonClientDocumentSchema.safeParse(raw);
   if (!parsed.success) return { status: 'invalid', reason: 'Malformed or answer-bearing document' };
   const missing = parsed.data.required_capabilities.find((capability) => !capabilities.includes(capability));

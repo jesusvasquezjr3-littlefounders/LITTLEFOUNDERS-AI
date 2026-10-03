@@ -1,6 +1,7 @@
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { LessonDocumentView, type OnGrade, type OnGradeAny, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeReasoning, type OnGradeWorkedExample, type OnView, type OnChooseApproach } from './LessonDocumentView';
 import { loadAdventureThemeProjection, loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
+import { useHorizonteReadiness } from './horizonte/useHorizonteReadiness';
 
 const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
 
@@ -56,6 +57,8 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   /** F3.0: Core's per-segment attempt seeds for the seeded Horizonte boards. */
   attemptSeeds?: Readonly<Record<string, string>>;
 }) {
+  // Re-renders this frame, which reads the document's own language and band, once its Horizonte packs have arrived.
+  useHorizonteReadiness(raw);
   const frame = lessonDocumentFrame(raw, responseLocale);
   const stage = loadMentorStageProjection(mentorStage);
   return <LessonDocumentView raw={raw} locale={frame.locale} ageBand={frame.ageBand ?? '6-9'} theme={theme} onBack={onBack} onGrade={onGrade}
