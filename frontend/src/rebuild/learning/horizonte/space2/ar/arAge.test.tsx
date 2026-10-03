@@ -12,11 +12,10 @@ import { arAgeFromScreen } from './arAge';
  */
 
 const mocks = vi.hoisted(() => ({
-  auth: { session: { user: { id: 'learner-1' } } as unknown, getToken: vi.fn() },
+  auth: { userId: 'learner-1' as string | null, getToken: vi.fn() },
   api: vi.fn(),
 }));
-vi.mock('@/auth/AuthContext', () => ({ useAuth: () => mocks.auth }));
-vi.mock('@/lib/api', async (original) => ({ ...(await original<typeof import('@/lib/api')>()), api: mocks.api }));
+vi.mock('../../../../mentor/session/coreApi', async (original) => ({ ...(await original<typeof import('../../../../mentor/session/coreApi')>()), api: mocks.api }));
 vi.mock('@/tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'none', maxTextureSize: 0, prefersReducedMotion: false }),
   pickInitialTier: () => 'medium',
@@ -28,7 +27,7 @@ const environment = (over: Partial<ArPilotEnvironment> = {}) => {
   const isSessionSupported = vi.fn(async () => true);
   const xr: ArXrSystem = { isSessionSupported, requestSession };
   const start = vi.fn(async (_input: ArStartInput) => ({ end: vi.fn() }));
-  const env: ArPilotEnvironment = { flag: true, consent: { learner: true, guardian: true }, xr: () => xr, start, ...over };
+  const env: ArPilotEnvironment = { flag: true, consent: { learner: true, guardian: true }, learner: { userId: mocks.auth.userId, getToken: mocks.auth.getToken }, xr: () => xr, start, ...over };
   return { env, isSessionSupported, requestSession, start };
 };
 const showBoard = (env?: ArPilotEnvironment) => {
@@ -39,7 +38,7 @@ const seeOnTable = () => screen.queryByRole('button', { name: 'See on table' });
 const answer = (screening: Record<string, unknown> | null) => mocks.api.mockResolvedValue(screening ? { data: screening, error: null } : { data: null, error: { code: 'INTERNAL', message: 'down' } });
 
 beforeEach(() => {
-  mocks.auth.session = { user: { id: 'learner-1' } };
+  mocks.auth.userId = 'learner-1';
   mocks.auth.getToken.mockReset().mockResolvedValue('jwt');
   mocks.api.mockReset();
 });
@@ -147,7 +146,7 @@ describe('the AR gate with the learner real age', () => {
     cleanup();
 
     mocks.api.mockReset();
-    mocks.auth.session = null;
+    mocks.auth.userId = null;
     const signedOut = environment();
     showBoard(signedOut.env);
     await screen.findByRole('group', { name: 'One litre box' });
@@ -155,7 +154,7 @@ describe('the AR gate with the learner real age', () => {
     expect(seeOnTable()).toBeNull();
     cleanup();
 
-    mocks.auth.session = { user: { id: 'learner-1' } };
+    mocks.auth.userId = 'learner-1';
     mocks.auth.getToken.mockResolvedValue(null);
     const noToken = environment();
     showBoard(noToken.env);
@@ -163,6 +162,17 @@ describe('the AR gate with the learner real age', () => {
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(mocks.api).not.toHaveBeenCalled();
     expect(seeOnTable()).toBeNull();
+  });
+
+  it('asks nothing and stays closed when the app supplies no learner at all', async () => {
+    answer({ required: false, ageBand: 'adult' });
+    const { env, isSessionSupported } = environment({ learner: undefined });
+    showBoard(env);
+    await screen.findByRole('group', { name: 'One litre box' });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(mocks.api).not.toHaveBeenCalled();
+    expect(seeOnTable()).toBeNull();
+    expect(isSessionSupported).not.toHaveBeenCalled();
   });
 
   it('never asks Core when the app supplies the age itself, and uses it as given', async () => {

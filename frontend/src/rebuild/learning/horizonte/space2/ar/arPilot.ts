@@ -33,6 +33,11 @@ export interface ArStartInput {
 /** A running AR session: ending it releases the camera and the renderer. */
 export interface ArSessionHandle { end(): void }
 
+export interface ArLearner {
+  userId: string | null;
+  getToken: () => Promise<string | null>;
+}
+
 export interface ArPilotEnvironment {
   /** The feature flag. Off by default. */
   flag: boolean;
@@ -43,6 +48,8 @@ export interface ArPilotEnvironment {
    * (only when the flag is on); null means no usable age, and the pilot stays closed. There is no fallback to the lesson's age.
    */
   age?: number | null;
+  /** The signed-in learner and a token source, which the app supplies so the board can ask Core for the age band. Absent, nothing is asked. */
+  learner?: ArLearner;
   /** The browser's WebXR system, or null where there is none. Read lazily, only when the gate is open. */
   xr: () => ArXrSystem | null;
   /** Starts a session. The default loads the three.js session module on demand. */
