@@ -159,3 +159,44 @@ Found by the Atlas audit (375 px and 1280 px, light and dark). Fixed from the co
 Still limited: no real browser, screenshot or contrast measurement has seen this. The audit's remaining low-contrast hits on these boards are
 the disabled Reset and Check buttons of the shared board shell (2.3 in light, 2.7 in dark), which are not part of this pack.
 
+## Solvability round
+
+All eight types now have a Forge solvability checker (`coursegen/src/v2/horizonte/solvability-plane.ts`, registered from `solvabilityPacks.ts`).
+Before this round only the gate-4 model check stood behind them. Tests: `solvability-plane.test.ts` (43, shared with the other two packs) and
+`solvability-plane-model.test.ts` (3).
+
+**How it proves a board.** The checker first runs the pack's own `solveX`; a refusal there is classed by its message (a start on the answer is
+`impossible-state`, an answer that is not a whole number is `no-solution`, a range problem is `out-of-bounds`). It then scans every
+position the learner's controls can take and tests each one with a predicate written again from the task wording, not by calling `solveX`. A
+board passes when exactly one control position meets the goal, that position is not the start, and it equals the solver's answer. Then it
+checks the key (exactly `{ target }`, the right shape, the right value) and, when the segment carries a `prompt` string, that the prompt names
+the number the answer depends on. A key that is well formed but wrong is `rubric-accepts-invalid` (block); a key of the wrong shape is
+`rubric-gap`. The scan spends one node per control position from the context budget and reports `budget-exceeded` instead of guessing.
+
+| Type | Controls scanned | Goal predicate (independent of `solveX`) | Proven | Stays unproven |
+|---|---|---|---|---|
+| `alg.slope-triangle.v2` | rise 0 to `yMax - from.y` | `rise * runLine == run * riseLine` on the line through `from` and `to` | solvable, unique, not already solved, reachable on the slider (no dead end), within budget, key matches | prompt wording beyond naming the run; the triangle sitting on the line as drawn |
+| `alg.rate-of-change.v2` | `y` from `yMin` to `yMax` | `y == origin.y + rate * (at - origin.x)` | same | prompt wording beyond naming the step; that the table beside the graph shows the same values |
+| `alg.linked-views.v2` | slope `m` from -9 to 9 by intercept `b` from `yMin` to `yMax` | the line passes through both rows of the table | same; the pair is the only one through both rows | a table row that is a non-record is reported as a range error, not as its own finding; the plain-English equation and its spoken form |
+| `fin.break-even.v2` | units 0 to `maxUnits` | `price * u == fixed + unit * u` | same | the facts line and status text; the Break-even word in the prompt |
+| `fin.cost-structure.v2` | units 1 to `maxUnits` | `fixed + variable * u == goal.average * u` | same | the same as break-even |
+| `fin.margin-markup.v2` | price 0 to `maxPrice`, price above cost | markup on cost or margin on price equals `percent` for a whole price | same | that the `basis` word in the prompt (on cost, on price) is the one the learner reads; the two bases are shown side by side, which is the only guard |
+| `econ.market-shift.v2` | two scans over price 0 to `pMax`, before and after the shift | demand equals supply at a whole price with a quantity from 1 to `qMax`; the direction is the sign of the move | same for both scans; a direction of `unset` in a key is `rubric-gap` | prompt wording; the shifted curve drawn as the task says; Shortage and Surplus text |
+| `econ.elasticity.v2` | price 1 to `pMax` | `den * b * price == num * (a - b * price)` with a quantity above zero | same | prompt wording; the Inelastic, Unit elastic and Elastic words |
+
+**Findings the plane1 scan can raise.** `impossible-state` (start on the answer, or the solver and the scan disagree), `no-solution` (no control
+position meets the goal, or the prompt does not name the number), `ambiguous-solution` (every control position meets it), `out-of-bounds`
+(a value outside its range), `rubric-gap`, `rubric-accepts-invalid`, `budget-exceeded`.
+
+**What this does not prove.**
+- Prompt wording and locale. Only that the prompt names the digits of the number the answer depends on; nothing about tone, reading level,
+  es-MX or pt-BR text, or word limits.
+- Layout, handle size, contrast, motion and the screen reader: no browser was started.
+- Timing: how long a learner takes to find the position is not measured.
+- Three branches of the scan cannot be reached from a payload that the pack's own `solveX` accepts: no hit, more than one hit, and a hit that
+  differs from the solver. The solver gates run first, so those branches are covered only by `solvability-plane-model.test.ts`, which replaces the
+  solver with a wrong one. If `solveX` and the scan ever disagree in production, those branches are what names it.
+- The key check is by value against the independent scan. It cannot tell whether the private key in Core was written from the same wrong
+  reading as the payload; a prose rubric is out of scope.
+- The Oracle context schema is unchanged and the checker reads nothing about the child.
+
