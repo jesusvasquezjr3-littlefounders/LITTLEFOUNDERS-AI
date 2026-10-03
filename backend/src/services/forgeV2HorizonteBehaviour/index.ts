@@ -3,6 +3,7 @@ import { ALG2_BEHAVIOUR } from './alg2.js';
 import { BALANCE_BEHAVIOUR } from './balance.js';
 import { FIN_BEHAVIOUR } from './fin.js';
 import { FIN2_BEHAVIOUR } from './fin2.js';
+import { GEOM2_BEHAVIOUR } from './geom2.js';
 import { NUMBER_BEHAVIOUR } from './numbers.js';
 import { PLANE_BEHAVIOUR } from './plane.js';
 import { SPACE_LIMIT, type HzBuilder, type HzSpace, type Json } from './shared.js';
@@ -18,6 +19,7 @@ const BUILDERS: Readonly<Record<string, HzBuilder>> = {
   ...PLANE_BEHAVIOUR,
   ...FIN_BEHAVIOUR,
   ...FIN2_BEHAVIOUR,
+  ...GEOM2_BEHAVIOUR,
 };
 
 export const horizonteBehaviourKinds = (): string[] => Object.keys(BUILDERS).sort();
