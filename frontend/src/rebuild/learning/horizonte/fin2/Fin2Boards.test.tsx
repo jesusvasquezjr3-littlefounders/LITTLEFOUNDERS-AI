@@ -123,6 +123,16 @@ describe('statement board (F2.13)', () => {
     expect(rows).toContain('Snacks and outingsnothing yet$90');
   });
 
+  it('keeps a wide table inside its own keyboard-reachable scroll region', async () => {
+    show('cash-flow-short');
+    await screen.findByRole('group', { name: 'Earned income' });
+    fireEvent.click(screen.getByRole('button', { name: 'Show as table' }));
+    const region = screen.getByRole('region', { name: 'Items by line' });
+    expect(region).toHaveClass('lf-slotboard-tablewrap');
+    expect(region).toHaveAttribute('tabindex', '0');
+    expect(within(region).getByRole('table', { name: 'Items by line' })).toBeInTheDocument();
+  });
+
   it('speaks the same piece in Spanish and Portuguese', async () => {
     show('cash-flow-short', 'es-MX');
     expect(await screen.findByRole('group', { name: 'Ingreso por trabajo' })).toBeTruthy();
