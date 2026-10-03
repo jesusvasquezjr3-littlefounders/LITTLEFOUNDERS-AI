@@ -403,6 +403,13 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
   'visual.waffle.v1', 'visual.donut.v1', 'operation.build-flowchart.v1', NOTATION_CAPABILITY, ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
 const knownTypes = new Set(Object.keys(REQUIRED_SEGMENT_CAPABILITIES));
+const knownChartKinds = new Set<string>(CHART_KINDS);
+/** A newer Core may serve a chart kind this bundle does not draw; that is an update, not a malformed document. */
+function hasUnknownChartKind(value: unknown): boolean {
+  if (typeof value !== 'object' || value === null) return false;
+  const { type, visual } = value as { type?: unknown; visual?: { type?: unknown } | null };
+  return type === 'visual.chart.v2' && typeof visual?.type === 'string' && !knownChartKinds.has(visual.type);
+}
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
 function contiguousChains(types: readonly string[], chain: readonly string[]): boolean {
   for (let index = 0; index < types.length; index += 1) {
@@ -565,6 +572,7 @@ export function loadLessonClientDocument(raw: unknown, capabilities: readonly st
   if (candidate.schema_version !== 2) return { status: 'upgrade-required', reason: 'Unsupported document version' };
   if (Array.isArray(candidate.segments) && candidate.segments.some((value) => typeof value === 'object' && value !== null
     && !knownTypes.has(String((value as Record<string, unknown>).type)))) return { status: 'upgrade-required', reason: 'Unsupported segment type' };
+  if (Array.isArray(candidate.segments) && candidate.segments.some(hasUnknownChartKind)) return { status: 'upgrade-required', reason: 'Unsupported chart kind' };
   const parsed = lessonClientDocumentSchema.safeParse(raw);
   if (!parsed.success) return { status: 'invalid', reason: 'Malformed or answer-bearing document' };
   const missing = parsed.data.required_capabilities.find((capability) => !capabilities.includes(capability));
