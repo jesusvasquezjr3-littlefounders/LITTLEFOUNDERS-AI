@@ -115,3 +115,36 @@ Two jobs: a dark-mode defect in the three original boards, and the missing circu
 - Lint (jsx-a11y) was not run in this lane.
 - `COVERAGE.md` was not re-summed and the catalogue rows (m:C03, m:C08, m:C09, m:C10, 2:Q15, 2:T13) are not re-marked.
 - What ran: the focused backend, browser and Forge tests of this pack, the capability parity gate, the coverage tool test, and one `type-check` per touched service after the merge.
+
+## Solvability round
+
+F0.4 solvability checkers for the four num-b pieces (arrays and area, ratio line and tape, fraction wall and operations, fraction circles),
+registered in `coursegen/src/v2/horizonte/solvability-num.ts` (shared with the golden and num-a pieces) and imported from
+`coursegen/src/v2/solvabilityPacks.ts`. Each one reads the public payload alone for everything the payload fixes and compares with the private
+key only when `context.answerKey` is present. The checkers reuse the pack by import: `num-b.ts` now exports `gcd`, `arrayAreaKind`,
+`arrayAreaAnswer`, `ratioKind`, `ratioAnswer`, `fractionOp`, `fractionAnswer`, `circleOp` and `circleAnswer` (export-only; `numBGates` accepts
+and refuses exactly what it did). A payload the pack cannot read is an `impossible-state` finding, never a throw. Tests:
+`coursegen/src/__tests__/horizonte/solvability-num.test.ts`.
+
+These are typed-answer pieces: there is no board to move through, so "not already solved" holds because the untouched response is incomplete
+(the empty value, or `{ n: 0, d: 0 }` for fractions) and every key is a positive whole number, and "no dead end" is vacuous because typing is
+always available. What the checker proves is that the learner can type the one answer, that the answer is the only one the payload allows, and
+that the key accepts exactly that. Common to every row: **budget** (each enumeration spends `context.nodeBudget` and returns `budgetIssue(...)`),
+and with a key, `checkRubricCoverage` over the typed set, so a key that names a wrong answer is `rubric-gap` plus `rubric-accepts-invalid`.
+
+| Type | Proven from the payload alone | Proven against the key | Not proven, and why |
+|---|---|---|---|
+| `math.array-area.v2` | **Solvable:** counting the payload the learner's way (cells of an array, one row of the area model at a time, repeated subtraction for the missing-area division) gives exactly the answer the pack derives (`arrayAreaAnswer`); a different count is `no-solution` (a division with a remainder is already a malformed payload for the pack reader, so it is `impossible-state`). **Unique:** the typed value is the only thing graded. | The key must be exactly `{ value }` with a whole number, and it must equal the answer; anything else is `impossible-state`, `rubric-gap` or `rubric-accepts-invalid`. | The scaffold fields (tapped cells, cuts, chips) are not graded and are not searched. The prompt against the visual kind, and the age rule (area model and division are 10 to 12) stay with `numBGates`, which already refuses them. |
+| `math.ratio-line.v2` | **Solvable and unique:** a search over every whole value from 1 to 11,988 (999 times 12, the largest answer the payload bounds allow) keeps the ones that satisfy the ratio (double number line: the value times the base of the given line equals the given value times the other base; ratio tape: the value times both parts equals the whole times the asked part). Exactly one must remain (`no-solution` for none, `ambiguous-solution` for several) and it must equal `ratioAnswer`. | The key must be exactly `{ value }` and equal that value (`impossible-state`, `rubric-gap`, `rubric-accepts-invalid`). | The prompt-to-visual correspondence (which line, which unit) is not proven; the table, the tape and the labels are read by a reviewer. Positive whole ratios give one value by construction; the search proves it for every payload it sees rather than assuming it. |
+| `math.fraction-wall.v2` | **Solvable:** every `{ n, d }` with numerator and denominator from 1 to 999 that the grader would accept for the answer (`fractionAnswer`) is enumerated; the set must be non-empty (`no-solution` otherwise). For `equivalent` the grader wants the exact form the payload names (one form); for add, subtract, multiply and divide any form of the same value passes (compared as reduced fractions). **Unique:** the accepted set is exactly what the payload implies, so the answer is unique as a value. | The key must be exactly `{ n, d }`, both whole numbers from 1 to 999. For `equivalent` it must be the exact `{ n, d }`; for the other four it may be any form of the answer. A key that names another value is `rubric-gap` plus `rubric-accepts-invalid`. | The wall, bars, product and measure drawings are not checked against the payload. Like and unlike denominators, proper fractions and the 10 to 12 age rule stay with `numBGates`. The prompt-to-target correspondence is not proven. |
+| `math.fraction-circles.v2` | The same enumeration as the wall with `circleAnswer` (show: the exact fraction drawn; compare: the larger numerator over the shared denominator; add and subtract: the sum or difference over it). For `show` the grader wants the exact form; for the others any form of the same value. Slices and the shared denominator are validated by the pack reader first. | The same key rules as the wall: exact `{ n, d }` for `show`, any form of the value for compare, add and subtract. | Pointer and one-more or one-less slice interactions are not modelled; typing is the proven path. Like denominators only and the age rule stay with `numBGates`. The shading and cut state is not graded. |
+
+Assumptions:
+
+- The typed set is the grader's own rule, re-derived here from the pack's pure functions rather than shared with Core, so a later change to
+  Core's scorer is not caught here.
+- The default budget is 200,000 nodes (cap 2,000,000). The largest enumeration (the 11,988-value ratio search) and the 999-denominator form
+  search finish well inside it; at a budget of a few dozen nodes each type answers `budget-exceeded` and never hangs.
+- A `{ value }` or `{ n, d }` key with extra fields, a string where a number belongs, or a zero is `impossible-state`; this is stricter than
+  the num-a `{ target }` keys because the pack gate and Core both read these keys exactly.
+- Still limited, not verified: the checkers prove the payload and the key, not the rendering; no browser was opened in this round.

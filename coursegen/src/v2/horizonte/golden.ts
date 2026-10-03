@@ -17,9 +17,9 @@ const GOLDEN_GUIDANCE: readonly ForgeGuidance[] = [{
 }];
 
 const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
-const frameCounts = (value: unknown, frames: number): value is number[] =>
+export const frameCounts = (value: unknown, frames: number): value is number[] =>
   Array.isArray(value) && value.length === frames && value.every((count) => whole(count) && count >= 0 && count <= CELLS);
-const total = (counts: readonly number[]) => counts.reduce((sum, count) => sum + count, 0);
+export const total = (counts: readonly number[]) => counts.reduce((sum, count) => sum + count, 0);
 
 /** Gate 4 (solvability): the private target is reachable from the public start under the frame rule, and is a change. */
 function goldenGates(document: { segments?: unknown }, answerKeys?: Record<string, unknown>): GateProblem[] {

@@ -57,12 +57,12 @@ const whole = (value: unknown): value is number => typeof value === 'number' && 
 const between = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const keysAre = (value: Record<string, unknown>, ...keys: string[]): boolean => Object.keys(value).sort().join() === [...keys].sort().join();
-const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+export const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
 const pair = (value: unknown): value is [unknown, unknown] => Array.isArray(value) && value.length === 2;
 
 type Fraction = [number, number];
 
-function arrayAreaKind(payload: unknown): 'array' | 'area-model' | 'area-division' | null {
+export function arrayAreaKind(payload: unknown): 'array' | 'area-model' | 'area-division' | null {
   if (!record(payload)) return null;
   if (keysAre(payload, 'rows', 'columns')) return between(payload.rows, 1, 10) && between(payload.columns, 1, 10) ? 'array' : null;
   if (keysAre(payload, 'across', 'down')) return between(payload.across, 11, 99) && between(payload.down, 2, 99) ? 'area-model' : null;
@@ -71,7 +71,7 @@ function arrayAreaKind(payload: unknown): 'array' | 'area-model' | 'area-divisio
   return between(divisor, 2, 12) && between(dividend, 4, 1188) && dividend % divisor === 0 && between(dividend / divisor, 2, 99) ? 'area-division' : null;
 }
 
-function arrayAreaAnswer(payload: unknown): number | null {
+export function arrayAreaAnswer(payload: unknown): number | null {
   const kind = arrayAreaKind(payload);
   const value = payload as Record<string, number>;
   if (kind === 'array') return value.rows! * value.columns!;
@@ -79,7 +79,7 @@ function arrayAreaAnswer(payload: unknown): number | null {
   return kind === 'area-division' ? value.dividend! / value.divisor! : null;
 }
 
-function ratioKind(payload: unknown): 'double-number-line' | 'ratio-tape' | null {
+export function ratioKind(payload: unknown): 'double-number-line' | 'ratio-tape' | null {
   if (!record(payload)) return null;
   const unit = (value: unknown) => typeof value === 'string' && RATIO_UNITS.includes(value);
   if (keysAre(payload, 'units', 'base', 'given')) {
@@ -99,7 +99,7 @@ function ratioKind(payload: unknown): 'double-number-line' | 'ratio-tape' | null
 
 type RatioPayload = { given: { line: 'top' | 'bottom'; value: number }; base: [number, number]; whole: number; parts: [number, number]; ask: 'a' | 'b' };
 
-function ratioAnswer(payload: unknown): number | null {
+export function ratioAnswer(payload: unknown): number | null {
   const kind = ratioKind(payload);
   const value = payload as RatioPayload;
   if (kind === 'double-number-line') {
@@ -116,7 +116,7 @@ function properFraction(value: unknown, denominator: (d: number) => boolean): va
 type Operation = 'equivalent' | 'add' | 'subtract' | 'multiply' | 'divide';
 const VISUALS: Readonly<Record<Operation, string>> = { equivalent: 'fraction-wall', add: 'fraction-bars', subtract: 'fraction-bars', multiply: 'fraction-product', divide: 'fraction-measure' };
 
-function fractionOp(payload: unknown): Operation | null {
+export function fractionOp(payload: unknown): Operation | null {
   if (!record(payload) || typeof payload.op !== 'string' || !Object.hasOwn(VISUALS, payload.op)) return null;
   const op = payload.op as Operation;
   const wall = (d: number) => WALL_DENOMINATORS.includes(d);
@@ -132,7 +132,7 @@ function fractionOp(payload: unknown): Operation | null {
   return (op === 'subtract' || op === 'divide') && a * d <= c * b ? null : op;
 }
 
-function fractionAnswer(payload: unknown): { n: number; d: number } | null {
+export function fractionAnswer(payload: unknown): { n: number; d: number } | null {
   const op = fractionOp(payload);
   if (op === null) return null;
   const value = payload as { fraction: Fraction; denominator: number; left: Fraction; right: Fraction };
@@ -147,7 +147,7 @@ function fractionAnswer(payload: unknown): { n: number; d: number } | null {
 const CIRCLE_VISUAL = 'fraction-circles';
 type CircleOp = 'show' | 'compare' | 'add' | 'subtract';
 
-function circleOp(payload: unknown): CircleOp | null {
+export function circleOp(payload: unknown): CircleOp | null {
   if (!record(payload) || typeof payload.op !== 'string') return null;
   const circle = (value: unknown): value is Fraction => properFraction(value, (d) => WALL_DENOMINATORS.includes(d));
   if (payload.op === 'show') return keysAre(payload, 'op', 'fraction') && circle(payload.fraction) ? 'show' : null;
@@ -159,7 +159,7 @@ function circleOp(payload: unknown): CircleOp | null {
   return (payload.op === 'add' ? a + c <= d : a > c) ? payload.op : null;
 }
 
-function circleAnswer(payload: unknown): { n: number; d: number } | null {
+export function circleAnswer(payload: unknown): { n: number; d: number } | null {
   const op = circleOp(payload);
   if (op === null) return null;
   const value = payload as { fraction: Fraction; left: Fraction; right: Fraction };
