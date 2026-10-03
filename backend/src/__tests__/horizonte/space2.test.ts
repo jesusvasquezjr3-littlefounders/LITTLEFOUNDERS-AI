@@ -5,6 +5,7 @@ import {
   AR_ADULT_AGE, AR_OBJECTS, AR_OBJECT_IDS, AR_PILOT_MIN_AGE, AR_RING_POINTS, arPilotGate, arVolumeMl, arWire, isArPilotEnabled, readArConsent, readArPayload,
 } from '../../services/horizonte/space2/ar.js';
 import { SPACE2_FIXTURES } from '../../services/horizonte/space2/fixtures.js';
+import { formulaProblem, readFormulaPayload } from '../../services/horizonte/space2/field.js';
 import {
   PLACES, PLACE_IDS, distanceKm, feeCents, globeKey, globePlaces, globeProblem, readGlobePayload, routeCenter, routeDistances, routeFees,
 } from '../../services/horizonte/space2/globe.js';
@@ -17,8 +18,9 @@ import { gradeV2Visual, v2PublicLessonSchema, v2ViewedSegmentIds, validateV2Less
 type Grade = (segment: unknown, response: unknown, rubric: unknown) => { verdict: string; diagnostic: string };
 const SURFACE = 'math.surface.v2';
 const GLOBE = 'geography.globe-route.v2';
+const FORMULA = 'math.surface-formula.v2';
 const AR = 'space.ar-table.v2';
-const GRADED = [SURFACE, GLOBE] as const;
+const GRADED = [SURFACE, GLOBE, FORMULA] as const;
 
 const grade = (type: string) => space2.scorers[type]!.grade as unknown as Grade;
 const fixture = (id: string) => SPACE2_FIXTURES.find((entry) => entry.id === id)!;
@@ -39,22 +41,22 @@ function lesson(id: string, locale: 'en-US' | 'es-MX' | 'pt-BR' = 'en-US') {
 
 const gradedPack = {
   ...space2,
-  segments: space2.segments.slice(0, 2),
+  segments: space2.segments.slice(0, 3),
   capabilities: Object.fromEntries(GRADED.map((type) => [type, space2.capabilities[type]])),
   ageScope: Object.fromEntries(GRADED.map((type) => [type, space2.ageScope[type]!])),
 };
 const gradedFixtures = SPACE2_FIXTURES.filter((entry) => (GRADED as readonly string[]).includes(entry.segment('en-US').type as string));
 
 describe('space2 pack: scorer contract', () => {
-  it('meets the scorer contract for the two graded segment types', () => {
+  it('meets the scorer contract for the three graded segment types', () => {
     expect(() => assertScorerContract(gradedPack, gradedFixtures)).not.toThrow();
   });
 
-  it('declares three types, only two of them scored and keyed', () => {
-    expect(Object.keys(space2.capabilities).sort()).toEqual([AR, GLOBE, SURFACE].sort());
-    expect(Object.keys(space2.rubrics).sort()).toEqual([GLOBE, SURFACE].sort());
-    expect(Object.keys(space2.scorers).sort()).toEqual([GLOBE, SURFACE].sort());
-    expect(Object.keys(space2.ageScope).sort()).toEqual([AR, GLOBE, SURFACE].sort());
+  it('declares four types, only three of them scored and keyed', () => {
+    expect(Object.keys(space2.capabilities).sort()).toEqual([AR, FORMULA, GLOBE, SURFACE].sort());
+    expect(Object.keys(space2.rubrics).sort()).toEqual([FORMULA, GLOBE, SURFACE].sort());
+    expect(Object.keys(space2.scorers).sort()).toEqual([FORMULA, GLOBE, SURFACE].sort());
+    expect(Object.keys(space2.ageScope).sort()).toEqual([AR, FORMULA, GLOBE, SURFACE].sort());
     for (const type of GRADED) expect(Object.hasOwn(HORIZONTE_RUBRICS, type), type).toBe(true);
     expect(Object.hasOwn(HORIZONTE_RUBRICS, AR)).toBe(false);
     expect(Object.hasOwn(HORIZONTE_CAPABILITIES, AR)).toBe(true);
@@ -65,6 +67,7 @@ describe('space2 pack: scorer contract', () => {
       const segment = entry.segment('en-US');
       if (segment.type === SURFACE) expect(surfaceProblem(readSurfacePayload(segment.payload)!), entry.id).toBeNull();
       if (segment.type === GLOBE) expect(globeProblem(readGlobePayload(segment.payload)!), entry.id).toBeNull();
+      if (segment.type === FORMULA) expect(formulaProblem(readFormulaPayload(segment.payload)!), entry.id).toBeNull();
       if (segment.type === AR) expect(readArPayload(segment.payload), entry.id).not.toBeNull();
     }
   });
