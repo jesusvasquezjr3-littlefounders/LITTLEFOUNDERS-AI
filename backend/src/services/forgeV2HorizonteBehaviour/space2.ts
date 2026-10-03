@@ -1,3 +1,4 @@
+import { FORMULA_BEHAVIOUR } from './formula.js';
 import { range, type HzBuilder, type HzSpace, type Json } from './shared.js';
 
 const IDS = ['a', 'b', 'c', 'd'];
@@ -89,4 +90,5 @@ const globe: HzBuilder = (p) => {
 export const SPACE2_BEHAVIOUR: Readonly<Record<string, HzBuilder>> = {
   'math.surface.v2': surface,
   'geography.globe-route.v2': globe,
+  ...FORMULA_BEHAVIOUR,
 };
