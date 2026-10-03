@@ -82,7 +82,7 @@ export function Zone({ board, id, name, note, cell }: { board: SlotBoard; id: st
 }
 
 export function SlotBoardShell({ screen, document, segment, onBack, sequence, board, t, named, status, table, tray, heading, children }: Omit<HorizonteBoardProps, 'segment' | 'onGrade'> & {
-  screen: string; segment: HorizonteSegment; board: SlotBoard; t: Words; named: { met: string; hint: string }; status: string; table: TableSpec; tray: boolean; heading: string; children: ReactNode;
+  screen: string; segment: HorizonteSegment; board: SlotBoard; t: Words; named: { met: string; hint: string }; status: ReactNode; table: TableSpec; tray: boolean; heading: string; children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const { grading } = board;

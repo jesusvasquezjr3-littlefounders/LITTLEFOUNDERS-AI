@@ -88,7 +88,7 @@ export const FIN2_COPY = {
   workers: { role: 'data', band: '13-17', 'en-US': 'Workers', 'es-MX': 'Personas', 'pt-BR': 'Pessoas' },
   busy: { role: 'data', band: '13-17', 'en-US': 'Busy', 'es-MX': 'Ocupadas', 'pt-BR': 'Ocupadas' },
   conflicts: { role: 'data', band: '13-17', 'en-US': 'Breaks a rule: {n}', 'es-MX': 'Rompe una regla: {n}', 'pt-BR': 'Quebra uma regra: {n}' },
-  noConflicts: { role: 'data', band: '13-17', 'en-US': 'No task breaks a rule.', 'es-MX': 'Ninguna tarea rompe una regla.', 'pt-BR': 'Nenhuma tarefa quebra uma regra.' },
+  noConflicts: { role: 'body', band: '13-17', 'en-US': 'No task breaks a rule.', 'es-MX': 'Ninguna tarea rompe una regla.', 'pt-BR': 'Nenhuma tarefa quebra uma regra.' },
   colTask: { role: 'data', band: '13-17', 'en-US': 'Task', 'es-MX': 'Tarea', 'pt-BR': 'Tarefa' },
   colAfter: { role: 'data', band: '13-17', 'en-US': 'After', 'es-MX': 'Después de', 'pt-BR': 'Depois de' },
   colTakes: { role: 'data', band: '13-17', 'en-US': 'Periods', 'es-MX': 'Periodos', 'pt-BR': 'Períodos' },

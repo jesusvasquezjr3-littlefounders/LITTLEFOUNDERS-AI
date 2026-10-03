@@ -3,6 +3,7 @@ import { Button } from '../../../design/controls';
 import { useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { copyText } from '../copyText';
 import { Plano } from '../plano/Plano';
 import type { PlanoPointLayer } from '../plano/model';
@@ -40,7 +41,7 @@ function Geoboard({ document, segment, onBack, sequence, onGrade }: Omit<Horizon
   const placed: PlanoPointLayer[] = band.map((peg, index) => ({ id: `band-${index}`, x: peg.x, y: peg.y, label: String(index + 1), series: 1 }));
   const crossed = band.length > 2 && !isSimplePolygon(band);
   const problem = band.length === 0 ? '' : band.length < 3 ? t.geoNeed : crossed ? t.geoCross : '';
-  const status = [fill(t.geoFacts, { size, count: band.length, x: cursor.x, y: cursor.y }), problem].filter(Boolean).join(' ');
+  const status = <>{fill(t.geoFacts, { size, count: band.length, x: cursor.x, y: cursor.y })}{problem ? <> <Prose>{problem}</Prose></> : null}</>;
 
   return <GeomFrame screen="geoboard" document={document} segment={segment} onBack={onBack} sequence={sequence} grading={grading}
     canCheck={readBand({ points: band }, size)?.kind === 'band'} answer={{ points: band }} named={{ met: t.metGeo, hint: t.hintGeo }} changed={band.length > 0}

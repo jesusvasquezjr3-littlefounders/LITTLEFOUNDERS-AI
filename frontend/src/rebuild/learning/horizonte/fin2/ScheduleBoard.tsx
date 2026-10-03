@@ -1,6 +1,7 @@
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
+import { Prose } from '../Prose';
 import { FIN2_COPY } from './copy';
 import { startSlots } from './placement.generated';
 import { PERIOD_PREFIX, STEP_PREFIX, scheduleConflicts, scheduleFrame, scheduleOf, type SchedulePayload, type ScheduleTask } from './schedule.generated';
@@ -136,8 +137,9 @@ function Plan({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBo
     zones.length > 0 ? describeZones(zones, taskName, t.none) : `${t.none}.`,
     ...(kanban ? [`${t.doneColumn}: ${done.map(taskName).join(', ')}.`] : []),
     ...rules.map((rule) => `${rule}.`),
-    ...(kanban ? [] : [brokenNames ? `${fillSlot(t.conflicts, brokenNames)}.` : t.noConflicts]),
+    ...(kanban || !brokenNames ? [] : [`${fillSlot(t.conflicts, brokenNames)}.`]),
   ].join(' ');
+  const statusNode = <>{status}{kanban || brokenNames ? null : <> <Prose>{t.noConflicts}</Prose></>}</>;
 
   const lastColumn = gantt ? t.colTakes : t.colDue;
   const table = kanban
@@ -147,7 +149,7 @@ function Plan({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBo
   const named = gantt ? { met: t.planMet, hint: t.planHint } : kanban ? { met: t.kanbanMet, hint: t.kanbanHint } : { met: t.orderMet, hint: t.orderHint };
 
   return <SlotBoardShell screen="schedule-board" document={document} segment={segment} onBack={onBack} sequence={sequence} board={board} t={t}
-    named={named} status={status} tray={!kanban} heading={kanban ? t.moveHeading : t.tray} table={table}>
+    named={named} status={statusNode} tray={!kanban} heading={kanban ? t.moveHeading : t.tray} table={table}>
     {kanban
       ? <Columns t={t} slots={board.slots} limit={schedule.limit!} movable={frame.pieceIds.length} done={done.length} />
       : <Rows t={t} gantt={gantt} schedule={schedule} labels={labels} slots={board.slots} broken={broken} />}

@@ -77,7 +77,7 @@ export function Zone({ board, id, name, note, cell, numbered }: {
 }
 
 export function SlotBoardShell({ screen, document, segment, onBack, sequence, board, t, named, status, table, tray, move = true, heading, aside, children }: Omit<HorizonteBoardProps, 'segment' | 'onGrade'> & {
-  screen: string; segment: HorizonteSegment; board: SlotBoard; t: Words; named: { met: string; hint: string }; status: string; table: TableSpec; tray: boolean; heading: string;
+  screen: string; segment: HorizonteSegment; board: SlotBoard; t: Words; named: { met: string; hint: string }; status: ReactNode; table: TableSpec; tray: boolean; heading: string;
   /** False when no piece is ever carried (a row of switches): the Move to menu has nothing to move. */
   move?: boolean;
   /** Shown under the status: facts the picture alone cannot say, such as a step list. */

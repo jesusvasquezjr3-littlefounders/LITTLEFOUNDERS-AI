@@ -94,7 +94,7 @@ export interface TableState { open: boolean; toggle: () => void }
 export function GeomFrame({ screen, document, segment, onBack, sequence, grading, canCheck, answer, named, changed, onReset, table, label, status, hint, board, tableNode, actions, onAct }: {
   screen: string; document: LessonClientDocument; segment: HorizonteSegment; onBack: () => void; sequence?: LessonSequenceControl;
   grading: Grading; canCheck: boolean; answer: unknown; named: { met: string; hint: string }; changed: boolean; onReset: () => void;
-  table: TableState; label: string; status: string; hint?: string; board: ReactNode; tableNode: ReactNode; actions?: ReactNode; onAct?: () => void;
+  table: TableState; label: string; status: ReactNode; hint?: string; board: ReactNode; tableNode: ReactNode; actions?: ReactNode; onAct?: () => void;
 }) {
   const t = copyText(GEOM2_COPY, document.locale);
   const locked = grading.pending || grading.met;

@@ -4,6 +4,8 @@
  * each as { role, 'en-US', 'es-MX', 'pt-BR' }. This enumerates those modules by directory scan (no list to maintain) and checks:
  * a valid Copy Budget role, three non-empty native versions (a translated string is not a copy of the English one),
  * and the word and sentence budgets of frontend/src/rebuild/design/copyBudget.ts at the entry's age band (6-9 unless it says otherwise).
+ * A data string is user content, a name or a number (Bible 06 section 3.3) and is not budgeted, so a fixed sentence of instruction or
+ * feedback cannot hide there: it takes the body role and is measured like any other body copy.
  */
 import { existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -14,6 +16,8 @@ const horizonte = resolve(root, 'frontend/src/rebuild/learning/horizonte');
 const LOCALES = ['en-US', 'es-MX', 'pt-BR'];
 const ROLES = ['action', 'heading', 'body', 'prompt', 'option', 'mentor', 'narrative', 'data', 'brand', 'legal'];
 const UNBUDGETED = new Set(['data', 'brand', 'legal']);
+/** A fixed sentence: no slot to fill, a closing full stop and more than a short label's worth of words. */
+const isFixedProse = (text, budget) => !/\{\w+\}/.test(text) && /[.!?]$/.test(text.trim()) && budget.wordCount(text) > 3;
 
 export function packCopyDirs(base = horizonte) {
   return readdirSync(base, { withFileTypes: true }).filter((entry) => entry.isDirectory() && existsSync(join(base, entry.name, 'copy.ts'))).map((entry) => entry.name).sort();
@@ -25,6 +29,7 @@ export function checkPackCopy(pack, copy, budget) {
     const label = `${pack}.${key}`;
     if (!entry || typeof entry !== 'object' || !ROLES.includes(entry.role)) { problems.push(`${label}: missing or unknown data-copy-role`); continue; }
     const band = entry.band ?? '6-9';
+    if (entry.role === 'data' && typeof entry['en-US'] === 'string' && isFixedProse(entry['en-US'], budget)) problems.push(`${label}: prose in a data string; give it the body role`);
     for (const locale of LOCALES) {
       const text = entry[locale];
       if (typeof text !== 'string' || !text.trim()) { problems.push(`${label}: no ${locale} text`); continue; }

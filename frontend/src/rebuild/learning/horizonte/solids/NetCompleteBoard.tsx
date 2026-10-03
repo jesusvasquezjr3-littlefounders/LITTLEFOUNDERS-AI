@@ -3,6 +3,7 @@ import { Button, ChoiceChip } from '../../../design/controls';
 import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { FoldedCube } from './FoldedCube';
 import { FoldPlayer } from './FoldPlayer';
 import { NET_PIECE, NET_SQUARES, cellKey, gridSlotId, parseGridSlot, type NetCell } from './net.generated';
@@ -76,7 +77,7 @@ export function NetCompleteBoard({ document, segment, payload, onBack, sequence,
           </div>;
         })}
       </div>
-      <p className="lf-solid-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.squaresCount, { n: squares.length })}. {foldText}</p>
+      <p className="lf-solid-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{fill(t.squaresCount, { n: squares.length })}. <Prose>{foldText}</Prose></p>
       <FoldedCube t={t} faces={fold.faces} />
       <FoldPlayer t={t} panels={fold.state === 'ok' ? motion : null} />
       {table ? <table className="lf-hz-table" data-hz-table="">

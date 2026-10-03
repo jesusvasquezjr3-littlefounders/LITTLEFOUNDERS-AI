@@ -3,6 +3,7 @@ import { MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText } from '../copyText';
+import { Prose } from '../Prose';
 import { DataTable, Handle, MAX_TYPED, NumBFrame, NumField, fill, typedNumber } from './boardKit';
 import { NUM_B_COPY } from './copy';
 import { isDoubleLinePayload, isRatioTapePayload, lineScale, type DoubleLinePayload, type RatioTapePayload, type RatioUnit } from './ratioLineModel.generated';
@@ -35,8 +36,8 @@ function DoubleLineBoard({ document, segment, onBack, sequence, onGrade, payload
   const steps = Array.from({ length: scale + 1 }, (_, step) => step);
   const known = (line: number, step: number) => (line === given || step === 0 || step === 1 ? String(payload.base[line]! * step) : step === scale ? '?' : '');
   const reset = () => { grading.reset(); drag.clear(); setMarker(null); setText(''); };
-  const markerText = marker === null ? t.markerNone : fill(t.markerAt, { n: marker, value: payload.base[given]! * marker, unit: name(given) });
-  const status = `${fill(t.lineFacts, { a: payload.base[0]!, unitA: name(0), b: payload.base[1]!, unitB: name(1), given: payload.given.value, givenUnit: name(given) })} ${markerText}`;
+  const markerText = marker === null ? <Prose>{t.markerNone}</Prose> : fill(t.markerAt, { n: marker, value: payload.base[given]! * marker, unit: name(given) });
+  const status = <>{fill(t.lineFacts, { a: payload.base[0]!, unitA: name(0), b: payload.base[1]!, unitB: name(1), given: payload.given.value, givenUnit: name(given) })} {markerText}</>;
 
   return <NumBFrame screen="ratio-line" document={document} segment={segment} onBack={onBack} sequence={sequence} grading={grading}
     canCheck={value !== null} answer={{ value: value ?? '' }} named={{ met: t.metLine, hint: t.hintLine }} changed={marker !== null || text !== ''}
@@ -119,7 +120,7 @@ function RatioTapeBoard({ document, segment, onBack, sequence, onGrade, payload 
       <h2 id={`${segment.id}-check`} data-copy-role="heading">{t.checkHeading}</h2>
       <NumField label={t.boxValue} locale={locale} value={check} onText={setCheck} disabled={locked} min={1} />
       {product === null ? null : <p className="lf-numb-status" data-copy-role="data" aria-live="polite">
-        {fill(t.boxCheck, { boxes, value: boxValue!, product })} {product === payload.whole ? t.boxMatch : t.boxMiss}
+        {fill(t.boxCheck, { boxes, value: boxValue!, product })} <Prose>{product === payload.whole ? t.boxMatch : t.boxMiss}</Prose>
       </p>}
     </section>
     <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-answer`}>

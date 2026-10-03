@@ -180,9 +180,12 @@ describe('ratio tape (F1.5)', () => {
     await screen.findByRole('img', { name: 'Ratio tape' });
     expect(status()).toHaveTextContent('30 stickers in 5 equal boxes. Part A has 3 boxes. Part B has 2 boxes.');
     type('Value of one box', '5');
-    expect(screen.getByText(/5 × 5 = 25\. Does not match the whole\./)).toBeTruthy();
+    const boxCheck = () => document.querySelector('.lf-numb-status[aria-live]') as HTMLElement;
+    expect(boxCheck()).toHaveTextContent('5 × 5 = 25. Does not match the whole.');
+    // The verdict sentence is body copy inside the data readout; the sum before it stays data.
+    expect(boxCheck().querySelector('[data-copy-role="body"]')).toHaveTextContent('Does not match the whole.');
     type('Value of one box', '6');
-    expect(screen.getByText(/5 × 6 = 30\. Matches the whole\./)).toBeTruthy();
+    expect(boxCheck()).toHaveTextContent('5 × 6 = 30. Matches the whole.');
     type('Value of part B', '12');
     check();
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ value: '12' }, 'tape-share', expect.anything()));

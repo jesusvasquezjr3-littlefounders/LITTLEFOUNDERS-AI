@@ -409,6 +409,8 @@ describe('F4.5 completion: the plane the learner slides', () => {
     await moveTo('Position of the plane: Move to', 'Position 0');
     expect(readout()).toHaveTextContent('Plane at position 0. The cut has 4 sides. Pairs of parallel sides: 2. All sides equal: yes. All angles right: yes.');
     expect(readout().textContent).not.toMatch(/square/i);
+    // A readout of counts and yes/no facts is data; it is not a sentence of instruction, so it is not measured as body.
+    expect(readout().querySelector('[data-copy-role="body"]')).toBeNull();
     fireEvent.click(button('Check'));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ offset: 0 }, 'slide-tetrahedron-square', expect.anything()));
   });
@@ -420,6 +422,8 @@ describe('F4.5 completion: the plane the learner slides', () => {
     await moveTo('Position of the plane: Move to', 'Position 0');
     expect(readout()).toHaveTextContent('Plane at position 0. The plane is slanted across the cylinder.');
     expect(readout().textContent).not.toMatch(/ellipse/i);
+    // The words that describe the cut are a fixed sentence, measured as body inside the data readout.
+    expect([...readout().querySelectorAll('[data-copy-role="body"]')].map((node) => node.textContent)).toEqual(['The plane is slanted across the cylinder.']);
     expect(document.querySelector('.lf-poly-face')).toHaveAttribute('data-curved', 'true');
     fireEvent.click(button('Check'));
     await waitFor(() => expect(grade).toHaveBeenCalledWith({ offset: 0 }, 'slide-cylinder-ellipse', expect.anything()));

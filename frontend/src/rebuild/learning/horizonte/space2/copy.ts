@@ -126,7 +126,7 @@ export const SPACE2_COPY = {
   stepDown: { role: 'action', band: B, 'en-US': 'Step downhill', 'es-MX': 'Bajar un paso', 'pt-BR': 'Descer um passo' },
   stepBack: { role: 'action', band: B, 'en-US': 'Step back', 'es-MX': 'Paso atrás', 'pt-BR': 'Passo atrás' },
   walkStatus: { role: 'data', band: B, 'en-US': 'Step {n} of {max}. Height {z}.', 'es-MX': 'Paso {n} de {max}. Altura {z}.', 'pt-BR': 'Passo {n} de {max}. Altura {z}.' },
-  walkLow: { role: 'data', band: B, 'en-US': 'At or below the line.', 'es-MX': 'En la línea o por debajo.', 'pt-BR': 'Na linha ou abaixo.' },
+  walkLow: { role: 'body', band: B, 'en-US': 'At or below the line.', 'es-MX': 'En la línea o por debajo.', 'pt-BR': 'Na linha ou abaixo.' },
   tableHeights: { role: 'heading', band: B, 'en-US': 'Height at every point', 'es-MX': 'Altura en cada punto', 'pt-BR': 'Altura em cada ponto' },
   tableSteps: { role: 'heading', band: B, 'en-US': 'The walk, step by step', 'es-MX': 'La caminata, paso a paso', 'pt-BR': 'A caminhada, passo a passo' },
   tableDots: { role: 'heading', band: B, 'en-US': 'The dots', 'es-MX': 'Los puntos', 'pt-BR': 'Os pontos' },

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { copyText } from '../copyText';
 import { Plano } from '../plano/Plano';
 import type { PlanoHandleLayer, PlanoPointLayer, PlanoPolylineLayer } from '../plano/model';
@@ -73,7 +74,7 @@ function Transform({ document, segment, onBack, sequence, onGrade }: Omit<Horizo
   ];
   if (move.kind === 'reflect') polylines.push({ id: 'mirror', points: mirrorPoints(move, reach + Math.abs(move.at)), label: t.tfMirror, series: 3 });
   const list = image.map((point, index) => `${name(index)}' ${pair(point)}`).join('; ');
-  const status = `${fill(t.tfFacts, { rule: ruleText(move, t), list })}${apart ? '' : ` ${t.tfCoincide}`}`;
+  const status = <>{fill(t.tfFacts, { rule: ruleText(move, t), list })}{apart ? null : <> <Prose>{t.tfCoincide}</Prose></>}</>;
 
   return <GeomFrame screen="transform" document={document} segment={segment} onBack={onBack} sequence={sequence} grading={grading}
     canCheck={moved && apart} answer={{ points: image }} named={{ met: t.metTransform, hint: t.hintTransform }} changed={moved}

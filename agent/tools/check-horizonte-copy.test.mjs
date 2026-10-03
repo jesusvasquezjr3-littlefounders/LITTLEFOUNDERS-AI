@@ -32,6 +32,18 @@ test('a longer budget applies when the entry declares an older band', () => {
   assert.deepEqual(checkPackCopy('x', { a: { ...entry, band: '10-12' } }, budget), []);
 });
 
+test('a fixed sentence cannot sit in an unbudgeted data string', () => {
+  const sentence = { 'en-US': 'One turn lays a line a bit more than 3 diameters long.', 'es-MX': 'Una vuelta tiende una línea de poco más de 3 diámetros.', 'pt-BR': 'Uma volta estende uma linha de um pouco mais de 3 diâmetros.' };
+  const problems = checkPackCopy('golden', {
+    prose: { role: 'data', ...sentence },
+    body: { role: 'body', ...sentence },
+    readout: { role: 'data', 'en-US': '{count} of {total} bridges crossed: {list}.', 'es-MX': '{count} de {total} puentes cruzados: {list}.', 'pt-BR': '{count} de {total} pontes atravessadas: {list}.' },
+    name: { role: 'data', 'en-US': 'Left pan', 'es-MX': 'Platillo izquierdo', 'pt-BR': 'Prato esquerdo' },
+    label: { role: 'data', 'en-US': 'Total.', 'es-MX': 'Total.', 'pt-BR': 'Total.' },
+  }, budget);
+  assert.deepEqual(problems, ['golden.prose: prose in a data string; give it the body role']);
+});
+
 test('enumerates every pack copy module by directory scan', () => {
   const packs = packCopyDirs();
   assert.ok(packs.includes('golden') && packs.includes('space2') && packs.length >= 18);

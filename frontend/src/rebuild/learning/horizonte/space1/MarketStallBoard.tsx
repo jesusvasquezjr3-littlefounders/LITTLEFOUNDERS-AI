@@ -95,7 +95,7 @@ function MarketStall({ document, segment, payload, onBack, sequence, onGrade }: 
       <p className="lf-stl-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
       <div className="lf-stl-basket" role="group" aria-label={t.stlBasketHeading} {...drag.target('basket')}>
         <h2 data-copy-role="heading">{t.stlBasketHeading}</h2>
-        {bought.length === 0 ? <p data-copy-role="data">{t.stlEmpty}</p> : <ul className="lf-stl-rows">
+        {bought.length === 0 ? <p data-copy-role="body">{t.stlEmpty}</p> : <ul className="lf-stl-rows">
           {bought.map((item) => <li key={item.id}>
             <span className="lf-hz-handle" data-hz-handle="" data-hz-hit="64">
               <ChoiceChip {...drag.chip(`basket:${item.id}`)} disabled={locked}>{itemName(t, item.id)} {fill(t.stlInBasket, { n: basket[item.id] ?? 0 })}</ChoiceChip>

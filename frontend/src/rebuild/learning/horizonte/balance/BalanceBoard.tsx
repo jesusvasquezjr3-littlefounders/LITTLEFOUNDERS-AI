@@ -6,6 +6,7 @@ import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } f
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
+import { Prose } from '../Prose';
 import { BALANCE_COPY } from './copy';
 import { BALANCE_MAX_ANSWER, applyOp, canApply, equationTex, isRouteOp, isSolved, levelScale, replay, tiltDegrees, type BalanceOp, type Pan, type RouteOp, type Scale, type SlipOp } from './model.generated';
 import { NumberField, readNumber } from './numberField';
@@ -148,7 +149,7 @@ function Balance({ document, segment, onBack, sequence, onGrade }: Omit<Horizont
       </div>
       <div className="lf-balance-stage" {...drag.target('scale')}><ScaleDrawing scale={scale} /></div>
       <p className="lf-balance-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
-        {t.panLeft}: {spokenPan(scale.l, t)}. {t.panRight}: {spokenPan(scale.r, t)}. {state} {fillSlot(t.moves, steps.length)}
+        {t.panLeft}: {spokenPan(scale.l, t)}. {t.panRight}: {spokenPan(scale.r, t)}. <Prose>{state}</Prose> {fillSlot(t.moves, steps.length)}
       </p>
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.balanceCaption}</caption>

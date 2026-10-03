@@ -3,6 +3,7 @@ import { Button, ChoiceChip } from '../../../design/controls';
 import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { NetFigure, type FigureHinge, type FigurePanel } from './NetFigure';
 import { FoldPlayer } from './FoldPlayer';
 import { frameOf, type Frame } from './netFrame';
@@ -122,7 +123,7 @@ export function SolidCompleteBoard({ document, segment, payload, solid, onBack, 
   }));
   const sheetBox = { x: box.minX, y: -box.maxY, width: payload.sheet.width, height: payload.sheet.height };
   const sheetText = fill(t.sheetSize, { w: payload.sheet.width, h: payload.sheet.height });
-  const status = `${fill(t.joinedOf, { n: placed.size, total })}. ${fill(t.netSize, { w: tidy(extent.width), h: tidy(extent.height) })}. ${sheetText}. ${fits ? t.sheetFits : t.sheetTooBig}`;
+  const status = `${fill(t.joinedOf, { n: placed.size, total })}. ${fill(t.netSize, { w: tidy(extent.width), h: tidy(extent.height) })}. ${sheetText}.`;
   const kind = polyKindLabel(t, solid.kind);
 
   return <BoardShell screen="solid-net" locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
@@ -134,7 +135,7 @@ export function SolidCompleteBoard({ document, segment, payload, solid, onBack, 
       onCheck={() => grading.check({ slots: hingesToSlots(solid, hinges) })} />}>
     <section className="lf-learning-board lf-net" aria-label={fill(t.netLabel, { solid: kind })}>
       <NetFigure frame={frame} panels={figure} hinges={marks} sheet={sheetBox} label={fill(t.netLabel, { solid: kind })} role="group" drop={drag.target} />
-      <p className="lf-solid-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
+      <p className="lf-solid-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status} <Prose>{fits ? t.sheetFits : t.sheetTooBig}</Prose></p>
       <FoldPlayer t={t} panels={fold} />
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.joinCaption}</caption>

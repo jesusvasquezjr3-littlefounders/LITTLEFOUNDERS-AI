@@ -5,6 +5,7 @@ import { BoardShell, GradedFoot, MoveToChoice, useDragPlace, useSegmentGrade } f
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
 import { copyText, fillSlot } from '../copyText';
+import { Prose } from '../Prose';
 import { BALANCE_COPY } from './copy';
 import { NumberField, fillNamed, readNumber } from './numberField';
 import { proofFigure, proofGroups, type FactKey, type Pose, type ProofChoice, type ProofFigure, type ProofVisual, type Pt } from './proof.generated';
@@ -131,7 +132,7 @@ function Proof({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteB
         {figure ? <ProofDrawing figure={figure} placed={placedSet} label={t[FIGURE_NAME[visual]]} /> : null}
       </div>
       <p className="lf-proof-status" role="status" data-copy-role="data" data-hz-text-equivalent="">
-        {facts.map((fact) => `${fact.label}: ${fact.amount}`).join(', ')}. {fillSlot(t.piecesMoved, `${placed.length} / ${groups.length}`)}. {result}
+        {facts.map((fact) => `${fact.label}: ${fact.amount}`).join(', ')}. {fillSlot(t.piecesMoved, `${placed.length} / ${groups.length}`)}. {result ? <Prose>{result}</Prose> : null}
       </p>
       {table ? <table className="lf-hz-table" data-hz-table="">
         <caption data-copy-role="heading">{t.proofCaption}</caption>

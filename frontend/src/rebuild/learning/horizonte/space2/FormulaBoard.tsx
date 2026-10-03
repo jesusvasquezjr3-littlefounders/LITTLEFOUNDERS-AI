@@ -5,6 +5,7 @@ import { MathExpression } from '../../pizarron/MathExpression';
 import { BoardShell, GradedFoot, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { DEFAULT_VIEW, SCENE_SIZE, projectPoint, type SolidView } from '../solids/projection.generated';
 import {
   FORMULA_HALF_HEIGHT, FORMULA_HALF_WIDTH, FORMULA_LIMITS, answerCount, evaluate, formulaGrid, formulaLatex, formulaMesh, formulaProblem, formulaSpoken,
@@ -277,7 +278,7 @@ function FormulaBoardView({ document, segment, payload, onBack, sequence, onGrad
         </div>
         <p className="lf-s2-status" role="status" data-copy-role="data">
           {here ? fill(t.walkStatus, { n: steps, max: maxSteps, z: ratShow(here.z, locale) }) : ''}
-          {here && ratCompare(here.z, ratFromInt(task.below)) <= 0 ? ` ${t.walkLow}` : ''}
+          {here && ratCompare(here.z, ratFromInt(task.below)) <= 0 ? <> <Prose>{t.walkLow}</Prose></> : null}
         </p>
       </div> : null}
       <h2 data-copy-role="heading">{t.answerHeading}</h2>

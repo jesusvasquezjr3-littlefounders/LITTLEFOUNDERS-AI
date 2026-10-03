@@ -5,6 +5,7 @@ import { MathExpression } from '../../pizarron/MathExpression';
 import { BoardShell, GradedFoot, MoveToChoice, NumberAnswer, useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { DEFAULT_VIEW, type SolidView } from '../solids/projection.generated';
 import { cutState, cutText, directionText, cylinderDirection } from './cutFacts';
 import { PolyCut, PolyEdges, PolyFaces, PolySheet, PolyStage } from './PolyStage';
@@ -119,7 +120,7 @@ function SectionView({ payload, view, onView, pick, onPick, locked, table, local
         <PolyCut scene={scene} />
       </PolyStage>
       <p data-copy-role="body">{t.secCutNote}</p>
-      <p className="lf-sec-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{`${crossed} ${chosen}`}</p>
+      <p className="lf-sec-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{round ? <Prose>{crossed}</Prose> : crossed} {chosen}</p>
       {table ? <FactTable locale={locale} caption={t.secTableCaption} valueHead={round ? t.colValue : t.colCount} rows={rows} /> : null}
     </section>
     <section className="lf-learning-control-strip" aria-label={t.secOptionsHeading}>
@@ -140,8 +141,10 @@ function SlideView({ payload, view, onView, offset, onOffset, locked, table, loc
   const { min, max } = useMemo(() => slideRange(payload.solid, payload.normal), [payload.solid, payload.normal]);
   const plane = useMemo(() => ({ normal: payload.normal, offset }), [payload.normal, offset]);
   const scene = useMemo(() => composePolyScene(mesh, view, { plane, sheet: true }), [mesh, view, plane]);
-  const state = cutText(t, cutState(payload.solid, plane));
-  const status = fill(t.slideStatus, { n: offset, cut: state });
+  const cut = cutState(payload.solid, plane);
+  const state = cutText(t, cut);
+  const position = fill(t.slideStatus, { n: offset });
+  const status = `${position} ${state}`;
   const positions = useMemo(() => Array.from({ length: max - min + 1 }, (_, at) => min + at), [min, max]);
   const rows = useMemo(() => positions.map((at) => [fill(t.slideValue, { n: at }), cutText(t, cutState(payload.solid, { normal: payload.normal, offset: at }))] as const), [positions, payload.solid, payload.normal, t]);
   const track = useRef<HTMLDivElement>(null);
@@ -176,7 +179,7 @@ function SlideView({ payload, view, onView, offset, onOffset, locked, table, loc
         <PolyCut scene={scene} />
       </PolyStage>
       <p data-copy-role="body">{t.slideNote}</p>
-      <p className="lf-slide-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{status}</p>
+      <p className="lf-slide-status" role="status" data-copy-role="data" data-hz-text-equivalent="">{position} {cut.kind === 'sides' ? state : <Prose>{state}</Prose>}</p>
       {table ? <FactTable locale={locale} caption={t.slideTableCaption} labelHead={t.slideColPosition} valueHead={t.slideColCut} rows={rows} current={positions.indexOf(offset)} /> : null}
     </section>
     <section className="lf-learning-control-strip" aria-label={t.slideHeading}>

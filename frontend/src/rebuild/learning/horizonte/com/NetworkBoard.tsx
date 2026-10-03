@@ -3,6 +3,7 @@ import { Button } from '../../../design/controls';
 import type { Locale } from '../../../design/copyBudget';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { copyText } from '../copyText';
 import { TRAY, type Frame } from './arrange.generated';
 import { COM_COPY } from './copy';
@@ -98,7 +99,7 @@ function GraphBoard({ document, segment, onBack, sequence, onGrade, t, labels }:
   const chosen = placed(board, slot);
   const linked = trail && chosen.length >= 2 ? isTrail(graph.edges, chosen, false) : null;
   const status = trail
-    ? fill(t.walkStatus, { count: chosen.length, total: graph.edges.length, list: list(chosen.map((id) => bridgeName(edgeOf(id))), t.none), link: linked === null ? '' : linked ? t.walkLinked : t.walkBroken })
+    ? <>{fill(t.walkStatus, { count: chosen.length, total: graph.edges.length, list: list(chosen.map((id) => bridgeName(edgeOf(id))), t.none) })}{linked === null ? null : <> <Prose>{linked ? t.walkLinked : t.walkBroken}</Prose></>}</>
     : fill(t.oddStatus, { count: chosen.length, total: graph.nodes.length, list: list(chosen.map(name), t.none) });
   const table: TableSpec = { caption: t.tableBridges, head: [t.colBridge, t.colFrom, t.colTo], rows: graph.edges.map((edge) => [bridgeName(edge), name(edge.from), name(edge.to)]) };
   return <SlotBoardShell screen={trail ? 'network-walk' : 'network-odd'} document={document} segment={segment} onBack={onBack} sequence={sequence} board={board} t={t}
@@ -143,7 +144,7 @@ function RouteBoard({ document, segment, onBack, sequence, onGrade, t, locale, l
     const road = route.edges.find((edge) => (edge.from === chosen[i] && edge.to === chosen[i + 1]) || (edge.to === chosen[i] && edge.from === chosen[i + 1]));
     if (road) roads.add(road.id);
   }
-  const note = chosen.length === 0 ? '' : cost === null ? t.routeBroken : fill(t.routeCost, { total: fmt(locale, cost) });
+  const note = chosen.length === 0 ? null : cost === null ? <Prose>{t.routeBroken}</Prose> : fill(t.routeCost, { total: fmt(locale, cost) });
   const result = board.grading.result;
   const tried = result !== null && result !== 'unavailable' && result.verdict !== 'met';
   const table: TableSpec = {
@@ -151,7 +152,7 @@ function RouteBoard({ document, segment, onBack, sequence, onGrade, t, locale, l
     rows: route.edges.map((edge, index) => [fill(t.roadN, { n: index + 1 }), name(edge.from), name(edge.to), fmt(locale, edge.weight ?? 0)]),
   };
   return <SlotBoardShell screen="network-route" document={document} segment={segment} onBack={onBack} sequence={sequence} board={board} t={t}
-    named={{ met: t.metRoute, hint: t.hintRoute }} status={fill(t.routeStatus, { list: list(chosen.map(name), t.none), note })} table={table} tray heading={t.headingStops}
+    named={{ met: t.metRoute, hint: t.hintRoute }} status={<>{fill(t.routeStatus, { list: list(chosen.map(name), t.none) })}{note ? <> {note}</> : null}</>} table={table} tray heading={t.headingStops}
     aside={tried ? <>
       <Button size="sm" variant="secondary" aria-expanded={help} onClick={() => setHelp((shown) => !shown)}>{help ? t.hideSteps : t.showSteps}</Button>
       {help ? <RouteSteps route={route} t={t} locale={locale} labels={labels} /> : null}

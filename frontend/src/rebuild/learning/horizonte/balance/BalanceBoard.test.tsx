@@ -44,6 +44,15 @@ describe('equation balance board (F1.8)', () => {
     expect(grade).not.toHaveBeenCalled();
   });
 
+  it('measures the spoken scale state as body copy inside the data readout (Copy Budget 06 section 3.3)', async () => {
+    show('two-sides');
+    await ready();
+    expect(status().getAttribute('data-copy-role')).toBe('data');
+    const sentences = [...status().querySelectorAll('[data-copy-role="body"]')].map((node) => node.textContent);
+    expect(sentences).toEqual(['The scale is level.']);
+    expect(status().textContent).toContain('Right pan: x plus 8. The scale is level. Moves: 0');
+  });
+
   it('walks the route with the tap path and submits the ordered operations plus x', async () => {
     const grade = show('two-sides');
     await ready();

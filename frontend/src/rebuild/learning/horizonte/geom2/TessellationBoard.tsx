@@ -3,6 +3,7 @@ import { Button, ChoiceChip } from '../../../design/controls';
 import { useSegmentGrade } from '../../segmentKit';
 import type { HorizonteBoardProps } from '../boardTypes';
 import type { HorizonteSegment } from '../contract';
+import { Prose } from '../Prose';
 import { copyText } from '../copyText';
 import { Plano } from '../plano/Plano';
 import type { PlanoSeries } from '../plano/model';
@@ -60,11 +61,11 @@ function Tessellation({ document, segment, onBack, sequence, onGrade }: Omit<Hor
   const reset = () => { grading.reset(); setRefused(false); setCopies([]); setMotion('slide'); setCursor({ x: 0, y: 0 }); };
 
   const preview = cellsOutline(shift(orientTile(tile, motion), cursor));
-  const status = [
+  const facts = [
     fill(t.tsFacts, { columns, rows, count: copies.length, left, x: cursor.x, y: cursor.y }),
     choosing ? fill(t.tsMove, { move: t[MOTION_NAME[motion]] }) : '',
-    refused ? t.tsNoFit : '',
   ].filter(Boolean).join(' ');
+  const status = <>{facts}{refused ? <> <Prose>{t.tsNoFit}</Prose></> : null}</>;
   const anchors = copies.map((copy) => copy.anchor);
 
   return <GeomFrame screen="tessellation" document={document} segment={segment} onBack={onBack} sequence={sequence} grading={grading}

@@ -85,7 +85,7 @@ export interface TableState { open: boolean; toggle: () => void }
 export function NumBFrame({ screen, document, segment, onBack, sequence, grading, canCheck, answer, named, changed, onReset, table, label, status, board, tableNode, children }: {
   screen: string; document: LessonClientDocument; segment: HorizonteSegment; onBack: () => void; sequence?: LessonSequenceControl;
   grading: Grading; canCheck: boolean; answer: unknown; named: { met: string; hint: string }; changed: boolean; onReset: () => void;
-  table: TableState; label: string; status: string; board: ReactNode; tableNode: ReactNode; children?: ReactNode;
+  table: TableState; label: string; status: ReactNode; board: ReactNode; tableNode: ReactNode; children?: ReactNode;
 }) {
   const t = copyText(NUM_B_COPY, document.locale);
   const locked = grading.pending || grading.met;
