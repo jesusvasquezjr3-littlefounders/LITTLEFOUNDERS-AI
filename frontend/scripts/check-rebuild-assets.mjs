@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { inflateSync } from 'node:zlib';
+import { isExistingBrandLogo } from './ocr/brandLogo.mjs';
 
 /*
  * The rebuilt frontend's asset gate (Frontend Bible 07 §2, §3, §4, §6, §7, §8).
@@ -584,6 +585,7 @@ if (process.env.REBUILD_ASSET_OCR !== 'off' && rasters.length) {
     const reader = await createRasterTextReader();
     try {
       for (const { path, bytes } of rasters) {
+        if (isExistingBrandLogo(path, bytes)) continue;
         const words = await reader.read(bytes);
         ocrRead++;
         if (words.length) fail(`Raster art contains text (07 §7, OCR read ${words.map((word) => `"${word.text}" ${word.confidence}%`).join(', ')}): ${path}`);
@@ -597,7 +599,7 @@ else {
   const pending = [...new Set(live.filter((asset) => asset.reviewStatus !== 'approved').map((asset) => asset.reviewFamily))];
   const status = release && !allowDrafts ? ' approved'
     : `, ${live.filter((asset) => asset.reviewStatus === 'draft').length} awaiting review${pending.length ? ` (owner style review pending for: ${pending.join(', ')})` : ''}`;
-  console.log(`Rebuild asset integrity OK: ${glyphRows.length}/${GLYPH_BUDGET} glyph families from one source (${glyphNames.length} names); ${classB.length} class B assets, ${ocrRead} raster(s) free of text by OCR${status}.`);
+  console.log(`Rebuild asset integrity OK: ${glyphRows.length}/${GLYPH_BUDGET} glyph families from one source (${glyphNames.length} names); ${classB.length} class B assets, ${ocrRead} raster(s) free of text by OCR; existing brand logo separately verified by SHA-256${status}.`);
   if (allowedDrafts.length) {
     console.warn(`LOCAL DRAFT BUILD (LF_LOCAL_DRAFT_ASSETS=1): ${allowedDrafts.length} draft assets allowed; this build is not releasable (07 §6).`);
   }

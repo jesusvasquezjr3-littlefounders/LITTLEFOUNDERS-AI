@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../design/ApplicationArt';
 import { useId, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
 import { Button, Card, Checkbox, ConfirmDialog, Dialog, EmptyState, ErrorState, InlineNotice, LoadingState, Pill, ProgressBar, RadioGroup,
@@ -78,7 +79,7 @@ export function TogetherView(props: TogetherViewProps) {
     data-age-band="13-17" data-screen={status === 'ready' ? (fixture ? 'together-preview' : 'together') : `together-${status}`} aria-busy={status === 'loading'}>
     <div className="lf-together-inner">
       <div className="lf-together-top"><Button onClick={props.onBack}>{t.back}</Button></div>
-      <h1 data-copy-role="heading">{t.title}</h1>
+      <header className="lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{t.title}</h1></div><ApplicationArt scene="family" /></header>
       {status === 'loading' ? <LoadingState label={t.loading} lines={4} />
         : status === 'offline' || status === 'error' ? <ErrorState heading={t.errorTitle} body={status === 'offline' ? t.offlineBody : t.errorBody}
           retryLabel={t.retry} retryingLabel={t.retrying} retrying={props.retrying} onRetry={props.onRetry} />

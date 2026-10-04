@@ -1,0 +1,32 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
+import type { HorizonteAgeScope } from '../types.js';
+import { CHOICES_MAX, CHOICES_MIN, GOAL_MAX, GOAL_MIN, MONEY_MAX, PERIODS_MAX, PERIODS_MIN, SCENARIOS, TARGET_MAX, payloadProblem } from './model.js';
+
+const money = (high: number) => z.number().int().min(0).max(high);
+
+/** F3.3: a scenario, its starting books and income, the finish and floor a future must meet, the goal count and the choices the learner may set. */
+export const lifeSimPayload = z.object({
+  scenario: z.enum(SCENARIOS),
+  periods: z.number().int().min(PERIODS_MIN).max(PERIODS_MAX),
+  cash: money(MONEY_MAX), debt: money(MONEY_MAX), flow: money(MONEY_MAX),
+  finish: money(TARGET_MAX), floor: money(MONEY_MAX),
+  goal: z.number().int().min(GOAL_MIN).max(GOAL_MAX),
+  choices: z.array(money(MONEY_MAX)).min(CHOICES_MIN).max(CHOICES_MAX),
+  start: money(MONEY_MAX),
+}).strict();
+
+export const SIM2_SEGMENTS = [
+  z.object({ ...hzBase, type: z.literal('money.life-sim.v2'), grading: hzServer, visual: hzVisual('life-sim'), payload: lifeSimPayload }).strict().superRefine((value, ctx) => {
+    const problem = payloadProblem(value.payload);
+    if (problem) ctx.addIssue({ code: 'custom', path: ['payload', problem.path], message: problem.message });
+  }),
+] as const;
+
+export const SIM2_RUBRICS = {
+  'money.life-sim.v2': z.object({ target: z.object({ answers: z.array(money(MONEY_MAX)).min(1).max(CHOICES_MAX) }).strict() }).strict(),
+} as const;
+
+export const SIM2_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'money.life-sim.v2': { ages: [13, 17], adult: true },
+};

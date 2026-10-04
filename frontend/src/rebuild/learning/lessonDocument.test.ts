@@ -42,6 +42,14 @@ describe('answerless versioned lesson client document', () => {
     expect(loadLessonClientDocument(pilot, ['visual.stacked-bar.v1']).status).toBe('upgrade-required');
   });
 
+  it('asks for an update on a chart kind a newer Core serves, and still rejects a malformed chart of a known kind', () => {
+    const chart = (visual: unknown) => ({ ...pilot, segments: [{ id: 'chart-01', type: 'visual.chart.v2', prompt: 'Look.', visual, payload: {} }] });
+    expect(loadLessonClientDocument(chart({ type: 'hologram-chart' }))).toEqual({ status: 'upgrade-required', reason: 'Unsupported chart kind' });
+    expect(loadLessonClientDocument(chart({ type: 'bar' })).status).toBe('invalid');
+    expect(loadLessonClientDocument(chart({})).status).toBe('invalid');
+    expect(loadLessonClientDocument(chart(null)).status).toBe('invalid');
+  });
+
   it('rejects answer keys, duplicate segments and invalid operation ranges', () => {
     expect(loadLessonClientDocument(({ ...pilot, eligibility: undefined } as unknown)).status).toBe('invalid');
     expect(loadLessonClientDocument({ ...pilot, eligibility: { minimum_age: 10, maximum_age: 6 } }).status).toBe('invalid');

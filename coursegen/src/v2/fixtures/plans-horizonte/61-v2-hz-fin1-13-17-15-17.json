@@ -1,0 +1,73 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-fin1",
+  "lesson_id": "v2-hz-fin1-13-17-15-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 15,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-fin1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Liruf sigue las monedas durante varios periodos para ver cómo crecen o se reparten.",
+  "title": {
+    "en-US": "The rate you really pay",
+    "es-MX": "La tasa que de verdad pagas",
+    "pt-BR": "A taxa que você realmente paga"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "effective-monthly",
+      "type": "money.rate-return.v2",
+      "grading": "server",
+      "visual": {
+        "type": "effective-rate"
+      },
+      "payload": {
+        "kind": "effective",
+        "nominalBps": 2400,
+        "periodsPerYear": 12
+      },
+      "rubric": {
+        "target": "26.82",
+        "tolerance": {
+          "absolute": "0.05"
+        },
+        "review": {
+          "absolute": "1"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A loan says 24% a year, charged monthly. Type the rate you really pay in a year.",
+          "feedback": {
+            "met": "You followed the coins through time correctly.",
+            "not_yet": "Check each period again, one at a time."
+          }
+        },
+        "es-MX": {
+          "prompt": "Un préstamo dice 24% al año, cobrado cada mes. Escribe la tasa real de un año.",
+          "feedback": {
+            "met": "Seguiste las monedas a través del tiempo correctamente.",
+            "not_yet": "Revisa cada periodo otra vez, uno por uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um empréstimo diz 24% ao ano, cobrado todo mês. Digite a taxa real de um ano.",
+          "feedback": {
+            "met": "Você acompanhou as moedas ao longo do tempo corretamente.",
+            "not_yet": "Confira cada período de novo, um por um."
+          }
+        }
+      }
+    }
+  ]
+}

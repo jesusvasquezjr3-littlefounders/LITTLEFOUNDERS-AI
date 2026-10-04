@@ -524,5 +524,142 @@
     "landing": "Dina, del equipo de Mentores, sonriendo",
     "howItWorks": "Dr. Rho, del equipo de Mentores, explicando",
     "families": "Zara, del equipo de Mentores, saludando"
+  },
+  "landingV2": {
+    "title": "Que tu hijo entienda",
+    "titleAccent": "el valor del dinero.",
+    "lead": "Ayúdalo a ahorrar, resolver problemas y crear ideas con retos interactivos y un Mentor de IA.",
+    "tryAction": "Probar un reto",
+    "note": "Gratis para empezar. Aprende a tu ritmo.",
+    "heroAlt": "Un padre y su hija exploran figuras y monedas juntos.",
+    "learnTitle": "Que lo aprendido salga de la pantalla.",
+    "example": "Vista de ejemplo",
+    "tryHint": "Elige una respuesta y explora por qué.",
+    "simulation": "Monedas simuladas. Solo es una demostración.",
+    "addCoin": "Ahorrar una moneda",
+    "removeCoin": "Quitar una moneda",
+    "saveHint": "Ahorra un poco hoy. Mira cómo te acercas a tu meta.",
+    "mentorTitle": "Cuando se atora, lo ayudan a pensar.",
+    "mentorBody": "Dr. Rho, Zara, Liruf y Dina guían con preguntas para que cada persona encuentre su propio camino.",
+    "reasonLabel": "Prueba una pregunta",
+    "reasonQuestion": "Está en oferta. ¿Lo necesitas?",
+    "reasonHint": "Elige una razón.",
+    "familyPreview": "Tu familia, conectada",
+    "familyStory": "Alex eligió ahorrar para una meta.",
+    "familyReflection": "¿Por qué? Comprar después le importaba más que gastar hoy.",
+    "task": "Regar las plantas",
+    "taskReward": "10 monedas simuladas",
+    "approve": "Aprobar",
+    "approved": "Aprobado",
+    "goal": "Meta de ahorro",
+    "approvalDemo": "Ejemplo actualizado. No se aprobó ninguna tarea real.",
+    "familyDemo": "Familia de ejemplo. Sin datos de estudiantes reales.",
+    "familyTitle": "Tú ves el avance, él toma las decisiones.",
+    "familyBody": "Acompaña sus metas, tareas y aprendizaje. Las herramientas familiares y las aprobaciones requieren un padre o madre verificado.",
+    "familyAction": "Explorar Familia",
+    "pathTitle": "Un camino que crece con él.",
+    "faqTitle": "Lo que necesitas saber.",
+    "closingTitle": "Dale espacio a su próxima idea.",
+    "topics": [
+      {
+        "title": "Ahorrar para una meta",
+        "body": "Elegir lo que importa mañana.",
+        "question": "¿Cuánto guardarías?",
+        "options": [],
+        "feedback": []
+      },
+      {
+        "title": "Encontrar la lógica",
+        "body": "Probar, observar y explicar.",
+        "question": "¿Qué sigue?",
+        "options": [
+          "7",
+          "8",
+          "10"
+        ],
+        "feedback": [
+          "Mira otra vez. Cada paso suma dos.",
+          "Así es. Cada paso suma dos.",
+          "Revisa la distancia entre los números."
+        ]
+      },
+      {
+        "title": "Crear algo útil",
+        "body": "Empezar con una necesidad real.",
+        "question": "Las plantas se secan.",
+        "options": [
+          "Un recordatorio",
+          "Más carteles",
+          "Un logo"
+        ],
+        "feedback": [
+          "Un recordatorio puede ayudar a regarlas.",
+          "¿Qué ayudaría a recordar cuándo regar?",
+          "Primero resuelve el problema. Después elige un nombre."
+        ]
+      }
+    ],
+    "reasons": [
+      {
+        "label": "Ya lo estaba buscando",
+        "feedback": "Compara el precio con tu plan. ¿Todavía encaja?"
+      },
+      {
+        "label": "Solo por la oferta",
+        "feedback": "Un descuento también es un gasto. ¿Qué más harías con esas monedas?"
+      },
+      {
+        "label": "Quiero pensarlo primero",
+        "feedback": "Esperar te da tiempo para comparar lo que importa."
+      }
+    ],
+    "ages": [
+      {
+        "range": "6–9",
+        "title": "Descubrir",
+        "body": "Explorar decisiones con retos breves y ejemplos concretos."
+      },
+      {
+        "range": "10–12",
+        "title": "Conectar",
+        "body": "Relacionar hábitos, metas e ideas con decisiones que puedes explicar."
+      },
+      {
+        "range": "13–17",
+        "title": "Decidir",
+        "body": "Explorar alternativas, metas personales y una cartera simulada independiente."
+      },
+      {
+        "range": "18+",
+        "title": "Construir",
+        "body": "Practicar decisiones financieras y emprendimiento a tu propio ritmo."
+      }
+    ],
+    "faq": [
+      {
+        "question": "¿Es dinero real?",
+        "answer": "No. Las actividades y las carteras usan monedas simuladas."
+      },
+      {
+        "question": "¿Qué hace el Mentor?",
+        "answer": "El Mentor de IA guía la práctica con preguntas y ejemplos. Puede equivocarse."
+      },
+      {
+        "question": "¿Necesitamos una cuenta familiar?",
+        "answer": "Puedes empezar individualmente, con cartera simulada personal para adolescentes. Las herramientas familiares y aprobaciones requieren un padre o madre verificado."
+      },
+      {
+        "question": "¿Es gratis?",
+        "answer": "Es gratis para empezar. Puedes probar un reto aquí antes de entrar a la aplicación."
+      }
+    ]
+  },
+  "marketingArt": {
+    "how": "Un adolescente ahorrando para una bicicleta",
+    "families": "Una familia planeando en equipo",
+    "questions": "Padre e hija explorando opciones",
+    "mentorsHow": "Rho y Liruf comparan juntos una decisión.",
+    "mentorsFamilies": "Zara y Dina construyen un pequeño puesto de plantas.",
+    "mentorsQuestions": "Cuatro Mentores conversan y construyen un puente en miniatura."
   }
 }

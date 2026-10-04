@@ -1,9 +1,10 @@
 import { StandaloneHeader } from '@/rebuild/design/StandaloneHeader';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  Button, IconButton, InlineNotice, ProgressBar, RadioGroup, SingleStateScreen, TextField, type MentorCharacter,
+  BrandMark, Button, IconButton, InlineNotice, ProgressBar, RadioGroup, SingleStateScreen, TextField, type MentorCharacter,
 } from '../design/controls';
 import { MentorChooser } from '../mentor/MentorChooser';
+import { EntryArt } from '../design/EntryArt';
 import type { Locale } from '../design/copyBudget';
 import { identityCopy } from './authBlocks';
 
@@ -104,6 +105,8 @@ export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, comple
   switch (step) {
     case 'welcome':
       content = <>
+        <BrandMark name="LittleFounders" />
+        <div className="lf-onboarding-art" aria-hidden="true"><EntryArt /></div>
         <h1 ref={heading} tabIndex={-1} data-copy-role="heading">{copy.welcomeTitle}</h1>
         <p data-copy-role="body">{copy.welcomeBody}</p>
       </>;

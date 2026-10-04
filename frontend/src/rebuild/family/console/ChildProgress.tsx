@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../../design/ApplicationArt';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Card, Chip, Copy, EmptyState, ProgressBar, SelectField, type GlyphName, type StatusTone } from '../../design/controls';
 import { AchievementShare, type AchievementShareCopy, type AchievementShareStatus } from '../AchievementShare';
@@ -117,10 +118,10 @@ export function ChildProgress({ copy, shareCopy, locale, dark, transport, kidId,
 
   const title = name ? fill(copy.title, { name }) : copy.titleFallback;
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console" data-screen="child-progress" data-theme={dark ? 'dark' : 'light'} lang={locale}>
-    <header className="lf-console-header">
+    <header className="lf-console-header lf-illustrated-header"><div className="lf-illustrated-heading">
       <BackLink href={backHref} label={copy.back} onNavigate={onNavigate} />
       <h1 className="ugc" data-copy-role="heading">{title}</h1>
-    </header>
+    </div><ApplicationArt scene="learning" /></header>
     {body}
   </div>;
   const retry = () => { setRetrying(true); if (courses.status !== 'ready') void readCourses(); else if (slug) void readTerritory(slug); };
@@ -158,6 +159,15 @@ export function ChildProgress({ copy, shareCopy, locale, dark, transport, kidId,
       </section>
     </Card> : null}
 
+    <section className="lf-console-group" aria-labelledby="child-progress-map" data-console-part="map">
+      <h2 id="child-progress-map" data-copy-role="heading">{copy.mapTitle}</h2>
+      <span className="ugc" data-copy-role="data">{courseTitle}</span>
+      {course.inProgress ? <Copy role="body">{copy.building}</Copy> : null}
+      {course.placementRequired ? <Copy role="body">{copy.placement}</Copy> : null}
+      <ul className="lf-console-units">
+        {territory.units.map((unit) => <Unit key={unit.id} unit={unit} copy={copy} locale={locale} />)}
+      </ul>
+    </section>
     {finished || streakShareable || goal ? <Card as="div">
       <section className="lf-console-shares" aria-labelledby="child-progress-share" data-console-part="shares">
         <h2 id="child-progress-share" data-copy-role="heading">{copy.shareTitle}</h2>
@@ -179,15 +189,6 @@ export function ChildProgress({ copy, shareCopy, locale, dark, transport, kidId,
       </section>
     </Card> : null}
 
-    <section className="lf-console-group" aria-labelledby="child-progress-map" data-console-part="map">
-      <h2 id="child-progress-map" data-copy-role="heading">{copy.mapTitle}</h2>
-      <span className="ugc" data-copy-role="data">{courseTitle}</span>
-      {course.inProgress ? <Copy role="body">{copy.building}</Copy> : null}
-      {course.placementRequired ? <Copy role="body">{copy.placement}</Copy> : null}
-      <ul className="lf-console-units">
-        {territory.units.map((unit) => <Unit key={unit.id} unit={unit} copy={copy} locale={locale} />)}
-      </ul>
-    </section>
   </>);
 }
 

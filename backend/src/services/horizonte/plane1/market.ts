@@ -1,0 +1,87 @@
+import { broken, hasOnly, inRange, solved, type Solved } from './model.js';
+
+export const PRICE_TOP_MIN = 4;
+export const PRICE_TOP_MAX = 60;
+export const QUANTITY_MIN = 20;
+export const QUANTITY_MAX = 300;
+export const INTERCEPT_MAX = 300;
+export const SLOPE_MAX = 10;
+export const SHIFT_MAX = 60;
+export const GOAL_PART_MAX = 4;
+export const CURVES = ['demand', 'supply'] as const;
+export type Curve = (typeof CURVES)[number];
+export const DIRECTIONS = ['up', 'down'] as const;
+export type Direction = (typeof DIRECTIONS)[number];
+/** The choice the learner makes before the answer counts: unset until a direction is picked. */
+export const CHOICES = ['unset', ...DIRECTIONS] as const;
+export type Choice = (typeof CHOICES)[number];
+
+/** Quantity demanded is a minus b times the price; quantity supplied is c plus d times the price. */
+export type Market = { demand: { a: number; b: number }; supply: { c: number; d: number } };
+export type MarketShift = { pMax: number; qMax: number; demand: { a: number; b: number }; supply: { c: number; d: number }; shift: { curve: Curve; by: number }; start: number };
+export type MarketAnswer = { direction: Direction; price: number };
+
+export const demandAt = (market: Market, price: number): number => market.demand.a - market.demand.b * price;
+export const supplyAt = (market: Market, price: number): number => market.supply.c + market.supply.d * price;
+
+/** The price where quantity demanded meets quantity supplied, when it is a whole number. */
+export function clearingPrice(market: Market): number | null {
+  const gap = market.demand.a - market.supply.c;
+  const slope = market.demand.b + market.supply.d;
+  return slope > 0 && gap % slope === 0 ? gap / slope : null;
+}
+
+/** The market after the shift: demand moves by `by` units at every price, or supply does (a positive shift is more units). */
+export function shiftedMarket(market: Market, shift: { curve: Curve; by: number }): Market {
+  return shift.curve === 'demand'
+    ? { demand: { a: market.demand.a + shift.by, b: market.demand.b }, supply: market.supply }
+    : { demand: market.demand, supply: { c: market.supply.c + shift.by, d: market.supply.d } };
+}
+
+const isLinear = (value: unknown, first: string, second: string, firstMax: number, firstMin: number): value is Record<string, number> =>
+  hasOnly(value, [first, second]) && inRange(value[first], firstMin, firstMax) && inRange(value[second], 1, SLOPE_MAX);
+
+/** N09, N13: a market and one shift of a curve; the learner says whether the price goes up or down and finds the new price. */
+export function solveMarketShift(payload: unknown): Solved<MarketAnswer> {
+  if (!hasOnly(payload, ['pMax', 'qMax', 'demand', 'supply', 'shift', 'start'])) return broken('', 'The payload is a price limit, a quantity limit, demand, supply, a shift and a start');
+  const { pMax, qMax, demand, supply, shift, start } = payload;
+  if (!inRange(pMax, PRICE_TOP_MIN, PRICE_TOP_MAX)) return broken('pMax', 'The price limit is 4 to 60');
+  if (!inRange(qMax, QUANTITY_MIN, QUANTITY_MAX)) return broken('qMax', 'The quantity limit is 20 to 300');
+  if (!isLinear(demand, 'a', 'b', INTERCEPT_MAX, 10)) return broken('demand', 'Demand is a quantity of 10 to 300 at price 0 that falls by 1 to 10 for each price step');
+  if (!isLinear(supply, 'c', 'd', 100, 0)) return broken('supply', 'Supply is a quantity of 0 to 100 at price 0 that rises by 1 to 10 for each price step');
+  if (!hasOnly(shift, ['curve', 'by']) || (shift.curve !== 'demand' && shift.curve !== 'supply') || !inRange(shift.by, -SHIFT_MAX, SHIFT_MAX) || shift.by === 0) {
+    return broken('shift', 'The shift moves demand or supply by 1 to 60 units, up or down');
+  }
+  const before: Market = { demand: { a: demand.a!, b: demand.b! }, supply: { c: supply.c!, d: supply.d! } };
+  const first = clearingPrice(before);
+  if (first === null || !inRange(first, 1, pMax) || !inRange(demandAt(before, first), 1, qMax)) return broken('demand', 'The market clears at a whole price and quantity inside the limits');
+  const after = shiftedMarket(before, { curve: shift.curve, by: shift.by });
+  const price = clearingPrice(after);
+  if (price === null || !inRange(price, 1, pMax) || !inRange(demandAt(after, price), 1, qMax)) return broken('shift', 'After the shift the market clears at a whole price and quantity inside the limits');
+  if (!inRange(start, 0, pMax)) return broken('start', 'The price starts on the axis');
+  if (start === price) return broken('start', 'The price starts away from the answer');
+  return solved({ direction: price > first ? 'up' : 'down', price });
+}
+
+export type Elasticity = { pMax: number; demand: { a: number; b: number }; goal: { num: number; den: number }; start: number };
+
+/** The price where elasticity b*P / (a - b*P) is num/den, when it is a whole number. */
+export function elasticPrice(demand: { a: number; b: number }, goal: { num: number; den: number }): number | null {
+  const top = goal.num * demand.a;
+  const bottom = demand.b * (goal.num + goal.den);
+  return bottom > 0 && top % bottom === 0 ? top / bottom : null;
+}
+
+/** N13: a demand line and an elasticity to reach; the learner slides the price until the elasticity is num over den. The answer is the whole price. */
+export function solveElasticity(payload: unknown): Solved<number> {
+  if (!hasOnly(payload, ['pMax', 'demand', 'goal', 'start'])) return broken('', 'The payload is a price limit, demand, a goal and a start');
+  const { pMax, demand, goal, start } = payload;
+  if (!inRange(pMax, PRICE_TOP_MIN, PRICE_TOP_MAX)) return broken('pMax', 'The price limit is 4 to 60');
+  if (!isLinear(demand, 'a', 'b', INTERCEPT_MAX, 10)) return broken('demand', 'Demand is a quantity of 10 to 300 at price 0 that falls by 1 to 10 for each price step');
+  if (demand.b! * pMax >= demand.a!) return broken('pMax', 'Demand stays above zero at every price up to the limit');
+  if (!hasOnly(goal, ['num', 'den']) || !inRange(goal.num, 1, GOAL_PART_MAX) || !inRange(goal.den, 1, GOAL_PART_MAX)) return broken('goal', 'The goal elasticity is a fraction of whole numbers from 1 to 4');
+  const price = elasticPrice({ a: demand.a!, b: demand.b! }, { num: goal.num, den: goal.den });
+  if (price === null || !inRange(price, 1, pMax)) return broken('goal', 'The goal elasticity is reached at a whole price within the limit');
+  if (!inRange(start, 1, pMax)) return broken('start', 'The price starts on the axis');
+  return start === price ? broken('start', 'The price starts away from the answer') : solved(price);
+}

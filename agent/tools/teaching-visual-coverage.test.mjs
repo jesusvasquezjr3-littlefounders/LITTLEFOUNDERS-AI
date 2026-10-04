@@ -1,0 +1,75 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { buildReport, chartCoverage, chartKindGroups, horizonteCoverage, localeCoverage, tapCoverage } from './teaching-visual-coverage.mjs';
+
+const root = fileURLToPath(new URL('../../', import.meta.url));
+const LOCALES = ['en-US', 'es-MX', 'pt-BR'];
+
+test('counts a pointer-drag handler and a drag-place hook, each needing its own tap alternative', () => {
+  const pointer = 'const a = <i onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)} />; <Button>Move</Button>';
+  const hook = 'const drag = useDragPlace<Region>((item, target) => place(item, target), disabled); <MoveToChoice />';
+  const bare = 'const drag = useDragPlace((item, target) => place(item, target), false);';
+  const report = tapCoverage([{ file: 'a.tsx', source: pointer }, { file: 'b.tsx', source: hook }, { file: 'c.tsx', source: bare }]);
+  assert.deepEqual({ drags: report.drag_interactions, pointer: report.pointer_handlers, hooks: report.drag_place_hooks, covered: report.with_alternative }, { drags: 3, pointer: 1, hooks: 2, covered: 2 });
+  assert.deepEqual(report.missing, ['c.tsx']);
+  assert.equal(report.share, 0.6667);
+});
+
+test('a hook declaration, a type reference and a pointer handler without capture are not drags', () => {
+  const sources = [
+    { file: 'kit.tsx', source: 'export function useDragPlace<T extends string>(onPlace: () => void) { return null; }' },
+    { file: 'types.tsx', source: 'type Drag = ReturnType<typeof useDragPlace<string>>;' },
+    { file: 'plain.tsx', source: '<div onPointerDown={() => 1} />' },
+  ];
+  assert.deepEqual(tapCoverage(sources), { drag_interactions: 0, pointer_handlers: 0, drag_place_hooks: 0, with_alternative: 0, share: null, missing: [] });
+});
+
+test('reads the three chart-kind lists of the Core chart model', () => {
+  const source = "export const CORE_CHART_KINDS = [\n  'bar', 'line',\n] as const;\nexport const SITUATIONAL_CHART_KINDS = ['pareto'] as const;\nexport const READING_CHART_KINDS = ['dot-plot', 'dumbbell'] as const;";
+  assert.deepEqual(chartKindGroups(source), { core: ['bar', 'line'], situational: ['pareto'], reading: ['dot-plot', 'dumbbell'] });
+  assert.throws(() => chartKindGroups('export const CORE_CHART_KINDS = [] as const;'), /SITUATIONAL_CHART_KINDS/);
+});
+
+test('a reading chart kind is covered only when Forge emits it in all three locales', () => {
+  const chart = (locale, kind) => ({ locale, document: { segments: [{ type: 'visual.chart.v2', visual: { type: kind } }] } });
+  const groups = { core: ['bar'], situational: ['pareto'], reading: ['dot-plot', 'dumbbell'] };
+  const rows = [...LOCALES.map((locale) => chart(locale, 'dot-plot')), chart('en-US', 'dumbbell'), chart('es-MX', 'dumbbell'), chart('en-US', 'bar')];
+  assert.deepEqual(chartCoverage(groups, rows), { kinds: 4, core: 1, situational: 1, reading: 2, reading_covered: 1, reading_missing: ['dumbbell'], forge_emitted: 1 });
+});
+
+test('a pack segment type needs a registered board and a contract that name it', () => {
+  const packs = [
+    { id: 'one', types: ['math.a.v2', 'math.b.v2'], boards: "  'math.a.v2': { board: lazy(() => import('./A')) },\n  'math.b.v2': { board: lazy(() => import('./B')) },", contract: "const A = 'math.a.v2'; const B = 'math.b.v2';" },
+    { id: 'two', types: ['math.c.v2'], boards: "// 'math.c.v2': commented out", contract: "const C = 'math.c.v2';" },
+  ];
+  assert.deepEqual(horizonteCoverage(packs), { packs: 2, segment_types: 3, with_board: 2, with_contract: 3, share: 0.6667, missing: ['math.c.v2'] });
+  assert.equal(horizonteCoverage([]).share, null);
+});
+
+test('locale coverage lists a kind a locale lacks', () => {
+  const rows = LOCALES.map((locale) => ({ locale, document: { segments: [{ type: 'a.v2' }] } })).concat([{ locale: 'en-US', document: { segments: [{ type: 'b.v2' }] } }]);
+  assert.deepEqual(localeCoverage(['a.v2', 'b.v2'], rows), { kinds: 2, covered: 1, share: 0.5, missing: ['b.v2'] });
+});
+
+test('the shipped tree covers every Horizonte segment type, chart kind and drag with its alternative', () => {
+  const report = buildReport('test');
+  assert.equal(report.chart_kinds.kinds, 58);
+  assert.equal(report.chart_kinds.reading, 12);
+  assert.deepEqual(report.chart_kinds.reading_missing, []);
+  assert.equal(report.horizonte.packs, 18);
+  assert.equal(report.horizonte.segment_types, 69);
+  assert.deepEqual(report.horizonte.missing, []);
+  assert.deepEqual(report.tap_alternative.missing, []);
+  assert.equal(report.tap_alternative.share, 1);
+  assert.equal(report.locale_rendering.share, 1);
+});
+
+test('the committed snapshot matches the tree except for its date', () => {
+  const snapshot = readFileSync(`${root}backend/src/services/teachingVisualCoverage.generated.ts`, 'utf8');
+  const stamp = /"generated_at": "([^"]+)"/.exec(snapshot)?.[1];
+  assert.ok(stamp);
+  const expected = `// Generated by agent/tools/teaching-visual-coverage.mjs (Appendix P Part 8). Do not edit by hand.\nexport const TEACHING_VISUAL_COVERAGE = ${JSON.stringify(buildReport(stamp), null, 2)} as const;\n`;
+  assert.equal(snapshot, expected);
+});

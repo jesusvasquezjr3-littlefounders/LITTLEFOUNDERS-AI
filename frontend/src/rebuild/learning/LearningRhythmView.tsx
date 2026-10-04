@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../design/ApplicationArt';
 import { useId, useState, type KeyboardEvent } from 'react';
 import { pluralUnit } from '../design/plural';
 import { StreakStrip } from './StreakStrip';
@@ -141,7 +142,7 @@ export function LearningRhythmView({ state, locale, dark, ageBand, onBack, onRet
     <div className="lf-rhythm-inner">
       <div className="lf-rhythm-top">
         <Button onClick={onBack}>{t.back}</Button>
-        <h1 data-copy-role="heading">{t.title}</h1>
+        <header className="lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{t.title}</h1></div><ApplicationArt scene="learning" /></header>
       </div>
       {state.status === 'loading' ? <div className="lf-rhythm-state"><LoadingState label={t.loading} lines={2} /></div>
         : state.status === 'error' ? <div className="lf-rhythm-state">

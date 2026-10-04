@@ -143,7 +143,7 @@ function headFor(page, locale, marketing) {
  * no aggregateRating, no review count, no invented founding date. A fabricated
  * rating is both a Google manual-action risk and a lie told to a parent.
  */
-function jsonLd(page, locale, marketing) {
+function jsonLd(page, locale, _marketing) {
   const meta = metaFor(page, locale);
   const url = absolute(page.path);
 
@@ -215,17 +215,7 @@ function jsonLd(page, locale, marketing) {
       })),
     });
 
-    // The one statistic in the marketing copy, carried with its attribution so
-    // a machine quoting it can quote the source too.
-    const landing = marketing?.landing;
-    if (landing?.factValue) {
-      graph.push({
-        '@type': 'Claim',
-        text: `${landing.factValue} ${landing.factBody}`,
-        appearance: { '@type': 'WebPage', url },
-        citation: landing.factSource ?? undefined,
-      });
-    }
+    // The redesigned landing carries no statistic: do not publish a removed claim to crawlers.
   }
 
   return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
@@ -249,16 +239,19 @@ function shellFor(page, locale, marketing) {
   const section = (heading, ...paragraphs) => `<h2>${esc(heading)}</h2>${paragraphs.map((p) => `<p>${esc(p)}</p>`).join('')}`;
 
   if (page.path === '/') {
-    const l = marketing.landing;
+    const l = marketing.landingV2;
+    parts[0] = `<h1>${esc(`${l.title} ${l.titleAccent}`)}</h1>`;
     parts.push(
       `<p>${esc(l.lead)} ${esc(l.note)}</p>`,
-      section(l.mentorsTitle, `${l.mentorsBody} ${MENTORS.join(', ')}.`),
-      `<p>${esc(l.factValue)} ${esc(l.factBody)} <small>${esc(l.factSource)}</small></p>`,
-      section(l.decideTitle, l.decideBody),
+      `<h2>${esc(l.learnTitle)}</h2>`,
+      ...l.topics.map((topic) => section(topic.title, topic.body, topic.question)),
+      section(l.mentorTitle, l.mentorBody),
       section(l.familyTitle, l.familyBody),
-      `<h2>${esc(SUBJECTS[locale].map((s) => s.name).join(' · '))}</h2>`,
-      `<ul>${SUBJECTS[locale].map((s) => `<li><strong>${esc(s.name)}</strong>: ${esc(s.about)}</li>`).join('')}</ul>`,
-      section(l.closingTitle, l.closingBody),
+      `<h2>${esc(l.pathTitle)}</h2>`,
+      ...l.ages.map((age) => section(`${age.range}: ${age.title}`, age.body)),
+      `<h2>${esc(l.faqTitle)}</h2>`,
+      ...l.faq.map((item) => section(item.question, item.answer)),
+      `<h2>${esc(l.closingTitle)}</h2>`,
     );
   } else if (page.path === '/how-it-works') {
     const h = marketing.howItWorks;

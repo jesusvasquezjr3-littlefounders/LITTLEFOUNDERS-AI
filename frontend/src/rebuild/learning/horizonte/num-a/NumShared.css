@@ -1,0 +1,8 @@
+/* Layout every num-a board shares: the board grid, the horizontal scroll that keeps a wide drawing at a tappable size on a phone, the status line and the tray. Tokens only. */
+.lf-num-board { display: grid; gap: var(--spacing-4); justify-items: start; min-inline-size: 0; }
+.lf-num-scroll { inline-size: 100%; overflow-x: auto; }
+/* The drawing keeps its tappable width and scrolls on a phone; its numerals are HTML labels laid over it in the same box. */
+.lf-num-drawing { min-inline-size: 26rem; max-inline-size: 44rem; }
+.lf-num-drawing--pan { max-inline-size: 36rem; }
+.lf-num-status { font-weight: 800; }
+.lf-num-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }

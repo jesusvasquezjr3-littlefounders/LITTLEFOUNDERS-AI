@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../../design/ApplicationArt';
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Chip, Copy, DashboardLayout, EmptyState, InlineNotice, RewardChip } from '../../design/controls';
 import type { ConsoleTransport } from '../console/consoleApi';
@@ -112,7 +113,7 @@ export function ChildTasks({ copy, locale, dark, transport, photos, onNavigate, 
 
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console lf-family-money" data-screen="child-tasks" data-theme={dark ? 'dark' : 'light'}
     data-age-band={REGISTER_BAND[register]} data-register={register} lang={locale}>
-    <header className="lf-console-header"><h1 data-copy-role="heading">{copy.title}</h1></header>
+    <header className="lf-console-header lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{copy.title}</h1></div><ApplicationArt scene="family" /></header>
     {body}
   </div>;
 

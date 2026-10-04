@@ -21,6 +21,8 @@ import { REGISTERS } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { learnCopy } from '@/rebuild/learning/learnCopy';
 import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
 import { clientScorerVerdict } from '@/rebuild/learning/clientScorerVerdict';
+import { isSeededHorizonteType, loadHorizontePacksFor } from '@/rebuild/learning/horizonte/contract';
+import { isAttemptSeed } from '@/rebuild/learning/horizonte/seed/protocol.generated';
 import { createTimeOnTask, watchTimeOnTask, type TimeOnTaskClock } from '@/rebuild/learning/timeOnTask';
 import { GuidedReviewOffer, guidedReviewOfferSchema, type GuidedReviewOfferValue } from '@/rebuild/learning/GuidedReviewOffer';
 import { fetchLearnerRegister, registerForBand, registerOf, type RegisterState } from '@/rebuild/learning/learnerRegister';
@@ -72,6 +74,8 @@ interface V2RunResponse {
   attempted_segment_ids?: string[];
   viewed_segment_ids?: string[];
   attempt_tokens: Record<string, string>;
+  /** F3.0: the seed of each seeded segment's attempt; absent when the lesson has none. */
+  attempt_seeds?: Record<string, string>;
   /** GAP-FIX-R5 (B.24): present when the lesson offers approaches; null until the learner chooses. */
   approach_id?: string | null;
 }
@@ -80,6 +84,8 @@ interface V2Attempt {
   runId: string;
   versionId: string;
   tokens: Record<string, string>;
+  /** F3.0: the seed of each seeded segment's current attempt, renewed with its token. */
+  seeds: Record<string, string>;
   metSegmentIds: string[];
   attemptedSegmentIds: string[];
   viewedSegmentIds: string[];
@@ -188,6 +194,12 @@ function LessonRouteSession() {
       const servedSlug = typeof data.lesson?.course_slug === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(data.lesson.course_slug) ? data.lesson.course_slug : null;
       const ready = { document: data.document, locale: data.locale, narrationAudio: data.narration_audio, mentorStage: data.mentor_stage, adventureTheme: data.adventure_theme,
         recall: parseNarrativeRecall(data.narrative_recall), courseSlug: servedSlug };
+      // The document's Horizonte packs download before it is read; a pack that does not arrive is the retry screen, never a half-played piece.
+      try { await loadHorizontePacksFor(data.document); } catch (packError) {
+        if (!cancelled) setState({ status: 'error', code: 'LESSON_PACK_UNAVAILABLE', offline: isOfflineError(packError as { message?: string }) });
+        return;
+      }
+      if (cancelled) return;
       const clientDocument = loadLessonClientDocument(data.document);
       // GAP-FIX-R1 (OD-17): every playable v2 lesson pins a run, graded or not;
       // non-scored steps complete through Core's view receipts.
@@ -243,7 +255,7 @@ function LessonRouteSession() {
     const hints = hintsRef.current[segmentId];
     const parity = clientScorerVerdict(document, segmentId, answer);
     const seconds = timeOnTask.current?.take();
-    const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown }; diagnostic?: unknown }; replayed: boolean; retry_attempt_token?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
+    const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown }; diagnostic?: unknown }; replayed: boolean; retry_attempt_token?: string; retry_attempt_seed?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
       method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken, ...(hints ? { hints_used: hints } : {}),
         // Appendix P Part 8 (GAP-FIX-R2): the browser scorer's advisory reading; Core only records whether it agreed.
         ...(parity ? { client_verdict: parity } : {}),
@@ -254,8 +266,12 @@ function LessonRouteSession() {
     if (offer.success) setGuidedReview(offer.data);
     if (!data.verdict.correct && !data.replayed) {
       if (typeof data.retry_attempt_token !== 'string' || data.retry_attempt_token.length === 0) throw new Error('Could not renew v2 lesson attempt');
+      // A seeded segment renews its seed with its token, or it could not run again.
+      const seeded = Object.hasOwn(attempt.seeds, segmentId);
+      if (seeded && !isAttemptSeed(data.retry_attempt_seed)) throw new Error('Could not renew v2 lesson attempt seed');
       setState((current) => current.status === 'ready' && current.v2Attempt?.runId === attempt.runId
-        ? { ...current, v2Attempt: { ...current.v2Attempt, tokens: { ...current.v2Attempt.tokens, [segmentId]: data.retry_attempt_token! } } }
+        ? { ...current, v2Attempt: { ...current.v2Attempt, tokens: { ...current.v2Attempt.tokens, [segmentId]: data.retry_attempt_token! },
+          seeds: seeded ? { ...current.v2Attempt.seeds, [segmentId]: data.retry_attempt_seed! } : current.v2Attempt.seeds } }
         : current);
     }
     const quality = data.verdict.judgment?.quality;
@@ -386,7 +402,7 @@ function LessonRouteSession() {
       onView={state.v2Attempt ? viewV2 : undefined} onHelpUsed={helpUsed}
       onComplete={state.v2Attempt ? completeV2 : undefined} metSegmentIds={state.v2Attempt?.metSegmentIds}
       attemptedSegmentIds={state.v2Attempt?.attemptedSegmentIds} viewedSegmentIds={state.v2Attempt?.viewedSegmentIds}
-      approachId={state.v2Attempt?.approachId ?? null} onChooseApproach={state.v2Attempt ? chooseApproachV2 : undefined} />,
+      approachId={state.v2Attempt?.approachId ?? null} onChooseApproach={state.v2Attempt ? chooseApproachV2 : undefined} attemptSeeds={state.v2Attempt?.seeds} />,
     { locale: frame.locale, ageBand: frame.ageBand, pageTitle: frame.title ?? lessonTitle });
   }
 
@@ -403,6 +419,12 @@ function validateV2Attempt(document: LessonClientDocument, value: V2RunResponse 
   // GAP-FIX-R1: a lesson with no graded step pins a run with no tokens; its steps complete by view receipts.
   if (expected.length !== supplied.length || expected.some((id, index) => id !== supplied[index])) return null;
   if (supplied.some((id) => typeof value.attempt_tokens[id] !== 'string' || value.attempt_tokens[id]!.length === 0)) return null;
+  // F3.0: exactly the seeded server-graded segments carry a seed, each a 64-hex string.
+  const seededIds = document.segments.filter(segment => segment.grading === 'server' && isSeededHorizonteType(segment.type)).map(segment => segment.id).sort();
+  const seeds = value.attempt_seeds ?? {};
+  if (typeof seeds !== 'object' || seeds === null || Array.isArray(seeds)) return null;
+  const seeded = Object.keys(seeds).sort();
+  if (seeded.length !== seededIds.length || seeded.some((id, index) => id !== seededIds[index]) || seeded.some((id) => !isAttemptSeed(seeds[id]))) return null;
   const metSegmentIds = [...new Set(value.met_segment_ids)].sort();
   if (metSegmentIds.some((id) => !expected.includes(id))) return null;
   if (value.attempted_segment_ids !== undefined
@@ -418,7 +440,7 @@ function validateV2Attempt(document: LessonClientDocument, value: V2RunResponse 
   const offered = document.approaches?.options.map((option) => option.id) ?? [];
   if (value.approach_id !== undefined && value.approach_id !== null && (typeof value.approach_id !== 'string' || !offered.includes(value.approach_id))) return null;
   const approachId = typeof value.approach_id === 'string' ? value.approach_id : null;
-  return { runId: value.run_id, versionId: value.version_id, tokens: value.attempt_tokens, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, approachId };
+  return { runId: value.run_id, versionId: value.version_id, tokens: value.attempt_tokens, seeds, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, approachId };
 }
 
 /** A recovery projection cannot skip a CPA experience and jump the learner ahead. */

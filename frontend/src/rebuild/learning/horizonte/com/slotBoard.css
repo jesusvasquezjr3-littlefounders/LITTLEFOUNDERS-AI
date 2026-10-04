@@ -1,0 +1,21 @@
+/* F2.16 and F2.18: zones that take pieces, the piece tray and the text lines, the same as fin2 so a pack owns its own css. Tokens only. */
+.lf-slotboard { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-4); justify-items: start; container: lf-slotboard / inline-size; }
+.lf-slotzones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--spacing-3); inline-size: 100%; }
+.lf-slotzone { --zc: auto; --zr: auto; --zw: 1; --zh: 1; display: grid; align-content: start; gap: var(--spacing-1); min-inline-size: 0; min-block-size: calc(var(--hz-hit) + var(--spacing-8)); padding: var(--spacing-3); border: 1px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); outline: 2px solid transparent; }
+.lf-slotzone h3 { font-size: 1rem; }
+.lf-slotzone[data-drop-armed='true'], .lf-slotboard-tray[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-slotzone[data-drop-selected='true'], .lf-slotboard-tray[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-slotzone-note, .lf-piece-note { color: var(--content-muted); font-size: 0.875rem; }
+.lf-slotzone-pieces, .lf-slotboard-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-inline-size: 0; }
+.lf-slotboard-tray { min-block-size: var(--hz-hit); padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--sunken); outline: 2px solid transparent; }
+.lf-piece { display: grid; gap: var(--spacing-1); justify-items: start; max-inline-size: 100%; }
+.lf-piece .lf-hz-handle { max-inline-size: 100%; }
+.lf-slotboard-status { font-weight: 800; max-inline-size: 60ch; }
+.lf-slotzone--static { background: var(--sunken); }
+@container lf-slotboard (min-width: 40rem) {
+  .lf-slotzones--grid { --zcols: 1; grid-template-columns: repeat(var(--zcols), minmax(0, 1fr)); }
+  .lf-slotzones--grid > .lf-slotzone { grid-column: var(--zc) / span var(--zw); grid-row: var(--zr) / span var(--zh); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lf-slotzone, .lf-slotboard-tray { transition: outline-color var(--dur-component) var(--ease-standard); }
+}

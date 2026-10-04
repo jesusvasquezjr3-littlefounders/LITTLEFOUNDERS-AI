@@ -18,6 +18,8 @@ npm run v2:author -- --skeleton <skeleton.json> --out <authored.json> --max-usd 
 - The model gets the brief, the skeleton's exact copy shape, the controlled glossary for all three markets (OD-11) and the tone and Copy Budget rules. Every draft is emitted and gated (gates 11-16); a blocked draft goes back with its itemized problems, at most two corrective rounds. A draft still blocked is not written.
 - Appendix C Part 1.3 (Forge Gate Pass Rate per gate, first submission): every run, dry runs included, appends one line per market of the first draft (blocked or not) to `gate-submissions.jsonl` in the run directory, with `pipeline: "v2"`, the `lesson_id` as `slotId`, and the gates that draft failed (`evaluated: false` and gate 1 when the reply did not parse). Pass `--run-id <id>` to share `runs/<id>/` across an authoring batch; without it the log lands next to `--out`. The command prints that directory's per-gate first-submission pass rate, v1 and v2 lines apart. The retired v1 commands cannot start a new run.
 - A plan may give a rubric per market (`rubric_by_locale`) when a market's scenario changes the answer (B.16, F-06); each market's answer keys are written from its own entry.
+- **Horizonte segment types in a skeleton.** The skeleton fixes the segment types, so choosing a Horizonte type is a Stage 0 decision. The 18 packs register their types once in `coursegen/src/v2/horizonte/index.ts`; `coursegen/src/v2/fixtures/plans-horizonte/` holds one working plan per type (copy one as the skeleton: its payload, rubric and labels are the shape the model must fill). `v2:author` adds each used type's own authoring guidance (age band, what the prompt must never state, the labels it needs) to the system prompt, and `coursegen/src/__tests__/horizonte/guidanceCoverage.test.ts` fails if a registered type has none. A neutral-payload type keeps ids, enums and numbers in the payload; its learner text goes in `prompt`, `help`, `feedback`, `labels` and, for algebra boards, `notation.spokenText`.
+- Zero-spend check of those plans: `npm run v2:emit -- --horizonte --out <dir>` then `npm --prefix backend run forge-v2:check -- <dir>/documents.json`. The root `npm run forge:v2:dry-run` runs both the shared plans and the Horizonte plans.
 
 ## 2. Check, verify and publish
 
@@ -27,7 +29,11 @@ cd coursegen
 npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir> --dry-run
 # Owner-run: the same, then verify:course and Vault's reviewed publication transaction per market.
 npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir>
+# Owner-run, when a document holds a Horizonte segment type (see below).
+npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir> --core-has-horizonte
 ```
+
+**Deploy order: Core first, then Forge.** The Core check in step 2 runs the Core source in this checkout, so it passes for a segment type the deployed Core does not know yet. An older Core answers 422 `UNSUPPORTED_LESSON` for a version that holds such a type: a new lesson stays unreachable, and a pending version that staff later release breaks a lesson that is already live. Every Horizonte type is new, so a Vault write (not a dry run) of a document that holds one stops at the Core check unless `--core-has-horizonte` confirms that the Core deploy is live. Deploy Core, then the browser, then publish.
 
 The chain stops at the first failing stage:
 

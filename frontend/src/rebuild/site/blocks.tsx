@@ -1,4 +1,4 @@
-import { useId, useState, type MouseEvent, type ReactNode } from 'react';
+import { Children, useId, useState, type MouseEvent, type ReactNode } from 'react';
 import { Art, Button, ButtonLink, InlineNotice, MENTOR_CHARACTERS, MENTOR_NAMES, MentorAvatar, RadioGroup, useRebuildEnvironment } from '../design/controls';
 import { findMentorAvatar } from '../design/assets';
 import type { Locale } from '../design/copyBudget';
@@ -90,10 +90,10 @@ export function SiteSection({ tone = 'default', heading, headingId, children, sp
 }) {
   const generated = useId();
   const id = headingId ?? generated;
+  const parts = split && heading ? Children.toArray(children) : null;
   return <section className={`lf-site-section lf-site-section--${tone}${split ? ` lf-site-section--split lf-site-section--split-${split}` : ''}${className ? ` ${className}` : ''}`}
     data-section aria-labelledby={heading ? id : undefined}>
-    {heading ? <h2 id={id} data-copy-role="heading">{heading}</h2> : null}
-    {children}
+    {parts ? <><div className="lf-site-section-copy"><h2 id={id} data-copy-role="heading">{heading}</h2>{parts[0]}</div>{parts.slice(1)}</> : <>{heading ? <h2 id={id} data-copy-role="heading">{heading}</h2> : null}{children}</>}
   </section>;
 }
 
@@ -181,7 +181,7 @@ export function DecisionDemo<T extends string>({ name, question, options, prompt
 
 /** Numbered steps as a staircase on wide containers (03 §3.3), one reading column below. */
 export function SiteSteps({ label, steps }: { label: string; steps: readonly { title: string; body: string }[] }) {
-  return <ol className="lf-site-steps" aria-label={label}>
+  return <ol className="lf-site-steps" data-uniform="sequence" aria-label={label}>
     {steps.map((step, index) => <li key={step.title} className="lf-site-step">
       <span className="lf-site-step-number" data-copy-role="data" aria-hidden="true">{index + 1}</span>
       <h3 data-copy-role="heading">{step.title}</h3>

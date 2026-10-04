@@ -1,0 +1,203 @@
+import { countOf, isCountKind, isSolidId, solidsWithCount, SOLID_IDS, type CountKind, type SolidId } from './model.js';
+import {
+  cellsOf, completions, inGrid, isCubeNet, isFaceName, isNetGrid, labelSolutions, netBounds, NET_GRID_LIMITS, NET_SQUARES,
+  type FaceName, type NetCell, type NetGrid,
+} from './net.js';
+import {
+  attach, buildNet, buildSolid, completionsOf, edgeBetween, faceIndex, isPolyFaceName, netOverlaps, polyCompleteFixed, polyLabelSolutions,
+  POLY_LABEL_FIXED, POLY_LIMITS, readSolidSpec, SHEET_LIMITS, surfaceAreaOf,
+  type Hinge, type PolyFaceName, type PolySolidSpec, type Sheet,
+} from './polynet.js';
+import { isHeights, isStackGoal, isStackSize, matchesGoal, solveStack, stackTotal, type Heights, type StackGoal } from './stack.js';
+
+export const VIEWER_MIN_SOLIDS = 2;
+export const VIEWER_COUNT_LIMIT = 12;
+export const NET_EDGE_LIMIT = 20;
+export const LABEL_FIXED_LIMITS = { min: 1, max: 3 } as const;
+export const COMPLETE_FIXED_LIMITS = { min: 2, max: 5 } as const;
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+const whole = (value: unknown, minimum: number, maximum: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= minimum && value <= maximum;
+const exactKeys = (value: Record<string, unknown>, keys: readonly string[]): boolean => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+
+export interface ViewerPayload { solids: SolidId[]; find: { kind: CountKind; count: number }; report: CountKind }
+
+export function readViewerPayload(value: unknown): ViewerPayload | null {
+  if (!isRecord(value) || !exactKeys(value, ['solids', 'find', 'report'])) return null;
+  const { solids, find, report } = value;
+  if (!Array.isArray(solids) || solids.length < VIEWER_MIN_SOLIDS || solids.length > SOLID_IDS.length || !solids.every(isSolidId) || new Set(solids).size !== solids.length) return null;
+  if (!isRecord(find) || !exactKeys(find, ['kind', 'count']) || !isCountKind(find.kind) || !whole(find.count, 0, VIEWER_COUNT_LIMIT) || !isCountKind(report)) return null;
+  return { solids: [...solids] as SolidId[], find: { kind: find.kind, count: find.count }, report };
+}
+
+/** The one solid that has the counted thing, or null when none or several do (the question must have exactly one answer). */
+export function viewerSolid(payload: ViewerPayload): SolidId | null {
+  const matches = solidsWithCount(payload.find.kind, payload.find.count, payload.solids);
+  return matches.length === 1 ? matches[0]! : null;
+}
+
+export function viewerProblem(payload: ViewerPayload): string | null {
+  if (payload.report === payload.find.kind) return 'The question counts a different thing than the one it searches by';
+  return viewerSolid(payload) === null ? 'Exactly one listed solid must match the searched count' : null;
+}
+
+export const viewerAnswer = (payload: ViewerPayload): { solid: SolidId; count: string } | null => {
+  const solid = viewerSolid(payload);
+  return solid === null ? null : { solid, count: String(countOf(solid, payload.report)) };
+};
+
+export interface LabelNet { mode: 'label'; cells: NetCell[]; fixed: { cell: number; name: FaceName }[]; edge: number }
+export interface CompleteNet { mode: 'complete'; grid: NetGrid; fixed: NetCell[]; edge: number }
+/** The learner computes the surface area of the cube from the net and the edge length printed on it. */
+export interface AreaNet { mode: 'area'; cells: NetCell[]; edge: number }
+export type NetPayload = LabelNet | CompleteNet | AreaNet;
+
+export function readNetPayload(value: unknown): NetPayload | null {
+  if (!isRecord(value)) return null;
+  if (value.mode === 'label') {
+    if (!exactKeys(value, ['mode', 'cells', 'fixed', 'edge']) || !cellsOf(value.cells, NET_SQUARES, NET_SQUARES) || !whole(value.edge, 1, NET_EDGE_LIMIT)) return null;
+    const fixed = value.fixed;
+    if (!Array.isArray(fixed) || fixed.length < LABEL_FIXED_LIMITS.min || fixed.length > LABEL_FIXED_LIMITS.max) return null;
+    const read: LabelNet['fixed'] = [];
+    for (const entry of fixed) {
+      if (!isRecord(entry) || !exactKeys(entry, ['cell', 'name']) || !whole(entry.cell, 0, NET_SQUARES - 1) || !isFaceName(entry.name)) return null;
+      read.push({ cell: entry.cell, name: entry.name });
+    }
+    return { mode: 'label', cells: value.cells.map((cell) => [cell[0]!, cell[1]!] as NetCell), fixed: read, edge: value.edge };
+  }
+  if (value.mode === 'complete') {
+    if (!exactKeys(value, ['mode', 'grid', 'fixed', 'edge']) || !isNetGrid(value.grid) || !whole(value.edge, 1, NET_EDGE_LIMIT)) return null;
+    const grid = value.grid;
+    if (!cellsOf(value.fixed, COMPLETE_FIXED_LIMITS.min, COMPLETE_FIXED_LIMITS.max)) return null;
+    const fixed = value.fixed.map((cell) => [cell[0]!, cell[1]!] as NetCell);
+    if (!fixed.every((cell) => inGrid(cell, grid))) return null;
+    return { mode: 'complete', grid: { cols: grid.cols, rows: grid.rows }, fixed, edge: value.edge };
+  }
+  if (value.mode === 'area') {
+    if (!exactKeys(value, ['mode', 'cells', 'edge']) || !cellsOf(value.cells, NET_SQUARES, NET_SQUARES) || !whole(value.edge, 1, NET_EDGE_LIMIT)) return null;
+    return { mode: 'area', cells: value.cells.map((cell) => [cell[0]!, cell[1]!] as NetCell), edge: value.edge };
+  }
+  return null;
+}
+
+export const fixedNames = (fixed: LabelNet['fixed']): Record<number, FaceName> => Object.fromEntries(fixed.map((entry) => [entry.cell, entry.name]));
+
+/** The authoring rules a net payload must meet: it can be solved, and its label mode has one answer. */
+export function netProblem(payload: NetPayload): string | null {
+  if (payload.mode === 'area') {
+    if (!isCubeNet(payload.cells)) return 'The six squares must fold into a cube';
+    const bounds = netBounds(payload.cells);
+    return bounds.cols > NET_GRID_LIMITS.maxCols || bounds.rows > NET_GRID_LIMITS.maxRows ? 'The net must fit on a grid of 5 by 4' : null;
+  }
+  if (payload.mode === 'label') {
+    if (!isCubeNet(payload.cells)) return 'The six squares must fold into a cube';
+    const bounds = netBounds(payload.cells);
+    if (bounds.cols > NET_GRID_LIMITS.maxCols || bounds.rows > NET_GRID_LIMITS.maxRows) return 'The net must fit on a grid of 5 by 4';
+    if (new Set(payload.fixed.map((entry) => entry.cell)).size !== payload.fixed.length) return 'A square is named once';
+    if (new Set(payload.fixed.map((entry) => entry.name)).size !== payload.fixed.length) return 'A face name is given once';
+    return labelSolutions(payload.cells, fixedNames(payload.fixed)).length === 1 ? null : 'The given names must leave exactly one way to name the rest';
+  }
+  return completions(payload.fixed, payload.grid, NET_SQUARES - payload.fixed.length, 1).count > 0 ? null : 'The given squares cannot be completed into a cube net';
+}
+
+export interface StackPayload { size: 2 | 3; start: Heights; goal: StackGoal; fewest: boolean }
+
+export function readStackPayload(value: unknown): StackPayload | null {
+  if (!isRecord(value) || !exactKeys(value, ['size', 'start', 'goal', 'fewest'])) return null;
+  const { size, start, goal, fewest } = value;
+  if (!isStackSize(size) || !isHeights(start, size) || !isStackGoal(goal, size) || typeof fewest !== 'boolean') return null;
+  return { size, start: start.map((row) => [...row]), goal: structuredClone(goal), fewest };
+}
+
+const minimums = new Map<string, number | null>();
+/** The fewest cubes any stack of the grid needs to match the goal (null when none does); exact, memoised for a bounded set of goals. */
+export function stackMinimum(goal: StackGoal, size: number): number | null {
+  const key = `${size}|${JSON.stringify(goal)}`;
+  if (!minimums.has(key)) {
+    if (minimums.size >= 64) minimums.clear();
+    minimums.set(key, solveStack(goal, size, undefined, 1).minimum);
+  }
+  return minimums.get(key) ?? null;
+}
+
+export function stackProblem(payload: StackPayload): string | null {
+  const minimum = stackMinimum(payload.goal, payload.size);
+  if (minimum === null) return 'No stack of this grid matches the goal';
+  if (minimum < 1) return 'The goal must need at least one cube';
+  if (stackTotal(payload.start) < 1) return 'The start holds at least one cube';
+  const done = matchesGoal(payload.start, payload.goal) && (!payload.fewest || stackTotal(payload.start) === minimum);
+  return done ? 'The start must not already be the answer' : null;
+}
+
+/** F4.2 for the solids that are not cubes: the model is in polynet.ts, the authoring rules are here. */
+export interface SolidLabel { mode: 'label'; solid: PolySolidSpec; net: string; fixed: { panel: number; name: PolyFaceName }[] }
+export interface SolidComplete { mode: 'complete'; solid: PolySolidSpec; root: PolyFaceName; fixed: { parent: PolyFaceName; child: PolyFaceName }[]; sheet: Sheet }
+export interface SolidArea { mode: 'area'; solid: PolySolidSpec; net: string }
+export type SolidNetPayload = SolidLabel | SolidComplete | SolidArea;
+
+export function readSolidNetPayload(value: unknown): SolidNetPayload | null {
+  if (!isRecord(value)) return null;
+  const spec = readSolidSpec(value.solid);
+  if (!spec) return null;
+  const faces = buildSolid(spec)?.faces.length ?? 0;
+  if (value.mode === 'label') {
+    if (!exactKeys(value, ['mode', 'solid', 'net', 'fixed']) || typeof value.net !== 'string' || !Array.isArray(value.fixed)) return null;
+    if (value.fixed.length < POLY_LABEL_FIXED.min || value.fixed.length > POLY_LABEL_FIXED.max) return null;
+    const fixed: SolidLabel['fixed'] = [];
+    for (const entry of value.fixed) {
+      if (!isRecord(entry) || !exactKeys(entry, ['panel', 'name']) || !whole(entry.panel, 0, faces - 1) || !isPolyFaceName(entry.name)) return null;
+      fixed.push({ panel: entry.panel, name: entry.name });
+    }
+    return { mode: 'label', solid: spec, net: value.net, fixed };
+  }
+  if (value.mode === 'complete') {
+    if (!exactKeys(value, ['mode', 'solid', 'root', 'fixed', 'sheet']) || !isPolyFaceName(value.root) || !Array.isArray(value.fixed)) return null;
+    const range = polyCompleteFixed(spec.kind);
+    if (value.fixed.length < range.min || value.fixed.length > range.max) return null;
+    const sheet = value.sheet;
+    if (!isRecord(sheet) || !exactKeys(sheet, ['width', 'height']) || !whole(sheet.width, SHEET_LIMITS.min, SHEET_LIMITS.max) || !whole(sheet.height, SHEET_LIMITS.min, SHEET_LIMITS.max)) return null;
+    const fixed: SolidComplete['fixed'] = [];
+    for (const entry of value.fixed) {
+      if (!isRecord(entry) || !exactKeys(entry, ['parent', 'child']) || !isPolyFaceName(entry.parent) || !isPolyFaceName(entry.child)) return null;
+      fixed.push({ parent: entry.parent, child: entry.child });
+    }
+    return { mode: 'complete', solid: spec, root: value.root, fixed, sheet: { width: sheet.width, height: sheet.height } };
+  }
+  if (value.mode === 'area') {
+    if (!exactKeys(value, ['mode', 'solid', 'net']) || typeof value.net !== 'string') return null;
+    return { mode: 'area', solid: spec, net: value.net };
+  }
+  return null;
+}
+
+/** The hinges a complete payload gives, as indices into the solid's faces; null when one is not between two faces that share an edge. */
+export function givenHinges(payload: SolidComplete): { root: number; hinges: Hinge[] } | null {
+  const solid = buildSolid(payload.solid);
+  if (!solid) return null;
+  const root = faceIndex(solid, payload.root);
+  const hinges = payload.fixed.map((entry) => ({ parent: faceIndex(solid, entry.parent), child: faceIndex(solid, entry.child) }));
+  if (root < 0 || hinges.some((hinge) => hinge.parent < 0 || hinge.child < 0 || !edgeBetween(solid, hinge.parent, hinge.child))) return null;
+  return { root, hinges };
+}
+
+/** The authoring rules of a solid net: it can be solved, label mode has one answer, and the sheet of complete mode rules some net out. */
+export function solidNetProblem(payload: SolidNetPayload): string | null {
+  const solid = buildSolid(payload.solid);
+  if (!solid) return 'The solid is not one this piece can build';
+  if (payload.mode === 'complete') {
+    const given = givenHinges(payload);
+    if (!given) return 'A given hinge must join two faces that share an edge, and the root must be a face of the solid';
+    if (new Set(given.hinges.map((hinge) => hinge.child)).size !== given.hinges.length) return 'A face hangs from one hinge only';
+    if (attach(given.root, given.hinges).orphans.length > 0) return 'Every given hinge must hang from the root face';
+    const onSheet = completionsOf(solid, given.root, given.hinges, payload.sheet, 0).count;
+    if (onSheet === 0) return 'The given hinges cannot be completed into a net that fits the sheet';
+    return completionsOf(solid, given.root, given.hinges, null, 0).count > onSheet ? null : 'The sheet must rule out at least one net';
+  }
+  const net = buildNet(solid, payload.net);
+  if (!net) return 'This solid has no net with that name';
+  if (netOverlaps(net)) return 'The net overlaps itself';
+  if (payload.mode === 'area') return surfaceAreaOf(solid) <= POLY_LIMITS.areaMaximum ? null : 'The surface area is too large to ask';
+  if (new Set(payload.fixed.map((entry) => entry.panel)).size !== payload.fixed.length) return 'A panel is named once';
+  if (new Set(payload.fixed.map((entry) => entry.name)).size !== payload.fixed.length) return 'A face name is given once';
+  return polyLabelSolutions(net, Object.fromEntries(payload.fixed.map((entry) => [entry.panel, entry.name]))).length === 1 ? null : 'The given names must leave exactly one way to name the rest';
+}

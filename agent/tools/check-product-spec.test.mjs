@@ -44,6 +44,35 @@ test('the 3D stage bridge is two named files, never a directory, and grants no l
   assert.deepEqual(boundaryFailures(root, file('frontend/src/rebuild/mentor/CheckIn.tsx'), "import { Button } from '../design/controls';\nimport en from '@/i18n/en-US/rebuild-mentor.json';"), []);
 });
 
+test('OD-35: only the solids viewer folder and the named AR pilot folder may import the 3D renderer', async () => {
+  const { boundaryFailures, SOLIDS_BRIDGE_PREFIXES } = await import('./check-product-spec.mjs');
+  const root = resolve('/repo');
+  const file = (path) => resolve(root, path);
+  const stage = "import { TutorStage } from '@/tutor-scene/TutorStage';\nimport { getDeviceProbe } from '@/tutor-scene/quality';\n";
+  assert.deepEqual(SOLIDS_BRIDGE_PREFIXES, ['frontend/src/rebuild/learning/horizonte/solids/', 'frontend/src/rebuild/learning/horizonte/space2/ar/']);
+  assert.deepEqual(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids/SolidsViewer.tsx'), stage), []);
+  assert.deepEqual(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids/nested/Scene.tsx'), stage), []);
+  assert.deepEqual(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/space2/ar/ArPilot.tsx'), stage), []);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/space2/SpaceBoard.tsx'), stage).length, 2);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/golden/TenFrameBoard.tsx'), stage).length, 2);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids-extra/Board.tsx'), stage).length, 2);
+  assert.match(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids/SolidsViewer.tsx'), "import { Button } from '@/components/ui';")[0], /Legacy dependency/);
+});
+
+test('OD-35: the shared scene canvas is a solids-folder target only', async () => {
+  const { boundaryFailures, SOLIDS_BRIDGE_TARGETS } = await import('./check-product-spec.mjs');
+  const root = resolve('/repo');
+  const file = (path) => resolve(root, path);
+  const canvas = "import { SceneCanvas } from '@/tutor-scene/SceneCanvas';\n";
+  assert.deepEqual(SOLIDS_BRIDGE_TARGETS, ['frontend/src/tutor-scene/SceneCanvas']);
+  assert.deepEqual(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids/SolidScene3D.tsx'), canvas), []);
+  assert.deepEqual(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids/SolidScene3D.tsx'), "import { SceneCanvas } from '../../../../tutor-scene/SceneCanvas';"), []);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/golden/TenFrameBoard.tsx'), canvas).length, 1);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/learning/CompactMentorStage.tsx'), canvas).length, 1);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/mentor/MentorStage.tsx'), canvas).length, 1);
+  assert.equal(boundaryFailures(root, file('frontend/src/rebuild/learning/horizonte/solids/SolidScene3D.tsx'), "import { Canvas } from '@/tutor-scene/Character3D';").length, 1);
+});
+
 test('retired lesson UI cannot return through any route, preview or adapter', async () => {
   const { legacyPlayerFailures } = await import('./check-product-spec.mjs');
   const root = resolve('/repo');

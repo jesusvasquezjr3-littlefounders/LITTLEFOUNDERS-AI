@@ -1,0 +1,25 @@
+/* F2.16 networks and counting: the map, the choice tree and Pascal's triangle. A neutral board: a surface, quiet lines, one ink for what the learner chose (V2, V3). Tokens only. */
+svg.lf-net { display: block; inline-size: 100%; max-inline-size: 36rem; block-size: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
+.lf-net-edge { stroke: var(--edge); stroke-width: 2.5; stroke-linecap: round; }
+.lf-net-edge--used { stroke: var(--primary-strong); stroke-width: 4; }
+.lf-net-node { fill: var(--surface); stroke: var(--edge); stroke-width: 2.5; }
+.lf-net-node--on { fill: var(--primary-strong); stroke: var(--primary-strong); }
+
+.lf-net-steps { display: grid; gap: var(--spacing-2); justify-items: start; max-inline-size: 42rem; }
+.lf-net-steps-nav { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+
+/* Pascal: every cell is a 64 px target, so the widest rows scroll sideways instead of shrinking the targets. */
+.lf-pascal-scroll { inline-size: 100%; overflow-x: auto; padding-block: var(--spacing-1); }
+.lf-pascal { display: grid; gap: var(--spacing-2); inline-size: max-content; min-inline-size: 100%; justify-items: center; }
+.lf-pascal-row { display: flex; gap: var(--spacing-2); }
+.lf-pascal-cell {
+  box-sizing: border-box; min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); padding: var(--spacing-1);
+  border: 2px solid var(--outline); border-radius: var(--rounded-md); background: var(--surface); color: var(--content);
+  font: var(--type-label); font-variant-numeric: tabular-nums; cursor: pointer;
+}
+.lf-pascal-cell[aria-pressed='true'] { border-color: var(--primary-strong); background: var(--primary-strong); color: var(--on-primary); }
+.lf-pascal-cell:disabled { cursor: default; }
+.lf-pascal-cell:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-pascal-cell { transition: background-color var(--dur-component) var(--ease-standard), border-color var(--dur-component) var(--ease-standard); }
+}

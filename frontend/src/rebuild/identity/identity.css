@@ -8,6 +8,8 @@
 
 /* ---- A sign-in screen: one column inside the sign-in shell ---- */
 .lf-rebuild .lf-auth-page { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+.lf-rebuild .lf-auth-page .lf-auth-form { gap: var(--spacing-4); }
+.lf-rebuild .lf-auth-page .lf-auth-fields { gap: var(--spacing-4); }
 .lf-rebuild .lf-auth-page :is(ol, ul) { margin: 0; padding: 0; list-style: none; }
 .lf-rebuild .lf-auth-intro { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-rebuild .lf-auth-intro h1:focus { outline: none; }
@@ -131,6 +133,10 @@
   color: var(--content);
 }
 .lf-rebuild .lf-onboarding-panel h1:focus { outline: none; }
+.lf-rebuild .lf-onboarding-art { inline-size: 180px; max-inline-size: 100%; justify-self: center; }
+.lf-rebuild .lf-onboarding-panel > .lf-brand-mark { justify-self: center; }
+.lf-rebuild [data-screen='onboarding'] .lf-single-state-main,
+.lf-rebuild [data-screen='onboarding'] .lf-single-state-actions { max-inline-size: 560px; }
 /* On the hue's tint, a field is the contrasting fill (the surface), not the sunken well it is on a neutral page. */
 .lf-rebuild .lf-onboarding-panel .lf-input { background: var(--surface); }
 /* The same for a choice row: its resting fill is the hue's tint, which the panel already is (the chosen row stays the hue). */

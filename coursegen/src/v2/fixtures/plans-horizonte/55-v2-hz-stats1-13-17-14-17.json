@@ -1,0 +1,182 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-stats1",
+  "lesson_id": "v2-hz-stats1-13-17-14-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-stats1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Zara pone datos en un tablero para elegir el centro que mejor los resume.",
+  "title": {
+    "en-US": "Fit the 95% band",
+    "es-MX": "Ajusta la banda del 95%",
+    "pt-BR": "Ajuste a faixa de 95%"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "normal-95",
+      "type": "stats.normal.v2",
+      "grading": "server",
+      "visual": {
+        "type": "normal-curve"
+      },
+      "payload": {
+        "axis": {
+          "min": 0,
+          "max": 100
+        },
+        "start": {
+          "mean": 30,
+          "sd": 10
+        },
+        "sdMax": 20,
+        "band": {
+          "rule": 2,
+          "low": 40,
+          "high": 60
+        }
+      },
+      "rubric": {
+        "target": {
+          "mean": 50,
+          "sd": 5
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fit the curve so 40 to 60 is two standard deviations either side of the mean.",
+          "feedback": {
+            "met": "You read the data and chose the center that fits it.",
+            "not_yet": "Look at the shape of the data again before you decide."
+          }
+        },
+        "es-MX": {
+          "prompt": "Ajusta la curva para que 40 a 60 sean dos desviaciones estándar a cada lado de la media.",
+          "feedback": {
+            "met": "Leíste los datos y elegiste el centro que les queda.",
+            "not_yet": "Mira la forma de los datos otra vez antes de decidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ajuste a curva para que 40 a 60 sejam dois desvios padrão de cada lado da média.",
+          "feedback": {
+            "met": "Você leu os dados e escolheu o centro que combina com eles.",
+            "not_yet": "Olhe o formato dos dados de novo antes de decidir."
+          }
+        }
+      }
+    },
+    {
+      "id": "binomial-fair",
+      "type": "stats.binomial.v2",
+      "grading": "server",
+      "visual": {
+        "type": "binomial-bars"
+      },
+      "payload": {
+        "nMax": 40,
+        "start": {
+          "n": 10,
+          "pct": 30
+        },
+        "goal": {
+          "mean": 10,
+          "variance": 5
+        }
+      },
+      "rubric": {
+        "target": {
+          "n": 20,
+          "pct": 50
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Set n and the chance so the mean is 10 and the variance is 5.",
+          "feedback": {
+            "met": "You read the data and chose the center that fits it.",
+            "not_yet": "Look at the shape of the data again before you decide."
+          }
+        },
+        "es-MX": {
+          "prompt": "Ajusta n y la probabilidad para que la media sea 10 y la varianza 5.",
+          "feedback": {
+            "met": "Leíste los datos y elegiste el centro que les queda.",
+            "not_yet": "Mira la forma de los datos otra vez antes de decidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ajuste n e a chance para que a média seja 10 e a variância 5.",
+          "feedback": {
+            "met": "Você leu os dados e escolheu o centro que combina com eles.",
+            "not_yet": "Olhe o formato dos dados de novo antes de decidir."
+          }
+        }
+      }
+    },
+    {
+      "id": "clt-shrink",
+      "type": "stats.clt.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sampling-mean"
+      },
+      "payload": {
+        "weights": [
+          6,
+          1,
+          1,
+          1,
+          1,
+          6
+        ],
+        "nMax": 25,
+        "start": {
+          "n": 1
+        },
+        "goal": {
+          "shrink": 3
+        }
+      },
+      "rubric": {
+        "target": {
+          "n": 9
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick the sample size that makes the spread of the mean 3 times smaller.",
+          "feedback": {
+            "met": "You read the data and chose the center that fits it.",
+            "not_yet": "Look at the shape of the data again before you decide."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige el tamaño de muestra que reduce 3 veces la dispersión de la media.",
+          "feedback": {
+            "met": "Leíste los datos y elegiste el centro que les queda.",
+            "not_yet": "Mira la forma de los datos otra vez antes de decidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha o tamanho da amostra que reduz 3 vezes a dispersão da média.",
+          "feedback": {
+            "met": "Você leu os dados e escolheu o centro que combina com eles.",
+            "not_yet": "Olhe o formato dos dados de novo antes de decidir."
+          }
+        }
+      }
+    }
+  ]
+}

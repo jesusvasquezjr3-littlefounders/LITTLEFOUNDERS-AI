@@ -1,0 +1,226 @@
+import { createPrng } from '../seed/prng.js';
+
+export const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
+export const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+/** A plain object whose own keys are exactly `keys`: a response, rubric or payload with an extra or missing field is malformed. */
+export const hasOnly = (value: unknown, keys: readonly string[]): value is Record<string, unknown> =>
+  isRecord(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
+export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
+
+export const SCENARIOS = ['portfolio', 'retirement', 'insurance', 'life'] as const;
+export type Scenario = (typeof SCENARIOS)[number];
+
+/** Every figure is whole money in the generic Horizonte currency; no float ever decides a verdict. */
+export const MONEY_MAX = 1_000_000;
+export const TARGET_MAX = 10_000_000;
+export const FUTURES = 100;
+/** Each chapter one of these equally likely outcomes happens, drawn with `below(OUTCOMES)`. */
+export const OUTCOMES = 8;
+export const PERIODS_MIN = 2;
+export const PERIODS_MAX = 5;
+export const CHOICES_MIN = 3;
+export const CHOICES_MAX = 8;
+export const GOAL_MIN = 50;
+export const GOAL_MAX = 99;
+/** A choice reaches the goal reliably when 100 futures meet it at least `goal` times with chance 1 - SOLVE_TAIL. */
+export const SOLVE_TAIL = 1e-5;
+/** A choice that is not an answer reaches the goal on a run with chance at most this, so the board never shows a goal the check refuses. */
+export const MISS_TAIL = 1e-4;
+
+/** Years one chapter stands for, by scenario: the board counts time in chapters and labels the axis in years. */
+export const CHAPTER_YEARS: Readonly<Record<Scenario, number>> = { portfolio: 4, retirement: 4, insurance: 1, life: 2 };
+
+/**
+ * What one chapter can bring, by outcome number. Portfolio and retirement: the return of stocks or of a mixed fund in percent.
+ * Insurance and life: a cost in money (0 is a quiet chapter). Public on purpose: the board lists the whole bag.
+ */
+export const OUTCOME_TABLE: Readonly<Record<Scenario, readonly number[]>> = {
+  portfolio: [-30, -8, 6, 16, 26, 36, 50, 72],
+  retirement: [-18, -6, 3, 8, 12, 17, 24, 34],
+  insurance: [0, 0, 0, 0, 400, 1000, 3000, 9000],
+  life: [0, 0, 0, 0, 300, 700, 1500, 3500],
+};
+/** Percent a safe holding grows per chapter, a premium per covered point, the percent debt costs and the percent savings earn per chapter. */
+export const BOND_PCT = 10;
+export const PREMIUM_PER_POINT = 20;
+export const DEBT_PCT = 25;
+export const SAVE_PCT = 2;
+
+/** Which of the reliable choices is the answer: any of them, the largest (the most risk or spending that still holds) or the smallest (the least cover that still holds). */
+export const ANSWER_RULE: Readonly<Record<Scenario, 'all' | 'highest' | 'lowest'>> = { portfolio: 'highest', retirement: 'highest', insurance: 'lowest', life: 'all' };
+
+export type Payload = {
+  scenario: Scenario;
+  periods: number;
+  cash: number;
+  debt: number;
+  flow: number;
+  finish: number;
+  floor: number;
+  goal: number;
+  choices: number[];
+  start: number;
+};
+export const PAYLOAD_KEYS = ['scenario', 'periods', 'cash', 'debt', 'flow', 'finish', 'floor', 'goal', 'choices', 'start'] as const;
+
+const pct = (amount: number, percent: number): number => Math.trunc((amount * percent) / 100);
+
+export type Books = readonly [cash: number, debt: number];
+
+/** One chapter of the learner's life under `choice`, after outcome number `outcome`. Pure whole-number arithmetic. */
+export function advance(scenario: Scenario, flow: number, books: Books, choice: number, outcome: number): Books {
+  const [cash, debt] = books;
+  const effect = OUTCOME_TABLE[scenario][outcome] as number;
+  if (scenario === 'portfolio') {
+    const wealth = cash + flow;
+    const stock = pct(wealth, choice);
+    const bond = wealth - stock;
+    return [stock + pct(stock, effect) + bond + pct(bond, BOND_PCT), 0];
+  }
+  if (scenario === 'retirement') {
+    const left = Math.max(0, cash + flow - choice);
+    return [left + pct(left, effect), 0];
+  }
+  if (scenario === 'insurance') return [cash + flow - choice * PREMIUM_PER_POINT - pct(effect, 100 - choice), 0];
+  const toDebt = Math.min(debt, pct(flow, choice));
+  let cashNow = cash + (flow - toDebt) - effect;
+  let debtNow = debt - toDebt;
+  if (cashNow < 0) { debtNow -= cashNow; cashNow = 0; }
+  return [cashNow + pct(cashNow, SAVE_PCT), debtNow + pct(debtNow, DEBT_PCT)];
+}
+
+/** What counts toward the target: all money held less any debt. */
+export const worth = (books: Books): number => books[0] - books[1];
+/** What must stay above the floor in every chapter: the cash on hand (the whole worth, where there is no debt). */
+export const cushion = (scenario: Scenario, books: Books): number => (scenario === 'life' ? books[0] : worth(books));
+
+export const succeeded = (payload: Payload, final: number, lowest: number): boolean => final >= payload.finish && lowest >= payload.floor;
+
+/** The outcome numbers of every future, future by future, chapter by chapter: the same for every choice, so a choice is judged on the same futures. */
+export function drawOutcomes(seed: string, periods: number): Uint8Array {
+  const prng = createPrng(seed);
+  const outcomes = new Uint8Array(FUTURES * periods);
+  for (let index = 0; index < outcomes.length; index += 1) outcomes[index] = prng.below(OUTCOMES);
+  return outcomes;
+}
+
+export type Future = { path: number[]; cushions: number[]; lowest: number; ok: boolean };
+
+/** One future per run: the worth and the cushion at the start and after each chapter, the lowest cushion met on the way, and whether it succeeded. */
+export function futuresOf(seed: string, payload: Payload, choice: number): Future[] {
+  const outcomes = drawOutcomes(seed, payload.periods);
+  const futures: Future[] = [];
+  for (let future = 0; future < FUTURES; future += 1) {
+    let books: Books = [payload.cash, payload.debt];
+    const path = [worth(books)];
+    const cushions = [cushion(payload.scenario, books)];
+    let lowest = Number.POSITIVE_INFINITY;
+    for (let period = 0; period < payload.periods; period += 1) {
+      books = advance(payload.scenario, payload.flow, books, choice, outcomes[future * payload.periods + period] as number);
+      path.push(worth(books));
+      cushions.push(cushion(payload.scenario, books));
+      lowest = Math.min(lowest, cushions[cushions.length - 1] as number);
+    }
+    futures.push({ path, cushions, lowest, ok: succeeded(payload, path[payload.periods] as number, lowest) });
+  }
+  return futures;
+}
+
+/** How many of the 100 seeded futures succeed under `choice`: the number the board shows and the server replays. */
+export const successCount = (seed: string, payload: Payload, choice: number): number => futuresOf(seed, payload, choice).filter((future) => future.ok).length;
+
+/** In how many of all OUTCOMES^periods equally likely histories `choice` succeeds: an exact count. */
+export function waysOf(payload: Payload, choice: number): number {
+  const visit = (books: Books, lowest: number, period: number): number => {
+    if (period === payload.periods) return succeeded(payload, worth(books), lowest) ? 1 : 0;
+    let total = 0;
+    for (let outcome = 0; outcome < OUTCOMES; outcome += 1) {
+      const next = advance(payload.scenario, payload.flow, books, choice, outcome);
+      total += visit(next, Math.min(lowest, cushion(payload.scenario, next)), period + 1);
+    }
+    return total;
+  };
+  return visit([payload.cash, payload.debt], Number.POSITIVE_INFINITY, 0);
+}
+
+/** P(at least `goal` of the 100 futures succeed) when each does with chance `ways / total`: only additions and products, so it is the same on every machine. */
+export function reachChance(ways: number, total: number, goal: number): number {
+  const q = ways / total;
+  const mass = new Array<number>(FUTURES + 1).fill(0);
+  mass[0] = 1;
+  for (let trial = 0; trial < FUTURES; trial += 1) {
+    for (let hits = trial + 1; hits >= 0; hits -= 1) mass[hits] = (mass[hits] as number) * (1 - q) + (hits > 0 ? (mass[hits - 1] as number) * q : 0);
+  }
+  let tail = 0;
+  for (let hits = goal; hits <= FUTURES; hits += 1) tail += mass[hits] as number;
+  return Math.min(1, tail);
+}
+
+export type Analysis = {
+  ways: number[];
+  reach: number[];
+  /** The choices a learner may be right with: every reliable one, or only the largest or the smallest by the scenario's rule. */
+  answers: number[];
+  /** Why the piece cannot be set, or null: a borderline choice, no answer, or an open start that is already one. */
+  problem: string | null;
+};
+
+const cache = new Map<string, Analysis>();
+
+/** The exact solution of a payload: success counts over every history, the chance each choice reaches the goal, and the answers. Memoized by payload. */
+export function analyse(payload: Payload): Analysis {
+  const key = JSON.stringify(payload);
+  const known = cache.get(key);
+  if (known) return known;
+  const total = OUTCOMES ** payload.periods;
+  const ways = payload.choices.map((choice) => waysOf(payload, choice));
+  const reach = ways.map((count) => reachChance(count, total, payload.goal));
+  const reliable = payload.choices.filter((_, index) => (reach[index] as number) >= 1 - SOLVE_TAIL);
+  const rule = ANSWER_RULE[payload.scenario];
+  const answers = rule === 'highest' ? reliable.slice(-1) : rule === 'lowest' ? reliable.slice(0, 1) : reliable;
+  let problem: string | null = null;
+  const borderline = payload.choices.find((_, index) => (reach[index] as number) > MISS_TAIL && (reach[index] as number) < 1 - SOLVE_TAIL);
+  if (answers.length === 0) problem = 'No choice reaches the goal reliably';
+  else if (borderline !== undefined) problem = `The choice ${borderline} reaches the goal by luck, so it is neither an answer nor a clear miss`;
+  else if (answers.includes(payload.start)) problem = 'The start choice already solves the piece';
+  const result: Analysis = { ways, reach, answers, problem };
+  if (cache.size > 64) cache.clear();
+  cache.set(key, result);
+  return result;
+}
+
+const moneyIn = (value: unknown, low: number, high: number): value is number => inRange(value, low, high);
+
+/** The choices a scenario offers: whole percents for a share, a coverage and a split; whole money for a withdrawal. Rising, 3 to 8. */
+export function isChoices(scenario: Scenario, value: unknown): value is number[] {
+  if (!Array.isArray(value) || value.length < CHOICES_MIN || value.length > CHOICES_MAX) return false;
+  const high = scenario === 'retirement' ? MONEY_MAX : 100;
+  return value.every((choice, index) => inRange(choice, 0, high) && (index === 0 || choice > (value[index - 1] as number)));
+}
+
+/** The structural rules of a payload: shape and ranges only. The exact solution is `analyse`. */
+export function isPayload(value: unknown): value is Payload {
+  if (!hasOnly(value, PAYLOAD_KEYS)) return false;
+  const scenario = value.scenario as Scenario;
+  if (!SCENARIOS.includes(scenario)) return false;
+  if (!inRange(value.periods, PERIODS_MIN, PERIODS_MAX) || !moneyIn(value.cash, 0, MONEY_MAX) || !moneyIn(value.flow, 0, MONEY_MAX)) return false;
+  if (!(scenario === 'life' ? moneyIn(value.debt, 1, MONEY_MAX) : value.debt === 0)) return false;
+  if (!moneyIn(value.finish, 0, TARGET_MAX) || !moneyIn(value.floor, 0, MONEY_MAX) || !inRange(value.goal, GOAL_MIN, GOAL_MAX)) return false;
+  if (!isChoices(scenario, value.choices)) return false;
+  return value.choices.includes(value.start as number);
+}
+
+/** Why a payload is malformed, for the contract's issue path; null when it is well formed. */
+export function payloadProblem(value: unknown): { path: string; message: string } | null {
+  if (!hasOnly(value, PAYLOAD_KEYS)) return { path: 'scenario', message: 'The payload has exactly the fields scenario, periods, cash, debt, flow, finish, floor, goal, choices and start' };
+  const scenario = value.scenario as Scenario;
+  if (!SCENARIOS.includes(scenario)) return { path: 'scenario', message: 'The scenario is portfolio, retirement, insurance or life' };
+  if (!inRange(value.periods, PERIODS_MIN, PERIODS_MAX)) return { path: 'periods', message: 'The run is 2 to 5 chapters' };
+  if (!moneyIn(value.cash, 0, MONEY_MAX) || !moneyIn(value.flow, 0, MONEY_MAX)) return { path: 'cash', message: 'The cash and the money in each chapter are whole amounts up to 1000000' };
+  if (!(scenario === 'life' ? moneyIn(value.debt, 1, MONEY_MAX) : value.debt === 0)) return { path: 'debt', message: 'Only a life piece carries debt, and it carries some' };
+  if (!moneyIn(value.finish, 0, TARGET_MAX) || !moneyIn(value.floor, 0, MONEY_MAX)) return { path: 'finish', message: 'The finish and the floor are whole amounts' };
+  if (!inRange(value.goal, GOAL_MIN, GOAL_MAX)) return { path: 'goal', message: 'The goal is 50 to 99 futures out of 100' };
+  if (!isChoices(scenario, value.choices)) return { path: 'choices', message: 'The choices are 3 to 8 rising whole values: percents up to 100, or amounts for a retirement' };
+  if (!value.choices.includes(value.start as number)) return { path: 'start', message: 'The start is one of the choices' };
+  return null;
+}

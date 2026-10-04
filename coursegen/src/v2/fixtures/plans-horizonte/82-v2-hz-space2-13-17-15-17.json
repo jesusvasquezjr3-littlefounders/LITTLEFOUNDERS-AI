@@ -1,0 +1,105 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-space2",
+  "lesson_id": "v2-hz-space2-13-17-15-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 15,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho lee vistas y cortes de un cuerpo para saber qué hay dentro.",
+  "title": {
+    "en-US": "Time or rate?",
+    "es-MX": "¿Tiempo o tasa?",
+    "pt-BR": "Tempo ou taxa?"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "surface-time-beats-rate",
+      "type": "math.surface.v2",
+      "grading": "server",
+      "visual": {
+        "type": "surface"
+      },
+      "payload": {
+        "surface": {
+          "kind": "compound",
+          "principalCents": 100000,
+          "ratesBps": [
+            200,
+            400,
+            600,
+            800
+          ],
+          "terms": [
+            5,
+            10,
+            15,
+            20
+          ]
+        },
+        "ask": {
+          "kind": "highest"
+        },
+        "options": [
+          {
+            "id": "a",
+            "x": 1,
+            "y": 3
+          },
+          {
+            "id": "b",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "id": "c",
+            "x": 2,
+            "y": 2
+          },
+          {
+            "id": "d",
+            "x": 0,
+            "y": 3
+          }
+        ]
+      },
+      "rubric": {
+        "choice": "c"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Savings start at $1,000. Which choice ends with the most money?",
+          "feedback": {
+            "met": "You placed the pieces in space correctly.",
+            "not_yet": "Look from another side and try again."
+          }
+        },
+        "es-MX": {
+          "prompt": "El ahorro empieza en $1,000. ¿Qué opción termina con más dinero?",
+          "feedback": {
+            "met": "Colocaste las piezas en el espacio correctamente.",
+            "not_yet": "Mira desde otro lado y prueba otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A poupança começa em R$ 1.000. Qual opção termina com mais dinheiro?",
+          "feedback": {
+            "met": "Você colocou as peças no espaço corretamente.",
+            "not_yet": "Olhe de outro lado e tente de novo."
+          }
+        }
+      }
+    }
+  ]
+}

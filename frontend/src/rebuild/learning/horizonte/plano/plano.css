@@ -1,0 +1,87 @@
+/* Plano (Horizonte F0.2): the shared SVG plane. A neutral board (V2): a surface, quiet grid lines, a 2 px axis and the
+   learner's marks, nothing decorative (V3). Series hues are sky, mint and berry with a second channel (dash, pattern,
+   shape); primary marks the handle being moved. Words and numerals are HTML beside the SVG so they never scale with
+   the viewBox, and marks and handles are HTML over it so they keep their size at any width. The only motion is the
+   250 ms glide of a handle after a key or a tap, under no-preference. Tokens and logical properties only. */
+
+.lf-rebuild .lf-plano { container: lf-plano / inline-size; display: grid; gap: var(--spacing-3); min-inline-size: 0; max-inline-size: calc(var(--spacing-32) * 7); margin: 0; }
+.lf-rebuild .lf-plano-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--spacing-2) var(--spacing-4); }
+.lf-rebuild .lf-plano-caption { display: grid; flex: 1 1 16em; gap: var(--spacing-1); min-inline-size: 0; }
+.lf-rebuild .lf-plano-name { font: var(--type-label); }
+.lf-rebuild .lf-plano-summary { font: var(--type-body); color: var(--content-muted); max-inline-size: 34rem; }
+
+.lf-rebuild .lf-plano-series-1 { --plano-ink: var(--sky-strong); }
+.lf-rebuild .lf-plano-series-2 { --plano-ink: var(--mint-strong); }
+.lf-rebuild .lf-plano-series-3 { --plano-ink: var(--berry-strong); }
+.lf-rebuild .lf-plano-series-neutral { --plano-ink: var(--content-muted); }
+
+.lf-rebuild .lf-plano-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-4); margin: 0; padding: 0; list-style: none; }
+.lf-rebuild .lf-plano-legend > li { display: inline-flex; align-items: center; gap: var(--spacing-2); font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-plano-key { inline-size: var(--spacing-8); block-size: var(--spacing-2); flex: none; overflow: visible; }
+.lf-rebuild .lf-plano-key-line { stroke: var(--plano-ink); stroke-width: 3; }
+.lf-rebuild .lf-plano-key-fill { fill: var(--plano-ink); }
+
+/* The frame: the y numerals in a gutter (its width is set from the longest numeral), the plot, the x numerals under it. */
+.lf-rebuild .lf-plano-frame {
+  --plano-gutter: 3ch;
+  direction: ltr; display: grid; grid-template-columns: var(--plano-gutter) minmax(0, 1fr); grid-template-rows: auto auto auto auto;
+  column-gap: var(--spacing-2); padding-inline-end: var(--spacing-4); min-inline-size: 0;
+}
+.lf-rebuild .lf-plano-axis-name { font: var(--type-caption); color: var(--content-muted); }
+.lf-rebuild .lf-plano-axis-name--y { grid-column: 1 / -1; grid-row: 1; padding-block-end: var(--spacing-1); }
+.lf-rebuild .lf-plano-axis-name--x { grid-column: 2; grid-row: 4; justify-self: end; }
+.lf-rebuild .lf-plano-yaxis { grid-column: 1; grid-row: 2; position: relative; }
+.lf-rebuild .lf-plano-xaxis { grid-column: 2; grid-row: 3; position: relative; block-size: var(--spacing-6); margin-block-start: var(--spacing-1); }
+.lf-rebuild .lf-plano-tick { position: absolute; font: var(--type-caption); color: var(--content-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lf-rebuild .lf-plano-yaxis .lf-plano-tick { inset-inline-end: var(--spacing-1); transform: translateY(-50%); }
+.lf-rebuild .lf-plano-xaxis .lf-plano-tick { inset-block-start: 0; transform: translateX(-50%); }
+
+.lf-rebuild .lf-plano-plot {
+  grid-column: 2; grid-row: 2; position: relative; min-inline-size: 0; aspect-ratio: var(--plano-ratio, 3 / 2);
+  background: var(--surface); border-radius: var(--rounded-sm); outline: 2px solid var(--outline); touch-action: pan-y; user-select: none;
+}
+.lf-rebuild .lf-plano-plot[data-tap='true'] { cursor: crosshair; }
+.lf-rebuild .lf-plano-svg { display: block; inline-size: 100%; block-size: 100%; border-radius: inherit; }
+
+.lf-rebuild .lf-plano-grid { stroke: var(--outline); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-plano-axis { stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-plano-line { fill: none; stroke: var(--plano-ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-plano-region { stroke: var(--plano-ink); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.lf-rebuild .lf-plano-region--tint { fill: color-mix(in srgb, var(--plano-ink) 22%, transparent); }
+.lf-rebuild .lf-plano-pattern-ground { fill: color-mix(in srgb, var(--plano-ink) 18%, var(--surface)); }
+.lf-rebuild .lf-plano-pattern-ink { fill: var(--plano-ink); }
+
+/* Marks and handles are HTML over the SVG, placed by percentage, so their size never follows the viewBox. */
+.lf-rebuild .lf-plano-overlay { position: absolute; inset: 0; pointer-events: none; }
+.lf-rebuild .lf-plano-point { position: absolute; inline-size: var(--spacing-4); block-size: var(--spacing-4); transform: translate(-50%, -50%); pointer-events: none; }
+.lf-rebuild .lf-plano-mark { display: block; inline-size: 100%; block-size: 100%; box-sizing: border-box; background: var(--plano-ink); border: 2px solid var(--surface); border-radius: var(--rounded-full); }
+.lf-rebuild .lf-plano-point[data-shape='square'] .lf-plano-mark { border-radius: 0; }
+.lf-rebuild .lf-plano-point[data-shape='diamond'] .lf-plano-mark { border-radius: 0; transform: rotate(45deg); }
+.lf-rebuild .lf-plano-point-label { position: absolute; inset-inline-start: calc(100% + var(--spacing-1)); inset-block-start: 50%; transform: translateY(-50%); font: var(--type-caption); color: var(--content); white-space: nowrap; }
+
+/* A handle: a 64 px hit area (target-lg, V4) around a 24 px disk. Primary is the default ink; a series hue replaces it. */
+.lf-rebuild .lf-plano-handle {
+  --plano-ink: var(--primary-strong);
+  position: absolute; display: grid; place-items: center; inline-size: var(--target-lg); block-size: var(--target-lg);
+  transform: translate(-50%, -50%); border-radius: var(--rounded-full); outline: none; pointer-events: auto; touch-action: none;
+  cursor: grab; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.lf-rebuild .lf-plano-handle.lf-plano-series-1 { --plano-ink: var(--sky-strong); }
+.lf-rebuild .lf-plano-handle.lf-plano-series-2 { --plano-ink: var(--mint-strong); }
+.lf-rebuild .lf-plano-handle.lf-plano-series-3 { --plano-ink: var(--berry-strong); }
+.lf-rebuild .lf-plano-handle.lf-plano-series-neutral { --plano-ink: var(--content-muted); }
+.lf-rebuild .lf-plano-handle::before { content: ''; box-sizing: border-box; inline-size: var(--spacing-6); block-size: var(--spacing-6); background: var(--plano-ink); border: 2px solid var(--surface); border-radius: var(--rounded-full); }
+.lf-rebuild .lf-plano-handle[data-shape='square']::before { border-radius: var(--spacing-1); }
+.lf-rebuild .lf-plano-handle[data-shape='diamond']::before { border-radius: 0; transform: rotate(45deg); }
+.lf-rebuild .lf-plano-handle[data-active='true']::before { outline: 2px solid var(--plano-ink); outline-offset: 2px; }
+.lf-rebuild .lf-plano-handle:focus-visible::before { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+.lf-rebuild .lf-plano-handle[data-dragging='true'] { cursor: grabbing; }
+.lf-rebuild .lf-plano-handle[aria-disabled='true'] { --plano-ink: var(--content-muted); cursor: default; }
+.lf-rebuild .lf-plano-handle-caption { position: absolute; inset-block-start: 0; inset-inline-start: 50%; transform: translateX(-50%); font: var(--type-caption); color: var(--content); white-space: nowrap; pointer-events: none; }
+
+.lf-rebuild .lf-plano-readout { margin: 0; font: var(--type-label); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-plano-handle { transition: inset-inline-start var(--dur-component) var(--ease-standard), inset-block-start var(--dur-component) var(--ease-standard); }
+  .lf-rebuild .lf-plano-handle[data-dragging='true'] { transition: none; }
+}

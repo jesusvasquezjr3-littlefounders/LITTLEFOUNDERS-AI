@@ -112,7 +112,7 @@ npm run setup
 DEV_PROFILE=core DEV_DB=1 npm run dev
 DEV_PROFILE=all  DEV_DB=1 npm run dev     # every service (several GB of RAM)
 
-# Gates before every commit
+# Push gate (once per push; see README "Mandatory testing" for the commit and build-loop tiers)
 npm run typecheck:all && npm run lint:all && npm run test:all
 npm run secrets:check && npm run tools:test && npm run spec:check
 npm run i18n:check && npm run seo:check && npm run glossary:check

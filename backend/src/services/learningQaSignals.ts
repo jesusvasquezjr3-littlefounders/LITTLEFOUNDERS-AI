@@ -58,6 +58,8 @@ const CoverageReport = z.object({
   generated_at: z.string(),
   tap_alternative: z.object({ drag_interactions: count, with_alternative: count, share, missing: z.array(z.string()) }),
   locale_rendering: z.object({ kinds: count, covered: count, share, missing: z.array(z.string()) }),
+  chart_kinds: z.object({ kinds: count, core: count, situational: count, reading: count, reading_covered: count, reading_missing: z.array(z.string()), forge_emitted: count }).optional(),
+  horizonte: z.object({ packs: count, segment_types: count, with_board: count, with_contract: count, share, missing: z.array(z.string()) }).optional(),
 });
 export type TeachingVisualCoverage = z.infer<typeof CoverageReport>;
 

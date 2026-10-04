@@ -1,0 +1,14 @@
+/* The wired circuit: the frame carries the surface so the names, positioned in the drawing's own box, line up with the SVG. Tokens only. */
+.lf-circuit-frame { box-sizing: border-box; inline-size: fit-content; max-inline-size: 100%; margin-inline: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
+/* The drawing is laid out in CSS pixels and never grows past the frame. */
+.lf-circuit-sized { max-inline-size: 100%; margin-inline: auto; }
+/* A name that crosses a wire still reads: a halo in the surface colour. */
+.lf-circuit-frame .lf-hz-label { text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface), 0 0 3px var(--surface); }
+.lf-circuit-frame .lf-circuit-name { display: block; }
+.lf-circuit-frame .lf-circuit-wire { stroke: var(--edge); stroke-width: 3; stroke-linecap: round; }
+.lf-circuit-frame .lf-circuit-pin { fill: var(--surface); stroke: var(--edge); stroke-width: 3; }
+.lf-circuit-frame .lf-circuit-lamp { fill: var(--sunken); stroke: var(--edge); stroke-width: 3; }
+.lf-circuit-frame .lf-circuit-box { fill: var(--sunken); stroke: var(--edge); stroke-width: 2.5; stroke-dasharray: 5 3; }
+/* A placed gate keeps the name's own ink: a soft fill and a strong edge. */
+.lf-circuit-frame .lf-circuit-box--set { fill: var(--primary-soft); stroke: var(--primary-strong); stroke-dasharray: none; }
+svg .lf-circuit-gate { font: var(--type-caption); font-size: 14px; font-weight: 800; fill: var(--content-muted); }

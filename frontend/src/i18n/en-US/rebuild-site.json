@@ -524,5 +524,142 @@
     "landing": "Dina, one of the Mentors, smiling",
     "howItWorks": "Dr. Rho, one of the Mentors, explaining",
     "families": "Zara, one of the Mentors, nodding hello"
+  },
+  "landingV2": {
+    "title": "Help your child understand",
+    "titleAccent": "the value of money.",
+    "lead": "Help them save, solve problems and develop ideas through interactive challenges and an AI Mentor.",
+    "tryAction": "Try a challenge",
+    "note": "Free to start. Learn at your own pace.",
+    "heroAlt": "A father and daughter explore shapes and coins together.",
+    "learnTitle": "Learning that goes beyond the screen.",
+    "example": "Example preview",
+    "tryHint": "Choose an answer and explore why.",
+    "simulation": "Simulated coins. Demo only.",
+    "addCoin": "Save one coin",
+    "removeCoin": "Remove one coin",
+    "saveHint": "Save a little today. See how your goal gets closer.",
+    "mentorTitle": "When they get stuck, help them think.",
+    "mentorBody": "Dr. Rho, Zara, Liruf and Dina guide learners with questions, so they can find their own way forward.",
+    "reasonLabel": "Try a question",
+    "reasonQuestion": "On sale. Do you need it?",
+    "reasonHint": "Choose your reason.",
+    "familyPreview": "Your family, connected",
+    "familyStory": "Alex chose to save for a goal.",
+    "familyReflection": "Why? Buying it later mattered more than spending today.",
+    "task": "Water the plants",
+    "taskReward": "10 simulated coins",
+    "approve": "Approve",
+    "approved": "Approved",
+    "goal": "Savings goal",
+    "approvalDemo": "Demo updated. No real task was approved.",
+    "familyDemo": "Sample family. No real learner data.",
+    "familyTitle": "You see progress as they make decisions.",
+    "familyBody": "Follow goals, tasks and learning together. Family tools and task approvals require a verified parent.",
+    "familyAction": "Explore Family",
+    "pathTitle": "A path that grows with them.",
+    "faqTitle": "A few things to know.",
+    "closingTitle": "Make room for their next idea.",
+    "topics": [
+      {
+        "title": "Save for a goal",
+        "body": "Choose what matters tomorrow.",
+        "question": "How much would you save?",
+        "options": [],
+        "feedback": []
+      },
+      {
+        "title": "Find the pattern",
+        "body": "Try, notice and explain.",
+        "question": "What comes next?",
+        "options": [
+          "7",
+          "8",
+          "10"
+        ],
+        "feedback": [
+          "Look again. Each step adds two.",
+          "Exactly. Each step adds two.",
+          "Check the gap between each number."
+        ]
+      },
+      {
+        "title": "Create something useful",
+        "body": "Start with a real need.",
+        "question": "The plants keep drying out.",
+        "options": [
+          "A reminder",
+          "More posters",
+          "A logo"
+        ],
+        "feedback": [
+          "A reminder could help people water them.",
+          "What would help people remember to water?",
+          "First solve the problem. Then choose a name."
+        ]
+      }
+    ],
+    "reasons": [
+      {
+        "label": "Already wanted it",
+        "feedback": "Compare the price with your plan. Does it still fit?"
+      },
+      {
+        "label": "For the discount",
+        "feedback": "A lower price is still spending. What else could those coins do?"
+      },
+      {
+        "label": "Think it through",
+        "feedback": "Waiting gives you time to compare what matters."
+      }
+    ],
+    "ages": [
+      {
+        "range": "6–9",
+        "title": "Discover",
+        "body": "Explore choices with short challenges and concrete examples."
+      },
+      {
+        "range": "10–12",
+        "title": "Connect",
+        "body": "Link habits, goals and ideas with decisions you can explain."
+      },
+      {
+        "range": "13–17",
+        "title": "Decide",
+        "body": "Explore trade-offs, personal goals and an independent simulated wallet."
+      },
+      {
+        "range": "18+",
+        "title": "Build",
+        "body": "Practice money choices and entrepreneurship at your own pace."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Is this real money?",
+        "answer": "No. Learning activities and wallets use simulated coins."
+      },
+      {
+        "question": "What does the Mentor do?",
+        "answer": "The AI Mentor guides practice with questions and examples. It can make mistakes."
+      },
+      {
+        "question": "Do we need a family account?",
+        "answer": "Start individually, including a personal simulated wallet for teens. Family tools and task approvals require a verified parent."
+      },
+      {
+        "question": "Is it free?",
+        "answer": "It is free to start. You can try a challenge here before entering the app."
+      }
+    ]
+  },
+  "marketingArt": {
+    "how": "A teenager saving toward a bicycle",
+    "families": "A family planning together",
+    "questions": "A parent and child exploring choices",
+    "mentorsHow": "Rho and Liruf weigh a decision together.",
+    "mentorsFamilies": "Zara and Dina build a small plant stand together.",
+    "mentorsQuestions": "Four Mentors discuss and build a miniature bridge."
   }
 }

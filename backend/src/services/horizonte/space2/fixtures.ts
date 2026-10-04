@@ -1,0 +1,202 @@
+import type { HorizonteFixture, HorizonteLocale } from '../types.js';
+
+const text = (en: string, es: string, pt: string): Record<HorizonteLocale, string> => ({ 'en-US': en, 'es-MX': es, 'pt-BR': pt });
+
+const CHOICE_LADDER = (met: string) => ({ invalid: { choice: 'z' }, valid: { choice: '' }, met: { choice: met } });
+
+const ANSWER_LADDER = (boxes: number, invalid: string[], met: string[]) => ({ invalid: { answer: invalid }, valid: { answer: Array.from({ length: boxes }, () => '') }, met: { answer: met } });
+
+export const SPACE2_FIXTURES: readonly HorizonteFixture[] = [
+  {
+    id: 'time-beats-rate',
+    title: text('Time or rate?', '¿Tiempo o tasa?', 'Tempo ou taxa?'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'surface-time-beats-rate', type: 'math.surface.v2', grading: 'server', visual: { type: 'surface' },
+      prompt: text(
+        'Savings start at $1,000. Which choice ends with the most money?',
+        'El ahorro empieza en $1,000. ¿Qué opción termina con más dinero?',
+        'A poupança começa em R$ 1.000. Qual opção termina com mais dinheiro?',
+      )[locale],
+      payload: {
+        surface: { kind: 'compound', principalCents: 100000, ratesBps: [200, 400, 600, 800], terms: [5, 10, 15, 20] },
+        ask: { kind: 'highest' },
+        options: [{ id: 'a', x: 1, y: 3 }, { id: 'b', x: 3, y: 0 }, { id: 'c', x: 2, y: 2 }, { id: 'd', x: 0, y: 3 }],
+      },
+    }),
+    rubric: { choice: 'c' },
+    ladder: CHOICE_LADDER('c'),
+  },
+  {
+    id: 'price-and-units',
+    title: text('Price and units', 'Precio y unidades', 'Preço e unidades'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'surface-price-and-units', type: 'math.surface.v2', grading: 'server', visual: { type: 'surface' },
+      prompt: text(
+        'Which choice makes a profit of at least $100?',
+        '¿Qué opción deja una ganancia de al menos $100?',
+        'Qual opção dá um lucro de pelo menos R$ 100?',
+      )[locale],
+      payload: {
+        surface: { kind: 'profit', unitCostCents: 150, fixedCents: 20000, prices: [200, 300, 400, 500], units: [50, 100, 150, 200] },
+        ask: { kind: 'reach', targetCents: 10000 },
+        options: [{ id: 'a', x: 0, y: 3 }, { id: 'b', x: 1, y: 2 }, { id: 'c', x: 2, y: 1 }, { id: 'd', x: 3, y: 1 }],
+      },
+    }),
+    rubric: { choice: 'd' },
+    ladder: CHOICE_LADDER('d'),
+  },
+  {
+    id: 'nearest-route',
+    title: text('The nearest route', 'La ruta más cercana', 'A rota mais próxima'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 12, maximum_age: 12 },
+    segment: (locale) => ({
+      id: 'globe-nearest-route', type: 'geography.globe-route.v2', grading: 'server', visual: { type: 'globe-route' },
+      prompt: text(
+        'Four parcels leave Mexico City. Which route is the shortest?',
+        'Cuatro paquetes salen de Ciudad de México. ¿Qué ruta es la más corta?',
+        'Quatro pacotes saem da Cidade do México. Qual rota é a mais curta?',
+      )[locale],
+      payload: {
+        routes: [
+          { id: 'a', from: 'mexico-city', to: 'madrid', feeBps: 300, flatCents: 500 },
+          { id: 'b', from: 'mexico-city', to: 'houston', feeBps: 400, flatCents: 300 },
+          { id: 'c', from: 'mexico-city', to: 'tokyo', feeBps: 250, flatCents: 600 },
+          { id: 'd', from: 'mexico-city', to: 'new-york', feeBps: 350, flatCents: 400 },
+        ],
+        ask: 'shortest',
+        sendCents: 20000,
+      },
+    }),
+    rubric: { choice: 'b' },
+    ladder: CHOICE_LADDER('b'),
+  },
+  {
+    id: 'cheapest-corridor',
+    title: text('The cheapest corridor', 'El corredor más barato', 'O corredor mais barato'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'globe-cheapest-corridor', type: 'geography.globe-route.v2', grading: 'server', visual: { type: 'globe-route' },
+      prompt: text(
+        'Send $200 from Los Angeles. Which route costs the least in fees?',
+        'Envía $200 desde Los Ángeles. ¿Qué ruta cuesta menos en comisiones?',
+        'Envie R$ 200 de Los Angeles. Qual rota custa menos em taxas?',
+      )[locale],
+      payload: {
+        routes: [
+          { id: 'a', from: 'los-angeles', to: 'mexico-city', feeBps: 400, flatCents: 800 },
+          { id: 'b', from: 'los-angeles', to: 'manila', feeBps: 150, flatCents: 300 },
+          { id: 'c', from: 'los-angeles', to: 'lagos', feeBps: 350, flatCents: 400 },
+          { id: 'd', from: 'los-angeles', to: 'new-york', feeBps: 250, flatCents: 700 },
+        ],
+        ask: 'cheapest',
+        sendCents: 20000,
+      },
+    }),
+    rubric: { choice: 'b' },
+    ladder: CHOICE_LADDER('b'),
+  },
+  {
+    id: 'slope-two-ways',
+    title: text('How steep, which way?', '¿Qué tan empinado, hacia dónde?', 'Quão inclinado, para onde?'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-slope-two-ways', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Stand on the dot and face along x. How steep is the surface there?',
+        'Párate en el punto y mira a lo largo de x. ¿Qué tan empinada es la superficie ahí?',
+        'Fique no ponto e olhe ao longo de x. Qual é a inclinação da superfície ali?',
+      )[locale],
+      payload: {
+        window: { xMin: -3, xMax: 3, yMin: -3, yMax: 3 },
+        task: { kind: 'slope', expression: 'x^2+2xy', axis: 'x', at: { x: 1, y: 2 } },
+      },
+    }),
+    rubric: { key: ['6'] },
+    ladder: ANSWER_LADDER(1, ['abc'], ['6']),
+  },
+  {
+    id: 'gradient-at-a-point',
+    title: text('Both slopes at once', 'Las dos pendientes a la vez', 'As duas inclinações juntas'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-gradient-at-a-point', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Find both slopes at the dot: the x slope first, then the y slope.',
+        'Halla las dos pendientes en el punto: primero la de x y luego la de y.',
+        'Ache as duas inclinações no ponto: primeiro a de x, depois a de y.',
+      )[locale],
+      payload: {
+        window: { xMin: -3, xMax: 3, yMin: -3, yMax: 3 },
+        task: { kind: 'gradient', expression: 'x^2+3y-xy', at: { x: 2, y: 1 } },
+      },
+    }),
+    rubric: { key: ['3', '1'] },
+    ladder: ANSWER_LADDER(2, ['x', 'y'], ['3', '1']),
+  },
+  {
+    id: 'downhill-walk',
+    title: text('Walk downhill', 'Camina cuesta abajo', 'Caminhe morro abaixo'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-downhill-walk', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Walk downhill a tenth of the slope each step. How many steps until the height is 3 or lower?',
+        'Baja desde el punto, un décimo de la pendiente en cada paso. ¿Cuántos pasos hasta que la altura sea 3 o menos?',
+        'Desça a partir do ponto, um décimo da inclinação a cada passo. Quantos passos até a altura ser 3 ou menos?',
+      )[locale],
+      payload: {
+        window: { xMin: -3, xMax: 3, yMin: -3, yMax: 3 },
+        task: { kind: 'walk', expression: 'x^2+y^2', at: { x: 3, y: 2 }, rate: { n: 1, d: 10 }, below: 3, maxSteps: 8 },
+      },
+    }),
+    rubric: { key: ['4'] },
+    ladder: ANSWER_LADDER(1, ['four steps'], ['4']),
+  },
+  {
+    id: 'build-a-surface',
+    title: text('Build a surface', 'Construye una superficie', 'Construa uma superfície'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 15, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'formula-build-a-surface', type: 'math.surface-formula.v2', grading: 'server', visual: { type: 'surface-formula' },
+      prompt: text(
+        'Type a formula for z whose surface passes through all three dots.',
+        'Escribe una fórmula para z cuya superficie pase por los tres puntos.',
+        'Digite uma fórmula para z cuja superfície passe pelos três pontos.',
+      )[locale],
+      payload: {
+        window: { xMin: -2, xMax: 2, yMin: -2, yMax: 2 },
+        task: { kind: 'build', through: [{ x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 3 }, { x: 0, y: 1, z: 0 }] },
+      },
+    }),
+    rubric: { reference: '1+2x-y' },
+    ladder: ANSWER_LADDER(1, ['sin(x)'], ['z = 1 + 2x - y']),
+  },
+  {
+    id: 'object-on-the-table',
+    title: text('A litre on your table', 'Un litro en tu mesa', 'Um litro na sua mesa'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 13, maximum_age: 17 },
+    segment: (locale) => ({
+      id: 'ar-table-litre-box', type: 'space.ar-table.v2', grading: 'none', visual: { type: 'ar-table' },
+      prompt: text(
+        'Look at a one litre box at its true size. Turn it to see every side.',
+        'Mira una caja de un litro a su tamaño real. Gírala para ver todos sus lados.',
+        'Veja uma caixa de um litro no tamanho real. Gire para ver todos os lados.',
+      )[locale],
+      payload: { object: 'litre-box' },
+    }),
+    // The AR step is not scored: it has no key and no answer ladder, so these are empty on purpose.
+    rubric: {},
+    ladder: { invalid: null, valid: null, met: null },
+  },
+];

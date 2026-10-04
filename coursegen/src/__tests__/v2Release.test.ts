@@ -8,7 +8,8 @@ import { GateSubmissionLog, firstSubmissionPassRates } from '../pipeline/gateSub
 import { author as v2AuthorCli, v2AuthorRunDir } from '../v2/releaseCli.js';
 import { emitV2Lesson } from '../v2/emit.js';
 import { loadV2Plans, type V2LessonPlan } from '../v2/plan.js';
-import { narrationWithoutAudio, releaseV2Lessons, stage3ItemsFor, V2_MANIFEST_GATES } from '../v2/release.js';
+import { FIXTURE_PLANS_HORIZONTE } from '../v2/cli.js';
+import { horizonteTypesIn, narrationWithoutAudio, releaseV2Lessons, stage3ItemsFor, V2_MANIFEST_GATES } from '../v2/release.js';
 
 /*
  * GAP-FIX-R1 learning (OD-17, OD-23, OD-24, F-06/B.16): the v2 authoring
@@ -151,6 +152,25 @@ describe('v2 write and publish', () => {
     expect(rpc.mock.calls.filter((c) => (c as unknown[])[0] === 'publish_v2_lesson_version')).toHaveLength(3);
     expect(rpc.mock.calls[0]![0]).toBe('publish_v2_lesson_version');
     expect(done.pendingApproval).toEqual([]);
+  });
+
+  it('refuses a Vault write of a Horizonte type until the owner confirms Core serves it, and never blocks a dry run or an older type', async () => {
+    const horizonte = structuredClone(loadV2Plans(FIXTURE_PLANS_HORIZONTE).find((entry) => entry.plan?.lesson_id === 'v2-hz-golden-6-9-6-9')!.plan!) as V2LessonPlan;
+    const rpc = vi.fn(async () => ({ ok: true, status: 200, body: {} }));
+    const verifyCourse = vi.fn(() => ({ ok: true, output: '' }));
+    const deps = { coreCheck: () => ({ ok: true, output: '' }), verifyCourse, rpc };
+    const refused = await releaseV2Lessons([horizonte], { runId: 'r1', outDir: tmp(), courseSlug: 'math', dryRun: false, deps });
+    expect(refused).toMatchObject({ ok: false, stage: 'core-check' });
+    expect(refused.problems[0]).toMatch(/Deploy Core first.*--core-has-horizonte/);
+    expect(horizonteTypesIn(refused.documents).length).toBeGreaterThan(0);
+    expect(refused.problems[0]).toContain(horizonteTypesIn(refused.documents)[0]);
+    expect(verifyCourse).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+    expect((await releaseV2Lessons([horizonte], { runId: 'r1', outDir: tmp(), courseSlug: 'math', dryRun: true, deps })).stage).toBe('dry-run');
+    expect((await releaseV2Lessons([horizonte], { runId: 'r1', outDir: tmp(), courseSlug: 'math', dryRun: false, deps, coreServesHorizonte: true })).stage).toBe('done');
+    const older = await releaseV2Lessons([planOf('v2-goal-bullet')], { runId: 'r1', outDir: tmp(), courseSlug: 'money', dryRun: false, deps });
+    expect(older.stage).toBe('done');
+    expect(horizonteTypesIn(older.documents)).toEqual([]);
   });
 
   it('G.2: reports every version of a live lesson that Vault queued for a staff release', async () => {

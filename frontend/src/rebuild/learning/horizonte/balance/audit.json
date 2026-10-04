@@ -1,0 +1,12 @@
+[
+  { "fixture": "two-sides", "age": "10-12" },
+  { "fixture": "x-on-right", "age": "10-12" },
+  { "fixture": "divide-last", "age": "10-12" },
+  { "fixture": "parallelogram", "age": "10-12" },
+  { "fixture": "triangle", "age": "10-12" },
+  { "fixture": "trapezoid", "age": "10-12" },
+  { "fixture": "circle-area", "age": "10-12" },
+  { "fixture": "circumference", "age": "10-12" },
+  { "fixture": "odd-sum", "age": "10-12" },
+  { "fixture": "pythagoras", "age": "13-17" }
+]

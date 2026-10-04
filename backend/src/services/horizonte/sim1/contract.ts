@@ -1,0 +1,106 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
+import type { HorizonteAgeScope } from '../types.js';
+import {
+  BOOTSTRAP_LEVELS, BOOTSTRAP_RESAMPLES_LIMIT, BOOT_TOLERANCE_MAX, CHOICES_MAX, CHOICES_MIN, COVERED_MAX, COVERED_MIN, LEVELS, SIZE_MAX, SIZE_MIN, TRUTH_DEN_MAX,
+  VALUE_MAX, isBootAxis, isBootData, isBootFloor, isBootStops, isBootTolerance, isChoice, isCovered, isLevels, isSizes, isTruth,
+} from './interval.js';
+import {
+  CHANCE_KINDS, CHANCE_TRIALS_LIMIT, FACES_MAX, GALTON_BALLS_LIMIT, GALTON_PCT_MAX, GALTON_PCT_MIN, GALTON_ROWS_MAX, GALTON_ROWS_MIN, GALTON_VIEWS, STOPS_MAX, STOPS_MIN,
+  TOLERANCE_MAX, TOLERANCE_MIN, WEIGHT_MAX, binChance, eventChance, facesOf, isEvent, isGalton, isMachine, runProblem,
+} from './model.js';
+
+const stops = (limit: number) => z.array(z.number().int().min(1).max(limit)).min(STOPS_MIN).max(STOPS_MAX);
+const tolerance = z.number().int().min(TOLERANCE_MIN).max(TOLERANCE_MAX);
+const floor = z.number().int().min(1);
+const lowestLevel = LEVELS[0];
+const highestLevel = LEVELS[LEVELS.length - 1] as number;
+
+/** H20: a coin, a die or a spinner with weights, an event on it and the run lengths the learner may pick. The chance stays in the rubric. */
+export const chanceSimPayload = z.object({
+  machine: z.object({ kind: z.enum(CHANCE_KINDS), weights: z.array(z.number().int().min(1).max(WEIGHT_MAX)).min(2).max(FACES_MAX) }).strict(),
+  event: z.array(z.number().int().min(0).max(FACES_MAX - 1)).min(1).max(FACES_MAX - 1),
+  stops: stops(CHANCE_TRIALS_LIMIT), tolerance, minTrials: floor,
+}).strict();
+
+/** H21: a Galton board or a random walk of `rows` pegs or steps, the share of balls in one bin, and the run lengths the learner may pick. */
+export const galtonSimPayload = z.object({
+  view: z.enum(GALTON_VIEWS), rows: z.number().int().min(GALTON_ROWS_MIN).max(GALTON_ROWS_MAX), rightPct: z.number().int().min(GALTON_PCT_MIN).max(GALTON_PCT_MAX),
+  bin: z.number().int().min(0).max(GALTON_ROWS_MAX), stops: stops(GALTON_BALLS_LIMIT), tolerance, minBalls: floor,
+}).strict();
+
+/** H26: the true share of a population, the levels and sample sizes to pick from, and how many of 100 intervals must cover the truth. */
+export const coverageSimPayload = z.object({
+  truth: z.object({ num: z.number().int().min(1).max(TRUTH_DEN_MAX - 1), den: z.number().int().min(2).max(TRUTH_DEN_MAX) }).strict(),
+  levels: z.array(z.number().int().min(lowestLevel).max(highestLevel)).min(CHOICES_MIN).max(CHOICES_MAX),
+  sizes: z.array(z.number().int().min(SIZE_MIN).max(SIZE_MAX)).min(CHOICES_MIN).max(CHOICES_MAX),
+  start: z.object({ level: z.number().int(), size: z.number().int() }).strict(),
+  goal: z.object({ covered: z.number().int().min(COVERED_MIN).max(COVERED_MAX) }).strict(),
+}).strict();
+
+/** H27: a small sample on an axis and the run lengths of the percentile bootstrap the learner may pick. The target edges stay in the rubric. */
+export const bootstrapSimPayload = z.object({
+  axis: z.object({ min: z.number().int().min(0).max(VALUE_MAX), max: z.number().int().min(0).max(VALUE_MAX) }).strict(),
+  data: z.array(z.number().int().min(0).max(VALUE_MAX)).min(4).max(10),
+  level: z.number().int().min(BOOTSTRAP_LEVELS[0]).max(BOOTSTRAP_LEVELS[BOOTSTRAP_LEVELS.length - 1] as number),
+  stops: stops(BOOTSTRAP_RESAMPLES_LIMIT), tolerance: z.number().int().min(1).max(BOOT_TOLERANCE_MAX), minResamples: floor,
+}).strict();
+
+type Issue = (path: string, message: string) => void;
+
+function chanceProblems(payload: z.infer<typeof chanceSimPayload>, issue: Issue): void {
+  if (!isMachine(payload.machine)) return issue('machine', 'A coin has 2 weights, a die 6 and a spinner 3 to 8, each from 1 to 12');
+  if (!isEvent(payload.event, facesOf(payload.machine.kind, payload.machine.weights))) return issue('event', 'The event is a non-empty, proper set of faces in rising order');
+  const problem = runProblem(eventChance(payload.machine, payload.event), payload.stops, payload.minTrials, payload.tolerance, CHANCE_TRIALS_LIMIT);
+  if (problem) issue(problem.path === 'floor' ? 'minTrials' : problem.path, problem.message);
+}
+
+function galtonProblems(payload: z.infer<typeof galtonSimPayload>, issue: Issue): void {
+  if (!isGalton({ view: payload.view, rows: payload.rows, rightPct: payload.rightPct, bin: payload.bin })) return issue('bin', 'The chance of going right is a multiple of 10 and the bin is one of the rows plus one');
+  const problem = runProblem(binChance(payload.rows, payload.rightPct, payload.bin), payload.stops, payload.minBalls, payload.tolerance, GALTON_BALLS_LIMIT);
+  if (problem) issue(problem.path === 'floor' ? 'minBalls' : problem.path, problem.message);
+}
+
+function coverageProblems(payload: z.infer<typeof coverageSimPayload>, issue: Issue): void {
+  if (!isTruth(payload.truth)) return issue('truth', 'The truth is a share between 1/5 and 4/5 with a denominator up to 20');
+  if (!isLevels(payload.levels)) return issue('levels', 'The levels are 2 to 5 rising picks from 50, 80, 90, 95 and 99');
+  if (!isSizes(payload.sizes)) return issue('sizes', 'The sizes are 2 to 5 rising counts from 10 to 400');
+  if (!isChoice(payload.start, payload.levels, payload.sizes)) return issue('start', 'The start level and size are among the choices');
+  if (!isCovered(payload.goal.covered)) issue('goal', 'The goal is 50 to 99 intervals out of 100');
+}
+
+function bootstrapProblems(payload: z.infer<typeof bootstrapSimPayload>, issue: Issue): void {
+  if (!isBootAxis(payload.axis)) return issue('axis', 'The axis runs from 0 to 100 and is 4 to 20 steps wide');
+  if (!isBootData(payload.data, payload.axis)) return issue('data', 'The data are 4 to 10 whole values on the axis with at least 3 different');
+  if (!BOOTSTRAP_LEVELS.includes(payload.level as (typeof BOOTSTRAP_LEVELS)[number])) return issue('level', 'The level is 80, 90 or 95');
+  if (!isBootStops(payload.stops)) return issue('stops', 'The stops are 3 to 8 rising counts up to 3000');
+  if (!isBootFloor(payload.minResamples, payload.stops)) return issue('minResamples', 'The floor is one of the stops, at least 50 and never the first');
+  if (!isBootTolerance(payload.tolerance)) issue('tolerance', 'The tolerance is 1 to 40 sum steps');
+}
+
+const refine = <P>(check: (payload: P, issue: Issue) => void) => (value: { payload: P }, ctx: z.RefinementCtx) =>
+  check(value.payload, (path, message) => ctx.addIssue({ code: 'custom', path: ['payload', path], message }));
+
+export const SIM1_SEGMENTS = [
+  z.object({ ...hzBase, type: z.literal('math.chance-sim.v2'), grading: hzServer, visual: hzVisual('chance-sim'), payload: chanceSimPayload }).strict().superRefine(refine(chanceProblems)),
+  z.object({ ...hzBase, type: z.literal('math.galton-sim.v2'), grading: hzServer, visual: hzVisual('galton-sim'), payload: galtonSimPayload }).strict().superRefine(refine(galtonProblems)),
+  z.object({ ...hzBase, type: z.literal('stats.coverage-sim.v2'), grading: hzServer, visual: hzVisual('coverage-sim'), payload: coverageSimPayload }).strict().superRefine(refine(coverageProblems)),
+  z.object({ ...hzBase, type: z.literal('stats.bootstrap-sim.v2'), grading: hzServer, visual: hzVisual('bootstrap-sim'), payload: bootstrapSimPayload }).strict().superRefine(refine(bootstrapProblems)),
+] as const;
+
+const target = <T extends z.ZodType>(shape: T) => z.object({ target: shape }).strict();
+const exactFraction = z.object({ num: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER), den: z.number().int().min(2).max(Number.MAX_SAFE_INTEGER) }).strict();
+
+export const SIM1_RUBRICS = {
+  'math.chance-sim.v2': target(exactFraction),
+  'math.galton-sim.v2': target(exactFraction),
+  'stats.coverage-sim.v2': target(z.object({ level: z.number().int().min(lowestLevel).max(highestLevel) }).strict()),
+  'stats.bootstrap-sim.v2': target(z.object({ low: z.number().int().min(0), high: z.number().int().min(0) }).strict()),
+} as const;
+
+export const SIM1_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'math.chance-sim.v2': { ages: [10, 14], adult: false },
+  'math.galton-sim.v2': { ages: [14, 17], adult: true },
+  'stats.coverage-sim.v2': { ages: [16, 17], adult: true },
+  'stats.bootstrap-sim.v2': { ages: [16, 17], adult: true },
+};

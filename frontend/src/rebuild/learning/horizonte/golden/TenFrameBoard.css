@@ -1,0 +1,25 @@
+/* A03/A04 ten frames: a 5 by 2 grid of 48 to 64 px square cells, 8 px apart, each a button holding an SVG counter. Tokens only. */
+.lf-tenframe { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-tenframe-frames { display: flex; flex-wrap: wrap; gap: var(--spacing-4); }
+.lf-tenframe-frame { display: grid; gap: var(--spacing-1); }
+.lf-tenframe-frame h3 { font-size: 1rem; }
+.lf-tenframe-grid { display: grid; grid-template-columns: repeat(5, minmax(var(--target-min), var(--hz-hit))); gap: var(--spacing-2); border-radius: var(--rounded-sm); outline: 2px solid transparent; outline-offset: var(--spacing-1); }
+.lf-tenframe-grid[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-tenframe-grid[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-tenframe-cell { display: grid; place-items: center; inline-size: 100%; aspect-ratio: 1; min-inline-size: 0; min-block-size: 0; padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--sunken); color: var(--sky-strong); cursor: pointer; }
+.lf-tenframe-frame--mint .lf-tenframe-cell { color: var(--mint-strong); }
+.lf-tenframe-cell:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-tenframe-cell[aria-disabled='true'] { cursor: default; }
+.lf-tenframe-cell svg { inline-size: 100%; block-size: 100%; }
+.lf-tenframe-added { fill: none; stroke: currentColor; stroke-width: 3; }
+.lf-tenframe-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-tenframe-status { font-weight: 800; }
+/* Five 48 px cells and four 8 px gaps need 272 px; the board's content box is 256 px at 320, so the grid borrows 8 px of padding on each side. */
+@container app (max-width: 359px) {
+  .lf-tenframe-grid { margin-inline: calc(var(--spacing-2) * -1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lf-tenframe-cell { transition: background-color var(--dur-component) var(--ease-standard); }
+  .lf-tenframe-cell:hover:not([aria-disabled='true']) { background-color: var(--sky-soft); }
+  .lf-tenframe-frame--mint .lf-tenframe-cell:hover:not([aria-disabled='true']) { background-color: var(--mint-soft); }
+}

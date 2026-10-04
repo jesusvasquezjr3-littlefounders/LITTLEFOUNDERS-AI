@@ -22,7 +22,7 @@ export const states = [
   shell('shell-tutor', 'tutor'),
   shell('shell-staff', 'staff'),
   shell('shell-staff-limited', 'staff-limited'),
-  shell('shell-staff-menu', 'staff', { widths: [320, 375, 768], open: ['.lf-appbar-menu'] }),
+  shell('shell-staff-menu', 'staff', { widths: [320, 375, 768], open: ['.lf-tabbar > .lf-icon-button'] }),
   shell('shell-site', 'site', { budget: 'site' }),
   shell('shell-site-menu', 'site', { budget: 'site', widths: [320, 375, 768], open: ['.lf-site-menu'] }),
   shell('shell-auth', 'auth'),

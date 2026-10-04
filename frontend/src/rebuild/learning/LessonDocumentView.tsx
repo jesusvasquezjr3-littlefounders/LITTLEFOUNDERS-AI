@@ -34,6 +34,9 @@ import { RuleBuilderBoard, UnitPriceBoard } from './buildBoards';
 import { ChartBoard, CoinTrayBoard, EulerBoard, FlowchartBoard, MentorEpisodeBoard, MentorTurnBoard, MessageListBoard, RuleCardsBoard, SortBinsBoard, StoryChoiceBoard } from './familyBoards';
 import { LessonPlayerProvider, playerCopy, type SegmentGrade } from './segmentKit';
 import { ApproachChoiceBoard } from './ApproachChoiceBoard';
+import { AttemptSeedProvider } from './horizonte/attemptSeed';
+import { useHorizonteReadiness } from './horizonte/useHorizonteReadiness';
+import { canRenderHorizonte, HorizonteSegmentView, isHorizonteSegment } from './horizonte/registry';
 import { v2ApproachOf, v2SegmentsForApproach } from './v2SegmentFamilies.generated';
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
@@ -61,6 +64,7 @@ const FAMILY_TYPES = new Set(['logic.rule-checker.v2', 'logic.euler.v2', 'logic.
   'money.unit-price.v2', 'logic.rule-builder.v2']);
 
 function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning, onGradeAny?: OnGradeAny): boolean {
+  if (isHorizonteSegment(segment)) return canRenderHorizonte(segment, !!onGradeAny);
   // A formerly presentation-only visual that the document now grades needs the generic grader (Appendix P Part 7).
   if (segment.grading === 'server' && (FAMILY_TYPES.has(segment.type) || (V2_CONCEPT_TYPES as readonly string[]).includes(segment.type) || ['visual.chart.v2', 'visual.goal-bullet.v2', 'visual.percent-grid.v2', 'math.place-value.v2', 'logic.savings-rule.v2',
     'money.running-ledger.v2', 'visual.growth-comparison.v2', 'visual.tax-bracket.v2', 'math.ratio-table.v2'].includes(segment.type))) return !!onGradeAny;
@@ -113,7 +117,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
  * (Core validates them). A segment this build cannot render, or a document it
  * cannot parse because it is newer, is the B.4 update-required screen.
  */
-export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio, approachId = null, onChooseApproach }: {
+export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio, approachId = null, onChooseApproach, attemptSeeds }: {
   raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
   onGradeAny?: OnGradeAny; onView?: OnView; onHelpUsed?: (segmentId: string, steps: number) => void;
   metSegmentIds?: string[];
@@ -126,7 +130,12 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   /** GAP-FIX-R5 (B.24): the approach Core pinned on this run (null before choosing), and how to pin one. */
   approachId?: string | null;
   onChooseApproach?: OnChooseApproach;
+  /** F3.0: the seeds Core issued with this run's attempts, segment id to seed; a seeded Horizonte board never runs without its own. */
+  attemptSeeds?: Readonly<Record<string, string>>;
 }) {
+  // A Horizonte piece's pack downloads when a document names it; until then there is nothing true to draw.
+  const readiness = useHorizonteReadiness(raw);
+  if (readiness === 'loading') return <div className="lf-hz-loading" aria-busy="true" />;
   const loaded = loadLessonClientDocument(raw);
   if (loaded.status !== 'ready') return loaded.status === 'upgrade-required' ? <UpdateRequired locale={locale} onBack={onBack} /> : unavailable(locale, onBack, 'invalid');
   const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny));
@@ -135,10 +144,12 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   // W2L.3 (B.8): every board's stage slot reads Core's projection from here; the allocation pilot keeps its own prop.
   return <LessonStageProvider stage={mentorStage} ageBand={loaded.document.age_band} theme={theme} adventureTheme={adventureTheme}>
     <LessonPlayerProvider stage={mentorStage} theme={theme} onHelpUsed={onHelpUsed} narrationAudio={narrationAudio}>
-      <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
-        onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
-        onGradeAny={onGradeAny} onView={onView} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} viewedSegmentIds={viewedSegmentIds}
-        mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} approachId={approachId} onChooseApproach={onChooseApproach} />
+      <AttemptSeedProvider seeds={attemptSeeds}>
+        <ValidatedLessonView key={lessonVersionKey(loaded.document)} document={loaded.document} onBack={onBack} onGrade={onGrade}
+          onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
+          onGradeAny={onGradeAny} onView={onView} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds} viewedSegmentIds={viewedSegmentIds}
+          mentorStage={mentorStage} theme={theme} previewSequence={previewSequence} approachId={approachId} onChooseApproach={onChooseApproach} />
+      </AttemptSeedProvider>
     </LessonPlayerProvider>
   </LessonStageProvider>;
 }
@@ -217,6 +228,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   // B.7 part 3 / Appendix P Parts 1-3 / OD-16 (gap-fix round 7): who may see a kind is decided once, by the shared
   // V2_AGE_SCOPE that loadLessonClientDocument (and Core) already ran. The player never adds a stricter band guard.
   const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
+  if (isHorizonteSegment(segment)) return <HorizonteSegmentView key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} unavailable={() => unavailable(document.locale, onBack)} />;
   switch (segment.type) {
     case 'money.unit-price.v2': return <UnitPriceBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;
     case 'logic.rule-builder.v2': return <RuleBuilderBoard key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} />;

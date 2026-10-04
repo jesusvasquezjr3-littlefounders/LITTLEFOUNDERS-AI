@@ -24,7 +24,7 @@
 .lf-learn-hero-body { display: grid; justify-items: start; gap: var(--spacing-3); min-inline-size: 0; }
 .lf-learn-hero-body > * { max-inline-size: 100%; }
 .lf-learn-hero h2 { font: var(--type-headline); overflow-wrap: break-word; }
-.lf-learn-hero-art { display: none; }
+.lf-learn-hero-art { display: block; inline-size: var(--spacing-32); justify-self: end; }
 .lf-learn-hero-action { display: flex; flex-wrap: wrap; gap: var(--spacing-3); padding-block-start: var(--spacing-2); }
 .lf-learn-hero :is(a, button):focus-visible { outline-color: var(--on-primary); }
 
@@ -66,7 +66,7 @@
 
 @container app (min-width: 480px) {
   .lf-learn-hero { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-  .lf-learn-hero-art { display: grid; place-items: center; inline-size: var(--spacing-24); block-size: var(--spacing-24); border-radius: var(--rounded-full); background: color-mix(in srgb, var(--on-primary) 16%, transparent); }
+  .lf-learn-hero-art { inline-size: calc(var(--spacing-32) + var(--spacing-16)); align-self: center; }
 }
 @container app (min-width: 640px) {
   .lf-learn-hero { padding: var(--spacing-8); }

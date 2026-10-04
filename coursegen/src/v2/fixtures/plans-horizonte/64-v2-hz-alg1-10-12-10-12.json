@@ -1,0 +1,85 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-alg1",
+  "lesson_id": "v2-hz-alg1-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-alg1"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara reescribe un tablero de fichas y tarjetas sin romper la igualdad.",
+  "title": {
+    "en-US": "The box, in pictures",
+    "es-MX": "La caja, en dibujos",
+    "pt-BR": "A caixa, em desenhos"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "cards-box-picture",
+      "type": "math.algebra-cards.v2",
+      "grading": "server",
+      "visual": {
+        "type": "algebra-cards"
+      },
+      "payload": {
+        "disguise": "picture",
+        "left": [
+          "unk",
+          "pos-3"
+        ],
+        "right": [
+          "pos-7"
+        ],
+        "supply": [
+          "neg-3"
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "left": [
+              "unk"
+            ],
+            "right": [
+              "neg-3",
+              "pos-7"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Get the box alone on one side. Keep both sides equal.",
+          "feedback": {
+            "met": "You kept the board true while you rewrote it.",
+            "not_yet": "Look at the pieces again and match them in pairs."
+          }
+        },
+        "es-MX": {
+          "prompt": "Deja la caja sola en un lado. Mantén iguales los dos lados.",
+          "feedback": {
+            "met": "Mantuviste el tablero correcto mientras lo reescribías.",
+            "not_yet": "Mira las piezas otra vez y júntalas en parejas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deixe a caixa sozinha de um lado. Mantenha os dois lados iguais.",
+          "feedback": {
+            "met": "Você manteve o quadro correto enquanto o reescrevia.",
+            "not_yet": "Olhe as peças de novo e junte-as em pares."
+          }
+        }
+      }
+    }
+  ]
+}

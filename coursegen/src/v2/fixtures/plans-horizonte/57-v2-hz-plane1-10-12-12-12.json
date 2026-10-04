@@ -1,0 +1,168 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-plane1",
+  "lesson_id": "v2-hz-plane1-10-12-12-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 12,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-plane1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho lee una gráfica paso a paso para entender qué cambia y qué no.",
+  "title": {
+    "en-US": "Table, graph and equation",
+    "es-MX": "Tabla, gráfica y ecuación",
+    "pt-BR": "Tabela, gráfico e equação"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "linked-views-line",
+      "type": "alg.linked-views.v2",
+      "grading": "server",
+      "visual": {
+        "type": "linked-views"
+      },
+      "payload": {
+        "grid": {
+          "xMax": 6,
+          "yMin": 0,
+          "yMax": 20
+        },
+        "given": [
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 9
+          }
+        ],
+        "start": {
+          "m": 1,
+          "b": 0
+        }
+      },
+      "rubric": {
+        "target": {
+          "m": 2,
+          "b": 3
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Edit the line until it passes through (1, 5) and (3, 9).",
+          "feedback": {
+            "met": "You read the graph the way its numbers say.",
+            "not_yet": "Follow the line again and check each step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Edita la recta hasta que pase por (1, 5) y (3, 9).",
+          "feedback": {
+            "met": "Leíste la gráfica como dicen sus números.",
+            "not_yet": "Sigue la línea otra vez y revisa cada paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Edite a reta até ela passar por (1, 5) e (3, 9).",
+          "feedback": {
+            "met": "Você leu o gráfico como os números dizem.",
+            "not_yet": "Siga a linha de novo e confira cada passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "break-even-stand",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "visual": {
+        "type": "break-even"
+      },
+      "payload": {
+        "fixed": 60,
+        "price": 5,
+        "unit": 2,
+        "maxUnits": 40,
+        "start": 5
+      },
+      "rubric": {
+        "target": 20
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Setup costs 60, and a cup costs 2 and sells for 5. Find the cups where sales equal costs.",
+          "feedback": {
+            "met": "You read the graph the way its numbers say.",
+            "not_yet": "Follow the line again and check each step."
+          }
+        },
+        "es-MX": {
+          "prompt": "La preparación cuesta 60, y un vaso cuesta 2 y se vende en 5. Halla los vasos donde las ventas igualan los costos.",
+          "feedback": {
+            "met": "Leíste la gráfica como dicen sus números.",
+            "not_yet": "Sigue la línea otra vez y revisa cada paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A preparação custa 60, e um copo custa 2 e vende por 5. Ache os copos em que as vendas igualam os custos.",
+          "feedback": {
+            "met": "Você leu o gráfico como os números dizem.",
+            "not_yet": "Siga a linha de novo e confira cada passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "markup-price",
+      "type": "fin.margin-markup.v2",
+      "grading": "server",
+      "visual": {
+        "type": "margin-markup"
+      },
+      "payload": {
+        "cost": 40,
+        "basis": "markup",
+        "percent": 50,
+        "maxPrice": 100,
+        "start": 40
+      },
+      "rubric": {
+        "target": 60
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An item costs 40. Set the price with a markup of 50% on the cost.",
+          "feedback": {
+            "met": "You read the graph the way its numbers say.",
+            "not_yet": "Follow the line again and check each step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Un artículo cuesta 40. Fija el precio con un recargo del 50% sobre el costo.",
+          "feedback": {
+            "met": "Leíste la gráfica como dicen sus números.",
+            "not_yet": "Sigue la línea otra vez y revisa cada paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um item custa 40. Defina o preço com um acréscimo de 50% sobre o custo.",
+          "feedback": {
+            "met": "Você leu o gráfico como os números dizem.",
+            "not_yet": "Siga a linha de novo e confira cada passo."
+          }
+        }
+      }
+    }
+  ]
+}

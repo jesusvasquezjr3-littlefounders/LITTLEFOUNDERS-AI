@@ -21,7 +21,7 @@
 
 import type { GateProblem } from '../pipeline/gates.js';
 import { loadMarketInventory, type MarketInventory } from '../contentGates/regional.js';
-import { isNonCopyKey, requiredCapabilities, V2_ID, V2_LOCALES, type V2Locale, type V2PublicDocument, type V2Segment } from './contract.js';
+import { hasNeutralPayload, isNonCopyKey, requiredCapabilities, V2_ID, V2_LOCALES, type V2Locale, type V2PublicDocument, type V2Segment } from './contract.js';
 import { analyzeV2Plan, runV2DocumentGates, type V2Finding } from './gates.js';
 import type { V2LessonPlan, V2PlanSegment } from './plan.js';
 import { v2AgeScopeProblem, v2ApproachesProblem, v2PayloadScopeProblem } from './v2SegmentFamilies.generated.js';
@@ -96,12 +96,25 @@ function mergeCopy(payload: unknown, copy: unknown, where: string, problems: str
   return payload;
 }
 
+/** A Horizonte kind: the payload stays as planned; labels and notation lift to the segment next to it. */
+function horizonteExtras(segment: V2PlanSegment, rest: Record<string, unknown>, where: string, problems: string[]): Pick<V2Segment, 'labels' | 'notation'> {
+  const { labels, notation, ...stray } = rest;
+  for (const key of Object.keys(stray)) problems.push(`${where}.${key}: a Horizonte kind takes only prompt, help, feedback, labels and notation as copy`);
+  const spokenText = (notation as { spokenText?: unknown } | undefined)?.spokenText;
+  return {
+    ...(isRecord(labels) ? { labels: { ...(labels as Record<string, string>) } } : {}),
+    ...(segment.notation && typeof spokenText === 'string' ? { notation: { tex: segment.notation.tex, spokenText } } : {}),
+  };
+}
+
 function buildSegment(segment: V2PlanSegment, locale: V2Locale, problems: string[]): V2Segment {
   const { prompt, help, feedback, ...rest } = segment.copy[locale];
   const where = `segments.${segment.id}.copy.${locale}`;
-  const payload = mergeCopy(segment.payload, rest, where, problems) as Record<string, unknown>;
+  const neutral = hasNeutralPayload(segment.type);
+  const payload = neutral ? segment.payload : (mergeCopy(segment.payload, rest, where, problems) as Record<string, unknown>);
   return {
     id: segment.id, type: segment.type, grading: segment.grading, prompt, visual: { ...segment.visual }, payload,
+    ...(neutral ? horizonteExtras(segment, rest, where, problems) : {}),
     ...(help ? { help: [...help] } : {}),
     ...(feedback ? { feedback: { ...feedback } } : {}),
     ...(segment.item_role ? { item_role: segment.item_role } : {}),
@@ -133,9 +146,15 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
 
   // Structure: strings come from copy only, and every market fills the same fields.
   for (const segment of plan.segments) {
-    const neutral = stringPaths(segment.payload);
+    const neutral = hasNeutralPayload(segment.type) ? [] : stringPaths(segment.payload);
     if (neutral.length > 0) {
       problems.push({ gate: 1, segmentId: segment.id, message: `payload strings (${neutral.join(', ')}) must come from the per-market copy, or they ship untranslated` });
+    }
+    if (hasNeutralPayload(segment.type)) {
+      const spoken = V2_LOCALES.map((locale) => typeof (segment.copy[locale].notation as { spokenText?: unknown } | undefined)?.spokenText === 'string');
+      if (spoken.some((has) => has !== Boolean(segment.notation))) {
+        problems.push({ gate: 1, segmentId: segment.id, message: 'a notation needs its tex and a spokenText in all three markets, or neither' });
+      }
     }
     const shapes = V2_LOCALES.map((locale) => stringPaths(segment.copy[locale]).sort().join('|'));
     if (new Set(shapes).size !== 1) {

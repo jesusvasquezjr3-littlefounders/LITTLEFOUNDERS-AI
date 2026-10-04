@@ -41,13 +41,13 @@ describe('Landing (M1)', () => {
   it('leads with the brand line and starts a guest session from the button that was pressed', () => {
     const onStart = vi.fn();
     const { container } = inRoot(<Landing locale="en-US" start={guest({ onStart })} />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy().landing.title);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy().landingV2.title);
     expect(container.querySelectorAll('h1')).toHaveLength(1);
     const buttons = screen.getAllByRole('button', { name: copy().site.startFree });
     expect(buttons).toHaveLength(2);
     fireEvent.click(buttons[0]!);
     expect(onStart).toHaveBeenCalledWith('landing-hero');
-    expect(screen.getByRole('link', { name: copy().site.login })).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('link', { name: copy().landingV2.tryAction })).toHaveAttribute('href', expect.stringContaining('-learn'));
     expect(undeclaredText(container)).toEqual([]);
   });
 
@@ -254,7 +254,7 @@ describe('BadgeLanding (M7, S10L.3)', () => {
   it('says an expired, revoked or unknown link expired, and still offers the site', () => {
     const { container } = inRoot(<BadgeLanding locale="es-MX" state={{ status: 'expired' }} start={{ kind: 'continue', href: '/learn' }} />, 'dark', 'es-MX');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy('es-MX').badgeLanding.expiredTitle);
-    expect(screen.queryByRole('img')).toBeNull();
+    expect(within(screen.getByRole('main')).queryByRole('img')).toBeNull();
     expect(screen.getByRole('link', { name: copy('es-MX').site.continue })).toHaveAttribute('href', '/learn');
     expect(undeclaredText(container)).toEqual([]);
   });

@@ -1,0 +1,50 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-space2",
+  "lesson_id": "v2-hz-space2-13-17-13-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho lee vistas y cortes de un cuerpo para saber qué hay dentro.",
+  "title": {
+    "en-US": "A litre on your table",
+    "es-MX": "Un litro en tu mesa",
+    "pt-BR": "Um litro na sua mesa"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "ar-table-litre-box",
+      "type": "space.ar-table.v2",
+      "grading": "none",
+      "visual": {
+        "type": "ar-table"
+      },
+      "payload": {
+        "object": "litre-box"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Look at a one litre box at its true size. Turn it to see every side."
+        },
+        "es-MX": {
+          "prompt": "Mira una caja de un litro a su tamaño real. Gírala para ver todos sus lados."
+        },
+        "pt-BR": {
+          "prompt": "Veja uma caixa de um litro no tamanho real. Gire para ver todos os lados."
+        }
+      }
+    }
+  ]
+}

@@ -29,12 +29,28 @@ export const CORE_CHART_KINDS = [
 export const SITUATIONAL_CHART_KINDS = ['stacked-bar-100', 'stacked-area-100', 'lollipop', 'slope', 'step', 'histogram', 'pareto', 'gauge',
   'candlestick', 'marimekko', 'treemap', 'sunburst', 'icicle', 'box-plot', 'connected-scatter', 'bump', 'org-chart', 'swimlane', 'venn',
   'ishikawa', 'mind-map'] as const;
-export const CHART_KINDS = [...CORE_CHART_KINDS, ...SITUATIONAL_CHART_KINDS] as const;
+/**
+ * Horizonte F1.0: twelve reading charts. Each one answers a question a learner
+ * asks of a table of numbers (which row is biggest, how far did it move, how
+ * unequal is it, how sure is the forecast, what shape do the samples take).
+ * They live in their own list so the 46 earlier kinds and their gates stay
+ * pinned; the browser draws them from one lazy chunk (charts/readingCharts.tsx).
+ */
+export const READING_CHART_KINDS = ['dot-plot', 'dumbbell', 'xy-heatmap', 'error-bars', 'funnel', 'lorenz-curve', 'fan-chart', 'density-plot',
+  'violin-plot', 'timeline', 'scatter-regression', 'parallel-coordinates'] as const;
+export type ReadingChartKind = (typeof READING_CHART_KINDS)[number];
+export const CHART_KINDS = [...CORE_CHART_KINDS, ...SITUATIONAL_CHART_KINDS, ...READING_CHART_KINDS] as const;
 export type ChartKind = (typeof CHART_KINDS)[number];
 
+const READING_SET = new Set<string>(READING_CHART_KINDS);
+export function isReadingChart(kind: string): kind is ReadingChartKind {
+  return READING_SET.has(kind);
+}
+
 type AgeBand = '6-9' | '10-12' | '13-17' | 'adult';
+type ChartGate = { bands: readonly AgeBand[]; subjects: readonly string[] | null };
 /** Appendix A's gate for each situational type: the age pathways and course subjects it may appear in (null: any subject). */
-export const SITUATIONAL_CHART_GATES: Readonly<Record<(typeof SITUATIONAL_CHART_KINDS)[number], { bands: readonly AgeBand[]; subjects: readonly string[] | null }>> = {
+export const SITUATIONAL_CHART_GATES: Readonly<Record<(typeof SITUATIONAL_CHART_KINDS)[number], ChartGate>> = {
   'stacked-bar-100': { bands: ['13-17', 'adult'], subjects: null }, // teens comparing allocation strategies
   'stacked-area-100': { bands: ['13-17', 'adult'], subjects: null }, // teens, longer horizons
   lollipop: { bands: ['10-12', '13-17', 'adult'], subjects: null }, // long skill lists
@@ -58,6 +74,24 @@ export const SITUATIONAL_CHART_GATES: Readonly<Record<(typeof SITUATIONAL_CHART_
   'mind-map': { bands: ['10-12', '13-17', 'adult'], subjects: null }, // organizing a broad topic (plan and notebook)
 };
 
+const FROM_TEN: readonly AgeBand[] = ['10-12', '13-17', 'adult'];
+const FROM_THIRTEEN: readonly AgeBand[] = ['13-17', 'adult'];
+/** F1.0 gates: none of the twelve opens to 6-9; the plain comparisons start at 10, the statistical readings at 13. */
+export const READING_CHART_GATES: Readonly<Record<ReadingChartKind, ChartGate>> = {
+  'dot-plot': { bands: FROM_TEN, subjects: null }, // ranking many rows without a bar's ink
+  dumbbell: { bands: FROM_TEN, subjects: null }, // before and after, or me and the class
+  'xy-heatmap': { bands: FROM_TEN, subjects: null }, // two things at once: day by activity
+  'error-bars': { bands: FROM_THIRTEEN, subjects: null }, // how sure an average is
+  funnel: { bands: FROM_TEN, subjects: ['entrepreneurship'] }, // visitors to buyers
+  'lorenz-curve': { bands: FROM_THIRTEEN, subjects: ['financial-education'] }, // how evenly money is shared
+  'fan-chart': { bands: FROM_THIRTEEN, subjects: ['investing', 'financial-education'] }, // a forecast that widens
+  'density-plot': { bands: FROM_THIRTEEN, subjects: null }, // the shape of a sample
+  'violin-plot': { bands: FROM_THIRTEEN, subjects: null }, // shapes side by side
+  timeline: { bands: FROM_TEN, subjects: null }, // events and spans in order
+  'scatter-regression': { bands: FROM_TEN, subjects: null }, // a trend through the dots
+  'parallel-coordinates': { bands: FROM_THIRTEEN, subjects: null }, // several measures per item
+};
+
 /** The subject a course id belongs to (course ids start with their subject). */
 export function chartSubject(courseId: string): string {
   return ['financial-education', 'investing', 'entrepreneurship'].find((subject) => courseId === subject || courseId.startsWith(`${subject}-`)) ?? courseId;
@@ -65,7 +99,7 @@ export function chartSubject(courseId: string): string {
 
 /** Whether a chart kind may appear in a document of this pathway and course. Core types are always allowed. */
 export function chartAllowed(kind: ChartKind, ageBand: AgeBand, courseId: string): boolean {
-  const gate = (SITUATIONAL_CHART_GATES as Record<string, { bands: readonly AgeBand[]; subjects: readonly string[] | null }>)[kind];
+  const gate = (SITUATIONAL_CHART_GATES as Record<string, ChartGate>)[kind] ?? (READING_CHART_GATES as Record<string, ChartGate>)[kind];
   if (!gate) return true;
   return gate.bands.includes(ageBand) && (gate.subjects === null || gate.subjects.includes(chartSubject(courseId)));
 }
@@ -78,7 +112,7 @@ export const chartDataSchema = z.object({
   unit: z.enum(['coins', 'local', 'percent', 'count', 'days', 'points']),
   categories: z.array(z.object({ id, label }).strict()).max(12).default([]),
   /** Up to three series: sky, mint and berry, each also carried by a pattern. */
-  series: z.array(z.object({ id, label, values: z.array(finite).max(12) }).strict()).max(3).default([]),
+  series: z.array(z.object({ id, label, values: z.array(finite).max(12), /** F1.0 error bars: the half-width of each value's whisker. */ error: z.array(z.number().finite().min(0).max(1_000_000_000)).max(12).optional() }).strict()).max(3).default([]),
   target: finite.optional(),
   bands: z.array(finite).max(3).optional(),
   points: z.array(z.object({ id, label, x: finite, y: finite, size: z.number().finite().positive().max(1_000_000).optional() }).strict()).max(30).optional(),
@@ -95,12 +129,23 @@ export const chartDataSchema = z.object({
   boxes: z.array(z.object({ id, label, min: finite, q1: finite, median: finite, q3: finite, max: finite }).strict()).max(6).optional(),
   /** GAP-FIX-R2 Venn: the count in each region, named by the category (set) ids it belongs to. */
   regions: z.array(z.object({ sets: z.array(id).min(1).max(3), value: z.number().int().min(0).max(1_000_000) }).strict()).max(7).optional(),
+  /** F1.0 XY heatmap: the categories are the columns, `rows` the other axis, `cells` one value per column and row pair. */
+  rows: z.array(z.object({ id, label }).strict()).max(8).optional(),
+  cells: z.array(z.object({ col: id, row: id, value: finite }).strict()).max(96).optional(),
+  /** F1.0 fan chart: nested ranges (a confidence level in percent) around the one central series, one low and high per category. */
+  ranges: z.array(z.object({ level: z.number().int().min(50).max(99), low: z.array(finite).max(12), high: z.array(finite).max(12) }).strict()).max(2).optional(),
+  /** F1.0 density and violin plots: the raw sample of each group (the browser smooths it). */
+  samples: z.array(z.object({ id, label, values: z.array(finite).min(5).max(60) }).strict()).max(3).optional(),
+  /** F1.0 timeline: a day, or a span when `end` is set; calendar days, in date order. */
+  events: z.array(z.object({ id, label, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional() }).strict()).max(12).optional(),
+  /** F1.0 parallel coordinates: one record per line, one value per axis (the categories are the axes). */
+  records: z.array(z.object({ id, label, values: z.array(finite).max(6) }).strict()).max(8).optional(),
 }).strict();
 export type ChartData = z.infer<typeof chartDataSchema>;
 
 const SERIES_KINDS = new Set<ChartKind>(['bar', 'column', 'grouped-bar', 'stacked-bar', 'diverging-bar', 'pie', 'donut', 'waterfall', 'radar', 'bullet',
   'line', 'area', 'stacked-area', 'time-series', 'sparkline', 'pictogram', 'waffle', 'stat-tile', 'stacked-bar-100', 'stacked-area-100', 'lollipop',
-  'slope', 'step', 'histogram', 'pareto', 'gauge', 'marimekko', 'bump']);
+  'slope', 'step', 'histogram', 'pareto', 'gauge', 'marimekko', 'bump', 'dot-plot', 'dumbbell', 'error-bars', 'funnel', 'lorenz-curve', 'fan-chart']);
 const TREE_KINDS = new Set<ChartKind>(['tree', 'decision-tree', 'treemap', 'sunburst', 'icicle', 'org-chart', 'ishikawa', 'mind-map']);
 
 /** A single-rooted tree over the nodes and links, or why not: root id, children and depth per node. */
@@ -129,6 +174,72 @@ export function hierarchyValue(data: ChartData, nodeId: string, children: Map<st
   return kids.reduce((sum, kid) => sum + hierarchyValue(data, kid, children), 0);
 }
 
+/** The p-th quantile (0..1) of an ascending list, by linear interpolation between the two nearest values. */
+export function quantile(sorted: readonly number[], p: number): number {
+  if (sorted.length === 0) return 0;
+  const at = (sorted.length - 1) * Math.min(1, Math.max(0, p));
+  const low = Math.floor(at);
+  const high = Math.ceil(at);
+  return sorted[low]! + (sorted[high]! - sorted[low]!) * (at - low);
+}
+
+/** The five-number summary, count and mean of a sample. */
+export function sampleSummary(values: readonly number[]): { n: number; min: number; q1: number; median: number; q3: number; max: number; mean: number } {
+  const sorted = [...values].sort((a, b) => a - b);
+  return { n: sorted.length, min: sorted[0] ?? 0, q1: quantile(sorted, 0.25), median: quantile(sorted, 0.5), q3: quantile(sorted, 0.75), max: sorted[sorted.length - 1] ?? 0,
+    mean: sorted.length ? sorted.reduce((a, b) => a + b, 0) / sorted.length : 0 };
+}
+
+/** Least-squares line through the points, with its R squared; null when every x is the same. */
+export function regressionFit(points: ReadonlyArray<{ x: number; y: number }>): { slope: number; intercept: number; r2: number } | null {
+  if (points.length < 2) return null;
+  const mx = points.reduce((a, p) => a + p.x, 0) / points.length;
+  const my = points.reduce((a, p) => a + p.y, 0) / points.length;
+  const sxx = points.reduce((a, p) => a + (p.x - mx) ** 2, 0);
+  const sxy = points.reduce((a, p) => a + (p.x - mx) * (p.y - my), 0);
+  const syy = points.reduce((a, p) => a + (p.y - my) ** 2, 0);
+  if (sxx === 0) return null;
+  const slope = sxy / sxx;
+  return { slope, intercept: my - slope * mx, r2: syy === 0 ? 0 : (sxy * sxy) / (sxx * syy) };
+}
+
+/** Lorenz curve of one series: the groups from smallest to largest, the cumulative share of people and of the total at each, and the Gini index. */
+export function lorenzCurve(values: readonly number[]): { order: number[]; people: number[]; share: number[]; gini: number } {
+  const order = values.map((_, index) => index).sort((a, b) => values[a]! - values[b]! || a - b);
+  const total = values.reduce((a, b) => a + Math.max(0, b), 0) || 1;
+  let run = 0;
+  const people = order.map((_, i) => (i + 1) / order.length);
+  const share = order.map((index) => { run += Math.max(0, values[index]!); return run / total; });
+  const area = share.reduce((sum, value, i) => sum + (value + (share[i - 1] ?? 0)) / (2 * order.length), 0);
+  return { order, people, share, gini: Math.min(1, Math.max(0, 1 - 2 * area)) };
+}
+
+/** Funnel stages: each value with its share of the first stage and of the stage before, in percent. */
+export function funnelSteps(values: readonly number[]): Array<{ value: number; ofFirst: number; ofPrevious: number }> {
+  return values.map((value, i) => ({ value, ofFirst: values[0]! > 0 ? (value / values[0]!) * 100 : 0,
+    ofPrevious: i === 0 ? 100 : values[i - 1]! > 0 ? (value / values[i - 1]!) * 100 : 0 }));
+}
+
+/** A calendar day (YYYY-MM-DD) as a whole day number since 1970-01-01, or NaN when it is not a real day. */
+export function dayNumber(day: string): number {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  if (!match) return Number.NaN;
+  const [year, month, date] = [Number(match[1]), Number(match[2]), Number(match[3])] as [number, number, number];
+  const at = new Date(Date.UTC(year, month - 1, date));
+  return at.getUTCFullYear() === year && at.getUTCMonth() === month - 1 && at.getUTCDate() === date ? at.getTime() / 86_400_000 : Number.NaN;
+}
+
+/** One axis of parallel coordinates: the lowest and highest value any record has there. */
+export function axisExtent(data: ChartData, axis: number): [number, number] {
+  const values = (data.records ?? []).map((record) => record.values[axis] ?? 0);
+  return [Math.min(...values), Math.max(...values)];
+}
+
+/** A heatmap cell's value (0 when the pair has none). */
+export function heatValue(data: ChartData, col: string, row: string): number {
+  return data.cells?.find((cell) => cell.col === col && cell.row === row)?.value ?? 0;
+}
+
 /** Why a chart's data does not fit its kind, or null. The rules each renderer relies on (and the overflow rule) live here. */
 export function chartProblem(kind: ChartKind, data: ChartData): string | null {
   const n = data.categories.length;
@@ -136,6 +247,7 @@ export function chartProblem(kind: ChartKind, data: ChartData): string | null {
   if (SERIES_KINDS.has(kind) && !seriesOk && kind !== 'stat-tile' && kind !== 'gauge' && kind !== 'bullet') return 'every series needs one value per category';
   if (new Set([...data.categories.map((c) => c.id), ...data.series.map((s) => s.id)]).size !== n + data.series.length) return 'duplicate ids';
   const values = data.series.flatMap((series) => series.values);
+  if (isReadingChart(kind) && [...data.categories, ...data.series, ...(data.rows ?? []), ...(data.samples ?? []), ...(data.events ?? []), ...(data.records ?? []), ...(data.points ?? [])].some((item) => item.label.startsWith('~'))) return 'a label does not start with ~';
   switch (kind) {
     case 'pie': case 'donut':
       // Appendix A: a pie reads for at most five or six parts; more goes to a bar chart.
@@ -236,6 +348,61 @@ export function chartProblem(kind: ChartKind, data: ChartData): string | null {
       if ((kind === 'mind-map' || kind === 'org-chart') && maxDepth > 3) return 'a map shows at most three levels';
       return null;
     }
+    case 'dot-plot':
+      return n < 2 || n > 6 ? 'a dot plot ranks 2-6 rows' : null;
+    case 'dumbbell':
+      return n < 2 || n > 6 || data.series.length !== 2 ? 'a dumbbell compares two series over 2-6 rows' : null;
+    case 'error-bars':
+      return n < 2 || data.series.some((series) => series.error?.length !== n) ? 'error bars need two or more categories and one error per value' : null;
+    case 'funnel':
+      if (n < 2 || n > 6 || data.series.length !== 1 || values.some((v) => v < 0) || !(values[0]! > 0) || values.some((v, i) => i > 0 && v > values[i - 1]!)) return 'a funnel needs 2-6 stages that never grow, from a first stage above zero';
+      return null;
+    case 'lorenz-curve':
+      if (n < 3 || data.series.length !== 1 || values.some((v) => v < 0) || values.reduce((a, b) => a + b, 0) <= 0) return 'a Lorenz curve needs 3+ groups of one non-negative series';
+      return null;
+    case 'fan-chart': {
+      const ranges = data.ranges ?? []; const centre = data.series[0]?.values ?? [];
+      if (n < 3 || data.series.length !== 1 || ranges.length < 1) return 'a fan chart needs 3+ periods, one central path and 1-2 ranges';
+      if (ranges.some((range) => range.low.length !== n || range.high.length !== n || centre.some((v, i) => range.low[i]! > v || range.high[i]! < v))) return 'each range holds the central path between its low and high';
+      for (let i = 1; i < ranges.length; i += 1) {
+        const inner = ranges[i - 1]!; const outer = ranges[i]!;
+        if (outer.level <= inner.level || outer.low.some((v, k) => v > inner.low[k]!) || outer.high.some((v, k) => v < inner.high[k]!)) return 'the wider range holds the narrower one';
+      }
+      return null;
+    }
+    case 'density-plot': case 'violin-plot': {
+      const groups = data.samples ?? [];
+      if (groups.length < 1 || new Set(groups.map((group) => group.id)).size !== groups.length) return 'a distribution chart needs 1-3 sample groups';
+      if (groups.some((group) => Math.max(...group.values) === Math.min(...group.values))) return 'every sample group needs some spread';
+      return null;
+    }
+    case 'timeline': {
+      const events = data.events ?? [];
+      if (events.length < 2 || new Set(events.map((event) => event.id)).size !== events.length) return 'a timeline needs two or more events';
+      const days = events.map((event) => ({ start: dayNumber(event.date), end: event.end === undefined ? undefined : dayNumber(event.end) }));
+      if (days.some((day) => Number.isNaN(day.start) || (day.end !== undefined && (Number.isNaN(day.end) || day.end < day.start)))) return 'timeline dates are real days and an event ends on or after it starts';
+      if (days.some((day, i) => i > 0 && day.start < days[i - 1]!.start)) return 'timeline events run in date order';
+      if (Math.max(...days.map((day) => day.end ?? day.start)) === days[0]!.start) return 'a timeline spans more than one day';
+      return null;
+    }
+    case 'scatter-regression': {
+      const points = data.points ?? [];
+      if (points.length < 4 || new Set(points.map((point) => point.id)).size !== points.length) return 'a regression chart needs 4+ points';
+      if (!regressionFit(points) || new Set(points.map((point) => point.y)).size < 2) return 'a regression chart needs x and y to vary';
+      return null;
+    }
+    case 'xy-heatmap': {
+      const rows = data.rows ?? []; const cells = data.cells ?? [];
+      if (n < 2 || rows.length < 2 || cells.length !== n * rows.length) return 'a heatmap needs 2+ columns, 2+ rows and one cell for each pair';
+      if (new Set(rows.map((row) => row.id)).size !== rows.length) return 'duplicate ids';
+      if (new Set(cells.map((cell) => `${cell.row}|${cell.col}`)).size !== cells.length || cells.some((cell) => !rows.some((row) => row.id === cell.row) || !data.categories.some((c) => c.id === cell.col))) return 'each heatmap cell names a known column and row once';
+      return null;
+    }
+    case 'parallel-coordinates': {
+      const records = data.records ?? [];
+      if (n < 3 || n > 6 || records.length < 2 || records.length > 8 || new Set(records.map((record) => record.id)).size !== records.length || records.some((record) => record.values.length !== n)) return 'parallel coordinates need 3-6 axes and 2-8 records with one value per axis';
+      return null;
+    }
     case 'flowchart': case 'decision-tree': case 'tree': {
       if (!data.nodes || data.nodes.length < 2 || !data.links) return 'a diagram needs nodes and links';
       const ids = new Set(data.nodes.map((node) => node.id));
@@ -253,7 +420,8 @@ export function chartProblem(kind: ChartKind, data: ChartData): string | null {
 }
 
 /** Show as table: one row per category (or point, node link, day) with the values the chart draws. */
-export function chartTable(kind: ChartKind, data: ChartData): { columns: string[]; rows: Array<{ id: string; cells: Array<string | number> }> } {
+export function chartTable(kind: ChartKind, data: ChartData): ChartTableModel {
+  if (isReadingChart(kind)) return readingTable(kind, data);
   if (kind === 'scatter' || kind === 'bubble') {
     return { columns: kind === 'bubble' ? ['x', 'y', 'size'] : ['x', 'y'], rows: (data.points ?? []).map((p) => ({ id: p.id, cells: [p.label, p.x, p.y, ...(kind === 'bubble' ? [p.size ?? 0] : [])] })) };
   }
@@ -293,6 +461,104 @@ export function chartTable(kind: ChartKind, data: ChartData): { columns: string[
   return { columns: data.series.map((s) => s.label), rows: data.categories.map((c, index) => ({ id: c.id, cells: [c.label, ...data.series.map((s) => s.values[index] ?? 0)] })) };
 }
 
+export interface ChartTableModel { columns: string[]; rows: Array<{ id: string; cells: Array<string | number> }> }
+
+/*
+ * F1.0: a column, a table cell or a read part name that starts with `~` is a
+ * word of the model ("change", "median", "low 80%"), not the author's copy: the
+ * browser translates it (charts/readingWords.ts). Every other string is a
+ * label the author wrote per locale, and chartProblem refuses a label that
+ * starts with `~`.
+ */
+function readingTable(kind: ReadingChartKind, data: ChartData): ChartTableModel {
+  const perCategory = (cells: (index: number) => Array<string | number>) => data.categories.map((c, i) => ({ id: c.id, cells: [c.label, ...cells(i)] }));
+  const series = data.series;
+  switch (kind) {
+    case 'dot-plot':
+      return { columns: series.map((s) => s.label), rows: perCategory((i) => series.map((s) => s.values[i] ?? 0)) };
+    case 'dumbbell': {
+      const [a, b] = [series[0]!, series[1]!];
+      return { columns: [a.label, b.label, '~change'], rows: perCategory((i) => [a.values[i] ?? 0, b.values[i] ?? 0, (b.values[i] ?? 0) - (a.values[i] ?? 0)]) };
+    }
+    case 'xy-heatmap':
+      return { columns: data.categories.map((c) => c.label), rows: (data.rows ?? []).map((row) => ({ id: row.id, cells: [row.label, ...data.categories.map((c) => heatValue(data, c.id, row.id))] })) };
+    case 'error-bars':
+      return { columns: series.flatMap((s) => [s.label, `${s.label} ±`]), rows: perCategory((i) => series.flatMap((s) => [s.values[i] ?? 0, s.error?.[i] ?? 0])) };
+    case 'funnel': {
+      const steps = funnelSteps(series[0]?.values ?? []);
+      return { columns: ['~value', '~of first %', '~of previous %'], rows: perCategory((i) => [steps[i]!.value, steps[i]!.ofFirst, steps[i]!.ofPrevious]) };
+    }
+    case 'lorenz-curve': {
+      const curve = lorenzCurve(series[0]?.values ?? []);
+      return { columns: ['~value', '~people %', '~total %'], rows: [...curve.order.map((index, k) => ({ id: data.categories[index]!.id,
+        cells: [data.categories[index]!.label, series[0]!.values[index] ?? 0, curve.people[k]! * 100, curve.share[k]! * 100] })), { id: '~gini', cells: ['~gini', curve.gini, '', ''] }] };
+    }
+    case 'fan-chart': {
+      const ranges = data.ranges ?? [];
+      return { columns: [series[0]?.label ?? '~value', ...ranges.flatMap((range) => [`~low ${range.level}%`, `~high ${range.level}%`])],
+        rows: perCategory((i) => [series[0]?.values[i] ?? 0, ...ranges.flatMap((range) => [range.low[i] ?? 0, range.high[i] ?? 0])]) };
+    }
+    case 'density-plot': case 'violin-plot':
+      return { columns: ['~n', '~min', '~q1', '~median', '~q3', '~max'], rows: (data.samples ?? []).map((group) => { const s = sampleSummary(group.values);
+        return { id: group.id, cells: [group.label, s.n, s.min, s.q1, s.median, s.q3, s.max] }; }) };
+    case 'timeline':
+      return { columns: ['~date', '~end'], rows: (data.events ?? []).map((event) => ({ id: event.id, cells: [event.label, event.date, event.end ?? ''] })) };
+    case 'scatter-regression': {
+      const fit = regressionFit(data.points ?? []);
+      const at = (x: number) => (fit ? fit.slope * x + fit.intercept : 0);
+      return { columns: ['~x', '~y', '~fit'], rows: [...(data.points ?? []).map((p) => ({ id: p.id, cells: [p.label, p.x, p.y, at(p.x)] })),
+        ...(fit ? [{ id: '~slope', cells: ['~slope', '', '', fit.slope] }, { id: '~r2', cells: ['~r2', '', '', fit.r2] }] : [])] };
+    }
+    case 'parallel-coordinates':
+      return { columns: data.categories.map((c) => c.label), rows: (data.records ?? []).map((record) => ({ id: record.id, cells: [record.label, ...data.categories.map((_, i) => record.values[i] ?? 0)] })) };
+  }
+}
+
+/** One thing a learner can tap and read: a mark's name and the numbers behind it (names starting with `~` are model words). */
+export interface ChartRead { id: string; label: string; parts: Array<{ name: string; value: number }>; /** A non-numeric detail (a timeline's dates), ISO days the browser formats per locale. */ text?: string }
+
+/** The marks of a reading chart in reading order: what tap-to-read and the next/previous buttons step through. Other kinds have none. */
+export function chartReads(kind: ChartKind, data: ChartData): ChartRead[] {
+  if (!isReadingChart(kind)) return [];
+  const part = (name: string, value: number) => ({ name, value });
+  const perCategory = (parts: (index: number) => ChartRead['parts']) => data.categories.map((c, i) => ({ id: c.id, label: c.label, parts: parts(i) }));
+  const series = data.series;
+  switch (kind) {
+    case 'dot-plot':
+      return perCategory((i) => series.map((s) => part(s.label, s.values[i] ?? 0)));
+    case 'dumbbell':
+      return perCategory((i) => [part(series[0]!.label, series[0]!.values[i] ?? 0), part(series[1]!.label, series[1]!.values[i] ?? 0), part('~change', (series[1]!.values[i] ?? 0) - (series[0]!.values[i] ?? 0))]);
+    case 'error-bars':
+      return perCategory((i) => series.flatMap((s) => [part(s.label, s.values[i] ?? 0), part(`${s.label} ±`, s.error?.[i] ?? 0)]));
+    case 'funnel': {
+      const steps = funnelSteps(series[0]?.values ?? []);
+      return perCategory((i) => [part('~value', steps[i]!.value), part('~of first %', steps[i]!.ofFirst), ...(i > 0 ? [part('~of previous %', steps[i]!.ofPrevious)] : [])]);
+    }
+    case 'xy-heatmap':
+      return (data.rows ?? []).flatMap((row) => data.categories.map((c) => ({ id: `${row.id}:${c.id}`, label: `${row.label}, ${c.label}`, parts: [part('~value', heatValue(data, c.id, row.id))] })));
+    case 'lorenz-curve': {
+      const curve = lorenzCurve(series[0]?.values ?? []);
+      return curve.order.map((index, k) => ({ id: data.categories[index]!.id, label: data.categories[index]!.label,
+        parts: [part('~value', series[0]!.values[index] ?? 0), part('~people %', curve.people[k]! * 100), part('~total %', curve.share[k]! * 100)] }));
+    }
+    case 'fan-chart':
+      return perCategory((i) => [part(series[0]?.label ?? '~value', series[0]?.values[i] ?? 0),
+        ...(data.ranges ?? []).flatMap((range) => [part(`~low ${range.level}%`, range.low[i] ?? 0), part(`~high ${range.level}%`, range.high[i] ?? 0)])]);
+    case 'density-plot': case 'violin-plot':
+      return (data.samples ?? []).map((group) => { const s = sampleSummary(group.values);
+        return { id: group.id, label: group.label, parts: [part('~median', s.median), part('~q1', s.q1), part('~q3', s.q3), part('~min', s.min), part('~max', s.max)] }; });
+    case 'timeline':
+      return (data.events ?? []).map((event) => ({ id: event.id, label: event.label, text: event.end ? `${event.date} – ${event.end}` : event.date,
+        parts: event.end ? [part('~days', dayNumber(event.end) - dayNumber(event.date))] : [] }));
+    case 'scatter-regression': {
+      const fit = regressionFit(data.points ?? []);
+      return (data.points ?? []).map((p) => ({ id: p.id, label: p.label, parts: [part('~x', p.x), part('~y', p.y), ...(fit ? [part('~fit', fit.slope * p.x + fit.intercept)] : [])] }));
+    }
+    case 'parallel-coordinates':
+      return (data.records ?? []).map((record) => ({ id: record.id, label: record.label, parts: data.categories.map((c, i) => part(c.label, record.values[i] ?? 0)) }));
+  }
+}
+
 /** Waterfall: each step's delta and the running total it ends on (the first step starts from zero). */
 export function waterfallSteps(data: ChartData): Array<{ start: number; end: number; delta: number }> {
   let total = 0;
@@ -305,10 +571,22 @@ export function shares(values: readonly number[]): number[] {
   return values.map((v) => (sum > 0 ? Math.max(0, v) / sum : 0));
 }
 
-/** The chart's value range, always including zero, for linear axes. */
+/** The chart's value range, always including zero, for linear axes (a sample's own range, a heatmap's cell range and a forecast's own range are the exceptions). */
 export function valueExtent(kind: ChartKind, data: ChartData): [number, number] {
   let values: number[];
-  if (kind === 'stacked-bar' || kind === 'stacked-area') values = data.categories.map((_, i) => data.series.reduce((s, series) => s + (series.values[i] ?? 0), 0));
+  if (kind === 'density-plot' || kind === 'violin-plot' || kind === 'xy-heatmap') {
+    const own = kind === 'xy-heatmap' ? (data.cells ?? []).map((cell) => cell.value) : (data.samples ?? []).flatMap((group) => group.values);
+    const [min, max] = [Math.min(...own), Math.max(...own)];
+    return own.length === 0 ? [0, 1] : [min, max === min ? min + 1 : max];
+  }
+  if (kind === 'fan-chart') {
+    const all = [...data.series.flatMap((s) => s.values), ...(data.ranges ?? []).flatMap((range) => [...range.low, ...range.high])];
+    const [min, max] = [Math.min(...all), Math.max(...all)];
+    return all.length === 0 ? [0, 1] : [min, max === min ? min + 1 : max];
+  }
+  if (kind === 'error-bars') values = data.series.flatMap((s) => s.values.flatMap((v, i) => [v - (s.error?.[i] ?? 0), v + (s.error?.[i] ?? 0)]));
+  else if (kind === 'lorenz-curve') values = [0, 1];
+  else if (kind === 'stacked-bar' || kind === 'stacked-area') values = data.categories.map((_, i) => data.series.reduce((s, series) => s + (series.values[i] ?? 0), 0));
   else if (kind === 'waterfall') values = waterfallSteps(data).flatMap((step) => [step.start, step.end]);
   else if (kind === 'stacked-bar-100' || kind === 'stacked-area-100' || kind === 'marimekko') values = [0, 1];
   else if (kind === 'candlestick') values = (data.ohlc ?? []).flatMap((r) => [r.low, r.high]);
@@ -327,7 +605,8 @@ export function valueExtent(kind: ChartKind, data: ChartData): [number, number] 
 
 /** The numbers the accessible description reads, in document order. */
 export function chartFacts(kind: ChartKind, data: ChartData): Array<{ label: string; value: number }> {
-  if (kind === 'scatter' || kind === 'bubble') return (data.points ?? []).map((p) => ({ label: p.label, value: p.y }));
+  if (isReadingChart(kind) && !SERIES_KINDS.has(kind) && kind !== 'scatter-regression') return chartReads(kind, data).filter((read) => read.parts.length > 0).map((read) => ({ label: read.label, value: read.parts[0]!.value }));
+  if (kind === 'scatter' || kind === 'bubble' || kind === 'scatter-regression') return (data.points ?? []).map((p) => ({ label: p.label, value: p.y }));
   if (kind === 'sankey') {
     const name = new Map((data.nodes ?? []).map((node) => [node.id, node.label]));
     return (data.links ?? []).map((l) => ({ label: `${name.get(l.from) ?? l.from} → ${name.get(l.to) ?? l.to}`, value: l.value ?? 0 }));

@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../design/ApplicationArt';
 import type { FormEvent, ReactNode } from 'react';
 import { Button, ButtonGroup, Card, ErrorState, InlineNotice, LoadingState, SelectField, TextField } from '../design/controls';
 import { AppLink, BackLink } from './navLink';
@@ -49,10 +50,10 @@ export function SettingsScreen({ copy, locale, dark, ageBand, view, onRetry, onN
 }) {
   return <div className="lf-rebuild lf-account-screen" data-screen="settings" data-theme={dark ? 'dark' : 'light'} lang={locale}
     data-age-band={ageBand} aria-busy={view.kind === 'loading'}>
-    <header className="lf-account-header">
+    <header className="lf-account-header lf-illustrated-header"><div className="lf-illustrated-heading">
       <BackLink href="/profile" label={copy.back} onNavigate={onNavigate} />
       <h1 data-copy-role="heading">{copy.title}</h1>
-    </header>
+    </div><ApplicationArt scene="family" /></header>
     <div className="lf-settings-column">
       {view.kind === 'loading' ? <LoadingState label={copy.loading} lines={4} />
         : view.kind === 'failed' ? <ErrorState heading={view.offline ? copy.offlineTitle : copy.failedTitle} body={view.offline ? copy.offlineBody : copy.failedBody}

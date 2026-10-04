@@ -23,6 +23,7 @@ import { glossaryPromptLines } from '../contentGates/glossary.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
 import type { CompleteOptions } from '../providers/deepseek.js';
 import { V2_LOCALES, type V2Locale } from './contract.js';
+import { horizonteGuidanceFor } from './horizonte/index.js';
 import { emitV2Lesson } from './emit.js';
 import { v2LessonPlanSchema, type V2LessonPlan } from './plan.js';
 import type { GateNumber } from '../pipeline/gates.js';
@@ -69,6 +70,7 @@ export function authoringMessages(skeleton: V2Skeleton, problems: string[] = [])
     'Never state or hint the answer of a graded segment in its prompt. Prompts are one or two short sentences; option labels are a few words; Mentor lines are at most two short sentences.',
     'Law 2 tone: speak like a mentor, never like a bank; no hype, urgency, shame, loss or "lives". The in-app currency is coins.',
     glossaryPromptLines('es-MX'), glossaryPromptLines('en-US'), glossaryPromptLines('pt-BR'),
+    ...horizonteGuidanceFor(skeleton.segments.map((segment) => segment.type)),
     'Output ONLY the JSON object {"title": {...}, "copy": {...}} with every string filled.',
   ].join('\n');
   const user = [

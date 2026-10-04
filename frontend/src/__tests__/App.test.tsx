@@ -42,9 +42,9 @@ describe('Marketing site', () => {
      * brand narrative's short form. What has to hold is the wiring and the beats
      * (the Mentors, the sourced statistic) and the guest-first call to action.
      */
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(site.landing.title);
-    expect(screen.getByRole('heading', { name: site.landing.mentorsTitle })).toBeInTheDocument();
-    expect(screen.getByText(site.landing.factSource)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`${site.landingV2.title} ${site.landingV2.titleAccent}`);
+    expect(screen.getByRole('heading', { name: site.landingV2.mentorTitle })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: site.landingV2.learnTitle })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: site.site.startFree }).length).toBeGreaterThan(0);
   });
 
@@ -261,6 +261,6 @@ describe('Marketing site', () => {
     // Again the bundle rather than a literal: what this test is for is that the
     // switch actually re-renders in the chosen locale, not what the Spanish
     // headline happens to say this quarter.
-    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(siteEs.landing.title);
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(`${siteEs.landingV2.title} ${siteEs.landingV2.titleAccent}`);
   });
 });

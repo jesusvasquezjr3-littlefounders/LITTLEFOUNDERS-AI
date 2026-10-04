@@ -1,0 +1,60 @@
+/* Local marketing composition: shared gutters, natural-height content and deliberate reading order. */
+.lf-rebuild .lf-shell--site > .lf-shell-main { padding-block: var(--spacing-4) var(--spacing-10); }
+.lf-rebuild .lf-marketing { gap: var(--spacing-10); padding-block-end: var(--spacing-4); }
+.lf-rebuild .lf-marketing h1 { font: var(--type-display-2xl); text-wrap: balance; }
+.lf-rebuild .lf-marketing h2 { font: var(--type-display-xl); text-wrap: balance; }
+.lf-rebuild .lf-marketing :is(h1,h2,p) { margin: 0; }
+.lf-rebuild .lf-marketing .lf-site-hero { padding-block: var(--spacing-4) 0; gap: var(--spacing-6); }
+.lf-rebuild .lf-marketing .lf-site-hero-copy { gap: var(--spacing-5); }
+.lf-rebuild .lf-marketing .lf-site-hero-art { order: 0; }
+.lf-rebuild .lf-marketing-art { display: block; inline-size: 100%; max-inline-size: 384px; block-size: auto; aspect-ratio: 4 / 5; border-radius: var(--rounded-xl); margin-inline: auto; }
+.lf-rebuild .lf-marketing-art--compact { max-inline-size: 240px; }
+.lf-rebuild .lf-marketing .lf-site-section { gap: var(--spacing-6); }
+.lf-rebuild .lf-marketing .lf-site-section--default { padding-block: 0; }
+.lf-rebuild .lf-marketing .lf-site-section--loose { padding-block: var(--spacing-4); }
+.lf-rebuild .lf-marketing .lf-site-section--band { padding: var(--spacing-8) var(--spacing-6); }
+.lf-rebuild .lf-marketing .lf-site-section--soft { background: none; padding: 0; }
+.lf-rebuild .lf-site-section-copy { display: grid; gap: var(--spacing-5); align-content: start; min-inline-size: 0; }
+.lf-rebuild .lf-marketing :is(.lf-site-step,.lf-site-decision) { padding: var(--spacing-6); border-radius: var(--rounded-xl); box-shadow: none; background: var(--primary-soft); }
+.lf-rebuild .lf-marketing .lf-site-step { background: var(--surface); margin-block-start: 0; }
+.lf-rebuild[data-theme='dark'] .lf-marketing .lf-site-step { background: var(--raised); }
+.lf-rebuild .lf-marketing .lf-site-cast-member { background: none; padding: var(--spacing-2); }
+.lf-rebuild .lf-marketing .lf-site-cast { align-self: center; }
+.lf-rebuild .lf-marketing .lf-site-split-copy { gap: var(--spacing-5); }
+.lf-rebuild .lf-marketing .lf-site-pair > .lf-card { background: var(--primary-soft); box-shadow: none; padding: var(--spacing-6); border-radius: var(--rounded-xl); align-content: start; }
+.lf-rebuild .lf-marketing .lf-faq-list { gap: var(--spacing-3); }
+.lf-rebuild .lf-marketing .lf-faq-item > .lf-disclosure { border-radius: var(--rounded-lg); }
+.lf-rebuild .lf-marketing .lf-legal-head { padding-block: var(--spacing-4) 0; gap: var(--spacing-4); max-inline-size: 52em; }
+.lf-rebuild .lf-marketing .lf-legal-contents { box-shadow: none; border-radius: var(--rounded-xl); background: var(--primary-soft); }
+.lf-rebuild .lf-marketing .lf-legal-body { gap: var(--spacing-8); }
+.lf-rebuild .lf-marketing .lf-legal-clause { gap: var(--spacing-4); }
+.lf-rebuild .lf-marketing .lf-legal-clause h2 { font: var(--type-title); }
+.lf-rebuild .lf-marketing-mentor-composition { display: grid; gap: var(--spacing-4); padding: var(--spacing-5); border-radius: var(--rounded-xl); background: var(--primary-soft); }
+.lf-rebuild .lf-marketing-mentor-composition .lf-site-cast { grid-template-columns: repeat(2,minmax(0,1fr)); }
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-marketing .lf-site-steps { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; }
+}
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-shell--site > .lf-shell-main { padding-block-start: var(--spacing-6); }
+  .lf-rebuild .lf-marketing { gap: var(--spacing-12); }
+  .lf-rebuild .lf-marketing .lf-site-hero { gap: var(--spacing-10); padding-block: var(--spacing-6) var(--spacing-2); }
+  .lf-rebuild .lf-marketing .lf-site-section--split { align-items: center; }
+  .lf-rebuild .lf-marketing .lf-site-section--band { padding: var(--spacing-8); }
+  .lf-rebuild .lf-marketing .lf-site-pair { align-items: stretch; }
+  .lf-rebuild .lf-marketing .lf-site-steps { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .lf-rebuild .lf-marketing-mentor-composition .lf-site-cast { grid-template-columns: repeat(4,minmax(0,1fr)); }
+  .lf-rebuild .lf-marketing-mentor-composition .lf-marketing-art { max-inline-size: 280px; }
+}
+@container app (max-width: 639px) {
+  .lf-rebuild .lf-marketing-art { max-inline-size: 240px; }
+  .lf-rebuild .lf-marketing-art--compact { max-inline-size: 224px; }
+  .lf-rebuild .lf-marketing .lf-site-steps { gap: var(--spacing-3); }
+  .lf-rebuild .lf-marketing .lf-site-section--band { padding: var(--spacing-6) var(--spacing-5); }
+  .lf-rebuild .lf-marketing :is(.lf-site-decision,.lf-site-pair > .lf-card) { padding: var(--spacing-5); }
+  .lf-rebuild .lf-marketing .lf-site-step { grid-template-columns: auto minmax(0,1fr); column-gap: var(--spacing-4); padding: var(--spacing-5); }
+  .lf-rebuild .lf-marketing .lf-site-step-number { grid-row: 1 / 3; }
+  .lf-rebuild .lf-marketing .lf-site-step > :is(h3,p) { grid-column: 2; }
+  .lf-rebuild .lf-marketing .lf-legal-contents { padding: var(--spacing-4); }
+}
+@media print { .lf-rebuild .lf-marketing .lf-legal-contents { background: none; } }
+

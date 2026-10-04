@@ -1,0 +1,287 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-geom2",
+  "lesson_id": "v2-hz-geom2-6-9-8-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-geom2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina arma figuras y revisa sus lados para descubrir qué las hace iguales.",
+  "title": {
+    "en-US": "Area of six",
+    "es-MX": "Área de seis",
+    "pt-BR": "Área de seis"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "geoboard-area-six",
+      "type": "math.geoboard.v2",
+      "grading": "server",
+      "visual": {
+        "type": "geoboard"
+      },
+      "payload": {
+        "size": 5
+      },
+      "rubric": {
+        "area2": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stretch the band to make a shape that covers 6 squares."
+        },
+        "es-MX": {
+          "prompt": "Estira la liga para formar una figura que cubra 6 cuadritos."
+        },
+        "pt-BR": {
+          "prompt": "Estique o elástico para formar uma figura que cubra 6 quadradinhos."
+        }
+      }
+    },
+    {
+      "id": "area-l-shape",
+      "type": "math.area-squares.v2",
+      "grading": "server",
+      "visual": {
+        "type": "area-squares"
+      },
+      "payload": {
+        "columns": 5,
+        "rows": 4,
+        "outline": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 4,
+            "y": 0
+          },
+          {
+            "x": 4,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 0,
+            "y": 3
+          }
+        ]
+      },
+      "rubric": {
+        "required": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 0
+          },
+          {
+            "x": 3,
+            "y": 1
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Shade every square inside the outline."
+        },
+        "es-MX": {
+          "prompt": "Sombrea todos los cuadritos dentro del contorno."
+        },
+        "pt-BR": {
+          "prompt": "Pinte todos os quadradinhos dentro do contorno."
+        }
+      }
+    },
+    {
+      "id": "reflect-triangle",
+      "type": "math.transform.v2",
+      "grading": "server",
+      "visual": {
+        "type": "transform-plane"
+      },
+      "payload": {
+        "extent": 5,
+        "figure": [
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 4
+          }
+        ],
+        "move": {
+          "kind": "reflect",
+          "across": "vertical",
+          "at": 0
+        }
+      },
+      "rubric": {
+        "required": [
+          {
+            "x": -1,
+            "y": 1
+          },
+          {
+            "x": -3,
+            "y": 1
+          },
+          {
+            "x": -1,
+            "y": 4
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Reflect the triangle across the line. Move each corner to its image."
+        },
+        "es-MX": {
+          "prompt": "Refleja el triángulo sobre la recta. Mueve cada vértice a su imagen."
+        },
+        "pt-BR": {
+          "prompt": "Reflita o triângulo sobre a reta. Mova cada vértice para a sua imagem."
+        }
+      }
+    },
+    {
+      "id": "tile-domino",
+      "type": "math.tessellation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "tessellation"
+      },
+      "payload": {
+        "floor": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 0
+          },
+          {
+            "x": 3,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 2
+          }
+        ],
+        "tile": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ]
+      },
+      "rubric": {
+        "copies": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cover the floor with the tile. Slide it, never turn it."
+        },
+        "es-MX": {
+          "prompt": "Cubre el piso con la baldosa. Deslízala, no la gires."
+        },
+        "pt-BR": {
+          "prompt": "Cubra o piso com o ladrilho. Deslize-o, sem girar."
+        }
+      }
+    }
+  ]
+}

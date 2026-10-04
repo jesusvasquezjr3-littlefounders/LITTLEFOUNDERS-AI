@@ -1,0 +1,74 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-plane1",
+  "lesson_id": "v2-hz-plane1-13-17-14-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-plane1"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho lee una gráfica paso a paso para entender qué cambia y qué no.",
+  "title": {
+    "en-US": "Find unit elasticity",
+    "es-MX": "Halla la elasticidad unitaria",
+    "pt-BR": "Ache a elasticidade unitária"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "elasticity-unit",
+      "type": "econ.elasticity.v2",
+      "grading": "server",
+      "visual": {
+        "type": "elasticity"
+      },
+      "payload": {
+        "pMax": 20,
+        "demand": {
+          "a": 60,
+          "b": 2
+        },
+        "goal": {
+          "num": 1,
+          "den": 1
+        },
+        "start": 5
+      },
+      "rubric": {
+        "target": 15
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Slide the price until the elasticity of demand is 1.",
+          "feedback": {
+            "met": "You read the graph the way its numbers say.",
+            "not_yet": "Follow the line again and check each step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Desliza el precio hasta que la elasticidad de la demanda sea 1.",
+          "feedback": {
+            "met": "Leíste la gráfica como dicen sus números.",
+            "not_yet": "Sigue la línea otra vez y revisa cada paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deslize o preço até a elasticidade da demanda ser 1.",
+          "feedback": {
+            "met": "Você leu o gráfico como os números dizem.",
+            "not_yet": "Siga a linha de novo e confira cada passo."
+          }
+        }
+      }
+    }
+  ]
+}

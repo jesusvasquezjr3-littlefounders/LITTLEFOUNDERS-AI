@@ -20,7 +20,7 @@ function expectHeader(container: HTMLElement) {
   const headers = container.querySelectorAll('.lf-standalone-header');
   expect(headers).toHaveLength(1);
   const header = headers[0] as HTMLElement;
-  expect(header.querySelector('img[data-asset-id="brand.mark"]')).toHaveAttribute('src', '/rebuild/brand/mark.svg');
+  expect(within(header).getByRole('img', { name: 'LittleFounders' })).toHaveAttribute('src', '/rebuild/brand/logo.png');
   const language = within(header).getByRole('combobox', { name: 'Language' });
   fireEvent.click(language);
   expect(screen.getAllByRole('option')).toHaveLength(3);
@@ -33,16 +33,18 @@ function expectHeader(container: HTMLElement) {
   expect(document.documentElement.classList.contains('dark')).toBe(!before);
 }
 
-describe('global headers on standalone route states', () => {
-  it('keeps working display controls on the standalone age gate', () => {
-    const { container } = mount(age); expectHeader(container);
+function expectNoHeader(container: HTMLElement) { expect(container.querySelector('.lf-standalone-header')).toBeNull(); }
+
+describe('topbars are exclusive to marketing', () => {
+  it('omits the topbar on the standalone age gate', () => {
+    const { container } = mount(age); expectNoHeader(container);
     expect(screen.getAllByRole('main')).toHaveLength(1);
   });
-  it('keeps the onboarding progress and back action alongside display controls', () => {
+  it('keeps onboarding progress and back navigation without a topbar', () => {
     const { container } = mount(<OnboardingFlow header={<ConnectedStandaloneHeader />} locale="en-US" skipLabel="Skip" completing={null} failed={false}
       askDiscovery={false} mentor={{ chosen: null, saving: null, failed: false, onChoose: vi.fn() }}
       onComplete={vi.fn()} initialStep="name" />);
-    expectHeader(container);
+    expectNoHeader(container);
     expect(container.querySelector('[data-onboarding="back"]')).toBeTruthy();
     expect(screen.getByRole('progressbar')).toBeTruthy();
     expect(screen.getAllByRole('main')).toHaveLength(1);
@@ -51,19 +53,19 @@ describe('global headers on standalone route states', () => {
     firstName: 'Ana', achievementKind: 'course_badge', achievementLabel: 'Money', imageUrl: '/synthetic-badge.png',
   } }];
   for (const state of badgeStates) it(`keeps display controls on the ${state.status} badge route`, () => {
-    const { container } = mount(<BadgeLanding header={<ConnectedStandaloneHeader />} locale="en-US" state={state} start={{ kind: 'continue', href: '/learn' }} />);
+    const { container } = mount(<BadgeLanding header={<ConnectedStandaloneHeader marketing />} locale="en-US" state={state} start={{ kind: 'continue', href: '/learn' }} />);
     expectHeader(container); expect(screen.getAllByRole('main')).toHaveLength(1);
   });
-  it('keeps display controls after a standalone route chunk fails', () => {
-    const { container } = mount(error('standalone')); expectHeader(container);
+  it('omits the topbar after an application chunk fails', () => {
+    const { container } = mount(error('standalone')); expectNoHeader(container);
     expect(screen.getByRole('button', { name: 'Reload' })).toBeTruthy();
   });
-  it('keeps display controls while a standalone chunk downloads', () => {
-    const { container } = mount(<TutorChunkFallback />); expectHeader(container);
+  it('keeps skip navigation while an application chunk downloads', () => {
+    const { container } = mount(<TutorChunkFallback />); expectNoHeader(container);
     const main = screen.getByRole('main');
     const skip = container.querySelector<HTMLAnchorElement>('.lf-skip-link')!;
     expect(skip).toHaveAttribute('href', `#${main.id}`);
-    expect(skip.compareDocumentPosition(container.querySelector('header')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(skip.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(skip);
     expect(main).toHaveFocus();
   });

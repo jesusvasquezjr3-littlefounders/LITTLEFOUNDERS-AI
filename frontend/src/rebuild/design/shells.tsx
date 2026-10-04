@@ -7,6 +7,8 @@ import { useRebuildEnvironment } from './layers';
 import { Sheet } from './overlays';
 import { replayRouteEntrance } from './motion';
 import './shells.css';
+import { rebuildNamespaceCopy } from '../../i18n/rebuild';
+import { EntryArt } from './EntryArt';
 
 /*
  * Shared shells (Frontend Bible 02 §1.1, §4.5, §7 rule 9, §9.7, §9.8; 03 §3.4;
@@ -44,6 +46,17 @@ export interface ShellCommonProps {
   /** The page. It carries exactly one <h1>. */
   children: ReactNode;
   utilities?: ReactNode;
+}
+
+/** Display controls live in the rail or a bottom-dock sheet, never an application topbar. */
+function AppPreferences({ locale, utilities }: { locale: Locale; utilities?: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const copy = rebuildNamespaceCopy[locale].core;
+  if (!utilities) return null;
+  return <div className="lf-app-preferences-dock">
+    <IconButton glyph="settings" label={copy.sessionPreferences.title} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)} />
+    <Sheet open={open} onClose={() => setOpen(false)} heading={copy.sessionPreferences.title} closeLabel={copy.appShell.close}>{utilities}</Sheet>
+  </div>;
 }
 
 /** Document title and language follow the page (WCAG 2.4.2, 3.1.1). */
@@ -100,8 +113,8 @@ export function SkipLink({ label, target }: { label: string; target: string }) {
 
 /** The wordmark. It is the approved brand name, so it is `brand` copy and never budgeted or translated. */
 export function BrandMark({ name, href, onNavigate }: { name: string; href?: string; onNavigate?: (href: string) => void }) {
-  const asset = resolveManifestAsset('brand.mark');
-  const content = <>{asset ? <img className="lf-brand-graphic" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} /> : null}<span>{name}</span></>;
+  const asset = resolveManifestAsset('brand.logo');
+  const content = asset ? <img className="lf-brand-wordmark" src="/rebuild/brand/logo.png" alt={name} width={560} height={102} data-asset-id={asset.id} /> : null;
   return href
     ? <a className="lf-brand-mark" href={href} data-copy-role="brand" onClick={linkHandler(href, onNavigate)}>{content}</a>
     : <span className="lf-brand-mark" data-copy-role="brand">{content}</span>;
@@ -202,15 +215,17 @@ export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, 
   entries.splice(Math.min(Math.max(mentorIndex, 0), entries.length), 0, mentorEntry);
   return <div className="lf-shell lf-shell--learner" data-shell="learner" lang={frame.locale}>
     <SkipLink label={labels.skip} target={mainId} />
-    <header className="lf-appbar"><BrandMark name={frame.appName} />{utilities}</header>
     <div className="lf-shell-frame">
       <nav className="lf-shell-rail" aria-label={labels.navigation}>
+        <BrandMark name={frame.appName} />
         <NavLinks items={entries} current={current} variant="rail" onNavigate={onNavigate} />
+        {utilities}
       </nav>
       <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main">{children}</main>
     </div>
     <nav className="lf-tabbar" aria-label={labels.navigation} data-dock>
       <NavLinks items={entries} current={current} variant="tab" onNavigate={onNavigate} />
+      <AppPreferences locale={frame.locale} utilities={utilities} />
     </nav>
   </div>;
 }
@@ -231,7 +246,7 @@ export interface ConsoleShellProps extends ShellCommonProps {
 /** At most this many destinations fit the phone tab bar at 64 px; more move into a menu sheet. */
 export const CONSOLE_TAB_LIMIT = 5;
 
-/** A console: an app bar with the brand and role on phones, a side rail from 840 px. */
+/** A console: a side rail on wide screens, navigation in the phone's bottom dock. */
 export function ConsoleShell({ kind, roleLabel, items, current, labels, onNavigate, children, utilities, ...frame }: ConsoleShellProps) {
   const { mainId, main } = useShellFrame(frame);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -239,29 +254,26 @@ export function ConsoleShell({ kind, roleLabel, items, current, labels, onNaviga
   const tabs = entries.length <= CONSOLE_TAB_LIMIT;
   return <div className={`lf-shell lf-shell--console lf-shell--${kind}`} data-shell={kind} lang={frame.locale}>
     <SkipLink label={labels.skip} target={mainId} />
-    <header className="lf-appbar">
-      <BrandMark name={frame.appName} />
-      <Pill tone="primary">{roleLabel}</Pill>
-      {utilities}
-      {!tabs ? <IconButton glyph="menu" label={labels.menu} aria-expanded={menuOpen} aria-haspopup="dialog" className="lf-appbar-menu"
-        onClick={() => setMenuOpen(true)} /> : null}
-    </header>
     <div className="lf-shell-frame">
       <nav className="lf-shell-rail" aria-label={labels.navigation}>
+        <BrandMark name={frame.appName} />
+        <Pill tone="primary">{roleLabel}</Pill>
         <NavLinks items={entries} current={current} variant="rail" onNavigate={onNavigate} />
+        {utilities}
       </nav>
       <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main">{children}</main>
     </div>
-    {tabs
-      ? <nav className="lf-tabbar" aria-label={labels.navigation} data-dock>
-        <NavLinks items={entries} current={current} variant="tab" onNavigate={onNavigate} />
-      </nav>
-      : <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} heading={labels.navigation} closeLabel={labels.close} placement="full"
+    <nav className="lf-tabbar" aria-label={labels.navigation} data-dock>
+      {tabs ? <NavLinks items={entries} current={current} variant="tab" onNavigate={onNavigate} />
+        : <IconButton glyph="menu" label={labels.menu} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={() => setMenuOpen(true)} />}
+      <AppPreferences locale={frame.locale} utilities={utilities} />
+    </nav>
+    {!tabs ? <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} heading={labels.navigation} closeLabel={labels.close} placement="full"
         headingHidden headerStart={<><BrandMark name={frame.appName} /><Pill tone="primary">{roleLabel}</Pill></>}>
         <nav aria-label={labels.navigation}>
           <NavLinks items={entries} current={current} variant="sheet" onNavigate={onNavigate} onFollow={() => setMenuOpen(false)} />
         </nav>
-      </Sheet>}
+      </Sheet> : null}
   </div>;
 }
 
@@ -337,7 +349,7 @@ export function SiteShell({ homeHref, links, current = '', secondaryAction, prim
   const follow = (href: string) => linkHandler(href, onNavigate, () => setMenuOpen(false));
   return <div className="lf-shell lf-shell--site" data-shell="site" lang={frame.locale}>
     <SkipLink label={labels.skip} target={mainId} />
-    <header className="lf-site-header">
+    <header className="lf-site-header"><div className="lf-site-header-inner">
       <BrandMark name={frame.appName} href={homeHref} onNavigate={onNavigate} />
       <nav className="lf-site-links" aria-label={labels.navigation}><NavLinks items={links} current={current} variant="rail" onNavigate={onNavigate} /></nav>
       {utilities}
@@ -346,7 +358,7 @@ export function SiteShell({ homeHref, links, current = '', secondaryAction, prim
         {primaryAction ? <ButtonLink size="sm" variant="accent" href={primaryAction.href} onClick={follow(primaryAction.href)}>{primaryAction.label}</ButtonLink> : null}
       </div>
       <IconButton glyph="menu" label={labels.menu} className="lf-site-menu" aria-expanded={menuOpen} aria-haspopup="dialog" onClick={() => setMenuOpen(true)} />
-    </header>
+    </div></header>
     <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main">{children}</main>
     {footer ? <footer className="lf-site-footer">{footer}</footer> : null}
     {stickyAction ? <div className="lf-sticky-action" data-visible={docked} data-dock={docked ? '' : undefined}>
@@ -372,12 +384,15 @@ export function AuthShell({ homeHref, back, footer, labels, onNavigate, children
   const { mainId, main } = useShellFrame(frame);
   return <div className="lf-shell" data-shell="auth" lang={frame.locale}>
     <SkipLink label={labels.skip} target={mainId} />
-    <header className="lf-auth-header">
+    <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main lf-auth-main"><div className="lf-auth-composition">
+      <div className="lf-auth-art" aria-hidden="true"><EntryArt /></div>
+      <div className="lf-auth-column">
       <BrandMark name={frame.appName} href={homeHref} onNavigate={onNavigate} />
-      {utilities}
+      {children}
       {back ? <ButtonLink size="sm" href={back.href} onClick={linkHandler(back.href, onNavigate)}>{back.label}</ButtonLink> : null}
-    </header>
-    <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main lf-auth-main"><div className="lf-auth-column">{children}</div></main>
+      {utilities}
+      </div>
+    </div></main>
     {footer ? <footer className="lf-auth-footer">{footer}</footer> : null}
   </div>;
 }

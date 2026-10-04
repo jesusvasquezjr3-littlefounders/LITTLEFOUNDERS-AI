@@ -17,6 +17,9 @@
 .lf-family-console .lf-console-group { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
 .lf-family-console .lf-console-group > h2 { font: var(--type-headline); }
 .lf-family-console .lf-console-group-items { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+/* Embedded screens are panels, not independent viewport-height pages. */
+.lf-family-console .lf-console-group-items > .lf-rebuild { min-block-size: 0; align-content: start; }
+.lf-family-console :is(.lf-card, .lf-console-control) { align-content: start; }
 .lf-family-console .lf-console-control { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
 .lf-family-console .lf-console-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-family-console .lf-console-danger { display: grid; gap: var(--spacing-3); min-inline-size: 0; padding-block-start: var(--spacing-4); }

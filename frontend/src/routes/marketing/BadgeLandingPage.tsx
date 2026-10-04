@@ -48,7 +48,7 @@ export function BadgeLandingPage() {
   }, [token]);
 
   return <ShellRoot>
-    <BadgeLanding header={<ConnectedStandaloneHeader />} locale={locale} state={state} start={start} onNavigate={onNavigate} />
+    <BadgeLanding header={<ConnectedStandaloneHeader marketing />} locale={locale} state={state} start={start} onNavigate={onNavigate} />
   </ShellRoot>;
 }
 

@@ -1,0 +1,102 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-space1",
+  "lesson_id": "v2-hz-space1-6-9-6-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Liruf coloca piezas en el espacio y las mira desde varios lados.",
+  "title": {
+    "en-US": "Turn the L",
+    "es-MX": "Gira la L",
+    "pt-BR": "Gire o L"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "rotation-turn-the-l",
+      "type": "geometry.mental-rotation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "mental-rotation"
+      },
+      "payload": {
+        "axis": "up",
+        "figure": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            1
+          ]
+        ],
+        "targets": [
+          [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              2
+            ],
+            [
+              1,
+              0,
+              2
+            ]
+          ]
+        ]
+      },
+      "rubric": {
+        "pick": "a",
+        "angles": [
+          90
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Turn the shape until it looks like the other one."
+        },
+        "es-MX": {
+          "prompt": "Gira la figura hasta que se vea igual a la otra."
+        },
+        "pt-BR": {
+          "prompt": "Gire a figura até ficar igual à outra."
+        }
+      }
+    }
+  ]
+}

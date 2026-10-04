@@ -1,0 +1,46 @@
+/* D02/B27 algebra tiles, D06 algebra cards, D09-D11 area model. Neutral board; a minus is a drawn minus and a dashed outline, never colour alone. Tokens only. */
+.lf-alg { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-alg-notation { margin: 0; font-size: 1.25rem; }
+.lf-alg-zones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--spacing-4); inline-size: 100%; }
+.lf-alg-zone, .lf-alg-side, .lf-alg-bin { display: grid; align-content: start; gap: var(--spacing-2); padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; }
+.lf-alg-zone h3, .lf-alg-side h3, .lf-alg-bin h3 { font-size: 1rem; }
+.lf-alg-zone--zero { border: 1px dashed var(--outline); }
+.lf-alg-zone[data-drop-armed='true'], .lf-alg-equation[data-drop-armed='true'], .lf-area-cell[data-drop-armed='true'], .lf-area-tray[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-alg-zone[data-drop-selected='true'], .lf-alg-equation[data-drop-selected='true'], .lf-area-cell[data-drop-selected='true'], .lf-area-tray[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-alg-tiles { inline-size: 100%; max-inline-size: 18rem; block-size: auto; }
+.lf-alg-tile rect { stroke-width: 2; }
+.lf-alg-tile path { fill: none; stroke: var(--surface); stroke-width: 3; stroke-linecap: round; }
+.lf-alg-tile--pos rect { fill: var(--sky-strong); stroke: var(--sky-strong); }
+.lf-alg-tile--neg rect { fill: var(--berry-strong); stroke: var(--berry-strong); }
+.lf-alg-tile--neg rect { stroke-dasharray: 4 3; stroke: var(--ink); }
+.lf-alg-status { font-weight: 800; margin: 0; }
+.lf-alg-note { margin: 0; min-block-size: 1.5rem; }
+.lf-alg-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-alg-handle { max-inline-size: 100%; }
+.lf-alg-equation { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--spacing-3); inline-size: 100%; padding: var(--spacing-2); border-radius: var(--rounded-sm); outline: 2px solid transparent; }
+.lf-alg-side { flex: 1 1 12rem; min-inline-size: 0; }
+.lf-alg-equals { inline-size: 1.5rem; block-size: 0.75rem; align-self: center; border-block: 3px solid var(--content); border-radius: 1px; }
+.lf-alg-cards { display: flex; flex-wrap: wrap; gap: var(--spacing-2); min-block-size: var(--hz-hit); }
+.lf-alg-card { display: inline-flex; }
+.lf-alg-bin-list { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-alg-art { inline-size: 2rem; block-size: 1.6rem; flex: none; }
+.lf-alg-art rect, .lf-alg-art circle { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; }
+.lf-alg-art path { fill: none; stroke: var(--content); stroke-width: 3; stroke-linecap: round; }
+.lf-alg-art--neg rect, .lf-alg-art--neg circle { fill: var(--berry-soft); stroke: var(--berry-strong); stroke-dasharray: 4 3; }
+.lf-alg-caption { font-weight: 800; }
+.lf-area-grid { display: grid; gap: var(--spacing-1); inline-size: 100%; max-inline-size: 36rem; }
+.lf-area-cell, .lf-area-head { position: relative; isolation: isolate; display: grid; place-items: center; min-block-size: var(--hz-hit); min-inline-size: 0; padding: var(--spacing-1); border-radius: var(--rounded-sm); font-weight: 800; outline: 2px solid transparent; }
+.lf-area-head { background: var(--sunken); }
+/* A bare text node cannot be lifted above a positioned child, so the backdrop goes under it. */
+.lf-area-back { position: absolute; inset: 0; z-index: -1; inline-size: 100%; block-size: 100%; pointer-events: none; overflow: visible; }
+.lf-area-back rect { fill: var(--sunken); stroke: var(--edge); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.lf-area-cell--d2 .lf-area-back rect { fill: var(--sky-soft); }
+.lf-area-cell--d1 .lf-area-back rect { fill: var(--sunken); }
+.lf-area-cell--d0 .lf-area-back rect { fill: var(--surface); }
+.lf-area-cell > :not(.lf-area-back) { position: relative; }
+.lf-area-constant { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); font-weight: 800; }
+.lf-area-constant .lf-area-cell { min-inline-size: var(--hz-hit); }
+.lf-area-tray { min-block-size: var(--hz-hit); padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; inline-size: 100%; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-alg-zone, .lf-alg-equation, .lf-area-cell, .lf-area-tray { transition: outline-color var(--dur-component) var(--ease-standard); }
+}

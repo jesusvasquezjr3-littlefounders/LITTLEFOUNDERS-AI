@@ -41,6 +41,13 @@ export const states = [
     '[role="dialog"] .lf-analytics-choice [data-analytics-choice="off"]', { readyAlso: '[role="dialog"] .lf-analytics-choice [data-analytics-choice="on"]' }),
   site('/@landing', '/', '[data-screen="landing"] [data-slot="mentor-avatar"] img', { readyAlso: '[data-consent-banner]' }),
   site('/@landing-tutor', '/', '[data-screen="landing"] [data-cta="continue"]', { scenario: 'site-tutor' }),
+  site('/@landing-saved', '/', '.lf-landing-stepper', { open: ['.lf-landing-stepper button:last-child'] }),
+  site('/@landing-logic', '/', '.lf-landing-topic', { open: ['.lf-landing-topic:nth-child(2)', '.lf-landing-answers button:nth-child(2)'] }),
+  site('/@landing-ideas', '/', '.lf-landing-topic', { open: ['.lf-landing-topic:nth-child(3)', '.lf-landing-answers button:first-child'] }),
+  site('/@landing-reason', '/', '.lf-landing-reasons', { open: ['.lf-landing-reasons button:last-child'] }),
+  site('/@landing-family-demo', '/', '.lf-landing-family-task', { open: ['.lf-landing-family-task button'] }),
+  site('/@landing-teen', '/', '.lf-landing-ages', { open: ['.lf-landing-ages button:nth-child(3)'] }),
+  site('/@landing-faq', '/', '.lf-landing-faq', { open: ['.lf-landing-faq details:nth-child(3) summary'] }),
   site('/@cookie-preferences', '/', '[data-consent-banner]', { open: ['[data-consent="preferences"]'] }),
   site('/how-it-works@how', '/how-it-works', '[data-screen="how-it-works"] [data-decision]'),
   site('/how-it-works@decision-picked', '/how-it-works', '[data-screen="how-it-works"] [data-decision]',
@@ -50,7 +57,7 @@ export const states = [
     { open: ['[data-decision="families-chore"] .lf-radio-option:nth-child(3)', '[data-example="approve"]'] }),
   site('/families@families-tutor', '/families', '[data-screen="families"] a[href="/family"]', { scenario: 'site-tutor' }),
   // The FAQ as it first loads is Lane 0's '/faq@shell-site' state (the same markup); these reach its other states.
-  site('/faq@faq-privacy', '/faq', '[data-screen="faq"] [data-faq-item]', { open: ['[data-screen="faq"] .lf-choice-chip:nth-child(6)'] }),
+  site('/faq@faq-privacy', '/faq', '[data-screen="faq"] [data-faq-item]', { open: ['[data-screen="faq"] .lf-choice-chip:nth-child(6)'], openReady: '[data-faq-filter="privacy"]' }),
   site('/faq@faq-open', '/faq', '[data-screen="faq"] [data-faq-item]',
     // The first answers, opened where the page loads: a press deeper down scrolls the list under the sticky
     // site header, and the spacing rule would then measure the scroll position rather than the layout.

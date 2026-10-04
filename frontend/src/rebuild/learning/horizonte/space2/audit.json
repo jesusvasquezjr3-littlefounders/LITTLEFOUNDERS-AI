@@ -1,0 +1,11 @@
+[
+  { "fixture": "time-beats-rate", "age": "13-17" },
+  { "fixture": "price-and-units", "age": "13-17" },
+  { "fixture": "nearest-route", "age": "10-12" },
+  { "fixture": "cheapest-corridor", "age": "13-17" },
+  { "fixture": "object-on-the-table", "age": "13-17" },
+  { "fixture": "slope-two-ways", "age": "13-17" },
+  { "fixture": "gradient-at-a-point", "age": "13-17" },
+  { "fixture": "downhill-walk", "age": "13-17" },
+  { "fixture": "build-a-surface", "age": "13-17" }
+]

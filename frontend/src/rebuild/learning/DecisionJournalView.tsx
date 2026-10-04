@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../design/ApplicationArt';
 import { useId, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, IconButton, InlineNotice } from '../design/controls';
@@ -204,7 +205,7 @@ export function DecisionJournalView({ state, locale, dark, ageBand, onBack, onRe
       <div className="lf-journal-top">
         <Button onClick={onBack}>{t.back}</Button>
       </div>
-      <h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : state.status === 'error' ? t.errorTitle : t.title}</h1>
+      <header className="lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : state.status === 'error' ? t.errorTitle : t.title}</h1></div><ApplicationArt scene="learning" /></header>
       {state.status === 'ready'
         ? <ReadyJournal key={state.entries.length === 0 ? 'empty' : 'list'} state={state} locale={locale} t={t}
           onMore={onMore} onClear={onClear} onBridge={onBridge} onOpenWallet={onOpenWallet} loadingMore={loadingMore} />

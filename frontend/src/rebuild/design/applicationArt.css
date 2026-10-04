@@ -1,0 +1,12 @@
+/* One supporting composition per surface. Controls and reading order stay first. */
+.lf-rebuild .lf-application-art { display: block; inline-size: 100%; min-inline-size: 0; pointer-events: none; }
+.lf-rebuild .lf-application-art .lf-art { inline-size: 100%; block-size: auto; max-inline-size: none; aspect-ratio: 3 / 2; object-fit: contain; }
+.lf-rebuild .lf-illustrated-header { display: grid; grid-template-columns: minmax(0, 1fr) var(--spacing-24); gap: var(--spacing-4); align-items: center; }
+.lf-illustrated-heading { display: grid; gap: var(--spacing-2); min-inline-size: 0; justify-items: start; }
+.lf-illustrated-header > .lf-application-art { align-self: center; }
+.lf-application-empty { display: grid; gap: var(--spacing-4); align-content: start; justify-items: center; padding-block: var(--spacing-4); }
+.lf-application-empty > .lf-application-art { max-inline-size: calc(var(--spacing-32) * 2); }
+.lf-application-empty > .lf-empty-state { inline-size: 100%; }
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-illustrated-header { grid-template-columns: minmax(0, 1fr) calc(var(--spacing-32) + var(--spacing-16)); gap: var(--spacing-6); }
+}

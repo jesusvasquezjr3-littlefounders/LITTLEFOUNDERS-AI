@@ -1,0 +1,22 @@
+[
+  { "fixture": "rekenrek-seven", "age": "6-9" },
+  { "fixture": "rekenrek-ten", "age": "6-9" },
+  { "fixture": "abacus-forty-seven", "age": "6-9" },
+  { "fixture": "abacus-add-twenty", "age": "6-9" },
+  { "fixture": "jump-up", "age": "6-9" },
+  { "fixture": "jump-back", "age": "6-9" },
+  { "fixture": "zoom-tenths", "age": "10-12" },
+  { "fixture": "zoom-hundredths", "age": "10-12" },
+  { "fixture": "clock-half-past", "age": "6-9" },
+  { "fixture": "clock-later", "age": "6-9" },
+  { "fixture": "ruler-six", "age": "6-9" },
+  { "fixture": "ruler-inches", "age": "6-9" },
+  { "fixture": "balance-it", "age": "6-9" },
+  { "fixture": "balance-heavier", "age": "6-9" },
+  { "fixture": "order-tens", "age": "6-9" },
+  { "fixture": "order-teens", "age": "6-9" },
+  { "fixture": "order-tenths", "age": "10-12" },
+  { "fixture": "order-hundredths", "age": "10-12" },
+  { "fixture": "measure-pencil", "age": "6-9" },
+  { "fixture": "measure-strip", "age": "10-12" }
+]

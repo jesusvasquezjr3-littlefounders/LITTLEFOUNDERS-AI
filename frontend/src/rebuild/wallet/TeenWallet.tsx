@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../design/ApplicationArt';
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
   Button, ButtonLink, CoinAmount, Copy, DashboardLayout, EmptyState, ErrorState, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField,
@@ -363,11 +364,11 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
 
   return <section className="lf-rebuild lf-teen-wallet" data-teen-wallet="root" data-theme={dark ? 'dark' : 'light'} data-age-band="13-17" lang={locale}
     aria-labelledby={ids.title}>
-    <header className="lf-teen-wallet-header">
+    <header className="lf-teen-wallet-header lf-illustrated-header"><div className="lf-illustrated-heading">
       <h1 id={ids.title} data-copy-role="heading">{copy.page.title}</h1>
       <Copy role="body">{copy.page.sub}</Copy>
       <span className="lf-teen-wallet-chip" data-copy-role="data">{copy.page.simulation}</span>
-    </header>
+    </div><ApplicationArt scene="wallet" /></header>
 
     {state === 'loading' && <LoadingState label={copy.page.loading} lines={3} />}
     {state === 'failed' && !screen && <>

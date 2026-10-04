@@ -1,0 +1,254 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-space2",
+  "lesson_id": "v2-hz-space2-13-17-15-17-formula",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 15,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho reads a formula as a surface: the slope at a dot, the walk downhill and a formula through three dots.",
+  "title": {
+    "en-US": "Slopes from a formula",
+    "es-MX": "Pendientes desde una fórmula",
+    "pt-BR": "Inclinações a partir de uma fórmula"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "formula-slope",
+      "type": "math.surface-formula.v2",
+      "grading": "server",
+      "visual": {
+        "type": "surface-formula"
+      },
+      "payload": {
+        "window": {
+          "xMin": -3,
+          "xMax": 3,
+          "yMin": -3,
+          "yMax": 3
+        },
+        "task": {
+          "kind": "slope",
+          "expression": "x^2+2xy",
+          "axis": "x",
+          "at": {
+            "x": 1,
+            "y": 2
+          }
+        }
+      },
+      "rubric": {
+        "key": [
+          "6"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stand on the dot and face along x. How steep is the surface there?",
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        "es-MX": {
+          "prompt": "Párate en el punto y mira a lo largo de x. ¿Qué tan empinada es la superficie ahí?",
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Fique no ponto e olhe ao longo de x. Qual é a inclinação da superfície ali?",
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "formula-gradient",
+      "type": "math.surface-formula.v2",
+      "grading": "server",
+      "visual": {
+        "type": "surface-formula"
+      },
+      "payload": {
+        "window": {
+          "xMin": -3,
+          "xMax": 3,
+          "yMin": -3,
+          "yMax": 3
+        },
+        "task": {
+          "kind": "gradient",
+          "expression": "x^2+3y-xy",
+          "at": {
+            "x": 2,
+            "y": 1
+          }
+        }
+      },
+      "rubric": {
+        "key": [
+          "3",
+          "1"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find both slopes at the dot: the x slope first, then the y slope.",
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        "es-MX": {
+          "prompt": "Halla las dos pendientes en el punto: primero la de x y luego la de y.",
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ache as duas inclinações no ponto: primeiro a de x, depois a de y.",
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "formula-walk",
+      "type": "math.surface-formula.v2",
+      "grading": "server",
+      "visual": {
+        "type": "surface-formula"
+      },
+      "payload": {
+        "window": {
+          "xMin": -3,
+          "xMax": 3,
+          "yMin": -3,
+          "yMax": 3
+        },
+        "task": {
+          "kind": "walk",
+          "expression": "x^2+y^2",
+          "at": {
+            "x": 3,
+            "y": 2
+          },
+          "rate": {
+            "n": 1,
+            "d": 10
+          },
+          "below": 3,
+          "maxSteps": 8
+        }
+      },
+      "rubric": {
+        "key": [
+          "4"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Walk downhill a tenth of the slope each step. How many steps until the height is 3 or lower?",
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        "es-MX": {
+          "prompt": "Baja desde el punto, un décimo de la pendiente en cada paso. ¿Cuántos pasos hasta que la altura sea 3 o menos?",
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Desça a partir do ponto, um décimo da inclinação a cada passo. Quantos passos até a altura ser 3 ou menos?",
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "formula-build",
+      "type": "math.surface-formula.v2",
+      "grading": "server",
+      "visual": {
+        "type": "surface-formula"
+      },
+      "payload": {
+        "window": {
+          "xMin": -2,
+          "xMax": 2,
+          "yMin": -2,
+          "yMax": 2
+        },
+        "task": {
+          "kind": "build",
+          "through": [
+            {
+              "x": 0,
+              "y": 0,
+              "z": 1
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "z": 3
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "z": 0
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "reference": "1+2x-y"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Type a formula for z whose surface passes through all three dots.",
+          "feedback": {
+            "met": "You worked it out from the formula.",
+            "not_yet": "Read the formula again and try once more."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escribe una fórmula para z cuya superficie pase por los tres puntos.",
+          "feedback": {
+            "met": "Lo resolviste a partir de la fórmula.",
+            "not_yet": "Lee la fórmula otra vez y prueba de nuevo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Digite uma fórmula para z cuja superfície passe pelos três pontos.",
+          "feedback": {
+            "met": "Você resolveu a partir da fórmula.",
+            "not_yet": "Leia a fórmula de novo e tente outra vez."
+          }
+        }
+      }
+    }
+  ]
+}

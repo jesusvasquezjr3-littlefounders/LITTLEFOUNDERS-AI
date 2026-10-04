@@ -1,0 +1,236 @@
+import type { HorizonteAgeBand, HorizonteFixture, HorizonteLocale } from '../types.js';
+import type { SlotMap } from './arrange.js';
+import { pascalByRow } from './network.js';
+
+type Words = readonly [en: string, es: string, pt: string];
+
+const LOCALES: readonly HorizonteLocale[] = ['en-US', 'es-MX', 'pt-BR'];
+const pick = (words: Words, locale: HorizonteLocale): string => words[LOCALES.indexOf(locale)]!;
+const title = (words: Words): Record<HorizonteLocale, string> => ({ 'en-US': words[0], 'es-MX': words[1], 'pt-BR': words[2] });
+const names = (labels: Record<string, Words>, locale: HorizonteLocale): Record<string, string> => Object.fromEntries(Object.entries(labels).map(([id, words]) => [id, pick(words, locale)]));
+
+interface Common {
+  id: string;
+  title: Words;
+  band: HorizonteAgeBand;
+  ages: [number, number];
+  type: string;
+  visual: string;
+  prompt: Words;
+  payload: Record<string, unknown>;
+}
+
+interface ArrangeSpec extends Common {
+  labels?: Record<string, Words>;
+  solutions: SlotMap[];
+  invalid: SlotMap;
+}
+
+interface ExplorerSpec extends Common {
+  predict: string;
+  value: number;
+}
+
+/** F2.16 and F2.18: the answer is an arrangement; the key lists examples and the scorer checks the rule. */
+function arrangement(spec: ArrangeSpec): HorizonteFixture {
+  return {
+    id: spec.id,
+    title: title(spec.title),
+    ageBand: spec.band,
+    eligibility: { minimum_age: spec.ages[0], maximum_age: spec.ages[1] },
+    segment: (locale) => ({
+      id: spec.id, type: spec.type, grading: 'server', visual: { type: spec.visual }, prompt: pick(spec.prompt, locale),
+      ...(spec.labels ? { labels: names(spec.labels, locale) } : {}), payload: spec.payload,
+    }),
+    rubric: { solutions: spec.solutions },
+    ladder: { invalid: { slots: spec.invalid }, valid: { slots: {} }, met: { slots: spec.solutions[0]! } },
+  };
+}
+
+/** F2.17: the answer is the prediction and then one whole number; the prediction alone is the untouched rung. */
+function explorer(spec: ExplorerSpec): HorizonteFixture {
+  return {
+    id: spec.id,
+    title: title(spec.title),
+    ageBand: spec.band,
+    eligibility: { minimum_age: spec.ages[0], maximum_age: spec.ages[1] },
+    segment: (locale) => ({ id: spec.id, type: spec.type, grading: 'server', visual: { type: spec.visual }, prompt: pick(spec.prompt, locale), payload: spec.payload }),
+    rubric: { predict: spec.predict, value: spec.value },
+    ladder: { invalid: { predict: 'no-such-choice', value: spec.value }, valid: { predict: spec.predict }, met: { predict: spec.predict, value: spec.value } },
+  };
+}
+
+const NETWORK = 'math.network-count.v2';
+const TRIG = 'trig.unit-circle.v2';
+const CALCULUS = 'calculus.explorer.v2';
+const CIRCUITS = 'computing.bits-gates.v2';
+
+const kids = { ana: ['Ana', 'Ana', 'Ana'], ben: ['Ben', 'Ben', 'Ben'], cai: ['Cai', 'Cai', 'Cai'], dev: ['Dev', 'Dev', 'Dev'] } as const satisfies Record<string, Words>;
+
+export const COM_FIXTURES: readonly HorizonteFixture[] = [
+  /* ── F2.16 Redes y conteo ── */
+  arrangement({
+    id: 'konigsberg', title: ['The seven bridges', 'Los siete puentes', 'As sete pontes'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'graph',
+    prompt: ['Count the bridges at each land area. Mark every area with an odd number of bridges.', 'Cuenta los puentes de cada zona. Marca cada zona con un número impar de puentes.', 'Conte as pontes de cada área. Marque cada área com um número ímpar de pontes.'],
+    labels: {
+      island: ['Island', 'Isla', 'Ilha'], north: ['North bank', 'Orilla norte', 'Margem norte'], south: ['South bank', 'Orilla sur', 'Margem sul'], east: ['East bank', 'Orilla este', 'Margem leste'],
+    },
+    payload: {
+      task: 'odd',
+      nodes: [{ id: 'island', x: 50, y: 50 }, { id: 'north', x: 50, y: 12 }, { id: 'south', x: 50, y: 88 }, { id: 'east', x: 90, y: 50 }],
+      edges: [
+        { id: 'bridge-1', from: 'island', to: 'north' }, { id: 'bridge-2', from: 'island', to: 'north' }, { id: 'bridge-3', from: 'island', to: 'south' }, { id: 'bridge-4', from: 'island', to: 'south' },
+        { id: 'bridge-5', from: 'island', to: 'east' }, { id: 'bridge-6', from: 'north', to: 'east' }, { id: 'bridge-7', from: 'south', to: 'east' },
+      ],
+    },
+    solutions: [{ odd: ['island', 'north', 'south', 'east'] }], invalid: { odd: ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'bridge-walk', title: ['A walk over every bridge', 'Un paseo por todos los puentes', 'Um passeio por todas as pontes'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'graph',
+    prompt: ['Walk across every bridge exactly once. Tap the bridges in the order you cross them.', 'Cruza cada puente una sola vez. Toca los puentes en el orden en que los cruzas.', 'Atravesse cada ponte uma só vez. Toque nas pontes na ordem em que as atravessa.'],
+    labels: {
+      west: ['West bank', 'Orilla oeste', 'Margem oeste'], island: ['Island', 'Isla', 'Ilha'], east: ['East bank', 'Orilla este', 'Margem leste'], north: ['North bank', 'Orilla norte', 'Margem norte'],
+      'bridge-1': ['Bridge 1', 'Puente 1', 'Ponte 1'], 'bridge-2': ['Bridge 2', 'Puente 2', 'Ponte 2'], 'bridge-3': ['Bridge 3', 'Puente 3', 'Ponte 3'],
+      'bridge-4': ['Bridge 4', 'Puente 4', 'Ponte 4'], 'bridge-5': ['Bridge 5', 'Puente 5', 'Ponte 5'], 'bridge-6': ['Bridge 6', 'Puente 6', 'Ponte 6'],
+    },
+    payload: {
+      task: 'trail',
+      nodes: [{ id: 'west', x: 12, y: 50 }, { id: 'island', x: 50, y: 50 }, { id: 'east', x: 88, y: 50 }, { id: 'north', x: 50, y: 12 }],
+      edges: [
+        { id: 'bridge-1', from: 'west', to: 'island' }, { id: 'bridge-2', from: 'west', to: 'island' }, { id: 'bridge-3', from: 'island', to: 'east' },
+        { id: 'bridge-4', from: 'island', to: 'north' }, { id: 'bridge-5', from: 'north', to: 'east' }, { id: 'bridge-6', from: 'west', to: 'north' },
+      ],
+    },
+    solutions: [{ walk: ['bridge-1', 'bridge-3', 'bridge-5', 'bridge-4', 'bridge-2', 'bridge-6'] }], invalid: { walk: ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'cheapest-route', title: ['The cheapest way to school', 'El camino más barato a la escuela', 'O caminho mais barato até a escola'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'shortest-path',
+    prompt: ['Find the cheapest way from home to school. Tap the stops in order, starting at home.', 'Encuentra el camino más barato de la casa a la escuela. Toca las paradas en orden, desde la casa.', 'Encontre o caminho mais barato de casa até a escola. Toque nas paradas em ordem, começando em casa.'],
+    labels: {
+      home: ['Home', 'Casa', 'Casa'], park: ['Park', 'Parque', 'Parque'], shop: ['Shop', 'Tienda', 'Loja'], mall: ['Mall', 'Plaza', 'Shopping'], pool: ['Pool', 'Alberca', 'Piscina'], school: ['School', 'Escuela', 'Escola'],
+    },
+    payload: {
+      nodes: [{ id: 'home', x: 10, y: 50 }, { id: 'park', x: 36, y: 16 }, { id: 'shop', x: 36, y: 84 }, { id: 'mall', x: 66, y: 16 }, { id: 'pool', x: 66, y: 84 }, { id: 'school', x: 92, y: 50 }],
+      edges: [
+        { id: 'road-1', from: 'home', to: 'park', weight: 2 }, { id: 'road-2', from: 'home', to: 'shop', weight: 5 }, { id: 'road-3', from: 'park', to: 'mall', weight: 4 },
+        { id: 'road-4', from: 'park', to: 'shop', weight: 1 }, { id: 'road-5', from: 'shop', to: 'pool', weight: 3 }, { id: 'road-6', from: 'mall', to: 'school', weight: 6 },
+        { id: 'road-7', from: 'pool', to: 'school', weight: 4 },
+      ],
+      start: 'home', goal: 'school',
+    },
+    solutions: [{ route: ['home', 'park', 'shop', 'pool', 'school'] }], invalid: { route: ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'cheapest-tie', title: ['Two routes, one price', 'Dos rutas, un precio', 'Duas rotas, um preço'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'shortest-path',
+    prompt: ['Two routes may cost the same. Tap the stops of one cheapest route, from camp to peak.', 'Dos rutas pueden costar lo mismo. Toca las paradas de una ruta más barata, del campamento a la cima.', 'Duas rotas podem custar o mesmo. Toque nas paradas de uma rota mais barata, do acampamento ao pico.'],
+    labels: { camp: ['Camp', 'Campamento', 'Acampamento'], ridge: ['Ridge', 'Cresta', 'Crista'], creek: ['Creek', 'Arroyo', 'Riacho'], cave: ['Cave', 'Cueva', 'Caverna'], peak: ['Peak', 'Cima', 'Pico'] },
+    payload: {
+      nodes: [{ id: 'camp', x: 8, y: 50 }, { id: 'ridge', x: 40, y: 14 }, { id: 'creek', x: 40, y: 86 }, { id: 'cave', x: 70, y: 50 }, { id: 'peak', x: 94, y: 50 }],
+      edges: [
+        { id: 'path-1', from: 'camp', to: 'ridge', weight: 3 }, { id: 'path-2', from: 'camp', to: 'creek', weight: 4 }, { id: 'path-3', from: 'ridge', to: 'cave', weight: 4 },
+        { id: 'path-4', from: 'creek', to: 'cave', weight: 3 }, { id: 'path-5', from: 'cave', to: 'peak', weight: 2 },
+      ],
+      start: 'camp', goal: 'peak',
+    },
+    solutions: [{ route: ['camp', 'creek', 'cave', 'peak'] }, { route: ['camp', 'ridge', 'cave', 'peak'] }], invalid: { route: ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'team-picks', title: ['Pick a pair', 'Elige una pareja', 'Escolha uma dupla'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'choice-tree',
+    prompt: ['Pick two kids for each team. Keep one outcome per team, since the order does not matter.', 'Elige dos niños para cada equipo. Deja un resultado por equipo, porque el orden no importa.', 'Escolha duas crianças para cada equipe. Mantenha um resultado por equipe, pois a ordem não importa.'],
+    labels: kids,
+    payload: { items: ['ana', 'ben', 'cai', 'dev'], pick: 2, mode: 'group' },
+    solutions: [{ keep: ['ana.ben', 'ana.cai', 'ana.dev', 'ben.cai', 'ben.dev', 'cai.dev'] }], invalid: { keep: ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'podium', title: ['The podium', 'El podio', 'O pódio'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'choice-tree',
+    prompt: ['Ana always wins gold. Keep every podium order where Ana comes first.', 'Ana siempre gana el oro. Deja todos los podios donde Ana queda primero.', 'Ana sempre ganha o ouro. Mantenha todos os pódios em que Ana fica em primeiro.'],
+    labels: { ana: kids.ana, ben: kids.ben, cai: kids.cai },
+    payload: { items: ['ana', 'ben', 'cai'], pick: 3, mode: 'order', first: 'ana' },
+    solutions: [{ keep: ['ana.ben.cai', 'ana.cai.ben'] }], invalid: { keep: ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'pascal-evens', title: ['Even numbers in the triangle', 'Pares en el triángulo', 'Pares no triângulo'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'pascal',
+    prompt: ['Color every even number in the triangle. Look for the pattern it makes.', 'Colorea cada número par del triángulo. Fíjate en el patrón que forma.', 'Pinte cada número par do triângulo. Observe o padrão que ele forma.'],
+    payload: { rows: 8, multiple: 2 },
+    solutions: [pascalByRow(['r2c1', 'r4c1', 'r4c2', 'r4c3', 'r5c2', 'r5c3', 'r6c1', 'r6c3', 'r6c5'])], invalid: { 'row-2': ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'pascal-threes', title: ['Threes in the triangle', 'Múltiplos de 3 en el triángulo', 'Múltiplos de 3 no triângulo'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'pascal',
+    prompt: ['Color every multiple of 3 in the triangle. What shape do they make?', 'Colorea cada múltiplo de 3 del triángulo. ¿Qué forma hacen?', 'Pinte cada múltiplo de 3 do triângulo. Que forma eles fazem?'],
+    payload: { rows: 9, multiple: 3 },
+    solutions: [pascalByRow(['r3c1', 'r3c2', 'r4c2', 'r6c1', 'r6c2', 'r6c4', 'r6c5', 'r7c2', 'r7c5'])], invalid: { 'row-3': ['no-such-id'] },
+  }),
+
+  /* ── F2.17 Circulo unitario, secante y suma de Riemann ── */
+  explorer({
+    id: 'unit-circle-cos', title: ['Cosine on the circle', 'Coseno en el círculo', 'Cosseno no círculo'], band: '13-17', ages: [15, 17], type: TRIG, visual: 'unit-circle',
+    prompt: ['Predict the quadrant. Then drag the point to the angle where the cosine fits.', 'Predice el cuadrante. Luego arrastra el punto al ángulo donde encaja el coseno.', 'Preveja o quadrante. Depois arraste o ponto até o ângulo em que o cosseno se encaixa.'],
+    payload: { ask: 'cos', level: 'root2', sign: -1, side: 'upper', step: 15, start: 0 }, predict: 'quadrant-2', value: 135,
+  }),
+  explorer({
+    id: 'unit-circle-sin', title: ['Sine on the circle', 'Seno en el círculo', 'Seno no círculo'], band: '13-17', ages: [15, 17], type: TRIG, visual: 'unit-circle',
+    prompt: ['Predict the quadrant. Then drag the point to the angle where the sine fits.', 'Predice el cuadrante. Luego arrastra el punto al ángulo donde encaja el seno.', 'Preveja o quadrante. Depois arraste o ponto até o ângulo em que o seno se encaixa.'],
+    payload: { ask: 'sin', level: 'root3', sign: -1, side: 'left', step: 30, start: 0 }, predict: 'quadrant-3', value: 240,
+  }),
+  explorer({
+    id: 'circle-wave', title: ['From circle to wave', 'Del círculo a la onda', 'Do círculo à onda'], band: '13-17', ages: [15, 17], type: TRIG, visual: 'circle-wave',
+    prompt: ['Predict how many times the wave hits this height in one turn. Then find the falling crossing.', 'Predice cuántas veces la onda alcanza esta altura en una vuelta. Luego halla el cruce descendente.', 'Preveja quantas vezes a onda atinge esta altura em uma volta. Depois ache o cruzamento descendente.'],
+    payload: { fn: 'sin', level: 'half', sign: 1, slope: 'falling', step: 30, start: 0 }, predict: 'times-2', value: 150,
+  }),
+  explorer({
+    id: 'secant-slope', title: ['Secant to tangent', 'De la secante a la tangente', 'Da secante à tangente'], band: '13-17', ages: [15, 17], type: CALCULUS, visual: 'secant',
+    prompt: ['Predict if the slope is positive or negative. Then shrink the gap until the secant becomes the tangent.', 'Predice si la pendiente es positiva o negativa. Luego reduce la distancia hasta que la secante sea la tangente.', 'Preveja se a inclinação é positiva ou negativa. Depois reduza a distância até a secante virar a tangente.'],
+    payload: { coeffs: [0, 1, -2, 0], a: 1 }, predict: 'negative', value: -3,
+  }),
+  explorer({
+    id: 'linked-graphs', title: ['A curve and its slope', 'Una curva y su pendiente', 'Uma curva e sua inclinação'], band: '13-17', ages: [15, 17], type: CALCULUS, visual: 'derivative-link',
+    prompt: ['Predict if the curve rises or falls between its two flat spots. Then find the x of the peak.', 'Predice si la curva sube o baja entre sus dos puntos planos. Luego halla la x del pico.', 'Preveja se a curva sobe ou desce entre seus dois pontos planos. Depois ache o x do pico.'],
+    payload: { lead: 1, roots: [-1, 2], base: 0, ask: 'max' }, predict: 'falling', value: -1,
+  }),
+  explorer({
+    id: 'riemann-sums', title: ['Rectangles under a curve', 'Rectángulos bajo una curva', 'Retângulos sob uma curva'], band: '13-17', ages: [15, 17], type: CALCULUS, visual: 'riemann',
+    prompt: ['Predict whether the estimate is too small or too big. Then raise n until it is close enough.', 'Predice si la estimación se queda corta o se pasa. Luego sube n hasta acercarte lo suficiente.', 'Preveja se a estimativa fica pequena ou grande demais. Depois aumente n até chegar perto o bastante.'],
+    payload: { coeffs: [1, 0, 1, 0], from: 0, to: 3, method: 'left', tolerance: 2 }, predict: 'too-small', value: 7,
+  }),
+  explorer({
+    id: 'area-so-far', title: ['The area so far', 'El área acumulada', 'A área acumulada'], band: '13-17', ages: [15, 17], type: CALCULUS, visual: 'accumulation',
+    prompt: ['Predict whether the area is growing, shrinking or flat when it hits 18. Then find that x.', 'Predice si el área crece, decrece o está plana cuando llega a 18. Luego halla esa x.', 'Preveja se a área cresce, diminui ou fica estável ao chegar a 18. Depois ache esse x.'],
+    payload: { coeffs: [6, -1, 0, 0], from: 0, to: 8, target: 18 }, predict: 'flat', value: 6,
+  }),
+
+  /* ── F2.18 Bits y compuertas ── */
+  arrangement({
+    id: 'bits-ten', title: ['Ten in four bits', 'Diez en cuatro bits', 'Dez em quatro bits'], band: '10-12', ages: [10, 12], type: CIRCUITS, visual: 'bits',
+    prompt: ['Switch the bits on to make 10. Each bit is worth double the one to its right.', 'Enciende los bits para formar 10. Cada bit vale el doble del que está a su derecha.', 'Ligue os bits para formar 10. Cada bit vale o dobro do que está à sua direita.'],
+    payload: { bits: 4, target: 10 }, solutions: [{ 'bits-on': ['bit-8', 'bit-2'] }], invalid: { 'bits-on': ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'bits-byte', title: ['A whole byte', 'Un byte completo', 'Um byte inteiro'], band: '10-12', ages: [10, 12], type: CIRCUITS, visual: 'bits',
+    prompt: ['Make 200 with eight bits. Start with the biggest bit that fits.', 'Forma 200 con ocho bits. Empieza por el bit más grande que quepa.', 'Forme 200 com oito bits. Comece pelo maior bit que couber.'],
+    payload: { bits: 8, target: 200 }, solutions: [{ 'bits-on': ['bit-128', 'bit-64', 'bit-8'] }], invalid: { 'bits-on': ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'gates-xor', title: ['Only one switch', 'Solo un interruptor', 'Só um interruptor'], band: '10-12', ages: [10, 12], type: CIRCUITS, visual: 'gates',
+    prompt: ['Place the gates so the lamp follows the table: on when only one switch is on.', 'Coloca las compuertas para que la lámpara siga la tabla: se enciende si solo un interruptor está encendido.', 'Coloque as portas para a lâmpada seguir a tabela: acende só quando um interruptor está ligado.'],
+    labels: { 'in-a': ['Switch A', 'Interruptor A', 'Interruptor A'], 'in-b': ['Switch B', 'Interruptor B', 'Interruptor B'], 'pos-3': ['Lamp', 'Lámpara', 'Lâmpada'] },
+    payload: {
+      inputs: ['in-a', 'in-b'],
+      slots: [{ id: 'pos-1', from: ['in-a', 'in-b'] }, { id: 'pos-2', from: ['in-a', 'in-b'] }, { id: 'pos-3', from: ['pos-1', 'pos-2'] }],
+      pieces: [{ id: 'gate-a', kind: 'or' }, { id: 'gate-b', kind: 'nand' }, { id: 'gate-c', kind: 'and' }, { id: 'gate-d', kind: 'nor' }],
+      expected: [0, 1, 1, 0],
+    },
+    solutions: [{ 'pos-1': ['gate-a'], 'pos-2': ['gate-b'], 'pos-3': ['gate-c'] }, { 'pos-1': ['gate-b'], 'pos-2': ['gate-a'], 'pos-3': ['gate-c'] }], invalid: { 'pos-1': ['no-such-id'] },
+  }),
+  arrangement({
+    id: 'gates-alarm', title: ['The alarm', 'La alarma', 'O alarme'], band: '10-12', ages: [10, 12], type: CIRCUITS, visual: 'gates',
+    prompt: ['Build the alarm: it rings when a door or a window opens, unless the key is in.', 'Construye la alarma: suena si se abre una puerta o una ventana, salvo que la llave esté puesta.', 'Monte o alarme: toca quando uma porta ou janela abre, a menos que a chave esteja no lugar.'],
+    labels: { 'in-door': ['Door', 'Puerta', 'Porta'], 'in-window': ['Window', 'Ventana', 'Janela'], 'in-key': ['Key in', 'Llave puesta', 'Chave no lugar'], 'pos-3': ['Alarm', 'Alarma', 'Alarme'] },
+    payload: {
+      inputs: ['in-door', 'in-window', 'in-key'],
+      slots: [{ id: 'pos-1', from: ['in-door', 'in-window'] }, { id: 'pos-2', from: ['in-key'] }, { id: 'pos-3', from: ['pos-1', 'pos-2'] }],
+      pieces: [{ id: 'gate-a', kind: 'or' }, { id: 'gate-b', kind: 'not' }, { id: 'gate-c', kind: 'and' }, { id: 'gate-d', kind: 'xor' }],
+      expected: [0, 0, 1, 0, 1, 0, 1, 0],
+    },
+    solutions: [{ 'pos-1': ['gate-a'], 'pos-2': ['gate-b'], 'pos-3': ['gate-c'] }], invalid: { 'pos-1': ['no-such-id'] },
+  }),
+];
