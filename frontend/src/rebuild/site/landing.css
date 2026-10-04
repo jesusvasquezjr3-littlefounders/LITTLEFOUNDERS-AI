@@ -78,7 +78,7 @@
 }
 @container app (max-width: 399px) {
   .lf-rebuild .lf-landing-hero .lf-site-cta-row > .lf-button { inline-size: 100%; }
-  .lf-rebuild .lf-landing-family-art { max-block-size: 300px; object-fit: contain; background: #f4f5fd; }
+  .lf-rebuild .lf-landing-family-art { max-block-size: 300px; }
   .lf-rebuild .lf-landing :is(.lf-landing-demo,.lf-landing-reasoning,.lf-landing-family-preview,.lf-landing-path) { padding: var(--spacing-5); }
 }
 

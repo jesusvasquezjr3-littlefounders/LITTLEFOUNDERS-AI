@@ -26,7 +26,7 @@ export function HowItWorks({ locale, start, onNavigate }: { locale: Locale; star
       <div className="lf-site-cta-row"><StartButton action={start} copy={copy.site} onNavigate={onNavigate} origin="how-hero" breathing /></div>
     </SiteHero>
 
-    <SiteSection tone="default" heading={h.demoTitle} split="start" className="lf-marketing-demo"><MarketingArt scene="questions" locale={locale} compact />
+    <SiteSection tone="default" heading={h.demoTitle} split="start"><MarketingArt scene="questions" locale={locale} compact />
       <DecisionDemo name="how-decision" question={h.demoQuestion} prompt={copy.site.pickOne} options={[
         { value: 'candy', label: h.optionCandy, consequence: h.consequenceCandy },
         { value: 'bike', label: h.optionBike, consequence: h.consequenceBike },
@@ -42,7 +42,7 @@ export function HowItWorks({ locale, start, onNavigate }: { locale: Locale; star
       <p data-copy-role="body">{h.guestBody}</p>
     </SiteSection>
 
-    <SiteSection tone="default" heading={h.closingTitle} className="lf-site-closing lf-marketing-closing">
+    <SiteSection tone="default" heading={h.closingTitle} className="lf-site-closing">
       <p data-copy-role="body">{h.closingBody}</p>
       <div className="lf-site-cta-row"><StartButton action={start} copy={copy.site} onNavigate={onNavigate} origin="how-closing" size="md" /></div>
     </SiteSection>

@@ -45,9 +45,11 @@ const DIRECT_MANIPULATION: Record<string, RegExp> = {
   'rebuild/learning/horizonte/solids/CubeStackBoard.tsx': /<button type="button" className="lf-stack-height"/g,
   'rebuild/learning/horizonte/solids/NetCompleteBoard.tsx': /<button type="button" className="lf-net-square"/g,
   'rebuild/learning/horizonte/solids/NetLabelBoard.tsx': /<button type="button" className="lf-net-square"/g,
+  // The public landing simulation: a topic card and an age card each hold a number or range, a title and a sentence, which the single-label ChoiceChip cannot carry. They only switch a local preview and never write learner state.
+  'rebuild/site/Landing.tsx': /<button key=\{item\.title\} type="button" className="lf-landing-topic"|<button type="button" key=\{item\.range\} aria-pressed=\{age === index\}/g,
 };
 
-/** Files whose drawn cells, beads or slices carry aria-pressed because the visual itself is the control. */
+/** Files whose drawn cells, beads or slices (or, on the public landing demo, selector cards) carry aria-pressed because that element itself is the control. */
 const PRESSED_VISUAL_CELLS = new Set([
   'rebuild/learning/horizonte/com/CircuitsBoard.tsx',
   'rebuild/learning/horizonte/com/NetworkBoard.tsx',
@@ -57,6 +59,7 @@ const PRESSED_VISUAL_CELLS = new Set([
   'rebuild/learning/horizonte/num-b/FractionCirclesBoard.tsx',
   'rebuild/learning/horizonte/num-b/FractionWallBoard.tsx',
   'rebuild/learning/horizonte/num-b/RatioLineBoard.tsx',
+  'rebuild/site/Landing.tsx',
 ]);
 
 /**

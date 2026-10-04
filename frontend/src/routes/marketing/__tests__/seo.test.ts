@@ -15,7 +15,7 @@ const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 
 function pageH1(path: string, locale: (typeof LOCALES)[number]): string | null {
   const site = rebuildNamespaceCopy[locale].site;
-  if (path === '/') return site.landing.title;
+  if (path === '/') return `${site.landingV2.title} ${site.landingV2.titleAccent}`;
   if (path === '/how-it-works') return site.howItWorks.title;
   if (path === '/families') return site.families.title;
   if (path === '/faq') return site.faq.title;

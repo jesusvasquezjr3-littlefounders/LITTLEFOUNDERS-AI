@@ -6,7 +6,7 @@ import { MentorCast, SiteLink, StartButton, siteCopy, type Navigate, type StartA
 import './landing.css';
 
 /** Marketing demos never write real learner history or guardian approvals. */
-export function Landing({ locale, start, onNavigate }: { locale: Locale; start: StartAction; onNavigate?: Navigate; onSecondary?: () => void }) {
+export function Landing({ locale, start, onNavigate, onSecondary }: { locale: Locale; start: StartAction; onNavigate?: Navigate; onSecondary?: () => void }) {
   const copy = siteCopy(locale), l = copy.landingV2, id = useId();
   const [topic, setTopic] = useState(0), [answer, setAnswer] = useState<number | null>(null);
   const [reason, setReason] = useState<number | null>(null), [age, setAge] = useState(0);
@@ -18,7 +18,7 @@ export function Landing({ locale, start, onNavigate }: { locale: Locale; start: 
       <div className="lf-landing-copy"><h1 data-copy-role="brand">{l.title}{' '}<span>{l.titleAccent}</span></h1>
         <p className="lf-site-lead" data-copy-role="body">{l.lead}</p>
         <div className="lf-site-cta-row"><StartButton action={start} copy={copy.site} onNavigate={onNavigate} origin="landing-hero" />
-          <a className="lf-button lf-button--secondary lf-button--lg" href={`#${id}-learn`} data-copy-role="action">{l.tryAction}</a></div>
+          <a className="lf-button lf-button--secondary lf-button--lg" href={`#${id}-learn`} data-copy-role="action" data-cta="secondary" onClick={onSecondary}>{l.tryAction}</a></div>
         <p className="lf-site-note" data-copy-role="body">{l.note}</p></div>
       <img className="lf-landing-family-art" src="/rebuild/landing/family.webp" alt={l.heroAlt} width={1120} height={1400} data-asset-id="site.landing.family" data-slot="site.hero" />
     </section>

@@ -55,9 +55,9 @@ describe('public page bridges', () => {
     expect(screen.queryByText('onboarding')).toBeNull();
   });
 
-  it('a signed-in visitor continues into the app; the Log in link reports the secondary goal for a visitor', () => {
+  it('a signed-in visitor continues into the app; the Try a challenge link reports the secondary goal', () => {
     const visitor = at('/', <Landing />);
-    fireEvent.click(screen.getByRole('link', { name: en.site.login }));
+    fireEvent.click(screen.getByRole('link', { name: en.landingV2.tryAction }));
     expect(goals.track).toHaveBeenCalledWith('cta_secondary', expect.anything());
     visitor.unmount();
     auth.session = { user: { id: 'u1' } };

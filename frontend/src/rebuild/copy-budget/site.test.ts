@@ -31,6 +31,14 @@ const SITE_GROUPS: Record<string, Rule> = {
     : ['accept', 'reject', 'preferences', 'privacyLink', 'close'].includes(key) ? 'action' : 'body',
   // The hero scenes' accessible names (GAP-FIX-R5, 07 §8): read aloud as the page's image, on the site body budget.
   siteHeroArt: () => 'body',
+  // The landing page: the hero lines are brand, the demo cards and the family preview use the roles their components declare.
+  landingV2: (key) => ['title', 'titleAccent'].includes(key) ? 'brand'
+    : key === 'reasonQuestion' ? 'prompt'
+      : key.endsWith('Title') || key === 'familyPreview' || /\.(?:question|title)$/.test(key) ? 'heading'
+        : ['tryAction', 'addCoin', 'removeCoin', 'approve', 'approved', 'familyAction'].includes(key) || key.endsWith('.label') ? 'action'
+          : key.includes('.options.') ? 'option' : key.endsWith('.range') ? 'data' : 'body',
+  // The accessible names of the marketing scenes: read aloud as the page's images, on the site body budget.
+  marketingArt: () => 'body',
 };
 
 /*
