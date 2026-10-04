@@ -199,6 +199,14 @@
 }
 .lf-rebuild .lf-appbar-menu { margin-inline-start: auto; }
 
+/*
+ * Staff pages are dense dashboards and meet the 40-word first view (06 §3.1) only with the band the retired app bar
+ * held above them; the families' consoles take that space back for content.
+ */
+@container app (max-width: 839px) {
+  .lf-rebuild .lf-shell--staff .lf-shell-main { padding-block-start: calc(max(var(--spacing-6), env(safe-area-inset-top)) + var(--spacing-16)); }
+}
+
 @container app (min-width: 640px) {
   .lf-rebuild .lf-nav-list--tab { max-inline-size: calc(var(--spacing-32) * 5); margin-inline: auto; }
   .lf-rebuild .lf-shell-main { padding-inline: max(var(--spacing-8), env(safe-area-inset-left)) max(var(--spacing-8), env(safe-area-inset-right)); }
