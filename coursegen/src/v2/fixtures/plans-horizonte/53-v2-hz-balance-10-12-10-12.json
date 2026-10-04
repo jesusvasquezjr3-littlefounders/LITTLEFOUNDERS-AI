@@ -1,0 +1,127 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-balance",
+  "lesson_id": "v2-hz-balance-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-balance"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Dina mantiene los dos lados de una balanza iguales para ver qué pasa al cambiar algo.",
+  "title": {
+    "en-US": "Same on both pans",
+    "es-MX": "Lo mismo en ambos platos",
+    "pt-BR": "O mesmo nos dois pratos"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "balance-two-sides",
+      "type": "math.equation-balance.v2",
+      "grading": "server",
+      "visual": {
+        "type": "equation-balance"
+      },
+      "payload": {
+        "start": {
+          "l": {
+            "x": 3,
+            "u": 2
+          },
+          "r": {
+            "x": 1,
+            "u": 8
+          }
+        },
+        "ops": [
+          "sub-x",
+          "sub-unit",
+          "add-unit",
+          "div-2",
+          "slip-left",
+          "slip-right"
+        ]
+      },
+      "rubric": {
+        "x": 3
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the scale level. Do the same on both pans until x stands alone, then type x.",
+          "feedback": {
+            "met": "You kept both sides equal.",
+            "not_yet": "Try changing the same thing on both sides."
+          }
+        },
+        "es-MX": {
+          "prompt": "Mantén la balanza nivelada. Haz lo mismo en ambos platos hasta dejar la x sola, y escribe x.",
+          "feedback": {
+            "met": "Mantuviste los dos lados iguales.",
+            "not_yet": "Prueba a cambiar lo mismo en los dos lados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mantenha a balança nivelada. Faça o mesmo nos dois pratos até deixar o x sozinho, e digite x.",
+          "feedback": {
+            "met": "Você manteve os dois lados iguais.",
+            "not_yet": "Tente mudar a mesma coisa nos dois lados."
+          }
+        }
+      }
+    },
+    {
+      "id": "proof-parallelogram",
+      "type": "math.visual-proof.v2",
+      "grading": "server",
+      "visual": {
+        "type": "parallelogram-area"
+      },
+      "payload": {
+        "base": 6,
+        "height": 4,
+        "slant": 2,
+        "choices": [
+          "base-plus-height",
+          "base-height",
+          "half-base-height"
+        ]
+      },
+      "rubric": {
+        "choice": "base-height",
+        "value": "24"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict which formula gives the area. Then move the piece and type the area.",
+          "feedback": {
+            "met": "You kept both sides equal.",
+            "not_yet": "Try changing the same thing on both sides."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice qué fórmula da el área. Luego mueve la pieza y escribe el área.",
+          "feedback": {
+            "met": "Mantuviste los dos lados iguales.",
+            "not_yet": "Prueba a cambiar lo mismo en los dos lados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja qual fórmula dá a área. Depois mova a peça e digite a área.",
+          "feedback": {
+            "met": "Você manteve os dois lados iguais.",
+            "not_yet": "Tente mudar a mesma coisa nos dois lados."
+          }
+        }
+      }
+    }
+  ]
+}

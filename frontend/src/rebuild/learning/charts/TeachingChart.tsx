@@ -1,8 +1,11 @@
-import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Suspense, lazy, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { Locale } from '../../design/copyBudget';
 import { Button } from '../../design/controls';
-import { chartFacts, chartTable, chartTree, hierarchyValue, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind } from './chartModel.generated';
+import { chartFacts, chartReads, chartTable, chartTree, hierarchyValue, isReadingChart, shares, valueExtent, waterfallSteps, type ChartData, type ChartKind, type ChartTableModel, type ReadingChartKind } from './chartModel.generated';
+import { readingCell, readingDescription, readingWord } from './readingWords';
 import './charts.css';
+
+const ReadingPlot = lazy(() => import('./readingCharts'));
 
 /*
  * B.7 part 1 (GAP-FIX-R1 learning; Appendix A Part 1; Bible 05 V1/V6): the
@@ -37,16 +40,16 @@ export interface ChartTag {
 type Tags = ChartTag[];
 const tag = (out: Tags, value: ChartTag): null => { out.push(value); return null; };
 
-export const chartCopy: Record<Locale, { showTable: string; showChart: string; table: string; category: string; value: string; target: string; delta: string; total: string; from: string; to: string; each: (n: string) => string }> = {
-  'en-US': { showTable: 'Show as table', showChart: 'Show chart', table: 'Chart data', category: 'Item', value: 'Value', target: 'Goal', delta: 'Change', total: 'Total', from: 'From', to: 'To', each: (n) => `Each icon is ${n}` },
-  'es-MX': { showTable: 'Ver tabla', showChart: 'Ver gráfica', table: 'Datos de la gráfica', category: 'Elemento', value: 'Valor', target: 'Meta', delta: 'Cambio', total: 'Total', from: 'De', to: 'A', each: (n) => `Cada ícono vale ${n}` },
-  'pt-BR': { showTable: 'Ver tabela', showChart: 'Ver gráfico', table: 'Dados do gráfico', category: 'Item', value: 'Valor', target: 'Meta', delta: 'Mudança', total: 'Total', from: 'De', to: 'Para', each: (n) => `Cada ícone vale ${n}` },
+export const chartCopy: Record<Locale, { showTable: string; showChart: string; table: string; category: string; value: string; target: string; delta: string; total: string; from: string; to: string; label: string; each: (n: string) => string }> = {
+  'en-US': { showTable: 'Show as table', showChart: 'Show chart', table: 'Chart data', category: 'Item', value: 'Value', target: 'Goal', delta: 'Change', total: 'Total', from: 'From', to: 'To', label: 'Label', each: (n) => `Each icon is ${n}` },
+  'es-MX': { showTable: 'Ver tabla', showChart: 'Ver gráfica', table: 'Datos de la gráfica', category: 'Elemento', value: 'Valor', target: 'Meta', delta: 'Cambio', total: 'Total', from: 'De', to: 'A', label: 'Etiqueta', each: (n) => `Cada ícono vale ${n}` },
+  'pt-BR': { showTable: 'Ver tabela', showChart: 'Ver gráfico', table: 'Dados do gráfico', category: 'Item', value: 'Valor', target: 'Meta', delta: 'Mudança', total: 'Total', from: 'De', to: 'Para', label: 'Rótulo', each: (n) => `Cada ícone vale ${n}` },
 };
 
-const HUES = ['var(--sky-strong)', 'var(--mint-strong)', 'var(--berry-strong)'];
-const W = 320; const H = 180; const PAD = 28;
+export const HUES = ['var(--sky-strong)', 'var(--mint-strong)', 'var(--berry-strong)'];
+export const W = 320; export const H = 180; const PAD = 28;
 
-function Patterns({ prefix }: { prefix: string }) {
+export function Patterns({ prefix }: { prefix: string }) {
   return <defs>
     {HUES.map((hue, index) => <pattern key={index} id={`${prefix}-${index}`} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform={index === 1 ? 'rotate(45)' : undefined}>
       <rect width="6" height="6" fill={hue} />
@@ -54,7 +57,17 @@ function Patterns({ prefix }: { prefix: string }) {
     </pattern>)}
   </defs>;
 }
-const fillOf = (prefix: string, index: number) => `url(#${prefix}-${index % 3})`;
+export const fillOf = (prefix: string, index: number) => `url(#${prefix}-${index % 3})`;
+
+/** A diagram has no numbers to read out, so its description is its structure: each step and where it leads. */
+function diagramFacts(kind: ChartKind, { rows }: ChartTableModel): string {
+  return rows.map(({ cells }) => {
+    const [first = '', second = '', third = ''] = cells.map(String);
+    if (kind === 'swimlane') return `${first}${second ? ` (${second})` : ''}${third ? ` → ${third}` : ''}`;
+    if (kind === 'flowchart' || kind === 'decision-tree' || kind === 'tree') return `${first} → ${second}${third ? ` (${third})` : ''}`;
+    return second ? `${second} → ${first}` : first;
+  }).join('; ');
+}
 
 /** `embedded`: the chart sits inside a board that already offers its own table, so it drops its own toggle (one "Show as table" per board). */
 export function TeachingChart({ kind, data, title, locale, embedded = false }: { kind: ChartKind; data: ChartData; title: string; locale: Locale; embedded?: boolean }) {
@@ -62,21 +75,29 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
   const [table, setTable] = useState(false);
   const id = useId().replace(/:/g, '');
   const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
-  const facts = chartFacts(kind, data).map((fact) => `${fact.label}: ${number.format(fact.value)}`).join('; ');
+  const reading = isReadingChart(kind);
   const model = chartTable(kind, data);
+  const facts = reading ? readingDescription(locale, chartReads(kind, data), number.format)
+    : chartFacts(kind, data).map((fact) => `${fact.label}: ${number.format(fact.value)}`).join('; ') || diagramFacts(kind, model);
   const canvas = useRef<HTMLDivElement>(null);
   useFittedTags(canvas);
   const labels: Tags = [];
-  const drawing = table ? null : draw(kind, data, id, locale, labels);
+  const drawing = table || reading ? null : draw(kind, data, id, locale, labels);
+  const word = (text: string) => (reading ? readingCell(locale, text) : text);
+  const heading = (column: string) => (reading ? readingWord(locale, column) : column);
+  // A link's own label is a cell without a model column: it gets a header, and shorter rows are padded, so every cell has a column.
+  const columns = [...model.columns.map(heading), ...Array.from({ length: Math.max(0, ...model.rows.map((row) => row.cells.length - 1 - model.columns.length)) }, () => t.label)];
   return <figure className="lf-chart" data-chart-kind={kind}>
     <figcaption className="lf-chart-head"><span data-copy-role="heading">{title}</span>
       {embedded ? null : <Button onClick={() => setTable((value) => !value)}>{table ? t.showChart : t.showTable}</Button>}</figcaption>
     {table ? <table className="lf-learning-table lf-chart-table" aria-label={t.table}>
-      <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{model.columns.map((column) => <th key={column} scope="col" data-copy-role="data">{column}</th>)}</tr></thead>
-      <tbody>{model.rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => index === 0
-        ? <th key={index} scope="row" data-copy-role="data">{cell}</th>
-        : <td key={index} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : cell}</td>)}</tr>)}</tbody>
-    </table> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
+      <thead><tr><th scope="col" data-copy-role="data">{t.category}</th>{columns.map((column, index) => <th key={index} scope="col" data-copy-role="data">{column}</th>)}</tr></thead>
+      <tbody>{model.rows.map((row) => <tr key={row.id}>{Array.from({ length: columns.length + 1 }, (_, index) => row.cells[index] ?? '').map((cell, index) => index === 0
+        ? <th key={index} scope="row" data-label={t.category} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</th>
+        : <td key={index} data-label={columns[index - 1]} data-copy-role="data">{typeof cell === 'number' ? number.format(cell) : word(cell)}</td>)}</tr>)}</tbody>
+    </table> : reading ? <Suspense fallback={<div className="lf-chart-plot" aria-busy="true" data-copy-role="data"><div className="lf-chart-canvas" /></div>}>
+      <ReadingPlot kind={kind as ReadingChartKind} data={data} title={title} locale={locale} id={id} description={facts} />
+    </Suspense> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
       {/* 05 §5: words are HTML over the SVG (`labels`), the SVG itself carries marks, numerals and symbols. */}
       <div ref={canvas} className="lf-chart-canvas"><svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false"><Patterns prefix={id} />{drawing}</svg>
         {labels.map((label) => <ChartLabel key={label.key} label={label} />)}</div>
@@ -89,10 +110,11 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
 
 const SHIFT = { start: '0%', middle: '-50%', end: '-100%', top: '0%', bottom: '-100%' } as const;
 
-function ChartLabel({ label }: { label: ChartTag }) {
+/** `height` is the viewBox height the label's y is measured in (a reading chart is only as tall as its content). */
+export function ChartLabel({ label, height = H }: { label: ChartTag; height?: number }) {
   const align = label.align ?? 'middle'; const valign = label.valign ?? 'middle';
   const style: CSSProperties = {
-    left: `${label.x / W * 100}%`, top: `${label.y / H * 100}%`, maxInlineSize: `${Math.max(0, label.room) / W * 100}%`,
+    left: `${label.x / W * 100}%`, top: `${label.y / height * 100}%`, maxInlineSize: `${Math.max(0, label.room) / W * 100}%`,
     transform: `translate(${SHIFT[align]}, ${valign === 'middle' ? '-50%' : SHIFT[valign]})`,
   };
   return <span className={`lf-chart-tag${label.edge ? ' lf-chart-tag--edge' : ''}`} data-copy-role="data" data-align={align}
@@ -104,8 +126,11 @@ function ChartLabel({ label }: { label: ChartTag }) {
  * word is wider than its room, that needs more lines than its room holds, that
  * leaves the drawing or that lands on an earlier label is hidden
  * (`data-fit="no"`). Re-measured on resize and when the web fonts arrive.
+ * A `lf-chart-canvas--fit` host also learns how far its shown labels hang past
+ * its top and bottom edge (px, `--lf-chart-over-top` and `--lf-chart-over-bottom`),
+ * so the room under the drawing is the room the words need and no more.
  */
-function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
+export function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
   useLayoutEffect(() => {
     const host = canvas.current;
     if (!host) return;
@@ -115,7 +140,7 @@ function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
       const box = host.getBoundingClientRect();
       if (box.width === 0) return;
       const placed: DOMRect[] = [];
-      let dropped = 0;
+      let dropped = 0; let above = 0; let below = 0;
       for (const element of host.querySelectorAll<HTMLElement>('.lf-chart-tag')) {
         const rect = element.getBoundingClientRect();
         const lineHeight = parseFloat(getComputedStyle(element).lineHeight) || 16;
@@ -127,9 +152,13 @@ function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
         const fits = element.scrollWidth <= element.clientWidth + 1 && inked <= rect.width + 0.25 && rect.height <= lines * lineHeight + 1
           && rect.left >= box.left - 1 && rect.right <= box.right + 1
           && !placed.some((other) => rect.left < other.right && rect.right > other.left && rect.top < other.bottom && rect.bottom > other.top);
-        if (fits) { placed.push(rect); element.removeAttribute('data-fit'); } else { element.dataset.fit = 'no'; dropped += 1; }
+        if (fits) { placed.push(rect); element.removeAttribute('data-fit'); above = Math.max(above, box.top - rect.top); below = Math.max(below, rect.bottom - box.bottom); } else { element.dataset.fit = 'no'; dropped += 1; }
       }
       host.dataset.labelsDropped = String(dropped);
+      if (host.classList.contains('lf-chart-canvas--fit')) {
+        host.style.setProperty('--lf-chart-over-top', `${Math.ceil(above / 4) * 4}px`);
+        host.style.setProperty('--lf-chart-over-bottom', `${Math.ceil(below / 4) * 4}px`);
+      }
     };
     fit();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);

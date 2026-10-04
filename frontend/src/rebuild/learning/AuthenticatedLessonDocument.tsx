@@ -1,6 +1,7 @@
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { LessonDocumentView, type OnGrade, type OnGradeAny, type OnGradeBarModel, type OnGradeFractionArea, type OnGradeNumberLine, type OnGradeSchemaDiagram, type OnGradeReasoning, type OnGradeWorkedExample, type OnView, type OnChooseApproach } from './LessonDocumentView';
 import { loadAdventureThemeProjection, loadLessonClientDocument, loadMentorStageProjection } from './lessonDocument';
+import { useHorizonteReadiness } from './horizonte/useHorizonteReadiness';
 
 const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
 
@@ -25,7 +26,7 @@ export function lessonDocumentFrame(raw: unknown, responseLocale: string): { loc
  * mounts it inside the lesson layer (`LessonLayer`, W2L.3), which carries the
  * design system's root, the document title, the skip link and route focus.
  */
-export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, adventureTheme, narrationAudio, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, approachId, onChooseApproach }: {
+export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, adventureTheme, narrationAudio, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, approachId, onChooseApproach, attemptSeeds }: {
   raw: unknown;
   responseLocale: string;
   mentorStage?: unknown;
@@ -53,14 +54,18 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   /** GAP-FIX-R5 (B.24): the run's pinned approach (null before choosing) and Core's pin. */
   approachId?: string | null;
   onChooseApproach?: OnChooseApproach;
+  /** F3.0: Core's per-segment attempt seeds for the seeded Horizonte boards. */
+  attemptSeeds?: Readonly<Record<string, string>>;
 }) {
+  // Re-renders this frame, which reads the document's own language and band, once its Horizonte packs have arrived.
+  useHorizonteReadiness(raw);
   const frame = lessonDocumentFrame(raw, responseLocale);
   const stage = loadMentorStageProjection(mentorStage);
   return <LessonDocumentView raw={raw} locale={frame.locale} ageBand={frame.ageBand ?? '6-9'} theme={theme} onBack={onBack} onGrade={onGrade}
     onGradeNumberLine={onGradeNumberLine} onGradeFractionArea={onGradeFractionArea} onGradeBarModel={onGradeBarModel} onGradeSchemaDiagram={onGradeSchemaDiagram} onGradeWorkedExample={onGradeWorkedExample} onGradeReasoning={onGradeReasoning}
     onGradeAny={onGradeAny} onView={onView} onHelpUsed={onHelpUsed} onComplete={onComplete} metSegmentIds={metSegmentIds} attemptedSegmentIds={attemptedSegmentIds}
     viewedSegmentIds={viewedSegmentIds} mentorStage={stage} adventureTheme={loadAdventureThemeProjection(adventureTheme)} narrationAudio={loadNarrationAudio(narrationAudio)}
-    approachId={approachId ?? null} onChooseApproach={onChooseApproach} />;
+    approachId={approachId ?? null} onChooseApproach={onChooseApproach} attemptSeeds={attemptSeeds} />;
 }
 
 /** Only segment ids mapped to an https or same-origin audio path survive; everything else plays nothing. */

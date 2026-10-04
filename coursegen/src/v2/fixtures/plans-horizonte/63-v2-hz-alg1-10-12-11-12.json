@@ -1,0 +1,99 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-alg1",
+  "lesson_id": "v2-hz-alg1-10-12-11-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-alg1"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Zara reescribe un tablero de fichas y tarjetas sin romper la igualdad.",
+  "title": {
+    "en-US": "Signed tiles",
+    "es-MX": "Fichas con signo",
+    "pt-BR": "Peças com sinal"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "tiles-signed-zero-pairs",
+      "type": "math.algebra-tiles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "signed-tiles"
+      },
+      "payload": {
+        "counts": {
+          "sq-pos": 0,
+          "sq-neg": 0,
+          "bar-pos": 0,
+          "bar-neg": 0,
+          "unit-pos": 5,
+          "unit-neg": 3
+        }
+      },
+      "notation": {
+        "tex": "5-3"
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "mat": [
+              "unit-pos",
+              "unit-pos"
+            ],
+            "zero": [
+              "unit-pos",
+              "unit-pos",
+              "unit-pos",
+              "unit-neg",
+              "unit-neg",
+              "unit-neg"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Make zero pairs with the tiles. What is left on the mat?",
+          "feedback": {
+            "met": "You kept the board true while you rewrote it.",
+            "not_yet": "Look at the pieces again and match them in pairs."
+          },
+          "notation": {
+            "spokenText": "five positive tiles and three negative tiles"
+          }
+        },
+        "es-MX": {
+          "prompt": "Forma pares cero con las fichas. ¿Qué queda en el tablero?",
+          "feedback": {
+            "met": "Mantuviste el tablero correcto mientras lo reescribías.",
+            "not_yet": "Mira las piezas otra vez y júntalas en parejas."
+          },
+          "notation": {
+            "spokenText": "cinco fichas positivas y tres fichas negativas"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Forme pares zero com as peças. O que sobra na mesa?",
+          "feedback": {
+            "met": "Você manteve o quadro correto enquanto o reescrevia.",
+            "not_yet": "Olhe as peças de novo e junte-as em pares."
+          },
+          "notation": {
+            "spokenText": "cinco peças positivas e três peças negativas"
+          }
+        }
+      }
+    }
+  ]
+}

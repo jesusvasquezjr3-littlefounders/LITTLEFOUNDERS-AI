@@ -1,0 +1,37 @@
+/* A05 rekenrek and A06 abacus: SVG beads on wires and rods, drawn in the sky and mint series hues. Tokens only. */
+.lf-rek-lane { fill: var(--sunken); stroke: transparent; stroke-width: 2; }
+.lf-rek-row[data-drop-armed='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: 6 4; }
+.lf-rek-row[data-drop-selected='true'] .lf-rek-lane { stroke: var(--primary-strong); stroke-dasharray: none; }
+.lf-rek-wire { stroke: var(--edge); stroke-width: 3; }
+.lf-rek-hit { fill: transparent; stroke: transparent; }
+.lf-rek-bead { cursor: pointer; outline: none; }
+.lf-rek-bead[aria-disabled='true'] { cursor: default; }
+.lf-rek-bead:focus-visible .lf-rek-hit { stroke: var(--focus-color); stroke-width: 3; }
+.lf-rek-disc { fill: var(--surface); stroke: var(--sky-strong); stroke-width: 3; }
+.lf-rek-row--mint .lf-rek-disc { stroke: var(--mint-strong); }
+.lf-rek-bead--b .lf-rek-disc { stroke-width: 6; }
+.lf-rek-bead--slid .lf-rek-disc { fill: var(--sky-strong); }
+.lf-rek-row--mint .lf-rek-bead--slid .lf-rek-disc { fill: var(--mint-strong); }
+.lf-rek-bead--b.lf-rek-bead--slid .lf-rek-disc { fill: var(--sky-soft); }
+.lf-rek-row--mint .lf-rek-bead--b.lf-rek-bead--slid .lf-rek-disc { fill: var(--mint-soft); }
+
+.lf-aba-frame { fill: var(--surface); stroke: var(--edge); stroke-width: 3; }
+.lf-aba-beam { stroke: var(--content-muted); stroke-width: 5; }
+.lf-aba-lane { fill: transparent; stroke: transparent; stroke-width: 2; }
+.lf-aba-rod[data-drop-armed='true'] .lf-aba-lane { stroke: var(--primary-strong); stroke-dasharray: 6 4; }
+.lf-aba-rod[data-drop-selected='true'] .lf-aba-lane { stroke: var(--primary-strong); stroke-dasharray: none; }
+.lf-aba-wire { stroke: var(--edge); stroke-width: 3; }
+.lf-aba-hit { fill: transparent; stroke: transparent; }
+.lf-aba-bead { cursor: pointer; outline: none; }
+.lf-aba-bead[aria-disabled='true'] { cursor: default; }
+.lf-aba-bead:focus-visible .lf-aba-hit { stroke: var(--focus-color); stroke-width: 3; }
+.lf-aba-disc { fill: var(--surface); stroke: var(--sky-strong); stroke-width: 3; }
+.lf-aba-rod--mint .lf-aba-disc { stroke: var(--mint-strong); }
+.lf-aba-bead--five .lf-aba-disc { stroke-width: 6; }
+.lf-aba-bead--on .lf-aba-disc { fill: var(--sky-strong); }
+.lf-aba-rod--mint .lf-aba-bead--on .lf-aba-disc { fill: var(--mint-strong); }
+.lf-aba-bead--five.lf-aba-bead--on .lf-aba-disc { fill: var(--sky-soft); }
+.lf-aba-rod--mint .lf-aba-bead--five.lf-aba-bead--on .lf-aba-disc { fill: var(--mint-soft); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rek-disc, .lf-aba-disc { transition: fill var(--dur-component) var(--ease-standard); }
+}

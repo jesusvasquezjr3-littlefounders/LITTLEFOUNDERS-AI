@@ -1,0 +1,134 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-alg2",
+  "lesson_id": "v2-hz-alg2-13-17-13-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-alg2"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "brief": "Rho conecta una gráfica con su regla para descubrir qué dice cada una.",
+  "title": {
+    "en-US": "Find the crossing",
+    "es-MX": "Encuentra el cruce",
+    "pt-BR": "Encontre o cruzamento"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "system-cross-two-lines",
+      "type": "math.line-system.v2",
+      "grading": "server",
+      "visual": {
+        "type": "line-system"
+      },
+      "payload": {
+        "lines": [
+          {
+            "a": 1,
+            "b": 1,
+            "c": 5
+          },
+          {
+            "a": 1,
+            "b": -1,
+            "c": 1
+          }
+        ],
+        "window": {
+          "xMin": -2,
+          "xMax": 8,
+          "yMin": -2,
+          "yMax": 8
+        },
+        "grid": 1,
+        "start": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "rubric": {
+        "required": [
+          {
+            "x": 3,
+            "y": 2
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move the marker to the point where the two lines cross.",
+          "feedback": {
+            "met": "You connected the graph with its rule.",
+            "not_yet": "Check the rule against the picture again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Mueve la marca al punto donde se cruzan las dos rectas.",
+          "feedback": {
+            "met": "Conectaste la gráfica con su regla.",
+            "not_yet": "Revisa la regla contra la imagen otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mova a marca até o ponto onde as duas retas se cruzam.",
+          "feedback": {
+            "met": "Você conectou o gráfico com a sua regra.",
+            "not_yet": "Confira a regra com a imagem de novo."
+          }
+        }
+      }
+    },
+    {
+      "id": "expression-expand-product",
+      "type": "math.expression-editor.v2",
+      "grading": "server",
+      "visual": {
+        "type": "expression-editor"
+      },
+      "payload": {
+        "task": "rewrite",
+        "given": "(x+2)(x+3)",
+        "form": "expanded",
+        "variable": "x"
+      },
+      "rubric": {
+        "reference": "x^2+5x+6"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Expand the product. Write each step on its own line.",
+          "feedback": {
+            "met": "You connected the graph with its rule.",
+            "not_yet": "Check the rule against the picture again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Expande el producto. Escribe cada paso en su propia línea.",
+          "feedback": {
+            "met": "Conectaste la gráfica con su regla.",
+            "not_yet": "Revisa la regla contra la imagen otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Expanda o produto. Escreva cada passo em sua própria linha.",
+          "feedback": {
+            "met": "Você conectou o gráfico com a sua regra.",
+            "not_yet": "Confira a regra com a imagem de novo."
+          }
+        }
+      }
+    }
+  ]
+}

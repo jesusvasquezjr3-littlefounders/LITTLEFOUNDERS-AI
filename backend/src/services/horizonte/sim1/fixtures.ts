@@ -1,0 +1,227 @@
+import type { HorizonteFixture, HorizonteLocale } from '../types.js';
+
+const text = (en: string, es: string, pt: string): Record<HorizonteLocale, string> => ({ 'en-US': en, 'es-MX': es, 'pt-BR': pt });
+
+/** Each seed is the one the ladder below was simulated under: the harness replays it, so a change to the PRNG or a replay breaks these on purpose. */
+export const SIM1_FIXTURES: readonly HorizonteFixture[] = [
+  {
+    id: 'chance-coin-heads',
+    title: text('Flip a coin', 'Lanza una moneda', 'Lance uma moeda'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    seed: 'e14221e579a3acfeba9e258ae53891fe8636825c285ae97b17aa45eef787dd35',
+    segment: (locale) => ({
+      id: 'chance-coin-heads', type: 'math.chance-sim.v2', grading: 'server', visual: { type: 'chance-sim' },
+      prompt: text(
+        'Flip at least 1000 times. Stop when the share of heads is within 4 points of its chance.',
+        'Lanza al menos 1000 veces. Detente cuando la proporción de caras esté a 4 puntos o menos de su probabilidad.',
+        'Lance pelo menos 1000 vezes. Pare quando a proporção de caras estiver a até 4 pontos da chance.',
+      )[locale],
+      payload: { machine: { kind: 'coin', weights: [1, 1] }, event: [0], stops: [10, 50, 200, 1000, 5000], tolerance: 4, minTrials: 1000 },
+    }),
+    rubric: { target: { num: 1, den: 2 } },
+    ladder: {
+      invalid: { seed: 'e14221e579a3acfeba9e258ae53891fe8636825c285ae97b17aa45eef787dd35', trials: 7 },
+      valid: { seed: 'e14221e579a3acfeba9e258ae53891fe8636825c285ae97b17aa45eef787dd35', trials: 0 },
+      met: { seed: 'e14221e579a3acfeba9e258ae53891fe8636825c285ae97b17aa45eef787dd35', trials: 5000 },
+    },
+  },
+  {
+    id: 'chance-die-six',
+    title: text('Roll a die', 'Tira un dado', 'Jogue um dado'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    seed: '18cac70591da5565d896657ccb55c173c547ef9775da0f19894939faef058c7e',
+    segment: (locale) => ({
+      id: 'chance-die-six', type: 'math.chance-sim.v2', grading: 'server', visual: { type: 'chance-sim' },
+      prompt: text(
+        'Roll at least 2000 times. Stop when the share of sixes is within 3 points of its chance.',
+        'Tira al menos 2000 veces. Detente cuando la proporción de seises esté a 3 puntos o menos de su probabilidad.',
+        'Jogue pelo menos 2000 vezes. Pare quando a proporção de seis estiver a até 3 pontos da chance.',
+      )[locale],
+      payload: { machine: { kind: 'die', weights: [1, 1, 1, 1, 1, 1] }, event: [5], stops: [10, 100, 500, 2000, 5000], tolerance: 3, minTrials: 2000 },
+    }),
+    rubric: { target: { num: 1, den: 6 } },
+    ladder: {
+      invalid: { seed: '18cac70591da5565d896657ccb55c173c547ef9775da0f19894939faef058c7e', trials: 7 },
+      valid: { seed: '18cac70591da5565d896657ccb55c173c547ef9775da0f19894939faef058c7e', trials: 0 },
+      met: { seed: '18cac70591da5565d896657ccb55c173c547ef9775da0f19894939faef058c7e', trials: 5000 },
+    },
+  },
+  {
+    id: 'chance-spinner-event',
+    title: text('Spin the spinner', 'Gira la ruleta', 'Gire a roleta'),
+    ageBand: '10-12',
+    eligibility: { minimum_age: 10, maximum_age: 12 },
+    seed: '9134625721dbe875793e7196968760cafe5cbebe57084106a2e0089b2c30e310',
+    segment: (locale) => ({
+      id: 'chance-spinner-event', type: 'math.chance-sim.v2', grading: 'server', visual: { type: 'chance-sim' },
+      prompt: text(
+        'Spin at least 2000 times. Stop when sectors 1 and 4 together are within 4 points of their chance.',
+        'Gira al menos 2000 veces. Detente cuando la proporción en los sectores 1 y 4 esté a 4 puntos o menos de su probabilidad.',
+        'Gire pelo menos 2000 vezes. Pare quando a proporção nos setores 1 e 4 estiver a até 4 pontos da chance.',
+      )[locale],
+      payload: { machine: { kind: 'spinner', weights: [2, 1, 1, 2] }, event: [0, 3], stops: [20, 100, 500, 2000, 5000], tolerance: 4, minTrials: 2000 },
+    }),
+    rubric: { target: { num: 2, den: 3 } },
+    ladder: {
+      invalid: { seed: '9134625721dbe875793e7196968760cafe5cbebe57084106a2e0089b2c30e310', trials: 7 },
+      valid: { seed: '9134625721dbe875793e7196968760cafe5cbebe57084106a2e0089b2c30e310', trials: 0 },
+      met: { seed: '9134625721dbe875793e7196968760cafe5cbebe57084106a2e0089b2c30e310', trials: 5000 },
+    },
+  },
+  {
+    id: 'galton-board',
+    title: text('Drop balls on the board', 'Suelta bolas en el tablero', 'Solte bolas no tabuleiro'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 14, maximum_age: 17 },
+    seed: '8a872a20c308a1abbd1f8b684d2de3dd40032ba28e0783054056d2816bab7c8f',
+    segment: (locale) => ({
+      id: 'galton-board', type: 'math.galton-sim.v2', grading: 'server', visual: { type: 'galton-sim' },
+      prompt: text(
+        'Drop at least 1500 balls. Stop when the share in bin 3 is within 5 points of its chance.',
+        'Suelta al menos 1500 bolas. Detente cuando la proporción en el casillero 3 esté a 5 puntos o menos de su probabilidad.',
+        'Solte pelo menos 1500 bolas. Pare quando a proporção na caixa 3 estiver a até 5 pontos da chance.',
+      )[locale],
+      payload: { view: 'board', rows: 6, rightPct: 50, bin: 3, stops: [20, 100, 500, 1500, 3000], tolerance: 5, minBalls: 1500 },
+    }),
+    rubric: { target: { num: 5, den: 16 } },
+    ladder: {
+      invalid: { seed: '8a872a20c308a1abbd1f8b684d2de3dd40032ba28e0783054056d2816bab7c8f', balls: 7 },
+      valid: { seed: '8a872a20c308a1abbd1f8b684d2de3dd40032ba28e0783054056d2816bab7c8f', balls: 0 },
+      met: { seed: '8a872a20c308a1abbd1f8b684d2de3dd40032ba28e0783054056d2816bab7c8f', balls: 3000 },
+    },
+  },
+  {
+    id: 'galton-walk',
+    title: text('Run random walks', 'Haz caminatas al azar', 'Faça caminhadas aleatórias'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 14, maximum_age: 17 },
+    seed: 'c2062b0610f888ab3e9501a2d4f48117cb3f1b1247044ead12d443c90a6afa27',
+    segment: (locale) => ({
+      id: 'galton-walk', type: 'math.galton-sim.v2', grading: 'server', visual: { type: 'galton-sim' },
+      prompt: text(
+        'Run at least 1500 walks. Stop when the share ending 4 steps right is within 5 points of its chance.',
+        'Haz al menos 1500 caminatas. Detente cuando la proporción con 4 pasos a la derecha esté a 5 puntos o menos de su probabilidad.',
+        'Faça pelo menos 1500 caminhadas. Pare quando a proporção com 4 passos para a direita estiver a até 5 pontos da chance.',
+      )[locale],
+      payload: { view: 'walk', rows: 8, rightPct: 50, bin: 4, stops: [20, 100, 500, 1500, 3000], tolerance: 5, minBalls: 1500 },
+    }),
+    rubric: { target: { num: 35, den: 128 } },
+    ladder: {
+      invalid: { seed: 'c2062b0610f888ab3e9501a2d4f48117cb3f1b1247044ead12d443c90a6afa27', balls: 7 },
+      valid: { seed: 'c2062b0610f888ab3e9501a2d4f48117cb3f1b1247044ead12d443c90a6afa27', balls: 0 },
+      met: { seed: 'c2062b0610f888ab3e9501a2d4f48117cb3f1b1247044ead12d443c90a6afa27', balls: 3000 },
+    },
+  },
+  {
+    id: 'galton-biased',
+    title: text('Tilt the pegs', 'Inclina las clavijas', 'Incline os pinos'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 14, maximum_age: 17 },
+    seed: '7fddfed4fba04ed6442b9d216db3163c82486fa8e191b2eb88c1e1808baa2e96',
+    segment: (locale) => ({
+      id: 'galton-biased', type: 'math.galton-sim.v2', grading: 'server', visual: { type: 'galton-sim' },
+      prompt: text(
+        'Each peg sends 7 of 10 balls right. Drop balls until bin 3 is within 5 points of its chance.',
+        'Cada clavija: 7 de cada 10 a la derecha. Suelta bolas hasta que el casillero 3 esté a 5 puntos o menos de su probabilidad.',
+        'Cada pino manda 7 de cada 10 para a direita. Solte bolas até a caixa 3 ficar a até 5 pontos da chance.',
+      )[locale],
+      payload: { view: 'board', rows: 4, rightPct: 70, bin: 3, stops: [20, 100, 500, 1500, 3000], tolerance: 5, minBalls: 1500 },
+    }),
+    rubric: { target: { num: 1029, den: 2500 } },
+    ladder: {
+      invalid: { seed: '7fddfed4fba04ed6442b9d216db3163c82486fa8e191b2eb88c1e1808baa2e96', balls: 7 },
+      valid: { seed: '7fddfed4fba04ed6442b9d216db3163c82486fa8e191b2eb88c1e1808baa2e96', balls: 0 },
+      met: { seed: '7fddfed4fba04ed6442b9d216db3163c82486fa8e191b2eb88c1e1808baa2e96', balls: 3000 },
+    },
+  },
+  {
+    id: 'coverage-three-fifths',
+    title: text('Catch the true share', 'Atrapa la proporción real', 'Capture a proporção real'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 16, maximum_age: 17 },
+    seed: '6275f5489b08422c1c54429a5885c0d4fd1ff9dfe6dd0402cce1925839ce1829',
+    segment: (locale) => ({
+      id: 'coverage-three-fifths', type: 'stats.coverage-sim.v2', grading: 'server', visual: { type: 'coverage-sim' },
+      prompt: text(
+        'Where 3 in 5 say yes, pick a level and size so at least 92 intervals cover the truth.',
+        'Donde 3 de cada 5 dicen que sí, elige un nivel y un tamaño para que al menos 92 intervalos cubran la verdad.',
+        'Onde 3 em cada 5 dizem sim, escolha um nível e um tamanho para que pelo menos 92 intervalos cubram a verdade.',
+      )[locale],
+      payload: { truth: { num: 3, den: 5 }, levels: [80, 90, 95, 99], sizes: [20, 50, 100, 200], start: { level: 80, size: 20 }, goal: { covered: 92 } },
+    }),
+    rubric: { target: { level: 99 } },
+    ladder: {
+      invalid: { seed: '6275f5489b08422c1c54429a5885c0d4fd1ff9dfe6dd0402cce1925839ce1829', level: 85, size: 20 },
+      valid: { seed: '6275f5489b08422c1c54429a5885c0d4fd1ff9dfe6dd0402cce1925839ce1829', level: 80, size: 20 },
+      met: { seed: '6275f5489b08422c1c54429a5885c0d4fd1ff9dfe6dd0402cce1925839ce1829', level: 99, size: 100 },
+    },
+  },
+  {
+    id: 'coverage-one-half',
+    title: text('Cover one half', 'Cubre la mitad', 'Cubra a metade'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 16, maximum_age: 17 },
+    seed: '5c5f18059313bb001c99e4100f437580c6eaeb2cce937a6a074d4bbed4b4c566',
+    segment: (locale) => ({
+      id: 'coverage-one-half', type: 'stats.coverage-sim.v2', grading: 'server', visual: { type: 'coverage-sim' },
+      prompt: text(
+        'Where half say yes, pick a level and size so at least 93 intervals cover the truth.',
+        'Donde la mitad dice que sí, elige un nivel y un tamaño para que al menos 93 intervalos cubran la verdad.',
+        'Onde metade diz sim, escolha um nível e um tamanho para que pelo menos 93 intervalos cubram a verdade.',
+      )[locale],
+      payload: { truth: { num: 1, den: 2 }, levels: [90, 95, 99], sizes: [30, 100, 300], start: { level: 90, size: 30 }, goal: { covered: 93 } },
+    }),
+    rubric: { target: { level: 99 } },
+    ladder: {
+      invalid: { seed: '5c5f18059313bb001c99e4100f437580c6eaeb2cce937a6a074d4bbed4b4c566', level: 80, size: 30 },
+      valid: { seed: '5c5f18059313bb001c99e4100f437580c6eaeb2cce937a6a074d4bbed4b4c566', level: 90, size: 30 },
+      met: { seed: '5c5f18059313bb001c99e4100f437580c6eaeb2cce937a6a074d4bbed4b4c566', level: 99, size: 300 },
+    },
+  },
+  {
+    id: 'bootstrap-six-values',
+    title: text('Resample six values', 'Remuestrea seis valores', 'Reamostre seis valores'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 16, maximum_age: 17 },
+    seed: '3224e44221a77f6e58a8ce398e189920d0226b5a149e6f2674ff81adfc204d71',
+    segment: (locale) => ({
+      id: 'bootstrap-six-values', type: 'stats.bootstrap-sim.v2', grading: 'server', visual: { type: 'bootstrap-sim' },
+      prompt: text(
+        'Resample the six values with replacement. Run at least 500 resamples so the middle 90% of the totals settles.',
+        'Remuestrea los seis valores con reemplazo. Haz al menos 500 remuestreos para que el 90% central de los totales se asiente.',
+        'Reamostre os seis valores com reposição. Faça pelo menos 500 reamostragens para que os 90% centrais dos totais se estabilizem.',
+      )[locale],
+      payload: { axis: { min: 0, max: 10 }, data: [2, 3, 3, 5, 6, 8], level: 90, stops: [50, 200, 500, 1000, 3000], tolerance: 1, minResamples: 500 },
+    }),
+    rubric: { target: { low: 19, high: 36 } },
+    ladder: {
+      invalid: { seed: '3224e44221a77f6e58a8ce398e189920d0226b5a149e6f2674ff81adfc204d71', resamples: 7 },
+      valid: { seed: '3224e44221a77f6e58a8ce398e189920d0226b5a149e6f2674ff81adfc204d71', resamples: 0 },
+      met: { seed: '3224e44221a77f6e58a8ce398e189920d0226b5a149e6f2674ff81adfc204d71', resamples: 3000 },
+    },
+  },
+  {
+    id: 'bootstrap-eight-values',
+    title: text('Resample eight values', 'Remuestrea ocho valores', 'Reamostre oito valores'),
+    ageBand: '13-17',
+    eligibility: { minimum_age: 16, maximum_age: 17 },
+    seed: 'e94198e61d6fde0c4981cb7c4036ffc30f368bb18864cc2982d9565dafcf86a1',
+    segment: (locale) => ({
+      id: 'bootstrap-eight-values', type: 'stats.bootstrap-sim.v2', grading: 'server', visual: { type: 'bootstrap-sim' },
+      prompt: text(
+        'Resample the eight values with replacement. Run at least 1000 resamples so the middle 80% of the totals settles.',
+        'Remuestrea los ocho valores con reemplazo. Haz al menos 1000 remuestreos para que el 80% central de los totales se asiente.',
+        'Reamostre os oito valores com reposição. Faça pelo menos 1000 reamostragens para que os 80% centrais dos totais se estabilizem.',
+      )[locale],
+      payload: { axis: { min: 10, max: 30 }, data: [12, 15, 15, 18, 22, 25, 25, 28], level: 80, stops: [100, 300, 1000, 2000, 3000], tolerance: 3, minResamples: 1000 },
+    }),
+    rubric: { target: { low: 140, high: 180 } },
+    ladder: {
+      invalid: { seed: 'e94198e61d6fde0c4981cb7c4036ffc30f368bb18864cc2982d9565dafcf86a1', resamples: 7 },
+      valid: { seed: 'e94198e61d6fde0c4981cb7c4036ffc30f368bb18864cc2982d9565dafcf86a1', resamples: 0 },
+      met: { seed: 'e94198e61d6fde0c4981cb7c4036ffc30f368bb18864cc2982d9565dafcf86a1', resamples: 3000 },
+    },
+  },
+];

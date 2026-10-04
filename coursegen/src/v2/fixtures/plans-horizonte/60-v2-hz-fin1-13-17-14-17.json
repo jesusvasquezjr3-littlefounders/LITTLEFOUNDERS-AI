@@ -1,0 +1,93 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-fin1",
+  "lesson_id": "v2-hz-fin1-13-17-14-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-fin1"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf sigue las monedas durante varios periodos para ver cómo crecen o se reparten.",
+  "title": {
+    "en-US": "Order three prizes",
+    "es-MX": "Ordena tres premios",
+    "pt-BR": "Ordene três prêmios"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "receive-three",
+      "type": "money.time-value.v2",
+      "grading": "server",
+      "visual": {
+        "type": "time-value"
+      },
+      "payload": {
+        "rateBps": 600,
+        "ask": "present",
+        "task": {
+          "kind": "order",
+          "side": "receive",
+          "amountsCents": [
+            100000,
+            200000,
+            300000
+          ]
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "year-1": [
+              "pay-3"
+            ],
+            "year-2": [
+              "pay-2"
+            ],
+            "year-3": [
+              "pay-1"
+            ]
+          }
+        ],
+        "tolerance": {
+          "absolute": "0.05"
+        },
+        "review": {
+          "absolute": "2"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Order three payments to be worth the most today. Then type that worth.",
+          "feedback": {
+            "met": "You followed the coins through time correctly.",
+            "not_yet": "Check each period again, one at a time."
+          }
+        },
+        "es-MX": {
+          "prompt": "Ordena tres pagos para que valgan lo máximo hoy. Luego escribe cuánto valen.",
+          "feedback": {
+            "met": "Seguiste las monedas a través del tiempo correctamente.",
+            "not_yet": "Revisa cada periodo otra vez, uno por uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordene três pagamentos para valerem o máximo hoje. Depois digite quanto valem.",
+          "feedback": {
+            "met": "Você acompanhou as moedas ao longo do tempo corretamente.",
+            "not_yet": "Confira cada período de novo, um por um."
+          }
+        }
+      }
+    }
+  ]
+}

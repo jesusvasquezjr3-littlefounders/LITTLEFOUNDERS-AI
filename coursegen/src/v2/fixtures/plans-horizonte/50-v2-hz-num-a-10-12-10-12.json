@@ -1,0 +1,166 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-num-a",
+  "lesson_id": "v2-hz-num-a-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-num-a"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf se acerca a una escala para leer decimales y fracciones con calma.",
+  "title": {
+    "en-US": "Place a decimal",
+    "es-MX": "Ubica un decimal",
+    "pt-BR": "Posicione um decimal"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "zoom-tenths",
+      "type": "math.number-line.zoom.v2",
+      "grading": "server",
+      "visual": {
+        "type": "zoom-number-line"
+      },
+      "payload": {
+        "low": 0,
+        "high": 10,
+        "depth": 1,
+        "start": 0
+      },
+      "rubric": {
+        "target": 34
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place 3.4 on the line. Zoom in to see tenths.",
+          "feedback": {
+            "met": "You read the scale and put it where it belongs.",
+            "not_yet": "Zoom in on the scale again and check its marks."
+          }
+        },
+        "es-MX": {
+          "prompt": "Ubica 3.4 en la recta. Acércate para ver décimas.",
+          "feedback": {
+            "met": "Leíste la escala y lo pusiste donde corresponde.",
+            "not_yet": "Acércate a la escala otra vez y revisa sus marcas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Posicione 3,4 na reta. Aproxime para ver décimos.",
+          "feedback": {
+            "met": "Você leu a escala e colocou no lugar certo.",
+            "not_yet": "Aproxime a escala de novo e confira as marcas."
+          }
+        }
+      }
+    },
+    {
+      "id": "order-tenths",
+      "type": "math.number-line.order.v2",
+      "grading": "server",
+      "visual": {
+        "type": "order-number-line"
+      },
+      "payload": {
+        "scale": 1,
+        "low": 0,
+        "step": 1,
+        "count": 10,
+        "values": [
+          7,
+          2,
+          5
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "m-7": [
+              "n-7"
+            ],
+            "m-2": [
+              "n-2"
+            ],
+            "m-5": [
+              "n-5"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each decimal where it belongs on the line.",
+          "feedback": {
+            "met": "Every decimal sits where it belongs.",
+            "not_yet": "Read the numbered ends again and count the steps."
+          }
+        },
+        "es-MX": {
+          "prompt": "Pon cada decimal donde le toca en la recta.",
+          "feedback": {
+            "met": "Cada decimal está donde le toca.",
+            "not_yet": "Lee de nuevo los extremos con número y cuenta los pasos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada decimal no lugar certo da reta.",
+          "feedback": {
+            "met": "Cada decimal está no lugar certo.",
+            "not_yet": "Leia de novo as pontas com número e conte os passos."
+          }
+        }
+      }
+    },
+    {
+      "id": "measure-strip",
+      "type": "math.ruler.measure.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ruler-measure"
+      },
+      "payload": {
+        "unit": "in",
+        "object": "strip",
+        "from": 2,
+        "to": 8,
+        "max": 11
+      },
+      "rubric": {
+        "target": "6"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How long is the paper strip in inches?",
+          "feedback": {
+            "met": "You read the length of the strip.",
+            "not_yet": "Check where the strip starts before you read its end."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas pulgadas mide la tira de papel?",
+          "feedback": {
+            "met": "Leíste la longitud de la tira.",
+            "not_yet": "Mira dónde empieza la tira antes de leer su final."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas polegadas mede a tira de papel?",
+          "feedback": {
+            "met": "Você leu o comprimento da tira.",
+            "not_yet": "Veja onde a tira começa antes de ler o fim dela."
+          }
+        }
+      }
+    }
+  ]
+}

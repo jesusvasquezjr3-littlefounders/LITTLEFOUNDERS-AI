@@ -1,0 +1,6 @@
+/* A table the learner can open beside the board. A wide one scrolls inside its own box, so it never pushes the page sideways. Tokens only. */
+.lf-hz-table-scroll { inline-size: 100%; min-inline-size: 0; overflow-x: auto; container: lf-hz-table / inline-size; }
+.lf-hz-table-scroll:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+@container lf-hz-table (max-width: 40rem) {
+  .lf-hz-table-scroll .lf-hz-table th, .lf-hz-table-scroll .lf-hz-table td { padding-inline: var(--spacing-1); }
+}

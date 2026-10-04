@@ -1,0 +1,365 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-fin2",
+  "lesson_id": "v2-hz-fin2-13-17-13-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-fin2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Dina ordena las piezas de un plan para decidir qué va primero y qué hace falta.",
+  "title": {
+    "en-US": "Sam's month",
+    "es-MX": "El mes de Sam",
+    "pt-BR": "O mês do Sam"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "cash-flow-short",
+      "type": "money.cash-flow.v2",
+      "grading": "server",
+      "visual": {
+        "type": "statement-board"
+      },
+      "payload": {
+        "items": [
+          {
+            "id": "weekend-job",
+            "amount": 420
+          },
+          {
+            "id": "tutoring",
+            "amount": 180
+          },
+          {
+            "id": "savings-interest",
+            "amount": 12
+          },
+          {
+            "id": "stock-dividend",
+            "amount": 25
+          },
+          {
+            "id": "phone-plan",
+            "amount": 35
+          },
+          {
+            "id": "snacks",
+            "amount": 90
+          },
+          {
+            "id": "savings",
+            "amount": 650
+          },
+          {
+            "id": "bike-loan",
+            "amount": 300
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "earned": [
+              "weekend-job",
+              "tutoring"
+            ],
+            "passive": [
+              "savings-interest",
+              "stock-dividend"
+            ],
+            "expenses": [
+              "phone-plan",
+              "snacks"
+            ],
+            "assets": [
+              "savings"
+            ],
+            "liabilities": [
+              "bike-loan"
+            ],
+            "goal": [
+              "goal-short"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort each item onto its line, then say if passive income beats expenses.",
+          "feedback": {
+            "met": "You put every piece in the place where it works.",
+            "not_yet": "Read each piece again and think about what it does."
+          },
+          "labels": {
+            "weekend-job": "Weekend pay",
+            "tutoring": "Tutoring fees",
+            "savings-interest": "Savings interest",
+            "stock-dividend": "Stock dividends",
+            "phone-plan": "Phone plan",
+            "snacks": "Snacks and outings",
+            "savings": "Savings account",
+            "bike-loan": "Bike loan balance"
+          }
+        },
+        "es-MX": {
+          "prompt": "Coloca cada concepto en su línea y di si el ingreso pasivo supera los gastos.",
+          "feedback": {
+            "met": "Pusiste cada pieza en el lugar donde funciona.",
+            "not_yet": "Lee cada pieza otra vez y piensa qué hace."
+          },
+          "labels": {
+            "weekend-job": "Sueldo de fin de semana",
+            "tutoring": "Pago por tutorías",
+            "savings-interest": "Intereses del ahorro",
+            "stock-dividend": "Dividendos de acciones",
+            "phone-plan": "Plan de celular",
+            "snacks": "Antojitos y salidas",
+            "savings": "Cuenta de ahorro",
+            "bike-loan": "Saldo del préstamo de la bici"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada item na sua linha e diga se a renda passiva supera as despesas.",
+          "feedback": {
+            "met": "Você colocou cada peça no lugar onde ela funciona.",
+            "not_yet": "Leia cada peça de novo e pense no que ela faz."
+          },
+          "labels": {
+            "weekend-job": "Salário de fim de semana",
+            "tutoring": "Pagamento por aulas",
+            "savings-interest": "Juros da poupança",
+            "stock-dividend": "Dividendos de ações",
+            "phone-plan": "Plano de celular",
+            "snacks": "Lanches e passeios",
+            "savings": "Conta poupança",
+            "bike-loan": "Saldo do empréstimo da bike"
+          }
+        }
+      }
+    },
+    {
+      "id": "grid-swot-stand",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "visual": {
+        "type": "swot"
+      },
+      "payload": {
+        "pieces": [
+          "fresh-recipe",
+          "loyal-regulars",
+          "cash-only",
+          "one-seller",
+          "school-fair",
+          "new-park",
+          "rainy-season",
+          "rival-stand"
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "strengths": [
+              "fresh-recipe",
+              "loyal-regulars"
+            ],
+            "weaknesses": [
+              "cash-only",
+              "one-seller"
+            ],
+            "opportunities": [
+              "school-fair",
+              "new-park"
+            ],
+            "threats": [
+              "rainy-season",
+              "rival-stand"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each point in strengths, weaknesses, opportunities or threats.",
+          "feedback": {
+            "met": "You put every piece in the place where it works.",
+            "not_yet": "Read each piece again and think about what it does."
+          },
+          "labels": {
+            "fresh-recipe": "Fresh family recipe",
+            "loyal-regulars": "Loyal regular customers",
+            "cash-only": "Cash payments only",
+            "one-seller": "Only one person selling",
+            "school-fair": "School fair next month",
+            "new-park": "New park opens nearby",
+            "rainy-season": "Rainy season starts",
+            "rival-stand": "Rival stand across the street"
+          }
+        },
+        "es-MX": {
+          "prompt": "Coloca cada punto en fortalezas, debilidades, oportunidades o amenazas.",
+          "feedback": {
+            "met": "Pusiste cada pieza en el lugar donde funciona.",
+            "not_yet": "Lee cada pieza otra vez y piensa qué hace."
+          },
+          "labels": {
+            "fresh-recipe": "Receta familiar fresca",
+            "loyal-regulars": "Clientes fieles y frecuentes",
+            "cash-only": "Solo se paga en efectivo",
+            "one-seller": "Solo una persona vende",
+            "school-fair": "Feria escolar el próximo mes",
+            "new-park": "Abren un parque cerca",
+            "rainy-season": "Empieza la temporada de lluvias",
+            "rival-stand": "Puesto rival al otro lado"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada ponto em forças, fraquezas, oportunidades ou ameaças.",
+          "feedback": {
+            "met": "Você colocou cada peça no lugar onde ela funciona.",
+            "not_yet": "Leia cada peça de novo e pense no que ela faz."
+          },
+          "labels": {
+            "fresh-recipe": "Receita de família sempre fresca",
+            "loyal-regulars": "Clientes fiéis e frequentes",
+            "cash-only": "Só aceita dinheiro",
+            "one-seller": "Só uma pessoa vende",
+            "school-fair": "Feira da escola no mês que vem",
+            "new-park": "Novo parque abre por perto",
+            "rainy-season": "Começa a época de chuvas",
+            "rival-stand": "Barraca rival do outro lado"
+          }
+        }
+      }
+    },
+    {
+      "id": "plan-gantt-opening",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "visual": {
+        "type": "gantt"
+      },
+      "payload": {
+        "tasks": [
+          {
+            "id": "design-menu",
+            "after": [],
+            "duration": 2
+          },
+          {
+            "id": "print-menu",
+            "after": [
+              "design-menu"
+            ],
+            "duration": 1
+          },
+          {
+            "id": "shop-lemons",
+            "after": [],
+            "duration": 1
+          },
+          {
+            "id": "squeeze-juice",
+            "after": [
+              "shop-lemons"
+            ],
+            "duration": 2
+          },
+          {
+            "id": "open-stand",
+            "after": [
+              "print-menu",
+              "squeeze-juice"
+            ],
+            "duration": 1
+          },
+          {
+            "id": "make-sign",
+            "after": [],
+            "duration": 1
+          }
+        ],
+        "periods": 5,
+        "workers": 2
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "period-1": [
+              "design-menu",
+              "shop-lemons"
+            ],
+            "period-2": [
+              "squeeze-juice"
+            ],
+            "period-3": [
+              "print-menu"
+            ],
+            "period-4": [
+              "open-stand",
+              "make-sign"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Give every task a start period. Keep the order and the deadline.",
+          "feedback": {
+            "met": "You put every piece in the place where it works.",
+            "not_yet": "Read each piece again and think about what it does."
+          },
+          "labels": {
+            "design-menu": "Design the menu",
+            "print-menu": "Print the menu",
+            "shop-lemons": "Buy lemons",
+            "squeeze-juice": "Squeeze the juice",
+            "open-stand": "Open the stand",
+            "make-sign": "Paint the sign"
+          }
+        },
+        "es-MX": {
+          "prompt": "Dale a cada tarea un periodo de inicio. Respeta el orden y la fecha límite.",
+          "feedback": {
+            "met": "Pusiste cada pieza en el lugar donde funciona.",
+            "not_yet": "Lee cada pieza otra vez y piensa qué hace."
+          },
+          "labels": {
+            "design-menu": "Diseñar el menú",
+            "print-menu": "Imprimir el menú",
+            "shop-lemons": "Comprar limones",
+            "squeeze-juice": "Exprimir el jugo",
+            "open-stand": "Abrir el puesto",
+            "make-sign": "Pintar el letrero"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dê a cada tarefa um período de início. Respeite a ordem e o prazo.",
+          "feedback": {
+            "met": "Você colocou cada peça no lugar onde ela funciona.",
+            "not_yet": "Leia cada peça de novo e pense no que ela faz."
+          },
+          "labels": {
+            "design-menu": "Desenhar o cardápio",
+            "print-menu": "Imprimir o cardápio",
+            "shop-lemons": "Comprar limões",
+            "squeeze-juice": "Espremer o suco",
+            "open-stand": "Abrir a barraca",
+            "make-sign": "Pintar a placa"
+          }
+        }
+      }
+    }
+  ]
+}

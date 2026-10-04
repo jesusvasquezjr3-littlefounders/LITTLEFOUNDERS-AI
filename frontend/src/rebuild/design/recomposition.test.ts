@@ -32,7 +32,32 @@ const DIRECT_MANIPULATION: Record<string, RegExp> = {
   'rebuild/learning/NumberLineBoard.tsx': /<input className="lf-number-line-slider"/g,
   'rebuild/learning/FractionNumberLineBoard.tsx': /<input className="lf-number-line-slider"/g,
   'rebuild/learning/RatioTableBoard.tsx': /<button className="lf-ratio-pair"/g,
+  // Horizonte boards: each is a cell, strip or step drawn on the visual itself, the tap alternative to a drag
+  // (Horizonte spec V1-V6). Choices that sit beside a visual use the shared ChoiceChip, never a raw button.
+  'rebuild/learning/horizonte/com/CircuitsBoard.tsx': /<button key=\{id\} type="button" className="lf-bit"/g,
+  'rebuild/learning/horizonte/com/NetworkBoard.tsx': /<button key=\{id\} type="button" className="lf-pascal-cell"/g,
+  'rebuild/learning/horizonte/golden/TenFrameBoard.tsx': /<button key=\{index\} type="button" className="lf-tenframe-cell"/g,
+  'rebuild/learning/horizonte/num-b/ArrayAreaBoard.tsx': /<button key=\{index\} type="button" className="lf-arr-row"|<button type="button" aria-pressed=\{split === at\}/g,
+  // The numbered shading row of the circles: the tap alternative to the drawn slices. ChoiceChip and Button are bound to counted copy roles, so they would count the digits as words.
+  'rebuild/learning/horizonte/num-b/FractionCirclesBoard.tsx': /<button key=\{item\.value\} type="button" className="lf-numb-numeral"/g,
+  'rebuild/learning/horizonte/num-b/FractionWallBoard.tsx':/<button type="button" className="lf-fcell lf-fcell--button"|<button key=\{index\} type="button" className="lf-grid-strip"|<button type="button" className="lf-grid-strip"/g,
+  'rebuild/learning/horizonte/num-b/RatioLineBoard.tsx': /<button type="button" className="lf-line-step"/g,
+  'rebuild/learning/horizonte/solids/CubeStackBoard.tsx': /<button type="button" className="lf-stack-height"/g,
+  'rebuild/learning/horizonte/solids/NetCompleteBoard.tsx': /<button type="button" className="lf-net-square"/g,
+  'rebuild/learning/horizonte/solids/NetLabelBoard.tsx': /<button type="button" className="lf-net-square"/g,
 };
+
+/** Files whose drawn cells, beads or slices carry aria-pressed because the visual itself is the control. */
+const PRESSED_VISUAL_CELLS = new Set([
+  'rebuild/learning/horizonte/com/CircuitsBoard.tsx',
+  'rebuild/learning/horizonte/com/NetworkBoard.tsx',
+  'rebuild/learning/horizonte/num-a/AbacusBoard.tsx',
+  'rebuild/learning/horizonte/num-a/RekenrekBoard.tsx',
+  'rebuild/learning/horizonte/num-b/ArrayAreaBoard.tsx',
+  'rebuild/learning/horizonte/num-b/FractionCirclesBoard.tsx',
+  'rebuild/learning/horizonte/num-b/FractionWallBoard.tsx',
+  'rebuild/learning/horizonte/num-b/RatioLineBoard.tsx',
+]);
 
 /**
  * The one governed upload surface (docs/rebuild/policies/SOCIAL-GOVERNANCE.md §4.2):
@@ -49,7 +74,7 @@ describe('rebuilt surfaces use the shared controls (S03.6)', () => {
   });
 
   it('draws no local toggle: aria-pressed and role="switch" live only in the design system', () => {
-    const offences = surfaces.filter(({ source }) => /aria-pressed|role="switch"/.test(source)).map(({ file }) => file);
+    const offences = surfaces.filter(({ file, source }) => /role="switch"/.test(source) || (/aria-pressed/.test(source) && !PRESSED_VISUAL_CELLS.has(file))).map(({ file }) => file);
     expect(offences).toEqual([]);
   });
 

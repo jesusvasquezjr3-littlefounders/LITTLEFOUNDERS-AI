@@ -1,0 +1,10 @@
+/* Shared by the three num-b boards: the board column, the spoken status line and the fraction cell hues. Tokens only. */
+.lf-numb { display: grid; gap: var(--spacing-4); justify-items: start; }
+.lf-numb-status { font-weight: 800; }
+.lf-numb .lf-hz-table { max-inline-size: 36rem; }
+.lf-numb-legend { font-weight: 800; }
+.lf-numb-fields { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: start; }
+.lf-numb-row { display: flex; flex-wrap: wrap; gap: var(--spacing-2); align-items: center; }
+.lf-numb-cut-target { border-radius: var(--rounded-sm); outline: 2px solid transparent; }
+.lf-numb-cut-target[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-numb-cut-target[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }

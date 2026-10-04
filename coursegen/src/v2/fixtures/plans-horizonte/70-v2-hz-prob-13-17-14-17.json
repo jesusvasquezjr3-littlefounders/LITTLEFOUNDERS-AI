@@ -1,0 +1,105 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-prob",
+  "lesson_id": "v2-hz-prob-13-17-14-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-prob"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara reparte los casos posibles en un árbol para comparar las probabilidades.",
+  "title": {
+    "en-US": "Fit a rising line",
+    "es-MX": "Ajusta una recta que sube",
+    "pt-BR": "Ajuste uma reta que sobe"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "regression-climb",
+      "type": "prob.regression.v2",
+      "grading": "server",
+      "visual": {
+        "type": "regression-residuals"
+      },
+      "payload": {
+        "size": 10,
+        "points": [
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 6,
+            "y": 7
+          },
+          {
+            "x": 8,
+            "y": 10
+          },
+          {
+            "x": 10,
+            "y": 10
+          }
+        ],
+        "start": {
+          "slope": 0,
+          "intercept": 50
+        }
+      },
+      "rubric": {
+        "family": "line",
+        "target": {
+          "m": "1",
+          "b": "1"
+        },
+        "parameter_tolerance": {
+          "absolute": "0.05"
+        },
+        "parameter_review": {
+          "absolute": "0.3"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move the line to make the squares as small as you can.",
+          "feedback": {
+            "met": "You weighed the chances the right way.",
+            "not_yet": "Split the cases again and count each one."
+          }
+        },
+        "es-MX": {
+          "prompt": "Mueve la recta para que los cuadrados sean lo más pequeños posible.",
+          "feedback": {
+            "met": "Pesaste las probabilidades de la forma correcta.",
+            "not_yet": "Separa los casos otra vez y cuenta cada uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mova a reta para deixar os quadrados o menores possível.",
+          "feedback": {
+            "met": "Você pesou as chances do jeito certo.",
+            "not_yet": "Separe os casos de novo e conte cada um."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-sim2",
+  "lesson_id": "v2-hz-sim2-13-17-14-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 14,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-sim2"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Zara repite una simulación muchas veces para ver qué tan seguro es un resultado.",
+  "title": {
+    "en-US": "Stocks and bonds",
+    "es-MX": "Acciones y bonos",
+    "pt-BR": "Ações e títulos"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "life-portfolio-risk",
+      "type": "money.life-sim.v2",
+      "grading": "server",
+      "visual": {
+        "type": "life-sim"
+      },
+      "payload": {
+        "scenario": "portfolio",
+        "periods": 5,
+        "cash": 10000,
+        "debt": 0,
+        "flow": 1000,
+        "finish": 19000,
+        "floor": 11000,
+        "goal": 90,
+        "choices": [
+          0,
+          10,
+          25,
+          60,
+          80,
+          100
+        ],
+        "start": 80
+      },
+      "rubric": {
+        "target": {
+          "answers": [
+            25
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick the highest stock share that still gets 90 of 100 futures past the target and above the floor.",
+          "feedback": {
+            "met": "You let the simulation run and read it well.",
+            "not_yet": "Run it again and watch the pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige la mayor proporción en acciones con la que 90 de 100 futuros alcanzan la meta sin bajar del mínimo.",
+          "feedback": {
+            "met": "Dejaste correr la simulación y la leíste bien.",
+            "not_yet": "Córrela otra vez y observa el patrón."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha a maior fatia em ações com a qual 90 de 100 futuros alcançam a meta sem cair abaixo do mínimo.",
+          "feedback": {
+            "met": "Você deixou a simulação rodar e a leu bem.",
+            "not_yet": "Rode de novo e observe o padrão."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+/* Words on a board: HTML over the drawing, at caption size, in the content tone (Frontend Bible 05 section 5). */
+.lf-rebuild .lf-hz-drawing { position: relative; inline-size: 100%; }
+.lf-rebuild .lf-hz-drawing > svg { display: block; inline-size: 100%; block-size: auto; }
+.lf-rebuild .lf-hz-label { position: absolute; inline-size: max-content; max-inline-size: 40%; font-size: .875rem; font-weight: 700; line-height: 1.15; color: var(--content); pointer-events: none; overflow-wrap: anywhere; }
+.lf-rebuild .lf-hz-label[data-align='middle'] { text-align: center; }
+.lf-rebuild .lf-hz-label[data-align='end'] { text-align: end; }
+.lf-rebuild .lf-hz-label--muted { font-weight: 600; color: var(--content-muted); }

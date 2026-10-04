@@ -1,0 +1,35 @@
+export const TEN_FRAME_CELLS = 10;
+export const TEN_FRAME_MAX_FRAMES = 2;
+
+export type TenFrameCounts = readonly number[];
+
+const whole = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value);
+
+/** A count per frame: one or two whole numbers, each between 0 and 10 (a frame holds ten cells). */
+export function isTenFrameCounts(value: unknown, frames?: number): value is TenFrameCounts {
+  return Array.isArray(value) && value.length >= 1 && value.length <= TEN_FRAME_MAX_FRAMES && (frames === undefined || value.length === frames)
+    && value.every((count) => whole(count) && count >= 0 && count <= TEN_FRAME_CELLS);
+}
+
+export const tenFrameTotal = (counts: TenFrameCounts): number => counts.reduce((sum, count) => sum + count, 0);
+export const sameCounts = (a: TenFrameCounts, b: TenFrameCounts): boolean => a.length === b.length && a.every((count, index) => count === b[index]);
+
+/** Cell `index` (0-9) of a frame is filled when it is below the count; a frame fills left to right, top row first. */
+export const cellFilled = (count: number, index: number): boolean => index < count;
+
+/** The cells that still hold nothing: what "make a ten" counts. */
+export const emptyCells = (counts: TenFrameCounts): number => counts.length * TEN_FRAME_CELLS - tenFrameTotal(counts);
+
+/**
+ * The rules a response must keep, whatever the target. One frame: counters are only added, never taken away.
+ * Two frames: counters move between the frames and the total never changes.
+ */
+export function respectsRule(start: TenFrameCounts, counts: TenFrameCounts): boolean {
+  if (counts.length !== start.length) return false;
+  return start.length === 1 ? counts[0]! >= start[0]! : tenFrameTotal(counts) === tenFrameTotal(start);
+}
+
+/** A target is reachable from the start under the rule and is a change from it. */
+export function targetReachable(start: TenFrameCounts, target: TenFrameCounts): boolean {
+  return target.length === start.length && respectsRule(start, target) && !sameCounts(start, target);
+}

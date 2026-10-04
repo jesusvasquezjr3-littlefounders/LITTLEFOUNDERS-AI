@@ -1,0 +1,25 @@
+/* F1.5 double number line and ratio tape: step columns that scale together, and a tape of equal boxes. Tokens only. */
+.lf-line-scroll { max-inline-size: 100%; overflow-x: auto; }
+.lf-line { --steps: 1; display: grid; grid-template-columns: auto repeat(var(--steps), minmax(var(--target-min), 4rem)); align-items: stretch; gap: var(--spacing-2); }
+.lf-line-names { display: grid; align-content: space-between; padding-block: var(--spacing-1); font-weight: 800; }
+.lf-line-col { display: grid; border-radius: var(--rounded-sm); outline: 2px solid transparent; }
+.lf-line-col[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }
+.lf-line-col[data-drop-selected='true'] { outline-color: var(--primary-strong); outline-style: solid; }
+.lf-line-step { display: grid; grid-template-rows: 1.5rem 3rem 1.5rem; justify-items: center; align-items: center; min-inline-size: var(--target-min); padding: 0; border: 1px solid var(--outline); border-radius: var(--rounded-sm); background: var(--surface); color: var(--sky-strong); cursor: pointer; }
+.lf-line-step[aria-pressed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
+.lf-line-step:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 2px; }
+.lf-line-step:disabled { cursor: default; }
+.lf-line-val { color: var(--content); font-weight: 800; }
+.lf-line-tick { inline-size: 1.5rem; block-size: 3rem; }
+.lf-line-tick line { stroke: currentColor; stroke-width: 2.5; }
+.lf-line-tick circle { fill: currentColor; }
+.lf-rebuild .lf-tape-drawing { max-inline-size: 30rem; }
+.lf-tape-svg { overflow: visible; }
+.lf-tape-svg text { fill: var(--content); font-size: 14px; font-weight: 800; }
+.lf-tape-whole { stroke: var(--edge); stroke-width: 3; }
+.lf-tape-box { stroke: var(--edge); stroke-width: 2; }
+.lf-tape-box--sky { fill: var(--sky-soft); stroke: var(--sky-strong); }
+.lf-tape-box--mint { fill: var(--mint-soft); stroke: var(--mint-strong); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-line-step { transition: background-color var(--dur-component) var(--ease-standard); }
+}

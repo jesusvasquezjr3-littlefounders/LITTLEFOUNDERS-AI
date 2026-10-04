@@ -3,6 +3,7 @@
 //   npm run v2:emit                                  fixture plans → runs/v2-emit/<run>/
 //   npm run v2:emit -- --plans <dir> --out <dir> --run-id <id>
 //   npm run v2:emit -- --write-fixture               refresh src/v2/fixtures/emitted.json
+//   npm run v2:emit -- --horizonte [--write-fixture] the Horizonte plans and their own emitted-horizonte.json
 //
 // Reads v2 lesson plans, emits each market's public document and private
 // answer keys, runs the v2 Forge gates, and writes:
@@ -24,6 +25,8 @@ import { loadV2Plans } from './plan.js';
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const FIXTURE_PLANS = path.join(here, 'fixtures/plans');
 export const FIXTURE_EMITTED = path.join(here, 'fixtures/emitted.json');
+export const FIXTURE_PLANS_HORIZONTE = path.join(here, 'fixtures/plans-horizonte');
+export const FIXTURE_EMITTED_HORIZONTE = path.join(here, 'fixtures/emitted-horizonte.json');
 export const FIXTURE_RUN_ID = 'fixture';
 
 export interface V2EmitRun {
@@ -54,8 +57,9 @@ export function runV2Emit(plansDir: string, runId: string): V2EmitRun {
   return { runId, versionId, planErrors, results, documents, ok: planErrors.length === 0 && loaded.length > 0 && results.every((result) => result.ok) };
 }
 
-function parseArgs(argv: string[]): { plans: string; out?: string; runId: string; writeFixture: boolean } {
+function parseArgs(argv: string[]): { plans: string; out?: string; runId: string; writeFixture: boolean; fixtureFile: string } {
   let plans = FIXTURE_PLANS;
+  let fixtureFile = FIXTURE_EMITTED;
   let out: string | undefined;
   let runId = `v2-emit-${new Date().toISOString().replace(/[:.]/g, '-').toLowerCase()}`;
   let writeFixture = false;
@@ -70,10 +74,13 @@ function parseArgs(argv: string[]): { plans: string; out?: string; runId: string
     else if (flag === '--out') out = path.resolve(value());
     else if (flag === '--run-id') runId = value();
     else if (flag === '--write-fixture') writeFixture = true;
-    else throw new Error(`v2:emit: unknown flag "${flag}"`);
+    else if (flag === '--horizonte') {
+      plans = FIXTURE_PLANS_HORIZONTE;
+      fixtureFile = FIXTURE_EMITTED_HORIZONTE;
+    } else throw new Error(`v2:emit: unknown flag "${flag}"`);
   }
   if (writeFixture) runId = FIXTURE_RUN_ID;
-  return { plans, runId, writeFixture, ...(out ? { out } : {}) };
+  return { plans, runId, writeFixture, fixtureFile, ...(out ? { out } : {}) };
 }
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -104,8 +111,8 @@ if (invokedDirectly) {
     if (!run.ok) {
       console.error('v2:emit: refusing to write the fixture from a failing run');
     } else {
-      writeFileSync(FIXTURE_EMITTED, `${JSON.stringify(run.documents, null, 2)}\n`);
-      console.log(`v2:emit: wrote ${path.relative(process.cwd(), FIXTURE_EMITTED)} (${run.documents.length} documents)`);
+      writeFileSync(args.fixtureFile, `${JSON.stringify(run.documents, null, 2)}\n`);
+      console.log(`v2:emit: wrote ${path.relative(process.cwd(), args.fixtureFile)} (${run.documents.length} documents)`);
     }
   } else {
     const outDir = args.out ?? path.resolve(here, '../../runs/v2-emit', run.runId);

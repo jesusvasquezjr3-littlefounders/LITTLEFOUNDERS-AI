@@ -1,0 +1,7 @@
+/* Choice tree: the SVG keeps the lines, the outcome names are HTML labels over it (Bible 05 section 5). Tokens only. */
+.lf-net-frame { box-sizing: border-box; inline-size: 100%; max-inline-size: 40rem; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
+/* The frame carries the surface, so the drawing host stays unpadded and the label percentages land on the SVG. */
+.lf-net-frame svg.lf-net-tree { max-inline-size: none; padding: 0; background: none; border-radius: 0; outline: 0; }
+.lf-net-frame .lf-hz-label { background: var(--surface); border-radius: var(--rounded-sm); }
+.lf-net-frame .lf-net-word { color: var(--content); }
+.lf-net-frame .lf-net-word--on { color: var(--primary-strong); font-weight: 800; }

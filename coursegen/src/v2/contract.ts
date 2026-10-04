@@ -12,6 +12,8 @@
 // the dry-run emitter's output is validated by Core itself
 // (`npm --prefix backend run forge-v2:check`), never by a Forge re-implementation.
 
+import { HORIZONTE_FORGE_CAPABILITIES } from './horizonte/index.js';
+
 export const V2_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
   'visual.savings-line.v2': ['visual.line.v1', 'operation.parameter-slider.v1'],
@@ -66,6 +68,7 @@ export const V2_SEGMENT_CAPABILITIES = {
   'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
   'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
   'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
+  ...HORIZONTE_FORGE_CAPABILITIES,
 } as const;
 
 /** The Mentor-voiced kinds (B.8, B.11): the only v2 segments that carry a narration channel. */
@@ -74,6 +77,11 @@ export const V2_MENTOR_VOICE_TYPES = ['voice.mentor-turn.v2', 'voice.mentor-epis
 export const V2_STORY_TYPES = ['story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2'] as const;
 
 export type V2SegmentType = keyof typeof V2_SEGMENT_CAPABILITIES;
+
+/** Horizonte kinds keep only ids, enums and numbers in the payload; their learner text is the prompt, help, feedback, labels and notation. */
+export function hasNeutralPayload(type: string): boolean {
+  return Object.hasOwn(HORIZONTE_FORGE_CAPABILITIES, type);
+}
 export const V2_SEGMENT_TYPES = Object.keys(V2_SEGMENT_CAPABILITIES) as V2SegmentType[];
 
 export const V2_LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
@@ -101,6 +109,10 @@ export interface V2Segment {
   item_phase?: 'pre' | 'post';
   variant?: string;
   knowledge_component_id?: string;
+  /** Horizonte kinds: localized names for the ids their payload holds. */
+  labels?: Record<string, string>;
+  /** Horizonte algebra boards: the TeX is neutral, `spokenText` is the accessible name in the lesson language. */
+  notation?: { tex: string; spokenText: string };
 }
 
 /** The answerless public document (Core's `v2PublicLessonSchema`). */
@@ -161,7 +173,9 @@ export function isNonCopyKey(key: string): boolean {
     // GAP-FIX-R1: structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
     || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref'
     // Chart data: link endpoints and calendar dates are identifiers, not copy.
-    || key === 'from' || key === 'to' || key === 'date'
+    || key === 'from' || key === 'to' || key === 'date' || key === 'end'
+    // Horizonte F1.0: a heatmap cell names its column and row by id.
+    || key === 'col' || key === 'row'
     // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
     || key === 'level'
     // GAP-FIX-R4: an L1 rule's kind is contract vocabulary.

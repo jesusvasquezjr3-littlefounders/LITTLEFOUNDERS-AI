@@ -4,6 +4,8 @@ import { barModelUnknown, gradeV2Response, lineUnits, scoreV2Judgment, scoreV2Vi
 import { conceptAllowed, conceptSampleResponse, gradeConcept, V2_CONCEPT_RUBRICS, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptSegment } from './v2ConceptBoards.js';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './v2ChartModel.js';
 import { v2ScorerPayload } from './v2ScorerPayload.js';
+import * as hz from './horizonte/index.js';
+import type { HorizonteAttempt } from './horizonte/seed/protocol.js';
 import { autonomyOfferForBand } from './learnerRegisterPolicy.js';
 import { BAR_MODEL_RUBRICS, barModelPayload, longArithmeticSchema, mathNotation, NOTATION_CAPABILITY, placeValuePayload, SCHEMA_DIAGRAM_RUBRICS, schemaDiagramPayload, V2_FAMILY_RUBRICS, v2AgeScopeProblem, v2FamilySampleResponse, v2FamilySegments, v2PayloadScopeProblem, v2SegmentExtras, v2ApproachesProblem, v2ApproachesSchema, v2ApproachOf, v2SegmentsForApproach, type V2FamilySegment } from './v2SegmentFamilies.js';
 
@@ -260,7 +262,7 @@ const chart = z.object({
   if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question; an explored chart asks none' });
 });
 
-const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify, chart, ...v2FamilySegments, ...v2ConceptSegments]);
+const segment = z.discriminatedUnion('type', [allocation, savingsLine, numberLine, fractionNumberLine, fractionArea, barModelStructure, barModelAnswer, schemaDiagramStructure, schemaDiagramSlots, schemaDiagramAnswer, goalBullet, percentGrid, placeValue, savingsRule, ledger, growth, taxBracket, ratioTable, workedExample, functionMachine, cpaCount, decideJustify, chart, ...v2FamilySegments, ...v2ConceptSegments, ...hz.horizonteSegments]);
 const capabilities = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
   'visual.savings-line.v2': ['visual.line.v1', 'operation.parameter-slider.v1'],
@@ -314,6 +316,7 @@ const capabilities = {
   'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
   'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
   'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
+  ...hz.HORIZONTE_CAPABILITIES,
 } as const;
 
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
@@ -377,7 +380,7 @@ export const v2PublicLessonSchema = z.object({
     }
     // B.7 part 3 / Appendix P Part 1 and Part 8, OD-16 (GAP-FIX-R2): each kind's age range and generic parameters, not pilot pins.
     const scopeKey = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar' ? `${value.type}:${value.visual.type}` : value.type;
-    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band);
+    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band) ?? hz.horizonteScopeProblem(value, document);
     if (scopeProblem) ctx.addIssue({ code: 'custom', path: ['segments', index], message: scopeProblem });
   }
   // OD-17 / B.7 (GAP-FIX-R1): a mixed document may surround these sequences
@@ -467,6 +470,7 @@ const rubricByKind = {
   'visual.chart.v2': z.object({ acceptable_choice_ids: z.array(id).min(1).max(3) }).strict(),
   ...V2_FAMILY_RUBRICS,
   ...V2_CONCEPT_RUBRICS,
+  ...hz.HORIZONTE_RUBRICS,
 } as const;
 
 export type V2PublicLesson = z.infer<typeof v2PublicLessonSchema>;
@@ -512,6 +516,10 @@ export function validateV2LessonForGrading(document: unknown, answerKeys: unknow
     const rubric = rubricByKind[item.type as keyof typeof rubricByKind].safeParse(keys[item.id]);
     // L2 (Appendix P Part 2): ages 8-9 build a single IF, so their rule key never needs a connective.
     if (item.type === 'logic.savings-rule.v2' && parsed.data.age_band === '6-9' && rubric.success && (rubric.data as { link: string }).link !== 'none') return null;
+    if (hz.isHorizonteType(item.type)) {
+      if (!rubric.success || hz.horizonteSampleVerdict(item, rubric.data) === 'invalid') return null;
+      continue;
+    }
     if (isConcept(item)) {
       if (!rubric.success || gradeConcept(item, conceptSampleResponse(item), rubric.data).verdict === 'invalid') return null;
       continue;
@@ -554,11 +562,15 @@ function v2SampleResponse(item: ServerSegment): unknown {
 }
 
 /** Server-only semantic scoring. A malformed response never becomes a score. */
-export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<string, unknown>, segmentId: string, response: unknown): V2GradeResult | null {
+export function gradeV2Visual(document: V2PublicLesson, answerKeys: Record<string, unknown>, segmentId: string, response: unknown, attempt?: HorizonteAttempt): V2GradeResult | null {
   const segment = document.segments.find((item) => item.id === segmentId);
   if (!segment || segment.grading !== 'server' || !Object.hasOwn(answerKeys, segmentId)) return null;
   const rubric = rubricByKind[segment.type as keyof typeof rubricByKind].safeParse(answerKeys[segmentId]);
   if (!rubric.success) return null;
+  if (hz.isHorizonteType(segment.type)) {
+    const pack = hz.horizonteGrade(segment, response, rubric.data, attempt);
+    return pack ? { ...pack, document, segmentId } : null;
+  }
   if (isConcept(segment)) {
     const concept = gradeConcept(segment, response, rubric.data);
     if (concept.verdict === 'invalid' || concept.verdict === 'valid') return null;

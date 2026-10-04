@@ -1,0 +1,10 @@
+/* Horizonte Visual shared layer: the 64 px handle, the loading placeholder and the table equivalent. Tokens only. */
+:root { --hz-hit: 64px; }
+.lf-hz-handle { display: inline-flex; min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); }
+.lf-hz-handle > button { flex: 1; min-inline-size: var(--hz-hit); min-block-size: var(--hz-hit); }
+.lf-hz-loading { min-block-size: 12rem; border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-hz-table { inline-size: 100%; border-collapse: collapse; }
+.lf-hz-table caption { text-align: start; font-weight: 800; padding-block-end: var(--spacing-2); }
+.lf-hz-table th, .lf-hz-table td { padding: var(--spacing-2); border-block-end: 1px solid var(--outline); text-align: start; }
+/* An SVG board whose beads or cells are the tap targets: its width stays between the base and large tiers for the smallest hit, however many rods or slots it draws. */
+.lf-hz-hit-sized { --hz-hit-span: 1; display: block; inline-size: 100%; min-inline-size: calc(var(--hz-hit-span) * var(--target-base)); max-inline-size: calc(var(--hz-hit-span) * var(--target-lg)); }

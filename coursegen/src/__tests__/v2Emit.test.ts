@@ -8,15 +8,17 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { loadMarketInventory } from '../contentGates/regional.js';
 import { V2_SEGMENT_TYPES, requiredCapabilities } from '../v2/contract.js';
 import { emitV2Lesson, forgeVersionId } from '../v2/emit.js';
-import { FIXTURE_EMITTED, FIXTURE_PLANS, FIXTURE_RUN_ID, runV2Emit } from '../v2/cli.js';
+import { FIXTURE_EMITTED, FIXTURE_EMITTED_HORIZONTE, FIXTURE_PLANS, FIXTURE_PLANS_HORIZONTE, FIXTURE_RUN_ID, runV2Emit } from '../v2/cli.js';
 import { analyzeV2Plan, runV2DocumentGates, v2Audience, v2TextBlocks, v2WorkingMemoryBand } from '../v2/gates.js';
 import { loadV2Plans, v2LessonPlanSchema, type V2LessonPlan } from '../v2/plan.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const RED_TEAM = path.resolve(here, '../v2/fixtures/red-team');
 const plans = loadV2Plans(FIXTURE_PLANS);
+const horizontePlans = loadV2Plans(FIXTURE_PLANS_HORIZONTE);
 const planById = new Map(plans.map((entry) => [entry.plan!.lesson_id, entry.plan!]));
 const base = planById.get('v2-allocation-bar')!;
 const clone = (plan: V2LessonPlan): V2LessonPlan => JSON.parse(JSON.stringify(plan));
@@ -24,10 +26,13 @@ const clone = (plan: V2LessonPlan): V2LessonPlan => JSON.parse(JSON.stringify(pl
 afterEach(() => vi.unstubAllGlobals());
 
 describe('the committed v2 plans', () => {
-  it('parse, and together cover every segment kind of the v2 contract', () => {
+  it('parse, and together with the Horizonte plans cover every segment kind of the v2 contract', () => {
     expect(plans.every((entry) => entry.errors.length === 0)).toBe(true);
-    const kinds = new Set(plans.flatMap((entry) => entry.plan!.segments.map((segment) => segment.type)));
+    expect(horizontePlans.every((entry) => entry.errors.length === 0)).toBe(true);
+    const kinds = new Set([...plans, ...horizontePlans].flatMap((entry) => entry.plan!.segments.map((segment) => segment.type)));
     expect([...kinds].sort()).toEqual([...V2_SEGMENT_TYPES].sort());
+    const lessonIds = [...plans, ...horizontePlans].map((entry) => entry.plan!.lesson_id);
+    expect(new Set(lessonIds).size).toBe(lessonIds.length);
   });
 
   it('emit with zero spend: no network call is possible during a run', () => {
@@ -75,6 +80,115 @@ describe('the committed v2 plans', () => {
     expect(market[0]).toContain('yard sale');
     expect(market[1]).toContain('tianguis');
     expect(market[2]).toContain('feira livre');
+  });
+});
+
+// Kept apart from the shared plans: Core's interactive-behaviour gate (forge-v2:check) has no behaviour
+// space for a Horizonte kind yet and fails closed on a graded segment of any kind it does not model.
+describe('the committed Horizonte plans (neutral payload, labels and notation)', () => {
+  const hzById = new Map(horizontePlans.map((entry) => [entry.plan!.lesson_id, entry.plan!]));
+  const hzRun = runV2Emit(FIXTURE_PLANS_HORIZONTE, FIXTURE_RUN_ID);
+
+  it('emit with zero spend in the three markets', () => {
+    const fetchSpy = vi.fn(() => {
+      throw new Error('the v2 emitter must never call the network');
+    });
+    vi.stubGlobal('fetch', fetchSpy);
+    const run = runV2Emit(FIXTURE_PLANS_HORIZONTE, FIXTURE_RUN_ID);
+    expect(run.planErrors).toEqual([]);
+    expect(run.ok).toBe(true);
+    expect(run.documents).toHaveLength(horizontePlans.length * 3);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('match the committed Horizonte fixture (refresh: npm run v2:emit -- --horizonte --write-fixture)', () => {
+    expect(JSON.parse(readFileSync(FIXTURE_EMITTED_HORIZONTE, 'utf8'))).toEqual(JSON.parse(JSON.stringify(hzRun.documents)));
+  });
+
+  it('keep the payload identical in every market, the rubric private, and the extras to labels and notation', () => {
+    const byLesson = Map.groupBy(hzRun.documents, (row) => row.lesson_id);
+    expect(byLesson.size).toBe(horizontePlans.length);
+    for (const [lessonId, rows] of byLesson) {
+      expect(rows.map((row) => row.locale)).toEqual(['en-US', 'es-MX', 'pt-BR']);
+      const plan = hzById.get(lessonId)!;
+      plan.segments.forEach((segment, index) => {
+        for (const row of rows) {
+          const emitted = row.document.segments[index]!;
+          expect(emitted.payload).toEqual(segment.payload);
+          const extras = Object.keys(emitted).filter((key) => !['id', 'type', 'grading', 'prompt', 'visual', 'payload', 'help', 'feedback', 'item_role', 'item_phase', 'variant', 'knowledge_component_id', 'labels', 'notation'].includes(key));
+          expect(extras).toEqual([]);
+          expect(emitted).not.toHaveProperty('rubric');
+          for (const key of Object.keys(segment.rubric ?? {})) {
+            if (!(key in segment.payload)) expect(emitted.payload).not.toHaveProperty(key);
+          }
+        }
+      });
+      for (const row of rows) {
+        const graded = row.document.segments.filter((segment) => segment.grading === 'server').map((segment) => segment.id);
+        expect(Object.keys(row.answer_keys).sort()).toEqual([...new Set(graded)].sort());
+        expect(row.document.required_capabilities).toEqual(requiredCapabilities(row.document.segments));
+      }
+    }
+  });
+
+  it('lift the labels and the spoken notation of each market next to the payload, and keep the neutral TeX the same', () => {
+    const fin2 = hzRun.documents.filter((row) => row.lesson_id === 'v2-hz-fin2-13-17-13-17');
+    const labelled = fin2[0]!.document.segments.filter((segment) => segment.labels);
+    expect(labelled.length).toBeGreaterThan(0);
+    for (const segment of labelled) {
+      const ids = fin2.map((row) => Object.keys(row.document.segments.find((s) => s.id === segment.id)!.labels!).sort());
+      expect(ids[1]).toEqual(ids[0]);
+      expect(ids[2]).toEqual(ids[0]);
+    }
+    const alg = hzRun.documents.filter((row) => row.lesson_id === 'v2-hz-alg1-13-17-13-15');
+    const notated = alg.map((row) => row.document.segments.find((segment) => segment.notation)!.notation!);
+    expect(new Set(notated.map((notation) => notation.tex)).size).toBe(1);
+    for (const notation of notated) expect(notation.spokenText.length).toBeGreaterThan(0);
+  });
+
+  it('refuse a corrupted private key at gate 1 or 4 for every graded Horizonte kind', () => {
+    const corrupt = (value: unknown, mode: number): unknown => {
+      if (typeof value === 'number') return mode === 0 ? value + 1 : mode === 1 ? -value - 7 : value * 3 + 2;
+      if (typeof value === 'string') return `${value}x`;
+      if (typeof value === 'boolean') return !value;
+      if (Array.isArray(value)) return value.map((item) => corrupt(item, mode));
+      if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, corrupt(item, mode)]));
+      return value;
+    };
+    const markets = loadMarketInventory();
+    const refused = new Map<string, boolean>();
+    for (const result of hzRun.results) {
+      const policy = analyzeV2Plan(hzById.get(result.lessonId)!, markets);
+      const row = hzRun.documents.find((candidate) => candidate.lesson_id === result.lessonId && candidate.locale === 'en-US')!;
+      for (const segment of row.document.segments.filter((candidate) => candidate.grading === 'server')) {
+        const caught = [0, 1, 2].some((mode) => runV2DocumentGates(row.document, policy.regional, markets, { ...row.answer_keys, [segment.id]: corrupt(row.answer_keys[segment.id], mode) })
+          .problems.some((problem) => problem.segmentId === segment.id && (problem.gate === 1 || problem.gate === 4)));
+        refused.set(segment.type, (refused.get(segment.type) ?? false) || caught);
+      }
+    }
+    expect(refused.size).toBeGreaterThanOrEqual(60);
+    expect([...refused].filter(([, caught]) => !caught).map(([type]) => type)).toEqual([]);
+  });
+
+  it('refuse a notation on a kind that is not Horizonte, a notation without its spoken text, and stray copy', () => {
+    const plain = clone(base);
+    (plain.segments[0] as Record<string, unknown>).notation = { tex: 'x+1' };
+    const parsed = v2LessonPlanSchema.safeParse(plain);
+    expect(parsed.success).toBe(false);
+    expect(JSON.stringify(parsed.error?.issues)).toMatch(/only a Horizonte kind carries a segment-level notation/);
+
+    const mute = clone(hzById.get('v2-hz-alg1-13-17-13-15')!);
+    const noted = mute.segments.find((segment) => segment.notation)!;
+    delete (noted.copy['es-MX'] as Record<string, unknown>).notation;
+    const mutedResult = emitV2Lesson(mute, { versionId: 'forge-test' });
+    expect(mutedResult.ok).toBe(false);
+    expect(mutedResult.problems.some((p) => p.gate === 1 && /notation needs its tex/.test(p.message))).toBe(true);
+
+    const stray = clone(hzById.get('v2-hz-fin2-13-17-13-17')!);
+    for (const locale of ['en-US', 'es-MX', 'pt-BR'] as const) (stray.segments[0]!.copy[locale] as Record<string, unknown>).mystery = 'x';
+    const strayResult = emitV2Lesson(stray, { versionId: 'forge-test' });
+    expect(strayResult.ok).toBe(false);
+    expect(strayResult.problems.some((p) => p.gate === 1 && /takes only prompt, help, feedback, labels and notation/.test(p.message))).toBe(true);
   });
 });
 

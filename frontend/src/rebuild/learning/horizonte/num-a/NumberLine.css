@@ -1,0 +1,19 @@
+/* A12 empty number line and A13 zoom number line: SVG ticks, jump arcs and a marker in the sky, mint and berry series hues. Tokens only. */
+.lf-line { display: block; inline-size: 100%; min-inline-size: 26rem; max-inline-size: 44rem; }
+.lf-line-axis { stroke: var(--content-muted); stroke-width: 4; stroke-linecap: round; }
+.lf-line-tick { stroke: var(--edge); stroke-width: 3; }
+.lf-line-point--long .lf-line-tick { stroke: var(--content-muted); }
+.lf-line-number { font: var(--type-label); fill: var(--content); }
+.lf-line-arc { fill: none; stroke-width: 5; stroke-linecap: round; }
+.lf-line-jump--sky .lf-line-arc { stroke: var(--sky-strong); }
+.lf-line-jump--mint .lf-line-arc { stroke: var(--mint-strong); }
+.lf-line-sign { font: var(--type-label); fill: var(--content); }
+.lf-num-jumps { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
+.lf-num-jumps-label { font: var(--type-label); min-inline-size: 5rem; }
+.lf-zoom-pin { stroke: var(--berry-strong); stroke-width: 4; }
+.lf-zoom-dot { fill: var(--berry-strong); stroke: var(--berry-ridge); stroke-width: 3; }
+.lf-zoom-strip { fill: transparent; cursor: pointer; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-line-arc { stroke-dasharray: 1; animation: lf-line-draw var(--dur-component) var(--ease-standard) both; }
+  @keyframes lf-line-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+}

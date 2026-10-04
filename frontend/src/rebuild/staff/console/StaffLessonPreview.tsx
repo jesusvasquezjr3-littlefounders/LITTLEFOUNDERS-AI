@@ -6,6 +6,7 @@ import { lessonDocumentFrame, loadNarrationAudio } from '../../learning/Authenti
 import { LessonDocumentView, type OnGradeAny, type OnGradeReasoning } from '../../learning/LessonDocumentView';
 import { LessonLayer } from '../../learning/LessonLayer';
 import { loadMentorStageProjection } from '../../learning/lessonDocument';
+import { useHorizonteReadiness } from '../../learning/horizonte/useHorizonteReadiness';
 import type { JudgmentQuality } from '../../learning/DecisionReasonsBoard';
 import type { LessonPreviewRequest } from './StaffContent';
 import './staffLessonPreview.css';
@@ -36,6 +37,8 @@ export default function StaffLessonPreview({ request }: { request: LessonPreview
   const panel = useRef<HTMLDivElement>(null);
   const host = useLayerHost(true, { layer: 'scrim' });
   const ready = host !== null && host.isConnected;
+  // The frame below reads the document's own language and band, so it re-renders once the document's Horizonte packs have arrived.
+  useHorizonteReadiness(request.document);
   // Escape closes the preview through the shared layer stack (DP-03), like every other overlay.
   const onClose = request.onExit;
   useLayer(ready, host, true, onClose);

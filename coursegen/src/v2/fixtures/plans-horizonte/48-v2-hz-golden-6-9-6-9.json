@@ -1,0 +1,57 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-young",
+  "chapter_id": "horizonte-golden",
+  "lesson_id": "v2-hz-golden-6-9-6-9",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "kc-hz-golden"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf agrupa fichas en cuadros de diez para ver cuántas faltan.",
+  "title": {
+    "en-US": "Make ten",
+    "es-MX": "Completa diez",
+    "pt-BR": "Complete dez"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "ten-frame-make-ten",
+      "type": "math.ten-frame.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ten-frame"
+      },
+      "payload": {
+        "start": [
+          6
+        ]
+      },
+      "rubric": {
+        "target": [
+          10
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Add counters to make ten."
+        },
+        "es-MX": {
+          "prompt": "Agrega fichas para completar diez."
+        },
+        "pt-BR": {
+          "prompt": "Adicione fichas para completar dez."
+        }
+      }
+    }
+  ]
+}

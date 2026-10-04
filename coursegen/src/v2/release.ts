@@ -32,6 +32,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RELEASE_CHECK_IDS } from '../release/gateManifest.js';
 import { emitV2Lesson, forgeVersionId, type EmittedV2Document, type V2EmitResult } from './emit.js';
+import { HORIZONTE_FORGE_CAPABILITIES } from './horizonte/index.js';
 import type { V2LessonPlan } from './plan.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -124,6 +125,19 @@ export function narrationWithoutAudio(documents: readonly EmittedV2Document[], a
   return missing;
 }
 
+/**
+ * The Horizonte segment types the documents use. Core parses a type only once
+ * it is deployed, so Vault must not accept a version holding one before then.
+ */
+export function horizonteTypesIn(documents: readonly EmittedV2Document[]): string[] {
+  const types = new Set<string>();
+  for (const row of documents) {
+    const segments = (row.document as unknown as { segments?: Array<{ type?: unknown }> }).segments ?? [];
+    for (const segment of segments) if (typeof segment.type === 'string' && Object.hasOwn(HORIZONTE_FORGE_CAPABILITIES, segment.type)) types.add(segment.type);
+  }
+  return [...types].sort();
+}
+
 function defaultCoreCheck(file: string) {
   const run = spawnSync('npm', ['--prefix', path.join(repoRoot, 'backend'), 'run', 'forge-v2:check', '--', file], { encoding: 'utf8', shell: process.platform === 'win32' });
   return { ok: run.status === 0, output: `${run.stdout ?? ''}${run.stderr ?? ''}` };
@@ -154,6 +168,8 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   audioManifest?: Readonly<Record<string, unknown>>;
   /** Refuse (instead of flag) a differentiated narration channel without its audio. */
   requireNarrationAudio?: boolean;
+  /** The owner confirms the deployed Core already serves the Horizonte segment types; a Vault write refuses them otherwise. */
+  coreServesHorizonte?: boolean;
 }): Promise<V2ReleaseResult> {
   const versionId = forgeVersionId(options.runId);
   const documents: EmittedV2Document[] = [];
@@ -188,6 +204,11 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     .map((call) => ({ lessonId: call.lessonId, locale: call.locale, versionId: call.versionId, items: stage3ItemsFor(reviewByLesson.get(call.lessonId) ?? [], call.locale) }))
     .filter((record) => record.items.length > 0);
   if (options.dryRun) return { ok: true, stage: 'dry-run', documents, calls, problems: [], stage3, ...flagged };
+
+  const horizonte = horizonteTypesIn(documents);
+  if (horizonte.length && !options.coreServesHorizonte) {
+    return { ok: false, stage: 'core-check', documents, calls, problems: [`${horizonte.join(', ')}: the local Core check cannot tell whether the deployed Core serves these Horizonte types, and an older Core answers 422 UNSUPPORTED_LESSON for a version that holds one. Deploy Core first, then pass --core-has-horizonte`] };
+  }
 
   const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
   if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };

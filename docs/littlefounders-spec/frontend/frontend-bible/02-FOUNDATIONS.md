@@ -66,7 +66,7 @@ Earlier fixed rules still apply: flat-tactile solid colour, no glassmorphism, wa
 7. Reserved hues (section 4.2).
 8. Touch targets: 48 / 56 / 64 px by function (section 8).
 9. Every pressable gives feedback through colour and scale — not simulated depth (section 9.1).
-10. Characters are 3D assets in a labelled slot, or on the Mentor stage (`08`). Text never lives inside a character asset. Nothing else in the interface simulates 3D, except the Diorama.
+10. Characters are 3D assets in a labelled slot, or on the Mentor stage (`08`). Text never lives inside a character asset. Nothing else in the interface simulates 3D, except the Diorama and, per OD-35, the one lazy 3D solids viewer of the Horizonte Visual (F4), which reuses the tutor-scene canvas and has SVG isometric alternates.
 11. Body and UI text never falls below 14 px, and every text token reaches at least 4.5:1 on the surfaces it is used on.
 12. Any overlay (dialog scrim, toast, sheet) uses `position:fixed`, anchored to the real viewport — never `position:absolute` inside a scrollable ancestor. An `absolute` overlay centers on the full scrollable content, not what the user can see, and on a long page can render off-screen entirely.
 13. Re-rendering the DOM in place (opening a dialog, a toast appearing, a validation error) must preserve the user's current scroll position. Only an intentional route change resets scroll to the top.

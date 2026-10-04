@@ -5,6 +5,8 @@
 //   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --max-usd <n>       (paid, owner-run)
 //   npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir> --dry-run
 //   npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir>     (writes to Vault)
+//   A Vault write of a Horizonte segment type also needs --core-has-horizonte: the owner's
+//   confirmation that Core, which parses the type, is deployed first.
 //
 // v2:author's dry run answers from a committed plan (the skeleton's own copy,
 // or --reference), so prompting, merging and gating run with zero model calls.
@@ -117,6 +119,7 @@ async function publish(args: Args): Promise<number> {
   const result = await releaseV2Lessons(loaded.map((entry) => entry.plan!), {
     runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun, deps: rpc ? { rpc } : {},
     audioManifest, requireNarrationAudio: args['require-narration-audio'] === true,
+    coreServesHorizonte: args['core-has-horizonte'] === true,
   });
   if (!result.ok) { console.error(`v2:publish: stopped at ${result.stage}:\n  ${result.problems.join('\n  ')}`); return 1; }
   console.log(`v2:publish: ${result.stage} — ${result.documents.length} document(s), ${result.calls.length} publication call(s)${dryRun ? ' written to publish-calls.json, nothing sent' : ' accepted by Vault'}`);

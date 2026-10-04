@@ -1,0 +1,92 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
+import type { HorizonteAgeScope } from '../types.js';
+import { BASES, PERCENT_MIN, solveBreakEven, solveCostStructure, solveMarginMarkup } from './finance.js';
+import { CURVES, DIRECTIONS, solveElasticity, solveMarketShift } from './market.js';
+import { GRID_BOTTOM_MIN, GRID_TOP_MAX, GRID_X_MAX, SLOPE_LIMIT, solveLinkedViews, solveRateOfChange, solveSlopeTriangle, type Solved } from './model.js';
+
+const int = (low: number, high: number) => z.number().int().min(low).max(high);
+
+const grid = z.object({ xMax: int(4, GRID_X_MAX), yMin: int(GRID_BOTTOM_MIN, 0), yMax: int(4, GRID_TOP_MAX) }).strict();
+const point = z.object({ x: int(0, GRID_X_MAX), y: int(GRID_BOTTOM_MIN, GRID_TOP_MAX) }).strict();
+const demand = z.object({ a: int(10, 300), b: int(1, 10) }).strict();
+const supply = z.object({ c: int(0, 100), d: int(1, 10) }).strict();
+const goalPart = int(1, 4);
+
+/** D15: a rising line, the run of a slope triangle and the rise it starts with. The answer (the rise that stays on the line) stays in the rubric. */
+export const slopeTrianglePayload = z.object({
+  grid, line: z.object({ from: point, to: point }).strict(), run: int(1, 8), start: int(0, GRID_TOP_MAX),
+}).strict();
+
+/** D16: a start point, a steady rate per step, the step to reach and the value the point starts at. */
+export const rateOfChangePayload = z.object({
+  grid, origin: point, rate: int(1, 8), at: int(1, GRID_X_MAX), start: int(GRID_BOTTOM_MIN, GRID_TOP_MAX),
+}).strict();
+
+/** D18: two points the line must pass through, in a table, a graph and an equation; the learner edits the slope and the intercept. */
+export const linkedViewsPayload = z.object({
+  grid, given: z.tuple([point, point]), start: z.object({ m: int(-SLOPE_LIMIT, SLOPE_LIMIT), b: int(GRID_BOTTOM_MIN, GRID_TOP_MAX) }).strict(),
+}).strict();
+
+/** N08, N09: a fixed cost, a price and a cost per unit, and how many units the axis shows. */
+export const breakEvenPayload = z.object({ fixed: int(1, 1000), price: int(2, 100), unit: int(1, 99), maxUnits: int(4, 60), start: int(0, 60) }).strict();
+
+/** N28: a fixed cost and a cost per unit, and the average cost per unit to reach. */
+export const costStructurePayload = z.object({
+  fixed: int(1, 1000), variable: int(1, 50), maxUnits: int(4, 60), goal: z.object({ average: int(2, 200) }).strict(), start: int(1, 60),
+}).strict();
+
+/** N10: a cost and a markup (on cost) or margin (on price) percent to price for. */
+export const marginMarkupPayload = z.object({
+  cost: int(1, 100), basis: z.enum(BASES), percent: int(PERCENT_MIN, 300), maxPrice: int(10, 400), start: int(0, 400),
+}).strict();
+
+/** N09, N13: a market, one shift of a curve and the price the line starts at. The learner picks up or down and sets the new price. */
+export const marketShiftPayload = z.object({
+  pMax: int(4, 60), qMax: int(20, 300), demand, supply, shift: z.object({ curve: z.enum(CURVES), by: int(-60, 60) }).strict(), start: int(0, 60),
+}).strict();
+
+/** N13: a demand line and the elasticity (a fraction) to reach by sliding the price. */
+export const elasticityPayload = z.object({
+  pMax: int(4, 60), demand, goal: z.object({ num: goalPart, den: goalPart }).strict(), start: int(1, 60),
+}).strict();
+
+const refine = (solve: (payload: unknown) => Solved<unknown>) => (value: { payload: unknown }, ctx: z.RefinementCtx) => {
+  const result = solve(value.payload);
+  if (!result.ok) ctx.addIssue({ code: 'custom', path: result.path ? ['payload', result.path] : ['payload'], message: result.message });
+};
+
+export const PLANE1_SEGMENTS = [
+  z.object({ ...hzBase, type: z.literal('alg.slope-triangle.v2'), grading: hzServer, visual: hzVisual('slope-triangle'), payload: slopeTrianglePayload }).strict().superRefine(refine(solveSlopeTriangle)),
+  z.object({ ...hzBase, type: z.literal('alg.rate-of-change.v2'), grading: hzServer, visual: hzVisual('rate-table-graph'), payload: rateOfChangePayload }).strict().superRefine(refine(solveRateOfChange)),
+  z.object({ ...hzBase, type: z.literal('alg.linked-views.v2'), grading: hzServer, visual: hzVisual('linked-views'), payload: linkedViewsPayload }).strict().superRefine(refine(solveLinkedViews)),
+  z.object({ ...hzBase, type: z.literal('fin.break-even.v2'), grading: hzServer, visual: hzVisual('break-even'), payload: breakEvenPayload }).strict().superRefine(refine(solveBreakEven)),
+  z.object({ ...hzBase, type: z.literal('fin.cost-structure.v2'), grading: hzServer, visual: hzVisual('cost-structure'), payload: costStructurePayload }).strict().superRefine(refine(solveCostStructure)),
+  z.object({ ...hzBase, type: z.literal('fin.margin-markup.v2'), grading: hzServer, visual: hzVisual('margin-markup'), payload: marginMarkupPayload }).strict().superRefine(refine(solveMarginMarkup)),
+  z.object({ ...hzBase, type: z.literal('econ.market-shift.v2'), grading: hzServer, visual: hzVisual('market-shift'), payload: marketShiftPayload }).strict().superRefine(refine(solveMarketShift)),
+  z.object({ ...hzBase, type: z.literal('econ.elasticity.v2'), grading: hzServer, visual: hzVisual('elasticity'), payload: elasticityPayload }).strict().superRefine(refine(solveElasticity)),
+] as const;
+
+const target = <T extends z.ZodType>(shape: T) => z.object({ target: shape }).strict();
+
+export const PLANE1_RUBRICS = {
+  'alg.slope-triangle.v2': target(int(1, GRID_TOP_MAX)),
+  'alg.rate-of-change.v2': target(int(GRID_BOTTOM_MIN, GRID_TOP_MAX)),
+  'alg.linked-views.v2': target(z.object({ m: int(-SLOPE_LIMIT, SLOPE_LIMIT), b: int(GRID_BOTTOM_MIN, GRID_TOP_MAX) }).strict()),
+  'fin.break-even.v2': target(int(1, 60)),
+  'fin.cost-structure.v2': target(int(1, 60)),
+  'fin.margin-markup.v2': target(int(2, 400)),
+  'econ.market-shift.v2': target(z.object({ direction: z.enum(DIRECTIONS), price: int(1, 60) }).strict()),
+  'econ.elasticity.v2': target(int(1, 60)),
+} as const;
+
+export const PLANE1_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'alg.slope-triangle.v2': { ages: [13, 17], adult: false },
+  'alg.rate-of-change.v2': { ages: [13, 17], adult: false },
+  'alg.linked-views.v2': { ages: [12, 17], adult: false },
+  'fin.break-even.v2': { ages: [12, 17], adult: true },
+  'fin.cost-structure.v2': { ages: [12, 17], adult: true },
+  'fin.margin-markup.v2': { ages: [12, 17], adult: true },
+  'econ.market-shift.v2': { ages: [13, 17], adult: true },
+  'econ.elasticity.v2': { ages: [13, 17], adult: true },
+};

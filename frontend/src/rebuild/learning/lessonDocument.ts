@@ -5,6 +5,7 @@ import { autonomyOfferForBand } from '../design/learnerRegisterPolicy.generated'
 import { conceptAllowed, V2_CONCEPT_TYPES, v2ConceptSegments, type V2ConceptType } from './v2ConceptBoards.generated';
 import { CHART_KINDS, chartAllowed, chartDataSchema, chartProblem } from './charts/chartModel.generated';
 import { lineUnits } from './v2VisualScorer.generated';
+import { HORIZONTE_CAPABILITIES, horizonteScopeProblem, horizonteSegmentGate, missingHorizontePacks } from './horizonte/contract';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/);
 const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
@@ -341,7 +342,7 @@ const chartSegment = z.object({
   if ((value.grading === 'server') !== !!value.payload.question) ctx.addIssue({ code: 'custom', path: ['grading'], message: 'A graded chart asks one question' });
 });
 
-const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments, ...v2ConceptSegments]);
+const segment = z.discriminatedUnion('type', [allocationSegment, timelineSegment, numberLineSegment, fractionNumberLineSegment, fractionAreaSegment, barModelStructureSegment, barModelAnswerSegment, schemaDiagramStructureSegment, schemaDiagramSlotsSegment, schemaDiagramAnswerSegment, goalBulletSegment, percentGridSegment, placeValueSegment, savingsRuleSegment, runningLedgerSegment, growthComparisonSegment, taxBracketSegment, ratioTableSegment, workedExampleSegment, functionMachineSegment, cpaCountSegment, decideJustifySegment, chartSegment, ...v2FamilySegments, ...v2ConceptSegments, horizonteSegmentGate]);
 type SegmentType = z.infer<typeof segment>['type'];
 export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.allocation.v2': ['visual.stacked-bar.v1', 'operation.reallocate.v1'],
@@ -397,10 +398,18 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'money.debt-payoff.v2': ['visual.debt-race.v1', 'operation.what-if-branch.v1', 'operation.ghost-trace.v1'],
   'money.diversification.v2': ['visual.portfolio.v1', 'operation.reallocate.v1', 'operation.linked-representations.v1'],
   'money.lemonade-stand.v2': ['visual.waterfall.v1', 'operation.guided-sandbox.v1', 'operation.running-ledger.v1'],
+  ...HORIZONTE_CAPABILITIES,
 } as const satisfies Record<SegmentType, readonly string[]>;
 export const LESSON_CLIENT_CAPABILITIES = [...new Set([...Object.values(REQUIRED_SEGMENT_CAPABILITIES).flat(),
   'visual.waffle.v1', 'visual.donut.v1', 'operation.build-flowchart.v1', NOTATION_CAPABILITY, ...CHART_KINDS.map((kind) => `visual.${kind}.v1`)])];
 const knownTypes = new Set(Object.keys(REQUIRED_SEGMENT_CAPABILITIES));
+const knownChartKinds = new Set<string>(CHART_KINDS);
+/** A newer Core may serve a chart kind this bundle does not draw; that is an update, not a malformed document. */
+function hasUnknownChartKind(value: unknown): boolean {
+  if (typeof value !== 'object' || value === null) return false;
+  const { type, visual } = value as { type?: unknown; visual?: { type?: unknown } | null };
+  return type === 'visual.chart.v2' && typeof visual?.type === 'string' && !knownChartKinds.has(visual.type);
+}
 /** Every occurrence of a chain member sits inside a complete, in-order run of the whole chain. */
 function contiguousChains(types: readonly string[], chain: readonly string[]): boolean {
   for (let index = 0; index < types.length; index += 1) {
@@ -472,7 +481,7 @@ export const lessonClientDocumentSchema = z.object({
     }
     // B.7 part 3 / Appendix P age ranges and generic parameters (Core's shared v2AgeScopeProblem, GAP-FIX-R2).
     const scopeKey = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar' ? `${value.type}:${value.visual.type}` : value.type;
-    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band);
+    const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band) ?? horizonteScopeProblem(value, document);
     if (scopeProblem) ctx.addIssue({ code: 'custom', path: ['segments', index], message: scopeProblem });
   }
   // OD-17 / B.7 (GAP-FIX-R1): mixed documents may surround the M7 chains, which stay contiguous and ordered (Core's contiguousChains).
@@ -563,6 +572,9 @@ export function loadLessonClientDocument(raw: unknown, capabilities: readonly st
   if (candidate.schema_version !== 2) return { status: 'upgrade-required', reason: 'Unsupported document version' };
   if (Array.isArray(candidate.segments) && candidate.segments.some((value) => typeof value === 'object' && value !== null
     && !knownTypes.has(String((value as Record<string, unknown>).type)))) return { status: 'upgrade-required', reason: 'Unsupported segment type' };
+  if (Array.isArray(candidate.segments) && candidate.segments.some(hasUnknownChartKind)) return { status: 'upgrade-required', reason: 'Unsupported chart kind' };
+  // A Horizonte pack that never arrived cannot vouch for its segments: an update, never a pass.
+  if (missingHorizontePacks(candidate).length > 0) return { status: 'upgrade-required', reason: 'Horizonte pack not loaded' };
   const parsed = lessonClientDocumentSchema.safeParse(raw);
   if (!parsed.success) return { status: 'invalid', reason: 'Malformed or answer-bearing document' };
   const missing = parsed.data.required_capabilities.find((capability) => !capabilities.includes(capability));

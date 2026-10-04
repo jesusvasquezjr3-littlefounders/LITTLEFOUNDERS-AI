@@ -1,0 +1,30 @@
+/* F3.3 life simulation board: a fan of 100 seeded futures under one slider choice. Tokens only. */
+.lf-life { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-life-chart { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--spacing-1); row-gap: var(--spacing-2); box-sizing: border-box; inline-size: 100%; max-inline-size: 42rem; padding: var(--spacing-3) var(--spacing-3) var(--spacing-2) var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
+.lf-life-plot { grid-area: 1 / 2; display: block; inline-size: 100%; block-size: auto; overflow: visible; }
+.lf-life-yaxis { grid-area: 1 / 1; display: flex; flex-direction: column; justify-content: space-between; }
+.lf-life-xaxis { grid-area: 2 / 2; display: flex; justify-content: space-between; }
+.lf-life-years { grid-area: 3 / 2; justify-self: center; }
+/* A tick is a zero-size box on its gridline: its label overflows the box evenly, so it sits centred on the line. */
+.lf-life-tick { display: flex; align-items: center; justify-content: center; }
+.lf-life-yaxis .lf-life-tick { block-size: 0; justify-content: flex-end; }
+.lf-life-yaxis .lf-life-tick:only-child { margin-block-start: auto; }
+.lf-life-xaxis .lf-life-tick { inline-size: 0; flex: none; }
+.lf-life-label { flex: none; inline-size: max-content; font-size: 0.875rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.lf-life-ticks line { stroke: var(--edge); stroke-width: 2; }
+.lf-life-grid { stroke: var(--outline); stroke-width: 1; stroke-opacity: 0.6; }
+.lf-life-path { fill: none; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+.lf-life-path--yes { stroke: var(--mint-strong); stroke-opacity: 0.8; }
+.lf-life-path--no { stroke: var(--berry-strong); stroke-opacity: 0.8; stroke-dasharray: 5 3; }
+.lf-life-mark { stroke-width: 3; }
+.lf-life-mark--finish { stroke: var(--content); stroke-dasharray: 8 6; }
+.lf-life-mark--floor { stroke: var(--content); stroke-dasharray: 2 6; }
+.lf-life-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
+.lf-life-legend li { display: flex; align-items: center; gap: var(--spacing-1); }
+.lf-life-legend svg { inline-size: 2.5rem; block-size: 0.75rem; }
+.lf-life-status { font-weight: 800; }
+.lf-life-note { margin: 0; }
+.lf-life-scroll { max-block-size: 20rem; overflow: auto; inline-size: 100%; max-inline-size: 42rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-life-path { transition: stroke var(--dur-component) var(--ease-standard); }
+}

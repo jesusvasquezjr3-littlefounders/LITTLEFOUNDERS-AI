@@ -1,0 +1,130 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
+import type { HorizonteAgeScope } from '../types.js';
+import { COIN_LIMITS, COIN_PIECES, coinProblem, readCoinPayload } from './coins.js';
+import { COUNT_NAMES, EULER_SOLIDS, PLANE_LIMITS, SECTION_SOLIDS, SHAPES } from './polyhedra.js';
+import { readRotationPayload, rotationProblem } from './rotationRules.js';
+import { CONE_LIMITS, OPTION_LIMITS, VOLUME_LIMITS, readSolidSectionPayload, solidSectionProblem } from './sectionRules.js';
+import { STALL_IDS, STALL_LIMITS, STALL_PIECE, readStallPayload, stallProblem } from './stall.js';
+import { BOX, FIGURE_LIMITS, ROTATION_AXES, TARGET_IDS, TARGET_LIMITS } from './voxels.js';
+
+const cellPart = z.number().int().min(0).max(BOX - 1);
+const figure = z.array(z.tuple([cellPart, cellPart, cellPart])).min(FIGURE_LIMITS.min).max(FIGURE_LIMITS.max);
+
+/** F4.4: turn a figure about one axis to match one of a few targets; the answer is which target and by how many degrees. */
+export const rotationPayload = z.object({
+  axis: z.enum(ROTATION_AXES),
+  figure,
+  targets: z.array(figure).min(TARGET_LIMITS.min).max(TARGET_LIMITS.max),
+}).strict();
+
+const planePart = z.number().int().min(-PLANE_LIMITS.normal).max(PLANE_LIMITS.normal);
+
+/** F4.5: `section` names the shape a plane cuts from a solid, `slide` moves the plane until it cuts a given shape, `euler` types the hidden count from V - E + F = 2, `volume` and `cone` type a pyramid's volume and a cone's volume in pi. */
+export const solidSectionPayload = z.discriminatedUnion('mode', [
+  z.object({
+    mode: z.literal('section'),
+    solid: z.enum(SECTION_SOLIDS),
+    plane: z.object({ normal: z.tuple([planePart, planePart, planePart]), offset: z.number().int().min(-PLANE_LIMITS.offset).max(PLANE_LIMITS.offset) }).strict(),
+    options: z.array(z.enum(SHAPES)).min(OPTION_LIMITS.min).max(OPTION_LIMITS.max).refine((list) => new Set(list).size === list.length, 'Each shape is listed once'),
+  }).strict(),
+  z.object({ mode: z.literal('euler'), solid: z.enum(EULER_SOLIDS), hide: z.enum(COUNT_NAMES) }).strict(),
+  z.object({
+    mode: z.literal('volume'),
+    side: z.number().int().min(VOLUME_LIMITS.side.min).max(VOLUME_LIMITS.side.max),
+    height: z.number().int().min(VOLUME_LIMITS.height.min).max(VOLUME_LIMITS.height.max),
+  }).strict(),
+  z.object({
+    mode: z.literal('cone'),
+    radius: z.number().int().min(CONE_LIMITS.radius.min).max(CONE_LIMITS.radius.max),
+    height: z.number().int().min(CONE_LIMITS.height.min).max(CONE_LIMITS.height.max),
+  }).strict(),
+  z.object({
+    mode: z.literal('slide'),
+    solid: z.enum(SECTION_SOLIDS),
+    normal: z.tuple([planePart, planePart, planePart]),
+    start: z.number().int().min(-PLANE_LIMITS.offset).max(PLANE_LIMITS.offset),
+    target: z.enum(SHAPES),
+  }).strict(),
+]);
+
+const stallGoal = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('exact'), total: z.number().int().min(1).max(STALL_LIMITS.total.max) }).strict(),
+  z.object({ kind: z.literal('change'), paid: z.number().int().min(2).max(STALL_LIMITS.total.max), change: z.number().int().min(1).max(STALL_LIMITS.total.max) }).strict(),
+  z.object({ kind: z.literal('most'), budget: z.number().int().min(1).max(STALL_LIMITS.total.max) }).strict(),
+]);
+
+/** F4.6 stall: fill a basket from priced items so it meets a total, the change from a payment, or the biggest bag a budget buys. */
+export const marketStallPayload = z.object({
+  items: z.array(z.object({
+    id: z.enum(STALL_IDS),
+    price: z.number().int().min(STALL_LIMITS.price.min).max(STALL_LIMITS.price.max),
+    stock: z.number().int().min(STALL_LIMITS.stock.min).max(STALL_LIMITS.stock.max),
+  }).strict()).min(STALL_LIMITS.items.min).max(STALL_LIMITS.items.max),
+  goal: stallGoal,
+}).strict();
+
+/** F4.6 stack: set how many coins or bills stand in a stack drawn to scale, from an amount of money or a height. */
+export const coinStackPayload = z.object({
+  piece: z.enum(COIN_PIECES),
+  value: z.number().int().min(COIN_LIMITS.value.min).max(COIN_LIMITS.value.max),
+  goal: z.discriminatedUnion('kind', [
+    z.object({ kind: z.literal('amount'), total: z.number().int().min(1).max(COIN_LIMITS.total.max) }).strict(),
+    z.object({ kind: z.literal('height'), mm: z.number().int().min(1).max(COIN_LIMITS.mm.max) }).strict(),
+  ]),
+  step: z.number().int().min(COIN_LIMITS.step.min).max(COIN_LIMITS.step.max),
+  max: z.number().int().min(COIN_LIMITS.max.min).max(COIN_LIMITS.max.max),
+}).strict();
+
+const complain = (ctx: z.RefinementCtx, message: string) => ctx.addIssue({ code: 'custom', path: ['payload'], message });
+
+export const SPACE1_SEGMENTS = [
+  z.object({
+    ...hzBase, type: z.literal('geometry.mental-rotation.v2'), grading: hzServer, visual: hzVisual('mental-rotation'), payload: rotationPayload,
+  }).strict().superRefine((value, ctx) => {
+    const payload = readRotationPayload(value.payload);
+    const problem = payload ? rotationProblem(payload) : 'The rotation payload is malformed';
+    if (problem) complain(ctx, problem);
+  }),
+  z.object({
+    ...hzBase, type: z.literal('geometry.solid-section.v2'), grading: hzServer, visual: hzVisual('solid-section'), payload: solidSectionPayload,
+  }).strict().superRefine((value, ctx) => {
+    const payload = readSolidSectionPayload(value.payload);
+    const problem = payload ? solidSectionProblem(payload) : 'The section payload is malformed';
+    if (problem) complain(ctx, problem);
+  }),
+  z.object({
+    ...hzBase, type: z.literal('money.market-stall.v2'), grading: hzServer, visual: hzVisual('market-stall'), payload: marketStallPayload,
+  }).strict().superRefine((value, ctx) => {
+    const payload = readStallPayload(value.payload);
+    const problem = payload ? stallProblem(payload) : 'The stall payload is malformed';
+    if (problem) complain(ctx, problem);
+  }),
+  z.object({
+    ...hzBase, type: z.literal('money.coin-stack.v2'), grading: hzServer, visual: hzVisual('coin-stack'), payload: coinStackPayload,
+  }).strict().superRefine((value, ctx) => {
+    const payload = readCoinPayload(value.payload);
+    const problem = payload ? coinProblem(payload) : 'The coin stack payload is malformed';
+    if (problem) complain(ctx, problem);
+  }),
+] as const;
+
+const stallSlots = z.record(z.string().regex(new RegExp(`^(${STALL_IDS.join('|')})$`)), z.array(z.literal(STALL_PIECE)).max(STALL_LIMITS.stock.max));
+const turn = z.union([z.literal(90), z.literal(180), z.literal(270)]);
+
+export const SPACE1_RUBRICS = {
+  'geometry.mental-rotation.v2': z.object({ pick: z.enum(TARGET_IDS), angles: z.array(turn).min(1).max(3) }).strict(),
+  'geometry.solid-section.v2': z.union([
+    z.object({ pick: z.enum(SHAPES) }).strict(),
+    z.object({ target: z.string().regex(/^[1-9]\d{0,3}$/) }).strict(),
+  ]),
+  'money.market-stall.v2': z.object({ solutions: z.array(stallSlots).min(1).max(8) }).strict(),
+  'money.coin-stack.v2': z.object({ target: z.string().regex(/^[1-9]\d{0,5}$/) }).strict(),
+} as const;
+
+export const SPACE1_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'geometry.mental-rotation.v2': { ages: [6, 17], adult: true },
+  'geometry.solid-section.v2': { ages: [11, 17], adult: true },
+  'money.market-stall.v2': { ages: [7, 12], adult: false },
+  'money.coin-stack.v2': { ages: [7, 17], adult: true },
+};

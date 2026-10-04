@@ -16,7 +16,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import { marketScenarioSchema } from '../catalog/schema.js';
-import { V2_AGE_BANDS, V2_ID, V2_SEGMENT_TYPES, type V2SegmentType } from './contract.js';
+import { hasNeutralPayload, V2_AGE_BANDS, V2_ID, V2_SEGMENT_TYPES, type V2SegmentType } from './contract.js';
 
 const id = z.string().regex(V2_ID);
 const localized = <T extends z.ZodType>(value: T) =>
@@ -26,7 +26,9 @@ const localized = <T extends z.ZodType>(value: T) =>
  * Learner-visible strings of one segment in one market: the prompt, the
  * optional help ladder (up to two Mentor turns, shown on request), the
  * optional feedback banner (GAP-FIX-R6, B.20: `met` names what was done right,
- * `not_yet` is a hint), plus string fields merged into the payload.
+ * `not_yet` is a hint), plus string fields merged into the payload. A Horizonte
+ * kind (`hasNeutralPayload`) instead carries its `labels` (one name per payload
+ * id) and its notation's `spokenText` here, and nothing is merged into its payload.
  */
 const feedbackLine = z.string().trim().min(1).max(160);
 const segmentCopySchema = z
@@ -45,6 +47,8 @@ export const v2PlanSegmentSchema = z
     visual: z.object({ type: z.string().min(1).max(40) }).strict(),
     /** Locale-neutral payload: numbers, enums and structure. Strings come from `copy`. */
     payload: z.record(z.string(), z.unknown()),
+    /** Horizonte algebra boards: the TeX is locale-neutral, its spoken form is `copy.<locale>.notation.spokenText`. */
+    notation: z.object({ tex: z.string().trim().min(1).max(200) }).strict().optional(),
     /** Private rubric: goes to answer_keys, never into the public document. */
     rubric: z.record(z.string(), z.unknown()).optional(),
     /**
@@ -65,6 +69,7 @@ export const v2PlanSegmentSchema = z
     if (segment.grading === 'server' && !segment.rubric && !segment.rubric_by_locale) ctx.addIssue({ code: 'custom', path: ['rubric'], message: 'a server-graded segment needs its private rubric' });
     if (segment.rubric && segment.rubric_by_locale) ctx.addIssue({ code: 'custom', path: ['rubric_by_locale'], message: 'use either one rubric or one per market, not both' });
     if (segment.grading === 'none' && (segment.rubric || segment.rubric_by_locale)) ctx.addIssue({ code: 'custom', path: ['rubric'], message: 'an ungraded segment carries no rubric' });
+    if (segment.notation && !hasNeutralPayload(segment.type)) ctx.addIssue({ code: 'custom', path: ['notation'], message: 'only a Horizonte kind carries a segment-level notation' });
   });
 
 export const v2LessonPlanSchema = z

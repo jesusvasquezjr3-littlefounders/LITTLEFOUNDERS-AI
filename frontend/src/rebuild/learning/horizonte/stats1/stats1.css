@@ -1,0 +1,30 @@
+/* F1.13 and F1.14 stats boards: dot plot, balance point, normal curve, binomial bars and the mean of draws. Tokens only. */
+.lf-stats { display: grid; gap: var(--spacing-3); justify-items: start; }
+.lf-stats-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
+.lf-stats-panel { display: grid; gap: var(--spacing-1); inline-size: 100%; max-inline-size: 42rem; }
+.lf-stats-panel h3 { font-size: 1rem; }
+.lf-stats-ticks line { stroke: var(--outline); stroke-width: 2; }
+.lf-stats-ticks text { fill: currentColor; font-size: 22px; font-weight: 700; }
+.lf-stats-drop { fill: transparent; }
+.lf-stats-drop[data-drop-armed='true'] { fill: var(--sky-soft); stroke: var(--sky-strong); stroke-width: 2; stroke-dasharray: 6 4; }
+.lf-stats-drop[data-drop-selected='true'] { fill: var(--sky); fill-opacity: 0.45; stroke-dasharray: none; stroke-width: 3; }
+.lf-stats-mode { fill: var(--outline); stroke: var(--content-muted); stroke-width: 3; pointer-events: none; }
+.lf-stats-marker { stroke: var(--content); stroke-width: 3; stroke-dasharray: 8 6; pointer-events: none; }
+.lf-stats-dot { fill: var(--sky-strong); pointer-events: none; }
+.lf-stats-dot--moved { stroke: var(--content); stroke-width: 3; }
+.lf-stats-beam { transform-box: view-box; }
+.lf-stats-beam .lf-stats-bar { fill: var(--content); }
+.lf-stats-beam--level .lf-stats-bar { fill: var(--mint-strong); }
+.lf-stats-pivot { fill: var(--edge); }
+.lf-stats-bar { fill: var(--sky-strong); }
+.lf-stats-band { fill: var(--mint-soft); pointer-events: none; }
+.lf-stats-area { fill: var(--mint); fill-opacity: 0.55; stroke: var(--mint-strong); stroke-width: 3; stroke-linejoin: round; }
+.lf-stats-curve { fill: none; stroke: var(--berry-strong); stroke-width: 4; stroke-linejoin: round; }
+.lf-stats-edge { stroke: var(--mint-strong); stroke-width: 3; }
+.lf-stats-edge-label { fill: currentColor; font-size: 22px; font-weight: 800; }
+.lf-stats-reach { stroke: var(--content); stroke-width: 3; stroke-dasharray: 8 6; }
+.lf-stats-status { font-weight: 800; }
+.lf-stats-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-stats-beam { transition: transform var(--dur-component) var(--ease-standard); }
+}

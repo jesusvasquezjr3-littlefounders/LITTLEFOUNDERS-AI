@@ -1,0 +1,115 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "horizonte-com",
+  "lesson_id": "v2-hz-com-13-17-15-17",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 15,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "kc-hz-com"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf recorre conexiones y compuertas para ver cómo viaja la información.",
+  "title": {
+    "en-US": "Cosine on the circle",
+    "es-MX": "Coseno en el círculo",
+    "pt-BR": "Cosseno no círculo"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "unit-circle-cos",
+      "type": "trig.unit-circle.v2",
+      "grading": "server",
+      "visual": {
+        "type": "unit-circle"
+      },
+      "payload": {
+        "ask": "cos",
+        "level": "root2",
+        "sign": -1,
+        "side": "upper",
+        "step": 15,
+        "start": 0
+      },
+      "rubric": {
+        "predict": "quadrant-2",
+        "value": 135
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict the quadrant. Then drag the point to the angle where the cosine fits.",
+          "feedback": {
+            "met": "You followed the connections the right way.",
+            "not_yet": "Trace each link again, one by one."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice el cuadrante. Luego arrastra el punto al ángulo donde encaja el coseno.",
+          "feedback": {
+            "met": "Seguiste las conexiones de la forma correcta.",
+            "not_yet": "Recorre cada enlace otra vez, uno por uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja o quadrante. Depois arraste o ponto até o ângulo em que o cosseno se encaixa.",
+          "feedback": {
+            "met": "Você seguiu as conexões do jeito certo.",
+            "not_yet": "Percorra cada ligação de novo, uma por uma."
+          }
+        }
+      }
+    },
+    {
+      "id": "secant-slope",
+      "type": "calculus.explorer.v2",
+      "grading": "server",
+      "visual": {
+        "type": "secant"
+      },
+      "payload": {
+        "coeffs": [
+          0,
+          1,
+          -2,
+          0
+        ],
+        "a": 1
+      },
+      "rubric": {
+        "predict": "negative",
+        "value": -3
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict if the slope is positive or negative. Then shrink the gap until the secant becomes the tangent.",
+          "feedback": {
+            "met": "You followed the connections the right way.",
+            "not_yet": "Trace each link again, one by one."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice si la pendiente es positiva o negativa. Luego reduce la distancia hasta que la secante sea la tangente.",
+          "feedback": {
+            "met": "Seguiste las conexiones de la forma correcta.",
+            "not_yet": "Recorre cada enlace otra vez, uno por uno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja se a inclinação é positiva ou negativa. Depois reduza a distância até a secante virar a tangente.",
+          "feedback": {
+            "met": "Você seguiu as conexões do jeito certo.",
+            "not_yet": "Percorra cada ligação de novo, uma por uma."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-space1",
+  "lesson_id": "v2-hz-space1-10-12-11-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-space1"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Liruf coloca piezas en el espacio y las mira desde varios lados.",
+  "title": {
+    "en-US": "Slice the cube",
+    "es-MX": "Corta el cubo",
+    "pt-BR": "Corte o cubo"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "section-cube-hexagon",
+      "type": "geometry.solid-section.v2",
+      "grading": "server",
+      "visual": {
+        "type": "solid-section"
+      },
+      "payload": {
+        "mode": "section",
+        "solid": "cube",
+        "plane": {
+          "normal": [
+            1,
+            1,
+            1
+          ],
+          "offset": 0
+        },
+        "options": [
+          "triangle",
+          "rectangle",
+          "hexagon"
+        ]
+      },
+      "rubric": {
+        "pick": "hexagon"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A plane slices the cube. What shape is the cut?",
+          "feedback": {
+            "met": "You placed the pieces in space correctly.",
+            "not_yet": "Look from another side and try again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Un plano corta el cubo. ¿Qué forma tiene el corte?",
+          "feedback": {
+            "met": "Colocaste las piezas en el espacio correctamente.",
+            "not_yet": "Mira desde otro lado y prueba otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um plano corta o cubo. Que forma tem o corte?",
+          "feedback": {
+            "met": "Você colocou as peças no espaço corretamente.",
+            "not_yet": "Olhe de outro lado e tente de novo."
+          }
+        }
+      }
+    }
+  ]
+}

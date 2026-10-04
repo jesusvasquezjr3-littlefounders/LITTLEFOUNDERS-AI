@@ -69,6 +69,13 @@ if ! node agent/tools/check-rebuild-namespaces.mjs; then
   exit 1
 fi
 
+# ── Phase 1c: Horizonte pack copy ─────────────────────────────────────────────
+# Each Horizonte pack holds its strings in <pack>/copy.ts (three native locales,
+# a Copy Budget role per string); the checker finds the pack modules by scanning.
+if ! node agent/tools/check-horizonte-copy.mjs; then
+  exit 1
+fi
+
 # ── Phase 2: Hardcoded string scan ────────────────────────────────────────────
 if ! node agent/tools/check-hardcoded-strings.mjs; then
   FAIL=1

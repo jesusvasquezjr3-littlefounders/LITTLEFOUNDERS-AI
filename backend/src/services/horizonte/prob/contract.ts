@@ -1,0 +1,93 @@
+import { z } from 'zod';
+import { hzBase, hzServer, hzVisual } from '../shared.js';
+import type { HorizonteAgeScope } from '../types.js';
+import {
+  ASKS, CHIPS_MAX, CHIPS_MIN, POPULATION_MAX, POPULATION_MIN, RATIO_WHOLE_MAX,
+  isAskable, isChipSet, isRatio, treeBasis, treeSolution, type TreeBasis,
+} from './model.js';
+import {
+  INTERCEPT_MAX, INTERCEPT_MIN, POINTS_MAX, POINTS_MIN, SIZE_MAX, SIZE_MIN, SLOPE_MAX, SLOPE_MIN,
+  fitOnGrid, isPoints, sameLine, sseHundredths,
+} from './regression.js';
+
+const ratio = z.object({ part: z.number().int().min(1).max(RATIO_WHOLE_MAX - 1), whole: z.number().int().min(2).max(RATIO_WHOLE_MAX) }).strict();
+const basis = {
+  population: z.number().int().min(POPULATION_MIN).max(POPULATION_MAX),
+  prior: ratio, hit: ratio, alarm: ratio,
+};
+
+/** H14: a tree for a whole population (who has it, who tests positive); the tray holds the six head counts and a few that tempt. */
+export const treePayload = z.object({ ...basis, chips: z.array(z.number().int().min(1).max(POPULATION_MAX)).min(CHIPS_MIN).max(CHIPS_MAX) }).strict();
+
+/** H29: the same three shares, and the one share asked for: of the people with a result, how many truly have it. */
+export const bayesPayload = z.object({ ...basis, ask: z.enum(ASKS) }).strict();
+
+const coordinate = z.number().int().min(0).max(SIZE_MAX);
+
+/** H11: points on a square grid and the line the sliders start on, both numbers of the line counted in tenths. */
+export const regressionPayload = z.object({
+  size: z.number().int().min(SIZE_MIN).max(SIZE_MAX),
+  points: z.array(z.object({ x: coordinate, y: coordinate }).strict()).min(POINTS_MIN).max(POINTS_MAX),
+  start: z.object({ slope: z.number().int().min(SLOPE_MIN).max(SLOPE_MAX), intercept: z.number().int().min(INTERCEPT_MIN).max(INTERCEPT_MAX) }).strict(),
+}).strict();
+
+type Issue = (path: string, message: string) => void;
+
+function basisProblems(payload: TreeBasis, issue: Issue): boolean {
+  const { population, prior, hit, alarm } = payload;
+  const shares = { population, prior, hit, alarm };
+  if (!isRatio(payload.prior)) issue('prior', 'A share is a part in a whole, with the part below the whole');
+  else if (!isRatio(payload.hit)) issue('hit', 'A share is a part in a whole, with the part below the whole');
+  else if (!isRatio(payload.alarm)) issue('alarm', 'A share is a part in a whole, with the part below the whole');
+  else if (!treeSolution(shares)) issue('population', 'Every share must land on whole people and the six counts must all differ');
+  else return true;
+  return false;
+}
+
+function treeProblems(payload: z.infer<typeof treePayload>, issue: Issue): void {
+  if (!basisProblems(payload, issue)) return;
+  if (!isChipSet(payload.chips, treeBasis(payload)!)) issue('chips', 'The tray holds the six counts and 1 to 4 more, all different, each a whole number of people up to the population');
+}
+
+function bayesProblems(payload: z.infer<typeof bayesPayload>, issue: Issue): void {
+  if (!basisProblems(payload, issue)) return;
+  if (!isAskable(treeBasis(payload)!, payload.ask)) issue('ask', 'The share asked for must be between 1 in 20 and 19 in 20');
+}
+
+function regressionProblems(payload: z.infer<typeof regressionPayload>, issue: Issue): void {
+  if (!isPoints(payload.points, payload.size)) return issue('points', 'The points are 4 to 12 different whole points on the grid, at least 3 of them at different x');
+  const answer = fitOnGrid(payload.points);
+  if (!answer) return issue('points', 'The best line must have its slope and intercept on the tenths grid, inside the slider ranges');
+  if (sseHundredths(payload.points, answer) === 0) return issue('points', 'The points must not all lie on one line');
+  if (sameLine(answer, payload.start)) issue('start', 'The line starts away from the best line');
+}
+
+const refine = <P>(check: (payload: P, issue: Issue) => void) => (value: { payload: P }, ctx: z.RefinementCtx) =>
+  check(value.payload, (path, message) => ctx.addIssue({ code: 'custom', path: ['payload', path], message }));
+
+export const PROB_SEGMENTS = [
+  z.object({ ...hzBase, type: z.literal('prob.tree.v2'), grading: hzServer, visual: hzVisual('prob-tree'), payload: treePayload }).strict().superRefine(refine(treeProblems)),
+  z.object({ ...hzBase, type: z.literal('prob.bayes.v2'), grading: hzServer, visual: hzVisual('natural-frequencies'), payload: bayesPayload }).strict().superRefine(refine(bayesProblems)),
+  z.object({ ...hzBase, type: z.literal('prob.regression.v2'), grading: hzServer, visual: hzVisual('regression-residuals'), payload: regressionPayload }).strict().superRefine(refine(regressionProblems)),
+] as const;
+
+const numberText = z.string().regex(/^(-?(0|[1-9]\d{0,14})(\.\d{1,12})?|-?(0|[1-9]\d{0,14})\/[1-9]\d{0,14})$/).max(32);
+const allowance = z.object({ absolute: numberText }).strict();
+const chip = z.array(z.string().regex(/^n-[1-9]\d{0,4}$/)).length(1);
+
+export const PROB_RUBRICS = {
+  'prob.tree.v2': z.object({
+    solutions: z.array(z.object({ has: chip, lacks: chip, 'has-pos': chip, 'has-neg': chip, 'lacks-pos': chip, 'lacks-neg': chip }).strict()).length(1),
+  }).strict(),
+  'prob.bayes.v2': z.object({ target: numberText, tolerance: allowance, review: allowance.optional() }).strict(),
+  'prob.regression.v2': z.object({
+    family: z.literal('line'), target: z.object({ m: numberText, b: numberText }).strict(),
+    parameter_tolerance: allowance, parameter_review: allowance.optional(),
+  }).strict(),
+} as const;
+
+export const PROB_AGE_SCOPE: Readonly<Record<string, HorizonteAgeScope>> = {
+  'prob.tree.v2': { ages: [13, 17], adult: true },
+  'prob.bayes.v2': { ages: [13, 17], adult: true },
+  'prob.regression.v2': { ages: [14, 17], adult: true },
+};

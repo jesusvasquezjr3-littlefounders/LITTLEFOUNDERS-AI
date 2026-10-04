@@ -1,0 +1,168 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-education-10-12",
+  "chapter_id": "horizonte-num-b",
+  "lesson_id": "v2-hz-num-b-10-12-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "kc-hz-num-b"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "brief": "Rho compara dos líneas para ver qué razón o fracción se mantiene igual.",
+  "title": {
+    "en-US": "Two lines, one ratio",
+    "es-MX": "Dos rectas, una razón",
+    "pt-BR": "Duas retas, uma razão"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "One neutral board: numbers and shapes only, and any amount is written with each market's own currency sign."
+  },
+  "segments": [
+    {
+      "id": "double-line-scale",
+      "type": "math.ratio-line.v2",
+      "grading": "server",
+      "visual": {
+        "type": "double-number-line"
+      },
+      "payload": {
+        "units": [
+          "pencils",
+          "coins"
+        ],
+        "base": [
+          3,
+          6
+        ],
+        "given": {
+          "line": "top",
+          "value": 12
+        }
+      },
+      "rubric": {
+        "value": 24
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "3 pencils cost 6 coins. How many coins for 12 pencils?",
+          "feedback": {
+            "met": "You kept both lines in the same proportion.",
+            "not_yet": "Compare the two lines again, one step at a time."
+          }
+        },
+        "es-MX": {
+          "prompt": "3 lápices cuestan 6 monedas. ¿Cuántas monedas por 12 lápices?",
+          "feedback": {
+            "met": "Mantuviste las dos líneas en la misma proporción.",
+            "not_yet": "Compara las dos líneas otra vez, un paso a la vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "3 lápis custam 6 moedas. Quantas moedas por 12 lápis?",
+          "feedback": {
+            "met": "Você manteve as duas linhas na mesma proporção.",
+            "not_yet": "Compare as duas linhas de novo, um passo de cada vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "circles-add",
+      "type": "math.fraction-circles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-circles"
+      },
+      "payload": {
+        "op": "add",
+        "left": [
+          1,
+          8
+        ],
+        "right": [
+          3,
+          8
+        ]
+      },
+      "rubric": {
+        "n": 1,
+        "d": 2
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Join one eighth and three eighths in one circle. What is the sum?",
+          "feedback": {
+            "met": "You joined parts of the same size.",
+            "not_yet": "Count the shaded parts of the work circle again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Junta un octavo y tres octavos en un círculo. ¿Cuál es la suma?",
+          "feedback": {
+            "met": "Juntaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes sombreadas del círculo de trabajo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Junte um oitavo e três oitavos em um círculo. Qual é a soma?",
+          "feedback": {
+            "met": "Você juntou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes pintadas do círculo de trabalho."
+          }
+        }
+      }
+    },
+    {
+      "id": "circles-subtract",
+      "type": "math.fraction-circles.v2",
+      "grading": "server",
+      "visual": {
+        "type": "fraction-circles"
+      },
+      "payload": {
+        "op": "subtract",
+        "left": [
+          7,
+          10
+        ],
+        "right": [
+          3,
+          10
+        ]
+      },
+      "rubric": {
+        "n": 2,
+        "d": 5
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Take three tenths from seven tenths. What is left?",
+          "feedback": {
+            "met": "You took away parts of the same size.",
+            "not_yet": "Count the parts left in the work circle again."
+          }
+        },
+        "es-MX": {
+          "prompt": "Quita tres décimos de siete décimos. ¿Cuánto queda?",
+          "feedback": {
+            "met": "Quitaste partes del mismo tamaño.",
+            "not_yet": "Cuenta otra vez las partes que quedan en el círculo de trabajo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tire três décimos de sete décimos. Quanto sobra?",
+          "feedback": {
+            "met": "Você tirou partes do mesmo tamanho.",
+            "not_yet": "Conte de novo as partes que sobram no círculo de trabalho."
+          }
+        }
+      }
+    }
+  ]
+}

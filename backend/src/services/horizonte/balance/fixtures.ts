@@ -1,0 +1,133 @@
+import type { HorizonteFixture, HorizonteLocale } from '../types.js';
+
+const text = (en: string, es: string, pt: string): Record<HorizonteLocale, string> => ({ 'en-US': en, 'es-MX': es, 'pt-BR': pt });
+
+const ELIGIBLE_10_12 = { minimum_age: 10, maximum_age: 12 };
+
+/** F1.8: `a x + b = c x + d` as a scale; every fixture has a route the offered operations can walk. */
+const balanceFixture = (
+  id: string,
+  title: Record<HorizonteLocale, string>,
+  prompt: Record<HorizonteLocale, string>,
+  start: { l: { x: number; u: number }; r: { x: number; u: number } },
+  ops: readonly string[],
+  x: number,
+  route: readonly string[],
+  untouchable: string,
+): HorizonteFixture => ({
+  id,
+  title,
+  ageBand: '10-12',
+  eligibility: ELIGIBLE_10_12,
+  segment: (locale) => ({
+    id: `balance-${id}`, type: 'math.equation-balance.v2', grading: 'server', visual: { type: 'equation-balance' },
+    prompt: prompt[locale], payload: { start, ops: [...ops] },
+  }),
+  rubric: { x },
+  ladder: { invalid: { steps: [untouchable], answer: '' }, valid: { steps: [], answer: '' }, met: { steps: [...route], answer: String(x) } },
+});
+
+/** F1.15: one visual, the formulas offered for the prediction, and the key (right formula and exact value). */
+const proofFixture = (
+  id: string,
+  visual: string,
+  title: Record<HorizonteLocale, string>,
+  prompt: Record<HorizonteLocale, string>,
+  payload: Record<string, unknown>,
+  key: { choice: string; value: string },
+  invalid: { choice: string; value: string },
+  band: { ageBand: '10-12' | '13-17'; eligibility: { minimum_age: number; maximum_age: number } } = { ageBand: '10-12', eligibility: ELIGIBLE_10_12 },
+): HorizonteFixture => ({
+  id,
+  title,
+  ...band,
+  segment: (locale) => ({
+    id: `proof-${id}`, type: 'math.visual-proof.v2', grading: 'server', visual: { type: visual }, prompt: prompt[locale], payload,
+  }),
+  rubric: { choice: key.choice, value: key.value },
+  ladder: { invalid, valid: { choice: '', value: '' }, met: { choice: key.choice, value: key.value } },
+});
+
+export const BALANCE_FIXTURES: readonly HorizonteFixture[] = [
+  balanceFixture(
+    'two-sides', text('Same on both pans', 'Lo mismo en ambos platos', 'O mesmo nos dois pratos'),
+    text('Keep the scale level. Do the same on both pans until x stands alone, then type x.',
+      'Mantén la balanza nivelada. Haz lo mismo en ambos platos hasta dejar la x sola, y escribe x.',
+      'Mantenha a balança nivelada. Faça o mesmo nos dois pratos até deixar o x sozinho, e digite x.'),
+    { l: { x: 3, u: 2 }, r: { x: 1, u: 8 } }, ['sub-x', 'sub-unit', 'add-unit', 'div-2', 'slip-left', 'slip-right'],
+    3, ['sub-x', 'sub-unit', 'sub-unit', 'div-2'], 'div-2',
+  ),
+  balanceFixture(
+    'x-on-right', text('x on the right', 'La x a la derecha', 'O x à direita'),
+    text('The x can end up on either pan. Find x and keep the scale level.',
+      'La x puede quedar en cualquier plato. Halla x sin desnivelar la balanza.',
+      'O x pode ficar em qualquer prato. Descubra x sem desequilibrar a balança.'),
+    { l: { x: 1, u: 5 }, r: { x: 2, u: 1 } }, ['sub-x', 'sub-unit', 'add-unit', 'slip-right'],
+    4, ['sub-x', 'sub-unit'], 'slip-right',
+  ),
+  balanceFixture(
+    'divide-last', text('Divide at the end', 'Dividir al final', 'Dividir no fim'),
+    text('Take away what you can, then divide both pans by the same number. What is x?',
+      'Quita lo que puedas y divide ambos platos entre el mismo número. ¿Cuánto vale x?',
+      'Tire o que puder e divida os dois pratos pelo mesmo número. Quanto vale x?'),
+    { l: { x: 6, u: 3 }, r: { x: 2, u: 15 } }, ['sub-x', 'sub-unit', 'div-2', 'div-3', 'div-4'],
+    3, ['sub-x', 'sub-x', 'sub-unit', 'sub-unit', 'sub-unit', 'div-4'], 'div-2',
+  ),
+  proofFixture(
+    'parallelogram', 'parallelogram-area', text('Parallelogram area', 'Área del paralelogramo', 'Área do paralelogramo'),
+    text('Predict which formula gives the area. Then move the piece and type the area.',
+      'Predice qué fórmula da el área. Luego mueve la pieza y escribe el área.',
+      'Preveja qual fórmula dá a área. Depois mova a peça e digite a área.'),
+    { base: 6, height: 4, slant: 2, choices: ['base-plus-height', 'base-height', 'half-base-height'] },
+    { choice: 'base-height', value: '24' }, { choice: 'pi-r-squared', value: '' },
+  ),
+  proofFixture(
+    'triangle', 'triangle-area', text('Triangle area', 'Área del triángulo', 'Área do triângulo'),
+    text('Predict which formula gives the area. Then copy and turn the triangle, and type the area.',
+      'Predice qué fórmula da el área. Luego copia y gira el triángulo, y escribe el área.',
+      'Preveja qual fórmula dá a área. Depois copie e gire o triângulo, e digite a área.'),
+    { base: 8, height: 5, apex: 3, choices: ['half-base-height', 'base-height', 'base-plus-height'] },
+    { choice: 'half-base-height', value: '20' }, { choice: 'base-height', value: '1,5' },
+  ),
+  proofFixture(
+    'trapezoid', 'trapezoid-area', text('Trapezoid area', 'Área del trapecio', 'Área do trapézio'),
+    text('Predict which formula gives the area. Then join two trapezoids, and type the area.',
+      'Predice qué fórmula da el área. Luego une dos trapecios y escribe el área.',
+      'Preveja qual fórmula dá a área. Depois una dois trapézios e digite a área.'),
+    { top: 4, bottom: 10, height: 6, offset: 2, choices: ['sum-bases-height', 'half-sum-bases-height', 'half-base-height'] },
+    { choice: 'half-sum-bases-height', value: '42' }, { choice: 'half-sum-bases-height', value: '4 2' },
+  ),
+  proofFixture(
+    'circle-area', 'circle-area', text('Circle area', 'Área del círculo', 'Área do círculo'),
+    text('Predict which formula gives the area. Use π as 3.14.',
+      'Predice qué fórmula da el área. Usa π igual a 3.14.',
+      'Preveja qual fórmula dá a área. Use π igual a 3,14.'),
+    { radius: 5, sectors: [8, 16, 32], choices: ['pi-diameter', 'pi-r-squared', 'radius-squared', 'pi-radius'] },
+    { choice: 'pi-r-squared', value: '78.5' }, { choice: 'legs-sum', value: '' },
+  ),
+  proofFixture(
+    'circumference', 'circumference-unroll', text('Circumference and pi', 'Circunferencia y pi', 'Circunferência e pi'),
+    text('Predict which formula gives the distance around. Use π as 3.14.',
+      'Predice qué fórmula da la distancia alrededor. Usa π igual a 3.14.',
+      'Preveja qual fórmula dá a distância ao redor. Use π igual a 3,14.'),
+    { diameter: 7, choices: ['pi-r-squared', 'pi-diameter', 'pi-radius'] },
+    { choice: 'pi-diameter', value: '21.98' }, { choice: 'pi-diameter', value: '21.980' },
+  ),
+  proofFixture(
+    'pythagoras', 'pythagoras-proof', text('Pythagoras by pieces', 'Pitágoras con piezas', 'Pitágoras com peças'),
+    text('Predict which formula links the legs and the long side. Then move the triangles, and type the long side.',
+      'Predice qué fórmula une los catetos y el lado largo. Luego mueve los triángulos y escribe el lado largo.',
+      'Preveja qual fórmula liga os catetos e o lado maior. Depois mova os triângulos e digite o lado maior.'),
+    { a: 6, b: 8, choices: ['legs-sum-squared', 'legs-squares-sum', 'legs-product', 'legs-sum'] },
+    { choice: 'legs-squares-sum', value: '10' }, { choice: 'legs-squares-sum', value: '-0' },
+    { ageBand: '13-17', eligibility: { minimum_age: 13, maximum_age: 15 } },
+  ),
+  proofFixture(
+    'odd-sum', 'odd-sum-proof', text('Sum of odd numbers', 'Suma de impares', 'Soma de ímpares'),
+    text('Predict the sum of the first odd numbers. Then fit the corners into a square, and type the sum.',
+      'Predice la suma de los primeros impares. Luego encaja las esquinas en un cuadrado y escribe la suma.',
+      'Preveja a soma dos primeiros ímpares. Depois encaixe os cantos num quadrado e digite a soma.'),
+    { n: 5, choices: ['n-plus-n', 'n-times-n', 'n-times-two'] },
+    { choice: 'n-times-n', value: '25' }, { choice: 'n-times-n', value: 'five' },
+  ),
+];

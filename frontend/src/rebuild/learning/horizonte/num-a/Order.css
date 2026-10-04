@@ -1,0 +1,16 @@
+/* F1.3 ordering line: equal marks on one axis with the given numbers placed on them. Flipping tokens only, no motion. */
+.lf-order-line { --marks: 1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(var(--hz-hit), 1fr); inline-size: 100%; min-inline-size: calc(var(--marks) * var(--hz-hit)); margin: 0; padding: 0; list-style: none; }
+.lf-order-mark { display: grid; grid-template-rows: minmax(var(--hz-hit), auto) var(--spacing-6) auto; justify-items: center; min-inline-size: 0; border-radius: var(--rounded-md); }
+.lf-order-mark[data-drop-armed='true'] { background: var(--sunken); }
+.lf-order-mark[data-drop-selected='true'] { background: var(--sunken); outline: 2px solid var(--primary-strong); }
+.lf-order-slot { display: grid; place-items: center; inline-size: 100%; }
+.lf-order-empty { display: block; inline-size: var(--spacing-8); block-size: var(--spacing-8); border: 2px dashed var(--outline); border-radius: var(--rounded-md); }
+.lf-order-axis { position: relative; display: block; inline-size: 100%; }
+.lf-order-axis::before { content: ''; position: absolute; inset-inline: 0; inset-block-start: 50%; border-block-start: 3px solid var(--content-muted); }
+.lf-order-axis::after { content: ''; position: absolute; inset-block: 0; inset-inline-start: 50%; border-inline-start: 3px solid var(--content-muted); }
+.lf-order-mark:first-child .lf-order-axis::before { inset-inline-start: 50%; }
+.lf-order-mark:last-child .lf-order-axis::before { inset-inline-end: 50%; }
+.lf-order-number { font: var(--type-label); color: var(--content); }
+.lf-order-tray { display: flex; flex-wrap: wrap; align-content: flex-start; gap: var(--spacing-2); min-block-size: calc(var(--hz-hit) + var(--spacing-6)); padding: var(--spacing-3); border: 2px solid var(--outline); border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-order-tray[data-drop-armed='true'] { border-color: var(--primary-strong); border-style: dashed; }
+.lf-order-tray[data-drop-selected='true'] { border-color: var(--primary-strong); border-style: solid; }

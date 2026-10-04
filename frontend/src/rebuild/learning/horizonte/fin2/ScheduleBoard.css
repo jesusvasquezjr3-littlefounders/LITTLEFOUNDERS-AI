@@ -1,0 +1,24 @@
+/* F2.15 schedule board: task rows by period or step, arrows for what must come first, and kanban columns. Words are HTML; the SVG keeps numerals. Tokens only. */
+.lf-sched-drawing { max-inline-size: 24rem; }
+.lf-sched-chart text { fill: var(--content); font-size: 18px; font-weight: 700; }
+.lf-sched-grid { stroke: var(--outline); stroke-width: 1; }
+.lf-sched-bar { fill: var(--sky-strong); }
+.lf-sched-bar--broken { fill: var(--sunken); stroke: var(--berry-strong); stroke-width: 2; stroke-dasharray: 3 2; }
+.lf-sched-due { stroke: var(--content); stroke-width: 2; stroke-dasharray: 4 3; }
+.lf-sched-arrow path { stroke: var(--content); stroke-width: 1.5; }
+.lf-sched-arrow polygon { fill: var(--content); }
+.lf-sched-arrow--broken path { stroke: var(--berry-strong); stroke-dasharray: 3 2; }
+.lf-sched-arrow--broken polygon { fill: var(--berry-strong); }
+.lf-sched-over { fill: none; stroke: var(--berry-strong); stroke-width: 2; stroke-dasharray: 3 2; }
+
+.lf-sched-kanban { display: grid; grid-template-columns: repeat(3, minmax(min-content, 1fr)); gap: var(--spacing-2); inline-size: 100%; max-inline-size: 28rem; }
+.lf-sched-column { display: flex; flex-direction: column; gap: var(--spacing-1); min-inline-size: 0; padding: var(--spacing-2) var(--spacing-1); border: 1px solid var(--content-muted); border-radius: var(--rounded-md); background: var(--sunken); }
+/* break-word, not anywhere: anywhere shrinks min-content to one letter, so a long name would be split instead of widening its column. */
+.lf-sched-column-name, .lf-sched-note { font-size: 0.875rem; line-height: 1.15; overflow-wrap: break-word; }
+.lf-sched-column-name { font-weight: 700; }
+.lf-sched-note { font-weight: 600; color: var(--content-muted); }
+.lf-sched-cards { display: flex; flex-wrap: wrap; gap: var(--spacing-1); margin-block-start: auto; padding-block-start: var(--spacing-2); }
+.lf-sched-card { display: block; inline-size: var(--spacing-4); block-size: var(--spacing-4); border: 1px solid var(--content-muted); border-radius: var(--rounded-sm); background: var(--surface); }
+.lf-sched-card--full { border-color: var(--sky-strong); background: var(--sky-strong); }
+.lf-sched-done { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+.lf-sched-done li { padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-md); background: var(--surface); }
