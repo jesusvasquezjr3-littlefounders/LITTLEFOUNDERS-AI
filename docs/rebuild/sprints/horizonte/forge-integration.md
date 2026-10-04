@@ -9,7 +9,7 @@ Solvability: [F0.4-solvability.md](./F0.4-solvability.md).
 | Area | `coursegen/` (Forge), v2 emitter, gates, fixtures |
 | Pieces covered | every Horizonte pack: golden, num-a, num-b, balance, stats1, plane1, fin1, fin2, alg1, alg2, geom2, prob, com, sim1, sim2, solids, space1, space2 |
 | Segment types added | 64 at the first merge; 69 now (the merges of `feat/horizonte-visual` during the fix round brought `math.number-line.order`, `math.ruler.measure`, `math.fraction-circles`, `geometry.solid-net` and `math.surface-formula`; the fix round itself added no segment type). At the first merge: 64 (golden 1, num-a 7, num-b 3, balance 2, stats1 5, plane1 8, fin1 3, fin2 3, alg1 3, alg2 3, geom2 4, prob 3, com 4, sim1 4, sim2 1, solids 3, space1 4, space2 3). Each is registered once, through its pack, in `horizonte/index.ts` |
-| Status | Implemented and locally verified in the worktree. Not accepted, not released, not pushed |
+| Status | Implemented, verified and merged to `main` as `2670d911` (PR #125, 4 October 2026); Core, Coursegen, Filebase and the frontend are deployed. Not accepted by the owner. Forge publishing Horizonte types waits until Core's capability map is confirmed live |
 
 ## What the merged tree needed
 
