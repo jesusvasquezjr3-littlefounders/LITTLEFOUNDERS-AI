@@ -161,7 +161,7 @@ export const PAGES = [
   {
     path: '/',
     index: true,
-    lastmod: '2026-09-26',
+    lastmod: '2026-10-02',
     priority: '1.0',
     changefreq: 'weekly',
     /** Included in llms.txt so an agent knows what the page is for. */
@@ -170,20 +170,20 @@ export const PAGES = [
       'en-US': {
         title: 'Financial literacy for kids and teens | LittleFounders',
         description:
-          "Kids don't watch lessons here: they make decisions and live the results. Four Mentors who answer back, and real money skills. Free to start.",
-        h1: 'The money pattern in your family ends with you.',
+          'Help your child save, solve problems and develop ideas through interactive challenges and an AI Mentor. Free to start.',
+        h1: 'Help your child understand the value of money.',
       },
       'es-MX': {
         title: 'Educación financiera para niños y adolescentes | LittleFounders',
         description:
-          'Aquí no ven lecciones: toman decisiones y viven el resultado. Cuatro Mentores que responden y habilidades reales con el dinero. Gratis para empezar.',
-        h1: 'El patrón del dinero en tu familia termina contigo.',
+          'Ayúdalo a ahorrar, resolver problemas y crear ideas con retos interactivos y un Mentor de IA. Gratis para empezar.',
+        h1: 'Que tu hijo entienda el valor del dinero.',
       },
       'pt-BR': {
         title: 'Educação financeira para crianças e adolescentes | LittleFounders',
         description:
-          'Aqui não se assiste a aulas: decide-se e vive-se o resultado. Quatro Mentores que respondem e habilidades reais com dinheiro. Grátis para começar.',
-        h1: 'O padrão do dinheiro na sua família termina com você.',
+          'Ajude a poupar, resolver problemas e criar ideias com desafios interativos e um Mentor de IA. Grátis para começar.',
+        h1: 'Ajude seu filho a entender o valor do dinheiro.',
       },
     },
   },

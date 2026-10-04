@@ -44,7 +44,7 @@ export function BadgeLanding({ locale, state, start, onNavigate, header }: {
   </ButtonGroup>;
 
   if (state.status === 'loading') {
-    return <SingleStateScreen appName="LittleFounders" pageTitle={copy.loading} routeKey="badge-landing" locale={locale} hue="primary" labels={{ skip }} bar={header ?? <StandaloneHeader locale={locale} theme="light" />}>
+    return <SingleStateScreen appName="LittleFounders" pageTitle={copy.loading} routeKey="badge-landing" locale={locale} hue="primary" labels={{ skip }} bar={header ?? <StandaloneHeader marketing locale={locale} theme="light" />}>
       <div className="lf-badge-landing" data-screen="badge-landing" data-state="loading">
         <LoadingState label={copy.loading} lines={2} />
       </div>
@@ -53,7 +53,7 @@ export function BadgeLanding({ locale, state, start, onNavigate, header }: {
 
   if (state.status === 'expired') {
     return <SingleStateScreen appName="LittleFounders" pageTitle={copy.expiredTitle} routeKey="badge-landing" locale={locale} hue="primary"
-      labels={{ skip }} bar={header ?? <StandaloneHeader locale={locale} theme="light" />} actions={actions}>
+      labels={{ skip }} bar={header ?? <StandaloneHeader marketing locale={locale} theme="light" />} actions={actions}>
       <div className="lf-badge-landing" data-screen="badge-landing" data-state="expired">
         <h1 data-copy-role="heading">{copy.expiredTitle}</h1>
         <p data-copy-role="body">{copy.expiredBody}</p>
@@ -64,7 +64,7 @@ export function BadgeLanding({ locale, state, start, onNavigate, header }: {
   const values = { name: state.payload.firstName, achievement: state.payload.achievementLabel };
   const title = fill(copy.title, values);
   return <SingleStateScreen appName="LittleFounders" pageTitle={title} routeKey="badge-landing" locale={locale} hue="primary"
-    labels={{ skip }} bar={header ?? <StandaloneHeader locale={locale} theme="light" />} actions={actions}>
+    labels={{ skip }} bar={header ?? <StandaloneHeader marketing locale={locale} theme="light" />} actions={actions}>
     <div className="lf-badge-landing" data-screen="badge-landing" data-state="ready" data-kind={state.payload.achievementKind}>
       {/* The share image Depot rendered for this badge (a server render of our own art, not a manifest slot). */}
       <img className="lf-badge-landing-image" src={state.payload.imageUrl} alt={fill(copy.imageAlt, values)} width={1080} height={1920} />

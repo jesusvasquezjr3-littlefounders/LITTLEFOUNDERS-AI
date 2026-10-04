@@ -65,11 +65,12 @@ function renderApp(path: string, layout: 'app' | 'staff' = 'app') {
 const navLinks = () => within(screen.getAllByRole('navigation')[0]!).getAllByRole('link');
 
 describe('the learner app shell', () => {
-  it('integrates the approved graphic, language dropdown and icon-only mode control in the header', async () => {
+  it('keeps branding and display controls in the rail and opens mobile preferences from the dock', async () => {
     const { container } = renderApp('/learn');
     await screen.findAllByRole('link', { name: 'Dina' });
-    const header = container.querySelector('.lf-appbar')!;
-    expect(header.querySelector('img[data-asset-id="brand.mark"]')).toHaveAttribute('src', '/rebuild/brand/mark.svg');
+    expect(container.querySelector('.lf-appbar')).toBeNull();
+    const header = container.querySelector('.lf-shell-rail')!;
+    expect(header.querySelector('img[data-asset-id="brand.logo"]')).toHaveAttribute('src', '/rebuild/brand/logo.png');
     const language = within(header as HTMLElement).getByRole('combobox', { name: 'Language' });
     expect(language).toHaveTextContent('EN');
     expect(language).toHaveAccessibleDescription('English');
@@ -107,8 +108,8 @@ describe('the learner app shell', () => {
     expect(container.querySelector('[data-shell="learner"]')).not.toBeNull();
     expect(screen.getByRole('link', { name: 'Skip to content' })).toBeInTheDocument();
     expect(within(container.querySelector('main')!).getByRole('heading', { name: 'Learn page' })).toBeInTheDocument();
-    // The legacy AppLayout's marks: its raster logo, its sidebar, its glass bars and its "Tutor" lock badge.
-    expect(container.querySelector('img[src*="logo"], aside, .lf-glass')).toBeNull();
+    // The official graphic is allowed; legacy chrome and unregistered replacement logos are not.
+    expect(container.querySelector('img[src*="logo"]:not([data-asset-id="brand.logo"]), aside, .lf-glass')).toBeNull();
     // No legacy page body is left (02 rule 23, D13): the page sits directly in the shell's <main>.
     expect(container.querySelector('[data-legacy-body]')).toBeNull();
     expect(container.querySelector('.lf-page-enter, .font-body, .max-w-container')).toBeNull();

@@ -4,13 +4,15 @@ import { BrandMark, IconButton, SelectField } from '@/rebuild/design/controls';
 import type { Locale } from '@/rebuild/design/copyBudget';
 import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 
-/** Provider-independent header for standalone screens and their preview fixtures. */
-export function StandaloneHeader({ locale, theme, onLocale, onTheme }: {
+/** Only public marketing surfaces may opt into a topbar. Application states render no header. */
+export function StandaloneHeader({ locale, theme, onLocale, onTheme, marketing = false }: {
   locale: Locale; theme: 'light' | 'dark'; onLocale?: (locale: Locale) => void; onTheme?: (theme: 'light' | 'dark') => void;
+  marketing?: boolean;
 }) {
   const copy = rebuildNamespaceCopy[locale].core.siteShell;
   const languageId = useId();
   const languageName = locale === 'es-MX' ? 'Español' : locale === 'pt-BR' ? 'Português' : 'English';
+  if (!marketing) return null;
   return <header className="lf-standalone-header">
     <BrandMark name="LittleFounders" />
     <div className="lf-shell-preferences" data-shell-preferences>

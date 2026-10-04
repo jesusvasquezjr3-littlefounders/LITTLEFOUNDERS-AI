@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../../design/ApplicationArt';
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Button, ButtonGroup, Chip, Copy, DashboardLayout, EmptyState, InlineNotice, RewardChip, TextField } from '../../design/controls';
 import { childName, fetchChildren, type Child, type ConsoleTransport } from '../console/consoleApi';
@@ -85,7 +86,7 @@ export function TutorTasks({ copy, locale, dark, transport, photos, onNavigate, 
   }, [read, refreshKey]);
 
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console lf-family-money" data-screen="tutor-tasks" data-theme={dark ? 'dark' : 'light'} lang={locale}>
-    <header className="lf-console-header"><h1 data-copy-role="heading">{copy.title}</h1></header>
+    <header className="lf-console-header lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{copy.title}</h1></div><ApplicationArt scene="family" /></header>
     {body}
   </div>;
 

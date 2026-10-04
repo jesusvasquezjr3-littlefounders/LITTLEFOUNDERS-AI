@@ -1,6 +1,6 @@
 /* B.10 / B.13, S05.3c. Family Hub sections: a neutral page with coloured cards
    (Bible 02 rule 15). Tokens only; separation by fill, never by outline (4.4). */
-.lf-family-learning, .lf-family-bridges { min-block-size: 0; display: grid; gap: var(--spacing-4); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--base); color: var(--content); }
+.lf-rebuild.lf-family-learning, .lf-rebuild.lf-family-bridges { min-block-size: 0; display: grid; align-content: start; gap: var(--spacing-4); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--base); color: var(--content); }
 .lf-family-learning > *, .lf-family-bridges > * { min-inline-size: 0; }
 .lf-family-learning h2, .lf-family-bridges h2 { font-size: 1.5rem; }
 .lf-family-learning-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); }

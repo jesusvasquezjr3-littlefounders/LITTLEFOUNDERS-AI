@@ -301,7 +301,8 @@ describe('console shells', () => {
     render(wrap(<StaffShell appName="LittleFounders" pageTitle="Visão geral" routeKey="overview" locale="pt-BR" labels={consoleLabels} roleLabel="Equipe"
       current="overview" items={staffItems} grants={{ superadmin: true, permissions: [] }}><h1>{'Visão geral'}</h1></StaffShell>));
     expect(staffItems.length).toBeGreaterThan(CONSOLE_TAB_LIMIT);
-    expect(document.querySelector('.lf-tabbar')).toBeNull();
+    expect(document.querySelector('.lf-tabbar > .lf-icon-button')).not.toBeNull();
+    expect(document.querySelector('.lf-appbar')).toBeNull();
     expect(document.querySelectorAll('.lf-shell-rail a')).toHaveLength(6);
     const menu = screen.getByRole('button', { name: 'Menu' });
     // No focus() first: Safari does not focus a button on click, so focus must come back to the control that was pressed anyway.

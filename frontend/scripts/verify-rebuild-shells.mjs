@@ -234,7 +234,7 @@ try {
     for (const [label, params, widths] of [['shell-staff-menu', { screen: 'shell', shell: 'staff' }, [320, 375, 768]], ['shell-site-menu', { screen: 'shell', shell: 'site' }, [320, 375, 768]]]) {
       await viewport(375);
       await navigate({ locale, theme, ...params });
-      await click(label === 'shell-staff-menu' ? '.lf-appbar-menu' : '.lf-site-menu');
+      await click(label === 'shell-staff-menu' ? '.lf-tabbar > .lf-icon-button' : '.lf-site-menu');
       await wait(350);
       await measureAcross(label, locale, theme, widths);
       axeViolations += await axe(label, locale, theme);
@@ -382,7 +382,7 @@ try {
 
     // Staff: permission-aware navigation and the phone menu sheet.
     await navigate({ locale, theme, screen: 'shell', shell: 'staff' });
-    await click('.lf-appbar-menu');
+    await click('.lf-tabbar > .lf-icon-button');
     await wait(350);
     await expectTrue('staff-menu-sheet', `document.querySelectorAll('.lf-sheet--full a[data-nav-id]').length === 7 && (() => { const r = document.querySelector('.lf-sheet--full').getBoundingClientRect(); return r.top === 0 && Math.round(r.height) === innerHeight; })()`);
     await click('.lf-sheet--full a[data-nav-id=insights]', { scroll: false });

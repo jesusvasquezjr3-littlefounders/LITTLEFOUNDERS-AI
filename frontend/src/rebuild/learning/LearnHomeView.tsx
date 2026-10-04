@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from 'react';
+import { ApplicationArt } from '../design/ApplicationArt';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Art, Banner, ButtonLink, Card, DashboardLayout, EmptyState, ErrorState, LoadingState, MentorAvatar, Pill, ProgressBar, RewardChip, Button } from '../design/controls';
 import { findMentorAvatar, MENTOR_NAMES } from '../design/assets';
@@ -108,7 +109,7 @@ function Shelf({ locale, shelf, courses, lead, ...props }: LearnHomeProps & { co
       retryLabel={t.retry} retryingLabel={t.retrying} retrying={props.retrying} onRetry={props.onRetry} />;
   }
   if (shelf.status === 'refused') return <EmptyState heading={t.refusedTitle} body={t.refusedBody} />;
-  if (courses.length === 0) return <EmptyState heading={t.emptyTitle} body={t.emptyBody} artAssetId="empty.fresh-start.art" />;
+  if (courses.length === 0) return <div className="lf-application-empty"><ApplicationArt scene="learning" /><EmptyState heading={t.emptyTitle} body={t.emptyBody} /></div>;
   return <>
     {lead ? <NextStepHero {...props} locale={locale} shelf={shelf} course={lead} /> : null}
     <section className="lf-learn-shelf" aria-labelledby={headingId}>
@@ -129,7 +130,6 @@ function NextStepHero({ locale, course, featured, links, onNavigate }: LearnHome
   // Without the course's own read, the shelf's B.6 recommendation still opens the next lesson directly.
   const recommended = course.pathway?.recommendedLessonId ?? null;
   const step: NextStep | null = read ?? (recommended ? { kind: 'lesson', lessonId: recommended, title: {}, minutes: null } : null);
-  const identity = courseIdentity(course.slug);
   const heading = step?.kind === 'lesson' ? localizedText(step.title, locale) || title
     : step?.kind === 'placement' ? t.placementTitle
       : step?.kind === 'done' ? t.doneTitle : title;
@@ -149,7 +149,7 @@ function NextStepHero({ locale, course, featured, links, onNavigate }: LearnHome
       </div>
       <div className="lf-learn-hero-action">{action}</div>
     </div>
-    {identity ? <span className="lf-learn-hero-art"><Art assetId={identity.iconAssetId} size="lg" /></span> : null}
+    <span className="lf-learn-hero-art"><ApplicationArt scene="learning" /></span>
   </section>;
 }
 

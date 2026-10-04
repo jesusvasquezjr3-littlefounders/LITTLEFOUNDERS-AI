@@ -19,3 +19,14 @@
 .lf-rebuild .lf-mentor-screen[data-global-header='true'] {
   grid-template-rows: auto auto minmax(0, 1fr);
 }
+/* A header fragment may contain only an out-of-flow skip link. Explicit rows
+   keep the stage in the flexible track even when the first track is empty. */
+.lf-rebuild .lf-mentor-screen[data-global-header='true'] > .lf-mentor-top { grid-row: 2; }
+.lf-rebuild .lf-mentor-screen[data-global-header='true'] > .lf-mentor-main { grid-row: 3; }
+
+.lf-rebuild .lf-standalone-header .lf-brand-wordmark { inline-size: 144px; }
+.lf-rebuild .lf-single-state--primary:has([data-screen='badge-landing']) { background: var(--base); color: var(--content); --focus-color: var(--primary-strong); }
+.lf-rebuild .lf-single-state:has([data-screen='badge-landing']) .lf-standalone-header { background: var(--surface); border-radius: var(--rounded-lg); }
+@container app (max-width: 479px) {
+  .lf-rebuild .lf-standalone-header { flex-wrap: wrap; gap: var(--spacing-2); }
+}

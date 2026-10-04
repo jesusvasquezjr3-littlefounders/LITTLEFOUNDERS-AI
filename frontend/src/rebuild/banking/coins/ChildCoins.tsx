@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../../design/ApplicationArt';
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Button, ButtonGroup, DashboardLayout, Dialog, EmptyState, InlineNotice } from '../../design/controls';
 import type { ConsoleTransport } from '../../family/console/consoleApi';
@@ -102,7 +103,7 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
 
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console lf-family-money" data-screen="child-coins" data-theme={dark ? 'dark' : 'light'}
     data-age-band={REGISTER_BAND[register]} data-register={register} lang={locale}>
-    <header className="lf-console-header"><h1 data-copy-role="heading">{familyCoins ? copy.titleFamily : copy.title}</h1></header>
+    <header className="lf-console-header lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{familyCoins ? copy.titleFamily : copy.title}</h1></div><ApplicationArt scene="wallet" /></header>
     {body}
   </div>;
 

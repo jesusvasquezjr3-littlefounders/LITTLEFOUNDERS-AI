@@ -1,5 +1,6 @@
+import { MarketingArt } from './MarketingArt';
 import type { Locale } from '../design/copyBudget';
-import { DecisionDemo, MentorCast, SiteHero, SiteHeroArt, SiteSection, StartButton, siteCopy, type Navigate, type StartAction } from './blocks';
+import { DecisionDemo, MentorCast, SiteHero, SiteSection, StartButton, siteCopy, type Navigate, type StartAction } from './blocks';
 
 /*
  * M2, How it works, rebuilt on the public-site shell (W2 Lane 1).
@@ -18,15 +19,14 @@ import { DecisionDemo, MentorCast, SiteHero, SiteHeroArt, SiteSection, StartButt
 export function HowItWorks({ locale, start, onNavigate }: { locale: Locale; start: StartAction; onNavigate?: Navigate }) {
   const copy = siteCopy(locale);
   const h = copy.howItWorks;
-  return <div className="lf-site-page" data-screen="how-it-works">
-    {/* GAP-FIX-R5 (03 §3.3): a 7:5 hero with its own portrait scene, Dr. Rho explaining. */}
-    <SiteHero art={<SiteHeroArt scene="how-it-works" locale={locale} />} overlap>
+  return <div className="lf-site-page lf-marketing" data-screen="how-it-works">
+    <SiteHero art={<MarketingArt scene="mentorsHow" locale={locale} />}>
       <h1 data-copy-role="heading">{h.title}</h1>
       <p className="lf-site-lead" data-copy-role="body">{h.lead}</p>
       <div className="lf-site-cta-row"><StartButton action={start} copy={copy.site} onNavigate={onNavigate} origin="how-hero" breathing /></div>
     </SiteHero>
 
-    <SiteSection tone="default" heading={h.demoTitle}>
+    <SiteSection tone="default" heading={h.demoTitle} split="start" className="lf-marketing-demo"><MarketingArt scene="questions" locale={locale} compact />
       <DecisionDemo name="how-decision" question={h.demoQuestion} prompt={copy.site.pickOne} options={[
         { value: 'candy', label: h.optionCandy, consequence: h.consequenceCandy },
         { value: 'bike', label: h.optionBike, consequence: h.consequenceBike },
@@ -35,14 +35,14 @@ export function HowItWorks({ locale, start, onNavigate }: { locale: Locale; star
 
     <SiteSection tone="tight" heading={h.mentorsTitle} split="start">
       <div className="lf-site-split-copy"><p data-copy-role="body">{h.mentorsBody}</p></div>
-      <MentorCast label={copy.site.mentorsLabel} size="md" />
+      <div className="lf-marketing-mentor-composition"><MarketingArt scene="mentorsQuestions" locale={locale} compact /><MentorCast label={copy.site.mentorsLabel} size="md" /></div>
     </SiteSection>
 
     <SiteSection tone="band" heading={h.guestTitle}>
       <p data-copy-role="body">{h.guestBody}</p>
     </SiteSection>
 
-    <SiteSection tone="default" heading={h.closingTitle} className="lf-site-closing">
+    <SiteSection tone="default" heading={h.closingTitle} className="lf-site-closing lf-marketing-closing">
       <p data-copy-role="body">{h.closingBody}</p>
       <div className="lf-site-cta-row"><StartButton action={start} copy={copy.site} onNavigate={onNavigate} origin="how-closing" size="md" /></div>
     </SiteSection>

@@ -171,7 +171,8 @@ async function load(page, state, locale, theme, width) {
       e.scrollIntoView({ block: 'center' });
       const r = e.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2, top = document.elementFromPoint(x, y);
       if (!(e.contains(top) || top?.contains(e))) throw new Error('Occluded: ' + ${JSON.stringify(selector)});
-      return { x, y, page: document.documentElement.scrollHeight };
+      // CDP input uses the visual viewport; DOM rectangles use the layout viewport.
+      return { x: x - (visualViewport?.offsetLeft ?? 0), y: y - (visualViewport?.offsetTop ?? 0), page: document.documentElement.scrollHeight };
     })()`;
     // Pressed only once the target has stopped moving, as a person taps what has settled: panels above it that are
     // still loading grow the page, and a press aimed before such a shift lands on whatever moved under the pointer

@@ -1,3 +1,4 @@
+import { ApplicationArt } from '../../design/ApplicationArt';
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
   Button, ButtonGroup, Card, Checkbox, ChipGroup, ChoiceChip, Copy, DashboardLayout, EmptyState, ErrorState, InlineNotice, ProgressBar, SegmentedControl,
@@ -90,7 +91,7 @@ export function TutorCoins({ copy, colours, locale, dark, transport, selectedId,
   }, [read]);
 
   const root = (body: ReactNode) => <div className="lf-rebuild lf-family-console lf-family-money" data-screen="tutor-coins" data-theme={dark ? 'dark' : 'light'} lang={locale}>
-    <header className="lf-console-header"><h1 data-copy-role="heading">{copy.title}</h1></header>
+    <header className="lf-console-header lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{copy.title}</h1></div><ApplicationArt scene="wallet" /></header>
     {body}
   </div>;
 

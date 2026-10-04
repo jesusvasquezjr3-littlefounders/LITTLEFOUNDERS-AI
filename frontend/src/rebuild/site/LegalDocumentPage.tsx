@@ -1,3 +1,4 @@
+import './marketing.css';
 import { useId, useState } from 'react';
 import { Button, EmptyState, Pill, TextField } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
@@ -29,7 +30,7 @@ export function LegalDocumentPage({ locale, doc, onNavigate, onOpenCookies }: {
   const contentsHeading = useId();
   const sections = matchingSections(document.sections, query);
   const docs: [LegalDoc, string, string][] = [['terms', '/legal/terms', copy.terms], ['privacy', '/legal/privacy', copy.privacy]];
-  return <div className="lf-site-page lf-legal" data-screen={`legal-${doc}`}>
+  return <div className="lf-site-page lf-marketing lf-legal" data-screen={`legal-${doc}`}>
     <section className="lf-legal-head" data-section>
       <Pill tone="primary">{copy.official}</Pill>
       <h1 data-copy-role="legal">{document.title}</h1>

@@ -159,6 +159,13 @@
 /* ---------------------------------------------------------------- P3 */
 .lf-settings-column { display: grid; gap: var(--spacing-6); min-inline-size: 0; max-inline-size: 44rem; }
 .lf-account-panels { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
+/* Wide screens give identity and account controls separate readable lanes;
+   narrow screens keep the same DOM order in one column. */
+@container app (min-width: 960px) {
+  .lf-settings-column { max-inline-size: none; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
+  .lf-settings-column > .lf-account-panels { grid-column: 1 / -1; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
+}
+.lf-account-screen .lf-card { align-content: start; }
 .lf-settings-form { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
 .lf-settings-row {
   display: flex;

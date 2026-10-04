@@ -297,7 +297,13 @@
   padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
 }
 .lf-rebuild .lf-auth-main { align-items: center; }
-.lf-rebuild .lf-auth-column { display: grid; gap: var(--spacing-5); inline-size: 100%; max-inline-size: calc(var(--spacing-32) * 4); }
+.lf-rebuild .lf-auth-composition { display: grid; justify-items: center; gap: var(--spacing-8); inline-size: 100%; max-inline-size: 960px; margin-inline: auto; }
+.lf-rebuild .lf-auth-art { display: none; }
+.lf-rebuild .lf-entry-art { display: block; inline-size: 100%; block-size: auto; object-fit: contain; }
+.lf-rebuild .lf-auth-column { display: grid; gap: var(--spacing-5); inline-size: 100%; min-inline-size: 0; max-inline-size: 480px; }
+.lf-rebuild .lf-auth-column > .lf-brand-mark { justify-self: start; margin-block-end: var(--spacing-2); }
+.lf-rebuild .lf-auth-column .lf-brand-wordmark { inline-size: 224px; }
+.lf-rebuild .lf-auth-column > [data-shell-preferences] { justify-self: end; margin-block-start: var(--spacing-1); }
 .lf-rebuild .lf-auth-footer {
   display: flex;
   justify-content: center;
@@ -307,6 +313,10 @@
 @container app (min-width: 640px) {
   .lf-rebuild .lf-auth-main { justify-content: center; }
   .lf-rebuild .lf-auth-column { padding: var(--spacing-8); border-radius: var(--rounded-xl); background: var(--surface); box-shadow: var(--elevation-card); }
+}
+@container app (min-width: 960px) {
+  .lf-rebuild .lf-auth-composition { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: var(--spacing-12); }
+  .lf-rebuild .lf-auth-art { display: block; inline-size: 100%; max-inline-size: 360px; }
 }
 
 /* ---- Full-bleed single-state screen (02 §4.5, rule 15) ---- */
@@ -433,3 +443,53 @@
 }
 
 .lf-rebuild :is(.lf-site-footer, .lf-auth-footer) > p { text-align: center; margin: 0; max-inline-size: none; }
+/* Owner direction, 2026-10-02: topbar exclusively on marketing pages. */
+.lf-rebuild .lf-tabbar:has(.lf-app-preferences-dock) { display: flex; align-items: center; gap: var(--spacing-2); }
+.lf-rebuild .lf-tabbar:has(.lf-app-preferences-dock) > .lf-nav-list { flex: 1; min-inline-size: 0; }
+.lf-rebuild .lf-app-preferences-dock { flex: none; }
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-shell-rail { inset-block-start: 0; block-size: 100dvh; }
+  .lf-rebuild :is(.lf-shell--learner,.lf-shell--console) .lf-tabbar { display: none; }
+  .lf-rebuild .lf-shell-rail > .lf-shell-preferences { margin-block-start: auto; }
+}
+/* Keep the application dock in one row when preferences share its thumb zone. */
+@container app (max-width: 479px) {
+  .lf-rebuild .lf-tabbar:has(.lf-app-preferences-dock) .lf-nav-list--tab[data-icons='all'] { padding: var(--spacing-1); }
+  .lf-rebuild .lf-tabbar:has(.lf-app-preferences-dock) .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry { min-inline-size: var(--target-min); }
+  .lf-rebuild .lf-tabbar:has(.lf-app-preferences-dock) .lf-nav-list--tab[data-icons='all'] > .lf-nav-entry:not([data-keep-label]) .lf-nav-label {
+    position: absolute; inline-size: 2px; block-size: 2px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+@container app (max-width: 359px) {
+  .lf-rebuild .lf-tabbar > .lf-app-preferences-dock { position: absolute; inset-inline-end: var(--spacing-3); inset-block-end: calc(100% + var(--spacing-2)); }
+}
+
+/* The unchanged company graphic is the sole wordmark on every surface. */
+.lf-rebuild .lf-brand-wordmark { display: block; inline-size: 184px; block-size: auto; max-inline-size: 100%; }
+.lf-rebuild .lf-site-header > .lf-brand-mark { flex: none; }
+.lf-rebuild .lf-site-header { box-shadow: none; }
+.lf-rebuild .lf-site-footer { padding-block: var(--spacing-10); }
+@container app (max-width: 639px) {
+  .lf-rebuild .lf-site-header { gap: var(--spacing-2); }
+  .lf-rebuild .lf-site-header .lf-brand-wordmark { inline-size: 132px; }
+  .lf-rebuild .lf-site-header .lf-shell-preferences { gap: var(--spacing-2); }
+  .lf-rebuild .lf-site-header .lf-shell-preferences .lf-select { padding-inline: var(--spacing-2) var(--spacing-6); }
+  .lf-rebuild .lf-site-header .lf-shell-preferences .lf-select-chevron { inset-inline-end: var(--spacing-1); }
+  .lf-rebuild .lf-site-header .lf-site-menu { margin-inline-start: 0; }
+}
+@container app (max-width: 359px) {
+  .lf-rebuild .lf-site-header .lf-brand-wordmark { inline-size: 112px; }
+}
+
+/* A public header owns its layout even before a marketing route stylesheet loads. */
+.lf-rebuild .lf-site-header-inner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); inline-size: 100%; max-inline-size: 1120px; margin-inline: auto; min-inline-size: 0; }
+.lf-rebuild .lf-site-header-inner > .lf-brand-mark { flex: none; }
+@container app (max-width: 639px) {
+  .lf-rebuild .lf-site-header-inner { gap: var(--spacing-2); }
+}
+@container app (min-width: 1120px) {
+  .lf-rebuild .lf-site-header-inner { gap: var(--spacing-2); }
+  .lf-rebuild .lf-site-header-inner .lf-brand-wordmark { inline-size: 168px; }
+  .lf-rebuild .lf-site-links .lf-nav-link { padding-inline: var(--spacing-2); }
+  .lf-rebuild .lf-site-actions .lf-button { padding-inline: var(--spacing-4); }
+}

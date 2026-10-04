@@ -1,3 +1,4 @@
+import { MarketingArt } from './MarketingArt';
 import { useState } from 'react';
 import { ChipGroup, ChoiceChip, Disclosure } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
@@ -34,8 +35,8 @@ export function Faq({ locale, tutor, onNavigate }: { locale: Locale; tutor: Tuto
     return next;
   });
   const shown = FAQ_ITEMS.filter((item) => filter === 'all' || item.category === filter);
-  return <div className="lf-site-page" data-screen="faq">
-    <SiteHero>
+  return <div className="lf-site-page lf-marketing" data-screen="faq">
+    <SiteHero art={<MarketingArt scene="mentorsQuestions" locale={locale} />}>
       <h1 data-copy-role="heading">{q.title}</h1>
       <p className="lf-site-lead" data-copy-role="body">{q.lead}</p>
     </SiteHero>

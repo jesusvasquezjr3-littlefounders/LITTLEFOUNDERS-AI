@@ -106,7 +106,8 @@ async function press(page, selector) {
     if (!e) return { missing: true };
     e.scrollIntoView({ block: 'center', behavior: 'instant' });
     const r = e.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2, top = document.elementFromPoint(x, y);
-    return { missing: false, occluded: !(e.contains(top) || top?.contains(e)), x, y };
+    // Mobile visual-viewport panning must not move the real pointer below its DOM target.
+    return { missing: false, occluded: !(e.contains(top) || top?.contains(e)), x: x - (visualViewport?.offsetLeft ?? 0), y: y - (visualViewport?.offsetTop ?? 0) };
   })()`);
   if (point.missing) throw new Error(`Missing: ${selector}`);
   if (point.occluded) throw new Error(`Occluded: ${selector}`);
@@ -164,7 +165,9 @@ try {
       await waitFor(page, "!document.documentElement.classList.contains('theme-transitioning')", `${where}: theme settled`);
       await sleep(150);
 
-      await waitFor(page, "(() => { const img = document.querySelector('img[data-asset-id=\"brand.mark\"]'); return !!img?.complete && img.naturalWidth > 0; })()", `${where}: official brand loaded`);
+      const marketing = entry.shell === 'site' || entry.path.startsWith('/badge/');
+      const application = ['learner', 'tutor', 'staff'].includes(entry.shell);
+      if (marketing || entry.shell === 'auth' || application) await waitFor(page, "(() => { const img = document.querySelector('img[data-asset-id^=\"brand.\"]'); return !!img?.complete && img.naturalWidth > 0; })()", `${where}: official brand loaded`);
       await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: initial assets`});
       const state = await page.evaluate(`(() => {
         const root = document.querySelector('.lf-rebuild');
@@ -182,8 +185,9 @@ try {
           overflow: document.documentElement.scrollWidth - innerWidth, title: document.title,
           skip: !!shell.querySelector('.lf-skip-link'),
           sessionControls: !!document.querySelector('.lf-session-preferences button'),
-          brand: (() => { const img = document.querySelector('img[data-asset-id="brand.mark"]'); const rect = img?.getBoundingClientRect(); return !!img?.complete && img.naturalWidth > 0 && rect.width > 0 && rect.height > 0 && getComputedStyle(img).visibility === 'visible'; })(),
+          brand: (() => { const img = document.querySelector('img[data-asset-id^="brand."]'); const rect = img?.getBoundingClientRect(); return !!img?.complete && img.naturalWidth > 0 && rect.width > 0 && rect.height > 0 && getComputedStyle(img).visibility === 'visible'; })(),
           preferences: document.querySelectorAll('[data-shell-preferences]').length,
+          topbars: document.querySelectorAll('.lf-site-header, .lf-appbar, .lf-auth-header, .lf-standalone-header').length,
         };
       })()`);
       assert.equal(state.lang, locale, 'shell language');
@@ -202,7 +206,7 @@ try {
         for (const text of state.navText) assert.doesNotMatch(text, /\b(tutor ia|ai tutor|bot|assistant|asistente|assistente)\b/i, `OD-6 wording: ${text}`);
         if (entry.shell === 'learner') for (const text of state.navText) assert.doesNotMatch(text, /tutor/i, `the learner's navigation never says Tutor: ${text}`);
       }
-      // Settings retains sign-out; mode and locale live in every route header.
+      // Settings retains sign-out; mode and locale live in the application rail or bottom dock, and the marketing header.
       if (entry.path === '/profile/settings') assert.ok(state.sessionControls, 'sign-out in Settings');
       if (entry.shell === 'tutor') { assert.ok(state.pill.includes('Tutor'), 'Tutor pill'); assert.ok(!state.nav.includes('mentor'), 'no Mentor slot'); }
       if (entry.shell === 'staff') assert.ok(state.pill.includes(copy[locale].appShell.staffRole), 'staff role pill');
@@ -215,9 +219,14 @@ try {
       await key(page, 'Enter', 'Enter', 13);
       await waitFor(page, "document.activeElement?.tagName === 'MAIN'", `${where}: skip link moves focus to <main>`, 40);
 
-      assert.ok(state.brand, 'approved graphical brand');
-      assert.equal(state.preferences, 1, 'exactly one shared header preference group');
-      const language = '[data-shell-preferences] [role=combobox]';
+      assert.equal(state.topbars, marketing ? 1 : 0, 'topbar exclusive to marketing');
+      if (marketing || entry.shell === 'auth' || (application && width >= 840)) assert.ok(state.brand, 'approved graphical brand');
+      if (marketing || application || entry.shell === 'auth') {
+      assert.equal(state.preferences, 1, 'one display preference group before opening the dock');
+      const dockPreferences = application && width < 840;
+      if (dockPreferences) await press(page, '.lf-app-preferences-dock > button');
+      const preferencesRoot = dockPreferences ? '[role=dialog] [data-shell-preferences]' : '[data-shell-preferences]';
+      const language = `${preferencesRoot} [role=combobox]`;
       await press(page, language);
       await waitFor(page, "document.querySelectorAll('[role=option]').length === 3", `${where}: three language options`);
       await key(page, 'Escape', 'Escape', 27);
@@ -238,8 +247,8 @@ try {
       await key(page, 'Enter', 'Enter', 13);
       await waitFor(page, `document.querySelector('.lf-rebuild').lang === ${JSON.stringify(locale)}`, `${where}: restores language`);
       await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: restored locale assets`});
-      const themeButton = '[data-shell-preferences] .lf-icon-button';
-      assert.ok(await page.evaluate("(() => { const b = document.querySelector('[data-shell-preferences] .lf-icon-button'); return !!b?.getAttribute('aria-label') && !b.textContent.trim() && !!b.querySelector('svg'); })()"), 'icon-only theme has accessible name and own glyph');
+      const themeButton = `${preferencesRoot} .lf-icon-button`;
+      assert.ok(await page.evaluate("(() => { const b = [...document.querySelectorAll('[data-shell-preferences] .lf-icon-button')].find(b => b.getBoundingClientRect().width > 0); return !!b?.getAttribute('aria-label') && !b.textContent.trim() && !!b.querySelector('svg'); })()"), 'icon-only theme has accessible name and own glyph');
       await key(page, 'Tab', 'Tab', 9);
       assert.ok(await page.evaluate("document.activeElement?.matches('[data-shell-preferences] .lf-icon-button')"), 'theme follows language in keyboard order');
       await key(page, 'Enter', 'Enter', 13);
@@ -250,6 +259,9 @@ try {
       await waitFor(page, "!document.documentElement.classList.contains('theme-transitioning')", `${where}: restored theme settles`);
 
       await waitForAuditedAssets(page, {timeoutMs:60000,label:`${where}: restored theme assets`});
+      if (dockPreferences) { await key(page, 'Escape', 'Escape', 27); await waitFor(page, '!document.querySelector("[role=dialog]")', `${where}: preferences sheet closed`); }
+      }
+
       // Scoped axe: the shell, not the legacy page body inside it.
       await page.evaluate(axeSource);
       const axe = await page.evaluate("axe.run({ include: [['[data-shell]']], exclude: [['[data-legacy-body]']] }, { resultTypes: ['violations'] })");
