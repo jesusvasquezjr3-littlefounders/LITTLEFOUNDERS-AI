@@ -42,9 +42,12 @@ const { runBatchNarration } = await import('./batch.js');
 
 runBatchNarration(courseSlug, { dryRun, ...(maxUsd !== undefined ? { maxUsd } : {}) })
   .then((summary) => {
-    process.exit(summary.lessonErrors > 0 || summary.unitFailures > 0 || summary.budgetSkippedLessons > 0 ? 1 : 0);
+    // Do not force-exit while Undici is still closing the Vault connection.
+    // On Windows that can abort inside libuv after a completely successful
+    // dry run. Setting exitCode preserves the result and lets handles drain.
+    process.exitCode = summary.lessonErrors > 0 || summary.unitFailures > 0 || summary.budgetSkippedLessons > 0 ? 1 : 0;
   })
   .catch((err) => {
     console.error('[audiogen] narrate:all failed:', err);
-    process.exit(1);
+    process.exitCode = 1;
   });
