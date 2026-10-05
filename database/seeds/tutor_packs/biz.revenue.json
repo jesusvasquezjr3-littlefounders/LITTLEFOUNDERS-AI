@@ -1,0 +1,573 @@
+{
+  "$comment": "Curated activity packs (C.6, tutor-pack.v1). Hand-authored at zero spend for an active knowledge component with no published teaching topic. Loaded as review by the tutor-pack seed; staff release remains required.",
+  "contract": "tutor-pack.v1",
+  "kc_key": "biz.revenue",
+  "demand_pattern": "kc_without_catalog_content",
+  "source": "hand_authored",
+  "packs": [
+    {
+      "tier": 2,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-revenue-t2-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "A stand sells 4 juices for 5 coins each. What is its revenue?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "20 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "9 coins",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "4 coins",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-revenue-t2-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "False. Revenue is all money received from sales; profit comes after costs.",
+          "payload": {
+            "statement_md": "Revenue means the money left after costs are removed."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-revenue-t2-en-3",
+          "type": "number_input",
+          "prompt_md": "A stall receives 18 coins in the morning and 12 later. What is total revenue?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Add every sale received: 18 + 12 = 30.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-revenue-t2-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Which amount belongs in revenue?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Revenue counts the money customers pay.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Money received from customers"
+              },
+              {
+                "id": "b",
+                "text_md": "Money spent on supplies",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "Money kept after costs",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-revenue-t2-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Un puesto vende 4 jugos a 5 monedas cada uno. ¿Cuál es su ingreso por ventas?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "20 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "9 monedas",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "4 monedas",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-revenue-t2-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. El ingreso es todo lo recibido; la ganancia se calcula después de los costos.",
+          "payload": {
+            "statement_md": "El ingreso por ventas es el dinero que queda después de quitar los costos."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-revenue-t2-es-3",
+          "type": "number_input",
+          "prompt_md": "Un puesto recibe 18 monedas por la mañana y 12 después. ¿Cuál es el ingreso total?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Suma todas las ventas recibidas: 18 + 12 = 30.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-revenue-t2-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Qué cantidad forma parte del ingreso por ventas?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "El ingreso cuenta lo que pagan los clientes.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Dinero recibido de clientes"
+              },
+              {
+                "id": "b",
+                "text_md": "Dinero gastado en materiales",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "Dinero restante después de costos",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-revenue-t2-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Uma barraca vende 4 sucos por 5 moedas cada. Qual é a receita?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "20 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "9 moedas",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "4 moedas",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-revenue-t2-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. Receita é todo o valor recebido; o lucro vem depois dos custos.",
+          "payload": {
+            "statement_md": "Receita é o dinheiro que sobra depois de retirar os custos."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-revenue-t2-pt-3",
+          "type": "number_input",
+          "prompt_md": "Uma barraca recebe 18 moedas de manhã e 12 depois. Qual é a receita total?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Some todas as vendas recebidas: 18 + 12 = 30.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-revenue-t2-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Qual valor faz parte da receita?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "A receita conta o que os clientes pagam.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Dinheiro recebido dos clientes"
+              },
+              {
+                "id": "b",
+                "text_md": "Dinheiro gasto em materiais",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "Dinheiro restante após os custos",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-revenue-t3-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "A stand sells 4 juices for 5 coins each. What is its revenue?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "20 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "9 coins",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "4 coins",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-revenue-t3-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "False. Revenue is all money received from sales; profit comes after costs.",
+          "payload": {
+            "statement_md": "Revenue means the money left after costs are removed."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-revenue-t3-en-3",
+          "type": "number_input",
+          "prompt_md": "A stall receives 18 coins in the morning and 12 later. What is total revenue?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Add every sale received: 18 + 12 = 30.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-revenue-t3-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Which amount belongs in revenue?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Revenue counts the money customers pay.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Money received from customers"
+              },
+              {
+                "id": "b",
+                "text_md": "Money spent on supplies",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "Money kept after costs",
+                "rationale_md": "Revenue is all sales money before subtracting costs: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-revenue-t3-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Un puesto vende 4 jugos a 5 monedas cada uno. ¿Cuál es su ingreso por ventas?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "20 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "9 monedas",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "4 monedas",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-revenue-t3-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. El ingreso es todo lo recibido; la ganancia se calcula después de los costos.",
+          "payload": {
+            "statement_md": "El ingreso por ventas es el dinero que queda después de quitar los costos."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-revenue-t3-es-3",
+          "type": "number_input",
+          "prompt_md": "Un puesto recibe 18 monedas por la mañana y 12 después. ¿Cuál es el ingreso total?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Suma todas las ventas recibidas: 18 + 12 = 30.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-revenue-t3-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Qué cantidad forma parte del ingreso por ventas?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "El ingreso cuenta lo que pagan los clientes.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Dinero recibido de clientes"
+              },
+              {
+                "id": "b",
+                "text_md": "Dinero gastado en materiales",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "Dinero restante después de costos",
+                "rationale_md": "El ingreso es todo lo recibido antes de restar costos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-revenue-t3-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Uma barraca vende 4 sucos por 5 moedas cada. Qual é a receita?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "20 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "9 moedas",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "4 moedas",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-revenue-t3-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. Receita é todo o valor recebido; o lucro vem depois dos custos.",
+          "payload": {
+            "statement_md": "Receita é o dinheiro que sobra depois de retirar os custos."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-revenue-t3-pt-3",
+          "type": "number_input",
+          "prompt_md": "Uma barraca recebe 18 moedas de manhã e 12 depois. Qual é a receita total?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Some todas as vendas recebidas: 18 + 12 = 30.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 30,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-revenue-t3-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Qual valor faz parte da receita?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "A receita conta o que os clientes pagam.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Dinheiro recebido dos clientes"
+              },
+              {
+                "id": "b",
+                "text_md": "Dinheiro gasto em materiais",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              },
+              {
+                "id": "c",
+                "text_md": "Dinheiro restante após os custos",
+                "rationale_md": "Receita é todo o dinheiro das vendas antes dos custos: 4 × 5 = 20."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    }
+  ]
+}

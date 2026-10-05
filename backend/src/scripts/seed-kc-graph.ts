@@ -48,7 +48,7 @@ import path from 'node:path';
 import { z } from 'zod';
 import { serviceRest } from '../services/supabaseRest.js';
 import { auditContentBridge } from '../services/contentBridgeAudit.js';
-import { KcTopicMapSchema, deriveTopicKcLinks, summarizeKcTopicMap, validateKcTopicMap } from '../services/pathway/kcTopicMap.js';
+import { KcTopicMapSchema, deriveTopicKcLinks, summarizeKcTopicMap, validateKcTopicMap, type TopicKcLink } from '../services/pathway/kcTopicMap.js';
 import { seedTopicKcLinks } from '../services/pathway/topicKcSeed.js';
 
 const Localized = z.record(z.enum(['en-US', 'es-MX', 'pt-BR']), z.string().min(1));
@@ -184,18 +184,49 @@ export function readSeedFiles(): {
   seed: z.infer<typeof SeedSchema>;
   map: ReturnType<typeof KcTopicMapSchema.parse>;
   activation: z.infer<typeof ActivationSchema>;
+  financialEducationV2: {
+    course_slug: string;
+    tables: {
+      adventures: Array<{ id: string; slug: string }>;
+      sagas: Array<{ id: string; adventure_id: string; slug: string }>;
+      topics: Array<{ id: string; saga_id: string; slug: string }>;
+      topic_knowledge_components: Array<{
+        topic_id: string;
+        kc_key: string;
+        role: 'teaches' | 'reviews';
+        is_primary: boolean;
+      }>;
+    };
+  };
 } {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const seed = SeedSchema.parse(JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_graph.v1.json'), 'utf8')));
   const map = KcTopicMapSchema.parse(JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_topic_map.v1.json'), 'utf8')));
+  const financialEducationV2 = JSON.parse(readFileSync(
+    path.resolve(here, '../../../coursegen/curriculum-v2/financial-education/hierarchy/hierarchy.rows.json'),
+    'utf8',
+  )) as {
+    course_slug: string;
+    tables: {
+      adventures: Array<{ id: string; slug: string }>;
+      sagas: Array<{ id: string; adventure_id: string; slug: string }>;
+      topics: Array<{ id: string; saga_id: string; slug: string }>;
+      topic_knowledge_components: Array<{
+        topic_id: string;
+        kc_key: string;
+        role: 'teaches' | 'reviews';
+        is_primary: boolean;
+      }>;
+    };
+  };
   const activation = ActivationSchema.parse(
     JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_activation.od22.json'), 'utf8')),
   );
-  return { seed, map, activation };
+  return { seed, map, activation, financialEducationV2 };
 }
 
 async function main(): Promise<void> {
-  const { seed, map, activation } = readSeedFiles();
+  const { seed, map, activation, financialEducationV2 } = readSeedFiles();
 
   const keys = new Set(seed.kcs.map((k) => k.key));
   if (keys.size !== seed.kcs.length) throw new Error('duplicate KC keys in seed');
@@ -251,15 +282,16 @@ async function main(): Promise<void> {
     body: JSON.stringify(deferredRows),
   });
   if (deferredInsertRes === null) throw new Error('deferred OD-22 KC insert failed');
-  const deferredMetadataResults = await Promise.all(deferredRows.map(({ status, skill_key: skillKey, ...row }) => {
+  const deferredMetadataResults: Array<unknown | null> = [];
+  for (const { status, skill_key: skillKey, ...row } of deferredRows) {
     void status;
     void skillKey;
-    return serviceRest<unknown>(`/kc?key=eq.${encodeURIComponent(row.key)}`, {
+    deferredMetadataResults.push(await serviceRest<unknown>(`/kc?key=eq.${encodeURIComponent(row.key)}`, {
       method: 'PATCH',
       headers: { Prefer: 'return=minimal' },
       body: JSON.stringify(row),
-    });
-  }));
+    }));
+  }
   if (deferredMetadataResults.some((result) => result === null)) throw new Error('deferred OD-22 KC metadata update failed');
 
   // 2) Resolve key -> id.
@@ -310,10 +342,31 @@ async function main(): Promise<void> {
   // live catalog does not have are reported, not invented; published topics
   // the map does not cover are the coverage failure this step exists to find.
   const summary = summarizeKcTopicMap(map);
-  const report = await seedTopicKcLinks(serviceRest, deriveTopicKcLinks(map), idByKey, map.version);
+  const adventureById = new Map(financialEducationV2.tables.adventures.map((row) => [row.id, row]));
+  const sagaById = new Map(financialEducationV2.tables.sagas.map((row) => [row.id, row]));
+  const topicById = new Map(financialEducationV2.tables.topics.map((row) => [row.id, row]));
+  const v2Links: TopicKcLink[] = financialEducationV2.tables.topic_knowledge_components.map((row) => {
+    const topic = topicById.get(row.topic_id);
+    const saga = topic ? sagaById.get(topic.saga_id) : undefined;
+    const adventure = saga ? adventureById.get(saga.adventure_id) : undefined;
+    if (!topic || !saga || !adventure) throw new Error(`invalid Financial Education V2 hierarchy link for topic ${row.topic_id}`);
+    return {
+      course: financialEducationV2.course_slug,
+      topicPath: `${adventure.slug}/${saga.slug}/${topic.slug}`,
+      kcKey: row.kc_key,
+      role: row.role,
+      isPrimary: row.is_primary,
+    };
+  });
+  const links = [
+    ...deriveTopicKcLinks(map).filter((link) => link.course !== financialEducationV2.course_slug),
+    ...v2Links,
+  ];
+  const report = await seedTopicKcLinks(serviceRest, links, idByKey, map.version);
   console.log(
     `seed:kc topic map — ${summary.topics} topics in the map (${summary.teachingTopics} teaching, ${summary.reviewTopics} review), ` +
-      `${report.written} links written, ${report.missingTopics.length} map topics not in this catalog, ${report.staleLinks} stale links kept`,
+      `${report.written} links written (including ${v2Links.length} Financial Education V2 links), ` +
+      `${report.missingTopics.length} map topics not in this catalog, ${report.staleLinks} stale links kept`,
   );
   if (report.unmappedPublished.length > 0) {
     console.error(

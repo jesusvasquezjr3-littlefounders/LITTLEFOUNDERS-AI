@@ -1,0 +1,291 @@
+{
+  "$comment": "Curated activity packs (C.6, tutor-pack.v1). Hand-authored at zero spend for an active knowledge component with no published teaching topic. Loaded as review by the tutor-pack seed; staff release remains required.",
+  "contract": "tutor-pack.v1",
+  "kc_key": "biz.pricing-strategy",
+  "demand_pattern": "kc_without_catalog_content",
+  "source": "hand_authored",
+  "packs": [
+    {
+      "tier": 3,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-pricing-strategy-t3-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "A bracelet costs 8 coins to make. Buyers accept 12 but not 18. Which price is sensible?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "A workable price covers cost, leaves room for profit, and remains acceptable to buyers.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "7 coins",
+                "rationale_md": "A workable price covers cost, leaves room for profit, and remains acceptable to buyers."
+              },
+              {
+                "id": "c",
+                "text_md": "18 coins",
+                "rationale_md": "A workable price covers cost, leaves room for profit, and remains acceptable to buyers."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "False. A price buyers reject produces no sale.",
+          "payload": {
+            "statement_md": "The highest possible price is always the best strategy."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-en-3",
+          "type": "number_input",
+          "prompt_md": "At a price of 14, 5 items sell. What is revenue?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Revenue is price times items sold: 14 × 5 = 70.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 70,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "What should a seller check before choosing a price?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Pricing balances costs, customer willingness, and profit.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Costs, buyer response, and desired profit"
+              },
+              {
+                "id": "b",
+                "text_md": "Only the seller’s favorite number",
+                "rationale_md": "A workable price covers cost, leaves room for profit, and remains acceptable to buyers."
+              },
+              {
+                "id": "c",
+                "text_md": "Only the highest competitor price",
+                "rationale_md": "A workable price covers cost, leaves room for profit, and remains acceptable to buyers."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-pricing-strategy-t3-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Hacer una pulsera cuesta 8 monedas. Los compradores aceptan 12, pero no 18. ¿Qué precio es razonable?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Un buen precio cubre el costo, permite ganar y sigue siendo aceptable para compradores.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "7 monedas",
+                "rationale_md": "Un buen precio cubre el costo, permite ganar y sigue siendo aceptable para compradores."
+              },
+              {
+                "id": "c",
+                "text_md": "18 monedas",
+                "rationale_md": "Un buen precio cubre el costo, permite ganar y sigue siendo aceptable para compradores."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. Un precio que los compradores rechazan no produce ventas.",
+          "payload": {
+            "statement_md": "El precio más alto posible siempre es la mejor estrategia."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-es-3",
+          "type": "number_input",
+          "prompt_md": "A un precio de 14 se venden 5 artículos. ¿Cuál es el ingreso?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "El ingreso es precio por artículos vendidos: 14 × 5 = 70.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 70,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Qué debe revisar quien vende antes de elegir un precio?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "La estrategia de precio equilibra costos, disposición a pagar y ganancia.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Costos, respuesta de compradores y ganancia deseada"
+              },
+              {
+                "id": "b",
+                "text_md": "Solo su número favorito",
+                "rationale_md": "Un buen precio cubre el costo, permite ganar y sigue siendo aceptable para compradores."
+              },
+              {
+                "id": "c",
+                "text_md": "Solo el precio más alto de la competencia",
+                "rationale_md": "Un buen precio cubre el costo, permite ganar y sigue siendo aceptable para compradores."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-pricing-strategy-t3-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Fazer uma pulseira custa 8 moedas. Os compradores aceitam 12, mas não 18. Qual preço faz sentido?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Um bom preço cobre o custo, permite lucro e continua aceitável para compradores.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "7 moedas",
+                "rationale_md": "Um bom preço cobre o custo, permite lucro e continua aceitável para compradores."
+              },
+              {
+                "id": "c",
+                "text_md": "18 moedas",
+                "rationale_md": "Um bom preço cobre o custo, permite lucro e continua aceitável para compradores."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. Um preço rejeitado pelos compradores não produz venda.",
+          "payload": {
+            "statement_md": "O preço mais alto possível é sempre a melhor estratégia."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-pt-3",
+          "type": "number_input",
+          "prompt_md": "Com preço de 14, são vendidos 5 itens. Qual é a receita?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Receita é preço vezes itens vendidos: 14 × 5 = 70.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 70,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-pricing-strategy-t3-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "O que o vendedor deve verificar antes de escolher um preço?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "A estratégia de preço equilibra custos, disposição para pagar e lucro.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Custos, resposta dos compradores e lucro desejado"
+              },
+              {
+                "id": "b",
+                "text_md": "Apenas seu número favorito",
+                "rationale_md": "Um bom preço cobre o custo, permite lucro e continua aceitável para compradores."
+              },
+              {
+                "id": "c",
+                "text_md": "Apenas o maior preço do concorrente",
+                "rationale_md": "Um bom preço cobre o custo, permite lucro e continua aceitável para compradores."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    }
+  ]
+}

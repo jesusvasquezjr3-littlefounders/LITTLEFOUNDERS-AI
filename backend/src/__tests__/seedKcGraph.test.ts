@@ -75,6 +75,22 @@ describe('the real seed file has no tier inversion and no cycle', () => {
     }
   });
 
+  it('maps every legacy active bridge to a canonical Financial Education V2 topic', () => {
+    const topicBySlug = new Map(hierarchy.tables.topics.map((topic) => [topic.slug, topic.id]));
+    const teachingLinks = new Set(hierarchy.tables.topic_knowledge_components
+      .filter((link) => link.role === 'teaches')
+      .map((link) => `${link.topic_id}:${link.kc_key}`));
+    const legacyBridges = seed.kcs.slice(0, 28).filter((kc) => kc.skill_key !== null);
+    expect(legacyBridges).toHaveLength(19);
+    for (const kc of legacyBridges) {
+      expect(kc.skill_key?.startsWith('financial-education/fe-'), kc.key).toBe(true);
+      const [, topicSlug] = kc.skill_key!.split('/');
+      const topicId = topicBySlug.get(topicSlug!);
+      expect(topicId, `${kc.key} -> ${kc.skill_key}`).toBeDefined();
+      expect(teachingLinks.has(`${topicId}:${kc.key}`), `${kc.key} -> ${kc.skill_key}`).toBe(true);
+    }
+  });
+
   it('every edge references a real KC in both directions', () => {
     for (const [from, to] of seed.edges) {
       expect(keys.has(from)).toBe(true);

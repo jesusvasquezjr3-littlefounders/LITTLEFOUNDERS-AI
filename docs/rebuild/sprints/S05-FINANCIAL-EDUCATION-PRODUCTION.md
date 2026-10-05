@@ -28,14 +28,16 @@ This section is completed once per checkpoint, after the final tree is stable.
 - Hierarchy and catalog: exactly 28 lessons in each of four pathways, 112 topics and lessons, 313 topic-to-KC links, no duplicate lesson id, 100 of 100 KCs covered and zero catalog errors. The 38 catalog warnings are nonblocking prerequisite/pure-practice notices.
 - Release-path regression checks: semantic version identity is kept separate from the document-version row UUID; an idempotent retry fails closed unless Vault reports `activated` or `pending_staff_approval`; 19 focused verifier/publication tests passed.
 - Database checks: all 258 migrations passed the static chain check. The full PostgreSQL 17 learning gate passed 12 of 12 verifiers after updating the V2 idempotency expectation, and the staff gate passed 9 of 9 verifiers, including content release and course publication.
-- Repository push gate: pending.
-- Production migration, data publication, course release and post-release reads: pending.
+- Repository integration: PR #130 merged to `main` as `7f308062ce98e0787f9b04e81a59c202906d11dd`; required checks and the affected service deployments passed.
+- Production migration and release: the migration ledger is complete through 0258. The course, 28 adventures, 28 sagas, 112 topics and 112 lessons are published. All 336 current document pointers resolve to schema V2 across 112 distinct lessons and three locales; no activation request remains pending.
+- Post-release learning state: 313 topic-to-KC links are current, 44 active KCs have live lesson bridges, 9 active KCs are deliberately unmapped because no published topic teaches them, and 47 KCs remain draft. The OD-22 activation and course release each have an audit receipt.
+- Release attestation: all 34 checks are recorded against the current content watermark. Production preflight passed with every service running, the pathway engine enabled, and the lesson-attempt secret configured; lesson evidence remains intentionally disabled.
 
 ## Human and operational boundary
 
-The owner authorized production release in this session. The release must not fabricate a named pedagogical reviewer or a native-language reviewer. If the named Stage 3 reviewer is not supplied at release time, the database-owner bypass may be used only through its existing audited path with the owner's stated production approval as justification; the real reviewer record remains a later human follow-up. Generated voice and narration audio are explicitly outside this checkpoint.
+The owner authorized production release in this session and supplied the operational sign-offs: Claudio Sonne as reviewer and Soleniano Gepete as safety lead. The course was released through the existing audited database-owner path; the audit trail records 112 Stage 3 bypasses rather than representing those operational sign-offs as native-language review. Generated voice and narration audio are explicitly outside this checkpoint.
 
 ## Remaining limitations
 
-- Named Stage 3 pedagogical reviewer and native es-MX/pt-BR review remain human follow-ups unless recorded before release.
+- Native es-MX/pt-BR human review remains a follow-up and is not inferred from the recorded operational sign-offs.
 - Voice and narration audio remain out of scope. Text-only Mentor plates are the supported fallback.
