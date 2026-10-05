@@ -28,6 +28,33 @@
         "MN-02": { "result": "open", "evidence": "OD-28 (27 September 2026) removed the 20 percent reduction: timed drills in the choice and storyplay families keep the answer's own score when time runs out, in grade.ts and its Core mirror (W2L.4, pinned by timeoutPenalty.test.ts). The timer stays and costs nothing. Forge gate 18 still flags timed segments for review. Open for the reviewer's manual check." },
         "MN-03": { "result": "open", "evidence": "The registers are defined and enforced (policy, gate 19); the first quarterly Age-Band Register Differentiation Audit is due after release." }
       }
+    },
+    {
+      "id": "2026-10-05-financial-education-v2-release-audit",
+      "date": "2026-10-05",
+      "kind": "release-audit",
+      "scope": "Financial Education V2 production release candidate at bf63dbd0: the rebuilt learner, verified Tutor, teen, adult, public, family, profile, staff and Horizonte surfaces; en-US, es-MX and pt-BR; light and dark themes; phone, tablet and desktop widths; the canonical 112-lesson / 336-document course corpus; and the current Mentor stage.",
+      "auditor": "Jesús Vásquez Jr. (Product owner and human release reviewer), supported by Engineering's automated release evidence",
+      "signed_off_by": "Jesús Vásquez Jr.",
+      "items": {
+        "DP-01": { "result": "pass", "evidence": "The signed walkthrough found no fabricated urgency. The release gate scanned the three locales and rebuilt surfaces with zero time-pressure findings; honest expiry disclosures remain non-coercive." },
+        "DP-02": { "result": "pass", "evidence": "The signed walkthrough found no parasocial pressure. The release gate found no pleading, missing-the-learner or disappointed-leaving language in localized copy or scripted Mentor lines." },
+        "DP-03": { "result": "pass", "evidence": "The signed walkthrough confirmed that dialogs and sheets close and that no timer advances into more content. The structural gate found no autoplay, timed navigation or unclosable overlay." },
+        "DP-04": { "result": "pass", "evidence": "The signed walkthrough and automated copy scan found no purchase, premium, upgrade, unlock-now or advertising lure; pricing and paywalls remain parked under OD-5." },
+        "DP-05": { "result": "pass", "evidence": "The signed walkthrough found no learner leaderboard, rank or peer comparison. Automated structure and copy checks confirm that comparison remains limited to the learner's own history." },
+        "DP-06": { "result": "pass", "evidence": "The signed walkthrough found no mystery reward. The reward-mechanics and Forge gate checks pass, with every allowed random draw declared outside reward paths." },
+        "DP-07": { "result": "pass", "evidence": "The signed walkthrough found no lives, hearts, depleting resource or threatened streak loss. Current-runtime and localized-copy gates confirm that retired penalty state cannot return." },
+        "DP-08": { "result": "pass", "evidence": "The signed walkthrough confirmed neutral declines and dismissals. The three-locale gate found no confirmshaming, guilt or trait language." },
+        "DP-09": { "result": "pass", "evidence": "The signed manual review confirmed no streak-at-risk, come-back or repeated learner re-engagement notification or email; repository inspection found no learner notification path of that kind." },
+        "DP-10": { "result": "pass", "evidence": "The signed manual review confirmed no third-party advertising, sponsored content or product placement on learner-visible surfaces; repository inspection found no advertising SDK or sponsored-content path." },
+        "SH-01": { "result": "pass", "evidence": "The signed walkthrough found no self-global shame or trait judgment in misses, failures or low scores. The automated three-locale lexicon scan reported zero findings." },
+        "SH-02": { "result": "pass", "evidence": "The signed walkthrough confirmed that misses are neutral: no error red, disappointed character or error sound. Structural, CSS, lesson-cue and Mentor-state checks all pass." },
+        "SH-03": { "result": "pass", "evidence": "The signed walkthrough found no peer-visible result, rank or comparative display changed by a miss; the structure gate likewise found no learner ranking surface." },
+        "FF-01": { "result": "pass", "evidence": "The signed walkthrough and three-locale content scan found no implication that a family's real financial circumstances are a personal or moral failing." },
+        "MN-01": { "result": "pass", "evidence": "Jesús Vásquez Jr. explicitly confirmed the manual release walkthrough and authorized this named sign-off on 2026-10-05. Supporting browser evidence covered 770 states across en-US, es-MX and pt-BR, light and dark themes and up to four widths: 73,872 text-fit, 18,468 proportion and 18,468 copy-budget configurations, with zero findings, JavaScript errors or media errors." },
+        "MN-02": { "result": "pass", "evidence": "The signed review approved the lesson timing behavior. OD-28 keeps the answer's score when time expires; timers cost no lives, currency or irreversible opportunity and the learner can retry. Current Core/frontend parity and timeout-penalty tests pass." },
+        "MN-03": { "result": "pass", "evidence": "The signed review confirmed distinct young, transition, teen and adult registers. The register policy, generated constants, release gates and age-band differentiation checks agree on the four bands." }
+      }
     }
   ]
 }
