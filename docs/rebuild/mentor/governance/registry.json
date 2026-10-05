@@ -335,8 +335,8 @@
       "kind": "adoption",
       "components": ["*"],
       "summary": "Adopts the three-tier model and the live-content axis (C.22) before any automated proposal-generation capability exists, with the initial classification above. Proposed in S06.14; binding on engineering from adoption, awaiting the two sign-offs.",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "id": "D-2026-09-27-finer-tier1-boundaries",
@@ -344,8 +344,8 @@
       "kind": "classification",
       "components": ["mentor.non_negotiables", "measurement.stage7_and_thresholds", "mentor.pacing_and_signals", "mentor.runtime", "measurement.reporting"],
       "summary": "OD-28 (owner review M-19): mixed Mentor files get finer Tier 1 boundaries at the level of top-level declarations. Oracle's controller.ts and orchestrator.ts and seven Core kill-switch modules are split: the strict component keeps every declaration by default (\"*\"), and the listed carve-outs move turn-pacing tables and two model-history windows to Tier 2 and report-only summaries and kill-switch log readers to Tier 3. Engineering's proposal; each carve-out takes effect only when both leads sign this decision, and until then the whole files stay Tier 1.",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     }
   ]
 }
