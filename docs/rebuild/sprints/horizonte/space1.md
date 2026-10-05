@@ -81,7 +81,7 @@ The browser has no rubric, so its generated scorer can say only `valid` or `inva
 - **Stall.** 2 to 5 items from a fixed list of ten ids, price 1 to 2000, stock 1 to 9, totals at most 10000. `exact` and `change` need a basket that
   reaches the cost (`change` is paid minus change); `most` needs a budget that buys at least the cheapest item but not the whole stall. The
   response has one slot per item holding up to its stock, and every piece is the one repeatable piece `item`.
-- **Stack.** `value` is in whole cents of a generic currency and `piece` is `coin` or `bill`. The answer is a whole count that is a multiple of
+- **Stack.** `value` is in whole cents (printed in the learner's market currency) and `piece` is `coin` or `bill`. The answer is a whole count that is a multiple of
   `step`, between one step and `max`, and `max` has at most 40 grid positions. Height goals are in whole millimetres of the thickness above.
 
 ## Files
@@ -137,7 +137,7 @@ Fixtures (23 after the fix round, 14 originally; the fixture id is the preview k
   the item count, not a particular basket.
 - **Teaching thickness.** A coin is 2 mm and a bill 0.1 mm. Real thicknesses vary; the lane uses two round numbers so the scale arithmetic is
   clean and the board labels them as teaching sizes.
-- **Generic currency.** The stack and the stall show money with the fin1 `format.ts` helper and name no real currency.
+- **Market currency.** The stack and the stall print money with `localMoney` (fin1 `format.ts`): `$12` in es-MX (pesos), `R$ 12,50` in pt-BR, `$12.50` in en-US, and read it aloud with `spokenLocalMoney` ("12 pesos", "12 reais"). The payload stays whole cents, so a plan is locale-neutral; a lesson that must not name money uses a count or a height goal instead. (Changed 2026-10-04 from "generic currency": a Mexican child who counted "dollars" was a defect the pilot review found.)
 - **Age.** The stall stops at 12 (no adult scope); sections start at 11 (planes and Euler need the vocabulary); rotation opens from 6 with one
   target and an easy figure. Each fixture band falls inside its piece's scope.
 - **Type ids and capabilities** are the four above, in parity across Core, the browser and the Forge.
