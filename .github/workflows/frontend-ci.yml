@@ -9,6 +9,8 @@ on:
       - 'coursegen/src/contentGates/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
+    # `labeled` so that adding `full-ci` to a pull request starts the browser gates (see HEAVY below).
+    types: [opened, synchronize, reopened, labeled]
     paths:
       - 'frontend/**'
       - 'database/types/**'
@@ -22,6 +24,12 @@ concurrency:
   group: frontend-ci-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# Cost: a full run is about 7 runner-hours (12 audit shards x ~33 min, the browser gates, the Lesson Engine), and 18 of
+# the 25 runs in a week were pull-request runs, each repeating on the push to main that follows the merge. The three
+# browser-driven jobs below therefore run on every push to main (the deploy gate: frontend-cd only deploys a green
+# run of main, so nothing unverified reaches production) and on a pull request only when it carries the `full-ci`
+# label. The fast `ci` job (type-check, lint, unit tests, build, i18n, tone gate, placement) still runs on every pull
+# request. The pre-merge UI gate in README ("Rebuilt UI pre-merge gate") is the local audit run, unchanged.
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -113,6 +121,7 @@ jobs:
   # here (--disable-dev-shm-usage, lesson-engine/browser.mjs).
   lesson-engine:
     needs: ci
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci') }}
     runs-on: ubuntu-latest
     # Measured at 21 minutes on the runner (2026-09-30); generous on purpose:
     # a timeout kill reads as a product failure rather than a slow one.
@@ -162,6 +171,7 @@ jobs:
   # together they are every family the verifier has.
   browser-gates:
     needs: ci
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci') }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -235,6 +245,7 @@ jobs:
   # went, so a full disk is named in the log instead of read as a broken state.
   rebuild-audits:
     needs: ci
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci') }}
     runs-on: ubuntu-latest
     timeout-minutes: 75
     strategy:
