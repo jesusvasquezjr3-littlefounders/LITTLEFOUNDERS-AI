@@ -1,0 +1,823 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-class-garden",
+  "lesson_id": "fe-1012-16-give-and-explain",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.giving",
+    "life.reflect-on-learning",
+    "life.save-spend-share"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf cuenta cómo Mia reparte las 40 monedas que le quedan tras la recaudación: se queda con 20 para gastar, regala 10 a la despensa del barrio después de preguntar a dónde llega y guarda 10 para el próximo proyecto. Después Mia explica con sus propias palabras tres ideas que aprendió y le enseña una a su primo Leo. El alumno practica el reparto, decide si preguntar antes de dar y elige cómo explicar con sus palabras.",
+  "title": {
+    "es-MX": "Dar y explicar",
+    "en-US": "Give and explain",
+    "pt-BR": "Doar e explicar"
+  },
+  "new_concepts": [
+    "life.giving",
+    "life.reflect-on-learning"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, muchas familias llevan comida o monedas a la despensa del barrio. Se practica regalar una parte, conservar otra y preguntar a dónde llega la ayuda antes de dar.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "despensa"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, muitas famílias ajudam a campanha da cesta básica do bairro. Aqui se pratica doar uma parte, guardar outra e perguntar para onde a ajuda vai antes de doar.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "cesta básica"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, many families give to a food bank. Learners give one part, keep another and ask where the help goes before they give.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "food bank"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "¡Clin! El frasco de Mia aún tiene 40 monedas tras la recaudación.",
+          "line": "Yo cuento 40 monedas. ¿Qué hará Mia con ellas?"
+        },
+        "en-US": {
+          "prompt": "Clink! Mia's jar still holds 40 coins after the fundraiser.",
+          "line": "I count 40 coins. What will Mia do with them?"
+        },
+        "pt-BR": {
+          "prompt": "Plim! O pote da Mia ainda tem 40 moedas depois da arrecadação.",
+          "line": "Eu conto 40 moedas. O que a Mia vai fazer com elas?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.reflect-on-learning",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-reread"
+          },
+          {
+            "id": "choice-move"
+          },
+          {
+            "id": "choice-explain"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-easy"
+          },
+          {
+            "id": "reason-page"
+          },
+          {
+            "id": "reason-gaps"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-explain"
+        ],
+        "reasonQuality": {
+          "reason-easy": "unsupported",
+          "reason-page": "partial",
+          "reason-gaps": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mia acaba de aprender una idea nueva. ¿Cómo sabe que de verdad la entiende?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso, juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso, juntos."
+          },
+          "choices": [
+            {
+              "label": "Volver a leer la misma página"
+            },
+            {
+              "label": "Decir que ya entendió y seguir"
+            },
+            {
+              "label": "Explicarlo a alguien con sus palabras"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Si se siente fácil, ya lo sé"
+            },
+            {
+              "label": "La página tiene las palabras correctas"
+            },
+            {
+              "label": "Decirlo en voz alta muestra qué me falta"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Mia just learned a new idea. How can she tell she really understands it?",
+          "feedback": {
+            "met": "Thanks. Now we'll look at it step by step, together.",
+            "not_yet": "Thanks. Now we'll look at it step by step, together."
+          },
+          "choices": [
+            {
+              "label": "Read the same page again"
+            },
+            {
+              "label": "Say she got it and move on"
+            },
+            {
+              "label": "Explain it to someone in her own words"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "If it feels easy, I know it"
+            },
+            {
+              "label": "The page has the right words"
+            },
+            {
+              "label": "Saying it aloud shows what I still miss"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mia acabou de aprender uma ideia nova. Como ela sabe que entendeu de verdade?",
+          "feedback": {
+            "met": "Certo, já vejo como você pensa. Agora vamos ver passo a passo, juntos.",
+            "not_yet": "Certo, já vejo como você pensa. Agora vamos ver passo a passo, juntos."
+          },
+          "choices": [
+            {
+              "label": "Ler a mesma página outra vez"
+            },
+            {
+              "label": "Dizer que entendeu e seguir em frente"
+            },
+            {
+              "label": "Explicar a alguém com as próprias palavras"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Se parece fácil, eu já sei"
+            },
+            {
+              "label": "A página tem as palavras certas"
+            },
+            {
+              "label": "Dizer em voz alta mostra o que me falta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: a Mia le quedan 40 monedas y un plan.",
+          "line": "Se queda con 20 para gastar, regala 10 a la despensa del barrio y guarda 10 para el próximo proyecto."
+        },
+        "en-US": {
+          "prompt": "Step 1: Mia has 40 coins left and a plan.",
+          "line": "She keeps 20 to spend, gives 10 to the food bank and saves 10 for the next project."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a Mia tem 40 moedas e um plano.",
+          "line": "Ela fica com 20 para gastar, doa 10 para a cesta básica do bairro e guarda 10 para o próximo projeto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.save-spend-share",
+      "payload": {
+        "total": 40,
+        "step": 10,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 10
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Reparte las 40 monedas de Mia entre Gastar, Compartir y Guardar. Pon al menos 10 en Guardar.",
+          "feedback": {
+            "met": "Cada moneda tiene su lugar y Guardar tiene 10 o más.",
+            "not_yet": "Todavía no. Mia guarda para después: pon al menos 10 en Guardar."
+          }
+        },
+        "en-US": {
+          "prompt": "Split Mia's 40 coins between Spend, Share and Save. Put at least 10 in Save.",
+          "feedback": {
+            "met": "Every coin has a place, and Save holds 10 or more.",
+            "not_yet": "Not yet. Mia saves for later: put at least 10 in Save."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Distribua as 40 moedas da Mia entre Gastar, Compartilhar e Guardar. Coloque pelo menos 10 em Guardar.",
+          "feedback": {
+            "met": "Cada moeda tem seu lugar e Guardar tem 10 ou mais.",
+            "not_yet": "Ainda não. A Mia guarda para depois: coloque pelo menos 10 em Guardar."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: antes de dar, Mia le pregunta a la despensa a quién ayuda y qué compra con los regalos.",
+          "line": "Le muestran los estantes. Ahora Mia sabe que su regalo llega a familias."
+        },
+        "en-US": {
+          "prompt": "Step 2: before giving, Mia asks the food bank who gets the gifts and what they buy.",
+          "line": "They show her the shelves. Now Mia knows her gift reaches families."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: antes de doar, a Mia pergunta aos organizadores da cesta básica quem recebe e o que se compra.",
+          "line": "Mostram o que compraram. Agora a Mia sabe que sua doação chega a famílias."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: Mia da sus 10 monedas. No pide nada a cambio.",
+          "line": "Un regalo no espera nada a cambio. Mia dio 10 y aún tiene 30 para gastar y guardar."
+        },
+        "en-US": {
+          "prompt": "Step 3: Mia gives her 10 coins. She asks for nothing back.",
+          "line": "A gift expects nothing back. Mia gave 10 and still has 30 to spend and save."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a Mia doa suas 10 moedas. Ela não pede nada em troca.",
+          "line": "Um presente não espera nada em troca. A Mia deu 10 e ainda tem 30 para gastar e guardar."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.giving",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-now"
+          },
+          {
+            "id": "opt-ask"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-ask"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mia tiene 10 monedas para dar. ¿Preferiría darlas ya, o preguntar primero a dónde van?",
+          "feedback": {
+            "met": "Elegiste preguntar a dónde va la ayuda antes de dar.",
+            "not_yet": "Todavía no. Recuerda a Mia: preguntó primero a quién llega el regalo."
+          },
+          "options": [
+            {
+              "label": "Darlas ya, sin preguntar"
+            },
+            {
+              "label": "Preguntar primero a dónde van"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Mia has 10 coins to give. Would she rather give right away, or ask first where they go?",
+          "feedback": {
+            "met": "You chose to ask where the help goes before giving.",
+            "not_yet": "Not yet. Remember Mia: she asked who gets the gift first."
+          },
+          "options": [
+            {
+              "label": "Give right away, no questions"
+            },
+            {
+              "label": "Ask first where the gift goes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mia tem 10 moedas para doar. Ela prefere doar já, ou perguntar primeiro para onde vão?",
+          "feedback": {
+            "met": "Você escolheu perguntar para onde vai a ajuda antes de doar.",
+            "not_yet": "Ainda não. Lembre da Mia: ela perguntou primeiro quem recebe o presente."
+          },
+          "options": [
+            {
+              "label": "Doar já, sem perguntar"
+            },
+            {
+              "label": "Perguntar primeiro para onde vai"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: Mia cierra el libro. Dice sus tres ideas con sus propias palabras.",
+          "line": "Un regalo no espera nada, una parte se queda con ella y ella revisa a dónde va la ayuda."
+        },
+        "en-US": {
+          "prompt": "Step 4: Mia closes the book. She says her three ideas in her own words.",
+          "line": "Gifts expect nothing back, a part stays with her, and she checks where help goes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a Mia fecha o livro. Ela diz as três ideias com as próprias palavras.",
+          "line": "Um presente não espera nada, uma parte fica com ela e ela confere para onde vai a ajuda."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: en el huerto, Mia le enseña una idea a su primo Leo, con su propio ejemplo.",
+          "line": "Le cuenta cómo preguntó primero en la despensa. Luego Leo lo repite con sus palabras."
+        },
+        "en-US": {
+          "prompt": "Step 5: in the garden, Mia teaches cousin Leo one idea, with her own example.",
+          "line": "She tells him how she asked the food bank first. Then Leo says it back in his words."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: na horta, a Mia ensina uma ideia ao primo Leo, com um exemplo dela.",
+          "line": "Ela conta como perguntou antes de doar para a cesta básica. Depois o Leo repete com as palavras dele."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.giving",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-fine"
+          },
+          {
+            "id": "choice-pay"
+          },
+          {
+            "id": "choice-all"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-thanks"
+          },
+          {
+            "id": "reason-free"
+          },
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-kept"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-fine"
+        ],
+        "reasonQuality": {
+          "reason-thanks": "partial",
+          "reason-free": "sound",
+          "reason-more": "unsupported",
+          "reason-kept": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "No llega ningún agradecimiento por las 10 monedas de Mia. ¿Qué debería pensar?",
+          "feedback": {
+            "met": "Viste que un regalo no espera nada a cambio.",
+            "not_yet": "Todavía no. Mia eligió dar, así que nadie le debe nada."
+          },
+          "choices": [
+            {
+              "label": "Un regalo no espera nada a cambio"
+            },
+            {
+              "label": "Debería recibir algo a cambio"
+            },
+            {
+              "label": "Debió dar las 40 monedas"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Alguien debería al menos dar las gracias"
+            },
+            {
+              "label": "Un regalo es gratis, no se debe nada"
+            },
+            {
+              "label": "Dar más siempre muestra más cariño"
+            },
+            {
+              "label": "Guardó monedas para ella y para después"
+            }
+          ],
+          "help": [
+            "Piensa en qué pidió Mia cuando dio."
+          ]
+        },
+        "en-US": {
+          "prompt": "No thank-you comes back for Mia's 10 coins. What should she think?",
+          "feedback": {
+            "met": "You saw that a gift expects nothing back.",
+            "not_yet": "Not yet. Mia chose to give, so nobody owes her."
+          },
+          "choices": [
+            {
+              "label": "A gift expects nothing back"
+            },
+            {
+              "label": "She should get something for it"
+            },
+            {
+              "label": "She should have given all 40 coins"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Someone should at least say thanks"
+            },
+            {
+              "label": "A gift is free, so nothing is owed"
+            },
+            {
+              "label": "Giving more always shows more caring"
+            },
+            {
+              "label": "She kept coins for herself and for later"
+            }
+          ],
+          "help": [
+            "Think about what Mia asked for when she gave."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nenhum agradecimento chega pelas 10 moedas da Mia. O que ela deve pensar?",
+          "feedback": {
+            "met": "Você viu que um presente não espera nada em troca.",
+            "not_yet": "Ainda não. A Mia escolheu doar, então ninguém lhe deve nada."
+          },
+          "choices": [
+            {
+              "label": "Um presente não espera nada em troca"
+            },
+            {
+              "label": "Ela deveria receber algo em troca"
+            },
+            {
+              "label": "Ela deveria ter dado as 40 moedas"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Alguém deveria ao menos agradecer"
+            },
+            {
+              "label": "Um presente é de graça, ninguém deve nada"
+            },
+            {
+              "label": "Dar mais sempre mostra mais carinho"
+            },
+            {
+              "label": "Ela guardou moedas para ela e para depois"
+            }
+          ],
+          "help": [
+            "Pense no que a Mia pediu quando doou."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.reflect-on-learning",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-read"
+          },
+          {
+            "id": "choice-own"
+          },
+          {
+            "id": "choice-easy"
+          },
+          {
+            "id": "choice-quiz"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-safe"
+          },
+          {
+            "id": "reason-own"
+          },
+          {
+            "id": "reason-short"
+          },
+          {
+            "id": "reason-picture"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-own"
+        ],
+        "reasonQuality": {
+          "reason-safe": "unsupported",
+          "reason-own": "sound",
+          "reason-short": "partial",
+          "reason-picture": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En casa, Leo recibe 20 monedas de cumpleaños. ¿Cómo debe Mia explicarle el reparto?",
+          "feedback": {
+            "met": "Elegiste explicar con sus palabras y un ejemplo.",
+            "not_yet": "Todavía no. Recuerda cómo Mia le enseñó a su primo Leo."
+          },
+          "choices": [
+            {
+              "label": "Leerle la página línea por línea"
+            },
+            {
+              "label": "Decirlo a su manera, con su propio ejemplo"
+            },
+            {
+              "label": "Decirle que es fácil y que ya verá"
+            },
+            {
+              "label": "Hacerle un examen hasta que repita"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Leer la página es lo más seguro"
+            },
+            {
+              "label": "Sus propias palabras muestran que lo sabe"
+            },
+            {
+              "label": "Una respuesta corta es más rápida para Leo"
+            },
+            {
+              "label": "Leo puede imaginar un ejemplo de su día"
+            }
+          ],
+          "help": [
+            "Piensa en qué ayuda a Leo a imaginarlo, no en qué es más rápido."
+          ]
+        },
+        "en-US": {
+          "prompt": "At home, Leo gets 20 coins for his birthday. How should Mia explain splitting them?",
+          "feedback": {
+            "met": "You chose an explanation in her own words, with an example.",
+            "not_yet": "Not yet. Remember how Mia taught her cousin Leo."
+          },
+          "choices": [
+            {
+              "label": "Read him the page line by line"
+            },
+            {
+              "label": "Say it her way, with her own example"
+            },
+            {
+              "label": "Tell him it is easy, he will see"
+            },
+            {
+              "label": "Quiz him until he gets the words"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Reading the page is the safest way"
+            },
+            {
+              "label": "Her own words show she really knows it"
+            },
+            {
+              "label": "A short answer is quicker for Leo"
+            },
+            {
+              "label": "Leo can picture an example from her day"
+            }
+          ],
+          "help": [
+            "Think about what helps Leo picture it, not what is quickest."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Em casa, o Leo ganha 20 moedas de aniversário. Como a Mia deve explicar a divisão?",
+          "feedback": {
+            "met": "Você escolheu explicar com palavras dela e um exemplo.",
+            "not_yet": "Ainda não. Lembre como a Mia ensinou o primo Leo."
+          },
+          "choices": [
+            {
+              "label": "Ler a página para ele linha por linha"
+            },
+            {
+              "label": "Dizer do jeito dela, com um exemplo dela"
+            },
+            {
+              "label": "Dizer que é fácil e que ele vai ver"
+            },
+            {
+              "label": "Fazer um teste até ele repetir as palavras"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Ler a página é o jeito mais seguro"
+            },
+            {
+              "label": "As palavras dela mostram que ela sabe"
+            },
+            {
+              "label": "Uma resposta curta é mais rápida para o Leo"
+            },
+            {
+              "label": "O Leo consegue imaginar um exemplo do dia dela"
+            }
+          ],
+          "help": [
+            "Pense no que ajuda o Leo a imaginar, não no que é mais rápido."
+          ]
+        }
+      }
+    }
+  ]
+}

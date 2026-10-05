@@ -1,0 +1,1031 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-first-account",
+  "lesson_id": "fe-1012-10-keep-it-private",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.data-privacy",
+    "life.banks-and-accounts",
+    "life.scam-awareness"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho enseña con ejemplos a medir qué se puede compartir y qué se queda privado con una sola regla: si puede abrir mi cuenta o mostrar dónde vivo, es privado. Prueba un apodo y un NIP, revisa contraseñas con tres reglas, aprende qué cartas voltear para probar una regla y termina decidiendo qué hacer ante un aviso que pide datos.",
+  "title": {
+    "es-MX": "Mantenlo en privado",
+    "en-US": "Keep it private",
+    "pt-BR": "Mantenha em sigilo"
+  },
+  "new_concepts": [
+    "life.data-privacy"
+  ],
+  "regional": {
+    "universal": "A made-up game chat with invented passwords and LittleFounders coins; no market institutions, brands or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En el chat de un juego, un amigo le escribe a Kai: “Mándame tu NIP, yo te muevo unas monedas.”",
+          "line": "Observa. Medimos qué se puede compartir y qué se queda privado."
+        },
+        "en-US": {
+          "prompt": "In a game chat, a friend writes to Kai: “Send me your PIN, I'll move some coins.”",
+          "line": "Watch. We measure what can be shared and what stays private."
+        },
+        "pt-BR": {
+          "prompt": "No chat de um jogo, um amigo escreve para o Kai: “Me manda seu PIN, eu movo umas moedas.”",
+          "line": "Observe. Medimos o que pode ser compartilhado e o que fica privado."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-nick"
+          },
+          {
+            "id": "opt-address"
+          },
+          {
+            "id": "opt-pin"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-nick"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué podría responder Kai?",
+          "scene": "Un jugador nuevo le escribe a Kai: “¿Cómo te llamo?”",
+          "feedback": {
+            "met": "Gracias. Ahora medimos qué puede compartir Kai, paso a paso.",
+            "not_yet": "Gracias. Ahora medimos qué puede compartir Kai, paso a paso."
+          },
+          "options": [
+            {
+              "label": "Un apodo"
+            },
+            {
+              "label": "La dirección de su casa"
+            },
+            {
+              "label": "El NIP de su cuenta"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Before we start: what could Kai send back?",
+          "scene": "A new player in the game writes to Kai: “What should I call you?”",
+          "feedback": {
+            "met": "Thanks. Now we measure what Kai can share, step by step.",
+            "not_yet": "Thanks. Now we measure what Kai can share, step by step."
+          },
+          "options": [
+            {
+              "label": "A nickname"
+            },
+            {
+              "label": "His home address"
+            },
+            {
+              "label": "His account PIN"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: o que o Kai poderia responder?",
+          "scene": "Um jogador novo escreve para o Kai: “Como posso te chamar?”",
+          "feedback": {
+            "met": "Certo. Agora vamos medir o que o Kai pode compartilhar, passo a passo.",
+            "not_yet": "Certo. Agora vamos medir o que o Kai pode compartilhar, passo a passo."
+          },
+          "options": [
+            {
+              "label": "Um apelido"
+            },
+            {
+              "label": "O endereço da casa dele"
+            },
+            {
+              "label": "O PIN da conta dele"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-rule",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: una regla para medir.",
+          "line": "Si puede abrir mi cuenta o mostrar dónde vivo, se queda privado."
+        },
+        "en-US": {
+          "prompt": "Step 1: one rule to measure by.",
+          "line": "If it could open my account or show where I live, it stays private."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: uma regra para medir.",
+          "line": "Se puder abrir minha conta ou mostrar onde moro, fica privado."
+        }
+      }
+    },
+    {
+      "id": "ex-nick",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: prueba un apodo.",
+          "line": "El apodo de Kai, “Cometa7”, no abre ninguna cuenta ni muestra un lugar. Resultado: se puede compartir."
+        },
+        "en-US": {
+          "prompt": "Step 2: test a nickname.",
+          "line": "Kai's nickname “Comet7” opens no account and shows no place. Result: it can be shared."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: teste um apelido.",
+          "line": "O apelido do Kai, “Cometa7”, não abre conta nenhuma nem mostra um lugar. Resultado: pode ser compartilhado."
+        }
+      }
+    },
+    {
+      "id": "ex-pin",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: prueba el NIP.",
+          "line": "Un NIP es un número secreto que abre la cuenta. Resultado: se queda privado, incluso con un amigo."
+        },
+        "en-US": {
+          "prompt": "Step 3: test the PIN.",
+          "line": "A PIN is a secret number that opens the account. Result: it stays private, even from a friend."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: teste o PIN.",
+          "line": "O PIN é um número secreto que abre a conta. Resultado: fica privado, até para um amigo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-share"
+          },
+          {
+            "id": "bin-private"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-team"
+          },
+          {
+            "id": "item-address"
+          },
+          {
+            "id": "item-card"
+          },
+          {
+            "id": "item-score"
+          },
+          {
+            "id": "item-pass"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "r-account"
+          },
+          {
+            "id": "r-place"
+          },
+          {
+            "id": "r-none"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-team": [
+            {
+              "bin": "bin-share",
+              "reason": "r-none"
+            }
+          ],
+          "item-address": [
+            {
+              "bin": "bin-private",
+              "reason": "r-place"
+            }
+          ],
+          "item-card": [
+            {
+              "bin": "bin-private",
+              "reason": "r-account"
+            }
+          ],
+          "item-score": [
+            {
+              "bin": "bin-share",
+              "reason": "r-none"
+            }
+          ],
+          "item-pass": [
+            {
+              "bin": "bin-private",
+              "reason": "r-account"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Clasifica cada dato que le podrían pedir a Kai y elige el porqué.",
+          "rule": "Si puede abrir mi cuenta o mostrar dónde vivo, se queda privado.",
+          "help": [
+            "Igual que con el NIP: ¿podría abrir mi cuenta o mostrar dónde vivo?"
+          ],
+          "feedback": {
+            "met": "Clasificaste con la regla y diste un porqué para cada dato.",
+            "not_yet": "Todavía no. Relee la regla y prueba cada dato."
+          },
+          "bins": [
+            {
+              "label": "Se puede compartir"
+            },
+            {
+              "label": "Mantener privado"
+            }
+          ],
+          "items": [
+            {
+              "label": "Equipo favorito"
+            },
+            {
+              "label": "Dirección de su casa"
+            },
+            {
+              "label": "Foto de una tarjeta del banco"
+            },
+            {
+              "label": "Mejor puntaje del juego"
+            },
+            {
+              "label": "Contraseña de la cuenta"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Podría abrir mi cuenta"
+            },
+            {
+              "label": "Podría mostrar dónde vivo"
+            },
+            {
+              "label": "No abre nada ni muestra un lugar"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Sort each thing Kai might be asked for, and pick the reason.",
+          "rule": "If it could open my account or show where I live, it stays private.",
+          "help": [
+            "Same as the PIN test: could it open my account, or show where I live?"
+          ],
+          "feedback": {
+            "met": "You sorted by the rule and gave a reason for each.",
+            "not_yet": "Not yet. Reread the rule, then test each thing."
+          },
+          "bins": [
+            {
+              "label": "Can share"
+            },
+            {
+              "label": "Keep private"
+            }
+          ],
+          "items": [
+            {
+              "label": "Favorite team"
+            },
+            {
+              "label": "Home address"
+            },
+            {
+              "label": "Photo of a bank card"
+            },
+            {
+              "label": "Best game score"
+            },
+            {
+              "label": "Account password"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It could open my account"
+            },
+            {
+              "label": "It could show where I live"
+            },
+            {
+              "label": "It opens nothing and shows no place"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Classifique cada coisa que podem pedir ao Kai e escolha o motivo.",
+          "rule": "Se puder abrir minha conta ou mostrar onde moro, fica privado.",
+          "help": [
+            "Igual ao teste do PIN: poderia abrir minha conta ou mostrar onde moro?"
+          ],
+          "feedback": {
+            "met": "Você classificou pela regra e deu um motivo para cada item.",
+            "not_yet": "Ainda não. Releia a regra e teste cada item."
+          },
+          "bins": [
+            {
+              "label": "Pode compartilhar"
+            },
+            {
+              "label": "Manter privado"
+            }
+          ],
+          "items": [
+            {
+              "label": "Time favorito"
+            },
+            {
+              "label": "Endereço da casa"
+            },
+            {
+              "label": "Foto de um cartão do banco"
+            },
+            {
+              "label": "Melhor pontuação no jogo"
+            },
+            {
+              "label": "Senha da conta"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Poderia abrir minha conta"
+            },
+            {
+              "label": "Poderia mostrar onde moro"
+            },
+            {
+              "label": "Não abre nada nem mostra um lugar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-pass-rules",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: tres reglas para una contraseña.",
+          "line": "Una buena contraseña es larga, no se repite y no es una fecha de cumpleaños. Larga significa 12 caracteres o más."
+        },
+        "en-US": {
+          "prompt": "Step 4: three rules for a password.",
+          "line": "A good password is long, used nowhere else, and not a birthday. Long means 12 or more characters."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: três regras para uma senha.",
+          "line": "Uma boa senha é longa, não se repete e não é uma data de aniversário. Longa quer dizer 12 caracteres ou mais."
+        }
+      }
+    },
+    {
+      "id": "ex-pass-demo",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: prueba una contraseña.",
+          "line": "“sol-rio-bici-82” tiene 15 caracteres, no se repite y no es una fecha de cumpleaños. Cumple las tres."
+        },
+        "en-US": {
+          "prompt": "Step 5: test a password.",
+          "line": "“sun-river-bike-82” has 17 characters, is used nowhere else, and is not a birthday. It meets all three."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: teste uma senha.",
+          "line": "“sol-rio-bike-82” tem 15 caracteres, não se repete e não é uma data de aniversário. Cumpre as três regras."
+        }
+      }
+    },
+    {
+      "id": "practice-pass",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-good"
+          },
+          {
+            "id": "bin-change"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-short"
+          },
+          {
+            "id": "item-bday"
+          },
+          {
+            "id": "item-reuse"
+          },
+          {
+            "id": "item-good"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "r-short"
+          },
+          {
+            "id": "r-bday"
+          },
+          {
+            "id": "r-twice"
+          },
+          {
+            "id": "r-good"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-short": [
+            {
+              "bin": "bin-change",
+              "reason": "r-short"
+            }
+          ],
+          "item-bday": [
+            {
+              "bin": "bin-change",
+              "reason": "r-bday"
+            }
+          ],
+          "item-reuse": [
+            {
+              "bin": "bin-change",
+              "reason": "r-twice"
+            }
+          ],
+          "item-good": [
+            {
+              "bin": "bin-good",
+              "reason": "r-good"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Clasifica las cuatro contraseñas con la regla y elige un porqué para cada una.",
+          "rule": "Una buena contraseña es larga (12+ caracteres), no se repite y no es un cumpleaños.",
+          "help": [
+            "Revisa el largo, si se repite y si es un cumpleaños, una por una."
+          ],
+          "feedback": {
+            "met": "Probaste cada contraseña con las tres reglas.",
+            "not_yet": "Todavía no. Prueba cada contraseña con las tres reglas."
+          },
+          "bins": [
+            {
+              "label": "Contraseña buena"
+            },
+            {
+              "label": "Hay que cambiarla"
+            }
+          ],
+          "items": [
+            {
+              "label": "kai7"
+            },
+            {
+              "label": "kai-12-04-2015 (su cumpleaños)"
+            },
+            {
+              "label": "tigre-lampara-orbita-47 (usada dos veces)"
+            },
+            {
+              "label": "mango-tren-luna-9 (usada una vez)"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muy corta"
+            },
+            {
+              "label": "Es un cumpleaños"
+            },
+            {
+              "label": "Usada en dos lugares"
+            },
+            {
+              "label": "Larga, usada una vez, sin cumpleaños"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Sort the four passwords by the rule, and pick a reason for each.",
+          "rule": "A good password is long (12+ characters), used nowhere else, and not a birthday.",
+          "help": [
+            "Check length, reuse and birthday for each one in turn."
+          ],
+          "feedback": {
+            "met": "You tested each password against the three rules.",
+            "not_yet": "Not yet. Test each password against the three rules."
+          },
+          "bins": [
+            {
+              "label": "Good password"
+            },
+            {
+              "label": "Needs a change"
+            }
+          ],
+          "items": [
+            {
+              "label": "kai7"
+            },
+            {
+              "label": "kai-12-04-2015 (his birthday)"
+            },
+            {
+              "label": "tiger-lamp-orbit-47 (used twice)"
+            },
+            {
+              "label": "mango-train-slide-9 (used once)"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Too short"
+            },
+            {
+              "label": "It is a birthday"
+            },
+            {
+              "label": "Used in two places"
+            },
+            {
+              "label": "Long, used once, no birthday"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Classifique as quatro senhas pela regra e escolha um motivo para cada uma.",
+          "rule": "Uma boa senha é longa (12+ caracteres), não se repete e não é um aniversário.",
+          "help": [
+            "Confira o tamanho, se repete e se é aniversário, uma por uma."
+          ],
+          "feedback": {
+            "met": "Você testou cada senha com as três regras.",
+            "not_yet": "Ainda não. Teste cada senha com as três regras."
+          },
+          "bins": [
+            {
+              "label": "Senha boa"
+            },
+            {
+              "label": "Precisa mudar"
+            }
+          ],
+          "items": [
+            {
+              "label": "kai7"
+            },
+            {
+              "label": "kai-12-04-2015 (aniversário dele)"
+            },
+            {
+              "label": "tigre-lampada-orbita-47 (usada duas vezes)"
+            },
+            {
+              "label": "manga-trem-lua-9 (usada uma vez)"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muito curta"
+            },
+            {
+              "label": "É um aniversário"
+            },
+            {
+              "label": "Usada em dois lugares"
+            },
+            {
+              "label": "Longa, usada uma vez, sem aniversário"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-flip-1",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 6: cuatro cartas: cuenta, solo para juego, 14 caracteres, 5 caracteres.",
+          "line": "Si una contraseña protege una cuenta, tiene 12 caracteres o más. Un lado muestra el uso y el otro el largo."
+        },
+        "en-US": {
+          "prompt": "Step 6: four cards: account, game-only, 14 characters, 5 characters.",
+          "line": "If a password guards an account, it has 12+ characters. One side shows use, the other length."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: quatro cartas: conta, só para jogo, 14 caracteres, 5 caracteres.",
+          "line": "Se uma senha protege uma conta, ela tem 12 caracteres ou mais. Um lado mostra o uso e o outro o tamanho."
+        }
+      }
+    },
+    {
+      "id": "ex-flip-2",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 7: voltea las cartas que podrían romper la regla.",
+          "line": "Solo una contraseña corta de una cuenta la rompe. Volteo la carta de cuenta y la de 5 caracteres."
+        },
+        "en-US": {
+          "prompt": "Step 7: turn the cards that could break the rule.",
+          "line": "Only a short account password breaks it. So I turn the account card and the 5-character card."
+        },
+        "pt-BR": {
+          "prompt": "Passo 7: vire as cartas que podem quebrar a regra.",
+          "line": "Só uma senha curta de uma conta quebra a regra. Eu viro a carta da conta e a de 5 caracteres."
+        }
+      }
+    },
+    {
+      "id": "ex-flip-3",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 8: deja las otras dos cartas.",
+          "line": "Una contraseña solo para juego no puede romper la regla, y 14 caracteres ya son 12 o más. No hace falta voltearlas."
+        },
+        "en-US": {
+          "prompt": "Step 8: leave the other two cards.",
+          "line": "A game-only password cannot break the rule, and 14 characters already pass. No need to turn them."
+        },
+        "pt-BR": {
+          "prompt": "Passo 8: deixe as outras duas cartas.",
+          "line": "Uma senha só para jogo não quebra a regra, e 14 caracteres já são 12 ou mais. Não precisa virar."
+        }
+      }
+    },
+    {
+      "id": "practice-cards",
+      "type": "logic.rule-checker.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "cards": [
+          {
+            "id": "card-adult"
+          },
+          {
+            "id": "card-pin"
+          },
+          {
+            "id": "card-nobody"
+          },
+          {
+            "id": "card-nick"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-pin",
+          "card-nobody"
+        ],
+        "roles": {
+          "card-adult": "q",
+          "card-pin": "p",
+          "card-nobody": "not_q",
+          "card-nick": "not_p"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cada carta tiene un mensaje de un lado y la acción de Kai del otro. ¿Qué cartas debes voltear?",
+          "rule": "Si un mensaje pide un NIP, Kai avisa a un adulto.",
+          "feedback": {
+            "met": "Volteaste solo las cartas que podían romper la regla.",
+            "not_yet": "Todavía no. Pregunta qué cartas podrían romper la regla."
+          },
+          "cards": [
+            {
+              "face": "Avisó a un adulto"
+            },
+            {
+              "face": "Pide un NIP"
+            },
+            {
+              "face": "No avisó a nadie"
+            },
+            {
+              "face": "Pide un apodo"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Each card has a message on one side, Kai's action on the other. Which cards must you turn?",
+          "rule": "If a message asks for a PIN, Kai tells an adult.",
+          "feedback": {
+            "met": "You turned only the cards that could break the rule.",
+            "not_yet": "Not yet. Ask which cards could break the rule."
+          },
+          "cards": [
+            {
+              "face": "Told an adult"
+            },
+            {
+              "face": "Asks for a PIN"
+            },
+            {
+              "face": "Told nobody"
+            },
+            {
+              "face": "Asks for a nickname"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cada carta tem uma mensagem de um lado e a ação do Kai do outro. Quais cartas você deve virar?",
+          "rule": "Se uma mensagem pede o PIN, o Kai avisa um adulto.",
+          "feedback": {
+            "met": "Você virou só as cartas que podiam quebrar a regra.",
+            "not_yet": "Ainda não. Pergunte quais cartas poderiam quebrar a regra."
+          },
+          "cards": [
+            {
+              "face": "Avisou um adulto"
+            },
+            {
+              "face": "Pede o PIN"
+            },
+            {
+              "face": "Não avisou ninguém"
+            },
+            {
+              "face": "Pede um apelido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-both"
+          },
+          {
+            "id": "reply-adult"
+          },
+          {
+            "id": "reply-card"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-adult"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Kai dibuja en una app nueva cuando aparece un aviso. ¿Qué hace?",
+          "speaker": "Aviso",
+          "line": "¡Ganaste un premio! Escribe la dirección de tu casa y manda una foto de tu tarjeta.",
+          "feedback": {
+            "met": "Mantuviste privadas las dos cosas y elegiste avisar a un adulto.",
+            "not_yet": "Todavía no. Prueba cada cosa que pide con la regla."
+          },
+          "replies": [
+            {
+              "label": "Mandar las dos; el premio suena divertido"
+            },
+            {
+              "label": "Cerrarlo y avisar a un adulto"
+            },
+            {
+              "label": "Mandar solo la foto de la tarjeta"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Kai is drawing in a new app when a pop-up appears. What does he do?",
+          "speaker": "Pop-up",
+          "line": "You won a prize! Type your home address and send a photo of your card.",
+          "feedback": {
+            "met": "You kept both things private and chose to tell an adult.",
+            "not_yet": "Not yet. Test each thing it asks for with the rule."
+          },
+          "replies": [
+            {
+              "label": "Send both; the prize sounds fun"
+            },
+            {
+              "label": "Close it and tell an adult"
+            },
+            {
+              "label": "Send only the card photo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Kai está desenhando num app novo quando aparece um aviso. O que ele faz?",
+          "speaker": "Aviso",
+          "line": "Você ganhou um prêmio! Digite o endereço da sua casa e envie uma foto do seu cartão.",
+          "feedback": {
+            "met": "Você manteve as duas coisas privadas e escolheu avisar um adulto.",
+            "not_yet": "Ainda não. Teste cada coisa que ele pede com a regra."
+          },
+          "replies": [
+            {
+              "label": "Enviar os dois; o prêmio parece divertido"
+            },
+            {
+              "label": "Fechar e avisar um adulto"
+            },
+            {
+              "label": "Enviar só a foto do cartão"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

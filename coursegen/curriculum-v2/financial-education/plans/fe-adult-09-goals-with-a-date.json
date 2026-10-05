@@ -1,0 +1,1021 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-plan-ahead",
+  "lesson_id": "fe-adult-09-goals-with-a-date",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.saving-goal",
+    "life.goal-planning",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara acompaña a Lena mientras convierte dos metas, un fondo de emergencia y unas vacaciones, en una cifra mensual con fecha. Compara esa cifra con lo que su presupuesto deja libre, ve qué pasa cuando aparece una cuenta del dentista y ordena los pasos del plan. Después practica con otros montos y plazos.",
+  "title": {
+    "en-US": "Goals with a date",
+    "es-MX": "Metas con fecha",
+    "pt-BR": "Metas com data"
+  },
+  "new_concepts": [
+    "biz.saving-goal",
+    "life.goal-planning",
+    "money.savings-plan-math"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Una persona adulta en México convierte dos metas de ahorro, un fondo de emergencia y unas vacaciones, en una cifra mensual: divide cada meta entre los meses que faltan para su fecha. Las cifras son ejemplos, no asesoría.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "fondo de emergencia"
+        ]
+      },
+      "en-US": {
+        "scenario": "A US adult turns two savings goals, an emergency fund and a vacation, into one monthly amount by dividing each target by the months left to its date. The amounts are examples, not advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "emergency fund"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Uma pessoa adulta no Brasil transforma duas metas de poupança, uma reserva de emergência e uma viagem de férias, em um valor mensal, dividindo cada meta pelos meses até a data. Os valores são exemplos, não aconselhamento.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reserva de emergência"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "Lena wants an emergency fund and a vacation, each with a date.",
+          "line": "Fund $6,000, trip $3,000, both within 24 months. We turn that date into a monthly number."
+        },
+        "es-MX": {
+          "prompt": "Lena quiere un fondo de emergencia y unas vacaciones, cada uno con fecha.",
+          "line": "Fondo de $6,000, viaje de $3,000, todo en 24 meses. Convertimos esa fecha en una cifra mensual."
+        },
+        "pt-BR": {
+          "prompt": "Lena quer uma reserva de emergência e umas férias, cada uma com data.",
+          "line": "Reserva de R$ 6.000, viagem de R$ 3.000, tudo em 24 meses. Vamos transformar essa data em um valor mensal."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "saved"
+          },
+          {
+            "id": "missing"
+          },
+          {
+            "id": "monthly"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "missing",
+          "monthly"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "missing": "500",
+          "monthly": "100"
+        }
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "pre",
+      "copy": {
+        "en-US": {
+          "prompt": "Omar wants a $650 laptop in 5 months and has $150. Write the gap, then the monthly amount.",
+          "feedback": {
+            "met": "Thanks. Now Lena's plan, step by step.",
+            "not_yet": "Thanks. Now Lena's plan, step by step."
+          },
+          "steps": [
+            {
+              "expression": "Omar has saved",
+              "result": "150",
+              "spokenText": "Omar has $150 saved toward the $650 laptop."
+            },
+            {
+              "expression": "What is missing",
+              "result": "500",
+              "spokenText": "From $650 I take away the $150: $500 is missing."
+            },
+            {
+              "expression": "Amount each month",
+              "result": "100",
+              "spokenText": "$500 over 5 months is $100 each month."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Omar quiere una laptop de $650 en 5 meses y ya tiene $150. Escribe lo que falta y la cantidad mensual.",
+          "feedback": {
+            "met": "Gracias. Ahora el plan de Lena, paso a paso.",
+            "not_yet": "Gracias. Ahora el plan de Lena, paso a paso."
+          },
+          "steps": [
+            {
+              "expression": "Lo que Omar ya tiene",
+              "result": "150",
+              "spokenText": "Omar ya tiene $150 para la laptop de $650."
+            },
+            {
+              "expression": "Lo que falta",
+              "result": "500",
+              "spokenText": "A $650 le quito los $150: faltan $500."
+            },
+            {
+              "expression": "Cantidad por mes",
+              "result": "100",
+              "spokenText": "Faltan $500 y son 5 meses: son $100 por mes."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Omar quer comprar um notebook de R$ 650 em 5 meses e já tem R$ 150. Escreva o que falta e o valor mensal.",
+          "feedback": {
+            "met": "Anotado. Agora o plano da Lena, passo a passo.",
+            "not_yet": "Anotado. Agora o plano da Lena, passo a passo."
+          },
+          "steps": [
+            {
+              "expression": "O que Omar já tem",
+              "result": "150",
+              "spokenText": "Omar já tem R$ 150 para o notebook de R$ 650."
+            },
+            {
+              "expression": "O que falta",
+              "result": "500",
+              "spokenText": "De R$ 650 tiro os R$ 150: faltam R$ 500."
+            },
+            {
+              "expression": "Valor por mês",
+              "result": "100",
+              "spokenText": "Faltam R$ 500 e são 5 meses: são R$ 100 por mês."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 12000,
+        "target": 9000,
+        "step": 1500,
+        "initial": 0,
+        "currency": "local"
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: add the goals. $6,000 + $3,000 = $9,000 is the Goal. Change savings and watch To go."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: suma las metas. $6,000 + $3,000 = $9,000 es la Meta. Cambia el ahorro y mira cuánto falta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: some as metas, R$ 6.000 + R$ 3.000 = R$ 9.000, a Meta. Mude a poupança e veja quanto falta."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 24,
+        "minimum": 100,
+        "maximum": 500,
+        "step": 25,
+        "initial": 250,
+        "currency": "local",
+        "unit": "month"
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: spread it over 24 months. $9,000 ÷ 24 = $375. Set Each month to $375 to reach $9,000."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: repártelo en 24 meses. $9,000 ÷ 24 = $375. Pon Cada mes en $375 y llegas a $9,000."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: divida em 24 meses, R$ 9.000 ÷ 24 = R$ 375. Ponha Por mês em R$ 375 e chegue a R$ 9.000."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: compare it with what her budget leaves.",
+          "line": "Her budget leaves $472 each month. $472 − $375 = $97 spare, so both goals fit."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: compáralo con su dinero libre.",
+          "line": "Su presupuesto deja $472 libres al mes. $472 − $375 = $97 de sobra, así que caben las dos metas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: compare com o dinheiro livre dela.",
+          "line": "O orçamento dela deixa R$ 472 livres por mês. R$ 472 − R$ 375 = R$ 97 de sobra, então as duas metas cabem."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "fund"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "month"
+          },
+          {
+            "id": "spare"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "total",
+          "month",
+          "spare"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "600",
+          "month": "50",
+          "spare": "80"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Omar wants a $240 fund and a $360 trip in 12 months. His budget leaves $130 a month.",
+          "help": [
+            "Like Lena: add the goals, divide by months, compare with the budget."
+          ],
+          "feedback": {
+            "met": "You added the goals, spread them over months and found what's left.",
+            "not_yet": "Not yet. Revisit Lena's steps: total, monthly amount, then what is left."
+          },
+          "steps": [
+            {
+              "expression": "Fund goal",
+              "result": "240",
+              "spokenText": "Omar's fund is $240."
+            },
+            {
+              "expression": "240 + 360",
+              "result": "600",
+              "spokenText": "$240 plus $360 makes $600 to save in all."
+            },
+            {
+              "expression": "Total ÷ 12",
+              "result": "50",
+              "spokenText": "$600 over 12 months is $50 a month."
+            },
+            {
+              "expression": "Budget left − monthly amount",
+              "result": "80",
+              "spokenText": "From the $130 the budget leaves, taking away $50 leaves $80 spare."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Omar quiere un fondo de $240 y un viaje de $360 en 12 meses, con $130 libres al mes. Completa los pasos.",
+          "help": [
+            "Como Lena: suma las metas, divide entre los meses y compara con el dinero libre."
+          ],
+          "feedback": {
+            "met": "Sumaste las metas, las repartiste en meses y hallaste lo que sobra.",
+            "not_yet": "Aún no. Repasa los pasos de Lena: total, cantidad mensual y lo que sobra."
+          },
+          "steps": [
+            {
+              "expression": "Meta del fondo",
+              "result": "240",
+              "spokenText": "El fondo de Omar es de $240."
+            },
+            {
+              "expression": "240 + 360",
+              "result": "600",
+              "spokenText": "$240 más $360 son $600 por juntar en total."
+            },
+            {
+              "expression": "Total ÷ 12",
+              "result": "50",
+              "spokenText": "$600 entre 12 meses son $50 al mes."
+            },
+            {
+              "expression": "Dinero libre − cantidad mensual",
+              "result": "80",
+              "spokenText": "De $130 libres, al quitar $50 sobran $80."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Omar quer uma reserva de R$ 240 e uma viagem de R$ 360 em 12 meses, com R$ 130 livres por mês. Complete os passos.",
+          "help": [
+            "Como a Lena: some as metas, divida pelos meses e compare com o dinheiro livre."
+          ],
+          "feedback": {
+            "met": "Você somou as metas, dividiu pelos meses e achou o que sobra.",
+            "not_yet": "Ainda não. Reveja os passos da Lena: total, valor mensal e o que sobra."
+          },
+          "steps": [
+            {
+              "expression": "Meta da reserva",
+              "result": "240",
+              "spokenText": "A reserva do Omar é de R$ 240."
+            },
+            {
+              "expression": "240 + 360",
+              "result": "600",
+              "spokenText": "R$ 240 mais R$ 360 dão R$ 600 para juntar no total."
+            },
+            {
+              "expression": "Total ÷ 12",
+              "result": "50",
+              "spokenText": "R$ 600 em 12 meses dão R$ 50 por mês."
+            },
+            {
+              "expression": "Dinheiro livre − valor mensal",
+              "result": "80",
+              "spokenText": "De R$ 130 livres, tirando R$ 50 sobram R$ 80."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the first obstacle, a $600 dental bill in 6 months.",
+          "line": "6 × $97 = $582 of spare money by then. Close to the bill, not enough."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: el primer obstáculo, una cuenta del dentista de $600 en 6 meses.",
+          "line": "6 × $97 = $582 de dinero sobrante para entonces. Cerca de la cuenta, pero no alcanza."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o primeiro obstáculo, uma conta de dentista de R$ 600 em 6 meses.",
+          "line": "6 × R$ 97 = R$ 582 de dinheiro sobrando até lá. Perto da conta, mas não chega."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: measure the gap, then give it a date.",
+          "line": "$600 − $582 = $18 short. Lena plans where the $18 comes from and checks again in month 3."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: mide la diferencia y ponle fecha.",
+          "line": "$600 − $582 = $18 de diferencia. Lena planea de dónde saldrán y lo revisa de nuevo en el mes 3."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: meça a diferença e dê uma data a ela.",
+          "line": "R$ 600 − R$ 582 = R$ 18 de diferença. A Lena planeja de onde virão e confere de novo no mês 3."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "spare"
+          },
+          {
+            "id": "saved"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "saved",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "saved": "360",
+          "gap": "40"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Omar's $400 car repair is due in 6 months; he has $60 spare a month. Finish the steps.",
+          "help": [
+            "Like Lena's bill: spare money × months, then compare with the bill."
+          ],
+          "feedback": {
+            "met": "You multiplied spare money by the months and compared with the bill.",
+            "not_yet": "Not yet. Revisit Lena's bill: spare money times months, then the gap."
+          },
+          "steps": [
+            {
+              "expression": "Spare money each month",
+              "result": "60",
+              "spokenText": "Omar has $60 spare each month."
+            },
+            {
+              "expression": "60 × 6",
+              "result": "360",
+              "spokenText": "$60 a month for 6 months is $360 saved."
+            },
+            {
+              "expression": "Bill − saved",
+              "result": "40",
+              "spokenText": "From the $400 bill, taking away $360 leaves $40 short."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La reparación del coche de Omar cuesta $400 y vence en 6 meses; tiene $60 libres al mes. Completa los pasos.",
+          "help": [
+            "Como la cuenta de Lena: dinero libre × meses y luego compara con la cuenta."
+          ],
+          "feedback": {
+            "met": "Multiplicaste el dinero libre por los meses y lo comparaste con la cuenta.",
+            "not_yet": "Aún no. Repasa la cuenta de Lena: dinero libre por meses y luego la diferencia."
+          },
+          "steps": [
+            {
+              "expression": "Dinero libre por mes",
+              "result": "60",
+              "spokenText": "Omar tiene $60 libres cada mes."
+            },
+            {
+              "expression": "60 × 6",
+              "result": "360",
+              "spokenText": "$60 al mes durante 6 meses son $360 ahorrados."
+            },
+            {
+              "expression": "Cuenta − ahorrado",
+              "result": "40",
+              "spokenText": "De la cuenta de $400, al quitar $360 faltan $40."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O conserto do carro do Omar custa R$ 400 e vence em 6 meses; ele tem R$ 60 livres por mês. Complete os passos.",
+          "help": [
+            "Como a conta da Lena: dinheiro livre × meses e depois compare com a conta."
+          ],
+          "feedback": {
+            "met": "Você multiplicou o dinheiro livre pelos meses e comparou com a conta.",
+            "not_yet": "Ainda não. Reveja a conta da Lena: dinheiro livre vezes meses e depois a diferença."
+          },
+          "steps": [
+            {
+              "expression": "Dinheiro livre por mês",
+              "result": "60",
+              "spokenText": "Omar tem R$ 60 livres por mês."
+            },
+            {
+              "expression": "60 × 6",
+              "result": "360",
+              "spokenText": "R$ 60 por mês durante 6 meses são R$ 360 guardados."
+            },
+            {
+              "expression": "Conta − guardado",
+              "result": "40",
+              "spokenText": "Da conta de R$ 400, tirando R$ 360 faltam R$ 40."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "months"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "month"
+          },
+          {
+            "id": "spare"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "total",
+          "month",
+          "spare"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "900",
+          "month": "75",
+          "spare": "15"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "You plan a $540 phone and a $360 bicycle in 12 months. Your budget leaves $90 a month.",
+          "help": [
+            "Add the goals, divide by months, compare that with the budget."
+          ],
+          "feedback": {
+            "met": "You turned two goals and a date into a monthly amount.",
+            "not_yet": "Not yet. Add the goals first, then divide by the months."
+          },
+          "steps": [
+            {
+              "expression": "Months to save",
+              "result": "12",
+              "spokenText": "You have 12 months to save."
+            },
+            {
+              "expression": "Total of both goals",
+              "result": "900",
+              "spokenText": "$540 plus $360 makes $900 to save."
+            },
+            {
+              "expression": "Amount each month",
+              "result": "75",
+              "spokenText": "$900 over 12 months is $75 a month."
+            },
+            {
+              "expression": "Budget left − monthly amount",
+              "result": "15",
+              "spokenText": "From the $90 the budget leaves, taking away $75 leaves $15 spare."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Planeas un celular de $540 y una bicicleta de $360 en 12 meses, con $90 libres al mes. Completa los pasos.",
+          "help": [
+            "Suma las metas, divide entre los meses y compara con el dinero libre."
+          ],
+          "feedback": {
+            "met": "Convertiste dos metas y una fecha en una cantidad mensual.",
+            "not_yet": "Aún no. Suma primero las metas y luego divide entre los meses."
+          },
+          "steps": [
+            {
+              "expression": "Meses para ahorrar",
+              "result": "12",
+              "spokenText": "Tienes 12 meses para ahorrar."
+            },
+            {
+              "expression": "Total de las dos metas",
+              "result": "900",
+              "spokenText": "$540 más $360 son $900 por juntar."
+            },
+            {
+              "expression": "Cantidad por mes",
+              "result": "75",
+              "spokenText": "$900 entre 12 meses son $75 al mes."
+            },
+            {
+              "expression": "Dinero libre − cantidad mensual",
+              "result": "15",
+              "spokenText": "De $90 libres, al quitar $75 sobran $15."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você planeja um celular de R$ 540 e uma bicicleta de R$ 360 em 12 meses, com R$ 90 livres. Complete os passos.",
+          "help": [
+            "Some as metas, divida pelos meses e compare com o dinheiro livre."
+          ],
+          "feedback": {
+            "met": "Você transformou duas metas e uma data em um valor mensal.",
+            "not_yet": "Ainda não. Some primeiro as metas e depois divida pelos meses."
+          },
+          "steps": [
+            {
+              "expression": "Meses para guardar",
+              "result": "12",
+              "spokenText": "Você tem 12 meses para guardar."
+            },
+            {
+              "expression": "Total das duas metas",
+              "result": "900",
+              "spokenText": "R$ 540 mais R$ 360 dão R$ 900 para juntar."
+            },
+            {
+              "expression": "Valor por mês",
+              "result": "75",
+              "spokenText": "R$ 900 em 12 meses dão R$ 75 por mês."
+            },
+            {
+              "expression": "Dinheiro livre − valor mensal",
+              "result": "15",
+              "spokenText": "De R$ 90 livres, tirando R$ 75 sobram R$ 15."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "visual": {
+        "type": "timeline"
+      },
+      "payload": {
+        "tasks": [
+          {
+            "id": "goals",
+            "after": []
+          },
+          {
+            "id": "date",
+            "after": []
+          },
+          {
+            "id": "monthly",
+            "after": [
+              "goals",
+              "date"
+            ]
+          },
+          {
+            "id": "free",
+            "after": []
+          },
+          {
+            "id": "compare",
+            "after": [
+              "monthly",
+              "free"
+            ]
+          },
+          {
+            "id": "obstacle",
+            "after": [
+              "compare"
+            ]
+          },
+          {
+            "id": "review",
+            "after": [
+              "obstacle"
+            ]
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "step-1": [
+              "goals"
+            ],
+            "step-2": [
+              "date"
+            ],
+            "step-3": [
+              "monthly"
+            ],
+            "step-4": [
+              "free"
+            ],
+            "step-5": [
+              "compare"
+            ],
+            "step-6": [
+              "obstacle"
+            ],
+            "step-7": [
+              "review"
+            ]
+          }
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "You are planning two goals from scratch. Order the steps so each one has what it needs.",
+          "help": [
+            "Ask of each step: what must I already know to do it?"
+          ],
+          "feedback": {
+            "met": "You ordered the plan so each step had what it needed.",
+            "not_yet": "Not yet. Check which steps need an earlier result first."
+          },
+          "labels": {
+            "goals": "Name each goal and its cost",
+            "date": "Choose a date for each goal",
+            "monthly": "Work out the monthly amount",
+            "free": "Find what the budget leaves",
+            "compare": "Compare the two amounts",
+            "obstacle": "Plan for the first obstacle",
+            "review": "Set a day to review the plan"
+          }
+        },
+        "es-MX": {
+          "prompt": "Vas a planear dos metas desde cero. Ordena los pasos para que cada uno tenga lo que necesita.",
+          "help": [
+            "Pregunta de cada paso: ¿qué debo saber ya para hacerlo?"
+          ],
+          "feedback": {
+            "met": "Ordenaste el plan para que cada paso tuviera lo que necesitaba.",
+            "not_yet": "Aún no. Revisa qué pasos necesitan antes un resultado anterior."
+          },
+          "labels": {
+            "goals": "Nombra cada meta y su costo",
+            "date": "Elige una fecha para cada meta",
+            "monthly": "Calcula la cantidad mensual",
+            "free": "Encuentra lo que deja libre el presupuesto",
+            "compare": "Compara las dos cantidades",
+            "obstacle": "Prevé el primer obstáculo",
+            "review": "Fija un día para revisar el plan"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Você vai planejar duas metas do zero. Ordene os passos para que cada um tenha o que precisa.",
+          "help": [
+            "Pergunte de cada passo: o que eu preciso saber antes para fazê-lo?"
+          ],
+          "feedback": {
+            "met": "Você ordenou o plano para que cada passo tivesse o que precisava.",
+            "not_yet": "Ainda não. Veja quais passos precisam antes de um resultado anterior."
+          },
+          "labels": {
+            "goals": "Nomeie cada meta e seu custo",
+            "date": "Escolha uma data para cada meta",
+            "monthly": "Calcule o valor mensal",
+            "free": "Descubra o que o orçamento deixa livre",
+            "compare": "Compare os dois valores",
+            "obstacle": "Preveja o primeiro obstáculo",
+            "review": "Marque um dia para revisar o plano"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "months"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "month"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "total",
+          "month",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "700",
+          "month": "70",
+          "gap": "20"
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "Wedding in 10 months: a $500 trip and a $200 gift. Your budget leaves $50 a month.",
+          "help": [
+            "Same method: total, monthly amount, then compare it with the budget."
+          ],
+          "feedback": {
+            "met": "You tested a new goal with a date against your budget.",
+            "not_yet": "Not yet. Revisit Lena's steps: total, monthly amount, then the comparison."
+          },
+          "steps": [
+            {
+              "expression": "Months to save",
+              "result": "10",
+              "spokenText": "The wedding is 10 months away."
+            },
+            {
+              "expression": "Total of both goals",
+              "result": "700",
+              "spokenText": "$500 plus $200 makes $700 to save."
+            },
+            {
+              "expression": "Amount each month",
+              "result": "70",
+              "spokenText": "$700 over 10 months is $70 a month."
+            },
+            {
+              "expression": "Gap between the two amounts",
+              "result": "20",
+              "spokenText": "$70 a month against the $50 the budget leaves is a gap of $20."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Boda en 10 meses: un viaje de $500 y un regalo de $200, con $50 libres al mes. Completa los pasos.",
+          "help": [
+            "El mismo método: total, cantidad mensual y luego compárala con el dinero libre."
+          ],
+          "feedback": {
+            "met": "Pusiste a prueba una meta nueva con fecha contra el dinero libre.",
+            "not_yet": "Aún no. Repasa los pasos de Lena: total, cantidad mensual y la comparación."
+          },
+          "steps": [
+            {
+              "expression": "Meses para ahorrar",
+              "result": "10",
+              "spokenText": "La boda es en 10 meses."
+            },
+            {
+              "expression": "Total de las dos metas",
+              "result": "700",
+              "spokenText": "$500 más $200 son $700 por juntar."
+            },
+            {
+              "expression": "Cantidad por mes",
+              "result": "70",
+              "spokenText": "$700 entre 10 meses son $70 al mes."
+            },
+            {
+              "expression": "Diferencia entre las dos cantidades",
+              "result": "20",
+              "spokenText": "$70 al mes contra $50 libres deja una diferencia de $20."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Casamento em 10 meses: uma viagem de R$ 500 e um presente de R$ 200, com R$ 50 livres. Complete os passos.",
+          "help": [
+            "O mesmo método: total, valor mensal e depois compare com o dinheiro livre."
+          ],
+          "feedback": {
+            "met": "Você testou uma meta nova com data contra o dinheiro livre.",
+            "not_yet": "Ainda não. Reveja os passos da Lena: total, valor mensal e a comparação."
+          },
+          "steps": [
+            {
+              "expression": "Meses para guardar",
+              "result": "10",
+              "spokenText": "O casamento é em 10 meses."
+            },
+            {
+              "expression": "Total das duas metas",
+              "result": "700",
+              "spokenText": "R$ 500 mais R$ 200 dão R$ 700 para juntar."
+            },
+            {
+              "expression": "Valor por mês",
+              "result": "70",
+              "spokenText": "R$ 700 em 10 meses dão R$ 70 por mês."
+            },
+            {
+              "expression": "Diferença entre os dois valores",
+              "result": "20",
+              "spokenText": "R$ 70 por mês contra R$ 50 livres deixa uma diferença de R$ 20."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

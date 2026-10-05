@@ -1,0 +1,475 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-first-version",
+  "lesson_id": "ent-1012-07-build-within-limits",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.build-within-constraints",
+    "biz.mvp",
+    "money.simple-budget"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara muestra cómo armar cinco bolsas de prueba con solo 40 monedas: primero lo que cada bolsa necesita, luego la reserva y al final los extras. Después el estudiante reparte monedas con el tablero, registra compras en un libro de saldo y aplica la misma idea en la mesa de una feria.",
+  "title": {
+    "es-MX": "Construir con límites",
+    "en-US": "Build within limits",
+    "pt-BR": "Construir dentro dos limites"
+  },
+  "new_concepts": [
+    "biz.build-within-constraints"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara buys ribbon, printed labels and sandwiches first, and the coins run out before the handles.",
+    "recovery": "Zara cuts the ribbon and labels, keeps the sandwich and handle, and promises to buy what each bag needs first next time."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Zara tiene 40 monedas, tijeras, una engrapadora y cinta.",
+          "line": "Cinco bolsas de prueba en dos fines de semana. Mmm, hay tantas cosas por comprar."
+        },
+        "en-US": {
+          "prompt": "Zara's team has 40 coins, scissors, a stapler and tape.",
+          "line": "Five test bags in two weekends. Hmm, so many things I could buy."
+        },
+        "pt-BR": {
+          "prompt": "A equipe da Zara tem 40 moedas, tesoura, um grampeador e fita.",
+          "line": "Cinco sacolas de teste em dois fins de semana. Hum, tanta coisa para comprar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.build-within-constraints",
+      "payload": {
+        "total": 40,
+        "step": 5,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 5
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cinco bolsas cuestan 7 monedas cada una. Reparte las 40 monedas de Zara: Gastar en bolsas, Guardar lo que sobre.",
+          "feedback": {
+            "met": "Gracias, así veo cómo planeas. Ahora empieza la construcción.",
+            "not_yet": "Gracias, así veo cómo planeas. Ahora empieza la construcción."
+          },
+          "help": [
+            "Usa las 40 monedas antes de comprobar."
+          ]
+        },
+        "en-US": {
+          "prompt": "Five bags cost 7 coins each. Split Zara's 40 coins: Spend for bags, Save the rest.",
+          "feedback": {
+            "met": "Thanks, that shows how you plan. Now the build begins.",
+            "not_yet": "Thanks, that shows how you plan. Now the build begins."
+          },
+          "help": [
+            "Use all 40 coins before you check."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cinco sacolas custam 7 moedas cada. Divida as 40 moedas da Zara: Gastar nas sacolas, Guardar o resto.",
+          "feedback": {
+            "met": "Isso mostra como você planeja. Agora começa a construção.",
+            "not_yet": "Isso mostra como você planeja. Agora começa a construção."
+          },
+          "help": [
+            "Use as 40 moedas antes de conferir."
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Zara.",
+          "setup": "Teníamos 40 monedas para 5 bolsas de prueba. El listón y las etiquetas impresas se veían geniales.",
+          "misjudgment": "Compré primero el listón, las etiquetas y los sándwiches. Las monedas se acabaron antes de las asas.",
+          "recovery": "Quité el listón y las etiquetas. La próxima vez compro primero lo que necesita cada bolsa, y los extras al final."
+        },
+        "en-US": {
+          "prompt": "See what happened to Zara.",
+          "setup": "We had 40 coins for 5 test bags. The ribbon and printed labels looked so cool.",
+          "misjudgment": "I bought the ribbon, the labels and the sandwiches first. The coins ran out before the handles.",
+          "recovery": "I cut the ribbon and labels. Next time I buy what each bag needs first, extras last."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Zara.",
+          "setup": "Tínhamos 40 moedas para 5 sacolas de teste. A fita e as etiquetas impressas pareciam muito legais.",
+          "misjudgment": "Comprei primeiro a fita, as etiquetas e os sanduíches. As moedas acabaram antes das alças.",
+          "recovery": "Tirei a fita e as etiquetas. Da próxima vez compro primeiro o que cada sacola precisa, e os extras por último."
+        }
+      }
+    },
+    {
+      "id": "step-needs-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: cada bolsa necesita dos cosas, un sándwich y un asa.",
+          "line": "El sándwich cuesta 4 monedas y el asa cuesta 3. Juntos son 7 monedas por bolsa."
+        },
+        "en-US": {
+          "prompt": "Step 1: each bag needs two things, a sandwich and a handle.",
+          "line": "The sandwich costs 4 coins and the handle costs 3. Together that is 7 coins per bag."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: cada sacola precisa de duas coisas, um sanduíche e uma alça.",
+          "line": "O sanduíche custa 4 moedas e a alça custa 3. Juntos são 7 moedas por sacola."
+        }
+      }
+    },
+    {
+      "id": "step-price-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: pon precio a las cinco bolsas. 5 por 7 monedas son 35 monedas.",
+          "line": "Tenemos 40 monedas y las bolsas necesitan 35. Quedan 5 monedas."
+        },
+        "en-US": {
+          "prompt": "Step 2: price all five bags. 5 times 7 coins is 35 coins.",
+          "line": "We have 40 coins and the bags need 35. That leaves 5 coins."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: calcule as cinco sacolas. 5 vezes 7 moedas são 35 moedas.",
+          "line": "Temos 40 moedas e as sacolas precisam de 35. Sobram 5 moedas."
+        }
+      }
+    },
+    {
+      "id": "guided-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "initial": 40,
+        "sale": 10,
+        "cost": 7,
+        "maxEntries": 8
+      },
+      "rubric": {
+        "target_balance": 19
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Registra los insumos de 3 bolsas a 7 monedas cada una; aún no se vende nada. Escribe el saldo.",
+          "feedback": {
+            "met": "Registraste cada compra de insumos y escribiste el saldo.",
+            "not_yet": "Revisa la tabla: cada Insumos baja el saldo."
+          },
+          "help": [
+            "Usa el Paso 2: cada bolsa cuesta 7 monedas."
+          ]
+        },
+        "en-US": {
+          "prompt": "Log supplies for 3 bags at 7 coins each; nothing is sold yet. Type the balance.",
+          "feedback": {
+            "met": "You logged each supply buy and typed the new balance.",
+            "not_yet": "Check the table: each Supplies press lowers the balance."
+          },
+          "help": [
+            "Use Step 2: each bag costs 7 coins."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Registre os insumos de 3 sacolas a 7 moedas cada; nada foi vendido ainda. Digite o saldo.",
+          "feedback": {
+            "met": "Você registrou cada compra de insumos e digitou o saldo.",
+            "not_yet": "Veja a tabela: cada Insumos diminui o saldo."
+          },
+          "help": [
+            "Use o Passo 2: cada sacola custa 7 moedas."
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-extras-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: suma los extras. El listón y las etiquetas cuestan 12 monedas, así que 35 más 12 son 47.",
+          "line": "A ver, probemos: 47 es más que nuestras 40 monedas, así que los extras se van."
+        },
+        "en-US": {
+          "prompt": "Step 3: add the extras. Ribbon and labels cost 12 coins, so 35 plus 12 is 47.",
+          "line": "Hmm, let me try this: 47 is more than our 40 coins, so the extras go."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: some os extras. A fita e as etiquetas custam 12 moedas, então 35 mais 12 dão 47.",
+          "line": "Vamos testar: 47 é mais que as nossas 40 moedas, então os extras saem."
+        }
+      }
+    },
+    {
+      "id": "step-reserve-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: las 5 monedas que sobran se quedan en Guardar, por si se rompe un asa.",
+          "line": "Las monedas de reserva son para sorpresas. Los extras vienen solo cuando la reserva está a salvo."
+        },
+        "en-US": {
+          "prompt": "Step 4: the 5 coins left stay in Save, in case a handle tears.",
+          "line": "Reserve coins are for surprises. Extras only come after the reserve is safe."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: as 5 moedas que sobram ficam em Guardar, caso uma alça rompa.",
+          "line": "As moedas de reserva são para surpresas. Os extras só vêm quando a reserva está segura."
+        }
+      }
+    },
+    {
+      "id": "practice-alloc-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.build-within-constraints",
+      "payload": {
+        "total": 30,
+        "step": 5,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 10
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Siguiente tanda: 4 bolsas a 5 monedas cada una. Reparte 30 monedas: paga las bolsas y deja una reserva en Guardar.",
+          "feedback": {
+            "met": "Dejaste la reserva a salvo en Guardar.",
+            "not_yet": "Calcula primero las 4 bolsas. Luego mira qué guarda Guardar."
+          },
+          "help": [
+            "Paga primero las bolsas. Deja el resto como reserva."
+          ]
+        },
+        "en-US": {
+          "prompt": "Next batch: 4 bags at 5 coins each. Split 30 coins: pay for the bags, keep a reserve in Save.",
+          "feedback": {
+            "met": "You kept the reserve safe in Save.",
+            "not_yet": "Price the 4 bags first. Then see what Save keeps."
+          },
+          "help": [
+            "Pay for the bags first. Keep the rest as reserve."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Próximo lote: 4 sacolas a 5 moedas cada. Divida 30 moedas: pague as sacolas e deixe uma reserva em Guardar.",
+          "feedback": {
+            "met": "Você deixou a reserva segura em Guardar.",
+            "not_yet": "Calcule primeiro as 4 sacolas. Depois veja o que Guardar mantém."
+          },
+          "help": [
+            "Pague as sacolas primeiro. Deixe o resto como reserva."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "initial": 36,
+        "sale": 5,
+        "cost": 4,
+        "maxEntries": 8
+      },
+      "rubric": {
+        "target_balance": 12
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Registra 6 correas de asa a 4 monedas cada una; aún no se vende nada. Escribe el saldo.",
+          "feedback": {
+            "met": "Registraste cada compra de correas y escribiste el saldo que dejó.",
+            "not_yet": "Cuenta tus Insumos en la tabla. ¿El saldo los sigue?"
+          },
+          "help": [
+            "Cada Insumos quita 4 monedas."
+          ]
+        },
+        "en-US": {
+          "prompt": "Log 6 handle straps at 4 coins each; nothing is sold yet. Type the balance.",
+          "feedback": {
+            "met": "You logged every strap buy and typed the balance it left.",
+            "not_yet": "Count your Supplies presses against the table. Does the balance follow?"
+          },
+          "help": [
+            "Each Supplies press takes 4 coins away."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Registre 6 tiras de alça a 4 moedas cada; nada foi vendido ainda. Digite o saldo.",
+          "feedback": {
+            "met": "Você registrou cada compra de tiras e digitou o saldo que sobrou.",
+            "not_yet": "Conte seus Insumos na tabela. O saldo acompanha?"
+          },
+          "help": [
+            "Cada Insumos tira 4 moedas."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.build-within-constraints",
+      "payload": {
+        "total": 45,
+        "step": 5,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 15
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mesa de la feria: 3 pancartas a 10 monedas cada una; la diamantina, un extra, cuesta 20. Reparte 45 monedas.",
+          "feedback": {
+            "met": "Dejaste una reserva segura en Guardar.",
+            "not_yet": "Calcula primero las tres pancartas. Luego mira qué guarda Guardar."
+          },
+          "help": [
+            "Primero van las necesidades. Los extras caben después."
+          ]
+        },
+        "en-US": {
+          "prompt": "Fair table: 3 banners at 10 coins each; glitter, an extra, costs 20. Split 45 coins.",
+          "feedback": {
+            "met": "You kept a safe reserve in Save.",
+            "not_yet": "Price the three banners first. Then see what Save keeps."
+          },
+          "help": [
+            "Needs come first. Extras only fit after them."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesa da feira: 3 faixas a 10 moedas cada; o glitter, um extra, custa 20. Divida 45 moedas.",
+          "feedback": {
+            "met": "Você deixou uma reserva segura em Guardar.",
+            "not_yet": "Calcule primeiro as três faixas. Depois veja o que Guardar mantém."
+          },
+          "help": [
+            "As necessidades vêm primeiro. Os extras só cabem depois."
+          ]
+        }
+      }
+    }
+  ]
+}

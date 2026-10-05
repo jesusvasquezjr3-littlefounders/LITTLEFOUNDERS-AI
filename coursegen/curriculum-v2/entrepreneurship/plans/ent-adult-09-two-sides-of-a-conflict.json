@@ -1,0 +1,914 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-lead-and-last",
+  "lesson_id": "ent-adult-09-two-sides-of-a-conflict",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.conflict-resolution",
+    "biz.team-culture"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho muestra con un caso resuelto, paso a paso, cómo atender un conflicto dentro del equipo: escuchar las dos partes, nombrar el problema y no a la persona, encontrar el interés detrás de las posturas, decidir una regla y reparar la confianza. Después aplicas esos pasos en un diálogo, un diagrama de decisión y una réplica de reparación, y decides tú en un caso nuevo con un proveedor.",
+  "title": {
+    "es-MX": "Dos lados de un conflicto",
+    "en-US": "Two sides of a conflict",
+    "pt-BR": "Dois lados de um conflito"
+  },
+  "new_concepts": [
+    "biz.conflict-resolution"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "El caso ocurre en México: una clienta con puesto en el tianguis pierde una visita de reparación porque la cita quedó en el grupo de mensajes y no en la libreta de la ayudante. No hay montos ni trámites; el conflicto se resuelve hablando y con un calendario compartido.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "O caso acontece no Brasil: uma cliente com banca na feira livre perde uma visita de reparo porque o horário ficou no grupo de mensagens e não no caderno da ajudante. Sem valores nem trâmites; o conflito se resolve conversando e com uma agenda compartilhada.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira livre"
+        ]
+      },
+      "en-US": {
+        "scenario": "The case is set in the US: a client with a stall at a farmers market loses a repair visit because the time sat in the group chat and not in the helper's notebook. No amounts or paperwork; the conflict is settled by talking and a shared calendar.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Martes, 4 pm: Marta espera en su puesto del tianguis una visita de reparación que nunca llega.",
+          "line": "Una visita fallida, una clienta perdida. Dani y tú creen que le tocaba al otro."
+        },
+        "en-US": {
+          "prompt": "Tuesday, 4 pm: Marta waits at her farmers market stall for a repair visit that never comes.",
+          "line": "One visit missed, one client lost. You and Dani each think it was the other's to handle."
+        },
+        "pt-BR": {
+          "prompt": "Terça-feira, 16h: a Marta espera na banca da feira livre uma visita de reparo que nunca chega.",
+          "line": "Uma visita perdida, uma cliente a menos. Você e a Dani acham que a tarefa era do outro."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.conflict-resolution",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-blame"
+          },
+          {
+            "id": "reply-listen"
+          },
+          {
+            "id": "reply-drop"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-listen"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dani llega molesta. Elige tu primera respuesta.",
+          "feedback": {
+            "met": "Anotado. Ahora vemos el caso paso a paso.",
+            "not_yet": "Anotado. Ahora vemos el caso paso a paso."
+          },
+          "speaker": "Dani",
+          "line": "Yo nunca vi esa visita. No estaba en mi libreta.",
+          "replies": [
+            {
+              "label": "Debiste revisar el grupo."
+            },
+            {
+              "label": "Cuéntame primero qué pasó de tu lado."
+            },
+            {
+              "label": "Olvídalo, la clienta ya se perdió."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Dani walks in upset. Choose your first reply.",
+          "feedback": {
+            "met": "Noted. Now we go through the case step by step.",
+            "not_yet": "Noted. Now we go through the case step by step."
+          },
+          "speaker": "Dani",
+          "line": "I never saw that visit. It was not in my notebook.",
+          "replies": [
+            {
+              "label": "You should have read the group chat."
+            },
+            {
+              "label": "Tell me what happened on your side first."
+            },
+            {
+              "label": "Forget it, the client is gone anyway."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Dani chega irritada. Escolha sua primeira resposta.",
+          "feedback": {
+            "met": "Anotado. Agora vemos o caso passo a passo.",
+            "not_yet": "Anotado. Agora vemos o caso passo a passo."
+          },
+          "speaker": "Dani",
+          "line": "Eu nunca vi essa visita. Não estava no meu caderno.",
+          "replies": [
+            {
+              "label": "Você devia ter lido o grupo."
+            },
+            {
+              "label": "Me conta primeiro o que houve do seu lado."
+            },
+            {
+              "label": "Deixa pra lá, a cliente já era."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-hear-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, escucha las dos partes. Dani habla primero y tú escuchas sin responder.",
+          "line": "Su parte: la visita estaba en el grupo, pero ella solo revisa su libreta. Después das la tuya."
+        },
+        "en-US": {
+          "prompt": "Step 1, hear both sides. Dani speaks first and you listen without answering.",
+          "line": "Her side: the visit was in the chat, but she reads only her notebook. Then you give yours."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, ouça os dois lados. A Dani fala primeiro e você escuta sem responder.",
+          "line": "O lado dela: a visita estava no grupo, mas ela só olha o caderno. Depois você dá o seu."
+        }
+      }
+    },
+    {
+      "id": "step-problem-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, nombra el problema. No dices “nunca revisas el grupo”.",
+          "line": "Dices: “La visita de las 4 pm estaba en el grupo, no en la libreta.” No culpa a nadie."
+        },
+        "en-US": {
+          "prompt": "Step 2, name the problem. You do not say “you never check the chat”.",
+          "line": "You say: “The 4 pm visit was in the chat, not the notebook.” It blames no one."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, nomeie o problema. Você não diz “você nunca olha o grupo”.",
+          "line": "Você diz: “A visita das 16h estava no grupo, não no caderno.” Isso não culpa ninguém."
+        }
+      }
+    },
+    {
+      "id": "step-interest-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, busca el interés. Pregunta a cada quien qué necesita, no quién tiene razón.",
+          "line": "Dani necesita saber su semana y tú necesitas que las visitas se cumplan: los dos necesitan un calendario confiable."
+        },
+        "en-US": {
+          "prompt": "Step 3, find the interest. Ask each person what they need, not who is right.",
+          "line": "Dani needs to know her week and you need visits that happen: both need one calendar they trust."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, descubra o interesse. Pergunte a cada um do que precisa, não quem tem razão.",
+          "line": "A Dani precisa saber a semana dela e você precisa que as visitas aconteçam: os dois precisam de uma agenda confiável."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.conflict-resolution",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-person"
+          },
+          {
+            "id": "reply-takeover"
+          },
+          {
+            "id": "reply-problem"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-problem"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2 con un caso nuevo. ¿Cómo nombras el problema?",
+          "feedback": {
+            "met": "Nombraste lo que pasó con el trabajo, no quién falló.",
+            "not_yet": "Todavía no. Vuelve al paso 2: el problema, no la persona."
+          },
+          "help": [
+            "Di lo que muestra la hoja, no lo que hizo Dani."
+          ],
+          "speaker": "Dani",
+          "line": "Me salté la revisión de frenos. No estaba en la hoja compartida.",
+          "replies": [
+            {
+              "label": "Te la saltaste, así que lee la hoja."
+            },
+            {
+              "label": "Yo haré todas las revisiones de frenos."
+            },
+            {
+              "label": "La revisión nunca llegó a la hoja."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Step 2 on a new case. How do you name the problem?",
+          "feedback": {
+            "met": "You named what happened to the check, not who failed.",
+            "not_yet": "Not yet. Look again at Step 2: the problem, not the person."
+          },
+          "help": [
+            "Say what the sheet shows, not what Dani did."
+          ],
+          "speaker": "Dani",
+          "line": "I skipped the brake check. It was not on the shared sheet.",
+          "replies": [
+            {
+              "label": "You skipped it, so read the sheet."
+            },
+            {
+              "label": "I will do every brake check myself."
+            },
+            {
+              "label": "The check never reached the sheet."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Passo 2 com um caso novo. Como você nomeia o problema?",
+          "feedback": {
+            "met": "Você nomeou o que houve com o serviço, não quem falhou.",
+            "not_yet": "Ainda não. Volte ao passo 2: o problema, não a pessoa."
+          },
+          "help": [
+            "Diga o que a planilha mostra, não o que a Dani fez."
+          ],
+          "speaker": "Dani",
+          "line": "Pulei a revisão de freio. Ela não estava na planilha compartilhada.",
+          "replies": [
+            {
+              "label": "Você pulou, então leia a planilha."
+            },
+            {
+              "label": "Eu faço todas as revisões de freio."
+            },
+            {
+              "label": "A revisão nunca chegou à planilha."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-rule-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, decidan juntos. Tú propones una regla y Dani la ajusta.",
+          "line": "Regla: toda visita entra al calendario compartido antes de colgar. Así los dos tienen lo que necesitan."
+        },
+        "en-US": {
+          "prompt": "Step 4, decide together. You propose one rule and Dani adjusts it.",
+          "line": "Rule: every visit goes into the shared calendar before the call ends. It gives you both what you need."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, decidam juntos. Você propõe uma regra e a Dani ajusta.",
+          "line": "Regra: toda visita entra na agenda compartilhada antes de desligar. Assim os dois têm o que precisam."
+        }
+      }
+    },
+    {
+      "id": "step-repair-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, repara. Nombras tu parte y fijas un día para revisar cómo va.",
+          "line": "“Agendé la visita en el grupo y no te avisé.” Una semana después preguntas si la regla funciona."
+        },
+        "en-US": {
+          "prompt": "Step 5, repair. You name your part, then you set a day to check back.",
+          "line": "“I booked it in the chat and never told you.” A week later you ask if the rule works."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, repare. Você nomeia a sua parte e marca um dia para conferir.",
+          "line": "“Eu marquei a visita no grupo e não te avisei.” Uma semana depois você pergunta se a regra funciona."
+        }
+      }
+    },
+    {
+      "id": "flow-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.conflict-resolution",
+      "payload": {
+        "start": "q-sides",
+        "nodes": [
+          {
+            "id": "q-sides",
+            "kind": "question",
+            "yes": "q-problem",
+            "no": "out-hear"
+          },
+          {
+            "id": "q-problem",
+            "kind": "question",
+            "yes": "q-needs",
+            "no": "out-reframe"
+          },
+          {
+            "id": "q-needs",
+            "kind": "question",
+            "yes": "q-rule",
+            "no": "out-ask"
+          },
+          {
+            "id": "q-rule",
+            "kind": "question",
+            "yes": "out-repair",
+            "no": "out-options"
+          },
+          {
+            "id": "out-hear",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-reframe",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-ask",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-options",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-repair",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-cut"
+          },
+          {
+            "id": "case-blame"
+          },
+          {
+            "id": "case-done"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-cut": [
+            "q-sides",
+            "out-hear"
+          ],
+          "case-blame": [
+            "q-sides",
+            "q-problem",
+            "out-reframe"
+          ],
+          "case-done": [
+            "q-sides",
+            "q-problem",
+            "q-needs",
+            "q-rule",
+            "out-repair"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Recorre el diagrama con cada caso hasta llegar a un resultado.",
+          "feedback": {
+            "met": "Seguiste cada caso hasta su resultado.",
+            "not_yet": "Todavía no. Responde la primera pregunta para cada caso."
+          },
+          "nodes": [
+            {
+              "label": "¿Cada quien contó su parte?"
+            },
+            {
+              "label": "¿Se habla del problema, no de la persona?"
+            },
+            {
+              "label": "¿Puedes decir qué necesita cada quien?"
+            },
+            {
+              "label": "¿Una regla da a los dos lo que necesitan?"
+            },
+            {
+              "label": "Escucha primero y vuelve a preguntar"
+            },
+            {
+              "label": "Replantéalo como problema"
+            },
+            {
+              "label": "Pregunta qué necesita cada quien"
+            },
+            {
+              "label": "Busca otra regla"
+            },
+            {
+              "label": "Acuerden la regla y repara"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Interrumpes mientras Dani habla"
+            },
+            {
+              "label": "Ya hablaron; dices: “Nunca revisas el grupo.”"
+            },
+            {
+              "label": "Partes oídas, problema dicho, necesidades claras, regla justa"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Walk the chart with each case until you reach an outcome.",
+          "feedback": {
+            "met": "You followed each case to its outcome.",
+            "not_yet": "Not yet. Answer the first question for each case."
+          },
+          "nodes": [
+            {
+              "label": "Has each person told their side?"
+            },
+            {
+              "label": "Is it about the problem, not the person?"
+            },
+            {
+              "label": "Can you name what each one needs?"
+            },
+            {
+              "label": "Does one rule give both what they need?"
+            },
+            {
+              "label": "Listen first, then ask again"
+            },
+            {
+              "label": "Restate it as the problem"
+            },
+            {
+              "label": "Ask what each one needs"
+            },
+            {
+              "label": "Look for another rule"
+            },
+            {
+              "label": "Agree the rule, then repair"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "You cut in while Dani is speaking"
+            },
+            {
+              "label": "Both spoke, then: “You never check the chat.”"
+            },
+            {
+              "label": "Sides heard, problem named, needs clear, rule fair"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Percorra o diagrama com cada caso até chegar a um resultado.",
+          "feedback": {
+            "met": "Você seguiu cada caso até o seu resultado.",
+            "not_yet": "Ainda não. Responda a primeira pergunta para cada caso."
+          },
+          "nodes": [
+            {
+              "label": "Cada um contou o seu lado?"
+            },
+            {
+              "label": "A conversa é sobre o problema, não a pessoa?"
+            },
+            {
+              "label": "Você sabe do que cada um precisa?"
+            },
+            {
+              "label": "Uma regra dá aos dois o que precisam?"
+            },
+            {
+              "label": "Ouça primeiro e pergunte de novo"
+            },
+            {
+              "label": "Reformule como problema"
+            },
+            {
+              "label": "Pergunte do que cada um precisa"
+            },
+            {
+              "label": "Procure outra regra"
+            },
+            {
+              "label": "Combinem a regra e repare"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Você interrompe enquanto a Dani fala"
+            },
+            {
+              "label": "Os dois falaram; você diz: “Você nunca olha o grupo.”"
+            },
+            {
+              "label": "Lados ouvidos, problema dito, necessidades claras, regra justa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "repair-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-repair"
+          },
+          {
+            "id": "reply-skip"
+          },
+          {
+            "id": "reply-deflect"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-repair"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La regla ya está acordada. Elige la réplica que repara la confianza.",
+          "feedback": {
+            "met": "Nombraste tu parte y fijaste cuándo revisar.",
+            "not_yet": "Todavía no. Recuerda el último paso: ¿qué incluye una reparación?"
+          },
+          "speaker": "Dani",
+          "line": "La regla está bien, pero el martes todavía me duele.",
+          "replies": [
+            {
+              "label": "No te avisé; revisemos el lunes cómo va."
+            },
+            {
+              "label": "Olvida el martes, la regla lo arregla."
+            },
+            {
+              "label": "Era tu libreta, no mi grupo."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "The rule is agreed. Choose the line that repairs trust.",
+          "feedback": {
+            "met": "You named your part and set a time to check back.",
+            "not_yet": "Not yet. Recall the last step: what does a repair include?"
+          },
+          "speaker": "Dani",
+          "line": "The rule is fine, but Tuesday still stings.",
+          "replies": [
+            {
+              "label": "I never told you; let's check Monday."
+            },
+            {
+              "label": "Forget Tuesday, the rule fixes it."
+            },
+            {
+              "label": "It was your notebook, not my chat."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A regra já está combinada. Escolha a fala que repara a confiança.",
+          "feedback": {
+            "met": "Você nomeou a sua parte e marcou quando conferir.",
+            "not_yet": "Ainda não. Lembre o último passo: o que uma reparação inclui?"
+          },
+          "speaker": "Dani",
+          "line": "A regra está boa, mas a terça ainda pesa.",
+          "replies": [
+            {
+              "label": "Eu não te avisei; vamos conferir na segunda."
+            },
+            {
+              "label": "Esqueça a terça, a regra resolve."
+            },
+            {
+              "label": "Foi o seu caderno, não o meu grupo."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.conflict-resolution",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-refund"
+          },
+          {
+            "id": "choice-hear"
+          },
+          {
+            "id": "choice-switch"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-judge"
+          },
+          {
+            "id": "reason-interest"
+          },
+          {
+            "id": "reason-fast"
+          },
+          {
+            "id": "reason-blame"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-hear"
+        ],
+        "reasonQuality": {
+          "reason-judge": "sound",
+          "reason-interest": "sound",
+          "reason-fast": "partial",
+          "reason-blame": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un proveedor mandó llantas rodada 27.5 en vez de las 26 que pediste, y una clienta esperó. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Elegiste escuchar al proveedor antes de juzgar.",
+            "not_yet": "Todavía no. ¿Qué paso va antes de decidir quién falló?"
+          },
+          "help": [
+            "Piensa en lo que sabes ahora y en lo que no sabes."
+          ],
+          "choices": [
+            {
+              "label": "Devuelvo el pedido y exijo reembolso"
+            },
+            {
+              "label": "Escucho su parte y comparamos los pedidos"
+            },
+            {
+              "label": "Cambio de proveedor sin decir nada"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es el mejor primer paso?",
+          "reasons": [
+            {
+              "label": "No puedo juzgar sin oír su parte"
+            },
+            {
+              "label": "Los dos queremos las llantas correctas a tiempo"
+            },
+            {
+              "label": "Pedir reembolso es la solución más rápida"
+            },
+            {
+              "label": "Los proveedores siempre culpan al comprador"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A supplier sent 27.5-inch tires, not the 26-inch ones you ordered; a client waited. What do you do first?",
+          "feedback": {
+            "met": "You chose to hear the supplier before judging.",
+            "not_yet": "Not yet. Which step comes before anyone is judged?"
+          },
+          "help": [
+            "Think about what you know right now, and what you do not."
+          ],
+          "choices": [
+            {
+              "label": "Return the order and demand a refund"
+            },
+            {
+              "label": "Hear their side, then compare orders"
+            },
+            {
+              "label": "Switch suppliers and say nothing"
+            }
+          ],
+          "reasonPrompt": "Why is that the best first step?",
+          "reasons": [
+            {
+              "label": "I cannot judge before hearing their side"
+            },
+            {
+              "label": "We both want the right tires on time"
+            },
+            {
+              "label": "A refund request is the fastest fix"
+            },
+            {
+              "label": "Suppliers always blame the buyer"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um fornecedor mandou pneus aro 27,5, não os aro 26 que você pediu; um cliente esperou. O que você faz primeiro?",
+          "feedback": {
+            "met": "Você escolheu ouvir o fornecedor antes de julgar.",
+            "not_yet": "Ainda não. Que passo vem antes de decidir quem errou?"
+          },
+          "help": [
+            "Pense no que você sabe agora e no que ainda não sabe."
+          ],
+          "choices": [
+            {
+              "label": "Devolvo o pedido e exijo reembolso"
+            },
+            {
+              "label": "Ouço o lado dele e comparamos os pedidos"
+            },
+            {
+              "label": "Troco de fornecedor sem dizer nada"
+            }
+          ],
+          "reasonPrompt": "Por que é o melhor primeiro passo?",
+          "reasons": [
+            {
+              "label": "Não posso julgar sem ouvir o lado dele"
+            },
+            {
+              "label": "Nós dois queremos os pneus certos a tempo"
+            },
+            {
+              "label": "Pedir reembolso é a solução mais rápida"
+            },
+            {
+              "label": "Fornecedores sempre culpam o comprador"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

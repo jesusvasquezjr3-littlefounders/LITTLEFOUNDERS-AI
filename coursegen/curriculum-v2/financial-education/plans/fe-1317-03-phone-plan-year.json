@@ -1,0 +1,903 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-first-pay",
+  "lesson_id": "fe-1317-03-phone-plan-year",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.recurring-costs",
+    "life.opportunity-cost",
+    "biz.value-of-work"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina eligió el plan de celular de 20 al mes porque era solo 8 más que el de 12. Ahora suma el año completo, 144 contra 240, y convierte la diferencia de 96 en unas 11 horas de trabajo a 9 la hora. Con eso decide si los datos extra valen ese tiempo y dice qué hará la próxima vez: sumar el año primero.",
+  "title": {
+    "en-US": "Phone plan: the hours it costs",
+    "es-MX": "Plan de celular: cuántas horas cuesta",
+    "pt-BR": "Plano de celular: quantas horas custa"
+  },
+  "new_concepts": [
+    "life.recurring-costs",
+    "life.opportunity-cost"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina takes the 20-a-month phone plan because it is only 8 more than the 12 plan, and never adds up what the difference costs over a whole year.",
+    "recovery": "Dina multiplies by 12, sees the 96 gap, turns it into about 11 hours of work at 9 an hour, decides the extra data is not worth it, and says that next time she adds up the year first."
+  },
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Dina compares two phone plans. In the US a monthly plan often has a data cap, and a prepaid plan is the alternative. Amounts are illustrative coin values, not real prices or wages.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "data cap",
+          "prepaid"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Dina compara dos planes de celular. En México se puede pagar un plan de renta cada mes o comprar una recarga de saldo, y el plan trae un límite de datos. Las cantidades son monedas ilustrativas, no precios ni sueldos reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "plan de renta",
+          "recarga"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Dina compara dois planos de celular. No Brasil existem o plano pré-pago e o plano controle, com valor mensal fixo e pacote de dados. Os valores são moedas ilustrativas, não preços nem salários reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "plano controle",
+          "pré-pago"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina took the 20-a-month phone plan over the 12 one because it has a bigger data cap.",
+          "line": "Now I sit down to check what that choice really costs me, one step at a time."
+        },
+        "es-MX": {
+          "prompt": "Dina eligió el plan de renta de 20 al mes en lugar del de 12, porque trae más datos.",
+          "line": "Ahora me siento a revisar lo que esa decisión me cuesta de verdad, paso a paso."
+        },
+        "pt-BR": {
+          "prompt": "A Dina escolheu o plano controle de 20 por mês em vez do de 12, porque tem mais dados.",
+          "line": "Agora sento para conferir quanto essa escolha me custa de verdade, passo a passo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-sign"
+          },
+          {
+            "id": "reply-monthly"
+          },
+          {
+            "id": "reply-year"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-year"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the store, the clerk says the 20 plan is only 8 more a month. What does Dina say?",
+          "feedback": {
+            "met": "Noted, that shows where you start. Now we go step by step.",
+            "not_yet": "Noted, that shows where you start. Now we go step by step."
+          },
+          "speaker": "Clerk",
+          "line": "The 20 plan has more data. It is only 8 more than the 12 plan.",
+          "replies": [
+            {
+              "label": "Only 8, I'll take it"
+            },
+            {
+              "label": "Can I pay month by month?"
+            },
+            {
+              "label": "What is that over a year?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la tienda, el vendedor dice que el plan de 20 cuesta solo 8 más al mes. ¿Qué responde Dina?",
+          "feedback": {
+            "met": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso.",
+            "not_yet": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso."
+          },
+          "speaker": "Vendedor",
+          "line": "El plan de 20 trae más datos. Son solo 8 más que el de 12.",
+          "replies": [
+            {
+              "label": "Solo 8, lo contrato"
+            },
+            {
+              "label": "¿Puedo pagar mes a mes?"
+            },
+            {
+              "label": "¿Cuánto es en un año?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na loja, o atendente diz que o plano de 20 custa só 8 a mais por mês. O que a Dina responde?",
+          "feedback": {
+            "met": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo.",
+            "not_yet": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo."
+          },
+          "speaker": "Atendente",
+          "line": "O plano de 20 tem mais dados. São só 8 a mais que o de 12.",
+          "replies": [
+            {
+              "label": "Só 8, eu assino"
+            },
+            {
+              "label": "Posso pagar mês a mês?"
+            },
+            {
+              "label": "Quanto dá em um ano?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Hear what happened when Dina picked her phone plan.",
+          "setup": "The 20 plan had more data and was only 8 more a month, so I took it.",
+          "misjudgment": "I only looked at the 8. I never added up the whole year.",
+          "recovery": "Later I multiplied by 12 and counted the hours of work. Next time I add up the year first."
+        },
+        "es-MX": {
+          "prompt": "Escucha qué pasó cuando Dina eligió su plan de celular.",
+          "setup": "El plan de 20 tenía más datos y costaba solo 8 más al mes, así que lo tomé.",
+          "misjudgment": "Solo miré los 8. Nunca sumé el año completo.",
+          "recovery": "Después multipliqué por 12 y conté las horas de trabajo. La próxima vez sumo primero el año."
+        },
+        "pt-BR": {
+          "prompt": "Ouça o que aconteceu quando a Dina escolheu o plano do celular.",
+          "setup": "O plano de 20 tinha mais dados e custava só 8 a mais por mês, então fiquei com ele.",
+          "misjudgment": "Eu só olhei os 8. Nunca somei o ano inteiro.",
+          "recovery": "Depois multipliquei por 12 e contei as horas de trabalho. Da próxima vez somo o ano primeiro."
+        }
+      }
+    },
+    {
+      "id": "example-year-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a monthly cost repeats, so Dina multiplies by 12 to see the year.",
+          "line": "The 12 plan is 12 × 12 = 144 a year. The 20 plan is 20 × 12 = 240."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un gasto mensual se repite, así que Dina multiplica por 12 para ver el año.",
+          "line": "El plan de renta de 12 son 12 × 12 = 144 al año. El de 20 son 20 × 12 = 240."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: um custo mensal se repete, então a Dina multiplica por 12 para ver o ano.",
+          "line": "O plano controle de 12 dá 12 × 12 = 144 por ano. O de 20 dá 20 × 12 = 240."
+        }
+      }
+    },
+    {
+      "id": "example-gap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Dina subtracts the smaller year from the bigger one.",
+          "line": "The gap is 240 − 144 = 96. So 8 more a month is really 96 more over the year."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Dina resta el año menor del año mayor.",
+          "line": "La diferencia es 240 − 144 = 96. Así que 8 más al mes son en realidad 96 más en el año."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Dina subtrai o ano menor do ano maior.",
+          "line": "A diferença é 240 − 144 = 96. Então 8 a mais por mês são, na verdade, 96 a mais no ano."
+        }
+      }
+    },
+    {
+      "id": "guided-year-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "steps": [
+          {
+            "id": "small-year"
+          },
+          {
+            "id": "big-year"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "big-year",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "big-year": "168",
+          "gap": "48"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Another plan costs 10 a month and a bigger one costs 14. Find each year and the gap.",
+          "feedback": {
+            "met": "You multiplied each month by 12, then found the gap between years.",
+            "not_yet": "Check Dina's year and gap steps: multiply, then subtract."
+          },
+          "help": [
+            "Multiply each monthly price by 12, then subtract the smaller year."
+          ],
+          "steps": [
+            {
+              "expression": "10 × 12",
+              "result": "120",
+              "spokenText": "Ten times 12 is 120 a year"
+            },
+            {
+              "expression": "14 × 12",
+              "result": "168",
+              "spokenText": "Fourteen times 12 is 168 a year"
+            },
+            {
+              "expression": "Bigger year − smaller year",
+              "result": "48",
+              "spokenText": "One hundred sixty-eight minus 120 is 48 more over the year"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Otro plan cuesta 10 al mes y uno mayor cuesta 14. Encuentra cada año y la diferencia.",
+          "feedback": {
+            "met": "Multiplicaste cada mes por 12 y luego hallaste la diferencia entre años.",
+            "not_yet": "Mira los pasos de año y diferencia de Dina: multiplica y luego resta."
+          },
+          "help": [
+            "Multiplica cada precio mensual por 12 y resta el año menor."
+          ],
+          "steps": [
+            {
+              "expression": "10 × 12",
+              "result": "120",
+              "spokenText": "Diez por 12 son 120 al año"
+            },
+            {
+              "expression": "14 × 12",
+              "result": "168",
+              "spokenText": "Catorce por 12 son 168 al año"
+            },
+            {
+              "expression": "Año mayor − año menor",
+              "result": "48",
+              "spokenText": "Ciento sesenta y ocho menos 120 son 48 más en el año"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outro plano custa 10 por mês e um maior custa 14. Ache cada ano e a diferença.",
+          "feedback": {
+            "met": "Você multiplicou cada mês por 12 e depois achou a diferença entre os anos.",
+            "not_yet": "Veja os passos de ano e diferença da Dina: multiplique e depois subtraia."
+          },
+          "help": [
+            "Multiplique cada preço mensal por 12 e subtraia o ano menor."
+          ],
+          "steps": [
+            {
+              "expression": "10 × 12",
+              "result": "120",
+              "spokenText": "Dez vezes 12 são 120 por ano"
+            },
+            {
+              "expression": "14 × 12",
+              "result": "168",
+              "spokenText": "Catorze vezes 12 são 168 por ano"
+            },
+            {
+              "expression": "Ano maior − ano menor",
+              "result": "48",
+              "spokenText": "Cento e sessenta e oito menos 120 são 48 a mais no ano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-hours-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Dina turns the gap into hours of work by dividing by her hourly pay.",
+          "line": "I earn 9 an hour, so 96 ÷ 9 is about 11 hours of work."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: Dina convierte la diferencia en horas de trabajo, dividiéndola entre su pago por hora.",
+          "line": "Yo gano 9 la hora, así que 96 ÷ 9 son unas 11 horas de trabajo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a Dina transforma a diferença em horas de trabalho, dividindo pelo valor da hora dela.",
+          "line": "Eu ganho 9 por hora, então 96 ÷ 9 dá cerca de 11 horas de trabalho."
+        }
+      }
+    },
+    {
+      "id": "example-board-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "tokens": 8,
+        "options": [
+          {
+            "id": "opt-data",
+            "cost": 8
+          },
+          {
+            "id": "opt-music",
+            "cost": 3
+          },
+          {
+            "id": "opt-saving",
+            "cost": 4
+          },
+          {
+            "id": "opt-concert",
+            "cost": 4
+          },
+          {
+            "id": "opt-lunch",
+            "cost": 3
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: every choice gives something up. The 8 tokens stand for the extra 8 a month.",
+          "options": [
+            {
+              "label": "Extra data plan"
+            },
+            {
+              "label": "Music app"
+            },
+            {
+              "label": "Saving"
+            },
+            {
+              "label": "Concert fund"
+            },
+            {
+              "label": "Lunches out"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Paso 4: toda elección deja algo fuera. Las 8 fichas representan los 8 extra al mes.",
+          "options": [
+            {
+              "label": "Plan con más datos"
+            },
+            {
+              "label": "App de música"
+            },
+            {
+              "label": "Ahorro"
+            },
+            {
+              "label": "Fondo para un concierto"
+            },
+            {
+              "label": "Comidas fuera"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: toda escolha deixa algo de fora. As 8 fichas representam os 8 extras por mês.",
+          "options": [
+            {
+              "label": "Plano com mais dados"
+            },
+            {
+              "label": "App de música"
+            },
+            {
+              "label": "Poupança"
+            },
+            {
+              "label": "Fundo para um show"
+            },
+            {
+              "label": "Lanches fora"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-decide-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the numbers inform the choice, but Dina decides. She checks if she ever runs out of data.",
+          "line": "I never do, so 11 hours of work is not worth it. I go back to the 12 plan."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: los números informan la decisión, pero Dina decide. Revisa si alguna vez se queda sin datos.",
+          "line": "Nunca me pasa, así que 11 horas de trabajo no valen la pena. Vuelvo al plan de 12."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: os números informam a decisão, mas a Dina decide. Ela confere se algum dia fica sem dados.",
+          "line": "Nunca acontece comigo, então 11 horas de trabalho não valem a pena. Volto ao plano de 12."
+        }
+      }
+    },
+    {
+      "id": "practice-hours-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "small-year"
+          },
+          {
+            "id": "big-year"
+          },
+          {
+            "id": "gap"
+          },
+          {
+            "id": "hours"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "big-year",
+          "gap",
+          "hours"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "big-year": "216",
+          "gap": "60",
+          "hours": "6"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Plans cost 13 and 18 a month; Dina earns 10 an hour. Find the gap in hours of work.",
+          "feedback": {
+            "met": "You turned both plans into years, then the gap into hours.",
+            "not_yet": "Check Dina's year, gap and hours steps: multiply, subtract, divide."
+          },
+          "help": [
+            "Multiply by 12, subtract the years, then divide by the hourly pay."
+          ],
+          "steps": [
+            {
+              "expression": "13 × 12",
+              "result": "156",
+              "spokenText": "Thirteen times 12 is 156 a year"
+            },
+            {
+              "expression": "18 × 12",
+              "result": "216",
+              "spokenText": "Eighteen times 12 is 216 a year"
+            },
+            {
+              "expression": "Bigger year − smaller year",
+              "result": "60",
+              "spokenText": "216 minus 156 is a gap of 60"
+            },
+            {
+              "expression": "Year gap ÷ hourly pay",
+              "result": "6",
+              "spokenText": "Sixty divided by 10 is 6 hours of work"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los planes cuestan 13 y 18 al mes; Dina gana 10 la hora. Encuentra la diferencia en horas de trabajo.",
+          "feedback": {
+            "met": "Convertiste ambos planes en años y luego la diferencia en horas.",
+            "not_yet": "Mira los pasos de año, diferencia y horas de Dina: multiplica, resta, divide."
+          },
+          "help": [
+            "Multiplica por 12, resta los años y divide entre el pago por hora."
+          ],
+          "steps": [
+            {
+              "expression": "13 × 12",
+              "result": "156",
+              "spokenText": "Trece por 12 son 156 al año"
+            },
+            {
+              "expression": "18 × 12",
+              "result": "216",
+              "spokenText": "Dieciocho por 12 son 216 al año"
+            },
+            {
+              "expression": "Año mayor − año menor",
+              "result": "60",
+              "spokenText": "216 menos 156 son 60 de diferencia"
+            },
+            {
+              "expression": "Diferencia del año ÷ pago por hora",
+              "result": "6",
+              "spokenText": "Sesenta entre 10 son 6 horas de trabajo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os planos custam 13 e 18 por mês; a Dina ganha 10 por hora. Ache a diferença em horas de trabalho.",
+          "feedback": {
+            "met": "Você transformou os dois planos em anos e depois a diferença em horas.",
+            "not_yet": "Veja os passos de ano, diferença e horas da Dina: multiplique, subtraia, divida."
+          },
+          "help": [
+            "Multiplique por 12, subtraia os anos e divida pelo valor da hora."
+          ],
+          "steps": [
+            {
+              "expression": "13 × 12",
+              "result": "156",
+              "spokenText": "Treze vezes 12 são 156 por ano"
+            },
+            {
+              "expression": "18 × 12",
+              "result": "216",
+              "spokenText": "Dezoito vezes 12 são 216 por ano"
+            },
+            {
+              "expression": "Ano maior − ano menor",
+              "result": "60",
+              "spokenText": "216 menos 156 são 60 de diferença"
+            },
+            {
+              "expression": "Diferença do ano ÷ valor da hora",
+              "result": "6",
+              "spokenText": "Sessenta divididos por 10 são 6 horas de trabalho"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-tickets-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "steps": [
+          {
+            "id": "extra-year"
+          },
+          {
+            "id": "tickets"
+          },
+          {
+            "id": "check"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "tickets",
+          "check"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "tickets": "4",
+          "check": "72"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Extra data costs 6 more a month and a ticket costs 18. How many tickets does a year give up?",
+          "feedback": {
+            "met": "You found the year's extra cost, then how many tickets it equals.",
+            "not_yet": "Check the year and tickets: divide the extra by the ticket price."
+          },
+          "help": [
+            "Multiply 6 by 12 first, then divide by the ticket price."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 12",
+              "result": "72",
+              "spokenText": "Six times 12 is 72 extra over the year"
+            },
+            {
+              "expression": "72 ÷ 18",
+              "result": "4",
+              "spokenText": "Seventy-two divided by 18 is 4 tickets"
+            },
+            {
+              "expression": "Tickets × ticket price",
+              "result": "72",
+              "spokenText": "Four tickets at 18 each is 72, the whole extra"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los datos extra cuestan 6 más al mes y un boleto de concierto cuesta 18. ¿A cuántos boletos renuncia un año?",
+          "feedback": {
+            "met": "Hallaste el extra del año y a cuántos boletos equivale.",
+            "not_yet": "Revisa el año y los boletos: divide el extra entre el precio del boleto."
+          },
+          "help": [
+            "Multiplica 6 por 12 y luego divide entre el precio del boleto."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 12",
+              "result": "72",
+              "spokenText": "Seis por 12 son 72 extra en el año"
+            },
+            {
+              "expression": "72 ÷ 18",
+              "result": "4",
+              "spokenText": "Setenta y dos entre 18 son 4 boletos"
+            },
+            {
+              "expression": "Boletos × precio del boleto",
+              "result": "72",
+              "spokenText": "Cuatro boletos a 18 son 72, todo el extra"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os dados extras custam 6 a mais por mês e um ingresso de show custa 18. A quantos ingressos um ano renuncia?",
+          "feedback": {
+            "met": "Você achou o extra do ano e a quantos ingressos ele equivale.",
+            "not_yet": "Confira o ano e os ingressos: divida o extra pelo preço do ingresso."
+          },
+          "help": [
+            "Multiplique 6 por 12 e depois divida pelo preço do ingresso."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 12",
+              "result": "72",
+              "spokenText": "Seis vezes 12 são 72 a mais no ano"
+            },
+            {
+              "expression": "72 ÷ 18",
+              "result": "4",
+              "spokenText": "Setenta e dois divididos por 18 são 4 ingressos"
+            },
+            {
+              "expression": "Ingressos × preço do ingresso",
+              "result": "72",
+              "spokenText": "Quatro ingressos a 18 são 72, todo o extra"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-gym-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-add"
+          },
+          {
+            "id": "reply-year-hours"
+          },
+          {
+            "id": "reply-open"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-year-hours"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The gym adds a pool for 3 more a month, and Dina earns 9 an hour. What does she say?",
+          "feedback": {
+            "met": "Asking for the year in hours lets you weigh it against pay.",
+            "not_yet": "What would show the real cost of a monthly extra?"
+          },
+          "speaker": "Gym staff",
+          "line": "The pool is only 3 more a month. Most members add it.",
+          "replies": [
+            {
+              "label": "Only 3, add it"
+            },
+            {
+              "label": "What is that in a year, in hours?"
+            },
+            {
+              "label": "Is the pool open every day?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El gimnasio agrega alberca por 3 más al mes, y Dina gana 9 la hora. ¿Qué dice?",
+          "feedback": {
+            "met": "Pedir el año en horas te deja compararlo con lo que ganas.",
+            "not_yet": "¿Qué mostraría el costo real de algo extra cada mes?"
+          },
+          "speaker": "Recepción del gimnasio",
+          "line": "La alberca son solo 3 más al mes. La mayoría la agrega.",
+          "replies": [
+            {
+              "label": "Solo 3, la agrego"
+            },
+            {
+              "label": "¿Cuánto es al año, en horas?"
+            },
+            {
+              "label": "¿La alberca abre diario?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A academia adiciona piscina por 3 a mais por mês, e a Dina ganha 9 por hora. O que ela diz?",
+          "feedback": {
+            "met": "Pedir o ano em horas permite comparar com o que você ganha.",
+            "not_yet": "O que mostraria o custo real de um extra mensal?"
+          },
+          "speaker": "Recepção da academia",
+          "line": "A piscina custa só 3 a mais por mês. A maioria adiciona.",
+          "replies": [
+            {
+              "label": "Só 3, eu adiciono"
+            },
+            {
+              "label": "Quanto dá no ano, em horas?"
+            },
+            {
+              "label": "A piscina abre todo dia?"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

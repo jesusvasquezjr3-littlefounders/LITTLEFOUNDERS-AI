@@ -1,0 +1,973 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-pitch-price-budget",
+  "lesson_id": "ent-1012-10-cost-and-price-per-bag",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.cost-vs-price",
+    "biz.profit"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina muestra al equipo cómo hallar cuánto cuesta hacer una bolsa, qué es el precio y cuánta ganancia deja cada una, y luego lo repite con un lote de ocho. Después practica con una gráfica de partes y un registro de ventas, y al final calcula el costo de una pulsera de Mia.",
+  "title": {
+    "en-US": "Cost and price per bag",
+    "es-MX": "Costo y precio por bolsa",
+    "pt-BR": "Custo e preço por sacola"
+  },
+  "new_concepts": [
+    "biz.cost-vs-price"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Eight bags wait on the team's table.",
+          "line": "Before pricing, let's find what one bag costs to make. We'll go one step at a time."
+        },
+        "es-MX": {
+          "prompt": "Ocho bolsas esperan en la mesa del equipo.",
+          "line": "Antes de poner precio, veamos cuánto cuesta hacer una bolsa. Iremos paso a paso."
+        },
+        "pt-BR": {
+          "prompt": "Oito sacolas esperam na mesa da equipe.",
+          "line": "Antes de dar o preço, vamos ver quanto custa fazer uma sacola. Vamos passo a passo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "others"
+          },
+          {
+            "id": "nicest"
+          },
+          {
+            "id": "cost"
+          },
+          {
+            "id": "howmany"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-others"
+          },
+          {
+            "id": "reason-cover"
+          },
+          {
+            "id": "reason-nice"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "cost"
+        ],
+        "reasonQuality": {
+          "reason-cover": "sound",
+          "reason-others": "partial",
+          "reason-nice": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before picking a price, what should the team find out first?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "What others sell for"
+            },
+            {
+              "label": "Which price sounds nicest"
+            },
+            {
+              "label": "What one bag costs to make"
+            },
+            {
+              "label": "How many bags we can make"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Other sellers know what works"
+            },
+            {
+              "label": "A price has to cover the cost"
+            },
+            {
+              "label": "A nice price always sells more"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de elegir un precio, ¿qué debería averiguar primero el equipo?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Cuánto cobran los demás"
+            },
+            {
+              "label": "Qué precio suena mejor"
+            },
+            {
+              "label": "Cuánto cuesta hacer una bolsa"
+            },
+            {
+              "label": "Cuántas bolsas podemos hacer"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Otros vendedores saben qué funciona"
+            },
+            {
+              "label": "Un precio debe cubrir el costo"
+            },
+            {
+              "label": "Un precio bonito siempre vende más"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de escolher um preço, o que a equipe deve descobrir primeiro?",
+          "feedback": {
+            "met": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Quanto os outros cobram"
+            },
+            {
+              "label": "Qual preço soa melhor"
+            },
+            {
+              "label": "Quanto custa fazer uma sacola"
+            },
+            {
+              "label": "Quantas sacolas podemos fazer"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Outros vendedores sabem o que funciona"
+            },
+            {
+              "label": "Um preço precisa cobrir o custo"
+            },
+            {
+              "label": "Um preço bonito sempre vende mais"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-parts-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-one"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-cloth",
+              "values": [
+                3
+              ]
+            },
+            {
+              "id": "series-food",
+              "values": [
+                3
+              ]
+            },
+            {
+              "id": "series-label",
+              "values": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the parts of one bag. Cloth 3, food 3, label 1.",
+          "title": "Cost of one bag",
+          "data": {
+            "categories": [
+              {
+                "label": "One bag"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cloth"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Label"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: las partes de una bolsa. Tela 3, comida 3, etiqueta 1.",
+          "title": "Costo de una bolsa",
+          "data": {
+            "categories": [
+              {
+                "label": "Una bolsa"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tela"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Etiqueta"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: as partes de uma sacola. Tecido 3, comida 3, etiqueta 1.",
+          "title": "Custo de uma sacola",
+          "data": {
+            "categories": [
+              {
+                "label": "Uma sacola"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tecido"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Etiqueta"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-add-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: cost is what we pay to make one bag.",
+          "line": "3 + 3 + 1 is 7, so one bag costs 7. I'll pause here so it can sink in."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el costo es lo que pagamos por hacer una bolsa.",
+          "line": "3 + 3 + 1 es 7, así que una bolsa cuesta 7. Hago una pausa aquí para que se asiente."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o custo é o que pagamos para fazer uma sacola.",
+          "line": "3 + 3 + 1 é 7, então uma sacola custa 7. Faço uma pausa aqui para a ideia assentar."
+        }
+      }
+    },
+    {
+      "id": "example-profit-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: price is what buyers pay. We choose 10.",
+          "line": "Price 10 minus cost 7 leaves 3 coins. That is the profit on one bag."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el precio es lo que paga el comprador. Elegimos 10.",
+          "line": "Precio 10 menos costo 7 deja 3 monedas. Esa es la ganancia de una bolsa."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o preço é o que o comprador paga. Escolhemos 10.",
+          "line": "Preço 10 menos custo 7 deixa 3 moedas. Esse é o lucro de uma sacola."
+        }
+      }
+    },
+    {
+      "id": "guided-unit-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "steps": [
+          {
+            "id": "parts"
+          },
+          {
+            "id": "cost"
+          },
+          {
+            "id": "profit"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "cost",
+          "profit"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "cost": "6",
+          "profit": "2"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Veggie version: cloth 3, food 2, label 1, sells for 8. Find its cost, then its profit.",
+          "feedback": {
+            "met": "You added every part, then took the cost from the price.",
+            "not_yet": "Look back at Dina's steps: add every part, then price minus cost."
+          },
+          "help": [
+            "Add the parts for the cost, then subtract it from the price."
+          ],
+          "steps": [
+            {
+              "expression": "Parts of one bag",
+              "result": "Cloth 3, food 2, label 1",
+              "spokenText": "Cloth 3, food 2 and label 1"
+            },
+            {
+              "expression": "3 + 2 + 1",
+              "result": "6",
+              "spokenText": "Three plus 2 plus 1 is 6, the cost"
+            },
+            {
+              "expression": "Price − cost",
+              "result": "2",
+              "spokenText": "Eight minus 6 leaves 2, the profit"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Versión de verduras: tela 3, comida 2, etiqueta 1, se vende en 8. Encuentra su costo y luego su ganancia.",
+          "feedback": {
+            "met": "Sumaste todas las partes y luego restaste el costo del precio.",
+            "not_yet": "Mira los pasos de Dina: suma cada parte y luego precio menos costo."
+          },
+          "help": [
+            "Suma las partes para el costo y réstalo del precio."
+          ],
+          "steps": [
+            {
+              "expression": "Partes de una bolsa",
+              "result": "Tela 3, comida 2, etiqueta 1",
+              "spokenText": "Tela 3, comida 2 y etiqueta 1"
+            },
+            {
+              "expression": "3 + 2 + 1",
+              "result": "6",
+              "spokenText": "Tres más 2 más 1 son 6, el costo"
+            },
+            {
+              "expression": "Precio − costo",
+              "result": "2",
+              "spokenText": "Ocho menos 6 deja 2, la ganancia"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Versão de legumes: tecido 3, comida 2, etiqueta 1, vende por 8. Ache o custo e depois o lucro.",
+          "feedback": {
+            "met": "Você somou todas as partes e depois tirou o custo do preço.",
+            "not_yet": "Veja os passos da Dina: some cada parte e depois preço menos custo."
+          },
+          "help": [
+            "Some as partes para achar o custo e tire-o do preço."
+          ],
+          "steps": [
+            {
+              "expression": "Partes de uma sacola",
+              "result": "Tecido 3, comida 2, etiqueta 1",
+              "spokenText": "Tecido 3, comida 2 e etiqueta 1"
+            },
+            {
+              "expression": "3 + 2 + 1",
+              "result": "6",
+              "spokenText": "Três mais 2 mais 1 são 6, o custo"
+            },
+            {
+              "expression": "Preço − custo",
+              "result": "2",
+              "spokenText": "Oito menos 6 deixa 2, o lucro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-batch-cost-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the cost of a whole batch.",
+          "line": "Eight bags at 7 coins each cost 8 × 7 = 56 coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: el costo de un lote entero.",
+          "line": "Ocho bolsas a 7 monedas cada una cuestan 8 × 7 = 56 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o custo de um lote inteiro.",
+          "line": "Oito sacolas a 7 moedas cada uma custam 8 × 7 = 56 moedas."
+        }
+      }
+    },
+    {
+      "id": "example-batch-income-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the income from selling all eight.",
+          "line": "Eight sales at 10 each bring in 8 × 10 = 80 coins. I'll pause here so it can sink in."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: el ingreso de vender las ocho.",
+          "line": "Ocho ventas a 10 cada una suman 8 × 10 = 80 monedas de ingreso. Hago una pausa aquí para que se asiente."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: a receita de vender as oito.",
+          "line": "Oito vendas a 10 cada uma somam 8 × 10 = 80 moedas de receita. Faço uma pausa aqui para a ideia assentar."
+        }
+      }
+    },
+    {
+      "id": "example-batch-ledger-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: the ledger tells the whole story.",
+          "line": "We start with 60 coins in the box: 60 + 80 − 56 = 84. Profit is 84 − 60 = 24."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: el registro cuenta toda la historia.",
+          "line": "Empezamos con 60 monedas en la caja: 60 + 80 − 56 = 84. La ganancia es 84 − 60 = 24."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: o registro conta a história toda.",
+          "line": "Começamos com 60 moedas na caixa: 60 + 80 − 56 = 84. O lucro é 84 − 60 = 24."
+        }
+      }
+    },
+    {
+      "id": "practice-chart-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-basic"
+            },
+            {
+              "id": "cat-deluxe"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-cloth",
+              "values": [
+                3,
+                4
+              ]
+            },
+            {
+              "id": "series-food",
+              "values": [
+                3,
+                4
+              ]
+            },
+            {
+              "id": "series-label",
+              "values": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-four"
+            },
+            {
+              "id": "ans-nine"
+            },
+            {
+              "id": "ans-seven"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the stacked parts in each bar.",
+          "feedback": {
+            "met": "You added every stacked part of the deluxe bag.",
+            "not_yet": "Add every part in the deluxe bar, not just one."
+          },
+          "title": "Cost parts of one bag",
+          "data": {
+            "categories": [
+              {
+                "label": "Basic"
+              },
+              {
+                "label": "Deluxe"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cloth"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Label"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "What does one deluxe bag cost to make?",
+            "options": [
+              {
+                "label": "4"
+              },
+              {
+                "label": "9"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee las partes apiladas en cada barra.",
+          "feedback": {
+            "met": "Sumaste todas las partes apiladas de la bolsa especial.",
+            "not_yet": "Suma todas las partes de la barra especial, no solo una."
+          },
+          "title": "Partes del costo de una bolsa",
+          "data": {
+            "categories": [
+              {
+                "label": "Básica"
+              },
+              {
+                "label": "Especial"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tela"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Etiqueta"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuánto cuesta hacer una bolsa especial?",
+            "options": [
+              {
+                "label": "4"
+              },
+              {
+                "label": "9"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia as partes empilhadas em cada barra.",
+          "feedback": {
+            "met": "Você somou todas as partes empilhadas da sacola especial.",
+            "not_yet": "Some todas as partes da barra especial, não só uma."
+          },
+          "title": "Partes do custo de uma sacola",
+          "data": {
+            "categories": [
+              {
+                "label": "Básica"
+              },
+              {
+                "label": "Especial"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tecido"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Etiqueta"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quanto custa fazer uma sacola especial?",
+            "options": [
+              {
+                "label": "4"
+              },
+              {
+                "label": "9"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-nine"
+        ]
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "initial": 30,
+        "sale": 9,
+        "cost": 5,
+        "maxEntries": 8
+      },
+      "rubric": {
+        "target_balance": 42
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "From 30 coins, log 3 fruit bags (supplies 5, sale 9) until you reach 42.",
+          "feedback": {
+            "met": "You logged each sale and each supplies cost.",
+            "not_yet": "Each bag needs one supplies entry and one sale entry."
+          }
+        },
+        "es-MX": {
+          "prompt": "De 30 monedas, registra 3 bolsas de fruta (insumos 5, venta 9) hasta llegar a 42.",
+          "feedback": {
+            "met": "Registraste cada venta y cada gasto de insumos.",
+            "not_yet": "Cada bolsa necesita una entrada de insumos y una de venta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "De 30 moedas, registre 3 sacolas de fruta (insumos 5, venda 9) até chegar a 42.",
+          "feedback": {
+            "met": "Você registrou cada venda e cada custo de insumos.",
+            "not_yet": "Cada sacola precisa de um registro de insumos e um de venda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-bracelet-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "ans-six"
+          },
+          {
+            "id": "ans-two"
+          },
+          {
+            "id": "ans-three"
+          },
+          {
+            "id": "ans-four"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-biggest"
+          },
+          {
+            "id": "reason-charges"
+          },
+          {
+            "id": "reason-added"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "ans-four"
+        ],
+        "reasonQuality": {
+          "reason-added": "sound",
+          "reason-biggest": "partial",
+          "reason-charges": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia's bracelet: beads 2, string 1, tag 1, sold for 6. What does one cost to make?",
+          "feedback": {
+            "met": "You added every part to find the cost.",
+            "not_yet": "Cost is every part Mia pays for, not the price."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "2"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Beads are the biggest part"
+            },
+            {
+              "label": "It's what Mia charges"
+            },
+            {
+              "label": "I added every part"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pulsera de Mia: cuentas 2, hilo 1, etiqueta 1, se vende en 6. ¿Cuánto cuesta hacer una?",
+          "feedback": {
+            "met": "Sumaste todas las partes para hallar el costo.",
+            "not_yet": "El costo es todo lo que Mia paga, no el precio."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "2"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Las cuentas son la parte más grande"
+            },
+            {
+              "label": "Es lo que cobra Mia"
+            },
+            {
+              "label": "Sumé todas las partes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Pulseira da Mia: contas 2, fio 1, etiqueta 1, vende por 6. Quanto custa fazer uma?",
+          "feedback": {
+            "met": "Você somou todas as partes para achar o custo.",
+            "not_yet": "Custo é tudo o que a Mia paga, não o preço."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "2"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "As contas são a maior parte"
+            },
+            {
+              "label": "É o que a Mia cobra"
+            },
+            {
+              "label": "Somei todas as partes"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

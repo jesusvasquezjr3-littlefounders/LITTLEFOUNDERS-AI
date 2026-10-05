@@ -1,0 +1,1323 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-time-rates-and-risk",
+  "lesson_id": "inv-adult-04-what-a-risky-offer-is-worth",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.expected-value",
+    "invest.no-free-lunch",
+    "invest.risk-tolerance"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho compara, con 100,000 unidades ilustrativas, un instrumento estable que paga 5% con un fondo ligado al mercado cuyos resultados (−20%, +10% y +40%, con probabilidades de 1 de cada 4, 1 de cada 2 y 1 de cada 4) promedian +10%. La persona adulta arma el árbol de resultados, calcula el valor esperado, ve la pérdida posible de 20,000, pregunta quién carga el riesgo de una oferta que promete alto rendimiento y ninguna pérdida y decide cuánta pérdida soporta una meta a 3 años frente a una a 25.",
+  "title": {
+    "en-US": "What a risky offer is worth",
+    "es-MX": "Cuánto vale una oferta riesgosa",
+    "pt-BR": "Quanto vale uma oferta arriscada"
+  },
+  "new_concepts": [
+    "invest.expected-value",
+    "invest.no-free-lunch",
+    "invest.risk-tolerance"
+  ],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "Rho picked the fund with the higher expected value for a goal due in 3 years and never checked its worst year: a 1 in 4 chance of losing 20,000, with only 2 years left to recover.",
+    "recovery": "Next time Rho asks first when the money is needed and what loss it can bear, and only then compares the expected values of the offers."
+  },
+  "regional": {
+    "universal": "Illustrative units and a generic steady instrument against a generic market-linked fund; no named product, no real rate, no forecast."
+  },
+  "segments": [
+    {
+      "id": "hook-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your 100,000 units are for a goal due in 3 years.",
+          "line": "A steady instrument pays an illustrative 5%. A market-linked fund averages an illustrative 10%, with down years."
+        },
+        "es-MX": {
+          "prompt": "Tus 100,000 unidades son para una meta a 3 años.",
+          "line": "Un instrumento estable paga un 5% ilustrativo. Un fondo ligado al mercado promedia un 10% ilustrativo, con años a la baja."
+        },
+        "pt-BR": {
+          "prompt": "Suas 100.000 unidades são para uma meta em 3 anos.",
+          "line": "Um instrumento estável paga 5% ilustrativos. Um fundo ligado ao mercado rende 10% ilustrativos em média, com anos de queda."
+        }
+      }
+    },
+    {
+      "id": "pre-04",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "choices": [
+          {
+            "id": "fund"
+          },
+          {
+            "id": "steady"
+          },
+          {
+            "id": "unsure"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-average"
+          },
+          {
+            "id": "reason-short"
+          },
+          {
+            "id": "reason-facts"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "steady"
+        ],
+        "reasonQuality": {
+          "reason-average": "unsupported",
+          "reason-short": "sound",
+          "reason-facts": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "For your 100,000 units due in 3 years, which offer would you take?",
+          "feedback": {
+            "met": "Noted. Rho shows the working next.",
+            "not_yet": "Noted. Rho shows the working next."
+          },
+          "choices": [
+            {
+              "label": "The fund, averaging 10%"
+            },
+            {
+              "label": "The steady 5%"
+            },
+            {
+              "label": "I need more facts first"
+            }
+          ],
+          "reasonPrompt": "What is your main reason?",
+          "reasons": [
+            {
+              "label": "The higher average is what counts"
+            },
+            {
+              "label": "Three years leave little time to recover"
+            },
+            {
+              "label": "I don’t know the fund’s bad years"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Para tus 100,000 unidades a 3 años, ¿qué oferta tomarías?",
+          "feedback": {
+            "met": "Anotado. Rho muestra el procedimiento a continuación.",
+            "not_yet": "Anotado. Rho muestra el procedimiento a continuación."
+          },
+          "choices": [
+            {
+              "label": "El fondo, con promedio de 10%"
+            },
+            {
+              "label": "El 5% estable"
+            },
+            {
+              "label": "Necesito más datos primero"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón principal?",
+          "reasons": [
+            {
+              "label": "Lo que cuenta es el promedio más alto"
+            },
+            {
+              "label": "Tres años dejan poco tiempo para recuperarse"
+            },
+            {
+              "label": "No conozco los años malos del fondo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Para suas 100.000 unidades em 3 anos, qual oferta você escolheria?",
+          "feedback": {
+            "met": "Anotado. Rho mostra o cálculo a seguir.",
+            "not_yet": "Anotado. Rho mostra o cálculo a seguir."
+          },
+          "choices": [
+            {
+              "label": "O fundo, com média de 10%"
+            },
+            {
+              "label": "Os 5% estáveis"
+            },
+            {
+              "label": "Preciso de mais dados primeiro"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo principal?",
+          "reasons": [
+            {
+              "label": "O que conta é a média mais alta"
+            },
+            {
+              "label": "Três anos deixam pouco tempo para se recuperar"
+            },
+            {
+              "label": "Não conheço os anos ruins do fundo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-tree-04",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-start",
+              "kind": "start"
+            },
+            {
+              "id": "node-low",
+              "kind": "outcome"
+            },
+            {
+              "id": "node-mid",
+              "kind": "outcome"
+            },
+            {
+              "id": "node-high",
+              "kind": "outcome"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-start",
+              "to": "node-low"
+            },
+            {
+              "from": "node-start",
+              "to": "node-mid"
+            },
+            {
+              "from": "node-start",
+              "to": "node-high"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: draw one year of the fund as a tree. Each branch carries its chance.",
+          "title": "One year of the fund",
+          "data": {
+            "nodes": [
+              {
+                "label": "100,000 units"
+              },
+              {
+                "label": "Ends at 80,000"
+              },
+              {
+                "label": "Ends at 110,000"
+              },
+              {
+                "label": "Ends at 140,000"
+              }
+            ],
+            "links": [
+              {
+                "label": "1 in 4 · −20%"
+              },
+              {
+                "label": "1 in 2 · +10%"
+              },
+              {
+                "label": "1 in 4 · +40%"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: dibuja un año del fondo como un árbol. Cada rama lleva su probabilidad.",
+          "title": "Un año del fondo",
+          "data": {
+            "nodes": [
+              {
+                "label": "100,000 unidades"
+              },
+              {
+                "label": "Termina en 80,000"
+              },
+              {
+                "label": "Termina en 110,000"
+              },
+              {
+                "label": "Termina en 140,000"
+              }
+            ],
+            "links": [
+              {
+                "label": "1 de cada 4 · −20%"
+              },
+              {
+                "label": "1 de cada 2 · +10%"
+              },
+              {
+                "label": "1 de cada 4 · +40%"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: desenhe um ano do fundo como uma árvore. Cada ramo traz a sua chance.",
+          "title": "Um ano do fundo",
+          "data": {
+            "nodes": [
+              {
+                "label": "100.000 unidades"
+              },
+              {
+                "label": "Termina em 80.000"
+              },
+              {
+                "label": "Termina em 110.000"
+              },
+              {
+                "label": "Termina em 140.000"
+              }
+            ],
+            "links": [
+              {
+                "label": "1 em cada 4 · −20%"
+              },
+              {
+                "label": "1 em cada 2 · +10%"
+              },
+              {
+                "label": "1 em cada 4 · +40%"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-ev-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the expected value weights each outcome by its chance: 20,000 + 55,000 + 35,000 = 110,000.",
+          "line": "The parts are 1 in 4 of 80,000, 1 in 2 of 110,000 and 1 in 4 of 140,000."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el valor esperado pondera cada resultado por su probabilidad: 20,000 + 55,000 + 35,000 = 110,000.",
+          "line": "Las partes son 1 de cada 4 de 80,000, 1 de cada 2 de 110,000 y 1 de cada 4 de 140,000."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o valor esperado pondera cada resultado pela sua chance: 20.000 + 55.000 + 35.000 = 110.000.",
+          "line": "As partes são 1 em cada 4 de 80.000, 1 em cada 2 de 110.000 e 1 em cada 4 de 140.000."
+        }
+      }
+    },
+    {
+      "id": "guided-ev-04",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "steps": [
+          {
+            "id": "part-low"
+          },
+          {
+            "id": "part-middle"
+          },
+          {
+            "id": "expected-value"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "part-middle",
+          "expected-value"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "part-middle": "50000",
+          "expected-value": "105000"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On 100,000 units, a fund ends at 90,000, 100,000 or 130,000. Fill in its expected value.",
+          "feedback": {
+            "met": "You weighted each outcome by its chance and added the parts.",
+            "not_yet": "Weight each outcome by its chance, as in the tree, then add."
+          },
+          "help": [
+            "The high outcome counts too; give it its own share."
+          ],
+          "steps": [
+            {
+              "expression": "Low part: 1 in 4 of 90,000",
+              "result": "22,500 units",
+              "spokenText": "A 1 in 4 chance of 90,000 adds 22,500 to the average"
+            },
+            {
+              "expression": "Middle part: 1 in 2 of 100,000",
+              "result": "50,000 units",
+              "spokenText": "Half of 100,000 is 50,000, the middle part"
+            },
+            {
+              "expression": "Expected value: low + middle + high part (1 in 4 of 130,000)",
+              "result": "105,000 units",
+              "spokenText": "The high part is 32,500, so 22,500 + 50,000 + 32,500 = 105,000"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Con 100,000 unidades, un fondo termina en 90,000, 100,000 o 130,000. Completa su valor esperado.",
+          "feedback": {
+            "met": "Ponderaste cada resultado por su probabilidad y sumaste las partes.",
+            "not_yet": "Pondera cada resultado por su probabilidad, como en el árbol, y suma."
+          },
+          "help": [
+            "El resultado alto también cuenta: dale su propia parte."
+          ],
+          "steps": [
+            {
+              "expression": "Parte baja: 1 de cada 4 de 90,000",
+              "result": "22,500 unidades",
+              "spokenText": "Una probabilidad de 1 de cada 4 de 90,000 aporta 22,500 al promedio"
+            },
+            {
+              "expression": "Parte media: 1 de cada 2 de 100,000",
+              "result": "50,000 unidades",
+              "spokenText": "La mitad de 100,000 es 50,000, la parte media"
+            },
+            {
+              "expression": "Valor esperado: parte baja + media + alta (1 de cada 4 de 130,000)",
+              "result": "105,000 unidades",
+              "spokenText": "La parte alta es 32,500, así que 22,500 + 50,000 + 32,500 = 105,000"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com 100.000 unidades, um fundo termina em 90.000, 100.000 ou 130.000. Complete o valor esperado.",
+          "feedback": {
+            "met": "Você ponderou cada resultado pela chance e somou as partes.",
+            "not_yet": "Pondere cada resultado pela chance, como na árvore, e some."
+          },
+          "help": [
+            "O resultado alto também conta: dê a ele a sua parte."
+          ],
+          "steps": [
+            {
+              "expression": "Parte baixa: 1 em cada 4 de 90.000",
+              "result": "22.500 unidades",
+              "spokenText": "Uma chance de 1 em cada 4 de 90.000 soma 22.500 à média"
+            },
+            {
+              "expression": "Parte média: 1 em cada 2 de 100.000",
+              "result": "50.000 unidades",
+              "spokenText": "Metade de 100.000 é 50.000, a parte média"
+            },
+            {
+              "expression": "Valor esperado: parte baixa + média + alta (1 em cada 4 de 130.000)",
+              "result": "105.000 unidades",
+              "spokenText": "A parte alta é 32.500, então 22.500 + 50.000 + 32.500 = 105.000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-ev-04",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "steps": [
+          {
+            "id": "part-low"
+          },
+          {
+            "id": "part-high"
+          },
+          {
+            "id": "expected-value"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "part-high",
+          "expected-value"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "part-high": "92000",
+          "expected-value": "106000"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On 100,000 units, another fund ends at 70,000 or 115,000. Fill in its expected value.",
+          "feedback": {
+            "met": "You applied each chance to its outcome and added the parts.",
+            "not_yet": "Each part uses its own chance, as the example weighted each branch."
+          },
+          "help": [
+            "Multiply each outcome by its chance, then add the two parts."
+          ],
+          "steps": [
+            {
+              "expression": "Low part: 1 in 5 of 70,000",
+              "result": "14,000 units",
+              "spokenText": "A 1 in 5 chance of 70,000 adds 14,000 to the average"
+            },
+            {
+              "expression": "High part: 4 in 5 of 115,000",
+              "result": "92,000 units",
+              "spokenText": "4 in 5 of 115,000 is 92,000, the high part"
+            },
+            {
+              "expression": "Expected value: low part + high part",
+              "result": "106,000 units",
+              "spokenText": "14,000 + 92,000 = 106,000, only 1,000 above a steady 105,000"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Con 100,000 unidades, otro fondo termina en 70,000 o 115,000. Completa su valor esperado.",
+          "feedback": {
+            "met": "Aplicaste cada probabilidad a su resultado y sumaste las partes.",
+            "not_yet": "Cada parte usa su propia probabilidad, como el ejemplo con cada rama."
+          },
+          "help": [
+            "Multiplica cada resultado por su probabilidad y suma las dos partes."
+          ],
+          "steps": [
+            {
+              "expression": "Parte baja: 1 de cada 5 de 70,000",
+              "result": "14,000 unidades",
+              "spokenText": "Una probabilidad de 1 de cada 5 de 70,000 aporta 14,000 al promedio"
+            },
+            {
+              "expression": "Parte alta: 4 de cada 5 de 115,000",
+              "result": "92,000 unidades",
+              "spokenText": "4 de cada 5 de 115,000 es 92,000, la parte alta"
+            },
+            {
+              "expression": "Valor esperado: parte baja + parte alta",
+              "result": "106,000 unidades",
+              "spokenText": "14,000 + 92,000 = 106,000, solo 1,000 más que un estable de 105,000"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com 100.000 unidades, outro fundo termina em 70.000 ou 115.000. Complete o valor esperado.",
+          "feedback": {
+            "met": "Você aplicou cada chance ao seu resultado e somou as partes.",
+            "not_yet": "Cada parte usa a sua própria chance, como o exemplo com cada ramo."
+          },
+          "help": [
+            "Multiplique cada resultado pela chance e some as duas partes."
+          ],
+          "steps": [
+            {
+              "expression": "Parte baixa: 1 em cada 5 de 70.000",
+              "result": "14.000 unidades",
+              "spokenText": "Uma chance de 1 em cada 5 de 70.000 soma 14.000 à média"
+            },
+            {
+              "expression": "Parte alta: 4 em cada 5 de 115.000",
+              "result": "92.000 unidades",
+              "spokenText": "4 em cada 5 de 115.000 é 92.000, a parte alta"
+            },
+            {
+              "expression": "Valor esperado: parte baixa + parte alta",
+              "result": "106.000 unidades",
+              "spokenText": "14.000 + 92.000 = 106.000, só 1.000 acima de um estável de 105.000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-04",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Rho faced the same choice for a goal due in 3 years.",
+          "setup": "I chose the fund for its higher average, 110,000 against 105,000.",
+          "misjudgment": "I never checked the worst year. The 1 in 4 loss came: 20,000 gone, 2 years left.",
+          "recovery": "Next time I ask first: when do I need this money, and what loss can it bear?"
+        },
+        "es-MX": {
+          "prompt": "Rho enfrentó la misma decisión para una meta a 3 años.",
+          "setup": "Elegí el fondo por su promedio más alto: 110,000 frente a 105,000.",
+          "misjudgment": "Nunca revisé el peor año. Llegó la pérdida de 1 de cada 4: se fueron 20,000 y quedaban 2 años.",
+          "recovery": "La próxima vez pregunto primero: ¿cuándo necesito este dinero y qué pérdida puede soportar?"
+        },
+        "pt-BR": {
+          "prompt": "Rho enfrentou a mesma escolha para uma meta em 3 anos.",
+          "setup": "Escolhi o fundo pela média mais alta: 110.000 contra 105.000.",
+          "misjudgment": "Nunca olhei o pior ano. A perda de 1 em cada 4 veio: sumiram 20.000 e restavam 2 anos.",
+          "recovery": "Da próxima vez pergunto primeiro: quando preciso deste dinheiro e que perda ele suporta?"
+        }
+      }
+    },
+    {
+      "id": "example-hist-04",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "histogram"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "bin-low"
+            },
+            {
+              "id": "bin-mid"
+            },
+            {
+              "id": "bin-high"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-years",
+              "values": [
+                48,
+                101,
+                51
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: of 200 simulated years, 48 ended at 80,000, under a 100,000 goal.",
+          "title": "200 simulated years, by outcome",
+          "data": {
+            "categories": [
+              {
+                "label": "80,000"
+              },
+              {
+                "label": "110,000"
+              },
+              {
+                "label": "140,000"
+              }
+            ],
+            "series": [
+              {
+                "label": "Simulated years"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: de 200 años simulados, 48 terminaron en 80,000, bajo una meta de 100,000.",
+          "title": "200 años simulados, por resultado",
+          "data": {
+            "categories": [
+              {
+                "label": "80,000"
+              },
+              {
+                "label": "110,000"
+              },
+              {
+                "label": "140,000"
+              }
+            ],
+            "series": [
+              {
+                "label": "Años simulados"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: de 200 anos simulados, 48 terminaram em 80.000, abaixo de uma meta de 100.000.",
+          "title": "200 anos simulados, por resultado",
+          "data": {
+            "categories": [
+              {
+                "label": "80.000"
+              },
+              {
+                "label": "110.000"
+              },
+              {
+                "label": "140.000"
+              }
+            ],
+            "series": [
+              {
+                "label": "Anos simulados"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-hist-04",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "histogram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "bin-80"
+            },
+            {
+              "id": "bin-90"
+            },
+            {
+              "id": "bin-100"
+            },
+            {
+              "id": "bin-110"
+            },
+            {
+              "id": "bin-120"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-years",
+              "values": [
+                20,
+                40,
+                70,
+                45,
+                25
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "low"
+            },
+            {
+              "id": "tall"
+            },
+            {
+              "id": "meets"
+            },
+            {
+              "id": "short"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "short"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Another fund: each bar counts simulated years that ended in that range.",
+          "feedback": {
+            "met": "The two bars under the goal are the years that fall short.",
+            "not_yet": "Add every bar that sits under the goal, as in the example."
+          },
+          "title": "Another fund, 200 simulated years",
+          "data": {
+            "categories": [
+              {
+                "label": "80-90k"
+              },
+              {
+                "label": "90-100k"
+              },
+              {
+                "label": "100-110k"
+              },
+              {
+                "label": "110-120k"
+              },
+              {
+                "label": "120-130k"
+              }
+            ],
+            "series": [
+              {
+                "label": "Simulated years"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "For a goal of 100,000 due next year, how many of these 200 years fall short?",
+            "options": [
+              {
+                "label": "20 of 200 years"
+              },
+              {
+                "label": "70 of 200 years"
+              },
+              {
+                "label": "140 of 200 years"
+              },
+              {
+                "label": "60 of 200 years"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Otro fondo: cada barra cuenta los años simulados que terminaron en ese rango.",
+          "feedback": {
+            "met": "Las dos barras bajo la meta son los años que no llegan.",
+            "not_yet": "Suma cada barra que queda bajo la meta, como en el ejemplo."
+          },
+          "title": "Otro fondo, 200 años simulados",
+          "data": {
+            "categories": [
+              {
+                "label": "80-90 mil"
+              },
+              {
+                "label": "90-100 mil"
+              },
+              {
+                "label": "100-110 mil"
+              },
+              {
+                "label": "110-120 mil"
+              },
+              {
+                "label": "120-130 mil"
+              }
+            ],
+            "series": [
+              {
+                "label": "Años simulados"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Para una meta de 100,000 que vence el próximo año, ¿en cuántos de estos 200 años no se llega?",
+            "options": [
+              {
+                "label": "20 de 200 años"
+              },
+              {
+                "label": "70 de 200 años"
+              },
+              {
+                "label": "140 de 200 años"
+              },
+              {
+                "label": "60 de 200 años"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Outro fundo: cada barra conta os anos simulados que terminaram nessa faixa.",
+          "feedback": {
+            "met": "As duas barras abaixo da meta são os anos que não chegam.",
+            "not_yet": "Some cada barra que fica abaixo da meta, como no exemplo."
+          },
+          "title": "Outro fundo, 200 anos simulados",
+          "data": {
+            "categories": [
+              {
+                "label": "80-90 mil"
+              },
+              {
+                "label": "90-100 mil"
+              },
+              {
+                "label": "100-110 mil"
+              },
+              {
+                "label": "110-120 mil"
+              },
+              {
+                "label": "120-130 mil"
+              }
+            ],
+            "series": [
+              {
+                "label": "Anos simulados"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Para uma meta de 100.000 com prazo no próximo ano, em quantos destes 200 anos não se chega?",
+            "options": [
+              {
+                "label": "20 de 200 anos"
+              },
+              {
+                "label": "70 de 200 anos"
+              },
+              {
+                "label": "140 de 200 anos"
+              },
+              {
+                "label": "60 de 200 anos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-nfl-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: when an offer promises a high return and no loss, ask who carries the risk.",
+          "line": "The fund’s 5,000 edge pays for its 20,000 loss risk. An offer showing no loss hides it."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: cuando una oferta promete un alto rendimiento y ninguna pérdida, pregunta quién carga el riesgo.",
+          "line": "La ventaja de 5,000 del fondo paga su riesgo de perder 20,000. Una oferta sin pérdida visible la esconde."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: quando uma oferta promete retorno alto e nenhuma perda, pergunte quem carrega o risco.",
+          "line": "A vantagem de 5.000 do fundo paga o risco de perder 20.000. Uma oferta sem perda visível a esconde."
+        }
+      }
+    },
+    {
+      "id": "practice-nfl-04",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "choices": [
+          {
+            "id": "who"
+          },
+          {
+            "id": "fast"
+          },
+          {
+            "id": "crowd"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-moved"
+          },
+          {
+            "id": "reason-fast"
+          },
+          {
+            "id": "reason-crowd"
+          },
+          {
+            "id": "reason-compare"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "who"
+        ],
+        "reasonQuality": {
+          "reason-moved": "sound",
+          "reason-fast": "unsupported",
+          "reason-crowd": "unsupported",
+          "reason-compare": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A message promises 15% a year, no loss, paid fast. Which question comes first?",
+          "feedback": {
+            "met": "You asked where the loss sits before judging the return.",
+            "not_yet": "Look back at the tree: every higher average came with a loss."
+          },
+          "choices": [
+            {
+              "label": "Who carries the loss if it fails?"
+            },
+            {
+              "label": "How soon can I join?"
+            },
+            {
+              "label": "How many people already joined?"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "A big, safe return puts the loss elsewhere"
+            },
+            {
+              "label": "Fast payment shows the offer is real"
+            },
+            {
+              "label": "Many people joining makes it safe"
+            },
+            {
+              "label": "15% beats the steady 5%, so compare"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un mensaje promete 15% al año, sin pérdida y con pago rápido. ¿Qué pregunta va primero?",
+          "feedback": {
+            "met": "Preguntaste dónde está la pérdida antes de juzgar el rendimiento.",
+            "not_yet": "Revisa el árbol: cada promedio más alto venía con una pérdida."
+          },
+          "choices": [
+            {
+              "label": "¿Quién carga la pérdida si falla?"
+            },
+            {
+              "label": "¿Qué tan pronto puedo entrar?"
+            },
+            {
+              "label": "¿Cuántas personas ya entraron?"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Rendimiento alto y seguro: la pérdida está en otro lado"
+            },
+            {
+              "label": "El pago rápido muestra que la oferta es real"
+            },
+            {
+              "label": "Que entre mucha gente la hace segura"
+            },
+            {
+              "label": "15% supera al 5% estable, así que comparo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma mensagem promete 15% ao ano, sem perda e com pagamento rápido. Qual pergunta vem primeiro?",
+          "feedback": {
+            "met": "Você perguntou onde está a perda antes de julgar o retorno.",
+            "not_yet": "Revise a árvore: cada média mais alta vinha com uma perda."
+          },
+          "choices": [
+            {
+              "label": "Quem arca com a perda se falhar?"
+            },
+            {
+              "label": "Quão cedo posso entrar?"
+            },
+            {
+              "label": "Quantas pessoas já entraram?"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Retorno alto e seguro: a perda está em outro lugar"
+            },
+            {
+              "label": "Pagamento rápido mostra que a oferta é real"
+            },
+            {
+              "label": "Muita gente entrando a torna segura"
+            },
+            {
+              "label": "15% supera os 5% estáveis, então comparo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-fit-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the time left to recover decides how much loss a goal can bear.",
+          "line": "A 3-year goal loses 20,000 in year 1. Two years at 5% lift 80,000 only to 88,200."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: el tiempo que queda para recuperarse decide cuánta pérdida soporta una meta.",
+          "line": "Una meta a 3 años pierde 20,000 en el año 1. Dos años al 5% llevan 80,000 solo a 88,200."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o tempo que resta para se recuperar decide quanta perda uma meta suporta.",
+          "line": "Uma meta de 3 anos perde 20.000 no ano 1. Dois anos a 5% levam 80.000 só a 88.200."
+        }
+      }
+    },
+    {
+      "id": "transfer-goals-04",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "choices": [
+          {
+            "id": "near"
+          },
+          {
+            "id": "equal"
+          },
+          {
+            "id": "far"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-time"
+          },
+          {
+            "id": "reason-same"
+          },
+          {
+            "id": "reason-soon"
+          },
+          {
+            "id": "reason-wait"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "far"
+        ],
+        "reasonQuality": {
+          "reason-time": "sound",
+          "reason-same": "unsupported",
+          "reason-soon": "unsupported",
+          "reason-wait": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A 20% loss hits goals due in 2 and in 25 years. Which can better bear it?",
+          "feedback": {
+            "met": "More years left to recover lets a goal bear a loss.",
+            "not_yet": "The last example showed how time left limits recovery."
+          },
+          "choices": [
+            {
+              "label": "The goal due in 2 years"
+            },
+            {
+              "label": "Both bear it the same"
+            },
+            {
+              "label": "The goal due in 25 years"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "More years remain to recover the loss"
+            },
+            {
+              "label": "The loss is 20% in both, so equal"
+            },
+            {
+              "label": "The sooner goal ends before more losses"
+            },
+            {
+              "label": "The longer goal can wait yet still fall"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una pérdida de 20% golpea metas a 2 y a 25 años. ¿Cuál la soporta mejor?",
+          "feedback": {
+            "met": "Con más años para recuperarse, una meta soporta mejor una pérdida.",
+            "not_yet": "El último ejemplo mostró cómo el tiempo restante limita la recuperación."
+          },
+          "choices": [
+            {
+              "label": "La meta a 2 años"
+            },
+            {
+              "label": "Las dos lo soportan igual"
+            },
+            {
+              "label": "La meta a 25 años"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Quedan más años para recuperar la pérdida"
+            },
+            {
+              "label": "La pérdida es 20% en ambas, así que igual"
+            },
+            {
+              "label": "La meta más cercana termina antes de más pérdidas"
+            },
+            {
+              "label": "La meta larga puede esperar, pero puede caer"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma perda de 20% atinge metas em 2 e em 25 anos. Qual suporta melhor?",
+          "feedback": {
+            "met": "Com mais anos para se recuperar, uma meta suporta melhor uma perda.",
+            "not_yet": "O último exemplo mostrou como o tempo restante limita a recuperação."
+          },
+          "choices": [
+            {
+              "label": "A meta em 2 anos"
+            },
+            {
+              "label": "As duas suportam igual"
+            },
+            {
+              "label": "A meta em 25 anos"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Restam mais anos para recuperar a perda"
+            },
+            {
+              "label": "A perda é 20% nas duas, então igual"
+            },
+            {
+              "label": "A meta mais próxima termina antes de mais perdas"
+            },
+            {
+              "label": "A meta longa pode esperar, mas pode cair"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

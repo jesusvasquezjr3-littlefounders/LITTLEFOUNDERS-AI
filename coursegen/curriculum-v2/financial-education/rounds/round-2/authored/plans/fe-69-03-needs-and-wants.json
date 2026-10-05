@@ -1,0 +1,438 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-03-needs-and-wants",
+  "age_band": "6-9",
+  "eligibility": { "minimum_age": 6, "maximum_age": 9 },
+  "knowledge_component_ids": ["life.wants-and-choices"],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": { "character": "liruf", "scene": "diorama-b" },
+  "brief": "Liruf llega al mercado con pocas monedas, cuenta cómo compró un juguete antes que el pan y se quedó sin cena, lo arregla con calma y dice qué hará la próxima vez. Luego muestra su pregunta («¿puedo pasar sin eso?») con el pan y con el juguete, y con 6 monedas paga primero la sopa. El niño ordena cosas entre necesidad y deseo, decide qué comprar primero y lo usa en un paseo escolar con lluvia.",
+  "title": {
+    "en-US": "Needs and wants",
+    "es-MX": "Necesidades y deseos",
+    "pt-BR": "Necessidades e desejos"
+  },
+  "new_concepts": ["life.wants-and-choices"],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf spends his coins on a toy first, then has no coins left to pay for the bread he needs.",
+    "recovery": "Liruf swaps the toy for the bread and says that next time he will ask first: need or want?"
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf is at the market.",
+          "line": "Stomp, stomp, market day. I have a few coins, and dinner waits."
+        },
+        "es-MX": {
+          "prompt": "Liruf está en el mercado.",
+          "line": "Pum, pum, día de mercado. Tengo pocas monedas y la cena espera."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf está no mercado.",
+          "line": "Tum, tum, dia de mercado. Tenho poucas moedas e o jantar espera."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.needs-wants.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-milk" }, { "id": "item-balloon" }, { "id": "item-eggs" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-milk": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-balloon": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-eggs": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's market: sort each thing, then pick why.",
+          "feedback": {
+            "met": "Thanks. Now let's see it step by step.",
+            "not_yet": "Thanks. Now let's see it step by step."
+          },
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Milk" }, { "label": "Balloon" }, { "label": "Eggs" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }]
+        },
+        "es-MX": {
+          "prompt": "Mercado de Liruf: ordena cada cosa y elige por qué.",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos paso a paso.",
+            "not_yet": "Gracias. Ahora lo vemos paso a paso."
+          },
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Leche" }, { "label": "Globo" }, { "label": "Huevos" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }]
+        },
+        "pt-BR": {
+          "prompt": "Mercado do Liruf: separe cada coisa e escolha por quê.",
+          "feedback": {
+            "met": "Vamos ver isso passo a passo, juntos.",
+            "not_yet": "Vamos ver isso passo a passo, juntos."
+          },
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Leite" }, { "label": "Balão" }, { "label": "Ovos" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "I had 4 coins. The toy cost 4, the bread cost 2.",
+          "misjudgment": "I bought the toy first. Then no coins were left for bread.",
+          "recovery": "I swapped it for bread. Next time I ask: need or want?"
+        },
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Liruf.",
+          "setup": "La vez pasada tenía 4 monedas. El juguete costaba 4, el pan costaba 2.",
+          "misjudgment": "Compré primero el juguete. Luego no quedaron monedas para el pan.",
+          "recovery": "Cambié el juguete por pan. La próxima vez pregunto: ¿necesidad o deseo?"
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Antes eu tinha 4 moedas. O brinquedo custava 4, o pão custava 2.",
+          "misjudgment": "Comprei o brinquedo primeiro. Depois não sobraram moedas para o pão.",
+          "recovery": "Troquei o brinquedo pelo pão. Da próxima vez pergunto: necessidade ou desejo?"
+        }
+      }
+    },
+    {
+      "id": "ask-bread-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf sorts the bread.",
+          "line": "Bread: can I go without it? No, so bread is a need."
+        },
+        "es-MX": {
+          "prompt": "Liruf ordena el pan.",
+          "line": "Pan: ¿puedo pasar sin eso? No, así que el pan es una necesidad."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf separa o pão.",
+          "line": "Pão: posso ficar sem isso? Não, então o pão é uma necessidade."
+        }
+      }
+    },
+    {
+      "id": "ask-toy-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf sorts the toy.",
+          "line": "Toy: can I go without it? Yes, so it is a want."
+        },
+        "es-MX": {
+          "prompt": "Liruf ordena el juguete.",
+          "line": "Juguete: ¿puedo pasar sin él? Sí, así que es un deseo."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf separa o brinquedo.",
+          "line": "Brinquedo: posso ficar sem ele? Sim, então é um desejo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.needs-wants.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "practice",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-water" }, { "id": "item-candy" }, { "id": "item-rice" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-water": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-candy": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-rice": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your turn: sort each thing with Liruf's question, then pick why.",
+          "feedback": {
+            "met": "Water and rice are needs. Candy is a want.",
+            "not_yet": "Not yet. Use Liruf's question: can I go without it?"
+          },
+          "help": ["Liruf asked it for bread: can I go without it?", "Try one thing at a time. Could you skip it?"],
+          "rule": "Can I go without it? If not, it is a need.",
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Water" }, { "label": "Candy" }, { "label": "Rice" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }]
+        },
+        "es-MX": {
+          "prompt": "Tu turno: ordena con la pregunta de Liruf y elige por qué.",
+          "feedback": {
+            "met": "El agua y el arroz son necesidades. El dulce es un deseo.",
+            "not_yet": "Todavía no. Usa la pregunta de Liruf: ¿puedo pasar sin eso?"
+          },
+          "help": ["Liruf lo preguntó con el pan: ¿puedo pasar sin eso?", "Ve una cosa a la vez. ¿Podrías pasar sin ella?"],
+          "rule": "¿Puedo pasar sin eso? Si no puedo, es una necesidad.",
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Agua" }, { "label": "Dulce" }, { "label": "Arroz" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }]
+        },
+        "pt-BR": {
+          "prompt": "Sua vez: separe com a pergunta do Liruf e escolha por quê.",
+          "feedback": {
+            "met": "Água e arroz são necessidades. Doce é desejo.",
+            "not_yet": "Ainda não. Use a pergunta do Liruf: posso ficar sem isso?"
+          },
+          "help": ["O Liruf perguntou isso com o pão: posso ficar sem isso?", "Veja uma coisa de cada vez. Você ficaria sem ela?"],
+          "rule": "Posso ficar sem isso? Se não posso, é uma necessidade.",
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Água" }, { "label": "Doce" }, { "label": "Arroz" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }]
+        }
+      }
+    },
+    {
+      "id": "numbers-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 6 coins.",
+          "line": "Soup costs 3: a need. The game costs 5: a want."
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 6 monedas.",
+          "line": "La sopa cuesta 3: es necesidad. El juego cuesta 5: es deseo."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf tem 6 moedas.",
+          "line": "A sopa custa 3: é necessidade. O jogo custa 5: é desejo."
+        }
+      }
+    },
+    {
+      "id": "order-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Needs go first.",
+          "line": "Soup first: 3 coins. Then 3 are left, so the game waits."
+        },
+        "es-MX": {
+          "prompt": "Primero las necesidades.",
+          "line": "Primero la sopa: 3 monedas. Quedan 3, así que el juego espera."
+        },
+        "pt-BR": {
+          "prompt": "Primeiro as necessidades.",
+          "line": "Primeiro a sopa: 3 moedas. Sobram 3, então o jogo espera."
+        }
+      }
+    },
+    {
+      "id": "story-01",
+      "type": "story.branch.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": { "type": "story-scene" },
+      "item_role": "practice",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": { "options": [{ "id": "opt-balloon-first" }, { "id": "opt-lunch-first" }] },
+      "rubric": { "acceptable_choice_ids": ["opt-lunch-first"] },
+      "copy": {
+        "en-US": {
+          "prompt": "What do you buy first?",
+          "feedback": {
+            "met": "Lunch first: 3 coins. The balloon can wait for another day.",
+            "not_yet": "Remember the soup: needs go first. Which one is a need?"
+          },
+          "help": ["Ask Liruf's question about the lunch and the balloon.", "A need goes first. A want can wait."],
+          "scene": "You have 5 coins. Lunch costs 3. A balloon costs 4. You cannot buy both.",
+          "options": [{ "label": "Buy the balloon first" }, { "label": "Buy the lunch first" }]
+        },
+        "es-MX": {
+          "prompt": "¿Qué compras primero?",
+          "feedback": {
+            "met": "Primero la comida: 3 monedas. El globo puede esperar otro día.",
+            "not_yet": "Recuerda la sopa: las necesidades van primero. ¿Cuál es una necesidad?"
+          },
+          "help": ["Hazle la pregunta de Liruf a la comida y al globo.", "Una necesidad va primero. Un deseo puede esperar."],
+          "scene": "Tienes 5 monedas. La comida cuesta 3. Un globo cuesta 4. No alcanza para los dos.",
+          "options": [{ "label": "Comprar primero el globo" }, { "label": "Comprar primero la comida" }]
+        },
+        "pt-BR": {
+          "prompt": "O que você compra primeiro?",
+          "feedback": {
+            "met": "Primeiro o almoço: 3 moedas. O balão pode esperar outro dia.",
+            "not_yet": "Lembre da sopa: as necessidades vêm primeiro. Qual é uma necessidade?"
+          },
+          "help": ["Faça a pergunta do Liruf sobre o almoço e o balão.", "A necessidade vem primeiro. O desejo pode esperar."],
+          "scene": "Você tem 5 moedas. O almoço custa 3. Um balão custa 4. Não dá para comprar os dois.",
+          "options": [{ "label": "Comprar o balão primeiro" }, { "label": "Comprar o almoço primeiro" }]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.needs-wants.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "practice",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-dinner" }, { "id": "item-stickers" }, { "id": "item-toy-robot" }, { "id": "item-fruit" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-dinner": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-stickers": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-toy-robot": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-fruit": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf shops again. Sort each thing, then pick why.",
+          "feedback": {
+            "met": "Liruf's question sorted them. Dinner and fruit are needs.",
+            "not_yet": "Not yet. Ask Liruf's question about each one."
+          },
+          "help": ["Pick one thing. Can you go without it?", "A need keeps us well. A want is just fun."],
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Dinner" }, { "label": "Stickers" }, { "label": "Toy robot" }, { "label": "Fruit" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }]
+        },
+        "es-MX": {
+          "prompt": "Liruf compra otra vez. Ordena cada cosa y elige por qué.",
+          "feedback": {
+            "met": "La pregunta de Liruf los ordenó. La cena y la fruta son necesidades.",
+            "not_yet": "Todavía no. Hazle a cada cosa la pregunta de Liruf."
+          },
+          "help": ["Toma una cosa. ¿Puedes pasar sin ella?", "Una necesidad nos mantiene bien. Un deseo es solo diversión."],
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Cena" }, { "label": "Calcomanías" }, { "label": "Robot de juguete" }, { "label": "Fruta" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf compra de novo. Separe cada coisa e escolha por quê.",
+          "feedback": {
+            "met": "A pergunta do Liruf separou tudo. Jantar e fruta são necessidades.",
+            "not_yet": "Ainda não. Faça a pergunta do Liruf para cada coisa."
+          },
+          "help": ["Pegue uma coisa. Você consegue ficar sem ela?", "Uma necessidade nos mantém bem. Um desejo é só diversão."],
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Jantar" }, { "label": "Figurinhas" }, { "label": "Robô de brinquedo" }, { "label": "Fruta" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.needs-wants.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-water-bottle" }, { "id": "item-toy-camera" }, { "id": "item-rain-jacket" }, { "id": "item-sandwich" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }, { "id": "why-will-rain" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-water-bottle": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-toy-camera": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-rain-jacket": [{ "bin": "bin-need", "reason": "why-will-rain" }],
+          "item-sandwich": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "School trip: the forecast says rain. Sort each, pick why.",
+          "feedback": {
+            "met": "Liruf's question works here too. Only the camera is a want.",
+            "not_yet": "Not yet. Picture the trip: can you go without it?"
+          },
+          "help": ["Picture the trip. What could you not go without?", "Think: what happens without a rain jacket if it rains?"],
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Water bottle" }, { "label": "Toy camera" }, { "label": "Rain jacket" }, { "label": "Sandwich" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }, { "label": "Rain would get me wet" }]
+        },
+        "es-MX": {
+          "prompt": "Paseo escolar: el pronóstico dice lluvia. Ordena y elige por qué.",
+          "feedback": {
+            "met": "La pregunta de Liruf sirve aquí también. Solo la cámara es un deseo.",
+            "not_yet": "Todavía no. Imagina el paseo: ¿puedes pasar sin eso?"
+          },
+          "help": ["Imagina el paseo. ¿Sin qué no podrías ir?", "Piensa: ¿qué te pasa sin impermeable si llueve?"],
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Botella de agua" }, { "label": "Cámara de juguete" }, { "label": "Impermeable" }, { "label": "Sándwich" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }, { "label": "Si llueve, me mojo" }]
+        },
+        "pt-BR": {
+          "prompt": "Passeio da escola: a previsão diz chuva. Separe e escolha por quê.",
+          "feedback": {
+            "met": "A pergunta do Liruf serve aqui também. Só a câmera é desejo.",
+            "not_yet": "Ainda não. Imagine o passeio: você ficaria sem isso?"
+          },
+          "help": ["Imagine o passeio. Sem o que não dá para ir?", "Pense: o que acontece sem capa de chuva se chover?"],
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Garrafa de água" }, { "label": "Câmera de brinquedo" }, { "label": "Capa de chuva" }, { "label": "Sanduíche" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }, { "label": "Se chover, eu me molho" }]
+        }
+      }
+    }
+  ]
+}

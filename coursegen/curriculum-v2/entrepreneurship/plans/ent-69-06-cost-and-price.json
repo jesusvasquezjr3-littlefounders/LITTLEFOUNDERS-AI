@@ -1,0 +1,665 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-stall",
+  "lesson_id": "ent-69-06-cost-and-price",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.cost-vs-price",
+    "biz.what-is-price"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina acompaña a la clase en su puesto de papalotes. Muestra un caso completo: el puesto compra papel, varitas e hilo, suma esas monedas y ve que el costo es lo que paga el puesto, mientras el precio es lo que paga quien compra. El niño cuenta con monedas el costo de un papalote chico, muestra su precio, separa costos y precios de las cosas del puesto y lo repite con pulseras.",
+  "title": {
+    "en-US": "Cost and price",
+    "es-MX": "Costo y precio",
+    "pt-BR": "Custo e preço"
+  },
+  "new_concepts": [
+    "biz.cost-vs-price"
+  ],
+  "regional": {
+    "universal": "Counts abstract coins at a class stall; no market money, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina and the class set up their kite stall.",
+          "line": "Paper 3 coins, sticks 2, string 1. The sign says 9."
+        },
+        "es-MX": {
+          "prompt": "Dina y la clase arman su puesto de papalotes.",
+          "line": "Papel: 3 monedas. Varitas: 2. Hilo: 1. El letrero dice 9."
+        },
+        "pt-BR": {
+          "prompt": "Dina e a turma montam a barraquinha de pipas.",
+          "line": "Papel 3 moedas, varetas 2, linha 1. O cartaz diz 9."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 6,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Try first: show what the stall paid for one kite.",
+          "feedback": {
+            "met": "Noted. Now we look at it step by step.",
+            "not_yet": "Noted. Now we look at it step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Inténtalo primero: muestra lo que el puesto pagó por un papalote.",
+          "feedback": {
+            "met": "Anotado. Ahora lo vemos paso a paso.",
+            "not_yet": "Anotado. Ahora lo vemos paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tente primeiro: mostre o que a barraquinha pagou por uma pipa.",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver passo a passo.",
+            "not_yet": "Anotado. Agora vamos ver passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the stall buys three things.",
+          "line": "No rush. Paper 3 coins, sticks 2 coins, string 1 coin."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el puesto compra tres cosas.",
+          "line": "Sin prisa. Papel 3 monedas, varitas 2 monedas, hilo 1 moneda."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a barraquinha compra três coisas.",
+          "line": "Sem pressa. Papel 3 moedas, varetas 2 moedas, linha 1 moeda."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: add them up.",
+          "line": "3 + 2 + 1 = 6. The cost is what the stall pays."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: súmalas.",
+          "line": "3 + 2 + 1 = 6. El costo es lo que paga el puesto."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: some tudo.",
+          "line": "3 + 2 + 1 = 6. O custo é o que a barraquinha paga."
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: now the price.",
+          "line": "The sign says 9 coins. A price is what a buyer pays."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: ahora el precio.",
+          "line": "El letrero dice 9 monedas. El precio es lo que paga quien compra."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: agora o preço.",
+          "line": "O cartaz diz 9 moedas. O preço é o que quem compra paga."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 4,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Small kite: paper 2, sticks 1, string 1. Show its cost.",
+          "help": [
+            "Dina added every part: paper, sticks, string.",
+            "Add yours, then count out that many coins."
+          ],
+          "feedback": {
+            "met": "You added all three parts and showed the cost.",
+            "not_yet": "Not yet. Dina added every part: paper, sticks, string."
+          }
+        },
+        "es-MX": {
+          "prompt": "Papalote chico: papel 2, varitas 1, hilo 1. Muestra su costo.",
+          "help": [
+            "Dina sumó cada parte: papel, varitas e hilo.",
+            "Suma las tuyas y cuenta esas monedas."
+          ],
+          "feedback": {
+            "met": "Sumaste las tres partes y mostraste el costo.",
+            "not_yet": "Aún no. Dina sumó cada parte: papel, varitas e hilo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pipa pequena: papel 2, varetas 1, linha 1. Mostre o custo dela.",
+          "help": [
+            "A Dina somou cada parte: papel, varetas e linha.",
+            "Some as suas e conte essas moedas."
+          ],
+          "feedback": {
+            "met": "Você somou as três partes e mostrou o custo.",
+            "not_yet": "Ainda não. A Dina somou cada parte: papel, varetas e linha."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 7,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Small kite: cost 4, sign 7. Show what a buyer pays.",
+          "help": [
+            "A price is what a buyer pays.",
+            "The sign shows that number."
+          ],
+          "feedback": {
+            "met": "You showed what a buyer pays, not what the stall paid.",
+            "not_yet": "Not yet. Look at the sign: it shows what a buyer pays."
+          }
+        },
+        "es-MX": {
+          "prompt": "Papalote chico: costo 4, letrero 7. Muestra lo que paga quien compra.",
+          "help": [
+            "El precio es lo que paga quien compra.",
+            "El letrero muestra ese número."
+          ],
+          "feedback": {
+            "met": "Mostraste lo que paga quien compra, no lo que pagó el puesto.",
+            "not_yet": "Aún no. Mira el letrero: muestra lo que paga quien compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pipa pequena: custo 4, cartaz 7. Mostre o que quem compra paga.",
+          "help": [
+            "O preço é o que quem compra paga.",
+            "O cartaz mostra esse número."
+          ],
+          "feedback": {
+            "met": "Você mostrou o que quem compra paga, não o que a barraquinha pagou.",
+            "not_yet": "Ainda não. Olhe o cartaz: ele mostra o que quem compra paga."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: ask who pays.",
+          "line": "Paper for a kite: the stall pays. That is a cost."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: pregunta quién paga.",
+          "line": "Papel para un papalote: paga el puesto. Eso es un costo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: pergunte quem paga.",
+          "line": "Papel para uma pipa: a barraquinha paga. Isso é um custo."
+        }
+      }
+    },
+    {
+      "id": "ex-05",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the same question.",
+          "line": "The 9 on the sign: a buyer pays. That is a price."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: la misma pregunta.",
+          "line": "El 9 del letrero: paga quien compra. Eso es un precio."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: a mesma pergunta.",
+          "line": "O 9 do cartaz: quem compra paga. Isso é um preço."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-cost"
+          },
+          {
+            "id": "bin-price"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-book-sign"
+          },
+          {
+            "id": "item-glue"
+          },
+          {
+            "id": "item-mark-sign"
+          },
+          {
+            "id": "item-covers"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-stall"
+          },
+          {
+            "id": "why-buyer"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-book-sign": [
+            {
+              "bin": "bin-price",
+              "reason": "why-buyer"
+            }
+          ],
+          "item-glue": [
+            {
+              "bin": "bin-cost",
+              "reason": "why-stall"
+            }
+          ],
+          "item-mark-sign": [
+            {
+              "bin": "bin-price",
+              "reason": "why-buyer"
+            }
+          ],
+          "item-covers": [
+            {
+              "bin": "bin-cost",
+              "reason": "why-stall"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Class stall: sort each into cost or price, then pick why.",
+          "help": [
+            "Ask who pays: the stall or a buyer."
+          ],
+          "feedback": {
+            "met": "You asked who pays for each one, like Dina.",
+            "not_yet": "Not yet. Ask who pays for each one, like Dina."
+          },
+          "rule": "The stall pays a cost. A buyer pays a price.",
+          "bins": [
+            {
+              "label": "Cost"
+            },
+            {
+              "label": "Price"
+            }
+          ],
+          "items": [
+            {
+              "label": "Book sign: 4 coins"
+            },
+            {
+              "label": "Glue for the books"
+            },
+            {
+              "label": "Bookmark sign: 2 coins"
+            },
+            {
+              "label": "Covers for the books"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "The stall pays it"
+            },
+            {
+              "label": "A buyer pays it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Puesto de la clase: pon cada cosa en costo o precio y elige por qué.",
+          "help": [
+            "Pregunta quién paga: el puesto o quien compra."
+          ],
+          "feedback": {
+            "met": "Preguntaste quién paga cada cosa, como Dina.",
+            "not_yet": "Aún no. Pregunta quién paga cada cosa, como Dina."
+          },
+          "rule": "El puesto paga un costo. Quien compra paga un precio.",
+          "bins": [
+            {
+              "label": "Costo"
+            },
+            {
+              "label": "Precio"
+            }
+          ],
+          "items": [
+            {
+              "label": "Letrero del libro: 4 monedas"
+            },
+            {
+              "label": "Pegamento para los libros"
+            },
+            {
+              "label": "Letrero del marcapáginas: 2 monedas"
+            },
+            {
+              "label": "Portadas para los libros"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo paga el puesto"
+            },
+            {
+              "label": "Lo paga quien compra"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Barraquinha da turma: coloque cada coisa em custo ou preço e escolha por quê.",
+          "help": [
+            "Pergunte quem paga: a barraquinha ou quem compra."
+          ],
+          "feedback": {
+            "met": "Você perguntou quem paga cada coisa, como a Dina.",
+            "not_yet": "Ainda não. Pergunte quem paga cada coisa, como a Dina."
+          },
+          "rule": "A barraquinha paga um custo. Quem compra paga um preço.",
+          "bins": [
+            {
+              "label": "Custo"
+            },
+            {
+              "label": "Preço"
+            }
+          ],
+          "items": [
+            {
+              "label": "Cartaz do livro: 4 moedas"
+            },
+            {
+              "label": "Cola para os livros"
+            },
+            {
+              "label": "Cartaz do marcador: 2 moedas"
+            },
+            {
+              "label": "Capas para os livros"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "A barraquinha paga"
+            },
+            {
+              "label": "Quem compra paga"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 4
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 5,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Bracelets: beads 3, string 1, tag 1, sign 8. Show the cost.",
+          "help": [
+            "The cost is what the stall pays.",
+            "Add the parts, then count out coins."
+          ],
+          "feedback": {
+            "met": "Another table, same move: you showed the cost, not the price.",
+            "not_yet": "Not yet. The cost is what the stall pays for the parts."
+          }
+        },
+        "es-MX": {
+          "prompt": "Pulseras: cuentas 3, hilo 1, etiqueta 1, letrero 8. Muestra el costo.",
+          "help": [
+            "El costo es lo que paga el puesto.",
+            "Suma las partes y cuenta las monedas."
+          ],
+          "feedback": {
+            "met": "Otra mesa, mismo paso: mostraste el costo, no el precio.",
+            "not_yet": "Aún no. El costo es lo que paga el puesto por las partes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pulseiras: miçangas 3, fio 1, etiqueta 1, cartaz 8. Mostre o custo.",
+          "help": [
+            "O custo é o que a barraquinha paga.",
+            "Some as partes e conte as moedas."
+          ],
+          "feedback": {
+            "met": "Outra mesa, mesmo passo: você mostrou o custo, não o preço.",
+            "not_yet": "Ainda não. O custo é o que a barraquinha paga pelas partes."
+          }
+        }
+      }
+    }
+  ]
+}

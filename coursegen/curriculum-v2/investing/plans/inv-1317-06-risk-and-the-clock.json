@@ -1,0 +1,1220 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-risk-and-baskets",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "lesson_id": "inv-1317-06-risk-and-the-clock",
+  "knowledge_component_ids": [
+    "invest.risk-tolerance",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina tiene dos metas de la simulación, un viaje de 300 monedas en un año y un plan largo a doce años, y dos fondos ficticios, uno más seguro y otro más riesgoso. Con ella la persona lee una gráfica de abanico con las 80 de cada 100 trayectorias posibles del fondo riesgoso, calcula cuánto podría quedar en el peor caso y cuánta pérdida aguanta cada meta, y ordena los fondos con pesos que cambian según el tiempo restante. Cierra repartiendo dinero de dos plazos distintos, en un contexto nuevo.",
+  "title": {
+    "en-US": "Risk and the clock",
+    "es-MX": "El riesgo y el reloj",
+    "pt-BR": "O risco e o relógio"
+  },
+  "new_concepts": [
+    "invest.risk-tolerance"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only, in a pretend sandbox; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina has two goals: 300 coins for a trip in one year, and a long plan due in twelve years.",
+          "line": "Two pretend funds, pools of coins that rise and fall: one safer, one riskier. I match them to goals."
+        },
+        "es-MX": {
+          "prompt": "Dina tiene dos metas: 300 monedas para un viaje en un año y un plan largo a doce años.",
+          "line": "Hay dos fondos de simulación, conjuntos de monedas que suben y bajan: uno más seguro, otro más riesgoso. Los emparejo con las metas."
+        },
+        "pt-BR": {
+          "prompt": "A Dina tem duas metas: 300 moedas para uma viagem em um ano e um plano longo para daqui a doze anos.",
+          "line": "Há dois fundos da simulação, conjuntos de moedas que sobem e descem: um mais seguro, outro mais arriscado. Vou combiná-los com as metas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-cost"
+          },
+          {
+            "id": "reply-winner"
+          },
+          {
+            "id": "reply-half"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-cost"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Kai wants the trip money in the riskier fund. What do you say?",
+          "speaker": "Kai",
+          "line": "The riskier fund beat every other fund last year. Put the trip money there?",
+          "replies": [
+            {
+              "label": "Ask what one bad year would cost"
+            },
+            {
+              "label": "Yes: last year's winner is the best pick"
+            },
+            {
+              "label": "Split it in half without checking"
+            }
+          ],
+          "feedback": {
+            "met": "Noted. Now we look at the fund together.",
+            "not_yet": "Noted. Now we look at the fund together."
+          }
+        },
+        "es-MX": {
+          "prompt": "Kai quiere el dinero del viaje en el fondo riesgoso. ¿Qué le dices?",
+          "speaker": "Kai",
+          "line": "El fondo riesgoso le ganó a todos el año pasado. ¿Ponemos ahí el dinero del viaje?",
+          "replies": [
+            {
+              "label": "Preguntar cuánto costaría un mal año"
+            },
+            {
+              "label": "Sí: el ganador del año pasado es la mejor opción"
+            },
+            {
+              "label": "Dividirlo a la mitad sin revisar"
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Ahora revisamos el fondo juntos.",
+            "not_yet": "Anotado. Ahora revisamos el fondo juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Kai quer o dinheiro da viagem no fundo arriscado. O que você diz?",
+          "speaker": "Kai",
+          "line": "O fundo arriscado ganhou de todos no ano passado. Colocamos o dinheiro da viagem lá?",
+          "replies": [
+            {
+              "label": "Perguntar quanto custaria um ano ruim"
+            },
+            {
+              "label": "Sim: o vencedor do ano passado é a melhor opção"
+            },
+            {
+              "label": "Dividir ao meio sem conferir"
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Agora vamos olhar o fundo juntos.",
+            "not_yet": "Anotado. Agora vamos olhar o fundo juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "fan-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "fan-chart"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-4"
+            },
+            {
+              "id": "year-8"
+            },
+            {
+              "id": "year-12"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-centre",
+              "values": [
+                100,
+                105,
+                125,
+                160,
+                205
+              ]
+            }
+          ],
+          "ranges": [
+            {
+              "level": 50,
+              "low": [
+                100,
+                90,
+                105,
+                130,
+                150
+              ],
+              "high": [
+                100,
+                115,
+                150,
+                205,
+                270
+              ]
+            },
+            {
+              "level": 80,
+              "low": [
+                100,
+                75,
+                85,
+                100,
+                115
+              ],
+              "high": [
+                100,
+                130,
+                185,
+                270,
+                380
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the wide band holds 80 of every 100 futures; 10 end below it and 10 above.",
+          "title": "Riskier fund: coins per 100 put in",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 4"
+              },
+              {
+                "label": "Year 8"
+              },
+              {
+                "label": "Year 12"
+              }
+            ],
+            "series": [
+              {
+                "label": "Typical path"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: la banda ancha contiene 80 de cada 100 futuros; 10 terminan debajo y 10 arriba.",
+          "title": "Fondo riesgoso: monedas por cada 100 puestas",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 4"
+              },
+              {
+                "label": "Año 8"
+              },
+              {
+                "label": "Año 12"
+              }
+            ],
+            "series": [
+              {
+                "label": "Camino típico"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a faixa larga contém 80 de cada 100 futuros; 10 terminam abaixo e 10 acima.",
+          "title": "Fundo arriscado: moedas por 100 colocadas",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 4"
+              },
+              {
+                "label": "Ano 8"
+              },
+              {
+                "label": "Ano 12"
+              }
+            ],
+            "series": [
+              {
+                "label": "Caminho típico"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "trip-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina puts the 300-coin trip in the riskier fund for one year.",
+          "line": "Step 2: Year 1's low edge is 75 per 100, so the trip could be worth 225 or less."
+        },
+        "es-MX": {
+          "prompt": "Dina pone el viaje de 300 monedas en el fondo riesgoso durante un año.",
+          "line": "Paso 2: el borde bajo del Año 1 es 75 por cada 100, así que el viaje podría valer 225 o menos."
+        },
+        "pt-BR": {
+          "prompt": "A Dina coloca a viagem de 300 moedas no fundo arriscado por um ano.",
+          "line": "Passo 2: a borda baixa do Ano 1 é 75 por 100, então a viagem poderia valer 225 ou menos."
+        }
+      }
+    },
+    {
+      "id": "plan-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Now the long plan: the same fund, with twelve years ahead.",
+          "line": "Step 3: by Year 12 the low edge is 115 per 100. A bad year early has time to recover."
+        },
+        "es-MX": {
+          "prompt": "Ahora el plan largo: el mismo fondo, con doce años por delante.",
+          "line": "Paso 3: en el Año 12 el borde bajo es 115 por cada 100. Un mal año temprano tiene tiempo de recuperarse."
+        },
+        "pt-BR": {
+          "prompt": "Agora o plano longo: o mesmo fundo, com doze anos pela frente.",
+          "line": "Passo 3: no Ano 12 a borda baixa é 115 por 100. Um ano ruim no começo tem tempo de se recuperar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "steps": [
+          {
+            "id": "bad-case"
+          },
+          {
+            "id": "shortfall"
+          },
+          {
+            "id": "affordable"
+          },
+          {
+            "id": "over"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "shortfall",
+          "affordable",
+          "over"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "shortfall": "50",
+          "affordable": "20",
+          "over": "30"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ines needs 200 coins in a year and uses the riskier fund. She can afford to lose 10 per 100.",
+          "feedback": {
+            "met": "You compared the bad-case loss with the loss she can afford.",
+            "not_yet": "Not yet. Follow the trip: bad-case value first, then the shortfall."
+          },
+          "help": [
+            "The shortfall is the goal minus the bad-case value.",
+            "Her affordable loss is 10 of every 100 of the goal."
+          ],
+          "steps": [
+            {
+              "expression": "200 × 75 ÷ 100",
+              "result": "150",
+              "spokenText": "In the bad case, 200 coins are worth 150"
+            },
+            {
+              "expression": "Goal − bad-case value",
+              "result": "50",
+              "spokenText": "The shortfall in the bad case is 50"
+            },
+            {
+              "expression": "200 × 10 ÷ 100",
+              "result": "20",
+              "spokenText": "Ten per 100 of 200 is 20 coins she can afford to lose"
+            },
+            {
+              "expression": "Shortfall − affordable loss",
+              "result": "30",
+              "spokenText": "The bad case goes 30 coins past what she can afford"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ines necesita 200 monedas en un año y usa el fondo riesgoso. Puede permitirse perder 10 por cada 100.",
+          "feedback": {
+            "met": "Comparaste la pérdida del peor caso con la que ella puede permitirse.",
+            "not_yet": "Todavía no. Sigue el viaje: primero el valor del peor caso, luego el faltante."
+          },
+          "help": [
+            "El faltante es la meta menos el valor del peor caso.",
+            "Su pérdida tolerable es 10 de cada 100 de la meta."
+          ],
+          "steps": [
+            {
+              "expression": "200 × 75 ÷ 100",
+              "result": "150",
+              "spokenText": "En el peor caso, 200 monedas valen 150"
+            },
+            {
+              "expression": "Meta − valor del peor caso",
+              "result": "50",
+              "spokenText": "El faltante en el peor caso es 50"
+            },
+            {
+              "expression": "200 × 10 ÷ 100",
+              "result": "20",
+              "spokenText": "Diez por cada 100 de 200 son 20 monedas que puede perder"
+            },
+            {
+              "expression": "Faltante − pérdida tolerable",
+              "result": "30",
+              "spokenText": "El peor caso pasa 30 monedas de lo que ella tolera"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Ines precisa de 200 moedas em um ano e usa o fundo arriscado. Ela aguenta perder 10 por 100.",
+          "feedback": {
+            "met": "Você comparou a perda do pior caso com a que ela aguenta.",
+            "not_yet": "Ainda não. Siga a viagem: primeiro o valor do pior caso, depois o que falta."
+          },
+          "help": [
+            "O que falta é a meta menos o valor do pior caso.",
+            "A perda que ela aguenta é 10 de cada 100 da meta."
+          ],
+          "steps": [
+            {
+              "expression": "200 × 75 ÷ 100",
+              "result": "150",
+              "spokenText": "No pior caso, 200 moedas valem 150"
+            },
+            {
+              "expression": "Meta − valor do pior caso",
+              "result": "50",
+              "spokenText": "O que falta no pior caso é 50"
+            },
+            {
+              "expression": "200 × 10 ÷ 100",
+              "result": "20",
+              "spokenText": "Dez por 100 de 200 são 20 moedas que ela aguenta perder"
+            },
+            {
+              "expression": "Falta − perda aguentável",
+              "result": "30",
+              "spokenText": "O pior caso passa 30 moedas do que ela aguenta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "weights-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina turns the goal into weights: with one year left, a bad year counts 5 and growth counts 1.",
+          "line": "Step 4: score times weight, added. Winner: 2 on bad year, 4 on growth, so 2×5 + 4×1 = 14."
+        },
+        "es-MX": {
+          "prompt": "Dina convierte la meta en pesos: con un año por delante, un mal año cuenta 5 y el crecimiento cuenta 1.",
+          "line": "Paso 4: puntaje por peso, sumado. El ganador: 2 en mal año y 4 en crecimiento, así que 2×5 + 4×1 = 14."
+        },
+        "pt-BR": {
+          "prompt": "A Dina transforma a meta em pesos: com um ano pela frente, um ano ruim conta 5 e o crescimento conta 1.",
+          "line": "Passo 4: nota vezes peso, somado. O vencedor: 2 em ano ruim e 4 em crescimento, então 2×5 + 4×1 = 14."
+        }
+      }
+    },
+    {
+      "id": "matrix-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "pieces": [
+          "fund-safer",
+          "fund-middle",
+          "fund-riskier",
+          "fund-winner"
+        ],
+        "criteria": [
+          {
+            "id": "bad-year",
+            "weight": 5
+          },
+          {
+            "id": "growth",
+            "weight": 1
+          }
+        ],
+        "scores": [
+          [
+            5,
+            1
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "fund-safer"
+            ],
+            "rank-2": [
+              "fund-middle"
+            ],
+            "rank-3": [
+              "fund-winner"
+            ],
+            "rank-4": [
+              "fund-riskier"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The trip: a bad year weighs 5, growth weighs 1. Rank the four funds, best first.",
+          "feedback": {
+            "met": "You ranked the funds by the trip weights, not by last year.",
+            "not_yet": "Not yet. Multiply each score by its weight, then add."
+          },
+          "help": [
+            "Each fund total is score × weight, added.",
+            "A bad year weighs 5 for the trip."
+          ],
+          "labels": {
+            "fund-safer": "Safer fund",
+            "fund-middle": "Middle fund",
+            "fund-riskier": "Riskier fund",
+            "fund-winner": "Last year's winner",
+            "bad-year": "Small bad year",
+            "growth": "Growth chance"
+          }
+        },
+        "es-MX": {
+          "prompt": "El viaje: un mal año pesa 5, el crecimiento pesa 1. Ordena los cuatro fondos, del mejor al peor.",
+          "feedback": {
+            "met": "Ordenaste los fondos con los pesos del viaje, no con el año pasado.",
+            "not_yet": "Todavía no. Multiplica cada puntaje por su peso y suma."
+          },
+          "help": [
+            "El total de cada fondo es puntaje × peso, sumado.",
+            "Para el viaje, un mal año pesa 5."
+          ],
+          "labels": {
+            "fund-safer": "Fondo más seguro",
+            "fund-middle": "Fondo intermedio",
+            "fund-riskier": "Fondo más riesgoso",
+            "fund-winner": "Ganador del año pasado",
+            "bad-year": "Mal año pequeño",
+            "growth": "Posibilidad de crecer"
+          }
+        },
+        "pt-BR": {
+          "prompt": "A viagem: um ano ruim pesa 5, o crescimento pesa 1. Ordene os quatro fundos, do melhor ao pior.",
+          "feedback": {
+            "met": "Você ordenou os fundos pelos pesos da viagem, não pelo ano passado.",
+            "not_yet": "Ainda não. Multiplique cada nota pelo peso e some."
+          },
+          "help": [
+            "O total de cada fundo é nota × peso, somado.",
+            "Para a viagem, um ano ruim pesa 5."
+          ],
+          "labels": {
+            "fund-safer": "Fundo mais seguro",
+            "fund-middle": "Fundo intermediário",
+            "fund-riskier": "Fundo mais arriscado",
+            "fund-winner": "Vencedor do ano passado",
+            "bad-year": "Ano ruim pequeno",
+            "growth": "Chance de crescer"
+          }
+        }
+      }
+    },
+    {
+      "id": "fan-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "fan-chart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-3"
+            },
+            {
+              "id": "year-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-centre",
+              "values": [
+                100,
+                104,
+                112,
+                126
+              ]
+            }
+          ],
+          "ranges": [
+            {
+              "level": 50,
+              "low": [
+                100,
+                95,
+                102,
+                114
+              ],
+              "high": [
+                100,
+                112,
+                124,
+                142
+              ]
+            },
+            {
+              "level": 80,
+              "low": [
+                100,
+                88,
+                97,
+                106
+              ],
+              "high": [
+                100,
+                122,
+                138,
+                162
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-a"
+            },
+            {
+              "id": "opt-c"
+            },
+            {
+              "id": "opt-b"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-b"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina checks the middle fund, in coins per 100 put in, over six years.",
+          "title": "Middle fund: coins per 100 put in",
+          "feedback": {
+            "met": "You followed the wide band's low edge, not the centre line.",
+            "not_yet": "Not yet. Follow the lower edge of the wide band."
+          },
+          "help": [
+            "The low edge is the bad end of the band.",
+            "Check each year's low edge against 100."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Typical path"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which due date keeps even the wide band's bad end above 100?",
+            "options": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 6"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Dina revisa el fondo intermedio, en monedas por cada 100 puestas, durante seis años.",
+          "title": "Fondo intermedio: monedas por cada 100 puestas",
+          "feedback": {
+            "met": "Seguiste el borde bajo de la banda ancha, no la línea central.",
+            "not_yet": "Todavía no. Sigue el borde inferior de la banda ancha."
+          },
+          "help": [
+            "El borde bajo es el extremo malo de la banda.",
+            "Compara con 100 el borde bajo de cada año."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Camino típico"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué fecha de entrega mantiene incluso el extremo malo de la banda ancha sobre 100?",
+            "options": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 6"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina confere o fundo intermediário, em moedas por 100 colocadas, ao longo de seis anos.",
+          "title": "Fundo intermediário: moedas por 100 colocadas",
+          "feedback": {
+            "met": "Você seguiu a borda baixa da faixa larga, não a linha central.",
+            "not_yet": "Ainda não. Siga a borda inferior da faixa larga."
+          },
+          "help": [
+            "A borda baixa é a ponta ruim da faixa.",
+            "Compare com 100 a borda baixa de cada ano."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Caminho típico"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual prazo mantém até a ponta ruim da faixa larga acima de 100?",
+            "options": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 6"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "again-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina swaps the goal: the plan is due in twelve years.",
+          "line": "Step 5: with twelve years left, a bad year can be waited out. The weights change, not the funds."
+        },
+        "es-MX": {
+          "prompt": "Dina cambia de meta: el plan vence dentro de doce años.",
+          "line": "Paso 5: con doce años por delante, un mal año se puede esperar. Cambian los pesos, no los fondos."
+        },
+        "pt-BR": {
+          "prompt": "A Dina troca a meta: o plano vence daqui a doze anos.",
+          "line": "Passo 5: com doze anos pela frente, um ano ruim pode ser esperado. Mudam os pesos, não os fundos."
+        }
+      }
+    },
+    {
+      "id": "matrix-02",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "pieces": [
+          "fund-safer",
+          "fund-middle",
+          "fund-riskier",
+          "fund-winner"
+        ],
+        "criteria": [
+          {
+            "id": "bad-year",
+            "weight": 1
+          },
+          {
+            "id": "growth",
+            "weight": 4
+          }
+        ],
+        "scores": [
+          [
+            5,
+            1
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "fund-riskier"
+            ],
+            "rank-2": [
+              "fund-winner"
+            ],
+            "rank-3": [
+              "fund-middle"
+            ],
+            "rank-4": [
+              "fund-safer"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The plan: a bad year weighs 1, growth weighs 4. Rank the four funds, best first.",
+          "feedback": {
+            "met": "You ranked the funds by the plan weights, not the trip weights.",
+            "not_yet": "Not yet. Use the plan weights, not the trip weights."
+          },
+          "help": [
+            "Each fund total is score × weight, added.",
+            "Growth weighs 4 for the plan."
+          ],
+          "labels": {
+            "fund-safer": "Safer fund",
+            "fund-middle": "Middle fund",
+            "fund-riskier": "Riskier fund",
+            "fund-winner": "Last year's winner",
+            "bad-year": "Small bad year",
+            "growth": "Growth chance"
+          }
+        },
+        "es-MX": {
+          "prompt": "El plan: un mal año pesa 1, el crecimiento pesa 4. Ordena los cuatro fondos, del mejor al peor.",
+          "feedback": {
+            "met": "Ordenaste los fondos con los pesos del plan, no los del viaje.",
+            "not_yet": "Todavía no. Usa los pesos del plan, no los del viaje."
+          },
+          "help": [
+            "El total de cada fondo es puntaje × peso, sumado.",
+            "Para el plan, el crecimiento pesa 4."
+          ],
+          "labels": {
+            "fund-safer": "Fondo más seguro",
+            "fund-middle": "Fondo intermedio",
+            "fund-riskier": "Fondo más riesgoso",
+            "fund-winner": "Ganador del año pasado",
+            "bad-year": "Mal año pequeño",
+            "growth": "Posibilidad de crecer"
+          }
+        },
+        "pt-BR": {
+          "prompt": "O plano: um ano ruim pesa 1, o crescimento pesa 4. Ordene os quatro fundos, do melhor ao pior.",
+          "feedback": {
+            "met": "Você ordenou os fundos pelos pesos do plano, não os da viagem.",
+            "not_yet": "Ainda não. Use os pesos do plano, não os da viagem."
+          },
+          "help": [
+            "O total de cada fundo é nota × peso, somado.",
+            "Para o plano, o crescimento pesa 4."
+          ],
+          "labels": {
+            "fund-safer": "Fundo mais seguro",
+            "fund-middle": "Fundo intermediário",
+            "fund-riskier": "Fundo mais arriscado",
+            "fund-winner": "Vencedor do ano passado",
+            "bad-year": "Ano ruim pequeno",
+            "growth": "Chance de crescer"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-safer"
+          },
+          {
+            "id": "choice-riskier"
+          },
+          {
+            "id": "choice-split"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-winner"
+          },
+          {
+            "id": "reason-time"
+          },
+          {
+            "id": "reason-half"
+          },
+          {
+            "id": "reason-never"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-split"
+        ],
+        "reasonQuality": {
+          "reason-winner": "unsupported",
+          "reason-time": "sound",
+          "reason-half": "partial",
+          "reason-never": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Noor splits 600 coins: 200 due in three months, 400 not needed for ten years. Where does each part go?",
+          "choices": [
+            {
+              "label": "All 600 in the safer fund"
+            },
+            {
+              "label": "All 600 in the riskier fund"
+            },
+            {
+              "label": "200 safer, 400 riskier"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "The riskier fund won last year"
+            },
+            {
+              "label": "Short money needs safety; long money can wait"
+            },
+            {
+              "label": "Any split cuts the risk in half"
+            },
+            {
+              "label": "A safer fund can never lose"
+            }
+          ],
+          "feedback": {
+            "met": "You matched each part to the time it has left.",
+            "not_yet": "Not yet. Check how long each part can wait."
+          },
+          "help": [
+            "Compare three months with ten years."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Noor reparte 600 monedas: 200 vencen en tres meses y 400 no se necesitan en diez años. ¿Dónde va cada parte?",
+          "choices": [
+            {
+              "label": "Las 600 en el fondo más seguro"
+            },
+            {
+              "label": "Las 600 en el fondo más riesgoso"
+            },
+            {
+              "label": "200 en el seguro, 400 en el riesgoso"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es mejor esa opción?",
+          "reasons": [
+            {
+              "label": "El fondo riesgoso ganó el año pasado"
+            },
+            {
+              "label": "El dinero corto pide seguridad; el largo puede esperar"
+            },
+            {
+              "label": "Cualquier reparto reduce el riesgo a la mitad"
+            },
+            {
+              "label": "Un fondo más seguro nunca pierde"
+            }
+          ],
+          "feedback": {
+            "met": "Emparejaste cada parte con el tiempo que le queda.",
+            "not_yet": "Todavía no. Revisa cuánto puede esperar cada parte."
+          },
+          "help": [
+            "Compara tres meses con diez años."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Noor divide 600 moedas: 200 vencem em três meses e 400 não são necessárias por dez anos. Onde vai cada parte?",
+          "choices": [
+            {
+              "label": "As 600 no fundo mais seguro"
+            },
+            {
+              "label": "As 600 no fundo mais arriscado"
+            },
+            {
+              "label": "200 no seguro, 400 no arriscado"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a melhor opção?",
+          "reasons": [
+            {
+              "label": "O fundo arriscado ganhou no ano passado"
+            },
+            {
+              "label": "Dinheiro de curto prazo pede segurança; o longo pode esperar"
+            },
+            {
+              "label": "Qualquer divisão reduz o risco pela metade"
+            },
+            {
+              "label": "Um fundo mais seguro nunca perde"
+            }
+          ],
+          "feedback": {
+            "met": "Você combinou cada parte com o tempo que ela tem.",
+            "not_yet": "Ainda não. Confira quanto cada parte pode esperar."
+          },
+          "help": [
+            "Compare três meses com dez anos."
+          ]
+        }
+      }
+    }
+  ]
+}

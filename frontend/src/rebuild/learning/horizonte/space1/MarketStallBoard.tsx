@@ -26,9 +26,9 @@ function marker(goal: StallGoal, t: Space1Text): { at: number; label: string } {
 }
 
 function goalText(goal: StallGoal, t: Space1Text, locale: Locale): string {
-  if (goal.kind === 'exact') return fill(t.stlGoalExact, { amount: money(goal.total, locale, true) });
-  if (goal.kind === 'most') return fill(t.stlGoalMost, { amount: money(goal.budget, locale, true) });
-  return fill(t.stlGoalChange, { paid: money(goal.paid, locale, true), change: money(goal.change, locale, true) });
+  if (goal.kind === 'exact') return fill(t.stlGoalExact, { amount: money(goal.total, locale) });
+  if (goal.kind === 'most') return fill(t.stlGoalMost, { amount: money(goal.budget, locale) });
+  return fill(t.stlGoalChange, { paid: money(goal.paid, locale), change: money(goal.change, locale) });
 }
 
 /*

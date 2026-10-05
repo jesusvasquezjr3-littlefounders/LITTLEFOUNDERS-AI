@@ -1,0 +1,1197 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-find-opportunity",
+  "lesson_id": "ent-1012-01-the-problem-behind-the-complaint",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.real-problems"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara enseña con un caso: la clase junta notas sobre la fila para comer. Muestra paso a paso quién tiene el problema, cada cuántos días pasa y por qué importa, y separa un problema que se repite de un solo día ruidoso. Después el alumno practica con otros datos y lo aplica en un club de natación.",
+  "title": {
+    "en-US": "The problem behind the complaint",
+    "es-MX": "El problema detrás de la queja",
+    "pt-BR": "O problema por trás da reclamação"
+  },
+  "new_concepts": [
+    "biz.real-problems"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La clase de Zara deja notas en una caja sobre la fila para comer.",
+          "line": "Nueve de 24 compañeros escribieron sobre eso. Hmm, ¿qué está pasando de verdad?"
+        },
+        "en-US": {
+          "prompt": "Zara's class drops notes in a box about the lunch line.",
+          "line": "Nine of our 24 classmates wrote about it. Hmm, what is really going on?"
+        },
+        "pt-BR": {
+          "prompt": "A turma da Zara deixa bilhetes numa caixa sobre a fila do almoço.",
+          "line": "Nove de 24 colegas escreveram sobre isso. Hmm, o que está acontecendo de verdade?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-food"
+          },
+          {
+            "id": "opt-who"
+          },
+          {
+            "id": "opt-often"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-who",
+          "opt-often"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué te gustaría saber primero sobre esta nota?",
+          "scene": "Una nota dice: \"La fila para comer es tan larga que casi no alcanzo a comer\". Zara quiere entenderla antes de construir algo.",
+          "options": [
+            {
+              "label": "Qué comida sirven ese día"
+            },
+            {
+              "label": "Quién la escribió y dónde estaba formado"
+            },
+            {
+              "label": "Cuántos días pasa"
+            }
+          ],
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora lo vemos juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora lo vemos juntos."
+          }
+        },
+        "en-US": {
+          "prompt": "Before we start: what would you want to know first about this note?",
+          "scene": "A note says: \"The lunch line is so long I barely get to eat.\" Zara wants to understand it before anyone builds anything.",
+          "options": [
+            {
+              "label": "What lunch is served that day"
+            },
+            {
+              "label": "Who wrote it and where they stood"
+            },
+            {
+              "label": "How many days it happens"
+            }
+          ],
+          "feedback": {
+            "met": "Thanks, I see how you think. Let's look at it together.",
+            "not_yet": "Thanks, I see how you think. Let's look at it together."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: o que você gostaria de saber primeiro sobre este bilhete?",
+          "scene": "Um bilhete diz: \"A fila do almoço é tão grande que quase não consigo comer\". A Zara quer entender isso antes de construir qualquer coisa.",
+          "options": [
+            {
+              "label": "Que comida é servida nesse dia"
+            },
+            {
+              "label": "Quem escreveu e onde estava na fila"
+            },
+            {
+              "label": "Em quantos dias isso acontece"
+            }
+          ],
+          "feedback": {
+            "met": "Entendi como você pensa. Agora vamos ver juntos.",
+            "not_yet": "Entendi como você pensa. Agora vamos ver juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "who-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara mira en qué lugar de la fila estaba cada uno de los nueve.",
+          "line": "Paso 1, quién: los nueve estaban al final de la fila. Los últimos de la fila tienen el problema."
+        },
+        "en-US": {
+          "prompt": "Zara checks where each of the nine writers stood in line.",
+          "line": "Step 1, who: all nine wrote from the back of the line. The last kids have this problem."
+        },
+        "pt-BR": {
+          "prompt": "A Zara vê em que lugar da fila cada um dos nove estava.",
+          "line": "Passo 1, quem: os nove estavam no fim da fila. Os últimos da fila têm o problema."
+        }
+      }
+    },
+    {
+      "id": "often-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "day-mon"
+            },
+            {
+              "id": "day-tue"
+            },
+            {
+              "id": "day-wed"
+            },
+            {
+              "id": "day-thu"
+            },
+            {
+              "id": "day-fri"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-notes",
+              "values": [
+                2,
+                1,
+                2,
+                2,
+                2
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, cuántas veces: hay notas todos los días de clase, así que el problema se repite.",
+          "title": "Notas sobre la fila para comer, por día",
+          "data": {
+            "categories": [
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              },
+              {
+                "label": "Mié"
+              },
+              {
+                "label": "Jue"
+              },
+              {
+                "label": "Vie"
+              }
+            ],
+            "series": [
+              {
+                "label": "Notas"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 2, how often: every school day has notes, so the problem repeats.",
+          "title": "Notes about the lunch line, per day",
+          "data": {
+            "categories": [
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              },
+              {
+                "label": "Wed"
+              },
+              {
+                "label": "Thu"
+              },
+              {
+                "label": "Fri"
+              }
+            ],
+            "series": [
+              {
+                "label": "Notes"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, com que frequência: há bilhetes todos os dias de aula, então o problema se repete.",
+          "title": "Bilhetes sobre a fila do almoço, por dia",
+          "data": {
+            "categories": [
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              },
+              {
+                "label": "Qua"
+              },
+              {
+                "label": "Qui"
+              },
+              {
+                "label": "Sex"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bilhetes"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "why-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La hora de comer dura 25 minutos. Zara mide la fila de los últimos: 17 minutos.",
+          "line": "Paso 3, por qué importa: 25 menos 17 deja 8 minutos para comer. Menos de 10 es muy poco."
+        },
+        "en-US": {
+          "prompt": "Lunch lasts 25 minutes. Zara times the line for the last kids: 17 minutes.",
+          "line": "Step 3, why it matters: 25 minus 17 leaves 8 minutes to eat. Under 10 is too short."
+        },
+        "pt-BR": {
+          "prompt": "O almoço dura 25 minutos. A Zara cronometra a fila dos últimos: 17 minutos.",
+          "line": "Passo 3, por que importa: 25 menos 17 sobram 8 minutos para comer. Menos de 10 é pouco."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "day-mon"
+            },
+            {
+              "id": "day-tue"
+            },
+            {
+              "id": "day-wed"
+            },
+            {
+              "id": "day-thu"
+            },
+            {
+              "id": "day-fri"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-notes",
+              "values": [
+                2,
+                0,
+                1,
+                2,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-two"
+            },
+            {
+              "id": "ans-four"
+            },
+            {
+              "id": "ans-five"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-four"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Segunda semana de notas sobre la fila de Zara. ¿En cuántos días apareció el problema?",
+          "feedback": {
+            "met": "Contaste los días con notas, como hizo Zara.",
+            "not_yet": "Todavía no. Cuenta los días que tienen barra, como hizo Zara."
+          },
+          "help": [
+            "Cuenta días con barra, no notas. Un día con cero notas no tiene barra."
+          ],
+          "title": "Notas sobre la fila para comer, semana 2",
+          "data": {
+            "categories": [
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              },
+              {
+                "label": "Mié"
+              },
+              {
+                "label": "Jue"
+              },
+              {
+                "label": "Vie"
+              }
+            ],
+            "series": [
+              {
+                "label": "Notas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cada cuánto apareció?",
+            "options": [
+              {
+                "label": "En 2 de 5 días"
+              },
+              {
+                "label": "En 4 de 5 días"
+              },
+              {
+                "label": "En los 5 días"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "A second week of notes about Zara's lunch line. On how many days did the problem come up?",
+          "feedback": {
+            "met": "You counted the days with notes, as Zara did.",
+            "not_yet": "Not yet. Count days with a bar, as Zara did."
+          },
+          "help": [
+            "Count days with a bar, not notes. A day with zero notes has no bar."
+          ],
+          "title": "Notes about the lunch line, week 2",
+          "data": {
+            "categories": [
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              },
+              {
+                "label": "Wed"
+              },
+              {
+                "label": "Thu"
+              },
+              {
+                "label": "Fri"
+              }
+            ],
+            "series": [
+              {
+                "label": "Notes"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How often did it come up?",
+            "options": [
+              {
+                "label": "On 2 of 5 days"
+              },
+              {
+                "label": "On 4 of 5 days"
+              },
+              {
+                "label": "On all 5 days"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Segunda semana de bilhetes sobre a fila da Zara. Em quantos dias o problema apareceu?",
+          "feedback": {
+            "met": "Você contou os dias com bilhetes, como a Zara fez.",
+            "not_yet": "Ainda não. Conte os dias que têm barra, como a Zara fez."
+          },
+          "help": [
+            "Conte dias com barra, não bilhetes. Um dia com zero bilhetes não tem barra."
+          ],
+          "title": "Bilhetes sobre a fila do almoço, semana 2",
+          "data": {
+            "categories": [
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              },
+              {
+                "label": "Qua"
+              },
+              {
+                "label": "Qui"
+              },
+              {
+                "label": "Sex"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bilhetes"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Com que frequência apareceu?",
+            "options": [
+              {
+                "label": "Em 2 de 5 dias"
+              },
+              {
+                "label": "Em 4 de 5 dias"
+              },
+              {
+                "label": "Em todos os 5 dias"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "loud-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Otra nota: un compañero gritó por el postre, solo un día.",
+          "line": "Paso 4, algo aislado: un compañero, un día, nada los días siguientes. Hace ruido, pero no se repite."
+        },
+        "en-US": {
+          "prompt": "A different note: one kid shouted about the dessert, on one day only.",
+          "line": "Step 4, one-off: one kid, one day, nothing the next days. It's loud, but it doesn't repeat."
+        },
+        "pt-BR": {
+          "prompt": "Outro bilhete: um colega reclamou da sobremesa, só num dia.",
+          "line": "Passo 4, caso isolado: um colega, um dia, nada nos dias seguintes. Faz barulho, mas não se repete."
+        }
+      }
+    },
+    {
+      "id": "who-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-ana"
+          },
+          {
+            "id": "opt-ben"
+          },
+          {
+            "id": "opt-cy"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-cy"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la fila para comer de la clase de Zara, ¿quién tiene el problema?",
+          "scene": "Tres compañeros escribieron notas. Ana recibió su charola primero. Beto esperó en medio. Cy fue el último en ser atendido.",
+          "feedback": {
+            "met": "Elegiste al último de la fila, como hizo Zara.",
+            "not_yet": "Todavía no. Piensa en dónde estaban formados los que escribieron."
+          },
+          "options": [
+            {
+              "label": "Ana, la primera en ser atendida"
+            },
+            {
+              "label": "Beto, que esperó en medio"
+            },
+            {
+              "label": "Cy, el último en ser atendido"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "At the lunch line in Zara's class, who has the problem?",
+          "scene": "Three classmates wrote notes. Ana got her tray first. Ben waited in the middle. Cy was the last one served.",
+          "feedback": {
+            "met": "You picked the last kid in line, as Zara did.",
+            "not_yet": "Not yet. Think about where the writers stood in line."
+          },
+          "options": [
+            {
+              "label": "Ana, the first one served"
+            },
+            {
+              "label": "Ben, who waited in the middle"
+            },
+            {
+              "label": "Cy, the last one served"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na fila do almoço da turma da Zara, quem tem o problema?",
+          "scene": "Três colegas escreveram bilhetes. A Ana pegou a bandeja primeiro. O Beto esperou no meio. O Cy foi o último a ser servido.",
+          "feedback": {
+            "met": "Você escolheu o último da fila, como a Zara fez.",
+            "not_yet": "Ainda não. Pense em onde estavam na fila os que escreveram."
+          },
+          "options": [
+            {
+              "label": "Ana, a primeira a ser servida"
+            },
+            {
+              "label": "Beto, que esperou no meio"
+            },
+            {
+              "label": "Cy, o último a ser servido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-repeats"
+          },
+          {
+            "id": "bin-once"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-three-days"
+          },
+          {
+            "id": "item-tray"
+          },
+          {
+            "id": "item-four-days"
+          },
+          {
+            "id": "item-loud"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-many"
+          },
+          {
+            "id": "why-one"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-three-days": [
+            {
+              "bin": "bin-repeats",
+              "reason": "why-many"
+            }
+          ],
+          "item-tray": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one"
+            }
+          ],
+          "item-four-days": [
+            {
+              "bin": "bin-repeats",
+              "reason": "why-many"
+            }
+          ],
+          "item-loud": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La clase de Zara ordena notas nuevas sobre la fila para comer.",
+          "rule": "En cada nota, ¿el problema se repite o pasó una sola vez?",
+          "feedback": {
+            "met": "Ordenaste según en cuántos días apareció cada nota.",
+            "not_yet": "Todavía no. En cada nota, cuenta los días en que apareció."
+          },
+          "help": [
+            "Zara revisó los días, no el ruido: una nota fuerte no es lo mismo que una repetida."
+          ],
+          "bins": [
+            {
+              "label": "Se repite"
+            },
+            {
+              "label": "Pasó una vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Notas el lun, mar y jue"
+            },
+            {
+              "label": "Un compañero, un día, una charola tirada"
+            },
+            {
+              "label": "Notas en 4 de 5 días"
+            },
+            {
+              "label": "Una nota fuerte, nunca más"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Aparece en muchos días"
+            },
+            {
+              "label": "Apareció en un solo día"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Zara's class sorts new notes about the lunch line.",
+          "rule": "For each note, does the problem keep happening or did it happen once?",
+          "feedback": {
+            "met": "You sorted by how many days each note showed up.",
+            "not_yet": "Not yet. For each note, count the days it showed up."
+          },
+          "help": [
+            "Zara checked days, not volume: a loud note is not the same as a repeated one."
+          ],
+          "bins": [
+            {
+              "label": "Keeps happening"
+            },
+            {
+              "label": "Happened once"
+            }
+          ],
+          "items": [
+            {
+              "label": "Notes on Mon, Tue and Thu"
+            },
+            {
+              "label": "One kid, one day, a spilled tray"
+            },
+            {
+              "label": "Notes on 4 of 5 days"
+            },
+            {
+              "label": "One loud note, never again"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It shows up on many days"
+            },
+            {
+              "label": "It showed up on one day"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A turma da Zara separa bilhetes novos sobre a fila do almoço.",
+          "rule": "Em cada bilhete, o problema se repete ou aconteceu uma vez só?",
+          "feedback": {
+            "met": "Você separou pelos dias em que cada bilhete apareceu.",
+            "not_yet": "Ainda não. Em cada bilhete, conte os dias em que apareceu."
+          },
+          "help": [
+            "A Zara olhou os dias, não o barulho: um bilhete forte não é o mesmo que um repetido."
+          ],
+          "bins": [
+            {
+              "label": "Se repete"
+            },
+            {
+              "label": "Aconteceu uma vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Bilhetes na seg, ter e qui"
+            },
+            {
+              "label": "Um colega, um dia, uma bandeja derrubada"
+            },
+            {
+              "label": "Bilhetes em 4 de 5 dias"
+            },
+            {
+              "label": "Um bilhete forte, nunca mais"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Aparece em muitos dias"
+            },
+            {
+              "label": "Apareceu em um só dia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "minutes-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-plenty"
+          },
+          {
+            "id": "reply-normal"
+          },
+          {
+            "id": "reply-short"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-short"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Leo está al final de la fila de Zara. ¿Qué le dices?",
+          "speaker": "Leo",
+          "line": "La fila se lleva 19 de los 25 minutos de comer. ¿Eso importa?",
+          "feedback": {
+            "met": "Convertiste el tiempo de espera en tiempo para comer, como hizo Zara.",
+            "not_yet": "Todavía no. Resta la espera al tiempo de comer, como Zara."
+          },
+          "help": [
+            "Réstale la espera a los 25 minutos. ¿Lo que queda es más o menos de 10?"
+          ],
+          "replies": [
+            {
+              "label": "No, aún tenías mucho tiempo para comer."
+            },
+            {
+              "label": "No, esperar es parte de la comida."
+            },
+            {
+              "label": "Sí, queda muy poco tiempo para comer."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Leo is last in Zara's lunch line. What do you tell him?",
+          "speaker": "Leo",
+          "line": "The line takes 19 of our 25 lunch minutes. Does that matter?",
+          "feedback": {
+            "met": "You turned waiting time into eating time, as Zara did.",
+            "not_yet": "Not yet. Do lunch time minus waiting time, like Zara."
+          },
+          "help": [
+            "Take the waiting from the 25 minutes. Is what is left more or less than 10?"
+          ],
+          "replies": [
+            {
+              "label": "No, you had plenty of time to eat."
+            },
+            {
+              "label": "No, waiting is just part of lunch."
+            },
+            {
+              "label": "Yes, that leaves too little time to eat."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Leo está no fim da fila da Zara. O que você diz a ele?",
+          "speaker": "Leo",
+          "line": "A fila leva 19 dos 25 minutos do almoço. Isso importa?",
+          "feedback": {
+            "met": "Você transformou o tempo de espera em tempo para comer, como a Zara fez.",
+            "not_yet": "Ainda não. Tire a espera do tempo do almoço, como a Zara."
+          },
+          "help": [
+            "Tire a espera dos 25 minutos. O que sobra é mais ou menos que 10?"
+          ],
+          "replies": [
+            {
+              "label": "Não, ainda sobrou bastante tempo para comer."
+            },
+            {
+              "label": "Não, esperar faz parte do almoço."
+            },
+            {
+              "label": "Sim, sobra muito pouco tempo para comer."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "bar"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "day-mon"
+            },
+            {
+              "id": "day-tue"
+            },
+            {
+              "id": "day-wed"
+            },
+            {
+              "id": "day-thu"
+            },
+            {
+              "id": "day-fri"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-showers",
+              "values": [
+                2,
+                1,
+                1,
+                2,
+                1
+              ]
+            },
+            {
+              "id": "series-goggles",
+              "values": [
+                0,
+                7,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-showers"
+            },
+            {
+              "id": "ans-goggles"
+            },
+            {
+              "id": "ans-both"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-showers"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La caja de ideas de Zara está ahora en el club de natación, donde las dos quejas tienen 7 notas. ¿Cuál se repite?",
+          "feedback": {
+            "met": "Revisaste los días, no los totales, como en los pasos de Zara.",
+            "not_yet": "Todavía no. Los totales coinciden, así que mira los días."
+          },
+          "help": [
+            "Cuenta en cuántos días tiene barra cada queja."
+          ],
+          "title": "Notas del club de natación, por día",
+          "data": {
+            "categories": [
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              },
+              {
+                "label": "Mié"
+              },
+              {
+                "label": "Jue"
+              },
+              {
+                "label": "Vie"
+              }
+            ],
+            "series": [
+              {
+                "label": "Regaderas frías"
+              },
+              {
+                "label": "Googles perdidos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué queja se repite?",
+            "options": [
+              {
+                "label": "Regaderas frías"
+              },
+              {
+                "label": "Googles perdidos"
+              },
+              {
+                "label": "Las dos, los totales coinciden"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Zara's idea box is now at the swim club, where both complaints got 7 notes. Which keeps happening?",
+          "feedback": {
+            "met": "You checked the days, not the totals, as in Zara's steps.",
+            "not_yet": "Not yet. Both totals match, so look at the days."
+          },
+          "help": [
+            "Count how many days each complaint has a bar."
+          ],
+          "title": "Swim club notes, per day",
+          "data": {
+            "categories": [
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              },
+              {
+                "label": "Wed"
+              },
+              {
+                "label": "Thu"
+              },
+              {
+                "label": "Fri"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cold showers"
+              },
+              {
+                "label": "Lost goggles"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which complaint keeps happening?",
+            "options": [
+              {
+                "label": "Cold showers"
+              },
+              {
+                "label": "Lost goggles"
+              },
+              {
+                "label": "Both, the totals match"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A caixa de ideias da Zara agora está no clube de natação, onde as duas reclamações têm 7 bilhetes. Qual se repete?",
+          "feedback": {
+            "met": "Você olhou os dias, não os totais, como nos passos da Zara.",
+            "not_yet": "Ainda não. Os totais são iguais, então olhe os dias."
+          },
+          "help": [
+            "Conte em quantos dias cada reclamação tem barra."
+          ],
+          "title": "Bilhetes do clube de natação, por dia",
+          "data": {
+            "categories": [
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              },
+              {
+                "label": "Qua"
+              },
+              {
+                "label": "Qui"
+              },
+              {
+                "label": "Sex"
+              }
+            ],
+            "series": [
+              {
+                "label": "Chuveiro frio"
+              },
+              {
+                "label": "Óculos perdidos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual reclamação se repete?",
+            "options": [
+              {
+                "label": "Chuveiro frio"
+              },
+              {
+                "label": "Óculos perdidos"
+              },
+              {
+                "label": "As duas, os totais são iguais"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

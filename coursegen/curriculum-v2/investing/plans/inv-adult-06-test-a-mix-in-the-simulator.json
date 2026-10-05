@@ -1,0 +1,1084 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-baskets-offers-and-a-plan",
+  "lesson_id": "inv-adult-06-test-a-mix-in-the-simulator",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.portfolio-mix",
+    "invest.simulate-before-deciding",
+    "invest.risk-tolerance"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho abre con un plan en papel, 75% en un índice amplio de acciones y 25% en renta fija, y enseña con ejemplos cómo se prueba en el simulador: la mezcla, el peor capítulo, la deriva tras un año fuerte y el rebalanceo. La persona busca la mayor proporción en acciones que sostiene un mínimo, lee una deriva a la inversa, arma una mezcla más estable para una meta cercana y cierra decidiendo para un colega, sabiendo qué puede y qué no puede decir una simulación.",
+  "title": {
+    "es-MX": "Prueba una mezcla en el simulador",
+    "en-US": "Test a mix in the simulator",
+    "pt-BR": "Teste uma mistura no simulador"
+  },
+  "new_concepts": [
+    "invest.portfolio-mix",
+    "invest.simulate-before-deciding"
+  ],
+  "regional": {
+    "universal": "Everything runs inside the simulator, in illustrative units: no real account, no named product and no market-specific rule is needed."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A plan on paper: 75% in a broad stock index, 25% in fixed income, goal 25 years away.",
+          "line": "On paper it looks fine. Before I rely on it, I run it through the simulator."
+        },
+        "es-MX": {
+          "prompt": "Un plan en papel: 75% en un índice amplio de acciones, 25% en renta fija, meta a 25 años.",
+          "line": "En papel se ve bien. Antes de confiar en él, lo paso por el simulador."
+        },
+        "pt-BR": {
+          "prompt": "Um plano no papel: 75% em um índice amplo de ações, 25% em renda fixa, meta daqui a 25 anos.",
+          "line": "No papel parece bom. Antes de confiar nele, vou rodá-lo no simulador."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-same"
+          },
+          {
+            "id": "opt-less"
+          },
+          {
+            "id": "opt-more"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-more"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we start: after that year, how is the money split?",
+          "feedback": {
+            "met": "Noted. The simulator will show how it comes out.",
+            "not_yet": "Noted. The simulator will show how it comes out."
+          },
+          "scene": "A 75/25 mix of stocks and fixed income. One year, stocks rise 20% and fixed income 2%.",
+          "options": [
+            {
+              "label": "Still 75/25"
+            },
+            {
+              "label": "Less than 75% in stocks"
+            },
+            {
+              "label": "More than 75% in stocks"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de empezar: tras ese año, ¿cómo queda repartido el dinero?",
+          "feedback": {
+            "met": "Anotado. El simulador mostrará cómo sale.",
+            "not_yet": "Anotado. El simulador mostrará cómo sale."
+          },
+          "scene": "Una mezcla 75/25 de acciones y renta fija. En un año, las acciones suben 20% y la renta fija 2%.",
+          "options": [
+            {
+              "label": "Sigue en 75/25"
+            },
+            {
+              "label": "Menos de 75% en acciones"
+            },
+            {
+              "label": "Más de 75% en acciones"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: depois desse ano, como fica a divisão do dinheiro?",
+          "feedback": {
+            "met": "Anotado. O simulador vai mostrar como fica.",
+            "not_yet": "Anotado. O simulador vai mostrar como fica."
+          },
+          "scene": "Uma mistura 75/25 de ações e renda fixa. Em um ano, as ações sobem 20% e a renda fixa 2%.",
+          "options": [
+            {
+              "label": "Continua 75/25"
+            },
+            {
+              "label": "Menos de 75% em ações"
+            },
+            {
+              "label": "Mais de 75% em ações"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01-mix",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a mix and the simulator.",
+          "line": "A mix splits a balance: stocks swing, fixed income steadies. Each four-year chapter, the simulator draws one outcome."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: una mezcla y el simulador.",
+          "line": "Una mezcla reparte un saldo: las acciones oscilan, la renta fija estabiliza. Cada capítulo de cuatro años, el simulador sortea un resultado."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: uma mistura e o simulador.",
+          "line": "Uma mistura divide um saldo: ações oscilam, a renda fixa estabiliza. A cada capítulo de quatro anos, o simulador sorteia um resultado."
+        }
+      }
+    },
+    {
+      "id": "ex-02-board",
+      "type": "money.diversification.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "portfolio"
+      },
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "assets": [
+          {
+            "id": "asset-broad",
+            "return_bps": 700,
+            "risk_bps": 1600
+          },
+          {
+            "id": "asset-fixed",
+            "return_bps": 300,
+            "risk_bps": 400
+          }
+        ],
+        "step": 25
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: at 75/25, the board reads return 6% and risk 12.04%. Stocks set most of both.",
+          "assets": [
+            {
+              "label": "Broad stock index"
+            },
+            {
+              "label": "Fixed income"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Paso 2: con 75/25, el tablero marca rendimiento 6% y riesgo 12.04%. Las acciones aportan casi todo de ambos.",
+          "assets": [
+            {
+              "label": "Índice amplio de acciones"
+            },
+            {
+              "label": "Renta fija"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: com 75/25, o painel mostra retorno 6% e risco 12,04%. As ações definem quase tudo nos dois.",
+          "assets": [
+            {
+              "label": "Índice amplo de ações"
+            },
+            {
+              "label": "Renda fixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-03-worst-chapter",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the worst chapter. 10,000 plus 4,000 added is 14,000, split 50/50.",
+          "line": "Worst outcome: stocks −30% takes 7,000 to 4,900; fixed income +10% takes 7,000 to 7,700. Left: 12,600."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el peor capítulo. 10,000 más 4,000 que se suman son 14,000, repartidos 50/50.",
+          "line": "Peor resultado: acciones −30% bajan 7,000 a 4,900; renta fija +10% sube 7,000 a 7,700. Quedan 12,600."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o pior capítulo. 10.000 mais 4.000 que entram somam 14.000, divididos 50/50.",
+          "line": "Pior resultado: ações −30% levam 7.000 a 4.900; renda fixa +10% leva 7.000 a 7.700. Sobram 12.600."
+        }
+      }
+    },
+    {
+      "id": "g-01-first-floor",
+      "type": "money.life-sim.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "life-sim"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "scenario": "portfolio",
+        "periods": 5,
+        "cash": 10000,
+        "debt": 0,
+        "flow": 4000,
+        "finish": 14000,
+        "floor": 10000,
+        "goal": 99,
+        "choices": [
+          0,
+          25,
+          50,
+          60,
+          75,
+          100
+        ],
+        "start": 100
+      },
+      "rubric": {
+        "target": {
+          "answers": [
+            75
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Target 14,000, floor 10,000, in 99 of 100 futures. Find the highest stock share that holds.",
+          "help": [
+            "Run Step 3's worst chapter on the top shares first.",
+            "Its worst chapter must not end below the floor."
+          ],
+          "feedback": {
+            "met": "That is the highest share that stays above the floor.",
+            "not_yet": "Test your share's worst chapter against the floor, then its neighbors."
+          }
+        },
+        "es-MX": {
+          "prompt": "Meta 14,000, mínimo 10,000, en 99 de 100 futuros. Encuentra la proporción más alta en acciones que se sostiene.",
+          "help": [
+            "Aplica el peor capítulo del Paso 3 a las proporciones más altas.",
+            "Su peor capítulo no debe terminar bajo el mínimo."
+          ],
+          "feedback": {
+            "met": "Es la proporción más alta que se mantiene sobre el mínimo.",
+            "not_yet": "Prueba el peor capítulo de tu proporción contra el mínimo y revisa las cercanas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Meta 14.000, mínimo 10.000, em 99 de 100 futuros. Encontre a fatia mais alta em ações que se sustenta.",
+          "help": [
+            "Aplique o pior capítulo do Passo 3 às fatias mais altas.",
+            "O pior capítulo não pode terminar abaixo do mínimo."
+          ],
+          "feedback": {
+            "met": "É a fatia mais alta que se mantém acima do mínimo.",
+            "not_yet": "Teste o pior capítulo da sua fatia contra o mínimo e confira as vizinhas."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-04-drift",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "stacked-area-100"
+      },
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "categories": [
+            {
+              "id": "cat-start"
+            },
+            {
+              "id": "cat-strong"
+            },
+            {
+              "id": "cat-rebalanced"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-stocks",
+              "values": [
+                75,
+                78,
+                75
+              ]
+            },
+            {
+              "id": "series-fixed",
+              "values": [
+                25,
+                22,
+                25
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: a strong year, stocks +20% and fixed income +2%, moves 75/25 to about 78/22.",
+          "title": "Share of the mix (%)",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "After a strong year"
+              },
+              {
+                "label": "After rebalancing"
+              }
+            ],
+            "series": [
+              {
+                "label": "Broad stock index"
+              },
+              {
+                "label": "Fixed income"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 4: un año fuerte, acciones +20% y renta fija +2%, lleva 75/25 a cerca de 78/22.",
+          "title": "Proporción de la mezcla (%)",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Tras un año fuerte"
+              },
+              {
+                "label": "Tras rebalancear"
+              }
+            ],
+            "series": [
+              {
+                "label": "Índice amplio de acciones"
+              },
+              {
+                "label": "Renta fija"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: um ano forte, ações +20% e renda fixa +2%, leva 75/25 a cerca de 78/22.",
+          "title": "Fatia da mistura (%)",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Após um ano forte"
+              },
+              {
+                "label": "Após rebalancear"
+              }
+            ],
+            "series": [
+              {
+                "label": "Índice amplo de ações"
+              },
+              {
+                "label": "Renda fixa"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-05-rebalance",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: rebalancing. After the strong year the mix is 78/22; the plan says 75/25.",
+          "line": "I sell a little of what grew and buy the other piece, back to 75/25."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: rebalancear. Tras el año fuerte la mezcla es 78/22; el plan dice 75/25.",
+          "line": "Vendo un poco de lo que creció y compro la otra pieza, hasta volver a 75/25."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: rebalancear. Depois do ano forte a mistura é 78/22; o plano diz 75/25.",
+          "line": "Vendo um pouco do que cresceu e compro a outra peça, até voltar a 75/25."
+        }
+      }
+    },
+    {
+      "id": "p-01-weak-years",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "stacked-area-100"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "categories": [
+            {
+              "id": "cat-start"
+            },
+            {
+              "id": "cat-weak"
+            },
+            {
+              "id": "cat-weak2"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-stocks",
+              "values": [
+                75,
+                72,
+                69
+              ]
+            },
+            {
+              "id": "series-fixed",
+              "values": [
+                25,
+                28,
+                31
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-to-stocks"
+            },
+            {
+              "id": "opt-to-fixed"
+            },
+            {
+              "id": "opt-leave"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-to-stocks"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same mix, two weak years in a row. Read how the bands moved.",
+          "help": [
+            "Compare each band's width now with its width at the start.",
+            "Step 5: rebalancing undoes the drift."
+          ],
+          "feedback": {
+            "met": "You read which band shrank and moved money back toward it.",
+            "not_yet": "Check which band is narrower than at the start."
+          },
+          "title": "Share of the mix (%)",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "After a weak year"
+              },
+              {
+                "label": "After a second weak year"
+              }
+            ],
+            "series": [
+              {
+                "label": "Broad stock index"
+              },
+              {
+                "label": "Fixed income"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Stocks fell and fixed income grew. Which move restores 75/25?",
+            "options": [
+              {
+                "label": "Move money from fixed income to stocks"
+              },
+              {
+                "label": "Move money from stocks to fixed income"
+              },
+              {
+                "label": "Leave it: the split corrects itself"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "La misma mezcla, dos años débiles seguidos. Lee cómo se movieron las bandas.",
+          "help": [
+            "Compara el ancho de cada banda ahora con el del inicio.",
+            "Paso 5: rebalancear deshace el desvío."
+          ],
+          "feedback": {
+            "met": "Leíste qué banda se redujo y devolviste dinero hacia ella.",
+            "not_yet": "Revisa qué banda está más angosta que al inicio."
+          },
+          "title": "Proporción de la mezcla (%)",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Tras un año débil"
+              },
+              {
+                "label": "Tras un segundo año débil"
+              }
+            ],
+            "series": [
+              {
+                "label": "Índice amplio de acciones"
+              },
+              {
+                "label": "Renta fija"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Las acciones cayeron y la renta fija creció. ¿Qué movimiento restablece 75/25?",
+            "options": [
+              {
+                "label": "Pasar dinero de renta fija a acciones"
+              },
+              {
+                "label": "Pasar dinero de acciones a renta fija"
+              },
+              {
+                "label": "Dejarlo: la proporción se corrige sola"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A mesma mistura, dois anos fracos seguidos. Leia como as faixas se moveram.",
+          "help": [
+            "Compare a largura de cada faixa agora com a do início.",
+            "Passo 5: rebalancear desfaz o desvio."
+          ],
+          "feedback": {
+            "met": "Você leu qual faixa encolheu e levou dinheiro de volta a ela.",
+            "not_yet": "Veja qual faixa está mais estreita do que no início."
+          },
+          "title": "Fatia da mistura (%)",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Após um ano fraco"
+              },
+              {
+                "label": "Após um segundo ano fraco"
+              }
+            ],
+            "series": [
+              {
+                "label": "Índice amplo de ações"
+              },
+              {
+                "label": "Renda fixa"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "As ações caíram e a renda fixa cresceu. Qual movimento restabelece 75/25?",
+            "options": [
+              {
+                "label": "Passar dinheiro da renda fixa para ações"
+              },
+              {
+                "label": "Passar dinheiro das ações para a renda fixa"
+              },
+              {
+                "label": "Deixar: a divisão se corrige sozinha"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "p-02-smaller-start",
+      "type": "money.life-sim.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "life-sim"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simulate-before-deciding",
+      "payload": {
+        "scenario": "portfolio",
+        "periods": 5,
+        "cash": 8000,
+        "debt": 0,
+        "flow": 4000,
+        "finish": 14000,
+        "floor": 10000,
+        "goal": 99,
+        "choices": [
+          0,
+          25,
+          50,
+          60,
+          75,
+          100
+        ],
+        "start": 25
+      },
+      "rubric": {
+        "target": {
+          "answers": [
+            60
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Start 8,000, add 4,000 a chapter; floor 10,000, 99 of 100 futures. Find the highest share that holds.",
+          "help": [
+            "The first chapter starts from the cash plus the amount added.",
+            "Same test as Step 3: the worst chapter, then the floor."
+          ],
+          "feedback": {
+            "met": "You raised the share only as far as the floor allows.",
+            "not_yet": "Add the 4,000 first, then test the worst chapter."
+          }
+        },
+        "es-MX": {
+          "prompt": "Empieza con 8,000 y suma 4,000 por capítulo; mínimo 10,000, 99 de 100 futuros. Encuentra la proporción más alta que se sostiene.",
+          "help": [
+            "El primer capítulo parte del efectivo más lo que se suma.",
+            "La misma prueba del Paso 3: el peor capítulo y luego el mínimo."
+          ],
+          "feedback": {
+            "met": "Subiste la proporción solo hasta donde el mínimo lo permite.",
+            "not_yet": "Suma primero los 4,000 y luego prueba el peor capítulo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Comece com 8.000 e some 4.000 por capítulo; mínimo 10.000, 99 de 100 futuros. Encontre a fatia mais alta que se sustenta.",
+          "help": [
+            "O primeiro capítulo parte do dinheiro mais o que entra.",
+            "O mesmo teste do Passo 3: o pior capítulo e depois o mínimo."
+          ],
+          "feedback": {
+            "met": "Você subiu a fatia só até onde o mínimo permite.",
+            "not_yet": "Some primeiro os 4.000 e depois teste o pior capítulo."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-06-near-goal",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: with 5 years left, one bad chapter leaves little time to recover.",
+          "line": "I lower the risk limit as the goal nears: a smaller stock share, a lower return."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: con 5 años por delante, un mal capítulo deja poco tiempo para recuperarse.",
+          "line": "Bajo el límite de riesgo a medida que la meta se acerca: menos acciones y menos rendimiento."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: com 5 anos pela frente, um capítulo ruim deixa pouco tempo para recuperar.",
+          "line": "Reduzo o limite de risco conforme a meta se aproxima: menos ações e menos retorno."
+        }
+      }
+    },
+    {
+      "id": "p-03-near-goal",
+      "type": "money.diversification.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "portfolio"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "assets": [
+          {
+            "id": "asset-broad",
+            "return_bps": 700,
+            "risk_bps": 1600
+          },
+          {
+            "id": "asset-fixed",
+            "return_bps": 300,
+            "risk_bps": 400
+          }
+        ],
+        "step": 5
+      },
+      "rubric": {
+        "max_risk_bps": 700,
+        "min_return_bps": 420
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Goal 5 years away: build a mix with risk at most 7% and return at least 4.2%.",
+          "help": [
+            "Stocks set most of the risk, as in Step 2.",
+            "Fixed income lowers risk and some return."
+          ],
+          "feedback": {
+            "met": "Your mix meets both limits with fewer stocks than before.",
+            "not_yet": "Check the board's risk and return against both limits."
+          },
+          "assets": [
+            {
+              "label": "Broad stock index"
+            },
+            {
+              "label": "Fixed income"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Meta a 5 años: arma una mezcla con riesgo máximo de 7% y rendimiento mínimo de 4.2%.",
+          "help": [
+            "Las acciones aportan casi todo el riesgo, como en el Paso 2.",
+            "La renta fija baja el riesgo y algo de rendimiento."
+          ],
+          "feedback": {
+            "met": "Tu mezcla cumple los dos límites con menos acciones que antes.",
+            "not_yet": "Compara el riesgo y el rendimiento del tablero con los dos límites."
+          },
+          "assets": [
+            {
+              "label": "Índice amplio de acciones"
+            },
+            {
+              "label": "Renta fija"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Meta em 5 anos: monte uma mistura com risco máximo de 7% e retorno mínimo de 4,2%.",
+          "help": [
+            "As ações definem quase todo o risco, como no Passo 2.",
+            "A renda fixa reduz o risco e um pouco do retorno."
+          ],
+          "feedback": {
+            "met": "Sua mistura cumpre os dois limites com menos ações do que antes.",
+            "not_yet": "Compare o risco e o retorno do painel com os dois limites."
+          },
+          "assets": [
+            {
+              "label": "Índice amplo de ações"
+            },
+            {
+              "label": "Renda fixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-07-sim-limits",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 7: what a simulation can and cannot say.",
+          "line": "It tests how a mix holds up in many futures. It forecasts none, and it decides nothing."
+        },
+        "es-MX": {
+          "prompt": "Paso 7: lo que una simulación puede y no puede decir.",
+          "line": "Prueba cómo aguanta una mezcla en muchos futuros. No pronostica ninguno y no decide nada."
+        },
+        "pt-BR": {
+          "prompt": "Passo 7: o que uma simulação pode e não pode dizer.",
+          "line": "Ela testa como uma mistura se sustenta em muitos futuros. Não prevê nenhum e não decide nada."
+        }
+      }
+    },
+    {
+      "id": "t-01-colleagues-limit",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-75"
+          },
+          {
+            "id": "choice-60"
+          },
+          {
+            "id": "choice-40"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rise"
+          },
+          {
+            "id": "reason-test"
+          },
+          {
+            "id": "reason-least"
+          },
+          {
+            "id": "reason-most"
+          },
+          {
+            "id": "reason-forecast"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-60"
+        ],
+        "reasonQuality": {
+          "reason-rise": "unsupported",
+          "reason-test": "sound",
+          "reason-least": "partial",
+          "reason-most": "sound",
+          "reason-forecast": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A colleague accepts at most a 15% loss in the worst chapter. Which mix keeps the most growth?",
+          "feedback": {
+            "met": "You kept the most stocks the limit allows.",
+            "not_yet": "Apply the worst-chapter test to each mix, then compare."
+          },
+          "choices": [
+            {
+              "label": "75% stocks, 25% fixed income"
+            },
+            {
+              "label": "60% stocks, 40% fixed income"
+            },
+            {
+              "label": "40% stocks, 60% fixed income"
+            }
+          ],
+          "reasonPrompt": "Which reason supports your choice best?",
+          "reasons": [
+            {
+              "label": "Stocks usually rise, so the limit rarely applies."
+            },
+            {
+              "label": "I tested each worst chapter against the limit."
+            },
+            {
+              "label": "The smallest loss wins, whatever the growth."
+            },
+            {
+              "label": "I kept the most stocks the limit allows."
+            },
+            {
+              "label": "The simulator shows what will happen."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un colega acepta como máximo una pérdida de 15% en el peor capítulo. ¿Qué mezcla conserva más crecimiento?",
+          "feedback": {
+            "met": "Conservaste el máximo de acciones que el límite permite.",
+            "not_yet": "Aplica la prueba del peor capítulo a cada mezcla y compara."
+          },
+          "choices": [
+            {
+              "label": "75% acciones, 25% renta fija"
+            },
+            {
+              "label": "60% acciones, 40% renta fija"
+            },
+            {
+              "label": "40% acciones, 60% renta fija"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Las acciones suelen subir; el límite importa poco."
+            },
+            {
+              "label": "Probé cada peor capítulo contra el límite."
+            },
+            {
+              "label": "La menor pérdida gana, sin importar el crecimiento."
+            },
+            {
+              "label": "Conservé el máximo de acciones que permite el límite."
+            },
+            {
+              "label": "El simulador muestra lo que va a pasar."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um colega aceita no máximo uma perda de 15% no pior capítulo. Qual mistura mantém mais crescimento?",
+          "feedback": {
+            "met": "Você manteve o máximo de ações que o limite permite.",
+            "not_yet": "Aplique o teste do pior capítulo a cada mistura e compare."
+          },
+          "choices": [
+            {
+              "label": "75% ações, 25% renda fixa"
+            },
+            {
+              "label": "60% ações, 40% renda fixa"
+            },
+            {
+              "label": "40% ações, 60% renda fixa"
+            }
+          ],
+          "reasonPrompt": "Qual motivo sustenta melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "Ações costumam subir, então o limite pouco importa."
+            },
+            {
+              "label": "Testei cada pior capítulo contra o limite."
+            },
+            {
+              "label": "A menor perda vence, não importa o crescimento."
+            },
+            {
+              "label": "Mantive o máximo de ações que o limite permite."
+            },
+            {
+              "label": "O simulador mostra o que vai acontecer."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

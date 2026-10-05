@@ -1,0 +1,925 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-my-coin-jar",
+  "lesson_id": "fe-69-13-earn-and-write-it-down",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.value-of-work",
+    "life.track-earnings",
+    "money.add-money"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina abre su cuaderno y anota, día por día, lo que gana con sus quehaceres: 5 monedas el lunes, 0 el martes y 10 el miércoles. Con calma, el niño ve que el trabajo terminado es lo que gana, lee el registro en un dibujo de monedas y suma los días hasta 15. Luego lee y suma otros días, y decide qué trabajo gana monedas en la venta de pasteles de la escuela.",
+  "title": {
+    "en-US": "Earn it and write it down",
+    "es-MX": "Gana y anótalo",
+    "pt-BR": "Ganhe e anote"
+  },
+  "new_concepts": [
+    "biz.value-of-work",
+    "life.track-earnings"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina opens her little notebook.",
+          "line": "I do chores and earn coins. I write each day down."
+        },
+        "es-MX": {
+          "prompt": "Dina abre su cuaderno chiquito.",
+          "line": "Hago quehaceres y gano monedas. Escribo cada día en el cuaderno."
+        },
+        "pt-BR": {
+          "prompt": "A Dina abre seu caderninho.",
+          "line": "Faço tarefas e ganho moedas. Anoto cada dia no caderno."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-water"
+          },
+          {
+            "id": "opt-watch"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-water"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina's neighbor has thirsty plants. Which task gets coins?",
+          "feedback": {
+            "met": "Thanks. Now let's look at it together.",
+            "not_yet": "Thanks. Now let's look at it together."
+          },
+          "options": [
+            {
+              "label": "Waters every plant"
+            },
+            {
+              "label": "Just watches the plants"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La vecina de Dina tiene plantas con sed. ¿Qué trabajo gana monedas?",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos juntos, paso a paso.",
+            "not_yet": "Gracias. Ahora lo vemos juntos, paso a paso."
+          },
+          "options": [
+            {
+              "label": "Regar todas las plantas"
+            },
+            {
+              "label": "Solo mirar las plantas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A vizinha da Dina tem plantas com sede. Qual trabalho ganha moedas?",
+          "feedback": {
+            "met": "Vamos ver isso juntos, passo a passo.",
+            "not_yet": "Vamos ver isso juntos, passo a passo."
+          },
+          "options": [
+            {
+              "label": "Regar todas as plantas"
+            },
+            {
+              "label": "Só olhar as plantas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mon-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Monday: Dina sweeps the whole porch.",
+          "line": "Finished work earns coins: 5. I write it down: Mon 5."
+        },
+        "es-MX": {
+          "prompt": "Lunes: Dina barre todo el patio.",
+          "line": "El trabajo terminado gana monedas: 5. Lo anoto: Lun 5."
+        },
+        "pt-BR": {
+          "prompt": "Segunda: a Dina varre o quintal inteiro.",
+          "line": "Trabalho terminado ganha moedas: 5. Anoto: Seg 5."
+        }
+      }
+    },
+    {
+      "id": "tue-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Tuesday: no chores today.",
+          "line": "No work, no coins. I still write it: Tue 0."
+        },
+        "es-MX": {
+          "prompt": "Martes: hoy no hay quehaceres.",
+          "line": "Sin trabajo, sin monedas. Igual lo anoto: Mar 0."
+        },
+        "pt-BR": {
+          "prompt": "Terça: hoje não tem tarefas.",
+          "line": "Sem trabalho, sem moedas. Mesmo assim anoto: Ter 0."
+        }
+      }
+    },
+    {
+      "id": "record-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "pictogram"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "mon"
+            },
+            {
+              "id": "tue"
+            },
+            {
+              "id": "wed"
+            }
+          ],
+          "series": [
+            {
+              "id": "coins",
+              "values": [
+                5,
+                0,
+                10
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Wednesday: all cups washed, 10 coins. That is the most.",
+          "title": "Dina's coins each day",
+          "data": {
+            "categories": [
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              },
+              {
+                "label": "Wed"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Miércoles: lavó todos los vasos, 10 monedas. Es lo más que ganó.",
+          "title": "Monedas de Dina cada día",
+          "data": {
+            "categories": [
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              },
+              {
+                "label": "Mié"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quarta: lavou todos os copos, 10 moedas. Foi o que mais ganhou.",
+          "title": "Moedas da Dina por dia",
+          "data": {
+            "categories": [
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              },
+              {
+                "label": "Qua"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "read-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "pictogram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "thu"
+            },
+            {
+              "id": "fri"
+            },
+            {
+              "id": "sat"
+            }
+          ],
+          "series": [
+            {
+              "id": "coins",
+              "values": [
+                5,
+                10,
+                5
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "thu"
+            },
+            {
+              "id": "fri"
+            },
+            {
+              "id": "sat"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "fri"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Look at Dina's next three days.",
+          "title": "Dina's next three days",
+          "data": {
+            "categories": [
+              {
+                "label": "Thu"
+              },
+              {
+                "label": "Fri"
+              },
+              {
+                "label": "Sat"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which day earned the most coins?",
+            "options": [
+              {
+                "label": "Thursday"
+              },
+              {
+                "label": "Friday"
+              },
+              {
+                "label": "Saturday"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You compared the rows and found the longest one.",
+            "not_yet": "Not yet. Count the coins in each row and compare."
+          },
+          "help": [
+            "Count the coins in one row.",
+            "Then count the next row."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mira los siguientes tres días de Dina.",
+          "title": "Los siguientes tres días de Dina",
+          "data": {
+            "categories": [
+              {
+                "label": "Jue"
+              },
+              {
+                "label": "Vie"
+              },
+              {
+                "label": "Sáb"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué día ganó más monedas?",
+            "options": [
+              {
+                "label": "Jueves"
+              },
+              {
+                "label": "Viernes"
+              },
+              {
+                "label": "Sábado"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Comparaste las filas y encontraste la más larga.",
+            "not_yet": "Todavía no. Cuenta las monedas de cada fila y compara."
+          },
+          "help": [
+            "Cuenta las monedas de una fila.",
+            "Luego cuenta la siguiente fila."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Veja os próximos três dias da Dina.",
+          "title": "Os próximos três dias da Dina",
+          "data": {
+            "categories": [
+              {
+                "label": "Qui"
+              },
+              {
+                "label": "Sex"
+              },
+              {
+                "label": "Sáb"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual dia ganhou mais moedas?",
+            "options": [
+              {
+                "label": "Quinta"
+              },
+              {
+                "label": "Sexta"
+              },
+              {
+                "label": "Sábado"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você comparou as linhas e achou a mais comprida.",
+            "not_yet": "Ainda não. Conte as moedas de cada linha e compare."
+          },
+          "help": [
+            "Conte as moedas de uma linha.",
+            "Depois conte a próxima linha."
+          ]
+        }
+      }
+    },
+    {
+      "id": "add-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina adds up her three days.",
+          "line": "5 + 0 + 10 is 15. Are we okay so far?"
+        },
+        "es-MX": {
+          "prompt": "Dina suma sus tres días.",
+          "line": "5 + 0 + 10 es 15. ¿Vamos bien?"
+        },
+        "pt-BR": {
+          "prompt": "A Dina soma os três dias.",
+          "line": "5 + 0 + 10 é 15. Estamos bem?"
+        }
+      }
+    },
+    {
+      "id": "total-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 4
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 20,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina's days: 5, 10, 5. Put her total in the tray.",
+          "feedback": {
+            "met": "You added the three days and showed the total.",
+            "not_yet": "Not yet. Add the days one at a time."
+          },
+          "help": [
+            "Start with the first day's coins.",
+            "Then add the next day's coins."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los días de Dina: 5, 10, 5. Pon su total en la bandeja.",
+          "feedback": {
+            "met": "Sumaste los tres días y mostraste el total.",
+            "not_yet": "Todavía no. Suma los días de uno en uno."
+          },
+          "help": [
+            "Empieza con las monedas del primer día.",
+            "Luego suma las monedas del siguiente día."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os dias da Dina: 5, 10, 5. Coloque o total na bandeja.",
+          "feedback": {
+            "met": "Você somou os três dias e mostrou o total.",
+            "not_yet": "Ainda não. Some os dias um de cada vez."
+          },
+          "help": [
+            "Comece com as moedas do primeiro dia.",
+            "Depois some as moedas do próximo dia."
+          ]
+        }
+      }
+    },
+    {
+      "id": "read-02",
+      "type": "visual.chart.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "pictogram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "sun"
+            },
+            {
+              "id": "mon"
+            },
+            {
+              "id": "tue"
+            }
+          ],
+          "series": [
+            {
+              "id": "coins",
+              "values": [
+                0,
+                5,
+                5
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "sun"
+            },
+            {
+              "id": "mon"
+            },
+            {
+              "id": "tue"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "sun"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Look at Dina's new notebook page.",
+          "title": "Dina's new page",
+          "data": {
+            "categories": [
+              {
+                "label": "Sun"
+              },
+              {
+                "label": "Mon"
+              },
+              {
+                "label": "Tue"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which day shows no coins?",
+            "options": [
+              {
+                "label": "Sunday"
+              },
+              {
+                "label": "Monday"
+              },
+              {
+                "label": "Tuesday"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You found the empty row: no work, no coins.",
+            "not_yet": "Not yet. Look for the row with no coins."
+          },
+          "help": [
+            "Look at each row, one by one.",
+            "Remember Tuesday: no work, no coins."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mira la nueva página del cuaderno de Dina.",
+          "title": "La nueva página de Dina",
+          "data": {
+            "categories": [
+              {
+                "label": "Dom"
+              },
+              {
+                "label": "Lun"
+              },
+              {
+                "label": "Mar"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué día no tiene monedas?",
+            "options": [
+              {
+                "label": "Domingo"
+              },
+              {
+                "label": "Lunes"
+              },
+              {
+                "label": "Martes"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Encontraste la fila vacía: sin trabajo, sin monedas.",
+            "not_yet": "Todavía no. Busca la fila sin monedas."
+          },
+          "help": [
+            "Mira cada fila, una por una.",
+            "Recuerda el martes: sin trabajo, sin monedas."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Veja a nova página do caderno da Dina.",
+          "title": "A nova página da Dina",
+          "data": {
+            "categories": [
+              {
+                "label": "Dom"
+              },
+              {
+                "label": "Seg"
+              },
+              {
+                "label": "Ter"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual dia não tem moedas?",
+            "options": [
+              {
+                "label": "Domingo"
+              },
+              {
+                "label": "Segunda"
+              },
+              {
+                "label": "Terça"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você achou a linha vazia: sem trabalho, sem moedas.",
+            "not_yet": "Ainda não. Procure a linha sem moedas."
+          },
+          "help": [
+            "Olhe cada linha, uma por uma.",
+            "Lembre da terça: sem trabalho, sem moedas."
+          ]
+        }
+      }
+    },
+    {
+      "id": "total-02",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 4
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 10,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina's days: 0, 5, 5. Put the total in the tray.",
+          "feedback": {
+            "met": "You added every day, even the zero.",
+            "not_yet": "Not yet. Add each day, one at a time."
+          },
+          "help": [
+            "A zero adds no coins to the tray.",
+            "Add the other two days."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los días de Dina: 0, 5, 5. Pon el total en la bandeja.",
+          "feedback": {
+            "met": "Sumaste todos los días, incluso el cero.",
+            "not_yet": "Todavía no. Suma cada día, uno a uno."
+          },
+          "help": [
+            "Un cero no agrega monedas a la bandeja.",
+            "Suma los otros dos días."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os dias da Dina: 0, 5, 5. Coloque o total na bandeja.",
+          "feedback": {
+            "met": "Você somou todos os dias, até o zero.",
+            "not_yet": "Ainda não. Some cada dia, um de cada vez."
+          },
+          "help": [
+            "Um zero não coloca moedas na bandeja.",
+            "Some os outros dois dias."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-play"
+          },
+          {
+            "id": "opt-carry"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-carry"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the school bake sale, which task earns Dina coins?",
+          "feedback": {
+            "met": "Finished work is what earns, here too.",
+            "not_yet": "Not yet. Which task is finished work?"
+          },
+          "options": [
+            {
+              "label": "Plays near the trays"
+            },
+            {
+              "label": "Carries all the trays"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la venta de pasteles de la escuela, ¿qué trabajo gana monedas?",
+          "feedback": {
+            "met": "El trabajo terminado es lo que gana, aquí también.",
+            "not_yet": "Todavía no. ¿Cuál trabajo queda terminado?"
+          },
+          "options": [
+            {
+              "label": "Jugar cerca de las charolas"
+            },
+            {
+              "label": "Llevar todas las charolas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na venda de bolos da escola, qual trabalho dá moedas à Dina?",
+          "feedback": {
+            "met": "Trabalho terminado é o que ganha, aqui também.",
+            "not_yet": "Ainda não. Qual trabalho fica terminado?"
+          },
+          "options": [
+            {
+              "label": "Brincar perto das bandejas"
+            },
+            {
+              "label": "Levar todas as bandejas"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

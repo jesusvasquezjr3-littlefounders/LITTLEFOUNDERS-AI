@@ -1,0 +1,2406 @@
+{
+  "namespace": "a3c1f0de-5b7e-4c21-9d34-7e6f1b2a8c90",
+  "course_slug": "entrepreneurship",
+  "tables": {
+    "courses": [
+      {
+        "id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "slug": "entrepreneurship",
+        "title": {
+          "en-US": "Entrepreneurship",
+          "es-MX": "Emprendimiento",
+          "pt-BR": "Empreendedorismo"
+        },
+        "description": {
+          "en-US": "Learn how to turn an idea into something real that people want.",
+          "es-MX": "Aprende cómo convertir una idea en algo real que la gente quiera.",
+          "pt-BR": "Aprenda como transformar uma ideia em algo real que as pessoas queiram."
+        },
+        "subject": "economics",
+        "status": "draft",
+        "position": 2,
+        "requires": [
+          "financial-education"
+        ],
+        "badge_asset": "course-badges/entrepreneurship.png"
+      }
+    ],
+    "adventures": [
+      {
+        "id": "85ea7955-cba2-593c-9a62-e070bf38d346",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 1,
+        "slug": "ent-69-little-inventors",
+        "title": {
+          "en-US": "Little inventors",
+          "es-MX": "Pequeños inventores",
+          "pt-BR": "Pequenos inventores"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "7026c60c-dcf4-5dd1-8a4e-41eea7ea3514",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 2,
+        "slug": "ent-69-little-stall",
+        "title": {
+          "en-US": "Our little stall",
+          "es-MX": "Nuestro puestito",
+          "pt-BR": "Nossa barraquinha"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "1f76da06-4a1f-5e12-b7fc-0344bf6062f6",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 3,
+        "slug": "ent-1012-find-opportunity",
+        "title": {
+          "en-US": "Is it worth trying?",
+          "es-MX": "¿Vale la pena intentarlo?",
+          "pt-BR": "Vale a pena tentar?"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "0303b881-3296-53b3-9335-587b98f2e89b",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 4,
+        "slug": "ent-1012-first-version",
+        "title": {
+          "en-US": "Build the first version",
+          "es-MX": "Construye la primera versión",
+          "pt-BR": "Construa a primeira versão"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "b88625e4-e67a-57b7-9394-98a5e8f1eb3e",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 5,
+        "slug": "ent-1012-pitch-price-budget",
+        "title": {
+          "en-US": "Pitch it, price it, budget it",
+          "es-MX": "Preséntalo, ponle precio y presupuéstalo",
+          "pt-BR": "Apresente, precifique e planeje o orçamento"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "9d900f3c-22c0-5004-bab1-11421a8f6424",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 6,
+        "slug": "ent-1317-prove-demand",
+        "title": {
+          "en-US": "Prove people want it",
+          "es-MX": "Demuestra que la gente lo quiere",
+          "pt-BR": "Prove que as pessoas querem"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "dd4b6bc4-95b0-54fb-bf5e-a3f1de107270",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 7,
+        "slug": "ent-1317-know-your-numbers",
+        "title": {
+          "en-US": "Know your numbers",
+          "es-MX": "Conoce tus números",
+          "pt-BR": "Conheça seus números"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "3793e9dd-f41b-5727-8d33-e60fd94aa7d5",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 8,
+        "slug": "ent-1317-negotiate-lead-honest",
+        "title": {
+          "en-US": "Negotiate, lead, stay honest",
+          "es-MX": "Negocia, lidera y sé honesto",
+          "pt-BR": "Negocie, lidere e seja honesto"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "1ad16f78-a30c-5903-88cb-aa2dde80d1db",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 9,
+        "slug": "ent-adult-real-business",
+        "title": {
+          "en-US": "Is my business real?",
+          "es-MX": "¿Mi negocio es real?",
+          "pt-BR": "Meu negócio é real?"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      },
+      {
+        "id": "e136c7e0-c71f-5caf-9d02-9ce4bf9605b7",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 10,
+        "slug": "ent-adult-trusted-deals",
+        "title": {
+          "en-US": "Deals you can trust",
+          "es-MX": "Tratos en los que puedes confiar",
+          "pt-BR": "Negócios em que você pode confiar"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      },
+      {
+        "id": "14be3948-d628-5caa-8d40-6dd26ccc1995",
+        "course_id": "eb027ae4-480c-5d69-9e7a-4d8db5410afc",
+        "position": 11,
+        "slug": "ent-adult-lead-and-last",
+        "title": {
+          "en-US": "Lead it and make it last",
+          "es-MX": "Lidéralo y haz que dure",
+          "pt-BR": "Lidere e faça durar"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      }
+    ],
+    "sagas": [
+      {
+        "id": "19c30a7f-6090-5613-9632-a702e69ebd03",
+        "adventure_id": "85ea7955-cba2-593c-9a62-e070bf38d346",
+        "position": 1,
+        "slug": "ent-69-little-inventors",
+        "title": {
+          "en-US": "Little inventors",
+          "es-MX": "Pequeños inventores",
+          "pt-BR": "Pequenos inventores"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "f42244fb-fec9-5f3d-9283-1c7072a887bc",
+        "adventure_id": "7026c60c-dcf4-5dd1-8a4e-41eea7ea3514",
+        "position": 1,
+        "slug": "ent-69-little-stall",
+        "title": {
+          "en-US": "Our little stall",
+          "es-MX": "Nuestro puestito",
+          "pt-BR": "Nossa barraquinha"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "b3f68b5b-d412-560b-a1ec-0697cbbe2667",
+        "adventure_id": "1f76da06-4a1f-5e12-b7fc-0344bf6062f6",
+        "position": 1,
+        "slug": "ent-1012-find-opportunity",
+        "title": {
+          "en-US": "Is it worth trying?",
+          "es-MX": "¿Vale la pena intentarlo?",
+          "pt-BR": "Vale a pena tentar?"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "f2845c61-e785-50d0-89e0-49236f040ed4",
+        "adventure_id": "0303b881-3296-53b3-9335-587b98f2e89b",
+        "position": 1,
+        "slug": "ent-1012-first-version",
+        "title": {
+          "en-US": "Build the first version",
+          "es-MX": "Construye la primera versión",
+          "pt-BR": "Construa a primeira versão"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "1bfe4b9f-d708-5312-aebd-f71a0e46142f",
+        "adventure_id": "b88625e4-e67a-57b7-9394-98a5e8f1eb3e",
+        "position": 1,
+        "slug": "ent-1012-pitch-price-budget",
+        "title": {
+          "en-US": "Pitch it, price it, budget it",
+          "es-MX": "Preséntalo, ponle precio y presupuéstalo",
+          "pt-BR": "Apresente, precifique e planeje o orçamento"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "f3ba3e87-4b84-5e82-8bae-4d5301ab59e0",
+        "adventure_id": "9d900f3c-22c0-5004-bab1-11421a8f6424",
+        "position": 1,
+        "slug": "ent-1317-prove-demand",
+        "title": {
+          "en-US": "Prove people want it",
+          "es-MX": "Demuestra que la gente lo quiere",
+          "pt-BR": "Prove que as pessoas querem"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "1ac9b8e2-aadd-5407-b732-c3b07182b1b9",
+        "adventure_id": "dd4b6bc4-95b0-54fb-bf5e-a3f1de107270",
+        "position": 1,
+        "slug": "ent-1317-know-your-numbers",
+        "title": {
+          "en-US": "Know your numbers",
+          "es-MX": "Conoce tus números",
+          "pt-BR": "Conheça seus números"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "78beaf2a-1118-5608-9a08-2adcefd4808b",
+        "adventure_id": "3793e9dd-f41b-5727-8d33-e60fd94aa7d5",
+        "position": 1,
+        "slug": "ent-1317-negotiate-lead-honest",
+        "title": {
+          "en-US": "Negotiate, lead, stay honest",
+          "es-MX": "Negocia, lidera y sé honesto",
+          "pt-BR": "Negocie, lidere e seja honesto"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "15b7536b-e795-5367-b2f2-2326705ec6d4",
+        "adventure_id": "1ad16f78-a30c-5903-88cb-aa2dde80d1db",
+        "position": 1,
+        "slug": "ent-adult-real-business",
+        "title": {
+          "en-US": "Is my business real?",
+          "es-MX": "¿Mi negocio es real?",
+          "pt-BR": "Meu negócio é real?"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "679e9f5c-0509-5114-9b1b-bf6510dd0786",
+        "adventure_id": "e136c7e0-c71f-5caf-9d02-9ce4bf9605b7",
+        "position": 1,
+        "slug": "ent-adult-trusted-deals",
+        "title": {
+          "en-US": "Deals you can trust",
+          "es-MX": "Tratos en los que puedes confiar",
+          "pt-BR": "Negócios em que você pode confiar"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "6f28c928-54dc-5ea6-89e1-7ff5366322ad",
+        "adventure_id": "14be3948-d628-5caa-8d40-6dd26ccc1995",
+        "position": 1,
+        "slug": "ent-adult-lead-and-last",
+        "title": {
+          "en-US": "Lead it and make it last",
+          "es-MX": "Lidéralo y haz que dure",
+          "pt-BR": "Lidere e faça durar"
+        },
+        "status": "draft"
+      }
+    ],
+    "topics": [
+      {
+        "id": "33295739-2361-58fe-bd6d-24112fde5099",
+        "saga_id": "19c30a7f-6090-5613-9632-a702e69ebd03",
+        "position": 1,
+        "slug": "ent-69-01-who-has-the-problem",
+        "title": {
+          "en-US": "Who has the problem?",
+          "es-MX": "¿Quién tiene el problema?",
+          "pt-BR": "Quem tem o problema?"
+        },
+        "learning_objective": {
+          "en-US": "Notice a problem that keeps happening to someone, and name exactly who has it and why it matters to them.",
+          "es-MX": "Notar un problema que se repite para alguien y nombrar exactamente quién lo vive y por qué le importa.",
+          "pt-BR": "Perceber um problema que se repete para alguém e nomear exatamente quem o vive e por que isso importa."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "55f304e2-427f-579c-b21d-f1adf7c061ba",
+        "saga_id": "19c30a7f-6090-5613-9632-a702e69ebd03",
+        "position": 2,
+        "slug": "ent-69-02-many-ideas",
+        "title": {
+          "en-US": "Many ideas, one pick",
+          "es-MX": "Muchas ideas, una elección",
+          "pt-BR": "Muitas ideias, uma escolha"
+        },
+        "learning_objective": {
+          "en-US": "Turn a problem into solution ideas and compare them to pick the most useful one.",
+          "es-MX": "Convertir un problema en ideas de solución y compararlas para elegir la más útil.",
+          "pt-BR": "Transformar um problema em ideias de solução e compará-las para escolher a mais útil."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "f965d3c2-0ccb-571f-9644-c2fdb7712cce",
+        "saga_id": "19c30a7f-6090-5613-9632-a702e69ebd03",
+        "position": 3,
+        "slug": "ent-69-03-build-and-test",
+        "title": {
+          "en-US": "Build a little, test a little",
+          "es-MX": "Construye un poco, prueba un poco",
+          "pt-BR": "Monte um pouco, teste um pouco"
+        },
+        "learning_objective": {
+          "en-US": "Plan a simple build, test it against the problem, and use what the test shows to improve it.",
+          "es-MX": "Planear una construcción sencilla, probarla contra el problema y usar lo que muestra la prueba para mejorarla.",
+          "pt-BR": "Planejar uma construção simples, testá-la contra o problema e usar o que o teste mostra para melhorá-la."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "57489e00-a4f5-5596-a274-0db2f3e046d2",
+        "saga_id": "19c30a7f-6090-5613-9632-a702e69ebd03",
+        "position": 4,
+        "slug": "ent-69-04-listen-and-improve",
+        "title": {
+          "en-US": "Listen, then improve",
+          "es-MX": "Escucha y mejora",
+          "pt-BR": "Escute e melhore"
+        },
+        "learning_objective": {
+          "en-US": "Listen to what customers say without defending, decide which comments should change the product, and check the change.",
+          "es-MX": "Escuchar lo que dicen los clientes sin defenderse, decidir qué comentarios deben cambiar el producto y comprobar el cambio.",
+          "pt-BR": "Ouvir o que os clientes dizem sem se defender, decidir quais comentários devem mudar o produto e verificar a mudança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "194e148c-741c-55ab-aa8c-12bfc2373834",
+        "saga_id": "f42244fb-fec9-5f3d-9283-1c7072a887bc",
+        "position": 1,
+        "slug": "ent-69-05-say-why-it-helps",
+        "title": {
+          "en-US": "Say why it helps",
+          "es-MX": "Cuenta por qué ayuda",
+          "pt-BR": "Diga por que ajuda"
+        },
+        "learning_objective": {
+          "en-US": "Explain clearly what a product does, who it is for and which problem it solves.",
+          "es-MX": "Explicar con claridad qué hace un producto, para quién es y qué problema resuelve.",
+          "pt-BR": "Explicar com clareza o que um produto faz, para quem é e que problema resolve."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9bf2f754-7fa6-53f1-a792-55ef2f86eaa2",
+        "saga_id": "f42244fb-fec9-5f3d-9283-1c7072a887bc",
+        "position": 2,
+        "slug": "ent-69-06-cost-and-price",
+        "title": {
+          "en-US": "Cost and price",
+          "es-MX": "Costo y precio",
+          "pt-BR": "Custo e preço"
+        },
+        "learning_objective": {
+          "en-US": "Tell apart what it costs to make something from the price it sells for.",
+          "es-MX": "Distinguir lo que cuesta hacer algo del precio al que se vende.",
+          "pt-BR": "Distinguir o que custa fazer algo do preço pelo qual é vendido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "a29d4d5f-bf0e-5047-a9a7-b97c3582a234",
+        "saga_id": "f42244fb-fec9-5f3d-9283-1c7072a887bc",
+        "position": 3,
+        "slug": "ent-69-07-money-that-comes-in",
+        "title": {
+          "en-US": "Coins that come in",
+          "es-MX": "Monedas que entran",
+          "pt-BR": "Moedas que entram"
+        },
+        "learning_objective": {
+          "en-US": "Work out all the money a stand takes in from its sales.",
+          "es-MX": "Calcular todo el dinero que un puesto recibe por sus ventas.",
+          "pt-BR": "Calcular todo o dinheiro que uma barraca recebe por suas vendas."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "83726c10-b5bb-57df-9d9f-5a109ea8e097",
+        "saga_id": "f42244fb-fec9-5f3d-9283-1c7072a887bc",
+        "position": 4,
+        "slug": "ent-69-08-what-is-left",
+        "title": {
+          "en-US": "What is left",
+          "es-MX": "Lo que queda",
+          "pt-BR": "O que sobra"
+        },
+        "learning_objective": {
+          "en-US": "Find the profit by taking the costs away from the money that came in.",
+          "es-MX": "Encontrar la ganancia quitando los costos al dinero que entró.",
+          "pt-BR": "Encontrar o lucro tirando os custos do dinheiro que entrou."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "78005f73-3cf0-5d43-9e3c-5c2ed1f5423b",
+        "saga_id": "b3f68b5b-d412-560b-a1ec-0697cbbe2667",
+        "position": 1,
+        "slug": "ent-1012-01-the-problem-behind-the-complaint",
+        "title": {
+          "en-US": "The problem behind the complaint",
+          "es-MX": "El problema detrás de la queja",
+          "pt-BR": "O problema por trás da reclamação"
+        },
+        "learning_objective": {
+          "en-US": "Notice a problem that keeps happening to someone, and name exactly who has it and why it matters to them.",
+          "es-MX": "Notar un problema que se repite para alguien y nombrar exactamente quién lo vive y por qué le importa.",
+          "pt-BR": "Perceber um problema que se repete para alguém e nomear exatamente quem o vive e por que isso importa."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9d4b5882-8999-528e-b218-c1df9cc4007b",
+        "saga_id": "b3f68b5b-d412-560b-a1ec-0697cbbe2667",
+        "position": 2,
+        "slug": "ent-1012-02-opportunity-signals",
+        "title": {
+          "en-US": "Signal or hunch?",
+          "es-MX": "¿Señal o corazonada?",
+          "pt-BR": "Sinal ou palpite?"
+        },
+        "learning_objective": {
+          "en-US": "Find signals of an opportunity, such as repeated complaints, recent changes and gaps in what exists, and check them with real evidence.",
+          "es-MX": "Encontrar señales de oportunidad, como quejas repetidas, cambios recientes y huecos en lo que existe, y comprobarlas con evidencia real.",
+          "pt-BR": "Encontrar sinais de oportunidade, como reclamações repetidas, mudanças recentes e lacunas no que existe, e confirmá-los com evidência real."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "d1ec1623-bdfb-50fd-9edf-b4271cb00b23",
+        "saga_id": "b3f68b5b-d412-560b-a1ec-0697cbbe2667",
+        "position": 3,
+        "slug": "ent-1012-03-weigh-the-risk",
+        "title": {
+          "en-US": "Weigh the risk",
+          "es-MX": "Pesa el riesgo",
+          "pt-BR": "Pese o risco"
+        },
+        "learning_objective": {
+          "en-US": "Weigh what can be lost against what can be gained before deciding.",
+          "es-MX": "Comparar lo que se puede perder con lo que se puede ganar antes de decidir.",
+          "pt-BR": "Comparar o que se pode perder com o que se pode ganhar antes de decidir."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "47a72ce6-965a-59ac-ac78-ad230594a09a",
+        "saga_id": "b3f68b5b-d412-560b-a1ec-0697cbbe2667",
+        "position": 4,
+        "slug": "ent-1012-04-is-it-a-real-opportunity",
+        "title": {
+          "en-US": "Is it a real opportunity?",
+          "es-MX": "¿Es una oportunidad real?",
+          "pt-BR": "É uma oportunidade real?"
+        },
+        "learning_objective": {
+          "en-US": "Decide whether an idea is a real opportunity by weighing market size, competition, your own advantage and its risks.",
+          "es-MX": "Decidir si una idea es una oportunidad real sopesando el tamaño del mercado, la competencia, tu ventaja propia y sus riesgos.",
+          "pt-BR": "Decidir se uma ideia é uma oportunidade real pesando o tamanho do mercado, a concorrência, sua própria vantagem e os riscos."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "7e007364-402f-563d-b04b-8097d8706d84",
+        "saga_id": "f2845c61-e785-50d0-89e0-49236f040ed4",
+        "position": 1,
+        "slug": "ent-1012-05-pick-the-best-idea",
+        "title": {
+          "en-US": "Pick the best idea",
+          "es-MX": "Elige la mejor idea",
+          "pt-BR": "Escolha a melhor ideia"
+        },
+        "learning_objective": {
+          "en-US": "Turn a problem into solution ideas and compare them to pick the most useful one.",
+          "es-MX": "Convertir un problema en ideas de solución y compararlas para elegir la más útil.",
+          "pt-BR": "Transformar um problema em ideias de solução e compará-las para escolher a mais útil."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "86c12153-4ee2-5d12-b6d3-1ba7fcd1239f",
+        "saga_id": "f2845c61-e785-50d0-89e0-49236f040ed4",
+        "position": 2,
+        "slug": "ent-1012-06-the-smallest-version",
+        "title": {
+          "en-US": "The smallest version",
+          "es-MX": "La versión más pequeña",
+          "pt-BR": "A menor versão"
+        },
+        "learning_objective": {
+          "en-US": "Define the smallest version of a product that already solves the real problem, and what it leaves out for now.",
+          "es-MX": "Definir la versión más pequeña de un producto que ya resuelve el problema real y lo que deja fuera por ahora.",
+          "pt-BR": "Definir a menor versão de um produto que já resolve o problema real e o que ela deixa de fora por enquanto."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "5f5bd948-756e-5b58-a424-e24ff5364210",
+        "saga_id": "f2845c61-e785-50d0-89e0-49236f040ed4",
+        "position": 3,
+        "slug": "ent-1012-07-build-within-limits",
+        "title": {
+          "en-US": "Build within limits",
+          "es-MX": "Construir con límites",
+          "pt-BR": "Construir dentro dos limites"
+        },
+        "learning_objective": {
+          "en-US": "Plan a prototype within a real budget, time and set of tools, cutting extras without breaking the essential part.",
+          "es-MX": "Planear un prototipo dentro de un presupuesto, un tiempo y unas herramientas reales, recortando extras sin romper lo esencial.",
+          "pt-BR": "Planejar um protótipo dentro de um orçamento, um prazo e ferramentas reais, cortando extras sem quebrar o essencial."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "cc37b9c6-7701-56e9-a472-2ac32e353a8a",
+        "saga_id": "f2845c61-e785-50d0-89e0-49236f040ed4",
+        "position": 4,
+        "slug": "ent-1012-08-first-customers-speak",
+        "title": {
+          "en-US": "First customers speak",
+          "es-MX": "Los primeros clientes hablan",
+          "pt-BR": "Os primeiros clientes falam"
+        },
+        "learning_objective": {
+          "en-US": "Listen to what customers say without defending, decide which comments should change the product, and check the change.",
+          "es-MX": "Escuchar lo que dicen los clientes sin defenderse, decidir qué comentarios deben cambiar el producto y comprobar el cambio.",
+          "pt-BR": "Ouvir o que os clientes dizem sem se defender, decidir quais comentários devem mudar o produto e verificar a mudança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "6e0c9e26-d410-57d9-a6c8-0fde5df973ac",
+        "saga_id": "1bfe4b9f-d708-5312-aebd-f71a0e46142f",
+        "position": 1,
+        "slug": "ent-1012-09-the-twenty-second-pitch",
+        "title": {
+          "en-US": "The twenty-second pitch",
+          "es-MX": "El pitch de veinte segundos",
+          "pt-BR": "O pitch de vinte segundos"
+        },
+        "learning_objective": {
+          "en-US": "Explain clearly what a product does, who it is for and which problem it solves.",
+          "es-MX": "Explicar con claridad qué hace un producto, para quién es y qué problema resuelve.",
+          "pt-BR": "Explicar com clareza o que um produto faz, para quem é e que problema resolve."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "05661cf9-6fc8-50cb-a8eb-7bbfa78c1896",
+        "saga_id": "1bfe4b9f-d708-5312-aebd-f71a0e46142f",
+        "position": 2,
+        "slug": "ent-1012-10-cost-and-price-per-bag",
+        "title": {
+          "en-US": "Cost and price per bag",
+          "es-MX": "Costo y precio por bolsa",
+          "pt-BR": "Custo e preço por sacola"
+        },
+        "learning_objective": {
+          "en-US": "Tell apart what it costs to make something from the price it sells for.",
+          "es-MX": "Distinguir lo que cuesta hacer algo del precio al que se vende.",
+          "pt-BR": "Distinguir o que custa fazer algo do preço pelo qual é vendido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "e91a1275-fa68-508f-ad02-d1b6c4b0e942",
+        "saga_id": "1bfe4b9f-d708-5312-aebd-f71a0e46142f",
+        "position": 3,
+        "slug": "ent-1012-11-choose-the-price",
+        "title": {
+          "en-US": "Choose the price",
+          "es-MX": "Elige el precio",
+          "pt-BR": "Escolha o preço"
+        },
+        "learning_objective": {
+          "en-US": "Choose a price that covers costs, leaves a profit and buyers still accept.",
+          "es-MX": "Elegir un precio que cubra los costos, deje ganancia y los compradores acepten.",
+          "pt-BR": "Escolher um preço que cubra os custos, deixe lucro e os compradores aceitem."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "957b3f69-dbfd-540e-b6cb-9ce571258d18",
+        "saga_id": "1bfe4b9f-d708-5312-aebd-f71a0e46142f",
+        "position": 4,
+        "slug": "ent-1012-12-spend-what-you-have",
+        "title": {
+          "en-US": "Spend what you have",
+          "es-MX": "Gasta lo que tienes",
+          "pt-BR": "Gaste o que você tem"
+        },
+        "learning_objective": {
+          "en-US": "Choose what a small business spends on when it cannot pay for everything.",
+          "es-MX": "Elegir en qué gasta un pequeño negocio cuando no alcanza para todo.",
+          "pt-BR": "Escolher em que um pequeno negócio gasta quando não dá para pagar tudo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "327855b9-07f0-5e40-9c53-1a90cce5d1b2",
+        "saga_id": "f3ba3e87-4b84-5e82-8bae-4d5301ab59e0",
+        "position": 1,
+        "slug": "ent-1317-01-ask-before-you-build",
+        "title": {
+          "en-US": "Ask before you build",
+          "es-MX": "Pregunta antes de construir",
+          "pt-BR": "Pergunte antes de construir"
+        },
+        "learning_objective": {
+          "en-US": "Plan and run an interview with open, non-leading questions that lets the person describe the problem in their own words.",
+          "es-MX": "Planear y hacer una entrevista con preguntas abiertas que no dirigen, para que la persona describa el problema con sus palabras.",
+          "pt-BR": "Planejar e fazer uma entrevista com perguntas abertas que não induzem, para a pessoa descrever o problema com suas palavras."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "250e0890-c017-57ef-a139-4dfa71661f32",
+        "saga_id": "f3ba3e87-4b84-5e82-8bae-4d5301ab59e0",
+        "position": 2,
+        "slug": "ent-1317-02-one-comment-is-a-clue",
+        "title": {
+          "en-US": "One comment is a clue",
+          "es-MX": "Un comentario es una pista",
+          "pt-BR": "Um comentário é uma pista"
+        },
+        "learning_objective": {
+          "en-US": "Compare several interviews, separate facts from opinions, and treat one comment as a clue rather than a pattern.",
+          "es-MX": "Comparar varias entrevistas, separar hechos de opiniones y tratar un comentario aislado como una pista, no como un patrón.",
+          "pt-BR": "Comparar várias entrevistas, separar fatos de opiniões e tratar um comentário isolado como pista, não como padrão."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "4b8f60d6-d652-52ac-b3ee-c9171a6c54d8",
+        "saga_id": "f3ba3e87-4b84-5e82-8bae-4d5301ab59e0",
+        "position": 3,
+        "slug": "ent-1317-03-sell-by-asking",
+        "title": {
+          "en-US": "Sell by asking",
+          "es-MX": "Vende preguntando",
+          "pt-BR": "Venda perguntando"
+        },
+        "learning_objective": {
+          "en-US": "Sell by first asking about the customer's problem, connecting only the relevant part of the product, and closing with a question.",
+          "es-MX": "Vender preguntando primero por el problema del cliente, conectando solo la parte útil del producto y cerrando con una pregunta.",
+          "pt-BR": "Vender perguntando primeiro sobre o problema do cliente, ligando só a parte útil do produto e fechando com uma pergunta."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "180b41ea-77b0-5a8b-ae3e-fa9d7164ade2",
+        "saga_id": "f3ba3e87-4b84-5e82-8bae-4d5301ab59e0",
+        "position": 4,
+        "slug": "ent-1317-04-where-the-funnel-leaks",
+        "title": {
+          "en-US": "Where the funnel leaks",
+          "es-MX": "Dónde se fuga el embudo",
+          "pt-BR": "Onde o funil vaza"
+        },
+        "learning_objective": {
+          "en-US": "Count people at each stage of a sales funnel, find the conversion rate, and pick the stage that loses the most people.",
+          "es-MX": "Contar a las personas en cada etapa del embudo de ventas, calcular la tasa de conversión y elegir la etapa que más gente pierde.",
+          "pt-BR": "Contar as pessoas em cada etapa do funil de vendas, calcular a taxa de conversão e escolher a etapa que mais perde gente."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "43e9df25-2a3c-5d45-a1ac-ea0876643cc7",
+        "saga_id": "1ac9b8e2-aadd-5407-b732-c3b07182b1b9",
+        "position": 1,
+        "slug": "ent-1317-05-the-real-cost-of-one",
+        "title": {
+          "en-US": "The real cost of one",
+          "es-MX": "El costo real de uno",
+          "pt-BR": "O custo real de um"
+        },
+        "learning_objective": {
+          "en-US": "Add fixed, variable and hidden costs and the value of your time to find the real cost of each unit.",
+          "es-MX": "Sumar costos fijos, variables y escondidos y el valor de tu tiempo para encontrar el costo real de cada unidad.",
+          "pt-BR": "Somar custos fixos, variáveis e escondidos e o valor do seu tempo para encontrar o custo real de cada unidade."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "bb0436c5-1750-55ce-8813-9d7ae13bd42c",
+        "saga_id": "1ac9b8e2-aadd-5407-b732-c3b07182b1b9",
+        "position": 2,
+        "slug": "ent-1317-06-how-much-is-kept",
+        "title": {
+          "en-US": "How much is kept",
+          "es-MX": "Cuánto te queda",
+          "pt-BR": "Quanto fica com você"
+        },
+        "learning_objective": {
+          "en-US": "Find the margin in currency and as a percentage of the price, and show how a discount reduces it.",
+          "es-MX": "Calcular el margen en dinero y como porcentaje del precio, y mostrar cómo un descuento lo reduce.",
+          "pt-BR": "Calcular a margem em dinheiro e como porcentagem do preço, e mostrar como um desconto a reduz."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9e584a38-7fde-54c0-b104-5c2c4c6389a8",
+        "saga_id": "1ac9b8e2-aadd-5407-b732-c3b07182b1b9",
+        "position": 3,
+        "slug": "ent-1317-07-the-break-even-point",
+        "title": {
+          "en-US": "The break-even point",
+          "es-MX": "El punto de equilibrio",
+          "pt-BR": "O ponto de equilíbrio"
+        },
+        "learning_objective": {
+          "en-US": "Find how many units must be sold to cover fixed costs, and how price and fixed costs move that point.",
+          "es-MX": "Calcular cuántas unidades hay que vender para cubrir los costos fijos y cómo el precio y los costos fijos mueven ese punto.",
+          "pt-BR": "Calcular quantas unidades precisam ser vendidas para cobrir os custos fixos e como o preço e os custos fixos movem esse ponto."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "0c433257-05eb-5d99-a240-e03de1d4339f",
+        "saga_id": "1ac9b8e2-aadd-5407-b732-c3b07182b1b9",
+        "position": 4,
+        "slug": "ent-1317-08-price-and-demand",
+        "title": {
+          "en-US": "Price and demand",
+          "es-MX": "Precio y demanda",
+          "pt-BR": "Preço e demanda"
+        },
+        "learning_objective": {
+          "en-US": "Choose a price that covers costs, leaves a profit and buyers still accept.",
+          "es-MX": "Elegir un precio que cubra los costos, deje ganancia y los compradores acepten.",
+          "pt-BR": "Escolher um preço que cubra os custos, deixe lucro e os compradores aceitem."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "94b06556-1e7e-540a-ba47-3d3a90ce7a88",
+        "saga_id": "78beaf2a-1118-5608-9a08-2adcefd4808b",
+        "position": 1,
+        "slug": "ent-1317-09-a-deal-both-accept",
+        "title": {
+          "en-US": "A deal both sides accept",
+          "es-MX": "Un trato que ambos aceptan",
+          "pt-BR": "Um acordo que os dois aceitam"
+        },
+        "learning_objective": {
+          "en-US": "Set your limit before negotiating, find what the other person really wants, trade low-cost concessions, and say no respectfully.",
+          "es-MX": "Fijar tu límite antes de negociar, descubrir qué quiere de verdad la otra persona, ceder lo que te cuesta poco y decir que no con respeto.",
+          "pt-BR": "Definir seu limite antes de negociar, descobrir o que a outra pessoa realmente quer, ceder o que custa pouco e dizer não com respeito."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "37c25c1c-f235-5e44-8923-c5b7a478f55f",
+        "saga_id": "78beaf2a-1118-5608-9a08-2adcefd4808b",
+        "position": 2,
+        "slug": "ent-1317-10-persuade-without-tricks",
+        "title": {
+          "en-US": "Persuade without tricks",
+          "es-MX": "Convence sin trucos",
+          "pt-BR": "Convença sem truques"
+        },
+        "learning_objective": {
+          "en-US": "Tell persuasion with real reasons from manipulation with lies, fake urgency or invented reviews, and choose the honest way.",
+          "es-MX": "Distinguir la persuasión con razones reales de la manipulación con mentiras, urgencia falsa o reseñas inventadas, y elegir el camino honesto.",
+          "pt-BR": "Distinguir a persuasão com razões reais da manipulação com mentiras, urgência falsa ou avaliações inventadas, e escolher o caminho honesto."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "551f402c-565c-5bfc-bd9d-cec8d1f765a5",
+        "saga_id": "78beaf2a-1118-5608-9a08-2adcefd4808b",
+        "position": 3,
+        "slug": "ent-1317-11-hand-it-over",
+        "title": {
+          "en-US": "Hand it over clearly",
+          "es-MX": "Entregar con claridad",
+          "pt-BR": "Entregar com clareza"
+        },
+        "learning_objective": {
+          "en-US": "Decide which tasks or decisions to hand over, to whom, with a clear expected result and agreed check-ins.",
+          "es-MX": "Decidir qué tareas o decisiones soltar, a quién, con un resultado esperado claro y revisiones acordadas.",
+          "pt-BR": "Decidir quais tarefas ou decisões passar adiante, para quem, com um resultado esperado claro e revisões combinadas."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "bee1bf2b-b0fc-5677-af53-6de783a36c8a",
+        "saga_id": "78beaf2a-1118-5608-9a08-2adcefd4808b",
+        "position": 4,
+        "slug": "ent-1317-12-the-way-we-work",
+        "title": {
+          "en-US": "The way we work",
+          "es-MX": "Nuestra forma de trabajar",
+          "pt-BR": "Nosso jeito de trabalhar"
+        },
+        "learning_objective": {
+          "en-US": "Explain how habits, specific recognition, the way mistakes are handled and a leader's example shape a team's culture.",
+          "es-MX": "Explicar cómo los hábitos, el reconocimiento específico, la forma de tratar los errores y el ejemplo del líder forman la cultura de un equipo.",
+          "pt-BR": "Explicar como hábitos, reconhecimento específico, a forma de lidar com erros e o exemplo do líder formam a cultura de uma equipe."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9a4d625a-af93-56ce-bb28-a3659e76b548",
+        "saga_id": "15b7536b-e795-5367-b2f2-2326705ec6d4",
+        "position": 1,
+        "slug": "ent-adult-01-is-it-a-real-opportunity",
+        "title": {
+          "en-US": "Is it a real opportunity?",
+          "es-MX": "¿Es una oportunidad real?",
+          "pt-BR": "É uma oportunidade real?"
+        },
+        "learning_objective": {
+          "en-US": "Decide whether an idea is a real opportunity by weighing market size, competition, your own advantage and its risks.",
+          "es-MX": "Decidir si una idea es una oportunidad real sopesando el tamaño del mercado, la competencia, tu ventaja propia y sus riesgos.",
+          "pt-BR": "Decidir se uma ideia é uma oportunidade real pesando o tamanho do mercado, a concorrência, sua própria vantagem e os riscos."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "25ee39fa-e394-51ee-a9d7-d1c683cddd0b",
+        "saga_id": "15b7536b-e795-5367-b2f2-2326705ec6d4",
+        "position": 2,
+        "slug": "ent-adult-02-how-many-jobs-to-break-even",
+        "title": {
+          "en-US": "How many repairs to break even?",
+          "es-MX": "¿Cuántas reparaciones hasta el punto de equilibrio?",
+          "pt-BR": "Quantos consertos até o ponto de equilíbrio?"
+        },
+        "learning_objective": {
+          "en-US": "Find how many units must be sold to cover fixed costs, and how price and fixed costs move that point.",
+          "es-MX": "Calcular cuántas unidades hay que vender para cubrir los costos fijos y cómo el precio y los costos fijos mueven ese punto.",
+          "pt-BR": "Calcular quantas unidades precisam ser vendidas para cobrir os custos fixos e como o preço e os custos fixos movem esse ponto."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c3c482b8-af32-5867-a68c-da74618cbc3c",
+        "saga_id": "15b7536b-e795-5367-b2f2-2326705ec6d4",
+        "position": 3,
+        "slug": "ent-adult-03-the-price-you-can-defend",
+        "title": {
+          "en-US": "The price you can defend",
+          "es-MX": "El precio que puedes defender",
+          "pt-BR": "O preço que você consegue defender"
+        },
+        "learning_objective": {
+          "en-US": "Choose a price that covers costs, leaves a profit and buyers still accept.",
+          "es-MX": "Elegir un precio que cubra los costos, deje ganancia y los compradores acepten.",
+          "pt-BR": "Escolher um preço que cubra os custos, deixe lucro e os compradores aceitem."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c7beeccc-76c4-51d0-bbd7-a4eb68240bb1",
+        "saga_id": "15b7536b-e795-5367-b2f2-2326705ec6d4",
+        "position": 4,
+        "slug": "ent-adult-04-the-whole-model-on-one-page",
+        "title": {
+          "en-US": "The whole model on one page",
+          "es-MX": "El modelo completo en una página",
+          "pt-BR": "O modelo completo em uma página"
+        },
+        "learning_objective": {
+          "en-US": "Connect problem, customer, product, price, channel and team into one coherent business model.",
+          "es-MX": "Conectar problema, cliente, producto, precio, canal y equipo en un solo modelo de negocio coherente.",
+          "pt-BR": "Conectar problema, cliente, produto, preço, canal e equipe em um único modelo de negócio coerente."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "3adaf1d3-dc0e-5b2e-9cf0-d8324a219d31",
+        "saga_id": "679e9f5c-0509-5114-9b1b-bf6510dd0786",
+        "position": 1,
+        "slug": "ent-adult-05-warning-signs-in-a-deal",
+        "title": {
+          "en-US": "Spot warning signs in a deal",
+          "es-MX": "Detecta las señales de alerta de un trato",
+          "pt-BR": "Identifique os sinais de alerta de um negócio"
+        },
+        "learning_objective": {
+          "en-US": "Spot the warning signs of a risky deal: an offer too good to be true, nothing in writing, full payment up front, changing terms or pressure.",
+          "es-MX": "Notar las señales de un trato riesgoso: una oferta demasiado buena, nada por escrito, pago total por adelantado, términos que cambian o presión.",
+          "pt-BR": "Notar os sinais de um negócio arriscado: oferta boa demais, nada por escrito, pagamento total adiantado, termos que mudam ou pressão."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "df227fb1-255e-5040-8762-cc8b97d79a74",
+        "saga_id": "679e9f5c-0509-5114-9b1b-bf6510dd0786",
+        "position": 2,
+        "slug": "ent-adult-06-an-agreement-that-says-it",
+        "title": {
+          "en-US": "Check an agreement before signing",
+          "es-MX": "Revisa un acuerdo antes de firmarlo",
+          "pt-BR": "Confira um acordo antes de assinar"
+        },
+        "learning_objective": {
+          "en-US": "Check that an agreement says what is delivered, when, for how much and what happens if someone does not comply; read it all and ask before signing.",
+          "es-MX": "Revisar que un acuerdo diga qué se entrega, cuándo, por cuánto y qué pasa si alguien no cumple; leerlo completo y preguntar antes de firmar.",
+          "pt-BR": "Verificar se um acordo diz o que é entregue, quando, por quanto e o que acontece se alguém não cumprir; ler tudo e perguntar antes de assinar."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "34221c48-a2c2-502e-82be-04f93f71088e",
+        "saga_id": "679e9f5c-0509-5114-9b1b-bf6510dd0786",
+        "position": 3,
+        "slug": "ent-adult-07-negotiate-with-a-limit",
+        "title": {
+          "en-US": "Negotiate with a limit",
+          "es-MX": "Negocia con un límite",
+          "pt-BR": "Negocie com um limite"
+        },
+        "learning_objective": {
+          "en-US": "Set your limit before negotiating, find what the other person really wants, trade low-cost concessions, and say no respectfully.",
+          "es-MX": "Fijar tu límite antes de negociar, descubrir qué quiere de verdad la otra persona, ceder lo que te cuesta poco y decir que no con respeto.",
+          "pt-BR": "Definir seu limite antes de negociar, descobrir o que a outra pessoa realmente quer, ceder o que custa pouco e dizer não com respeito."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "2cacd1cd-11a9-520e-92ea-13da5176c400",
+        "saga_id": "679e9f5c-0509-5114-9b1b-bf6510dd0786",
+        "position": 4,
+        "slug": "ent-adult-08-trust-after-a-bad-review",
+        "title": {
+          "en-US": "Trust after a bad review",
+          "es-MX": "Confianza tras una mala reseña",
+          "pt-BR": "Confiança após uma avaliação ruim"
+        },
+        "learning_objective": {
+          "en-US": "Explain that reputation is the trust others give you after past dealings, and respond to criticism in a way that protects it.",
+          "es-MX": "Explicar que la reputación es la confianza que otros te dan por tratos anteriores y responder a una crítica de forma que la proteja.",
+          "pt-BR": "Explicar que a reputação é a confiança que os outros dão a você por negócios anteriores e responder a críticas de um jeito que a proteja."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9d697bf7-76f0-5c08-8a12-87825aa7b48b",
+        "saga_id": "6f28c928-54dc-5ea6-89e1-7ff5366322ad",
+        "position": 1,
+        "slug": "ent-adult-09-two-sides-of-a-conflict",
+        "title": {
+          "en-US": "Two sides of a conflict",
+          "es-MX": "Dos lados de un conflicto",
+          "pt-BR": "Dois lados de um conflito"
+        },
+        "learning_objective": {
+          "en-US": "Hear both sides, address the problem rather than the person, find the interest behind the conflict, decide, and repair the relationship.",
+          "es-MX": "Escuchar a ambas partes, hablar del problema y no de la persona, encontrar el interés detrás del conflicto, decidir y reparar la relación.",
+          "pt-BR": "Ouvir os dois lados, tratar do problema e não da pessoa, encontrar o interesse por trás do conflito, decidir e reparar a relação."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "351dec79-6de8-5c16-b0a2-ce07e604586a",
+        "saga_id": "6f28c928-54dc-5ea6-89e1-7ff5366322ad",
+        "position": 2,
+        "slug": "ent-adult-10-growing-from-two-to-five",
+        "title": {
+          "en-US": "Growing from two to five",
+          "es-MX": "De dos a cinco personas",
+          "pt-BR": "De duas a cinco pessoas"
+        },
+        "learning_objective": {
+          "en-US": "Adapt how a growing team works: define clear roles, welcome new people well, and respond respectfully when a role does not fit.",
+          "es-MX": "Adaptar cómo trabaja un equipo que crece: definir roles claros, recibir bien a quien llega y responder con respeto cuando un rol no encaja.",
+          "pt-BR": "Adaptar como uma equipe que cresce trabalha: definir papéis claros, receber bem quem chega e responder com respeito quando um papel não combina."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "af971f83-da23-5437-aa89-cb97047acc90",
+        "saga_id": "6f28c928-54dc-5ea6-89e1-7ff5366322ad",
+        "position": 3,
+        "slug": "ent-adult-11-three-requests-one-answer",
+        "title": {
+          "en-US": "Three requests, one answer",
+          "es-MX": "Tres solicitudes, una respuesta",
+          "pt-BR": "Três pedidos, uma resposta"
+        },
+        "learning_objective": {
+          "en-US": "Treat customers fairly, make honest claims, protect customer data, notice conflicts of interest, and say no to requests that are not right.",
+          "es-MX": "Tratar con justicia a los clientes, prometer con honestidad, proteger sus datos, notar conflictos de interés y decir que no a lo que no está bien.",
+          "pt-BR": "Tratar os clientes com justiça, prometer com honestidade, proteger os dados deles, notar conflitos de interesse e dizer não ao que não está certo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "bd225549-4808-5148-a2b9-18fb3a4efa3b",
+        "saga_id": "6f28c928-54dc-5ea6-89e1-7ff5366322ad",
+        "position": 4,
+        "slug": "ent-adult-12-the-year-ahead",
+        "title": {
+          "en-US": "The year ahead",
+          "es-MX": "El año por delante",
+          "pt-BR": "O ano pela frente"
+        },
+        "learning_objective": {
+          "en-US": "Set a concrete one-year goal, decide what to stop doing, prepare a contingency plan and measure success beyond money.",
+          "es-MX": "Fijar una meta concreta a un año, decidir qué dejar de hacer, preparar un plan de contingencia y medir el éxito más allá del dinero.",
+          "pt-BR": "Definir uma meta concreta para um ano, decidir o que parar de fazer, preparar um plano de contingência e medir o sucesso além do dinheiro."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "8040f7c3-af25-5cde-b71b-f961ab352fc9",
+        "topic_id": "33295739-2361-58fe-bd6d-24112fde5099",
+        "position": 1,
+        "slug": "ent-69-01-who-has-the-problem",
+        "title": {
+          "en-US": "Who has the problem?",
+          "es-MX": "¿Quién tiene el problema?",
+          "pt-BR": "Quem tem o problema?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "c3872315-a541-5801-b334-032bdb080bc4",
+        "topic_id": "55f304e2-427f-579c-b21d-f1adf7c061ba",
+        "position": 1,
+        "slug": "ent-69-02-many-ideas",
+        "title": {
+          "en-US": "Many ideas, one pick",
+          "es-MX": "Muchas ideas, una elección",
+          "pt-BR": "Muitas ideias, uma escolha"
+        },
+        "status": "review"
+      },
+      {
+        "id": "b28808bd-dfb3-54f3-a26f-071d96fbdae4",
+        "topic_id": "f965d3c2-0ccb-571f-9644-c2fdb7712cce",
+        "position": 1,
+        "slug": "ent-69-03-build-and-test",
+        "title": {
+          "en-US": "Build a little, test a little",
+          "es-MX": "Construye un poco, prueba un poco",
+          "pt-BR": "Monte um pouco, teste um pouco"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8f909d57-652c-5a8a-94d7-dcaac7072b72",
+        "topic_id": "57489e00-a4f5-5596-a274-0db2f3e046d2",
+        "position": 1,
+        "slug": "ent-69-04-listen-and-improve",
+        "title": {
+          "en-US": "Listen, then improve",
+          "es-MX": "Escucha y mejora",
+          "pt-BR": "Escute e melhore"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d68a87c4-f814-5e56-b953-6385cbc15abd",
+        "topic_id": "194e148c-741c-55ab-aa8c-12bfc2373834",
+        "position": 1,
+        "slug": "ent-69-05-say-why-it-helps",
+        "title": {
+          "en-US": "Say why it helps",
+          "es-MX": "Cuenta por qué ayuda",
+          "pt-BR": "Diga por que ajuda"
+        },
+        "status": "review"
+      },
+      {
+        "id": "f1003701-291a-5af7-8440-85d6d4491d94",
+        "topic_id": "9bf2f754-7fa6-53f1-a792-55ef2f86eaa2",
+        "position": 1,
+        "slug": "ent-69-06-cost-and-price",
+        "title": {
+          "en-US": "Cost and price",
+          "es-MX": "Costo y precio",
+          "pt-BR": "Custo e preço"
+        },
+        "status": "review"
+      },
+      {
+        "id": "7e03cd40-6562-5237-b41d-dfa248b7223f",
+        "topic_id": "a29d4d5f-bf0e-5047-a9a7-b97c3582a234",
+        "position": 1,
+        "slug": "ent-69-07-money-that-comes-in",
+        "title": {
+          "en-US": "Coins that come in",
+          "es-MX": "Monedas que entran",
+          "pt-BR": "Moedas que entram"
+        },
+        "status": "review"
+      },
+      {
+        "id": "0c583571-9079-5dd8-a91c-b70da5d16762",
+        "topic_id": "83726c10-b5bb-57df-9d9f-5a109ea8e097",
+        "position": 1,
+        "slug": "ent-69-08-what-is-left",
+        "title": {
+          "en-US": "What is left",
+          "es-MX": "Lo que queda",
+          "pt-BR": "O que sobra"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d1461bd3-ae22-599e-94da-69546f2665f3",
+        "topic_id": "78005f73-3cf0-5d43-9e3c-5c2ed1f5423b",
+        "position": 1,
+        "slug": "ent-1012-01-the-problem-behind-the-complaint",
+        "title": {
+          "en-US": "The problem behind the complaint",
+          "es-MX": "El problema detrás de la queja",
+          "pt-BR": "O problema por trás da reclamação"
+        },
+        "status": "review"
+      },
+      {
+        "id": "1d668648-76ee-55b6-aeef-e61cb29db022",
+        "topic_id": "9d4b5882-8999-528e-b218-c1df9cc4007b",
+        "position": 1,
+        "slug": "ent-1012-02-opportunity-signals",
+        "title": {
+          "en-US": "Signal or hunch?",
+          "es-MX": "¿Señal o corazonada?",
+          "pt-BR": "Sinal ou palpite?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "a8d4c590-9b43-5f13-a9f2-a4eb95fb69cb",
+        "topic_id": "d1ec1623-bdfb-50fd-9edf-b4271cb00b23",
+        "position": 1,
+        "slug": "ent-1012-03-weigh-the-risk",
+        "title": {
+          "en-US": "Weigh the risk",
+          "es-MX": "Pesa el riesgo",
+          "pt-BR": "Pese o risco"
+        },
+        "status": "review"
+      },
+      {
+        "id": "e6a51e7c-abed-5010-add0-98537f9427b4",
+        "topic_id": "47a72ce6-965a-59ac-ac78-ad230594a09a",
+        "position": 1,
+        "slug": "ent-1012-04-is-it-a-real-opportunity",
+        "title": {
+          "en-US": "Is it a real opportunity?",
+          "es-MX": "¿Es una oportunidad real?",
+          "pt-BR": "É uma oportunidade real?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d7d0e5a1-804c-59e5-8ce8-8aa42ebe7442",
+        "topic_id": "7e007364-402f-563d-b04b-8097d8706d84",
+        "position": 1,
+        "slug": "ent-1012-05-pick-the-best-idea",
+        "title": {
+          "en-US": "Pick the best idea",
+          "es-MX": "Elige la mejor idea",
+          "pt-BR": "Escolha a melhor ideia"
+        },
+        "status": "review"
+      },
+      {
+        "id": "689a0c95-d9bc-5633-8186-7fcdcd530238",
+        "topic_id": "86c12153-4ee2-5d12-b6d3-1ba7fcd1239f",
+        "position": 1,
+        "slug": "ent-1012-06-the-smallest-version",
+        "title": {
+          "en-US": "The smallest version",
+          "es-MX": "La versión más pequeña",
+          "pt-BR": "A menor versão"
+        },
+        "status": "review"
+      },
+      {
+        "id": "46696661-bedd-5921-a0e8-50b5e9added7",
+        "topic_id": "5f5bd948-756e-5b58-a424-e24ff5364210",
+        "position": 1,
+        "slug": "ent-1012-07-build-within-limits",
+        "title": {
+          "en-US": "Build within limits",
+          "es-MX": "Construir con límites",
+          "pt-BR": "Construir dentro dos limites"
+        },
+        "status": "review"
+      },
+      {
+        "id": "5d551e4c-1c6e-56f0-8773-e42784419744",
+        "topic_id": "cc37b9c6-7701-56e9-a472-2ac32e353a8a",
+        "position": 1,
+        "slug": "ent-1012-08-first-customers-speak",
+        "title": {
+          "en-US": "First customers speak",
+          "es-MX": "Los primeros clientes hablan",
+          "pt-BR": "Os primeiros clientes falam"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4a28c995-0a27-5725-8116-4a7ead844f17",
+        "topic_id": "6e0c9e26-d410-57d9-a6c8-0fde5df973ac",
+        "position": 1,
+        "slug": "ent-1012-09-the-twenty-second-pitch",
+        "title": {
+          "en-US": "The twenty-second pitch",
+          "es-MX": "El pitch de veinte segundos",
+          "pt-BR": "O pitch de vinte segundos"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8a8c9d03-734f-5dbe-8e3b-a67c8d41886e",
+        "topic_id": "05661cf9-6fc8-50cb-a8eb-7bbfa78c1896",
+        "position": 1,
+        "slug": "ent-1012-10-cost-and-price-per-bag",
+        "title": {
+          "en-US": "Cost and price per bag",
+          "es-MX": "Costo y precio por bolsa",
+          "pt-BR": "Custo e preço por sacola"
+        },
+        "status": "review"
+      },
+      {
+        "id": "cb04af68-6f84-578d-9eb5-7ab3d06b4282",
+        "topic_id": "e91a1275-fa68-508f-ad02-d1b6c4b0e942",
+        "position": 1,
+        "slug": "ent-1012-11-choose-the-price",
+        "title": {
+          "en-US": "Choose the price",
+          "es-MX": "Elige el precio",
+          "pt-BR": "Escolha o preço"
+        },
+        "status": "review"
+      },
+      {
+        "id": "10a5823d-9704-5908-bef4-fe6d55352a16",
+        "topic_id": "957b3f69-dbfd-540e-b6cb-9ce571258d18",
+        "position": 1,
+        "slug": "ent-1012-12-spend-what-you-have",
+        "title": {
+          "en-US": "Spend what you have",
+          "es-MX": "Gasta lo que tienes",
+          "pt-BR": "Gaste o que você tem"
+        },
+        "status": "review"
+      },
+      {
+        "id": "614cd6bf-b55c-53e0-9202-b406f96c0152",
+        "topic_id": "327855b9-07f0-5e40-9c53-1a90cce5d1b2",
+        "position": 1,
+        "slug": "ent-1317-01-ask-before-you-build",
+        "title": {
+          "en-US": "Ask before you build",
+          "es-MX": "Pregunta antes de construir",
+          "pt-BR": "Pergunte antes de construir"
+        },
+        "status": "review"
+      },
+      {
+        "id": "291cae14-5756-594c-922e-eed4a684bdbd",
+        "topic_id": "250e0890-c017-57ef-a139-4dfa71661f32",
+        "position": 1,
+        "slug": "ent-1317-02-one-comment-is-a-clue",
+        "title": {
+          "en-US": "One comment is a clue",
+          "es-MX": "Un comentario es una pista",
+          "pt-BR": "Um comentário é uma pista"
+        },
+        "status": "review"
+      },
+      {
+        "id": "091b096d-f37c-55a0-b0e8-0d1ac6a81111",
+        "topic_id": "4b8f60d6-d652-52ac-b3ee-c9171a6c54d8",
+        "position": 1,
+        "slug": "ent-1317-03-sell-by-asking",
+        "title": {
+          "en-US": "Sell by asking",
+          "es-MX": "Vende preguntando",
+          "pt-BR": "Venda perguntando"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8e57eca2-ddea-5d16-85eb-9798464208ad",
+        "topic_id": "180b41ea-77b0-5a8b-ae3e-fa9d7164ade2",
+        "position": 1,
+        "slug": "ent-1317-04-where-the-funnel-leaks",
+        "title": {
+          "en-US": "Where the funnel leaks",
+          "es-MX": "Dónde se fuga el embudo",
+          "pt-BR": "Onde o funil vaza"
+        },
+        "status": "review"
+      },
+      {
+        "id": "aea10519-3496-5799-b7cc-0c43c576603e",
+        "topic_id": "43e9df25-2a3c-5d45-a1ac-ea0876643cc7",
+        "position": 1,
+        "slug": "ent-1317-05-the-real-cost-of-one",
+        "title": {
+          "en-US": "The real cost of one",
+          "es-MX": "El costo real de uno",
+          "pt-BR": "O custo real de um"
+        },
+        "status": "review"
+      },
+      {
+        "id": "45e21c7c-d771-5f0c-bb0f-6ea1fdf597e5",
+        "topic_id": "bb0436c5-1750-55ce-8813-9d7ae13bd42c",
+        "position": 1,
+        "slug": "ent-1317-06-how-much-is-kept",
+        "title": {
+          "en-US": "How much is kept",
+          "es-MX": "Cuánto te queda",
+          "pt-BR": "Quanto fica com você"
+        },
+        "status": "review"
+      },
+      {
+        "id": "58d9080c-dde9-51ad-812f-5e72583e4c91",
+        "topic_id": "9e584a38-7fde-54c0-b104-5c2c4c6389a8",
+        "position": 1,
+        "slug": "ent-1317-07-the-break-even-point",
+        "title": {
+          "en-US": "The break-even point",
+          "es-MX": "El punto de equilibrio",
+          "pt-BR": "O ponto de equilíbrio"
+        },
+        "status": "review"
+      },
+      {
+        "id": "ee68ef0b-33be-574e-bab8-f3d18106f985",
+        "topic_id": "0c433257-05eb-5d99-a240-e03de1d4339f",
+        "position": 1,
+        "slug": "ent-1317-08-price-and-demand",
+        "title": {
+          "en-US": "Price and demand",
+          "es-MX": "Precio y demanda",
+          "pt-BR": "Preço e demanda"
+        },
+        "status": "review"
+      },
+      {
+        "id": "9a63c76f-e9a6-50a0-ac76-2f2008c5ea03",
+        "topic_id": "94b06556-1e7e-540a-ba47-3d3a90ce7a88",
+        "position": 1,
+        "slug": "ent-1317-09-a-deal-both-accept",
+        "title": {
+          "en-US": "A deal both sides accept",
+          "es-MX": "Un trato que ambos aceptan",
+          "pt-BR": "Um acordo que os dois aceitam"
+        },
+        "status": "review"
+      },
+      {
+        "id": "600b6acb-c3a3-5048-a86d-da1fe4aa1af2",
+        "topic_id": "37c25c1c-f235-5e44-8923-c5b7a478f55f",
+        "position": 1,
+        "slug": "ent-1317-10-persuade-without-tricks",
+        "title": {
+          "en-US": "Persuade without tricks",
+          "es-MX": "Convence sin trucos",
+          "pt-BR": "Convença sem truques"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d3be4acb-0d64-5173-858e-9b8f0c426772",
+        "topic_id": "551f402c-565c-5bfc-bd9d-cec8d1f765a5",
+        "position": 1,
+        "slug": "ent-1317-11-hand-it-over",
+        "title": {
+          "en-US": "Hand it over clearly",
+          "es-MX": "Entregar con claridad",
+          "pt-BR": "Entregar com clareza"
+        },
+        "status": "review"
+      },
+      {
+        "id": "6894535c-410b-5351-9d7e-bcb87fb8e3f3",
+        "topic_id": "bee1bf2b-b0fc-5677-af53-6de783a36c8a",
+        "position": 1,
+        "slug": "ent-1317-12-the-way-we-work",
+        "title": {
+          "en-US": "The way we work",
+          "es-MX": "Nuestra forma de trabajar",
+          "pt-BR": "Nosso jeito de trabalhar"
+        },
+        "status": "review"
+      },
+      {
+        "id": "34a8b4e9-e079-5065-9f7c-d6da6b92708d",
+        "topic_id": "9a4d625a-af93-56ce-bb28-a3659e76b548",
+        "position": 1,
+        "slug": "ent-adult-01-is-it-a-real-opportunity",
+        "title": {
+          "en-US": "Is it a real opportunity?",
+          "es-MX": "¿Es una oportunidad real?",
+          "pt-BR": "É uma oportunidade real?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "a4417659-4ebd-5b63-8270-a569d1fc731e",
+        "topic_id": "25ee39fa-e394-51ee-a9d7-d1c683cddd0b",
+        "position": 1,
+        "slug": "ent-adult-02-how-many-jobs-to-break-even",
+        "title": {
+          "en-US": "How many repairs to break even?",
+          "es-MX": "¿Cuántas reparaciones hasta el punto de equilibrio?",
+          "pt-BR": "Quantos consertos até o ponto de equilíbrio?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "e73250a0-d521-5dc4-8e12-6de4b4c774da",
+        "topic_id": "c3c482b8-af32-5867-a68c-da74618cbc3c",
+        "position": 1,
+        "slug": "ent-adult-03-the-price-you-can-defend",
+        "title": {
+          "en-US": "The price you can defend",
+          "es-MX": "El precio que puedes defender",
+          "pt-BR": "O preço que você consegue defender"
+        },
+        "status": "review"
+      },
+      {
+        "id": "c46a9413-6d55-531e-a34b-58c70fdae26b",
+        "topic_id": "c7beeccc-76c4-51d0-bbd7-a4eb68240bb1",
+        "position": 1,
+        "slug": "ent-adult-04-the-whole-model-on-one-page",
+        "title": {
+          "en-US": "The whole model on one page",
+          "es-MX": "El modelo completo en una página",
+          "pt-BR": "O modelo completo em uma página"
+        },
+        "status": "review"
+      },
+      {
+        "id": "19681627-a4a0-58c3-b4cd-884c595498a4",
+        "topic_id": "3adaf1d3-dc0e-5b2e-9cf0-d8324a219d31",
+        "position": 1,
+        "slug": "ent-adult-05-warning-signs-in-a-deal",
+        "title": {
+          "en-US": "Spot warning signs in a deal",
+          "es-MX": "Detecta las señales de alerta de un trato",
+          "pt-BR": "Identifique os sinais de alerta de um negócio"
+        },
+        "status": "review"
+      },
+      {
+        "id": "67570a12-4986-5fba-8e4e-ad8605c3e413",
+        "topic_id": "df227fb1-255e-5040-8762-cc8b97d79a74",
+        "position": 1,
+        "slug": "ent-adult-06-an-agreement-that-says-it",
+        "title": {
+          "en-US": "Check an agreement before signing",
+          "es-MX": "Revisa un acuerdo antes de firmarlo",
+          "pt-BR": "Confira um acordo antes de assinar"
+        },
+        "status": "review"
+      },
+      {
+        "id": "a7d1b39e-7276-5286-8dc5-1e06091aa11d",
+        "topic_id": "34221c48-a2c2-502e-82be-04f93f71088e",
+        "position": 1,
+        "slug": "ent-adult-07-negotiate-with-a-limit",
+        "title": {
+          "en-US": "Negotiate with a limit",
+          "es-MX": "Negocia con un límite",
+          "pt-BR": "Negocie com um limite"
+        },
+        "status": "review"
+      },
+      {
+        "id": "f2b7e384-552d-57c1-9608-a197d80e7936",
+        "topic_id": "2cacd1cd-11a9-520e-92ea-13da5176c400",
+        "position": 1,
+        "slug": "ent-adult-08-trust-after-a-bad-review",
+        "title": {
+          "en-US": "Trust after a bad review",
+          "es-MX": "Confianza tras una mala reseña",
+          "pt-BR": "Confiança após uma avaliação ruim"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4a33f6d0-64c9-5316-a0ad-f59c59e6109e",
+        "topic_id": "9d697bf7-76f0-5c08-8a12-87825aa7b48b",
+        "position": 1,
+        "slug": "ent-adult-09-two-sides-of-a-conflict",
+        "title": {
+          "en-US": "Two sides of a conflict",
+          "es-MX": "Dos lados de un conflicto",
+          "pt-BR": "Dois lados de um conflito"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8bcf0375-1439-57dc-8211-a6863bc2559c",
+        "topic_id": "351dec79-6de8-5c16-b0a2-ce07e604586a",
+        "position": 1,
+        "slug": "ent-adult-10-growing-from-two-to-five",
+        "title": {
+          "en-US": "Growing from two to five",
+          "es-MX": "De dos a cinco personas",
+          "pt-BR": "De duas a cinco pessoas"
+        },
+        "status": "review"
+      },
+      {
+        "id": "57af01c9-eb78-527b-9444-c8a1af185fd2",
+        "topic_id": "af971f83-da23-5437-aa89-cb97047acc90",
+        "position": 1,
+        "slug": "ent-adult-11-three-requests-one-answer",
+        "title": {
+          "en-US": "Three requests, one answer",
+          "es-MX": "Tres solicitudes, una respuesta",
+          "pt-BR": "Três pedidos, uma resposta"
+        },
+        "status": "review"
+      },
+      {
+        "id": "ef2a5b19-ad3a-50c5-ae2a-8cf6cc6b2859",
+        "topic_id": "bd225549-4808-5148-a2b9-18fb3a4efa3b",
+        "position": 1,
+        "slug": "ent-adult-12-the-year-ahead",
+        "title": {
+          "en-US": "The year ahead",
+          "es-MX": "El año por delante",
+          "pt-BR": "O ano pela frente"
+        },
+        "status": "review"
+      }
+    ],
+    "topic_knowledge_components": [
+      {
+        "topic_id": "33295739-2361-58fe-bd6d-24112fde5099",
+        "kc_key": "biz.real-problems",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "55f304e2-427f-579c-b21d-f1adf7c061ba",
+        "kc_key": "biz.solution-ideas",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "55f304e2-427f-579c-b21d-f1adf7c061ba",
+        "kc_key": "biz.real-problems",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f965d3c2-0ccb-571f-9644-c2fdb7712cce",
+        "kc_key": "biz.make-and-test",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f965d3c2-0ccb-571f-9644-c2fdb7712cce",
+        "kc_key": "biz.solution-ideas",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "57489e00-a4f5-5596-a274-0db2f3e046d2",
+        "kc_key": "biz.customer-feedback",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "57489e00-a4f5-5596-a274-0db2f3e046d2",
+        "kc_key": "biz.make-and-test",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "194e148c-741c-55ab-aa8c-12bfc2373834",
+        "kc_key": "biz.communicate-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "194e148c-741c-55ab-aa8c-12bfc2373834",
+        "kc_key": "biz.solution-ideas",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9bf2f754-7fa6-53f1-a792-55ef2f86eaa2",
+        "kc_key": "biz.cost-vs-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9bf2f754-7fa6-53f1-a792-55ef2f86eaa2",
+        "kc_key": "biz.what-is-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a29d4d5f-bf0e-5047-a9a7-b97c3582a234",
+        "kc_key": "biz.revenue",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a29d4d5f-bf0e-5047-a9a7-b97c3582a234",
+        "kc_key": "money.add-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "83726c10-b5bb-57df-9d9f-5a109ea8e097",
+        "kc_key": "biz.profit",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "83726c10-b5bb-57df-9d9f-5a109ea8e097",
+        "kc_key": "biz.revenue",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "83726c10-b5bb-57df-9d9f-5a109ea8e097",
+        "kc_key": "biz.cost-vs-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "78005f73-3cf0-5d43-9e3c-5c2ed1f5423b",
+        "kc_key": "biz.real-problems",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9d4b5882-8999-528e-b218-c1df9cc4007b",
+        "kc_key": "biz.market-signals",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9d4b5882-8999-528e-b218-c1df9cc4007b",
+        "kc_key": "biz.real-problems",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d1ec1623-bdfb-50fd-9edf-b4271cb00b23",
+        "kc_key": "biz.risk-and-reward",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d1ec1623-bdfb-50fd-9edf-b4271cb00b23",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "47a72ce6-965a-59ac-ac78-ad230594a09a",
+        "kc_key": "biz.opportunity-evaluation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "47a72ce6-965a-59ac-ac78-ad230594a09a",
+        "kc_key": "biz.market-signals",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "47a72ce6-965a-59ac-ac78-ad230594a09a",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7e007364-402f-563d-b04b-8097d8706d84",
+        "kc_key": "biz.solution-ideas",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7e007364-402f-563d-b04b-8097d8706d84",
+        "kc_key": "biz.real-problems",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "86c12153-4ee2-5d12-b6d3-1ba7fcd1239f",
+        "kc_key": "biz.mvp",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "86c12153-4ee2-5d12-b6d3-1ba7fcd1239f",
+        "kc_key": "biz.make-and-test",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "86c12153-4ee2-5d12-b6d3-1ba7fcd1239f",
+        "kc_key": "biz.opportunity-evaluation",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5f5bd948-756e-5b58-a424-e24ff5364210",
+        "kc_key": "biz.build-within-constraints",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5f5bd948-756e-5b58-a424-e24ff5364210",
+        "kc_key": "biz.mvp",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5f5bd948-756e-5b58-a424-e24ff5364210",
+        "kc_key": "money.simple-budget",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cc37b9c6-7701-56e9-a472-2ac32e353a8a",
+        "kc_key": "biz.customer-feedback",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cc37b9c6-7701-56e9-a472-2ac32e353a8a",
+        "kc_key": "biz.make-and-test",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6e0c9e26-d410-57d9-a6c8-0fde5df973ac",
+        "kc_key": "biz.communicate-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6e0c9e26-d410-57d9-a6c8-0fde5df973ac",
+        "kc_key": "biz.solution-ideas",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "05661cf9-6fc8-50cb-a8eb-7bbfa78c1896",
+        "kc_key": "biz.cost-vs-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "05661cf9-6fc8-50cb-a8eb-7bbfa78c1896",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e91a1275-fa68-508f-ad02-d1b6c4b0e942",
+        "kc_key": "biz.pricing-strategy",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e91a1275-fa68-508f-ad02-d1b6c4b0e942",
+        "kc_key": "biz.cost-vs-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e91a1275-fa68-508f-ad02-d1b6c4b0e942",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "957b3f69-dbfd-540e-b6cb-9ce571258d18",
+        "kc_key": "biz.budget-decisions",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "957b3f69-dbfd-540e-b6cb-9ce571258d18",
+        "kc_key": "money.simple-budget",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "957b3f69-dbfd-540e-b6cb-9ce571258d18",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "327855b9-07f0-5e40-9c53-1a90cce5d1b2",
+        "kc_key": "biz.customer-interviews",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "327855b9-07f0-5e40-9c53-1a90cce5d1b2",
+        "kc_key": "biz.customer-feedback",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "250e0890-c017-57ef-a139-4dfa71661f32",
+        "kc_key": "biz.evidence-from-customers",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "250e0890-c017-57ef-a139-4dfa71661f32",
+        "kc_key": "biz.customer-interviews",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "4b8f60d6-d652-52ac-b3ee-c9171a6c54d8",
+        "kc_key": "biz.consultative-selling",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "4b8f60d6-d652-52ac-b3ee-c9171a6c54d8",
+        "kc_key": "biz.communicate-value",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "180b41ea-77b0-5a8b-ae3e-fa9d7164ade2",
+        "kc_key": "biz.sales-funnel",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "180b41ea-77b0-5a8b-ae3e-fa9d7164ade2",
+        "kc_key": "biz.consultative-selling",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "180b41ea-77b0-5a8b-ae3e-fa9d7164ade2",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "43e9df25-2a3c-5d45-a1ac-ea0876643cc7",
+        "kc_key": "biz.full-costing",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "43e9df25-2a3c-5d45-a1ac-ea0876643cc7",
+        "kc_key": "biz.cost-vs-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "43e9df25-2a3c-5d45-a1ac-ea0876643cc7",
+        "kc_key": "money.unit-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bb0436c5-1750-55ce-8813-9d7ae13bd42c",
+        "kc_key": "biz.margin",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bb0436c5-1750-55ce-8813-9d7ae13bd42c",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bb0436c5-1750-55ce-8813-9d7ae13bd42c",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9e584a38-7fde-54c0-b104-5c2c4c6389a8",
+        "kc_key": "biz.break-even",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9e584a38-7fde-54c0-b104-5c2c4c6389a8",
+        "kc_key": "biz.full-costing",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9e584a38-7fde-54c0-b104-5c2c4c6389a8",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "0c433257-05eb-5d99-a240-e03de1d4339f",
+        "kc_key": "biz.pricing-strategy",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "0c433257-05eb-5d99-a240-e03de1d4339f",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "0c433257-05eb-5d99-a240-e03de1d4339f",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "94b06556-1e7e-540a-ba47-3d3a90ce7a88",
+        "kc_key": "biz.negotiation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "94b06556-1e7e-540a-ba47-3d3a90ce7a88",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "94b06556-1e7e-540a-ba47-3d3a90ce7a88",
+        "kc_key": "biz.consultative-selling",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "37c25c1c-f235-5e44-8923-c5b7a478f55f",
+        "kc_key": "biz.ethical-persuasion",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "37c25c1c-f235-5e44-8923-c5b7a478f55f",
+        "kc_key": "life.advertising-literacy",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "37c25c1c-f235-5e44-8923-c5b7a478f55f",
+        "kc_key": "biz.consultative-selling",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "551f402c-565c-5bfc-bd9d-cec8d1f765a5",
+        "kc_key": "biz.delegation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bee1bf2b-b0fc-5677-af53-6de783a36c8a",
+        "kc_key": "biz.team-culture",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bee1bf2b-b0fc-5677-af53-6de783a36c8a",
+        "kc_key": "biz.delegation",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9a4d625a-af93-56ce-bb28-a3659e76b548",
+        "kc_key": "biz.opportunity-evaluation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9a4d625a-af93-56ce-bb28-a3659e76b548",
+        "kc_key": "biz.market-signals",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9a4d625a-af93-56ce-bb28-a3659e76b548",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "25ee39fa-e394-51ee-a9d7-d1c683cddd0b",
+        "kc_key": "biz.break-even",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "25ee39fa-e394-51ee-a9d7-d1c683cddd0b",
+        "kc_key": "biz.full-costing",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "25ee39fa-e394-51ee-a9d7-d1c683cddd0b",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c3c482b8-af32-5867-a68c-da74618cbc3c",
+        "kc_key": "biz.pricing-strategy",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c3c482b8-af32-5867-a68c-da74618cbc3c",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c3c482b8-af32-5867-a68c-da74618cbc3c",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c7beeccc-76c4-51d0-bbd7-a4eb68240bb1",
+        "kc_key": "biz.business-model",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c7beeccc-76c4-51d0-bbd7-a4eb68240bb1",
+        "kc_key": "biz.pricing-strategy",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c7beeccc-76c4-51d0-bbd7-a4eb68240bb1",
+        "kc_key": "biz.mvp",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3adaf1d3-dc0e-5b2e-9cf0-d8324a219d31",
+        "kc_key": "biz.deal-red-flags",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3adaf1d3-dc0e-5b2e-9cf0-d8324a219d31",
+        "kc_key": "life.scam-awareness",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "df227fb1-255e-5040-8762-cc8b97d79a74",
+        "kc_key": "biz.agreements",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "df227fb1-255e-5040-8762-cc8b97d79a74",
+        "kc_key": "biz.deal-red-flags",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "34221c48-a2c2-502e-82be-04f93f71088e",
+        "kc_key": "biz.negotiation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "34221c48-a2c2-502e-82be-04f93f71088e",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "34221c48-a2c2-502e-82be-04f93f71088e",
+        "kc_key": "biz.consultative-selling",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2cacd1cd-11a9-520e-92ea-13da5176c400",
+        "kc_key": "biz.reputation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2cacd1cd-11a9-520e-92ea-13da5176c400",
+        "kc_key": "biz.customer-feedback",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9d697bf7-76f0-5c08-8a12-87825aa7b48b",
+        "kc_key": "biz.conflict-resolution",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9d697bf7-76f0-5c08-8a12-87825aa7b48b",
+        "kc_key": "biz.team-culture",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "351dec79-6de8-5c16-b0a2-ce07e604586a",
+        "kc_key": "biz.leading-growth",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "351dec79-6de8-5c16-b0a2-ce07e604586a",
+        "kc_key": "biz.delegation",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "351dec79-6de8-5c16-b0a2-ce07e604586a",
+        "kc_key": "biz.team-culture",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "af971f83-da23-5437-aa89-cb97047acc90",
+        "kc_key": "biz.business-ethics",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "af971f83-da23-5437-aa89-cb97047acc90",
+        "kc_key": "biz.ethical-persuasion",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bd225549-4808-5148-a2b9-18fb3a4efa3b",
+        "kc_key": "biz.long-term-vision",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "bd225549-4808-5148-a2b9-18fb3a4efa3b",
+        "kc_key": "biz.business-model",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      }
+    ]
+  }
+}

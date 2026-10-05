@@ -1,0 +1,1032 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-the-clock-and-your-money",
+  "lesson_id": "inv-1317-04-prices-that-rise",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.inflation-buffer",
+    "money.percent-intro",
+    "life.goal-planning"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho muestra la etiqueta de unos tenis de 400 y, un año después, de 440. El aprendiz calcula el aumento en dinero y en porcentaje, lo lee en una gráfica de pendiente, ve cómo un segundo año lleva el precio a 484 y agrega un colchón a una meta de dos años; al final decide en otro caso, el viaje escolar de Dana.",
+  "title": {
+    "en-US": "Prices that rise",
+    "es-MX": "Precios que suben",
+    "pt-BR": "Preços que sobem"
+  },
+  "new_concepts": [
+    "invest.inflation-buffer"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México los precios cambian de una quincena a otra, y unos tenis, una mochila o unos audífonos cuestan más cuando por fin juntas el dinero. Los precios de la lección son ilustrativos y la decisión de comprar es tuya.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil o preço de um tênis ou de um fone muda de um ano para o outro, e o dinheiro do cofrinho precisa acompanhar essa subida. Os valores da lição são ilustrativos e a escolha de comprar é de quem poupa.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "cofrinho"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US a pair of sneakers bought with yard sale money can cost more by the time the savings are ready. The prices in this lesson are illustrative and the choice to buy is the learner's.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "yard sale"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You are saving yard sale money for a pair of sneakers. Rho checks the price tag: $400 today.",
+          "line": "That tag shows today's price. The plan you make depends on what it does next."
+        },
+        "es-MX": {
+          "prompt": "Guardas una parte de cada quincena para unos tenis. Rho revisa la etiqueta: 400 pesos hoy.",
+          "line": "Esa etiqueta muestra el precio de hoy. Tu plan depende de lo que haga después."
+        },
+        "pt-BR": {
+          "prompt": "Você junta dinheiro no cofrinho para um tênis. Rho confere a etiqueta: R$ 400 hoje.",
+          "line": "Essa etiqueta mostra o preço de hoje. Seu plano depende do que ela fizer depois."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-matches"
+          },
+          {
+            "id": "choice-more"
+          },
+          {
+            "id": "choice-short"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-tag"
+          },
+          {
+            "id": "reason-hunch"
+          },
+          {
+            "id": "reason-rise"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-short"
+        ],
+        "reasonQuality": {
+          "reason-rise": "sound",
+          "reason-tag": "partial",
+          "reason-hunch": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You save 400 over a year for the sneakers tagged 400 today, then buy. Is 400 enough?",
+          "feedback": {
+            "met": "Noted, I see your thinking. Now we measure it.",
+            "not_yet": "Noted, I see your thinking. Now we measure it."
+          },
+          "choices": [
+            {
+              "label": "Yes, 400 matches the tag"
+            },
+            {
+              "label": "More than enough"
+            },
+            {
+              "label": "Probably short"
+            }
+          ],
+          "reasonPrompt": "What is your answer based on?",
+          "reasons": [
+            {
+              "label": "The tag shows the price I know"
+            },
+            {
+              "label": "It is only a hunch"
+            },
+            {
+              "label": "Prices tend to rise within a year"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ahorras 400 durante un año para los tenis que hoy cuestan 400, y luego los compras. ¿Alcanza con 400?",
+          "feedback": {
+            "met": "Anotado, así veo cómo piensas. Ahora lo medimos.",
+            "not_yet": "Anotado, así veo cómo piensas. Ahora lo medimos."
+          },
+          "choices": [
+            {
+              "label": "Sí, 400 es lo que dice la etiqueta"
+            },
+            {
+              "label": "Sobra"
+            },
+            {
+              "label": "Probablemente falte"
+            }
+          ],
+          "reasonPrompt": "¿En qué basas tu respuesta?",
+          "reasons": [
+            {
+              "label": "La etiqueta muestra el precio que conozco"
+            },
+            {
+              "label": "Solo es una corazonada"
+            },
+            {
+              "label": "Los precios suelen subir en un año"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você poupa 400 durante um ano para o tênis que hoje custa 400 e depois compra. Dá para pagar com 400?",
+          "feedback": {
+            "met": "Anotado, assim vejo como você pensa. Agora vamos medir.",
+            "not_yet": "Anotado, assim vejo como você pensa. Agora vamos medir."
+          },
+          "choices": [
+            {
+              "label": "Sim, 400 é o que a etiqueta diz"
+            },
+            {
+              "label": "Vai sobrar"
+            },
+            {
+              "label": "Provavelmente vai faltar"
+            }
+          ],
+          "reasonPrompt": "No que você baseia sua resposta?",
+          "reasons": [
+            {
+              "label": "A etiqueta mostra o preço que conheço"
+            },
+            {
+              "label": "É só um palpite"
+            },
+            {
+              "label": "Os preços costumam subir em um ano"
+            }
+          ]
+        }
+      },
+      "item_phase": "pre"
+    },
+    {
+      "id": "example-rise-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. A year later the same sneakers are tagged 440. The rise in money is 440 − 400 = 40.",
+          "line": "That 40 is the rise in money. It depends on the price you start from."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Un año después los mismos tenis marcan 440. El aumento en dinero es 440 − 400 = 40.",
+          "line": "Esos 40 son el aumento en dinero. Depende del precio del que partes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Um ano depois, o mesmo tênis marca 440. O aumento em dinheiro é 440 − 400 = 40.",
+          "line": "Esses 40 são o aumento em dinheiro. Ele depende do preço de onde você parte."
+        }
+      }
+    },
+    {
+      "id": "example-percent-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. As a share of the old price, 40 ÷ 400 = 0.10, which is 10%.",
+          "line": "Percent lets you compare tags of any size. Prices rising like this, year after year, is inflation."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Como parte del precio anterior, 40 ÷ 400 = 0.10, es decir, 10%.",
+          "line": "El porcentaje te deja comparar etiquetas de cualquier tamaño. Que los precios suban así, año tras año, es inflación."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Como parte do preço antigo, 40 ÷ 400 = 0,10, ou seja, 10%.",
+          "line": "A porcentagem permite comparar etiquetas de qualquer tamanho. Preços que sobem assim, ano após ano, são a inflação."
+        }
+      }
+    },
+    {
+      "id": "example-slope-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "slope"
+      },
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "year-ago"
+            },
+            {
+              "id": "today"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-sneakers",
+              "values": [
+                400,
+                440
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. Rho plots the tag a year ago and today. The line climbs from 400 to 440.",
+          "title": "Sneakers: a year ago and today",
+          "data": {
+            "categories": [
+              {
+                "label": "A year ago"
+              },
+              {
+                "label": "Today"
+              }
+            ],
+            "series": [
+              {
+                "label": "Sneakers"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Rho grafica la etiqueta de hace un año y la de hoy. La línea sube de 400 a 440.",
+          "title": "Tenis: hace un año y hoy",
+          "data": {
+            "categories": [
+              {
+                "label": "Hace un año"
+              },
+              {
+                "label": "Hoy"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tenis"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Rho faz o gráfico da etiqueta de um ano atrás e de hoje. A linha sobe de 400 para 440.",
+          "title": "Tênis: um ano atrás e hoje",
+          "data": {
+            "categories": [
+              {
+                "label": "Um ano atrás"
+              },
+              {
+                "label": "Hoje"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tênis"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "steps": [
+          {
+            "id": "rise"
+          },
+          {
+            "id": "share"
+          },
+          {
+            "id": "percent"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "share",
+          "percent"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "share": "0.15",
+          "percent": "15"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho tracks a backpack: 300 a year ago, 345 today. Work out the rise in money, then in percent.",
+          "feedback": {
+            "met": "You turned the money rise into a share of the old price.",
+            "not_yet": "Not yet. Divide the rise by the old price, then ×100."
+          },
+          "help": [
+            "Rise in money divided by the old price gives a decimal.",
+            "A decimal times 100 is the percent."
+          ],
+          "steps": [
+            {
+              "expression": "New price − old price",
+              "result": "45",
+              "spokenText": "The new price minus the old price is 45"
+            },
+            {
+              "expression": "Rise ÷ old price",
+              "result": "0.15",
+              "spokenText": "The rise divided by the old price is 0.15"
+            },
+            {
+              "expression": "That share × 100 (percent)",
+              "result": "15",
+              "spokenText": "That share times 100 is 15 percent"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho sigue una mochila: 300 hace un año, 345 hoy. Calcula el aumento en dinero y luego en porcentaje.",
+          "feedback": {
+            "met": "Convertiste el aumento en dinero en una parte del precio anterior.",
+            "not_yet": "Aún no. Divide el aumento entre el precio anterior y luego × 100."
+          },
+          "help": [
+            "El aumento en dinero entre el precio anterior da un decimal.",
+            "Un decimal por 100 es el porcentaje."
+          ],
+          "steps": [
+            {
+              "expression": "Precio nuevo − precio anterior",
+              "result": "45",
+              "spokenText": "El precio nuevo menos el anterior es 45"
+            },
+            {
+              "expression": "Aumento ÷ precio anterior",
+              "result": "0.15",
+              "spokenText": "El aumento entre el precio anterior es 0.15"
+            },
+            {
+              "expression": "Esa parte × 100 (porcentaje)",
+              "result": "15",
+              "spokenText": "Esa parte por 100 es 15 por ciento"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho acompanha uma mochila: 300 há um ano, 345 hoje. Calcule o aumento em dinheiro e depois em porcentagem.",
+          "feedback": {
+            "met": "Você transformou o aumento em dinheiro em parte do preço antigo.",
+            "not_yet": "Ainda não. Divida o aumento pelo preço antigo e depois × 100."
+          },
+          "help": [
+            "O aumento em dinheiro dividido pelo preço antigo dá um decimal.",
+            "Um decimal vezes 100 é a porcentagem."
+          ],
+          "steps": [
+            {
+              "expression": "Preço novo − preço antigo",
+              "result": "45",
+              "spokenText": "O preço novo menos o antigo é 45"
+            },
+            {
+              "expression": "Aumento ÷ preço antigo",
+              "result": "0,15",
+              "spokenText": "O aumento dividido pelo preço antigo é 0,15"
+            },
+            {
+              "expression": "Essa parte × 100 (porcentagem)",
+              "result": "15",
+              "spokenText": "Essa parte vezes 100 é 15 por cento"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-rise-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "slope"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "year-ago"
+            },
+            {
+              "id": "today"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-jersey",
+              "values": [
+                500,
+                550
+              ]
+            },
+            {
+              "id": "series-cap",
+              "values": [
+                100,
+                112
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-jersey"
+            },
+            {
+              "id": "opt-cap"
+            },
+            {
+              "id": "opt-same"
+            },
+            {
+              "id": "opt-compare"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-cap"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho's board of tags shows a jersey and a cap, a year ago and today.",
+          "feedback": {
+            "met": "You picked the tag whose rise is the larger share.",
+            "not_yet": "Not yet. Divide each rise by that tag's old price."
+          },
+          "help": [
+            "Percent is the rise divided by the old price."
+          ],
+          "title": "Jersey and cap: a year ago and today",
+          "data": {
+            "categories": [
+              {
+                "label": "A year ago"
+              },
+              {
+                "label": "Today"
+              }
+            ],
+            "series": [
+              {
+                "label": "Jersey"
+              },
+              {
+                "label": "Cap"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which tag rose more as a percent of its old price?",
+            "options": [
+              {
+                "label": "The jersey"
+              },
+              {
+                "label": "The cap"
+              },
+              {
+                "label": "Both rose by the same percent"
+              },
+              {
+                "label": "Different prices cannot be compared"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "El tablero de etiquetas de Rho muestra una playera y una gorra, hace un año y hoy.",
+          "feedback": {
+            "met": "Elegiste la etiqueta cuyo aumento es la mayor parte de su precio.",
+            "not_yet": "Aún no. Divide cada aumento entre el precio anterior de esa etiqueta."
+          },
+          "help": [
+            "El porcentaje es el aumento entre el precio anterior."
+          ],
+          "title": "Playera y gorra: hace un año y hoy",
+          "data": {
+            "categories": [
+              {
+                "label": "Hace un año"
+              },
+              {
+                "label": "Hoy"
+              }
+            ],
+            "series": [
+              {
+                "label": "Playera"
+              },
+              {
+                "label": "Gorra"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué etiqueta subió más como porcentaje de su precio anterior?",
+            "options": [
+              {
+                "label": "La playera"
+              },
+              {
+                "label": "La gorra"
+              },
+              {
+                "label": "Ambas subieron el mismo porcentaje"
+              },
+              {
+                "label": "No se pueden comparar precios distintos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O quadro de etiquetas do Rho mostra uma camisa e um boné, há um ano e hoje.",
+          "feedback": {
+            "met": "Você escolheu a etiqueta cujo aumento é a maior parte do preço.",
+            "not_yet": "Ainda não. Divida cada aumento pelo preço antigo daquela etiqueta."
+          },
+          "help": [
+            "A porcentagem é o aumento dividido pelo preço antigo."
+          ],
+          "title": "Camisa e boné: um ano atrás e hoje",
+          "data": {
+            "categories": [
+              {
+                "label": "Um ano atrás"
+              },
+              {
+                "label": "Hoje"
+              }
+            ],
+            "series": [
+              {
+                "label": "Camisa"
+              },
+              {
+                "label": "Boné"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual etiqueta subiu mais em porcentagem do preço antigo?",
+            "options": [
+              {
+                "label": "A camisa"
+              },
+              {
+                "label": "O boné"
+              },
+              {
+                "label": "Os dois subiram a mesma porcentagem"
+              },
+              {
+                "label": "Não dá para comparar preços diferentes"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-second-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4. A second year at 10% lands on the new price: 440 × 1.10 = 484.",
+          "line": "In two years the tag goes from 400 to 484, so saving 400 would fall 84 short."
+        },
+        "es-MX": {
+          "prompt": "Paso 4. Un segundo año al 10% se aplica al precio nuevo: 440 × 1.10 = 484.",
+          "line": "En dos años la etiqueta pasa de 400 a 484, así que ahorrar 400 dejaría 84 sin cubrir."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4. Um segundo ano a 10% incide sobre o preço novo: 440 × 1,10 = 484.",
+          "line": "Em dois anos a etiqueta vai de 400 para 484, então poupar 400 deixaria 84 sem cobrir."
+        }
+      }
+    },
+    {
+      "id": "example-buffer-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bullet"
+      },
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "minimum": 0,
+        "maximum": 600,
+        "target": 400,
+        "step": 4,
+        "initial": 400,
+        "currency": "local"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5. Set the savings to 484, not 400. The extra 84 is the buffer."
+        },
+        "es-MX": {
+          "prompt": "Paso 5. Pon el ahorro en 484, no en 400. Los 84 extra son el colchón."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5. Ajuste a poupança para 484, não 400. Os 84 a mais são a margem."
+        }
+      }
+    },
+    {
+      "id": "practice-prices-01",
+      "type": "money.inflation.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "inflation"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "currency": "local",
+        "price_minor": 20000,
+        "min_rate_bps": 1000,
+        "max_rate_bps": 1500,
+        "rate_step_bps": 500,
+        "min_years": 2,
+        "max_years": 3,
+        "year_step": 1,
+        "prediction_step_minor": 100,
+        "prediction_max_minor": 31000
+      },
+      "rubric": {
+        "tolerance_minor": 100
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ines wants headphones tagged 200. Set 10% and 2 years, then predict the price.",
+          "feedback": {
+            "met": "You raised the price year by year, not in one jump.",
+            "not_yet": "Not yet. Year two's rise applies to the already higher price."
+          },
+          "help": [
+            "Year 1: 200 × 1.10. Then grow that result again."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Inés quiere unos audífonos de 200. Fija 10% y 2 años, y predice el precio.",
+          "feedback": {
+            "met": "Subiste el precio año por año, no de un solo salto.",
+            "not_yet": "Aún no. El aumento del año dos se aplica al precio ya más alto."
+          },
+          "help": [
+            "Año 1: 200 × 1.10. Luego haz crecer ese resultado otra vez."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Inês quer um fone de ouvido de 200. Defina 10% e 2 anos e preveja o preço.",
+          "feedback": {
+            "met": "Você subiu o preço ano a ano, não de uma vez.",
+            "not_yet": "Ainda não. O aumento do ano dois incide sobre o preço já mais alto."
+          },
+          "help": [
+            "Ano 1: 200 × 1,10. Depois faça esse resultado crescer de novo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-goal-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "minimum": 0,
+        "maximum": 625,
+        "target": 500,
+        "step": 5,
+        "initial": 500,
+        "currency": "local"
+      },
+      "rubric": {
+        "minimum_value": 605
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Marco's 500 guitar rises 10% a year. Set savings that at least cover its price in two years.",
+          "feedback": {
+            "met": "Your savings cover the price after two yearly rises.",
+            "not_yet": "Not yet. Grow the price twice, then save at least that."
+          },
+          "help": [
+            "The price after year 1 × 1.10 is the price after year 2."
+          ]
+        },
+        "es-MX": {
+          "prompt": "La guitarra de Marco, de 500, sube 10% al año. Pon un ahorro que cubra al menos su precio en dos años.",
+          "feedback": {
+            "met": "Tu ahorro cubre el precio después de dos aumentos anuales.",
+            "not_yet": "Aún no. Sube el precio dos veces, una por año, y ahorra al menos eso."
+          },
+          "help": [
+            "El precio del año 1 × 1.10 es el precio del año 2."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A guitarra do Marco, de 500, sobe 10% ao ano. Ajuste uma poupança que cubra ao menos o preço dela em dois anos.",
+          "feedback": {
+            "met": "Sua poupança cobre o preço depois de dois aumentos anuais.",
+            "not_yet": "Ainda não. Suba o preço duas vezes, uma por ano, e poupe pelo menos isso."
+          },
+          "help": [
+            "O preço do ano 1 × 1,10 é o preço do ano 2."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-two-rises"
+          },
+          {
+            "id": "choice-one-rise"
+          },
+          {
+            "id": "choice-no-rise"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-margin"
+          },
+          {
+            "id": "reason-today"
+          },
+          {
+            "id": "reason-higher-price"
+          },
+          {
+            "id": "reason-round"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-two-rises"
+        ],
+        "reasonQuality": {
+          "reason-higher-price": "sound",
+          "reason-margin": "partial",
+          "reason-today": "unsupported",
+          "reason-round": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dana pays for a 600 school trip in two years; trips rise 10% a year. What should she save?",
+          "feedback": {
+            "met": "You chose the amount that covers both yearly rises.",
+            "not_yet": "Not yet. Raise the price once per year, then compare."
+          },
+          "choices": [
+            {
+              "label": "Save about 726"
+            },
+            {
+              "label": "Save 660"
+            },
+            {
+              "label": "Save 600, the tag today"
+            }
+          ],
+          "reasonPrompt": "Which reason best supports your amount?",
+          "reasons": [
+            {
+              "label": "Prices usually rise, so I add a buffer"
+            },
+            {
+              "label": "The tag today is what she will pay"
+            },
+            {
+              "label": "The second rise lands on the higher price"
+            },
+            {
+              "label": "A round number is easier to save"
+            }
+          ],
+          "help": [
+            "Raise the tag 10% for year one, then again."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dana pagará en dos años un viaje escolar de 600; estos viajes suben 10% al año. ¿Cuánto debería ahorrar?",
+          "feedback": {
+            "met": "Elegiste la cantidad que cubre los dos aumentos anuales.",
+            "not_yet": "Aún no. Sube el precio una vez por año y compara."
+          },
+          "choices": [
+            {
+              "label": "Ahorrar unos 726"
+            },
+            {
+              "label": "Ahorrar 660"
+            },
+            {
+              "label": "Ahorrar 600, la etiqueta de hoy"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu cantidad?",
+          "reasons": [
+            {
+              "label": "Los precios suelen subir, así que sumo un colchón"
+            },
+            {
+              "label": "La etiqueta de hoy es lo que pagará"
+            },
+            {
+              "label": "El segundo aumento cae sobre el precio más alto"
+            },
+            {
+              "label": "Un número redondo es más fácil de ahorrar"
+            }
+          ],
+          "help": [
+            "Sube la etiqueta 10% el primer año y otra vez el segundo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dana vai pagar em dois anos uma viagem escolar de 600; essas viagens sobem 10% ao ano. Quanto ela deve poupar?",
+          "feedback": {
+            "met": "Você escolheu o valor que cobre os dois aumentos anuais.",
+            "not_yet": "Ainda não. Suba o preço uma vez por ano e compare."
+          },
+          "choices": [
+            {
+              "label": "Poupar cerca de 726"
+            },
+            {
+              "label": "Poupar 660"
+            },
+            {
+              "label": "Poupar 600, a etiqueta de hoje"
+            }
+          ],
+          "reasonPrompt": "Qual motivo sustenta melhor o seu valor?",
+          "reasons": [
+            {
+              "label": "Os preços costumam subir, então somo uma margem"
+            },
+            {
+              "label": "A etiqueta de hoje é o que ela vai pagar"
+            },
+            {
+              "label": "O segundo aumento incide sobre o preço mais alto"
+            },
+            {
+              "label": "Um número redondo é mais fácil de poupar"
+            }
+          ],
+          "help": [
+            "Suba a etiqueta 10% no primeiro ano e de novo no segundo."
+          ]
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

@@ -1,0 +1,913 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "chapter_id": "inv-1012-luck-risk-and-the-simulator",
+  "lesson_id": "inv-1012-08-growth-simulator",
+  "knowledge_component_ids": [
+    "invest.simulate-before-deciding",
+    "invest.compound-growth",
+    "invest.expected-value"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-a"
+  },
+  "brief": "Liruf, con palabras sencillas, te lleva al simulador de crecimiento con un fondo de práctica de 1,000 monedas. Primero adivinas el resultado, luego corres la simulación y comparas con el registro: así ves por qué un cálculo simple se queda corto cuando las ganancias también ganan. Practicas con un libro de movimientos y con un diagrama de preguntas, y distingues una simulación sola de muchas juntas. Al final, tú usas la misma idea en el simulador del club de la escuela y dices qué puede y qué no puede decirte una simulación.",
+  "title": {
+    "en-US": "Guess first, then run",
+    "es-MX": "Adivina primero, luego corre",
+    "pt-BR": "Chute primeiro, depois rode"
+  },
+  "new_concepts": [
+    "invest.simulate-before-deciding"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf and you stand at the growth simulator, a pretend fund of 1,000 coins on screen.",
+          "line": "Liruf guesses first, then runs it. On the boards, $ means coins."
+        },
+        "es-MX": {
+          "prompt": "Liruf y tú están frente al simulador de crecimiento: un fondo de práctica de 1,000 monedas.",
+          "line": "Liruf adivina primero y luego corre la simulación. En los tableros, $ significa monedas."
+        },
+        "pt-BR": {
+          "prompt": "Liruf e você estão diante do simulador de crescimento, com um fundo de prática de 1.000 moedas.",
+          "line": "Liruf chuta primeiro e depois roda. Nos painéis, $ significa moedas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.simulate-before-deciding",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-watch"
+          },
+          {
+            "id": "choice-biggest"
+          },
+          {
+            "id": "choice-guess"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-compare"
+          },
+          {
+            "id": "reason-watch"
+          },
+          {
+            "id": "reason-fast"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-guess"
+        ],
+        "reasonQuality": {
+          "reason-compare": "sound",
+          "reason-watch": "partial",
+          "reason-fast": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the simulator, you hold a pretend 1,000-coin fund. What do you do before pressing run?",
+          "feedback": {
+            "met": "I see how you think. Now we look closer.",
+            "not_yet": "I see how you think. Now we look closer."
+          },
+          "choices": [
+            {
+              "label": "Press run and just watch"
+            },
+            {
+              "label": "Pick the biggest rate first"
+            },
+            {
+              "label": "Guess the result, then press run"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "My guess gives me something to compare"
+            },
+            {
+              "label": "Watching the run teaches me something"
+            },
+            {
+              "label": "Running first is quicker"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el simulador tienes un fondo de práctica de 1,000 monedas. ¿Qué haces antes de correr la simulación?",
+          "feedback": {
+            "met": "Veo cómo piensas. Ahora lo miramos de cerca.",
+            "not_yet": "Veo cómo piensas. Ahora lo miramos de cerca."
+          },
+          "choices": [
+            {
+              "label": "Correrla y solo mirar"
+            },
+            {
+              "label": "Elegir primero la tasa más alta"
+            },
+            {
+              "label": "Adivinar el resultado y luego correrla"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Mi predicción me da algo con qué comparar"
+            },
+            {
+              "label": "Ver la simulación también enseña algo"
+            },
+            {
+              "label": "Correr primero es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No simulador você tem um fundo de prática de 1.000 moedas. O que você faz antes de rodar a simulação?",
+          "feedback": {
+            "met": "Vejo como você pensa. Agora olhamos de perto.",
+            "not_yet": "Vejo como você pensa. Agora olhamos de perto."
+          },
+          "choices": [
+            {
+              "label": "Rodar e só olhar"
+            },
+            {
+              "label": "Escolher primeiro a taxa mais alta"
+            },
+            {
+              "label": "Chutar o resultado e depois rodar"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Meu palpite me dá algo para comparar"
+            },
+            {
+              "label": "Ver a simulação também ensina algo"
+            },
+            {
+              "label": "Rodar primeiro é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step1-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the pretend fund holds 1,000 coins and grows 5% a year for 6 years.",
+          "line": "Liruf guesses: 5% of 1,000 is 50. Six years, so 300 more: 1,300 coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el fondo de práctica tiene 1,000 monedas y crece 5% al año durante 6 años.",
+          "line": "Liruf adivina: 5% de 1,000 es 50. Seis años, 300 más: 1,300 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o fundo de prática tem 1.000 moedas e cresce 5% ao ano por 6 anos.",
+          "line": "Liruf chuta: 5% de 1.000 é 50. Seis anos, 300 a mais: 1.300 moedas."
+        }
+      }
+    },
+    {
+      "id": "step2-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Liruf runs it. The ledger says about 1,340 coins.",
+          "line": "The guess was 40 coins low: gains earn gains. Liruf writes one rule from that gap."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Liruf corre la simulación. El registro dice cerca de 1,340 monedas.",
+          "line": "La predicción quedó 40 monedas corta: las ganancias también ganan. Liruf escribe una regla con esa diferencia."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: Liruf roda a simulação. O registro diz cerca de 1.340 moedas.",
+          "line": "O palpite ficou 40 moedas abaixo: ganhos também ganham. Liruf escreve uma regra com essa diferença."
+        }
+      }
+    },
+    {
+      "id": "ledger-ex-01",
+      "type": "money.running-ledger.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 10,
+        "sale": 5,
+        "cost": 3,
+        "maxEntries": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's stall starts at 10 coins. Guess the end, log 2 sales and 1 supply, then compare."
+        },
+        "es-MX": {
+          "prompt": "El puesto de Liruf empieza con 10 monedas. Adivina el final, anota 2 ventas y 1 insumo, y compara."
+        },
+        "pt-BR": {
+          "prompt": "A barraca do Liruf começa com 10 moedas. Chute o final, anote 2 vendas e 1 insumo, e compare."
+        }
+      }
+    },
+    {
+      "id": "compound-01",
+      "type": "money.compound-interest.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "compound-interest"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "principalCents": 100000,
+        "scenario": {
+          "rate": 8,
+          "years": 10
+        },
+        "options": [
+          {
+            "id": "opt-a",
+            "cents": 180000
+          },
+          {
+            "id": "opt-b",
+            "cents": 220000
+          },
+          {
+            "id": "opt-c",
+            "cents": 260000
+          },
+          {
+            "id": "opt-d",
+            "cents": 300000
+          }
+        ],
+        "challenge": {
+          "minimumCents": 200000,
+          "maximumYears": 8
+        },
+        "explain": [
+          "same-each-year",
+          "interest-on-interest",
+          "deposit-grows"
+        ]
+      },
+      "rubric": {
+        "predictOption": "opt-b",
+        "explainId": "interest-on-interest"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict what 1,000 coins grow to at 8% in 10 years. Then test it with the sliders.",
+          "feedback": {
+            "met": "You predicted, tested with the sliders and explained why.",
+            "not_yet": "Not yet. Run the sliders again and compare with your guess."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice a cuánto crecen 1,000 monedas al 8% en 10 años. Luego pruébalo con los controles.",
+          "feedback": {
+            "met": "Predijiste, probaste con los controles y explicaste por qué.",
+            "not_yet": "Aún no. Mueve los controles otra vez y compara con tu predicción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja quanto 1.000 moedas viram a 8% em 10 anos. Depois teste com os controles.",
+          "feedback": {
+            "met": "Você previu, testou com os controles e explicou o porquê.",
+            "not_yet": "Ainda não. Mexa nos controles de novo e compare com o seu palpite."
+          }
+        }
+      }
+    },
+    {
+      "id": "step3-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: one run shows what a rule did once. Many runs give an average.",
+          "line": "The simulator only runs the numbers you give it. Real life can differ, and loss can happen."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: una simulación muestra qué hizo una regla una vez. Muchas dan un promedio.",
+          "line": "El simulador solo usa los números que le das. La vida real puede cambiar, y se puede perder."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: uma rodada mostra o que uma regra fez uma vez. Muitas dão uma média.",
+          "line": "O simulador só roda os números que você dá. A vida real pode mudar, e dá para perder."
+        }
+      }
+    },
+    {
+      "id": "ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simulate-before-deciding",
+      "payload": {
+        "initial": 8,
+        "sale": 4,
+        "cost": 3,
+        "maxEntries": 8
+      },
+      "rubric": {
+        "target_balance": 14
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At Liruf's stall you start at 8 coins: guess, log 3 sales and 2 supplies, type the balance.",
+          "feedback": {
+            "met": "You logged every move and typed the matching balance.",
+            "not_yet": "Not yet. Check each logged move against your guess."
+          }
+        },
+        "es-MX": {
+          "prompt": "En el puesto de Liruf empiezas con 8 monedas: adivina, anota 3 ventas y 2 insumos, escribe el saldo.",
+          "feedback": {
+            "met": "Anotaste cada movimiento y escribiste el saldo que coincide.",
+            "not_yet": "Aún no. Revisa cada movimiento anotado contra lo que adivinaste."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na barraca do Liruf você começa com 8 moedas: chute, anote 3 vendas e 2 insumos, digite o saldo.",
+          "feedback": {
+            "met": "Você anotou cada movimento e digitou o saldo que combina.",
+            "not_yet": "Ainda não. Confira cada movimento anotado com o seu palpite."
+          }
+        }
+      }
+    },
+    {
+      "id": "flow-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simulate-before-deciding",
+      "payload": {
+        "start": "q-guess",
+        "nodes": [
+          {
+            "id": "q-guess",
+            "kind": "question",
+            "yes": "q-gap",
+            "no": "out-guess"
+          },
+          {
+            "id": "q-gap",
+            "kind": "question",
+            "yes": "out-rule",
+            "no": "out-same"
+          },
+          {
+            "id": "out-guess",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-rule",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-same",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-none"
+          },
+          {
+            "id": "case-gap"
+          },
+          {
+            "id": "case-same"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-none": [
+            "q-guess",
+            "out-guess"
+          ],
+          "case-gap": [
+            "q-guess",
+            "q-gap",
+            "out-rule"
+          ],
+          "case-same": [
+            "q-guess",
+            "q-gap",
+            "out-same"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the simulator, you and Liruf check each practice run. Answer the questions for each case.",
+          "feedback": {
+            "met": "You answered each case from the facts it shows.",
+            "not_yet": "Not yet. Re-read the case: what does it say about the guess?"
+          },
+          "nodes": [
+            {
+              "label": "Did I write a guess first?"
+            },
+            {
+              "label": "Did the result differ from my guess?"
+            },
+            {
+              "label": "Guess first, then run again"
+            },
+            {
+              "label": "Find the gap and write one rule"
+            },
+            {
+              "label": "Change one setting and guess again"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "No guess, just ran it"
+            },
+            {
+              "label": "Guess 700, result 740"
+            },
+            {
+              "label": "Guess 900, result 900"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el simulador, tú y Liruf revisan cada simulación de práctica. Responde las preguntas de cada caso.",
+          "feedback": {
+            "met": "Respondiste cada caso con los datos que muestra.",
+            "not_yet": "Aún no. Relee el caso: ¿qué dice sobre la predicción?"
+          },
+          "nodes": [
+            {
+              "label": "¿Anoté una predicción primero?"
+            },
+            {
+              "label": "¿El resultado difirió de mi predicción?"
+            },
+            {
+              "label": "Predice primero y corre otra vez"
+            },
+            {
+              "label": "Busca la diferencia y escribe una regla"
+            },
+            {
+              "label": "Cambia un ajuste y predice otra vez"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Sin predicción, solo corrió"
+            },
+            {
+              "label": "Predicción 700, resultado 740"
+            },
+            {
+              "label": "Predicción 900, resultado 900"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No simulador, você e Liruf conferem cada rodada de treino. Responda às perguntas de cada caso.",
+          "feedback": {
+            "met": "Você respondeu cada caso com os dados que ele mostra.",
+            "not_yet": "Ainda não. Releia o caso: o que ele diz sobre o palpite?"
+          },
+          "nodes": [
+            {
+              "label": "Anotei um palpite antes?"
+            },
+            {
+              "label": "O resultado diferiu do meu palpite?"
+            },
+            {
+              "label": "Chute primeiro e rode de novo"
+            },
+            {
+              "label": "Ache a diferença e escreva uma regra"
+            },
+            {
+              "label": "Mude um ajuste e chute de novo"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Sem palpite, só rodou"
+            },
+            {
+              "label": "Palpite 700, resultado 740"
+            },
+            {
+              "label": "Palpite 900, resultado 900"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reason-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-avg"
+          },
+          {
+            "id": "choice-next"
+          },
+          {
+            "id": "choice-bad"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-many"
+          },
+          {
+            "id": "reason-practice"
+          },
+          {
+            "id": "reason-plus"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-avg"
+        ],
+        "reasonQuality": {
+          "reason-many": "sound",
+          "reason-practice": "partial",
+          "reason-plus": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's simulator ran one rule 100 times: +30 coins on average, but some runs lost. Which is true?",
+          "feedback": {
+            "met": "You picked the statement about many runs, not one.",
+            "not_yet": "Not yet. Look again: what happened in some of the runs?"
+          },
+          "help": [
+            "Picture 100 runs together, then just one."
+          ],
+          "choices": [
+            {
+              "label": "Many runs average 30; one run can lose"
+            },
+            {
+              "label": "The next run will gain 30 coins"
+            },
+            {
+              "label": "One losing run proves the rule is bad"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "An average comes from many runs together"
+            },
+            {
+              "label": "The simulator is only practice"
+            },
+            {
+              "label": "A plus average means it cannot lose"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el simulador de Liruf se corrió una regla 100 veces: promedió +30 monedas, pero algunas simulaciones perdieron. ¿Qué frase es cierta?",
+          "feedback": {
+            "met": "Elegiste la frase sobre muchas simulaciones, no una.",
+            "not_yet": "Aún no. Mira otra vez: ¿qué pasó en algunas simulaciones?"
+          },
+          "help": [
+            "Imagina 100 simulaciones juntas, y luego solo una."
+          ],
+          "choices": [
+            {
+              "label": "En muchas simulaciones promedia 30; una puede perder"
+            },
+            {
+              "label": "La próxima simulación ganará 30 monedas"
+            },
+            {
+              "label": "Una simulación perdida prueba que la regla es mala"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Un promedio sale de muchas simulaciones juntas"
+            },
+            {
+              "label": "El simulador es solo práctica"
+            },
+            {
+              "label": "Un promedio positivo significa que no puede perder"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No simulador do Liruf, uma regra rodou 100 vezes: média de +30 moedas, mas algumas rodadas perderam. Qual frase é verdadeira?",
+          "feedback": {
+            "met": "Você escolheu a frase sobre muitas rodadas, não uma.",
+            "not_yet": "Ainda não. Olhe de novo: o que aconteceu em algumas rodadas?"
+          },
+          "help": [
+            "Imagine 100 rodadas juntas, depois só uma."
+          ],
+          "choices": [
+            {
+              "label": "Em muitas rodadas a média é 30; uma pode perder"
+            },
+            {
+              "label": "A próxima rodada vai ganhar 30 moedas"
+            },
+            {
+              "label": "Uma rodada perdida prova que a regra é ruim"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Uma média vem de muitas rodadas juntas"
+            },
+            {
+              "label": "O simulador é só treino"
+            },
+            {
+              "label": "Uma média positiva significa que não pode perder"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.simulate-before-deciding",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-real"
+          },
+          {
+            "id": "choice-one"
+          },
+          {
+            "id": "choice-every"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rules"
+          },
+          {
+            "id": "reason-differ"
+          },
+          {
+            "id": "reason-again"
+          },
+          {
+            "id": "reason-proof"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-one"
+        ],
+        "reasonQuality": {
+          "reason-rules": "sound",
+          "reason-differ": "sound",
+          "reason-again": "partial",
+          "reason-proof": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the school club simulator, you and Liruf end a run on 2,000 coins. What does that run tell you?",
+          "feedback": {
+            "met": "You chose the line that stays with what the run showed.",
+            "not_yet": "Not yet. Count the runs on screen: what can one show?"
+          },
+          "help": [
+            "Think back: the simulator runs the numbers it is given."
+          ],
+          "choices": [
+            {
+              "label": "A real fund would end on 2,000 too"
+            },
+            {
+              "label": "What this rule did in one pretend run"
+            },
+            {
+              "label": "That every run will end on 2,000"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A run only follows the numbers typed in"
+            },
+            {
+              "label": "Real results can differ and can lose coins"
+            },
+            {
+              "label": "I would run it a few more times"
+            },
+            {
+              "label": "A big number is proof it works"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el simulador del club de la escuela, tú y Liruf terminan una simulación con 2,000 monedas. ¿Qué te dice esa simulación?",
+          "feedback": {
+            "met": "Elegiste la frase que se queda con lo que mostró la simulación.",
+            "not_yet": "Aún no. Cuenta las simulaciones en pantalla: ¿qué puede mostrar una?"
+          },
+          "help": [
+            "Recuerda: el simulador solo usa los números que le das."
+          ],
+          "choices": [
+            {
+              "label": "Un fondo real también terminaría en 2,000"
+            },
+            {
+              "label": "Lo que hizo esta regla en una simulación de práctica"
+            },
+            {
+              "label": "Que toda simulación terminará en 2,000"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Una simulación solo sigue los números escritos"
+            },
+            {
+              "label": "Los resultados reales pueden cambiar y perder monedas"
+            },
+            {
+              "label": "Repetiría la simulación unas veces más"
+            },
+            {
+              "label": "Un número grande prueba que funciona"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No simulador do clube da escola, você e Liruf terminam uma rodada com 2.000 moedas. O que essa rodada diz a você?",
+          "feedback": {
+            "met": "Você escolheu a frase que fica com o que a rodada mostrou.",
+            "not_yet": "Ainda não. Conte as rodadas na tela: o que uma pode mostrar?"
+          },
+          "help": [
+            "Lembre: o simulador roda os números que você dá."
+          ],
+          "choices": [
+            {
+              "label": "Um fundo real também terminaria em 2.000"
+            },
+            {
+              "label": "O que esta regra fez em uma rodada de treino"
+            },
+            {
+              "label": "Que toda rodada vai terminar em 2.000"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Uma rodada só segue os números digitados"
+            },
+            {
+              "label": "Resultados reais podem mudar e perder moedas"
+            },
+            {
+              "label": "Eu rodaria mais algumas vezes"
+            },
+            {
+              "label": "Um número grande prova que funciona"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

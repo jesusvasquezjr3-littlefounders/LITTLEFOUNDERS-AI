@@ -1,0 +1,1311 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-market-day",
+  "lesson_id": "fe-69-12-pause-before-you-buy",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.think-before-buying",
+    "life.advertising-literacy",
+    "biz.needs-vs-wants"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho tiene 20 monedas guardadas para zapatos, ve un letrero que grita «solo hoy, juguete gratis con cada papalote», paga 15 por el papalote y se queda con 5. Hace una pausa, pregunta si puede esperar, descubre que «gratis» exigía una compra y dice qué hará la próxima vez. El niño separa datos claros de presiones para comprar, decide qué puede esperar y usa la pausa con un letrero nuevo.",
+  "title": {
+    "en-US": "Pause before you buy",
+    "es-MX": "Haz una pausa antes de comprar",
+    "pt-BR": "Pare antes de comprar"
+  },
+  "new_concepts": [
+    "life.think-before-buying",
+    "life.advertising-literacy"
+  ],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "Rho buys a 15-coin kite because a banner shouts “Only today, free toy with every kite!” That leaves 5 of the 20 coins he saved for shoes.",
+    "recovery": "Rho pauses and asks whether the kite can wait, sees that the free toy needed a kite purchase, and says that next time he will ask “can it wait?” before he buys."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho has 20 coins saved for new shoes.",
+          "line": "Today I measure one thing: a banner that shouts."
+        },
+        "es-MX": {
+          "prompt": "Rho tiene 20 monedas guardadas para zapatos nuevos.",
+          "line": "Hoy mido una sola cosa: un letrero que grita."
+        },
+        "pt-BR": {
+          "prompt": "O Rho guardou 20 moedas para sapatos novos.",
+          "line": "Hoje eu meço uma coisa só: um cartaz que grita."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-buy-today"
+          },
+          {
+            "id": "choice-wait"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-gone"
+          },
+          {
+            "id": "why-plan"
+          },
+          {
+            "id": "why-sign"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-wait"
+        ],
+        "reasonQuality": {
+          "why-plan": "sound",
+          "why-gone": "partial",
+          "why-sign": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Robot sign: one day only! Ana saves coins for a lunch box.",
+          "feedback": {
+            "met": "Noted. Now we measure it, one step at a time.",
+            "not_yet": "Noted. Now we measure it, one step at a time."
+          },
+          "choices": [
+            {
+              "label": "Buy the robot today"
+            },
+            {
+              "label": "Wait a day, then decide"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "It could be gone tomorrow"
+            },
+            {
+              "label": "My coins have a plan"
+            },
+            {
+              "label": "The sign says so"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Letrero del robot: ¡un solo día! Ana guarda monedas para una lonchera.",
+          "feedback": {
+            "met": "Anotado. Ahora lo medimos, un paso a la vez.",
+            "not_yet": "Anotado. Ahora lo medimos, un paso a la vez."
+          },
+          "choices": [
+            {
+              "label": "Comprar el robot hoy"
+            },
+            {
+              "label": "Esperar un día y decidir"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "Podría agotarse mañana"
+            },
+            {
+              "label": "Mis monedas ya tienen un plan"
+            },
+            {
+              "label": "Lo dice el letrero"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cartaz do robô: só um dia! Ana guarda moedas para uma lancheira.",
+          "feedback": {
+            "met": "Anotado. Agora vamos medir, um passo de cada vez.",
+            "not_yet": "Anotado. Agora vamos medir, um passo de cada vez."
+          },
+          "choices": [
+            {
+              "label": "Comprar o robô hoje"
+            },
+            {
+              "label": "Esperar um dia e decidir"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "Pode acabar amanhã"
+            },
+            {
+              "label": "Minhas moedas já têm um plano"
+            },
+            {
+              "label": "O cartaz diz isso"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Rho.",
+          "setup": "A banner shouted: “Only today, free toy with every kite!”",
+          "misjudgment": "I paid 15 of my 20 shoe coins. Only 5 were left.",
+          "recovery": "That’s okay. Next time I pause and ask: can it wait?"
+        },
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Rho.",
+          "setup": "Un letrero gritó: “¡Solo hoy, juguete gratis con cada papalote!”",
+          "misjudgment": "Pagué 15 de mis 20 monedas ahorradas para zapatos. Solo quedaron 5.",
+          "recovery": "Está bien. La próxima vez hago una pausa y pregunto: ¿puede esperar?"
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Rho.",
+          "setup": "Um cartaz gritou: “Somente hoje, brinquedo grátis com cada pipa!”",
+          "misjudgment": "Paguei 15 das minhas 20 moedas guardadas para os sapatos. Só sobraram 5.",
+          "recovery": "Tudo bem. Da próxima vez faço uma pausa e pergunto: pode esperar?"
+        }
+      }
+    },
+    {
+      "id": "ex-check-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Measure one: can I check it?",
+          "line": "15 coins: a plain fact. “Best kite ever”: nobody can check."
+        },
+        "es-MX": {
+          "prompt": "Medida uno: ¿lo puedo comprobar?",
+          "line": "15 monedas: un dato claro. “El mejor papalote”: nadie lo comprueba."
+        },
+        "pt-BR": {
+          "prompt": "Medida um: posso conferir?",
+          "line": "15 moedas: um fato claro. “A melhor pipa”: ninguém confere."
+        }
+      }
+    },
+    {
+      "id": "ex-free-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Measure two: the word free.",
+          "line": "Free needs a 15-coin kite. A push is a nudge to buy."
+        },
+        "es-MX": {
+          "prompt": "Medida dos: la palabra gratis.",
+          "line": "Gratis pide un papalote de 15 monedas. Una presión es un empujón para comprar."
+        },
+        "pt-BR": {
+          "prompt": "Medida dois: a palavra grátis.",
+          "line": "Grátis pede uma pipa de 15 moedas. Pressão é um empurrãozinho para comprar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.advertising-literacy",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-fact"
+          },
+          {
+            "id": "bin-push"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-free-ball"
+          },
+          {
+            "id": "item-red-hat"
+          },
+          {
+            "id": "item-best-hat"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-no-check"
+          },
+          {
+            "id": "why-check"
+          },
+          {
+            "id": "why-hurry"
+          },
+          {
+            "id": "why-free"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-free-ball": [
+            {
+              "bin": "bin-push",
+              "reason": "why-free"
+            }
+          ],
+          "item-red-hat": [
+            {
+              "bin": "bin-fact",
+              "reason": "why-check"
+            }
+          ],
+          "item-best-hat": [
+            {
+              "bin": "bin-push",
+              "reason": "why-no-check"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort each hat sign, then pick why.",
+          "rule": "Can I check it? Does it push me to buy?",
+          "feedback": {
+            "met": "You sorted each sign. Only the price is a plain fact.",
+            "not_yet": "Not yet: read each sign. Can I check it?"
+          },
+          "help": [
+            "Pick one sign. Can you check it?",
+            "Look at the word free. What must you buy first?"
+          ],
+          "bins": [
+            {
+              "label": "Plain fact"
+            },
+            {
+              "label": "A push to buy"
+            }
+          ],
+          "items": [
+            {
+              "label": "Free ball with every hat"
+            },
+            {
+              "label": "Red hat: 6 coins"
+            },
+            {
+              "label": "Best hat on Earth!"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Nobody can check it"
+            },
+            {
+              "label": "I can check it"
+            },
+            {
+              "label": "It says to hurry"
+            },
+            {
+              "label": "Free needs a purchase"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Separa cada letrero de sombreros y elige por qué.",
+          "rule": "¿Lo puedo comprobar? ¿Me presiona a comprar?",
+          "feedback": {
+            "met": "Separaste cada letrero. Solo el precio es un dato claro.",
+            "not_yet": "Todavía no: lee cada letrero. ¿Lo puedo comprobar?"
+          },
+          "help": [
+            "Elige un letrero. ¿Lo puedes comprobar?",
+            "Mira la palabra gratis. ¿Qué debes comprar primero?"
+          ],
+          "bins": [
+            {
+              "label": "Dato claro"
+            },
+            {
+              "label": "Presión para comprar"
+            }
+          ],
+          "items": [
+            {
+              "label": "Pelota gratis con cada sombrero"
+            },
+            {
+              "label": "Sombrero rojo: 6 monedas"
+            },
+            {
+              "label": "¡El mejor sombrero del mundo!"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Nadie lo puede comprobar"
+            },
+            {
+              "label": "Lo puedo comprobar"
+            },
+            {
+              "label": "Dice que me apure"
+            },
+            {
+              "label": "Gratis exige comprar algo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Separe cada cartaz de chapéu e escolha por quê.",
+          "rule": "Posso conferir? Isso me pressiona a comprar?",
+          "feedback": {
+            "met": "Você separou cada cartaz. Só o preço é um fato claro.",
+            "not_yet": "Ainda não: leia cada cartaz. Posso conferir?"
+          },
+          "help": [
+            "Escolha um cartaz. Você consegue conferir?",
+            "Olhe a palavra grátis. O que comprar primeiro?"
+          ],
+          "bins": [
+            {
+              "label": "Fato claro"
+            },
+            {
+              "label": "Pressão para comprar"
+            }
+          ],
+          "items": [
+            {
+              "label": "Bola grátis com cada chapéu"
+            },
+            {
+              "label": "Chapéu vermelho: 6 moedas"
+            },
+            {
+              "label": "O melhor chapéu do mundo!"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Ninguém pode conferir"
+            },
+            {
+              "label": "Posso conferir"
+            },
+            {
+              "label": "Manda eu me apressar"
+            },
+            {
+              "label": "Grátis exige comprar algo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-today-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Measure three: “Only today!”",
+          "line": "It pushes me to hurry. A pause costs no coins."
+        },
+        "es-MX": {
+          "prompt": "Medida tres: “¡Solo hoy!”",
+          "line": "Me apura a comprar. Una pausa no cuesta monedas."
+        },
+        "pt-BR": {
+          "prompt": "Medida três: “Somente hoje!”",
+          "line": "Ele me apressa. Uma pausa não custa moedas."
+        }
+      }
+    },
+    {
+      "id": "ex-ask-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Measure four: can it wait?",
+          "line": "The kite can wait. Shoes cannot, so shoes come first."
+        },
+        "es-MX": {
+          "prompt": "Medida cuatro: ¿puede esperar?",
+          "line": "El papalote puede esperar. Los zapatos no, van primero."
+        },
+        "pt-BR": {
+          "prompt": "Medida quatro: pode esperar?",
+          "line": "A pipa pode esperar. Os sapatos não, vêm primeiro."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-wait"
+          },
+          {
+            "id": "bin-first"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-sticker-book"
+          },
+          {
+            "id": "item-lunch"
+          },
+          {
+            "id": "item-notebook"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-fun"
+          },
+          {
+            "id": "why-soon"
+          },
+          {
+            "id": "why-later"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-sticker-book": [
+            {
+              "bin": "bin-wait",
+              "reason": "why-fun"
+            },
+            {
+              "bin": "bin-wait",
+              "reason": "why-later"
+            }
+          ],
+          "item-lunch": [
+            {
+              "bin": "bin-first",
+              "reason": "why-soon"
+            }
+          ],
+          "item-notebook": [
+            {
+              "bin": "bin-first",
+              "reason": "why-soon"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your turn: sort with Rho’s question, then pick why.",
+          "rule": "Can it wait? If not, it comes first.",
+          "feedback": {
+            "met": "You asked it of each thing. Lunch and notebook go first.",
+            "not_yet": "Not yet: ask Rho’s question about each thing."
+          },
+          "help": [
+            "Pick one thing. Could it wait a few days?",
+            "Think about tomorrow. What do you need then?"
+          ],
+          "bins": [
+            {
+              "label": "Can wait"
+            },
+            {
+              "label": "Cannot wait"
+            }
+          ],
+          "items": [
+            {
+              "label": "Sticker book"
+            },
+            {
+              "label": "Lunch for today"
+            },
+            {
+              "label": "Notebook for tomorrow’s class"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It is just for fun"
+            },
+            {
+              "label": "I need it soon"
+            },
+            {
+              "label": "I can get it later"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu turno: separa con la pregunta de Rho y elige por qué.",
+          "rule": "¿Puede esperar? Si no, va primero.",
+          "feedback": {
+            "met": "Hiciste la pregunta con cada cosa. La comida y el cuaderno van primero.",
+            "not_yet": "Todavía no: hazle a cada cosa la pregunta de Rho."
+          },
+          "help": [
+            "Elige una cosa. ¿Podría esperar unos días?",
+            "Piensa en mañana. ¿Qué necesitas entonces?"
+          ],
+          "bins": [
+            {
+              "label": "Puede esperar"
+            },
+            {
+              "label": "No puede esperar"
+            }
+          ],
+          "items": [
+            {
+              "label": "Álbum de calcomanías"
+            },
+            {
+              "label": "Comida de hoy"
+            },
+            {
+              "label": "Cuaderno para la clase de mañana"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Es solo para divertirme"
+            },
+            {
+              "label": "Lo necesito pronto"
+            },
+            {
+              "label": "Lo puedo conseguir después"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua vez: separe com a pergunta do Rho e escolha por quê.",
+          "rule": "Pode esperar? Se não, vem primeiro.",
+          "feedback": {
+            "met": "Você perguntou a cada coisa. Almoço e caderno vêm primeiro.",
+            "not_yet": "Ainda não: faça a pergunta do Rho sobre cada coisa."
+          },
+          "help": [
+            "Escolha uma coisa. Poderia esperar uns dias?",
+            "Pense em amanhã. O que você precisa então?"
+          ],
+          "bins": [
+            {
+              "label": "Pode esperar"
+            },
+            {
+              "label": "Não pode esperar"
+            }
+          ],
+          "items": [
+            {
+              "label": "Álbum de figurinhas"
+            },
+            {
+              "label": "Almoço de hoje"
+            },
+            {
+              "label": "Caderno para a aula de amanhã"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "É só diversão"
+            },
+            {
+              "label": "Preciso logo"
+            },
+            {
+              "label": "Posso pegar depois"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-reason-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Last measure: a decision needs a reason.",
+          "line": "I wait a day, because my coins have a plan."
+        },
+        "es-MX": {
+          "prompt": "Última medida: una decisión necesita razón.",
+          "line": "Espero un día, porque mis monedas tienen un plan."
+        },
+        "pt-BR": {
+          "prompt": "Última medida: uma decisão precisa de motivo.",
+          "line": "Espero um dia, porque minhas moedas têm um plano."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.advertising-literacy",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-fact"
+          },
+          {
+            "id": "bin-push"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-sweetest"
+          },
+          {
+            "id": "item-price"
+          },
+          {
+            "id": "item-last-day"
+          },
+          {
+            "id": "item-bag-six"
+          },
+          {
+            "id": "item-free-apple"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-check"
+          },
+          {
+            "id": "why-hurry"
+          },
+          {
+            "id": "why-free"
+          },
+          {
+            "id": "why-no-check"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-sweetest": [
+            {
+              "bin": "bin-push",
+              "reason": "why-no-check"
+            }
+          ],
+          "item-price": [
+            {
+              "bin": "bin-fact",
+              "reason": "why-check"
+            }
+          ],
+          "item-last-day": [
+            {
+              "bin": "bin-push",
+              "reason": "why-hurry"
+            }
+          ],
+          "item-bag-six": [
+            {
+              "bin": "bin-fact",
+              "reason": "why-check"
+            }
+          ],
+          "item-free-apple": [
+            {
+              "bin": "bin-push",
+              "reason": "why-free"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A fruit stall: sort each sign, then pick why.",
+          "feedback": {
+            "met": "You sorted every sign. Two are plain facts.",
+            "not_yet": "Not yet: pick one sign. Can I check it?"
+          },
+          "help": [
+            "Take one sign. Can you check it?",
+            "Look for words like free or last."
+          ],
+          "bins": [
+            {
+              "label": "Plain fact"
+            },
+            {
+              "label": "A push to buy"
+            }
+          ],
+          "items": [
+            {
+              "label": "Sweetest pears ever!"
+            },
+            {
+              "label": "Pears: 2 coins each"
+            },
+            {
+              "label": "Last day for pears!"
+            },
+            {
+              "label": "Each bag holds 6 pears"
+            },
+            {
+              "label": "Free apple with every bag"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "I can check it"
+            },
+            {
+              "label": "It says to hurry"
+            },
+            {
+              "label": "Free needs a purchase"
+            },
+            {
+              "label": "Nobody can check it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un puesto de fruta: separa cada letrero y elige por qué.",
+          "feedback": {
+            "met": "Separaste todos los letreros. Dos son datos claros.",
+            "not_yet": "Todavía no: toma un letrero. ¿Lo puedo comprobar?"
+          },
+          "help": [
+            "Toma un letrero. ¿Lo puedes comprobar?",
+            "Busca palabras como gratis o último."
+          ],
+          "bins": [
+            {
+              "label": "Dato claro"
+            },
+            {
+              "label": "Presión para comprar"
+            }
+          ],
+          "items": [
+            {
+              "label": "¡Las peras más dulces!"
+            },
+            {
+              "label": "Peras: 2 monedas cada una"
+            },
+            {
+              "label": "¡Último día de peras!"
+            },
+            {
+              "label": "Cada bolsa trae 6 peras"
+            },
+            {
+              "label": "Manzana gratis con cada bolsa"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo puedo comprobar"
+            },
+            {
+              "label": "Dice que me apure"
+            },
+            {
+              "label": "Gratis exige comprar algo"
+            },
+            {
+              "label": "Nadie lo puede comprobar"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma barraca de frutas: separe cada cartaz e escolha por quê.",
+          "feedback": {
+            "met": "Você separou todos os cartazes. Dois são fatos claros.",
+            "not_yet": "Ainda não: pegue um cartaz. Posso conferir?"
+          },
+          "help": [
+            "Pegue um cartaz. Você consegue conferir?",
+            "Procure palavras como grátis ou último."
+          ],
+          "bins": [
+            {
+              "label": "Fato claro"
+            },
+            {
+              "label": "Pressão para comprar"
+            }
+          ],
+          "items": [
+            {
+              "label": "As peras mais doces!"
+            },
+            {
+              "label": "Peras: 2 moedas cada"
+            },
+            {
+              "label": "Último dia de peras!"
+            },
+            {
+              "label": "Cada sacola tem 6 peras"
+            },
+            {
+              "label": "Maçã grátis com cada sacola"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Posso conferir"
+            },
+            {
+              "label": "Manda eu me apressar"
+            },
+            {
+              "label": "Grátis exige comprar algo"
+            },
+            {
+              "label": "Ninguém pode conferir"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.needs-vs-wants",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-lunch"
+          },
+          {
+            "id": "choice-toy"
+          },
+          {
+            "id": "choice-both"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-feels"
+          },
+          {
+            "id": "why-lunch"
+          },
+          {
+            "id": "why-sticker"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-lunch"
+        ],
+        "reasonQuality": {
+          "why-lunch": "sound",
+          "why-sticker": "partial",
+          "why-feels": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia has 9 coins. Lunch is 6, the toy is 5.",
+          "help": [
+            "Ask Rho’s question: can it wait?",
+            "Add 5 and 6. How many coins is that?"
+          ],
+          "feedback": {
+            "met": "You put lunch first: 6 of the 9 coins.",
+            "not_yet": "Not yet: ask Rho’s question about lunch and the toy."
+          },
+          "choices": [
+            {
+              "label": "Buy lunch first"
+            },
+            {
+              "label": "Buy the toy: free sticker"
+            },
+            {
+              "label": "Buy both"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "It just feels right"
+            },
+            {
+              "label": "Lunch cannot wait"
+            },
+            {
+              "label": "The sticker isn’t really free"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mia tiene 9 monedas. La comida cuesta 6, el juguete 5.",
+          "help": [
+            "Haz la pregunta de Rho: ¿puede esperar?",
+            "Suma 5 y 6. ¿Cuántas monedas son?"
+          ],
+          "feedback": {
+            "met": "Pusiste la comida primero: 6 de las 9 monedas.",
+            "not_yet": "Todavía no: hazle a cada cosa la pregunta de Rho."
+          },
+          "choices": [
+            {
+              "label": "Comprar primero la comida"
+            },
+            {
+              "label": "Comprar el juguete: calcomanía gratis"
+            },
+            {
+              "label": "Comprar los dos"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "Solo se siente bien"
+            },
+            {
+              "label": "La comida no puede esperar"
+            },
+            {
+              "label": "La calcomanía no es gratis de verdad"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mia tem 9 moedas. O almoço custa 6, o brinquedo 5.",
+          "help": [
+            "Faça a pergunta do Rho: pode esperar?",
+            "Some 5 e 6. Quantas moedas dá?"
+          ],
+          "feedback": {
+            "met": "Você pôs o almoço primeiro: 6 das 9 moedas.",
+            "not_yet": "Ainda não: faça a pergunta do Rho sobre cada coisa."
+          },
+          "choices": [
+            {
+              "label": "Comprar o almoço primeiro"
+            },
+            {
+              "label": "Comprar o brinquedo: figurinha grátis"
+            },
+            {
+              "label": "Comprar os dois"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "Só parece certo"
+            },
+            {
+              "label": "O almoço não pode esperar"
+            },
+            {
+              "label": "A figurinha não é grátis de verdade"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-skip"
+          },
+          {
+            "id": "choice-buy-shirt"
+          },
+          {
+            "id": "choice-pause"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-bag"
+          },
+          {
+            "id": "why-feels"
+          },
+          {
+            "id": "why-needs-shirt"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-pause"
+        ],
+        "reasonQuality": {
+          "why-bag": "sound",
+          "why-needs-shirt": "partial",
+          "why-feels": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sign: free cap with every shirt! Omar saves for a bag.",
+          "help": [
+            "Ask Rho’s question: can it wait?",
+            "What is Omar saving for? Does it come first?"
+          ],
+          "feedback": {
+            "met": "You paused to check the plan before buying.",
+            "not_yet": "Not yet: what must Omar buy to get the cap?"
+          },
+          "choices": [
+            {
+              "label": "Skip it, signs always trick"
+            },
+            {
+              "label": "Buy the shirt now"
+            },
+            {
+              "label": "Pause, then check my plan"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "The bag comes first"
+            },
+            {
+              "label": "It just feels better"
+            },
+            {
+              "label": "Free needs a shirt first"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Letrero: ¡gorra gratis con cada camisa! Omar ahorra para una mochila.",
+          "help": [
+            "Haz la pregunta de Rho: ¿puede esperar?",
+            "¿Para qué ahorra Omar? ¿Va primero?"
+          ],
+          "feedback": {
+            "met": "Hiciste una pausa para revisar el plan antes de comprar.",
+            "not_yet": "Todavía no: ¿qué debe comprar Omar para tener la gorra?"
+          },
+          "choices": [
+            {
+              "label": "Olvidarlo: los letreros siempre engañan"
+            },
+            {
+              "label": "Comprar la camisa ahora"
+            },
+            {
+              "label": "Pausa y revisar mi plan"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "La mochila va primero"
+            },
+            {
+              "label": "Solo se siente mejor"
+            },
+            {
+              "label": "Gratis exige una camisa"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cartaz: boné grátis com cada camisa! Omar guarda moedas para uma mochila.",
+          "help": [
+            "Faça a pergunta do Rho: pode esperar?",
+            "Para que o Omar guarda moedas? Vem primeiro?"
+          ],
+          "feedback": {
+            "met": "Você fez uma pausa para conferir o plano antes de comprar.",
+            "not_yet": "Ainda não: o que o Omar precisa comprar para ter o boné?"
+          },
+          "choices": [
+            {
+              "label": "Pular isso: cartazes sempre enganam"
+            },
+            {
+              "label": "Comprar a camisa agora"
+            },
+            {
+              "label": "Pausar e conferir meu plano"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "A mochila vem primeiro"
+            },
+            {
+              "label": "Só parece melhor"
+            },
+            {
+              "label": "Grátis exige uma camisa"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

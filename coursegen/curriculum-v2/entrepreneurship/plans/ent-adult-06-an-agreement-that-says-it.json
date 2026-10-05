@@ -1,0 +1,983 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-trusted-deals",
+  "lesson_id": "ent-adult-06-an-agreement-that-says-it",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.agreements",
+    "biz.deal-red-flags"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Mensajería Metro ofrece a tu taller móvil de bicicletas un acuerdo de una visita al mes durante 12 meses por $12,000 en total. Rho lo mide en cuatro partes, una por una: qué se entrega, cuándo, cuánto y qué pasa si alguien no cumple. Tú pruebas una regla con cartas, ordenas las fechas de otro acuerdo, encuentras qué partes le faltan a un texto y decides cuándo pedir ayuda profesional antes de firmar.",
+  "title": {
+    "es-MX": "Revisa un acuerdo antes de firmarlo",
+    "en-US": "Check an agreement before signing",
+    "pt-BR": "Confira um acordo antes de assinar"
+  },
+  "new_concepts": [
+    "biz.agreements"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Tu taller móvil de bicicletas recibe de una empresa de mensajería un acuerdo de servicio de una página: una visita al mes durante 12 meses, $12,000 en total, con pago por SPEI contra factura. Es una lista general de revisión, no asesoría legal. Las cifras son ilustrativas.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "SPEI",
+          "factura"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Sua bicicletaria móvel recebe de uma empresa de entregas um acordo de serviço de uma página: uma visita por mês durante 12 meses, R$ 3.600 no total, com pagamento por Pix contra nota fiscal. É uma lista geral de conferência, não orientação jurídica. Os valores são ilustrativos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "Pix",
+          "nota fiscal"
+        ]
+      },
+      "en-US": {
+        "scenario": "Your mobile bike repair business gets a one-page service agreement from a courier company: one visit a month for 12 months, $2,400 in total, paid by Zelle against an invoice. It is a general checklist, not legal advice. Figures are illustrative.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "Zelle",
+          "invoice"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mensajería Metro ofrece a tu taller móvil un acuerdo: una visita al mes durante 12 meses a sus bicis de reparto, $12,000 en total.",
+          "line": "El texto ocupa una página. Antes de firmar lo medimos, una parte a la vez."
+        },
+        "en-US": {
+          "prompt": "Metro Couriers offers your bike repair business an agreement: one visit a month for 12 months, $2,400 in total.",
+          "line": "The text is one page. Before you sign, we measure it, one part at a time."
+        },
+        "pt-BR": {
+          "prompt": "A Metro Entregas oferece à sua bicicletaria móvel um acordo: uma visita por mês durante 12 meses, R$ 3.600 no total.",
+          "line": "O texto tem uma página. Antes de assinar, medimos uma parte de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.agreements",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-sign"
+          },
+          {
+            "id": "choice-parts"
+          },
+          {
+            "id": "choice-friend"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-price"
+          },
+          {
+            "id": "reason-leaves"
+          },
+          {
+            "id": "reason-trust"
+          },
+          {
+            "id": "reason-parts"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-parts"
+        ],
+        "reasonQuality": {
+          "reason-leaves": "sound",
+          "reason-parts": "partial",
+          "reason-price": "unsupported",
+          "reason-trust": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mensajería Metro envía su acuerdo de una página: 12 visitas, $12,000. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Anotado. Ahora medimos el texto, una parte a la vez.",
+            "not_yet": "Anotado. Ahora medimos el texto, una parte a la vez."
+          },
+          "choices": [
+            {
+              "label": "Lo firmo, el precio parece justo"
+            },
+            {
+              "label": "Lo leo para ver qué le falta"
+            },
+            {
+              "label": "Pregunto a un amigo si firmaría"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón va con tu elección?",
+          "reasons": [
+            {
+              "label": "Un precio justo lo arregla todo"
+            },
+            {
+              "label": "Lo que falta en el texto puede costar dinero"
+            },
+            {
+              "label": "Una empresa grande me tratará bien"
+            },
+            {
+              "label": "Cada parte es más fácil de revisar sola"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Metro Couriers sends its one-page agreement: 12 visits, $2,400. What do you do first?",
+          "feedback": {
+            "met": "Noted. Now we measure the text, one part at a time.",
+            "not_yet": "Noted. Now we measure the text, one part at a time."
+          },
+          "choices": [
+            {
+              "label": "Sign it, the price looks fair"
+            },
+            {
+              "label": "Read it for what it leaves out"
+            },
+            {
+              "label": "Ask a friend if they would sign"
+            }
+          ],
+          "reasonPrompt": "Which reason goes with your choice?",
+          "reasons": [
+            {
+              "label": "A fair price settles everything"
+            },
+            {
+              "label": "What the text leaves out can cost money"
+            },
+            {
+              "label": "A big company will treat me well"
+            },
+            {
+              "label": "Each part is easier to check alone"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Metro Entregas envia o acordo de uma página: 12 visitas, R$ 3.600. O que você faz primeiro?",
+          "feedback": {
+            "met": "Anotado. Agora medimos o texto, uma parte de cada vez.",
+            "not_yet": "Anotado. Agora medimos o texto, uma parte de cada vez."
+          },
+          "choices": [
+            {
+              "label": "Assino, o preço parece justo"
+            },
+            {
+              "label": "Leio para ver o que falta nele"
+            },
+            {
+              "label": "Pergunto a um amigo se assinaria"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina com sua escolha?",
+          "reasons": [
+            {
+              "label": "Um preço justo resolve tudo"
+            },
+            {
+              "label": "O que falta no texto pode custar dinheiro"
+            },
+            {
+              "label": "Uma empresa grande vai me tratar bem"
+            },
+            {
+              "label": "Cada parte é mais fácil de conferir sozinha"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-what-price",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, qué: “una visita al mes a las bicis de reparto, durante doce meses”; paso 2, cuánto: “$12,000, $1,000 al mes.”",
+          "line": "Las dos partes están en el texto, con cifras que puedo revisar. Siguen las otras dos."
+        },
+        "en-US": {
+          "prompt": "Step 1, what: “one bike visit a month for twelve months”; step 2, how much: “$2,400, $200 a month.”",
+          "line": "Both parts are in the text, with numbers I can check. Next, the other two."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, o quê: “uma visita por mês às bicicletas de entrega, durante doze meses”; passo 2, quanto: “R$ 3.600, R$ 300 por mês.”",
+          "line": "As duas partes estão no texto, com números que posso conferir. Seguem as outras duas."
+        }
+      }
+    },
+    {
+      "id": "ex-gaps",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, cuándo: no aparece ningún día de visita. Paso 4, qué pasa si no: nada cubre un pago tardío.",
+          "line": "Faltan dos de cuatro partes. Una parte ausente del texto es una pregunta por resolver antes de firmar."
+        },
+        "en-US": {
+          "prompt": "Step 3, when: no visit day appears. Step 4, what if not: nothing covers a late payment.",
+          "line": "Two of four parts are missing. A missing part is a question to settle before signing."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, quando: nenhum dia de visita aparece. Passo 4, e se não: nada cobre um pagamento atrasado.",
+          "line": "Faltam duas de quatro partes. Uma parte ausente do texto é uma pergunta a resolver antes de assinar."
+        }
+      }
+    },
+    {
+      "id": "ex-cards",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, la regla: si una cláusula nombra un precio, dice cuándo se paga.",
+          "line": "Hay que voltear una carta con precio, y también una que no diga cuándo."
+        },
+        "en-US": {
+          "prompt": "Step 5, the rule: if a clause names a price, it says when it is paid.",
+          "line": "A card showing a price must be turned, and so must one silent on when."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, a regra: se uma cláusula cita um preço, ela diz quando ele é pago.",
+          "line": "É preciso virar uma carta com preço, e também uma que não diga quando."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.rule-checker.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.agreements",
+      "payload": {
+        "rule_kind": "abstract",
+        "cards": [
+          {
+            "id": "card-days"
+          },
+          {
+            "id": "card-visits"
+          },
+          {
+            "id": "card-novisits"
+          },
+          {
+            "id": "card-nodays"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-visits",
+          "card-nodays"
+        ],
+        "roles": {
+          "card-visits": "p",
+          "card-novisits": "not_p",
+          "card-days": "q",
+          "card-nodays": "not_q"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En el segundo acuerdo de Metro, ¿qué cartas debes voltear para probar la regla?",
+          "feedback": {
+            "met": "Volteaste las dos cartas que podían romper la regla.",
+            "not_yet": "Todavía no. Recuerda el paso de la regla: ¿qué cartas pueden ocultar un fallo?"
+          },
+          "help": [
+            "Voltea una carta solo si en su reverso podría esconderse algo que rompa la regla.",
+            "Una carta que no puede romper la regla no necesita voltearse."
+          ],
+          "rule": "Si una cláusula nombra visitas, da sus días.",
+          "cards": [
+            {
+              "face": "Da los días"
+            },
+            {
+              "face": "Nombra visitas"
+            },
+            {
+              "face": "No nombra visitas"
+            },
+            {
+              "face": "No da los días"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In Metro's second agreement, which cards must you turn to test the rule?",
+          "feedback": {
+            "met": "You turned the two cards that could break the rule.",
+            "not_yet": "Not yet. Recall the rule step: which cards can hide a break?"
+          },
+          "help": [
+            "Turn a card only if a break of the rule could hide on its back.",
+            "A card that cannot break the rule needs no turn."
+          ],
+          "rule": "If a clause names visits, it gives their days.",
+          "cards": [
+            {
+              "face": "Gives the days"
+            },
+            {
+              "face": "Names visits"
+            },
+            {
+              "face": "Names no visits"
+            },
+            {
+              "face": "Gives no days"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No segundo acordo da Metro, quais cartas você precisa virar para testar a regra?",
+          "feedback": {
+            "met": "Você virou as duas cartas que podiam quebrar a regra.",
+            "not_yet": "Ainda não. Lembre do passo da regra: quais cartas podem esconder uma falha?"
+          },
+          "help": [
+            "Vire uma carta só se uma quebra da regra puder se esconder no verso.",
+            "Uma carta que não pode quebrar a regra não precisa ser virada."
+          ],
+          "rule": "Se uma cláusula cita visitas, ela dá os dias delas.",
+          "cards": [
+            {
+              "face": "Dá os dias"
+            },
+            {
+              "face": "Cita visitas"
+            },
+            {
+              "face": "Não cita visitas"
+            },
+            {
+              "face": "Não dá os dias"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-order",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 6, las fechas: primero la firma, luego la visita, la factura y el pago.",
+          "line": "Cada fecha va después de lo que la origina. El pago llega antes de la siguiente visita."
+        },
+        "en-US": {
+          "prompt": "Step 6, the dates: signing comes first, then the visit, the invoice and the payment.",
+          "line": "Each date falls after what it depends on. Payment comes before the next visit."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6, as datas: primeiro a assinatura, depois a visita, a nota fiscal e o pagamento.",
+          "line": "Cada data vem depois do que a origina. O pagamento chega antes da próxima visita."
+        }
+      }
+    },
+    {
+      "id": "ex-professional",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 7, el siguiente movimiento: pide a Metro que agregue las partes faltantes, por escrito, antes de firmar.",
+          "line": "Solo doy una lista de revisión. Una cláusula que no puedes explicar es motivo para consultar a un profesional."
+        },
+        "en-US": {
+          "prompt": "Step 7, the next move: ask Metro to add the missing parts, in writing, before you sign.",
+          "line": "I only give a checklist. A clause you cannot explain is a reason to ask a professional."
+        },
+        "pt-BR": {
+          "prompt": "Passo 7, o próximo movimento: peça à Metro que acrescente as partes que faltam, por escrito, antes de assinar.",
+          "line": "Só dou uma lista de conferência. Uma cláusula que você não sabe explicar é motivo para consultar um profissional."
+        }
+      }
+    },
+    {
+      "id": "practice-timeline",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "timeline"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.agreements",
+      "payload": {
+        "tasks": [
+          {
+            "id": "task-late",
+            "after": [
+              "task-pay"
+            ]
+          },
+          {
+            "id": "task-visit-two",
+            "after": [
+              "task-visit-one"
+            ]
+          },
+          {
+            "id": "task-pay",
+            "after": [
+              "task-invoice"
+            ],
+            "due": 4
+          },
+          {
+            "id": "task-sign",
+            "after": []
+          },
+          {
+            "id": "task-invoice",
+            "after": [
+              "task-visit-one"
+            ]
+          },
+          {
+            "id": "task-visit-one",
+            "after": [
+              "task-sign"
+            ]
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "step-1": [
+              "task-sign"
+            ],
+            "step-2": [
+              "task-visit-one"
+            ],
+            "step-3": [
+              "task-invoice"
+            ],
+            "step-4": [
+              "task-pay"
+            ],
+            "step-5": [
+              "task-visit-two"
+            ],
+            "step-6": [
+              "task-late"
+            ]
+          },
+          {
+            "step-1": [
+              "task-sign"
+            ],
+            "step-2": [
+              "task-visit-one"
+            ],
+            "step-3": [
+              "task-invoice"
+            ],
+            "step-4": [
+              "task-pay"
+            ],
+            "step-5": [
+              "task-late"
+            ],
+            "step-6": [
+              "task-visit-two"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El segundo acuerdo de Metro ya lista fechas. Ordena sus primeros pasos.",
+          "feedback": {
+            "met": "Mantuviste cada paso en orden, con el pago antes de la visita dos.",
+            "not_yet": "Todavía no. ¿De qué depende cada paso?"
+          },
+          "help": [
+            "Un paso no puede ir antes de uno del que depende.",
+            "La etiqueta del pago dice cuándo cae."
+          ],
+          "labels": {
+            "task-late": "Condiciones por pago tardío, tras el vencimiento",
+            "task-visit-two": "Segunda visita, el mes siguiente",
+            "task-pay": "Pago vence antes de la visita dos",
+            "task-sign": "Acuerdo firmado",
+            "task-invoice": "Factura enviada tras la visita",
+            "task-visit-one": "Primera visita, primer lunes"
+          }
+        },
+        "en-US": {
+          "prompt": "Metro's second agreement now lists dates. Put its first steps in order.",
+          "feedback": {
+            "met": "You kept every step in order, with payment before visit two.",
+            "not_yet": "Not yet. What does each step depend on?"
+          },
+          "help": [
+            "A step cannot come before one it depends on.",
+            "The payment label says when it falls."
+          ],
+          "labels": {
+            "task-late": "Late-payment terms apply after the due date",
+            "task-visit-two": "Second visit, next month",
+            "task-pay": "Payment due before visit two",
+            "task-sign": "Agreement signed",
+            "task-invoice": "Invoice sent after the visit",
+            "task-visit-one": "First visit, first Monday"
+          }
+        },
+        "pt-BR": {
+          "prompt": "O segundo acordo da Metro agora lista datas. Ordene os primeiros passos.",
+          "feedback": {
+            "met": "Você manteve cada passo em ordem, com o pagamento antes da visita dois.",
+            "not_yet": "Ainda não. Do que cada passo depende?"
+          },
+          "help": [
+            "Um passo não pode vir antes de um do qual depende.",
+            "O rótulo do pagamento diz quando ele cai."
+          ],
+          "labels": {
+            "task-late": "Condições de atraso valem após o vencimento",
+            "task-visit-two": "Segunda visita, no mês seguinte",
+            "task-pay": "Pagamento vence antes da visita dois",
+            "task-sign": "Acordo assinado",
+            "task-invoice": "Nota fiscal enviada após a visita",
+            "task-visit-one": "Primeira visita, primeira segunda-feira"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-missing",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.agreements",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-what-price"
+          },
+          {
+            "id": "choice-dates-late"
+          },
+          {
+            "id": "choice-price-late"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-spoken"
+          },
+          {
+            "id": "reason-each"
+          },
+          {
+            "id": "reason-small"
+          },
+          {
+            "id": "reason-days"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-price-late"
+        ],
+        "reasonQuality": {
+          "reason-each": "sound",
+          "reason-days": "partial",
+          "reason-spoken": "unsupported",
+          "reason-small": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tercer acuerdo de Metro: “seis servicios de bicicleta, el primer lunes de cada mes; el Cliente paga el día 5.” ¿Qué falta?",
+          "feedback": {
+            "met": "Nombraste las dos partes que el texto deja fuera.",
+            "not_yet": "Todavía no. Repasa qué, cuánto, cuándo y qué pasa si no."
+          },
+          "help": [
+            "Compara el texto con las cuatro partes: qué, cuánto, cuándo y qué pasa si no."
+          ],
+          "choices": [
+            {
+              "label": "Lo que se entrega y el precio"
+            },
+            {
+              "label": "Los días de visita y el pago tardío"
+            },
+            {
+              "label": "El precio y las condiciones de pago tardío"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda tu elección?",
+          "reasons": [
+            {
+              "label": "El precio se puede arreglar por teléfono después"
+            },
+            {
+              "label": "Cada parte necesita palabras en el texto"
+            },
+            {
+              "label": "Un acuerdo pequeño no necesita las cuatro"
+            },
+            {
+              "label": "Hay días de visita y un día de pago"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Metro's third agreement: “six bike services, first Monday of each month; Client pays on the 5th.” What is missing?",
+          "feedback": {
+            "met": "You named the two parts the text leaves out.",
+            "not_yet": "Not yet. Go through what, how much, when, what if not."
+          },
+          "help": [
+            "Match the text to the four parts: what, how much, when, what if not."
+          ],
+          "choices": [
+            {
+              "label": "What is delivered and the price"
+            },
+            {
+              "label": "The visit days and late payment"
+            },
+            {
+              "label": "The price and late-payment terms"
+            }
+          ],
+          "reasonPrompt": "Which reason backs your choice?",
+          "reasons": [
+            {
+              "label": "A price can be settled by phone later"
+            },
+            {
+              "label": "Each part needs words in the text"
+            },
+            {
+              "label": "A small agreement does not need all four"
+            },
+            {
+              "label": "Visit days and a pay day are given"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Terceiro acordo da Metro: “seis serviços de bicicleta, na primeira segunda-feira de cada mês; o Cliente paga no dia 5.” O que falta?",
+          "feedback": {
+            "met": "Você nomeou as duas partes que o texto deixa de fora.",
+            "not_yet": "Ainda não. Revise o quê, quanto, quando e o que acontece se não."
+          },
+          "help": [
+            "Compare o texto com as quatro partes: o quê, quanto, quando e o que acontece se não."
+          ],
+          "choices": [
+            {
+              "label": "O que se entrega e o preço"
+            },
+            {
+              "label": "Os dias de visita e o pagamento atrasado"
+            },
+            {
+              "label": "O preço e as condições de atraso"
+            }
+          ],
+          "reasonPrompt": "Qual razão sustenta sua escolha?",
+          "reasons": [
+            {
+              "label": "O preço se acerta por telefone depois"
+            },
+            {
+              "label": "Cada parte precisa de palavras no texto"
+            },
+            {
+              "label": "Um acordo pequeno não precisa das quatro"
+            },
+            {
+              "label": "Há dias de visita e um dia de pagamento"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.agreements",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-sign"
+          },
+          {
+            "id": "choice-professional"
+          },
+          {
+            "id": "choice-strike"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-four"
+          },
+          {
+            "id": "reason-long"
+          },
+          {
+            "id": "reason-cross"
+          },
+          {
+            "id": "reason-explain"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-professional"
+        ],
+        "reasonQuality": {
+          "reason-explain": "sound",
+          "reason-long": "partial",
+          "reason-four": "unsupported",
+          "reason-cross": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El acuerdo de tu proveedor de balatas tiene las cuatro partes y una renovación a cinco años que no sabes explicar. ¿Qué haces?",
+          "feedback": {
+            "met": "Elegiste consultar a un profesional antes de firmar.",
+            "not_yet": "Todavía no. ¿Cuatro partes significan que entiendes cada cláusula?"
+          },
+          "help": [
+            "Recuerda el Paso 7: ¿qué es motivo para consultar a un profesional?"
+          ],
+          "choices": [
+            {
+              "label": "Lo firmo, están las cuatro partes"
+            },
+            {
+              "label": "Primero consulto a un profesional sobre esa cláusula"
+            },
+            {
+              "label": "Tacho la cláusula y firmo sin preguntar"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda tu elección?",
+          "reasons": [
+            {
+              "label": "Están las cuatro partes, así que firmo"
+            },
+            {
+              "label": "Un compromiso largo merece un segundo lector"
+            },
+            {
+              "label": "Tachar una cláusula la cancela"
+            },
+            {
+              "label": "No puedo explicar qué significa esa cláusula"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Your pad supplier's agreement has all four parts, plus a five-year renewal clause you cannot explain. Your move?",
+          "feedback": {
+            "met": "You chose to ask a professional before signing.",
+            "not_yet": "Not yet. Do all four parts mean you understand every clause?"
+          },
+          "help": [
+            "Recall Step 7: what is a reason to ask a professional?"
+          ],
+          "choices": [
+            {
+              "label": "Sign it, all four parts are there"
+            },
+            {
+              "label": "Ask a professional about that clause first"
+            },
+            {
+              "label": "Cross out the clause and sign without asking"
+            }
+          ],
+          "reasonPrompt": "Which reason backs your choice?",
+          "reasons": [
+            {
+              "label": "All four parts are there, so sign"
+            },
+            {
+              "label": "A long commitment deserves a second reader"
+            },
+            {
+              "label": "Crossing out a clause cancels it"
+            },
+            {
+              "label": "I cannot explain what that clause means"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O acordo do fornecedor tem as quatro partes e uma renovação de cinco anos que você não sabe explicar. O que você faz?",
+          "feedback": {
+            "met": "Você escolheu consultar um profissional antes de assinar.",
+            "not_yet": "Ainda não. Quatro partes significam que você entende cada cláusula?"
+          },
+          "help": [
+            "Lembre do Passo 7: o que é motivo para consultar um profissional?"
+          ],
+          "choices": [
+            {
+              "label": "Assino, as quatro partes estão lá"
+            },
+            {
+              "label": "Consulto um profissional sobre essa cláusula antes"
+            },
+            {
+              "label": "Risco a cláusula e assino sem perguntar"
+            }
+          ],
+          "reasonPrompt": "Qual razão sustenta sua escolha?",
+          "reasons": [
+            {
+              "label": "As quatro partes estão lá, então assino"
+            },
+            {
+              "label": "Um compromisso longo merece um segundo leitor"
+            },
+            {
+              "label": "Riscar uma cláusula a cancela"
+            },
+            {
+              "label": "Não sei explicar o que essa cláusula significa"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,869 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-time-rates-and-risk",
+  "lesson_id": "inv-adult-03-what-a-rate-really-buys",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.inflation-buffer",
+    "money.percent-intro",
+    "life.goal-planning"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara muestra qué compra de verdad una tasa cuando los precios suben: un saldo de 100,000 que gana 3% ilustrativo mientras los precios suben 5% llega a unos 134,000 en diez años, pero compra lo que hoy compran unos 82,500. La persona adulta practica el alza de precios y la regla del 72, calcula el colchón que necesita una meta de 500,000 y decide en una situación nueva con sueldo y renta.",
+  "title": {
+    "en-US": "What a rate really buys",
+    "es-MX": "Lo que de verdad compra una tasa",
+    "pt-BR": "O que uma taxa realmente compra"
+  },
+  "new_concepts": [
+    "invest.inflation-buffer"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, un hogar sigue el precio de su canasta de cada semana, y el INPC mide cómo cambian esos precios con el tiempo. Las tasas de 3% y 5% son ilustrativas, nunca un pronóstico ni una oferta, y la lección no da consejo personal.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "INPC"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, uma família compara o custo da sua cesta básica ao longo dos anos, e o IPCA é o índice que mede a alta dos preços. As taxas de 3% e 5% são ilustrativas, nunca uma previsão nem uma oferta, e a lição não dá conselho pessoal.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "IPCA"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, a household watches what its grocery basket and rent cost from year to year, and the CPI measures how those prices move. The 3% and 5% rates are illustrative, never a forecast or an offer, and the lesson gives no personal advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "CPI"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A $100,000 balance earns 3% a year while everyday prices rise 5%.",
+          "line": "Illustrative rates; the CPI tracks prices like these. After ten years the balance is $134,392."
+        },
+        "es-MX": {
+          "prompt": "Un saldo de $100,000 gana 3% al año mientras los precios cotidianos suben 5%.",
+          "line": "Tasas ilustrativas; el INPC mide precios como estos. A diez años, el saldo es de $134,392."
+        },
+        "pt-BR": {
+          "prompt": "Um saldo de R$ 100.000 rende 3% ao ano enquanto os preços do dia a dia sobem 5%.",
+          "line": "Taxas ilustrativas; o IPCA mede preços como esses. Em dez anos, o saldo é de R$ 134.392."
+        }
+      }
+    },
+    {
+      "id": "pre-03",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "choices": [
+          {
+            "id": "more"
+          },
+          {
+            "id": "same"
+          },
+          {
+            "id": "less"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-grew"
+          },
+          {
+            "id": "reason-race"
+          },
+          {
+            "id": "reason-both"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "less"
+        ],
+        "reasonQuality": {
+          "reason-grew": "unsupported",
+          "reason-race": "sound",
+          "reason-both": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Prices rise 5% a year, the balance earns 3%. Ten years on, what does the balance buy?",
+          "feedback": {
+            "met": "Noted. Zara shows the working next.",
+            "not_yet": "Noted. Zara shows the working next."
+          },
+          "choices": [
+            {
+              "label": "More than it buys today"
+            },
+            {
+              "label": "The same as today"
+            },
+            {
+              "label": "Less than it buys today"
+            }
+          ],
+          "reasonPrompt": "What is your main reason?",
+          "reasons": [
+            {
+              "label": "The balance grew, so it buys more"
+            },
+            {
+              "label": "Prices rose faster than the balance"
+            },
+            {
+              "label": "Both rise, so nothing really changes"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los precios suben 5% al año y el saldo gana 3%. Diez años después, ¿qué compra el saldo?",
+          "feedback": {
+            "met": "Anotado. Zara muestra el procedimiento a continuación.",
+            "not_yet": "Anotado. Zara muestra el procedimiento a continuación."
+          },
+          "choices": [
+            {
+              "label": "Más de lo que compra hoy"
+            },
+            {
+              "label": "Lo mismo que hoy"
+            },
+            {
+              "label": "Menos de lo que compra hoy"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón principal?",
+          "reasons": [
+            {
+              "label": "El saldo creció, así que compra más"
+            },
+            {
+              "label": "Los precios subieron más que el saldo"
+            },
+            {
+              "label": "Ambos suben, así que nada cambia"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os preços sobem 5% ao ano e o saldo rende 3%. Dez anos depois, o que o saldo compra?",
+          "feedback": {
+            "met": "Anotado. Zara mostra o cálculo a seguir.",
+            "not_yet": "Anotado. Zara mostra o cálculo a seguir."
+          },
+          "choices": [
+            {
+              "label": "Mais do que compra hoje"
+            },
+            {
+              "label": "O mesmo que hoje"
+            },
+            {
+              "label": "Menos do que compra hoje"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo principal?",
+          "reasons": [
+            {
+              "label": "O saldo cresceu, então compra mais"
+            },
+            {
+              "label": "Os preços subiram mais que o saldo"
+            },
+            {
+              "label": "Ambos sobem, então nada muda de fato"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-percent-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a 5% price rise applies to the new price each year.",
+          "line": "A $1,000 basket costs $1,050 after year 1. Year 2 raises $1,050 by 5%, to $1,102.50."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un alza de 5% se aplica al precio nuevo cada año.",
+          "line": "Una canasta de $1,000 cuesta $1,050 tras el año 1. El año 2 sube $1,050 un 5%, hasta $1,102.50."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: uma alta de 5% se aplica ao preço novo a cada ano.",
+          "line": "Uma cesta de R$ 1.000 custa R$ 1.050 após o ano 1. O ano 2 sobe R$ 1.050 em 5%, até R$ 1.102,50."
+        }
+      }
+    },
+    {
+      "id": "example-prices-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: ten years of 5% multiply prices by about 1.629.",
+          "line": "A basket costing $100,000 today costs about $162,889 in ten years: the $62,889 extra is the buffer."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: diez años al 5% multiplican los precios por cerca de 1.629.",
+          "line": "Una canasta que hoy cuesta $100,000 costará unos $162,889 en diez años: los $62,889 extra son el colchón."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: dez anos a 5% multiplicam os preços por cerca de 1,629.",
+          "line": "Uma cesta que hoje custa R$ 100.000 custará cerca de R$ 162.889 em dez anos: os R$ 62.889 a mais são o colchão."
+        }
+      }
+    },
+    {
+      "id": "example-slope-03",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "slope"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "cat-today"
+            },
+            {
+              "id": "cat-ten"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-balance",
+              "values": [
+                100000,
+                134392
+              ]
+            },
+            {
+              "id": "series-power",
+              "values": [
+                100000,
+                82505
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the balance reads $134,392, but it buys only about $82,505 of today’s basket.",
+          "title": "Balance and buying power, in dollars",
+          "data": {
+            "categories": [
+              {
+                "label": "Today"
+              },
+              {
+                "label": "In ten years"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance at 3%"
+              },
+              {
+                "label": "Buying power, in today’s money"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el saldo marca $134,392, pero compra solo unos $82,505 de la canasta de hoy.",
+          "title": "Saldo y poder de compra, en pesos",
+          "data": {
+            "categories": [
+              {
+                "label": "Hoy"
+              },
+              {
+                "label": "En diez años"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo al 3%"
+              },
+              {
+                "label": "Poder de compra, en dinero de hoy"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o saldo marca R$ 134.392, mas compra só cerca de R$ 82.505 da cesta de hoje.",
+          "title": "Saldo e poder de compra, em reais",
+          "data": {
+            "categories": [
+              {
+                "label": "Hoje"
+              },
+              {
+                "label": "Em dez anos"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo a 3%"
+              },
+              {
+                "label": "Poder de compra, em dinheiro de hoje"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-buffer-03",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "steps": [
+          {
+            "id": "goal-year-one"
+          },
+          {
+            "id": "goal-year-two"
+          },
+          {
+            "id": "goal-buffer"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "goal-year-two",
+          "goal-buffer"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "goal-year-two": "220500",
+          "goal-buffer": "20500"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A $200,000 goal faces 5% yearly price rises for two years. Fill the blanks.",
+          "feedback": {
+            "met": "You raised the price each year and sized the buffer.",
+            "not_yet": "Apply the rise to the latest price, not the original."
+          },
+          "help": [
+            "The buffer is the extra cost over today’s goal."
+          ],
+          "steps": [
+            {
+              "expression": "Year 1: $200,000 + 5% of $200,000",
+              "result": "$210,000",
+              "spokenText": "5% of $200,000 is $10,000, so the goal costs $210,000 after year 1"
+            },
+            {
+              "expression": "Year 2: $210,000 + 5% of $210,000",
+              "result": "$220,500",
+              "spokenText": "5% of $210,000 is $10,500, so the goal costs $220,500 after year 2"
+            },
+            {
+              "expression": "Buffer: cost after year 2 − goal today",
+              "result": "$20,500",
+              "spokenText": "The goal needs a buffer of $20,500 on top of today’s $200,000"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una meta de $200,000 enfrenta alzas de precios de 5% al año durante dos años. Completa los valores.",
+          "feedback": {
+            "met": "Subiste el precio cada año y calculaste el colchón.",
+            "not_yet": "Aplica el alza al último precio, no al original."
+          },
+          "help": [
+            "El colchón es el costo extra sobre la meta de hoy."
+          ],
+          "steps": [
+            {
+              "expression": "Año 1: $200,000 + 5% de $200,000",
+              "result": "$210,000",
+              "spokenText": "El 5% de $200,000 es $10,000, así que la meta cuesta $210,000 tras el año 1"
+            },
+            {
+              "expression": "Año 2: $210,000 + 5% de $210,000",
+              "result": "$220,500",
+              "spokenText": "El 5% de $210,000 es $10,500, así que la meta cuesta $220,500 tras el año 2"
+            },
+            {
+              "expression": "Colchón: costo tras el año 2 − meta de hoy",
+              "result": "$20,500",
+              "spokenText": "La meta necesita un colchón de $20,500 además de los $200,000 de hoy"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma meta de R$ 200.000 enfrenta altas de preços de 5% ao ano por dois anos. Preencha os valores.",
+          "feedback": {
+            "met": "Você subiu o preço a cada ano e calculou o colchão.",
+            "not_yet": "Aplique a alta ao último preço, não ao original."
+          },
+          "help": [
+            "O colchão é o custo extra sobre a meta de hoje."
+          ],
+          "steps": [
+            {
+              "expression": "Ano 1: R$ 200.000 + 5% de R$ 200.000",
+              "result": "R$ 210.000",
+              "spokenText": "5% de R$ 200.000 é R$ 10.000, então a meta custa R$ 210.000 após o ano 1"
+            },
+            {
+              "expression": "Ano 2: R$ 210.000 + 5% de R$ 210.000",
+              "result": "R$ 220.500",
+              "spokenText": "5% de R$ 210.000 é R$ 10.500, então a meta custa R$ 220.500 após o ano 2"
+            },
+            {
+              "expression": "Colchão: custo após o ano 2 − meta de hoje",
+              "result": "R$ 20.500",
+              "spokenText": "A meta precisa de um colchão de R$ 20.500 além dos R$ 200.000 de hoje"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-inflation-03",
+      "type": "money.inflation.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "inflation"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "currency": "local",
+        "price_minor": 100000,
+        "min_rate_bps": 500,
+        "max_rate_bps": 700,
+        "rate_step_bps": 100,
+        "min_years": 10,
+        "max_years": 20,
+        "year_step": 5,
+        "prediction_step_minor": 5000,
+        "prediction_max_minor": 400000
+      },
+      "rubric": {
+        "tolerance_minor": 3000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "If prices rise 5% a year for ten years, predict what a $1,000 basket will cost.",
+          "feedback": {
+            "met": "Your estimate is close to the price those rises produce.",
+            "not_yet": "Each year’s rise lands on the already higher price."
+          }
+        },
+        "es-MX": {
+          "prompt": "Si los precios suben 5% al año durante diez años, estima cuánto costará una canasta de $1,000.",
+          "feedback": {
+            "met": "Tu estimación se acerca al precio que producen esas alzas.",
+            "not_yet": "Cada alza cae sobre el precio ya más alto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Se os preços sobem 5% ao ano por dez anos, estime quanto vai custar uma cesta de R$ 1.000.",
+          "feedback": {
+            "met": "Sua estimativa está perto do preço que essas altas produzem.",
+            "not_yet": "Cada alta recai sobre o preço já mais alto."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-rule72-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: divide 72 by the yearly rate to estimate the doubling time.",
+          "line": "72 ÷ 5 = 14.4, so prices double in about 14 years. Counting year by year gives 15."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: divide 72 entre la tasa anual para estimar cuándo se duplica.",
+          "line": "72 ÷ 5 = 14.4, así que los precios se duplican en unos 14 años. Contando año por año salen 15."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: divida 72 pela taxa anual para estimar quando dobra.",
+          "line": "72 ÷ 5 = 14,4, então os preços dobram em cerca de 14 anos. Contando ano a ano dá 15."
+        }
+      }
+    },
+    {
+      "id": "practice-rule72-03",
+      "type": "money.rule-of-72.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "doubling"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "currency": "local",
+        "principal_minor": 100,
+        "min_rate_bps": 500,
+        "max_rate_bps": 900,
+        "rate_step_bps": 100
+      },
+      "rubric": {
+        "tolerance_years": 1
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Prices rise at a yearly rate you pick. Use 72 ÷ rate to estimate the years to double.",
+          "feedback": {
+            "met": "Your estimate is within a year of the doubling time.",
+            "not_yet": "Check the example: one division gives the doubling time."
+          },
+          "help": [
+            "Divide 72 by the yearly rate in percent."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los precios suben a una tasa anual que eliges. Usa 72 ÷ tasa para estimar los años en que se duplican.",
+          "feedback": {
+            "met": "Tu estimación queda a un año o menos de la duplicación.",
+            "not_yet": "Revisa el ejemplo: una división da el tiempo de duplicación."
+          },
+          "help": [
+            "Divide 72 entre la tasa anual en porcentaje."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os preços sobem a uma taxa anual que você escolhe. Use 72 ÷ taxa para estimar os anos até dobrarem.",
+          "feedback": {
+            "met": "Sua estimativa fica a um ano ou menos do tempo para dobrar.",
+            "not_yet": "Revise o exemplo: uma divisão dá o tempo para dobrar."
+          },
+          "help": [
+            "Divida 72 pela taxa anual em porcentagem."
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-goal-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: price the goal at what it will cost when you reach it.",
+          "line": "A goal of $500,000 today costs $814,447 in ten years at 5%. The buffer is the $314,447 difference."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: pon a la meta el precio que tendrá cuando la alcances.",
+          "line": "Una meta de $500,000 hoy costará $814,447 en diez años al 5%. El colchón es la diferencia de $314,447."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: dê à meta o preço que ela terá quando você a alcançar.",
+          "line": "Uma meta de R$ 500.000 hoje custará R$ 814.447 em dez anos a 5%. O colchão é a diferença de R$ 314.447."
+        }
+      }
+    },
+    {
+      "id": "practice-goal-03",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "minimum": 0,
+        "maximum": 550000,
+        "target": 300000,
+        "step": 10000,
+        "initial": 100000,
+        "currency": "local"
+      },
+      "rubric": {
+        "minimum_value": 490000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The marker is a $300,000 goal at today’s prices. Set Saved to cover its cost in ten years at 5%.",
+          "feedback": {
+            "met": "Saved covers the goal’s future price, not today’s.",
+            "not_yet": "Rebuild the goal’s price year by year, as in the example."
+          }
+        },
+        "es-MX": {
+          "prompt": "La marca es una meta de $300,000 a precios de hoy. Fija Guardado para cubrir su costo a diez años con 5%.",
+          "feedback": {
+            "met": "Lo guardado cubre el precio futuro de la meta, no el de hoy.",
+            "not_yet": "Reconstruye el precio de la meta año por año, como en el ejemplo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A marca é uma meta de R$ 300.000 a preços de hoje. Defina Guardado para cobrir o custo dela em dez anos a 5%.",
+          "feedback": {
+            "met": "O guardado cobre o preço futuro da meta, não o de hoje.",
+            "not_yet": "Refaça o preço da meta ano a ano, como no exemplo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-rent-03",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.inflation-buffer",
+      "payload": {
+        "choices": [
+          {
+            "id": "smaller"
+          },
+          {
+            "id": "bigger"
+          },
+          {
+            "id": "same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-faster"
+          },
+          {
+            "id": "reason-hold"
+          },
+          {
+            "id": "reason-larger"
+          },
+          {
+            "id": "reason-speeds"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "bigger"
+        ],
+        "reasonQuality": {
+          "reason-faster": "sound",
+          "reason-hold": "unsupported",
+          "reason-larger": "unsupported",
+          "reason-speeds": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your pay rises 4% a year; your rent rises 6%. After ten years, what share of pay goes to rent?",
+          "feedback": {
+            "met": "Rent rises faster, so it takes a larger share of pay.",
+            "not_yet": "Compare the two yearly rises, as with the balance and the basket."
+          },
+          "choices": [
+            {
+              "label": "A smaller share than now"
+            },
+            {
+              "label": "A bigger share than now"
+            },
+            {
+              "label": "The same share as now"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Rent grows faster than pay does"
+            },
+            {
+              "label": "Both rise, so the share holds"
+            },
+            {
+              "label": "Pay is larger, so it pulls ahead"
+            },
+            {
+              "label": "Both rise, but at different speeds"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu sueldo sube 4% al año y tu renta sube 6%. A diez años, ¿qué parte del sueldo va a la renta?",
+          "feedback": {
+            "met": "La renta sube más rápido, así que ocupa una parte mayor del sueldo.",
+            "not_yet": "Compara las dos alzas anuales, como con el saldo y la canasta."
+          },
+          "choices": [
+            {
+              "label": "Una parte menor que ahora"
+            },
+            {
+              "label": "Una parte mayor que ahora"
+            },
+            {
+              "label": "La misma parte que ahora"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "La renta crece más rápido que el sueldo"
+            },
+            {
+              "label": "Ambos suben, así que la parte se mantiene"
+            },
+            {
+              "label": "El sueldo es mayor, así que se adelanta"
+            },
+            {
+              "label": "Ambos suben, pero a distinto ritmo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu salário sobe 4% ao ano e seu aluguel sobe 6%. Daqui a dez anos, que parte do salário vai para o aluguel?",
+          "feedback": {
+            "met": "O aluguel sobe mais rápido, então pesa mais no salário.",
+            "not_yet": "Compare as duas altas anuais, como com o saldo e a cesta."
+          },
+          "choices": [
+            {
+              "label": "Uma parte menor que hoje"
+            },
+            {
+              "label": "Uma parte maior que hoje"
+            },
+            {
+              "label": "A mesma parte de hoje"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O aluguel cresce mais rápido que o salário"
+            },
+            {
+              "label": "Ambos sobem, então a parte se mantém"
+            },
+            {
+              "label": "O salário é maior, então sai na frente"
+            },
+            {
+              "label": "Ambos sobem, mas em ritmos diferentes"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

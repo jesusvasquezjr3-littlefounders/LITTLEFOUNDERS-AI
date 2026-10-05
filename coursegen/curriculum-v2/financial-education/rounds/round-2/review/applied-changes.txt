@@ -1,0 +1,1169 @@
+fe-1012-01-unit-price.mentor_misjudgment.recovery
+   - "Liruf divides each price by the number of juices (5 and 4), says he now compares the price of one, and would pick the pack of 6."
+   + "Liruf divides each price by the number of juices (5 and 4), says that next time he compares the price of one, and would pick the pack of 6."
+fe-1012-01-unit-price.segments.hook-01.copy.es-MX.prompt
+   - "Escucha a Liruf."
+   + "Liruf pisa fuerte rumbo a la tiendita de doña Lupe."
+fe-1012-01-unit-price.segments.hook-01.copy.en-US.prompt
+   - "Listen to Liruf."
+   + "Liruf stomps toward the corner store."
+fe-1012-01-unit-price.segments.hook-01.copy.pt-BR.prompt
+   - "Ouça o Liruf."
+   + "O Liruf pisa firme rumo à padaria do seu Zé."
+fe-1012-01-unit-price.segments.episode-01.copy.es-MX.recovery
+   - "Dividí: 20 ÷ 4 son 5 monedas cada jugo, 24 ÷ 6 son 4. Ahora comparo el precio de uno: me quedo con los 6."
+   + "Dividí: 20 ÷ 4 son 5 monedas cada jugo, 24 ÷ 6 son 4. Me quedo con los 6; la próxima vez comparo el precio de uno."
+fe-1012-01-unit-price.segments.episode-01.copy.en-US.recovery
+   - "I divide: 20 ÷ 4 is 5, 24 ÷ 6 is 4. Compare the price of one, and the 6 win."
+   + "20 ÷ 4 is 5, 24 ÷ 6 is 4. I take the 6; next time I compare the price of one."
+fe-1012-01-unit-price.segments.episode-01.copy.pt-BR.recovery
+   - "Dividi: 20 ÷ 4 dá 5 moedas por suco, 24 ÷ 6 dá 4. Agora comparo o preço de um: fico com os 6."
+   + "Dividi: 20 ÷ 4 dá 5 por suco, 24 ÷ 6 dá 4. Fico com os 6; da próxima vez comparo o preço de um."
+fe-1012-01-unit-price.segments.example-02.copy.es-MX.line
+   - "Tianguis: 3 plátanos por 12 monedas, o 5 por 15. Divido cada precio: 12 ÷ 3 = 4 y 15 ÷ 5 = 3."
+   + "Tianguis: 2 plátanos por 5 monedas, o 5 por 11. Divido: 5 ÷ 2 = 2.5 y 11 ÷ 5 = 2.2."
+fe-1012-01-unit-price.segments.example-02.copy.en-US.line
+   - "Corner store: 2 yogurts for 6 coins, or 5 for 10. Divide: 6 ÷ 2 = 3, and 10 ÷ 5 = 2."
+   + "Corner store: 2 yogurts for 5 coins, or 5 for 11. Divide: 5 ÷ 2 = 2.5, and 11 ÷ 5 = 2.2."
+fe-1012-01-unit-price.segments.example-02.copy.pt-BR.line
+   - "Na feira livre: a dúzia de bananas custa 24 moedas e a meia dúzia, 18. Divido: 24 ÷ 12 = 2 e 18 ÷ 6 = 3."
+   + "Na feira livre: 2 bananas por 5 moedas, ou 5 por 11. Divido: 5 ÷ 2 = 2,5 e 11 ÷ 5 = 2,2."
+fe-1012-01-unit-price.segments.example-03.copy.es-MX.line
+   - "Comparo: 3 es menos que 4, gana la bolsa de 5. Pero si no uso los 5, lo que sobra se echa a perder."
+   + "Gana la bolsa de 5: 2.2 cada uno es menos que 2.5. Si solo uso 2, pago 11 por 2: 5.5 cada uno."
+fe-1012-01-unit-price.segments.example-03.copy.en-US.line
+   - "Compare: 2 coins beats 3, so the 5-pack wins. But if I eat 3, two yogurts spoil."
+   + "The 5-pack wins: 2.2 each, under 2.5. If I eat only 2, I pay 11 for 2: 5.5 each."
+fe-1012-01-unit-price.segments.example-03.copy.pt-BR.line
+   - "Comparo: 2 é menos que 3, a dúzia ganha. Mas se eu comer só 6 antes de escurecerem, as outras 6 vão pro lixo."
+   + "A de 5 ganha: 2,2 moedas cada uma é menos que 2,5. Se eu comer só 2, pago 11 por 2: 5,5 cada uma."
+fe-1012-01-unit-price.segments.example-04.copy.es-MX.line
+   - "Con el precio de uno puedo sumar: 4 plátanos a 3 monedas y un jugo de 5. 3 × 4 = 12, y 12 + 5 = 17."
+   + "Con el precio de uno puedo sumar: 4 plátanos a 2.5 monedas, 4 × 2.5 = 10. Más un jugo de 5: 10 + 5 = 15."
+fe-1012-01-unit-price.segments.example-04.copy.en-US.line
+   - "One price helps me add: 3 yogurts at 2 coins is 6, plus a 4-coin juice is 10."
+   + "One price helps me add: 4 yogurts at 2.5 coins is 10, plus a 5-coin juice is 15."
+fe-1012-01-unit-price.segments.example-04.copy.pt-BR.line
+   - "Com o preço de um eu somo: 5 bananas a 2 moedas, 5 × 2 = 10. Mais um pão de 6: 10 + 6 = 16."
+   + "Com o preço de um eu somo: 4 bananas a 2,5 moedas, 4 × 2,5 = 10. Mais um suco de 5: 10 + 5 = 15."
+fe-1012-01-unit-price.segments.guided-02.rubric_by_locale.es-MX.expectedValues.few-price
+   - "12"
+   + "14"
+fe-1012-01-unit-price.segments.guided-02.rubric_by_locale.es-MX.expectedValues.plus-drink
+   - "20"
+   + "22"
+fe-1012-01-unit-price.segments.guided-02.rubric_by_locale.es-MX.expectedValues.plus-snack
+   - "25"
+   + "27"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.prompt
+   - "Bolsa de 6 mandarinas por 24 monedas. ¿Cuánto pagas por 3 mandarinas, un jugo de 8 monedas y un pan de 5?"
+   + "Bolsa de 6 mandarinas por 42 monedas. ¿Cuánto pagas por 2 mandarinas, un jugo de 8 monedas y un pan de 5?"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.help.0
+   - "Primero: ¿cuánto cuesta una mandarina? Divide 24 entre 6."
+   + "Ya está el precio de una: 7 monedas. Multiplícalo por las 2 que compras."
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.help.1
+   - "Luego multiplica por las 3 que compras. Después suma el jugo y el pan."
+   + "Después suma el jugo y el pan."
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.feedback.met
+   - "Calculaste el precio de uno, multiplicaste y fuiste sumando el total."
+   + "Multiplicaste el precio de una por 2 y sumaste el jugo y el pan."
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.0.expression
+   - "24 ÷ 6"
+   + "42 ÷ 6"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.0.result
+   - "4"
+   + "7"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.0.spokenText
+   - "Veinticuatro entre 6 es 4: una mandarina cuesta 4 monedas"
+   + "Cuarenta y dos entre 6 es 7: una mandarina cuesta 7 monedas"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.1.expression
+   - "4 × 3"
+   + "7 × 2"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.1.result
+   - "12"
+   + "14"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.1.spokenText
+   - "Cuatro por 3 es 12: tres mandarinas cuestan 12 monedas"
+   + "Siete por 2 es 14: dos mandarinas cuestan 14 monedas"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.2.expression
+   - "12 + 8"
+   + "Mandarinas + jugo"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.2.result
+   - "20"
+   + "22"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.2.spokenText
+   - "Doce más 8 es 20: llevas 20 monedas"
+   + "Catorce más 8 es 22: llevas 22 monedas"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.3.result
+   - "25"
+   + "27"
+fe-1012-01-unit-price.segments.guided-02.copy.es-MX.steps.3.spokenText
+   - "Veinte más 5 es 25: pagas 25 monedas"
+   + "Veintidós más 5 es 27: pagas 27 monedas"
+fe-1012-01-unit-price.segments.guided-02.copy.en-US.help.0
+   - "First, what does one apple cost? Divide 12 by 6."
+   + "The price of one is done: 2 coins. Multiply it by the 4 you buy."
+fe-1012-01-unit-price.segments.guided-02.copy.en-US.help.1
+   - "Then multiply by the 4 you buy. After that, add the juice and the pretzel."
+   + "Then add the juice and the pretzel."
+fe-1012-01-unit-price.segments.guided-02.copy.en-US.feedback.met
+   - "You found the price of one, multiplied, and kept a running total."
+   + "You multiplied by 4, then added the juice and pretzel."
+fe-1012-01-unit-price.segments.guided-02.copy.en-US.steps.2.expression
+   - "8 + 3"
+   + "Apples + juice"
+fe-1012-01-unit-price.segments.guided-02.copy.pt-BR.help.0
+   - "Primeiro: quanto custa um pêssego? Divida 30 por 5."
+   + "O preço de um já está: 6 moedas. Multiplique pelos 3 que você compra."
+fe-1012-01-unit-price.segments.guided-02.copy.pt-BR.help.1
+   - "Depois multiplique pelos 3 que você compra. Por fim, some o suco e o pão."
+   + "Depois some o suco e o pão."
+fe-1012-01-unit-price.segments.guided-02.copy.pt-BR.feedback.met
+   - "Você achou o preço de um, multiplicou e foi somando o total."
+   + "Você multiplicou o preço de um por 3 e somou o suco e o pão."
+fe-1012-01-unit-price.segments.guided-02.copy.pt-BR.steps.2.expression
+   - "18 + 7"
+   + "Pêssegos + suco"
+fe-1012-01-unit-price.segments.practice-01.copy.en-US.help.1
+   - "If it is not exact, use decimals: 5 divided by 2 is 2.5."
+   + "If it isn't exact, use decimals: 5 divided by 2 is 2.5."
+fe-1012-01-unit-price.segments.practice-02.copy.es-MX.prompt
+   - "Tiendita: 4 bolillos por 12 monedas, o 10 por 25. Hoy cenan 4 y mañana el pan ya está duro."
+   + "Tiendita: 4 bolillos por 12 monedas, o 10 por 25. Hoy cenan 4 personas y mañana el pan ya está duro."
+fe-1012-01-unit-price.segments.practice-02.copy.en-US.help.0
+   - "Remember Liruf's yogurts: what happens to the extras?"
+   + "Remember Liruf's yogurts: would any extras go to waste here?"
+fe-1012-01-unit-price.segments.practice-02.copy.pt-BR.prompt
+   - "Padaria: pão de hot dog, 4 por 8 moedas ou 10 por 18. Hoje comem 4 e amanhã o pão já endureceu."
+   + "Padaria: pão de hot dog, 4 por 8 moedas ou 10 por 18. Hoje comem 4 pessoas e amanhã o pão já endureceu."
+fe-1012-01-unit-price.segments.transfer-01.payload.offers.0.price_minor
+   - 20
+   + 30
+fe-1012-01-unit-price.segments.transfer-01.payload.offers.1.price_minor
+   - 54
+   + 78
+fe-1012-01-unit-price.segments.transfer-01.rubric.unit_prices.pack-5
+   - "4"
+   + "6"
+fe-1012-01-unit-price.segments.transfer-01.rubric.unit_prices.box-12
+   - "4.5"
+   + "6.5"
+fe-1012-01-unit-price.segments.transfer-01.copy.en-US.prompt
+   - "Trading cards, pack of 5 or box of 12. Price of one: which is the better buy?"
+   + "Trading cards: pack of 5 or box of 12. Find the price of one and pick the better buy."
+fe-1012-02-plan-the-budget.segments.hook-01.copy.en-US.prompt
+   - "Listen to Rho."
+   + "Nia's club looks at the picnic basket."
+fe-1012-02-plan-the-budget.segments.hook-01.copy.en-US.line
+   - "Observe: Nia's club plans a picnic with limited coins. Our goal is to make the whole list fit."
+   + "Observe: Nia's club plans a picnic with limited coins. Our goal: spend without going over."
+fe-1012-02-plan-the-budget.segments.hook-01.copy.es-MX.prompt
+   - "Escucha a Rho."
+   + "Nia y su club miran la canasta del picnic."
+fe-1012-02-plan-the-budget.segments.hook-01.copy.es-MX.line
+   - "Observa: el club de Nia planea un picnic con monedas limitadas. Nuestra meta es lograr que toda la lista quepa."
+   + "Observa: el club de Nia planea un picnic con monedas limitadas. Nuestra meta: gastar sin pasarnos de las monedas."
+fe-1012-02-plan-the-budget.segments.hook-01.copy.pt-BR.prompt
+   - "Ouça Rho."
+   + "O clube da Nia olha a cesta do piquenique."
+fe-1012-02-plan-the-budget.segments.hook-01.copy.pt-BR.line
+   - "Observe: o clube da Nia planeja um piquenique com moedas limitadas. Nossa meta é fazer a lista inteira caber."
+   + "Observe: o clube da Nia planeja um piquenique com moedas limitadas. Nossa meta: gastar sem passar das moedas."
+fe-1012-02-plan-the-budget.segments.pre-01.copy.en-US.feedback.met
+   - "You compared the plan with 40 coins. Now, step by step."
+   + "Thanks, that shows where you start. Now let's check step by step."
+fe-1012-02-plan-the-budget.segments.pre-01.copy.en-US.feedback.not_yet
+   - "Thanks for trying. Now let's check it together, step by step."
+   + "Thanks, that shows where you start. Now let's check step by step."
+fe-1012-02-plan-the-budget.segments.pre-01.copy.es-MX.feedback.met
+   - "Comparaste el plan con 40 monedas. Ahora lo revisamos paso a paso."
+   + "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+fe-1012-02-plan-the-budget.segments.pre-01.copy.es-MX.feedback.not_yet
+   - "Gracias por intentarlo. Ahora lo revisamos juntos, paso a paso."
+   + "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+fe-1012-02-plan-the-budget.segments.pre-01.copy.pt-BR.feedback.met
+   - "Você comparou o plano com 40 moedas. Agora vamos conferir passo a passo."
+   + "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+fe-1012-02-plan-the-budget.segments.pre-01.copy.pt-BR.feedback.not_yet
+   - "Que bom que tentou. Agora vamos conferir juntos, passo a passo."
+   + "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+fe-1012-02-plan-the-budget.segments.example-exact-01.copy.pt-BR.prompt
+   - "Caminho 2: some exato e veja quanto sobra."
+   + "Caminho 2: some os valores exatos e veja quanto sobra."
+fe-1012-02-plan-the-budget.segments.example-exact-01.copy.pt-BR.line
+   - "Somamos exato: 18 mais 23 são 41, e 41 mais 6 são 47. Depois 70 menos 47 sobra 23 moedas."
+   + "Somamos os valores exatos: 18 mais 23 são 41, e 41 mais 6 são 47. Depois 70 menos 47 sobram 23 moedas."
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.en-US.feedback.met
+   - "You rounded each price up and compared the total with 60."
+   + "You added the rounded prices and compared the total with 60."
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.en-US.steps.2.expression
+   - "60 − 50"
+   + "Goal − rounded total"
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.es-MX.feedback.met
+   - "Redondeaste cada precio hacia arriba y comparaste el total con 60."
+   + "Sumaste los precios redondeados y comparaste el total con 60."
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.es-MX.steps.0.expression
+   - "Redondea cada precio hacia arriba"
+   + "Redondea cada precio hacia arriba a la decena"
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.es-MX.steps.2.expression
+   - "60 − 50"
+   + "Meta − total redondeado"
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.pt-BR.feedback.met
+   - "Você arredondou cada preço para cima e comparou o total com 60."
+   + "Você somou os preços arredondados e comparou o total com 60."
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.pt-BR.steps.0.expression
+   - "Arredonde cada preço para cima"
+   + "Arredonde cada preço para cima até a dezena"
+fe-1012-02-plan-the-budget.segments.guided-round-01.copy.pt-BR.steps.2.expression
+   - "60 − 50"
+   + "Meta − total arredondado"
+fe-1012-02-plan-the-budget.segments.guided-exact-01.copy.en-US.steps.2.expression
+   - "45 − 37"
+   + "Goal − total"
+fe-1012-02-plan-the-budget.segments.guided-exact-01.copy.es-MX.steps.2.expression
+   - "45 − 37"
+   + "Meta − total"
+fe-1012-02-plan-the-budget.segments.guided-exact-01.copy.pt-BR.steps.2.expression
+   - "45 − 37"
+   + "Meta − total"
+fe-1012-02-plan-the-budget.segments.example-over-01.copy.en-US.line
+   - "Another list: bread 16, juice 9, grapes 19 add to 44. The club has 40, so it passes by 4."
+   + "Another list: bread 16, juice 9, grapes 19 add to 44. The club has 40, so it's over by 4."
+fe-1012-02-plan-the-budget.segments.example-over-01.copy.pt-BR.prompt
+   - "Uma lista que passa."
+   + "Uma lista que ultrapassa o dinheiro."
+fe-1012-02-plan-the-budget.segments.example-over-01.copy.pt-BR.line
+   - "Outra lista: pão 16, suco 9, uvas 19 somam 44. O clube tem 40, então passa por 4."
+   + "Outra lista: pão 16, suco 9, uvas 19 somam 44. O clube tem 40, então a lista ultrapassa em 4 moedas."
+fe-1012-02-plan-the-budget.segments.example-drop-01.copy.en-US.line
+   - "Juice matters least, so drop its 9 coins. 44 minus 9 is 35, under 40: the plan fits."
+   + "Juice matters least, and its 9 coins cover the 4 over. 44 minus 9 is 35: it fits."
+fe-1012-02-plan-the-budget.segments.example-drop-01.copy.es-MX.line
+   - "El jugo importa menos, así que quitamos sus 9 monedas. 44 menos 9 son 35, menos de 40: el plan cabe."
+   + "El jugo importa menos y sus 9 monedas cubren los 4 de más. 44 menos 9 son 35: el plan cabe en 40."
+fe-1012-02-plan-the-budget.segments.example-drop-01.copy.pt-BR.line
+   - "O suco importa menos, então tiramos suas 9 moedas. 44 menos 9 é 35, menos de 40: o plano cabe."
+   + "O suco importa menos, e suas 9 moedas cobrem os 4 a mais. 44 menos 9 é 35: o plano cabe em 40."
+fe-1012-02-plan-the-budget.segments.practice-over-01.rubric.expectedValues.total
+   - "54"
+   + "55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.rubric.expectedValues.over-by
+   - "4"
+   + "5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.rubric.expectedValues.new-total
+   - "41"
+   + "42"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.prompt
+   - "Nia has 50 coins: bread 17, juice 13, grapes 24. Add exactly, find how far over, then drop the juice."
+   + "Nia has 50 coins: bread 17, juice 13, grapes 25. Add exactly, find how far over, then drop the juice."
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.1.expression
+   - "30 + 24"
+   + "30 + 25"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.1.result
+   - "54"
+   + "55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.1.spokenText
+   - "Thirty plus 24 is 54"
+   + "Thirty plus 25 is 55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.2.expression
+   - "54 − 50"
+   + "Total − goal"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.2.result
+   - "4"
+   + "5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.2.spokenText
+   - "Fifty-four minus 50 is 4, so the list is over by 4"
+   + "Fifty-five minus 50 is 5, so the list is over by 5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.3.expression
+   - "54 − 13"
+   + "Total − dropped item"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.3.result
+   - "41"
+   + "42"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.en-US.steps.3.spokenText
+   - "Fifty-four minus 13 is 41, under 50"
+   + "Fifty-five minus 13 is 42, under 50"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.prompt
+   - "Nia tiene 50 monedas: pan 17, jugo 13, uvas 24. Suma exacto, mira cuánto se pasa y luego quita el jugo."
+   + "Nia tiene 50 monedas: pan 17, jugo 13, uvas 25. Suma exacto, mira cuánto se pasa y luego quita el jugo."
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.1.expression
+   - "30 + 24"
+   + "30 + 25"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.1.result
+   - "54"
+   + "55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.1.spokenText
+   - "Treinta más 24 son 54"
+   + "Treinta más 25 son 55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.2.expression
+   - "54 − 50"
+   + "Total − meta"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.2.result
+   - "4"
+   + "5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.2.spokenText
+   - "Cincuenta y cuatro menos 50 son 4, así que la lista se pasa por 4"
+   + "Cincuenta y cinco menos 50 son 5, así que la lista se pasa por 5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.3.expression
+   - "54 − 13"
+   + "Total − artículo quitado"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.3.result
+   - "41"
+   + "42"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.es-MX.steps.3.spokenText
+   - "Cincuenta y cuatro menos 13 son 41, menos de 50"
+   + "Cincuenta y cinco menos 13 son 42, menos de 50"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.prompt
+   - "Nia tem 50 moedas: pão 17, suco 13, uvas 24. Some exato, veja quanto passa e depois tire o suco."
+   + "A Nia tem 50 moedas: pão 17, suco 13, uvas 25. Some os valores exatos, veja quanto ultrapassa e depois tire o suco."
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.feedback.met
+   - "Você somou exato, viu quanto passa e somou de novo sem o suco."
+   + "Você somou os valores exatos, viu quanto ultrapassa e somou de novo sem o suco."
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.feedback.not_yet
+   - "Veja a lista que passou com Rho: some, compare, tire e some de novo."
+   + "Veja a lista do Rho que ultrapassou: some, compare, tire e some de novo."
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.1.expression
+   - "30 + 24"
+   + "30 + 25"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.1.result
+   - "54"
+   + "55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.1.spokenText
+   - "Trinta mais 24 são 54"
+   + "Trinta mais 25 são 55"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.2.expression
+   - "54 − 50"
+   + "Total − meta"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.2.result
+   - "4"
+   + "5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.2.spokenText
+   - "Cinquenta e quatro menos 50 são 4, então a lista passa por 4"
+   + "Cinquenta e cinco menos 50 são 5, então a lista ultrapassa em 5"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.3.expression
+   - "54 − 13"
+   + "Total − item tirado"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.3.result
+   - "41"
+   + "42"
+fe-1012-02-plan-the-budget.segments.practice-over-01.copy.pt-BR.steps.3.spokenText
+   - "Cinquenta e quatro menos 13 são 41, menos de 50"
+   + "Cinquenta e cinco menos 13 são 42, menos de 50"
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.en-US.feedback.met
+   - "You dropped one item, re-added, and checked the new total against 40."
+   + "Drop what covers the excess, add again: it works on any list."
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.en-US.feedback.not_yet
+   - "Look back at Rho's over-budget list: drop one item, then add again."
+   + "Like Rho: drop one, add again, compare with 40. The paper stays."
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.en-US.reasons.1.label
+   - "It is the cheapest thing on the list"
+   + "It's the cheapest thing on the list"
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.en-US.reasons.2.label
+   - "It is what I like least"
+   + "It's what I like least"
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.es-MX.feedback.met
+   - "Quitaste un artículo, volviste a sumar y comparaste el nuevo total con 40."
+   + "Quita lo que cubra el exceso y suma otra vez: sirve en cualquier lista."
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.es-MX.feedback.not_yet
+   - "Mira la lista que se pasó con Rho: quita un artículo y suma otra vez."
+   + "Como Rho: quita uno, suma otra vez y compara con 40. El papel se queda."
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.pt-BR.feedback.met
+   - "Você tirou um item, somou de novo e comparou o novo total com 40."
+   + "Tire o que cubra o excesso e some de novo: vale para qualquer lista."
+fe-1012-02-plan-the-budget.segments.transfer-kites-01.copy.pt-BR.feedback.not_yet
+   - "Veja a lista que passou com Rho: tire um item e some de novo."
+   + "Como o Rho: tire um, some de novo e compare com 40. O papel fica."
+fe-1012-03-saving-plan.segments.hook-01.copy.es-MX.prompt
+   - "Escucha a Zara."
+   + "Nico y Zara miran un balón en la vitrina."
+fe-1012-03-saving-plan.segments.hook-01.copy.en-US.prompt
+   - "Listen to Zara."
+   + "Max and Zara eye a telescope at the yard sale."
+fe-1012-03-saving-plan.segments.hook-01.copy.pt-BR.prompt
+   - "Ouça a Zara."
+   + "O Davi e a Zara olham um kit de robô na feira."
+fe-1012-03-saving-plan.segments.hook-01.copy.pt-BR.line
+   - "Davi guarda a mesada no cofrinho. Hoje, na feira livre, ele vê um kit de robô e sonha em comprar."
+   + "O Davi guarda a mesada no cofrinho. Na barraca de brinquedos da feira livre, ele vê um kit de robô."
+fe-1012-03-saving-plan.segments.pre-01.copy.es-MX.help
+   - ["Piensa primero cuántas monedas le faltan a Nico. Luego, en cuántas semanas las junta."]
+   + undefined
+fe-1012-03-saving-plan.segments.pre-01.copy.es-MX.feedback.not_yet
+   - "Gracias. Revisa los datos y prueba otra vez; luego lo vemos paso a paso."
+   + "Gracias. Ahora vemos el plan de Nico paso a paso."
+fe-1012-03-saving-plan.segments.pre-01.copy.en-US.help
+   - ["First think how many coins Max still needs. Then, how many weeks it takes to save them."]
+   + undefined
+fe-1012-03-saving-plan.segments.pre-01.copy.en-US.feedback.not_yet
+   - "Thanks. Check the numbers, try again, then we go step by step."
+   + "Thanks. Now let's see Max's plan step by step."
+fe-1012-03-saving-plan.segments.pre-01.copy.pt-BR.prompt
+   - "Davi quer um kit de robô de 90 moedas. Já tem 30 e guarda 10 por semana: escreva o que falta e as semanas."
+   + "O Davi quer um kit de robô de 90 moedas. Já tem 30 e guarda 10 por semana: escreva o que falta e as semanas."
+fe-1012-03-saving-plan.segments.pre-01.copy.pt-BR.help
+   - ["Pense primeiro em quantas moedas faltam para o Davi. Depois, em quantas semanas ele junta."]
+   + undefined
+fe-1012-03-saving-plan.segments.pre-01.copy.pt-BR.feedback.not_yet
+   - "Anotado. Confira os dados e tente de novo; depois vemos passo a passo."
+   + "Anotado. Agora vemos o plano do Davi passo a passo."
+fe-1012-03-saving-plan.segments.example-01.copy.es-MX.prompt
+   - "Escucha a Zara."
+   + "Paso 1: lo que falta"
+fe-1012-03-saving-plan.segments.example-01.copy.en-US.prompt
+   - "Listen to Zara."
+   + "Step 1: what is missing"
+fe-1012-03-saving-plan.segments.example-01.copy.pt-BR.prompt
+   - "Ouça a Zara."
+   + "Passo 1: o que falta"
+fe-1012-03-saving-plan.segments.example-01.copy.pt-BR.line
+   - "Olha o truque: o que você já tem não precisa ser guardado de novo. Davi tem 30 de 90, então faltam 90 − 30 = 60."
+   + "Olha o truque: o que você já tem não precisa ser guardado de novo. O Davi tem 30 de 90, então faltam 90 − 30 = 60."
+fe-1012-03-saving-plan.segments.example-02.copy.es-MX.prompt
+   - "Escucha a Zara."
+   + "Paso 2: las semanas"
+fe-1012-03-saving-plan.segments.example-02.copy.en-US.prompt
+   - "Listen to Zara."
+   + "Step 2: the weeks"
+fe-1012-03-saving-plan.segments.example-02.copy.pt-BR.prompt
+   - "Ouça a Zara."
+   + "Passo 2: as semanas"
+fe-1012-03-saving-plan.segments.example-03.payload.initial
+   - 20
+   + 10
+fe-1012-03-saving-plan.segments.example-03.copy.es-MX.prompt
+   - "Comprobemos: elige 10 por semana. En 6 semanas Nico junta 60, y 60 + 30 = 90."
+   + "Paso 3: pruebo 10 por semana. En 6 semanas, 6 × 10 = 60: justo lo que faltaba."
+fe-1012-03-saving-plan.segments.example-03.copy.en-US.prompt
+   - "Check it: set 10 a week. In 6 weeks Max saves 60, and 60 + 30 = 90."
+   + "Step 3: I try 10 a week. In 6 weeks, 6 × 10 = 60: exactly what was missing."
+fe-1012-03-saving-plan.segments.example-03.copy.pt-BR.prompt
+   - "Vamos conferir: escolha 10 por semana. Em 6 semanas Davi junta 60, e 60 + 30 = 90."
+   + "Passo 3: eu testo 10 por semana. Em 6 semanas, 6 × 10 = 60: exatamente o que faltava."
+fe-1012-03-saving-plan.segments.guided-01.payload.steps.0.id
+   - "missing"
+   + "saved"
+fe-1012-03-saving-plan.segments.guided-01.payload.steps.1.id
+   - "weeks"
+   + "missing"
+fe-1012-03-saving-plan.segments.guided-01.payload.steps.2.id
+   - "check"
+   + "weeks"
+fe-1012-03-saving-plan.segments.guided-01.payload.response_step_ids.0
+   - "weeks"
+   + "missing"
+fe-1012-03-saving-plan.segments.guided-01.payload.response_step_ids.1
+   - "check"
+   + "weeks"
+fe-1012-03-saving-plan.segments.guided-01.rubric.expectedValues.check
+   - "50"
+   + undefined
+fe-1012-03-saving-plan.segments.guided-01.rubric.expectedValues.missing
+   - undefined
+   + "50"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.feedback.met
+   - "Dividiste lo que falta entre lo que guarda y comprobaste con una multiplicación."
+   + "Restaste lo que ya tiene Lía y dividiste lo que falta entre lo que guarda."
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.0.expression
+   - "90 − 40"
+   + "Lía guarda por semana"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.0.result
+   - "50"
+   + "5"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.0.spokenText
+   - "A 90 le quito las 40 que Lía ya tiene: faltan 50 monedas."
+   + "Lía guarda 5 monedas cada semana."
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.1.expression
+   - "Lo que falta ÷ 5"
+   + "90 − 40"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.1.result
+   - "10"
+   + "50"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.1.spokenText
+   - "Faltan 50 monedas y Lía guarda 5 por semana: son 10 semanas."
+   + "A 90 le quito las 40 que Lía ya tiene: faltan 50 monedas."
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.2.expression
+   - "Semanas × 5"
+   + "Lo que falta ÷ 5"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.2.result
+   - "50"
+   + "10"
+fe-1012-03-saving-plan.segments.guided-01.copy.es-MX.steps.2.spokenText
+   - "En 10 semanas, 10 por 5 son 50 monedas: justo lo que faltaba."
+   + "Faltan 50 monedas y Lía guarda 5 por semana: son 10 semanas."
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.feedback.met
+   - "You divided what was missing by her saving and checked by multiplying."
+   + "You subtracted what Lia has, then divided what was missing."
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.0.expression
+   - "90 − 40"
+   + "Lia saves each week"
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.0.result
+   - "50"
+   + "5"
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.0.spokenText
+   - "From 90 I take away the 40 Lia already has: 50 coins are missing."
+   + "Lia saves 5 coins every week."
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.1.expression
+   - "What is missing ÷ 5"
+   + "90 − 40"
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.1.result
+   - "10"
+   + "50"
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.1.spokenText
+   - "50 coins are missing and Lia saves 5 a week: that is 10 weeks."
+   + "From 90 I take away the 40 Lia already has: 50 coins are missing."
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.2.expression
+   - "Weeks × 5"
+   + "What is missing ÷ 5"
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.2.result
+   - "50"
+   + "10"
+fe-1012-03-saving-plan.segments.guided-01.copy.en-US.steps.2.spokenText
+   - "In 10 weeks, 10 times 5 is 50 coins: exactly what was missing."
+   + "50 coins are missing and Lia saves 5 a week: that is 10 weeks."
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.feedback.met
+   - "Você dividiu o que faltava pelo que ela guarda e conferiu multiplicando."
+   + "Você tirou o que a Lia já tem e dividiu o que faltava."
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.0.expression
+   - "90 − 40"
+   + "Lia guarda por semana"
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.0.result
+   - "50"
+   + "5"
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.0.spokenText
+   - "De 90 tiro as 40 que a Lia já tem: faltam 50 moedas."
+   + "Lia guarda 5 moedas por semana."
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.1.expression
+   - "O que falta ÷ 5"
+   + "90 − 40"
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.1.result
+   - "10"
+   + "50"
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.1.spokenText
+   - "Faltam 50 moedas e a Lia guarda 5 por semana: são 10 semanas."
+   + "De 90 tiro as 40 que a Lia já tem: faltam 50 moedas."
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.2.expression
+   - "Semanas × 5"
+   + "O que falta ÷ 5"
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.2.result
+   - "50"
+   + "10"
+fe-1012-03-saving-plan.segments.guided-01.copy.pt-BR.steps.2.spokenText
+   - "Em 10 semanas, 10 vezes 5 são 50 moedas: exatamente o que faltava."
+   + "Faltam 50 moedas e a Lia guarda 5 por semana: são 10 semanas."
+fe-1012-03-saving-plan.segments.example-04.copy.es-MX.prompt
+   - "Escucha a Zara."
+   + "Paso 4: lo que sobra"
+fe-1012-03-saving-plan.segments.example-04.copy.en-US.prompt
+   - "Listen to Zara."
+   + "Step 4: what is left"
+fe-1012-03-saving-plan.segments.example-04.copy.pt-BR.prompt
+   - "Ouça a Zara."
+   + "Passo 4: o que sobra"
+fe-1012-03-saving-plan.segments.guided-02.payload.steps.3
+   - {"id":"check"}
+   + undefined
+fe-1012-03-saving-plan.segments.guided-02.payload.fade_count
+   - 2
+   + 1
+fe-1012-03-saving-plan.segments.guided-02.payload.response_step_ids.2
+   - "check"
+   + undefined
+fe-1012-03-saving-plan.segments.guided-02.rubric.expectedValues.check
+   - "40"
+   + undefined
+fe-1012-03-saving-plan.segments.guided-02.copy.es-MX.feedback.not_yet
+   - "Aún no. Repasa cómo sacó Nico lo que sobra y prueba de nuevo."
+   + "Aún no. Saca lo que sobra por semana y luego divide lo que falta."
+fe-1012-03-saving-plan.segments.guided-02.copy.es-MX.steps.3
+   - {"expression":"Semanas × lo que sobra","result":"40","spokenText":"En 5 semanas, 5 por 8 son 40: justo lo que faltaba."}
+   + undefined
+fe-1012-03-saving-plan.segments.guided-02.copy.en-US.feedback.not_yet
+   - "Not yet. Review how Max found what is left, then try again."
+   + "Not yet. Find the weekly leftover, then divide what is missing."
+fe-1012-03-saving-plan.segments.guided-02.copy.en-US.steps.3
+   - {"expression":"Weeks × what is left","result":"40","spokenText":"In 5 weeks, 5 times 8 is 40: exactly what was missing."}
+   + undefined
+fe-1012-03-saving-plan.segments.guided-02.copy.pt-BR.feedback.not_yet
+   - "Ainda não. Reveja como o Davi achou o que sobra e tente de novo."
+   + "Ainda não. Ache o que sobra por semana e divida o que falta."
+fe-1012-03-saving-plan.segments.guided-02.copy.pt-BR.steps.3
+   - {"expression":"Semanas × o que sobra","result":"40","spokenText":"Em 5 semanas, 5 vezes 8 são 40: exatamente o que faltava."}
+   + undefined
+fe-1012-03-saving-plan.segments.practice-01.copy.es-MX.feedback.not_yet
+   - "Aún no. Recuerda el truco: lo que ya tienes no se junta otra vez."
+   + "Aún no. Primero resta lo que ya tienes; luego divide lo que falta."
+fe-1012-03-saving-plan.segments.practice-01.copy.en-US.feedback.not_yet
+   - "Not yet. Remember: coins you already have need no saving."
+   + "Not yet. First subtract what you have, then divide what is missing."
+fe-1012-03-saving-plan.segments.practice-01.copy.pt-BR.feedback.not_yet
+   - "Ainda não. Lembre do truque: o que você já tem não se guarda de novo."
+   + "Ainda não. Primeiro tire o que você já tem; depois divida o que falta."
+fe-1012-03-saving-plan.segments.transfer-01.rubric.expectedValues.missing
+   - "84"
+   + "108"
+fe-1012-03-saving-plan.segments.transfer-01.rubric.expectedValues.weeks
+   - "7"
+   + "9"
+fe-1012-03-saving-plan.segments.transfer-01.copy.es-MX.prompt
+   - "Quieres una bici de 120 monedas y ya tienes 36. Ganas 20 por semana y gastas 8: completa lo que sigue."
+   + "Quieres una bici de 150 monedas y ya tienes 42. Ganas 20 por semana y gastas 8: completa lo que sigue."
+fe-1012-03-saving-plan.segments.transfer-01.copy.es-MX.steps.2.result
+   - "84"
+   + "108"
+fe-1012-03-saving-plan.segments.transfer-01.copy.es-MX.steps.2.spokenText
+   - "A la meta de 120 le quito las 36 que ya tienes: faltan 84."
+   + "A la meta de 150 le quito las 42 que ya tienes: faltan 108."
+fe-1012-03-saving-plan.segments.transfer-01.copy.es-MX.steps.3.result
+   - "7"
+   + "9"
+fe-1012-03-saving-plan.segments.transfer-01.copy.es-MX.steps.3.spokenText
+   - "Faltan 84 y te sobran 12 por semana: son 7 semanas."
+   + "Faltan 108 y te sobran 12 por semana: son 9 semanas."
+fe-1012-03-saving-plan.segments.transfer-01.copy.en-US.prompt
+   - "You want a 120-coin bike and have 36. You earn 20 a week and spend 8: finish the steps."
+   + "You want a 150-coin bike and have 42. You earn 20 a week and spend 8: finish the steps."
+fe-1012-03-saving-plan.segments.transfer-01.copy.en-US.feedback.met
+   - "You found what is left and what is missing, then divided."
+   + "You found what's left and what's missing. Same steps, any goal."
+fe-1012-03-saving-plan.segments.transfer-01.copy.en-US.steps.2.result
+   - "84"
+   + "108"
+fe-1012-03-saving-plan.segments.transfer-01.copy.en-US.steps.2.spokenText
+   - "From the goal of 120 I take away the 36 you have: 84 are missing."
+   + "From the goal of 150 I take away the 42 you have: 108 are missing."
+fe-1012-03-saving-plan.segments.transfer-01.copy.en-US.steps.3.result
+   - "7"
+   + "9"
+fe-1012-03-saving-plan.segments.transfer-01.copy.en-US.steps.3.spokenText
+   - "84 are missing and you keep 12 a week: that is 7 weeks."
+   + "108 are missing and you keep 12 a week: that is 9 weeks."
+fe-1012-03-saving-plan.segments.transfer-01.copy.pt-BR.prompt
+   - "Você quer uma bicicleta de 120 moedas e já tem 36. Ganha 20 por semana e gasta 8: complete as etapas."
+   + "Você quer uma bicicleta de 150 moedas e já tem 42. Ganha 20 por semana e gasta 8: complete as etapas."
+fe-1012-03-saving-plan.segments.transfer-01.copy.pt-BR.feedback.met
+   - "Você achou o que sobra e o que falta e depois dividiu."
+   + "Você achou o que sobra e o que falta, e dividiu. Vale para qualquer meta."
+fe-1012-03-saving-plan.segments.transfer-01.copy.pt-BR.steps.2.result
+   - "84"
+   + "108"
+fe-1012-03-saving-plan.segments.transfer-01.copy.pt-BR.steps.2.spokenText
+   - "Da meta de 120 tiro as 36 que você já tem: faltam 84."
+   + "Da meta de 150 tiro as 42 que você já tem: faltam 108."
+fe-1012-03-saving-plan.segments.transfer-01.copy.pt-BR.steps.3.result
+   - "7"
+   + "9"
+fe-1012-03-saving-plan.segments.transfer-01.copy.pt-BR.steps.3.spokenText
+   - "Faltam 84 e sobram 12 por semana: são 7 semanas."
+   + "Faltam 108 e sobram 12 por semana: são 9 semanas."
+fe-1012-04-suspicious-messages.mentor_misjudgment.recovery
+   - "Dina stops, shows the message to a trusted adult, and together they see that it is a trap."
+   + "Dina stops, shows the message to a trusted adult, and says next time she will pause first."
+fe-1012-04-suspicious-messages.segments.pre-01.copy.es-MX.feedback.not_yet
+   - "Ahora vemos las señales paso a paso, sin prisa."
+   + "Ahora vemos las señales paso a paso, juntos."
+fe-1012-04-suspicious-messages.segments.pre-01.copy.en-US.feedback.not_yet
+   - "Now we see the signs step by step, no rush."
+   + "Now we see the signs step by step, together."
+fe-1012-04-suspicious-messages.segments.pre-01.copy.pt-BR.feedback.not_yet
+   - "Vamos ver os sinais passo a passo, sem pressa."
+   + "Vamos ver os sinais passo a passo, juntos."
+fe-1012-04-suspicious-messages.segments.episode-01.copy.es-MX.misjudgment
+   - "Casi toqué el link y respondí sin mirar quién lo mandó."
+   + "Casi toqué el link sin mirar quién lo mandó."
+fe-1012-04-suspicious-messages.segments.episode-01.copy.es-MX.recovery
+   - "Me di cuenta, paré y se lo enseñé a un adulto. La próxima vez paro primero."
+   + "Vi que no conocía el número, paré y se lo enseñé a un adulto. La próxima vez paro primero."
+fe-1012-04-suspicious-messages.segments.episode-01.copy.en-US.recovery
+   - "I noticed, stopped, and showed a trusted adult. Next time I pause first."
+   + "I saw I didn't know the number, so I stopped and showed an adult. Next time I pause first."
+fe-1012-04-suspicious-messages.segments.episode-01.copy.pt-BR.misjudgment
+   - "Quase toquei no link e respondi sem ver quem mandou."
+   + "Quase toquei no link sem ver quem mandou."
+fe-1012-04-suspicious-messages.segments.episode-01.copy.pt-BR.recovery
+   - "Percebi, parei e mostrei a um adulto. Da próxima vez, paro primeiro."
+   + "Vi que não conhecia o número, parei e mostrei a um adulto. Da próxima vez, paro primeiro."
+fe-1012-04-suspicious-messages.segments.look-ask-01.copy.es-MX.line
+   - "“Hoy” me mete presión para no pensar. Y mi contraseña es solo mía: quien la pide quiere entrar a mi cuenta."
+   + "“Hoy” me mete presión para no pensar. Y mi contraseña es solo mía: quien la pide puede querer entrar a mi cuenta."
+fe-1012-04-suspicious-messages.segments.look-ask-01.copy.en-US.line
+   - "“Today” pushes me to act without thinking. And my password is only mine: anyone asking wants into my account."
+   + "“Today” pushes me to act without thinking. And my password is only mine: anyone asking may want into my account."
+fe-1012-04-suspicious-messages.segments.look-ask-01.copy.pt-BR.line
+   - "“Hoje” tenta me fazer agir sem pensar. E minha senha é só minha: quem pede quer entrar na minha conta."
+   + "“Hoje” tenta me fazer agir sem pensar. E minha senha é só minha: quem pede pode querer entrar na minha conta."
+fe-1012-04-suspicious-messages.segments.guided-01.rubric.cue_ids.msg-parcel.0
+   - "cue-link"
+   + "cue-sender"
+fe-1012-04-suspicious-messages.segments.guided-01.rubric.cue_ids.msg-parcel.1
+   - "cue-rush"
+   + "cue-link"
+fe-1012-04-suspicious-messages.segments.guided-01.rubric.cue_ids.msg-parcel.2
+   - "cue-asks"
+   + "cue-rush"
+fe-1012-04-suspicious-messages.segments.guided-01.rubric.cue_ids.msg-parcel.3
+   - undefined
+   + "cue-asks"
+fe-1012-04-suspicious-messages.segments.guided-01.copy.es-MX.feedback.met
+   - "Marcaste las trampas. Quien conoces y pide algo normal es seguro."
+   + "Marcaste las trampas. Los otros mensajes no traen ninguna señal de trampa."
+fe-1012-04-suspicious-messages.segments.guided-01.copy.en-US.feedback.met
+   - "You flagged the traps. People you know asking normal things are safe."
+   + "You flagged the traps. The others show no sign of a trap."
+fe-1012-04-suspicious-messages.segments.guided-01.copy.en-US.help.1
+   - "A message from someone you know, with a normal request, is not suspicious."
+   + "A message from someone you know, with a normal request, isn't suspicious."
+fe-1012-04-suspicious-messages.segments.guided-01.copy.pt-BR.feedback.met
+   - "Você marcou as armadilhas. Quem você conhece pedindo algo normal é seguro."
+   + "Você marcou as armadilhas. As outras mensagens não têm sinal de armadilha."
+fe-1012-04-suspicious-messages.segments.tell-adult-01.copy.es-MX.line
+   - "Paro, no toco el link y se lo enseño a un adulto. Así comprobamos quién escribió y no pierdo nada."
+   + "Paro, no toco el link y no respondo: quien escribe puede mentir. Un adulto me ayuda a comprobar."
+fe-1012-04-suspicious-messages.segments.tell-adult-01.copy.en-US.line
+   - "I stop, don't tap the link, and show an adult. Together we check who wrote it, and I lose nothing."
+   + "I stop, don't tap the link, don't reply: the sender can lie. An adult helps me check."
+fe-1012-04-suspicious-messages.segments.tell-adult-01.copy.pt-BR.line
+   - "Paro, não toco no link e mostro a um adulto. Assim conferimos quem escreveu e não perco nada."
+   + "Paro, não toco no link e não respondo: quem escreve pode mentir. Um adulto me ajuda a conferir."
+fe-1012-04-suspicious-messages.segments.reply-01.copy.pt-BR.replies.1.label
+   - "Respondo e pergunto quem é."
+   + "Responda e pergunte quem é."
+fe-1012-04-suspicious-messages.segments.example-fine-01
+   - undefined
+   + {"id":"example-fine-01","type":"voice.mentor-turn.v2","grading":"none","teaching_role":"example","visual":{"type":"speech-plate"},"payload":{"role":"transition","narration":{"mode":"text_only"}},"copy":{"es-MX":{"prompt":"Otro mensaje de Dina, de Papá: “Llego a las 6. ¿Pedimos pizza?”","line":"Conozco a quien escribe, no hay link ni prisa y no pide nada raro. Aquí no veo señales."},"en-US":{"prompt":"Another text Dina gets, from Dad: “Home at 6. Pizza tonight?”","line":"I know who wrote it, there is no link or rush, and it asks nothing odd. No signs here."},"pt-BR":{"prompt":"Outra mensagem da Dina, do Pai: “Chego às 18h. Pedimos pizza?”","line":"Conheço quem escreveu, não tem link nem pressa e não pede nada estranho. Aqui não vejo sinais."}}}
+fe-69-01-count-coins.segments.pre-01.copy.es-MX.feedback.met
+   - "Armaste tu total. Ahora vemos cómo lo hace Dina, paso a paso."
+   + "Gracias. Ahora vemos cómo lo hace Dina, paso a paso."
+fe-69-01-count-coins.segments.pre-01.copy.es-MX.feedback.not_yet
+   - "Sin problema. Ahora vemos cómo lo hace Dina, paso a paso."
+   + "Gracias. Ahora vemos cómo lo hace Dina, paso a paso."
+fe-69-01-count-coins.segments.pre-01.copy.en-US.feedback.met
+   - "Thanks, you built it. Now let's see Dina's way, step by step."
+   + "Thanks. Now let's see how Dina does it, step by step."
+fe-69-01-count-coins.segments.pre-01.copy.en-US.feedback.not_yet
+   - "No problem. Now let's see how Dina does it, step by step."
+   + "Thanks. Now let's see how Dina does it, step by step."
+fe-69-01-count-coins.segments.pre-01.copy.pt-BR.feedback.met
+   - "Você montou o seu total. Agora vamos ver como a Dina faz, passo a passo."
+   + "Anotado. Agora vamos ver como a Dina faz, passo a passo."
+fe-69-01-count-coins.segments.pre-01.copy.pt-BR.feedback.not_yet
+   - "Tudo bem. Vamos ver como a Dina faz, passo a passo."
+   + "Anotado. Agora vamos ver como a Dina faz, passo a passo."
+fe-69-01-count-coins.segments.count-01.payload.narration.mode
+   - "differentiated"
+   + "text_only"
+fe-69-01-count-coins.segments.count-01.copy.es-MX.line
+   - "Primero junto las iguales: dos de 10, una de 5, tres de 1."
+   + "Junto las iguales para no perderme: dos de 10, una de 5, tres de 1."
+fe-69-01-count-coins.segments.count-01.copy.es-MX.narration
+   - {"script":"Si junto las monedas iguales, la cuenta se ordena. Sin prisa, así es más fácil."}
+   + undefined
+fe-69-01-count-coins.segments.count-01.copy.en-US.line
+   - "First I put like coins together: two 10s, one 5, three 1s."
+   + "Same coins together: two 10s, one 5, three 1s. Easier to count."
+fe-69-01-count-coins.segments.count-01.copy.en-US.narration
+   - {"script":"When I put the same coins together, the count stays tidy. No rush, it's easier this way."}
+   + undefined
+fe-69-01-count-coins.segments.count-01.copy.pt-BR.line
+   - "Primeiro junto as moedas iguais: duas de 10, uma de 5, três de 1."
+   + "Iguais juntas, sem me perder: duas de 10, uma de 5, três de 1."
+fe-69-01-count-coins.segments.count-01.copy.pt-BR.narration
+   - {"script":"Quando junto as moedas iguais, a conta fica organizada. Sem pressa, assim é mais fácil."}
+   + undefined
+fe-69-01-count-coins.segments.count-02.payload.narration.mode
+   - "differentiated"
+   + "text_only"
+fe-69-01-count-coins.segments.count-02.copy.es-MX.line
+   - "Seis monedas, pero valen 28: cada una suma su valor."
+   + "Voy de 10 en 10, más rápido. Seis monedas, pero valen 28."
+fe-69-01-count-coins.segments.count-02.copy.es-MX.narration
+   - {"script":"Contar de 10 en 10 es más rápido que de 1 en 1. Por eso empiezo por las más grandes."}
+   + undefined
+fe-69-01-count-coins.segments.count-02.copy.en-US.line
+   - "Six coins, but worth 28: each one adds its own value."
+   + "Counting by 10s is faster. Six coins, but worth 28."
+fe-69-01-count-coins.segments.count-02.copy.en-US.narration
+   - {"script":"Counting by 10s is faster than counting by 1s. That is why I start with the biggest coins."}
+   + undefined
+fe-69-01-count-coins.segments.count-02.copy.pt-BR.line
+   - "Seis moedas, mas valem 28: cada uma soma o seu valor."
+   + "De 10 em 10 é mais rápido. Seis moedas, mas valem 28."
+fe-69-01-count-coins.segments.count-02.copy.pt-BR.narration
+   - {"script":"Contar de 10 em 10 é mais rápido do que de 1 em 1. Por isso começo pelas maiores."}
+   + undefined
+fe-69-01-count-coins.segments.guided-01.copy.es-MX.feedback.met
+   - "Tus monedas suman 24: cada una aportó su valor, no uno."
+   + "Tus monedas suman 24: la de 10 cuenta 10, no 1."
+fe-69-01-count-coins.segments.guided-01.copy.es-MX.help.1
+   - "Después mira cuánto falta y agrega la moneda que quepa."
+   + "Después suma las demás por su valor, una por una."
+fe-69-01-count-coins.segments.guided-01.copy.en-US.feedback.met
+   - "Your coins make 24: each one added its value, not one."
+   + "Your coins make 24: a 10-coin counts as 10, not 1."
+fe-69-01-count-coins.segments.guided-01.copy.en-US.help.1
+   - "Then see how much is left and add the coin that fits."
+   + "Then add the rest by their value, one at a time."
+fe-69-01-count-coins.segments.guided-01.copy.pt-BR.prompt
+   - "A segunda pilha da Dina vale 24. Monte-a, das maiores às menores."
+   + "A segunda pilha da Dina vale 24. Monte essa pilha, das maiores às menores."
+fe-69-01-count-coins.segments.guided-01.copy.pt-BR.feedback.met
+   - "Suas moedas fazem 24: cada uma somou o seu valor, não um."
+   + "Suas moedas fazem 24: a de 10 vale 10, não 1."
+fe-69-01-count-coins.segments.guided-01.copy.pt-BR.help.1
+   - "Depois veja quanto falta e acrescente a moeda que couber."
+   + "Depois some as outras pelo valor, uma a uma."
+fe-69-01-count-coins.segments.fewest-01.payload.narration.mode
+   - "differentiated"
+   + "text_only"
+fe-69-01-count-coins.segments.fewest-01.copy.es-MX.line
+   - "Menos monedas, bolsita más ligera. Pongo la más grande que quepa."
+   + "Las grandes llegan antes, con menos monedas. Pongo la más grande que quepa."
+fe-69-01-count-coins.segments.fewest-01.copy.es-MX.narration
+   - {"script":"Si empiezo con monedas chicas, necesito muchas. Con las grandes termino antes y la bolsita pesa menos."}
+   + undefined
+fe-69-01-count-coins.segments.fewest-01.copy.en-US.line
+   - "Fewer coins, lighter pouch. I add the biggest that fits."
+   + "Big coins get there sooner. I add the biggest that fits."
+fe-69-01-count-coins.segments.fewest-01.copy.en-US.narration
+   - {"script":"If I start with small coins, I need lots of them. Big coins get me there sooner, and the pouch stays lighter."}
+   + undefined
+fe-69-01-count-coins.segments.fewest-01.copy.pt-BR.line
+   - "Menos moedas, bolsinha mais leve. Coloco a maior que couber."
+   + "As grandes chegam antes, com menos moedas. Coloco a maior que couber."
+fe-69-01-count-coins.segments.fewest-01.copy.pt-BR.narration
+   - {"script":"Se começo com moedas pequenas, preciso de muitas. Com as grandes chego mais rápido e a bolsinha fica mais leve."}
+   + undefined
+fe-69-02-change-counting-up.segments.hook-01.copy.es-MX.narration.script
+   - "Te damos la bienvenida a mi puesto de la feria LittleFounders. Hoy atiendo la caja. Ari quiere un cuaderno y me entrega una sola moneda grande. El puesto se queda con una parte y la otra tiene que regresar. Fíjate bien, porque voy a medir exactamente cuánto es."
+   + "Te doy la bienvenida a mi puesto de la feria LittleFounders. Hoy atiendo la caja. Ari quiere un cuaderno y me entrega una sola moneda grande. El puesto se queda con una parte y la otra tiene que regresar. Fíjate bien, porque voy a medir exactamente cuánto es."
+fe-69-02-change-counting-up.segments.hook-01.copy.en-US.narration.script
+   - "Welcome to my stall at the LittleFounders fair. Today I run the cash box. Ari wants a notebook and hands me one single big coin. The stall keeps one part, and the other part has to go back. Watch closely, because I will measure exactly how much."
+   + "Welcome to my stall at the LittleFounders fair. Today I run the cash box. Ari wants a notebook and hands me one single big coin. The stall keeps one part, and the other part has to go back. Watch closely, because I'll measure exactly how much."
+fe-69-02-change-counting-up.segments.hook-01.copy.pt-BR.prompt
+   - "A lojinha de Rho na feira."
+   + "A lojinha do Rho na feira."
+fe-69-02-change-counting-up.segments.example-01.copy.pt-BR.prompt
+   - "Ari compra um caderno de 35 e paga 50."
+   + "O Ari compra um caderno de 35 e paga 50."
+fe-69-02-change-counting-up.segments.practice-01.copy.es-MX.help.0
+   - "Párate en 17, suma una moneda y di el total nuevo."
+   + "Empieza en 17, suma una moneda y di el total nuevo."
+fe-69-02-change-counting-up.segments.practice-01.copy.pt-BR.help.0
+   - "Fique no 17, some uma moeda e diga o novo total."
+   + "Comece no 17, some uma moeda e diga o novo total."
+fe-69-02-change-counting-up.segments.practice-02.payload.choices.0.id
+   - "back-gap"
+   + "back-all"
+fe-69-02-change-counting-up.segments.practice-02.payload.choices.1.id
+   - "back-all"
+   + "back-gap"
+fe-69-02-change-counting-up.segments.practice-02.copy.es-MX.choices.0.label
+   - "Devolver 6"
+   + "Devolver 20"
+fe-69-02-change-counting-up.segments.practice-02.copy.es-MX.choices.1.label
+   - "Devolver 20"
+   + "Devolver 6"
+fe-69-02-change-counting-up.segments.practice-02.copy.en-US.choices.0.label
+   - "Give back 6"
+   + "Give back 20"
+fe-69-02-change-counting-up.segments.practice-02.copy.en-US.choices.1.label
+   - "Give back 20"
+   + "Give back 6"
+fe-69-02-change-counting-up.segments.practice-02.copy.pt-BR.choices.0.label
+   - "Devolver 6"
+   + "Devolver 20"
+fe-69-02-change-counting-up.segments.practice-02.copy.pt-BR.choices.1.label
+   - "Devolver 20"
+   + "Devolver 6"
+fe-69-02-change-counting-up.segments.transfer-01.copy.es-MX.help.0
+   - "El mismo movimiento que con Ari: párate en el precio y sube."
+   + "El mismo movimiento que con Ari: empieza en el precio y sube."
+fe-69-02-change-counting-up.segments.transfer-01.copy.pt-BR.help.0
+   - "O mesmo movimento de Ari: fique no preço e suba."
+   + "O mesmo movimento do Ari: comece no preço e suba."
+fe-69-03-needs-and-wants.segments.hook-01.copy.en-US.prompt
+   - "Liruf is at the market."
+   + "Liruf is at the store."
+fe-69-03-needs-and-wants.segments.hook-01.copy.en-US.line
+   - "Stomp, stomp, market day. I have a few coins, and dinner waits."
+   + "Stomp, stomp, shopping time. I have a few coins, and dinner waits."
+fe-69-03-needs-and-wants.segments.hook-01.copy.pt-BR.line
+   - "Tum, tum, dia de mercado. Tenho poucas moedas e o jantar espera."
+   + "Tum, tum, hora de comprar. Tenho poucas moedas e o jantar espera."
+fe-69-03-needs-and-wants.segments.pre-01.copy.en-US.prompt
+   - "Liruf's market: sort each thing, then pick why."
+   + "Liruf's shopping trip: sort each thing, then pick why."
+fe-69-03-needs-and-wants.segments.pre-01.copy.en-US.reasons.0.label
+   - "We cannot go without it"
+   + "We can't go without it"
+fe-69-03-needs-and-wants.segments.pre-01.copy.en-US.reasons.1.label
+   - "It is just for fun"
+   + "It's just a treat"
+fe-69-03-needs-and-wants.segments.pre-01.copy.es-MX.prompt
+   - "Mercado de Liruf: ordena cada cosa y elige por qué."
+   + "Mercado de Liruf: separa cada cosa y elige por qué."
+fe-69-03-needs-and-wants.segments.pre-01.copy.es-MX.reasons.1.label
+   - "Es solo para divertirnos"
+   + "Es solo un antojo"
+fe-69-03-needs-and-wants.segments.pre-01.copy.pt-BR.reasons.1.label
+   - "É só para brincar"
+   + "É só vontade"
+fe-69-03-needs-and-wants.segments.ask-bread-01.copy.en-US.prompt
+   - "Liruf sorts the bread."
+   + "Liruf lifts a warm loaf in his tiny arms."
+fe-69-03-needs-and-wants.segments.ask-bread-01.copy.es-MX.prompt
+   - "Liruf ordena el pan."
+   + "Liruf levanta el pan calientito con sus bracitos."
+fe-69-03-needs-and-wants.segments.ask-bread-01.copy.pt-BR.prompt
+   - "O Liruf separa o pão."
+   + "O Liruf levanta o pãozinho quentinho nos bracinhos."
+fe-69-03-needs-and-wants.segments.ask-toy-01.copy.en-US.prompt
+   - "Liruf sorts the toy."
+   + "Liruf stares at the shiny toy, eyes wide."
+fe-69-03-needs-and-wants.segments.ask-toy-01.copy.es-MX.prompt
+   - "Liruf ordena el juguete."
+   + "Liruf mira el juguete brillante, con ojos enormes."
+fe-69-03-needs-and-wants.segments.ask-toy-01.copy.pt-BR.prompt
+   - "O Liruf separa o brinquedo."
+   + "O Liruf olha o brinquedo brilhante, de olhos arregalados."
+fe-69-03-needs-and-wants.segments.guided-01.copy.en-US.reasons.0.label
+   - "We cannot go without it"
+   + "We can't go without it"
+fe-69-03-needs-and-wants.segments.guided-01.copy.en-US.reasons.1.label
+   - "It is just for fun"
+   + "It's just a treat"
+fe-69-03-needs-and-wants.segments.guided-01.copy.es-MX.prompt
+   - "Tu turno: ordena con la pregunta de Liruf y elige por qué."
+   + "Tu turno: separa con la pregunta de Liruf y elige por qué."
+fe-69-03-needs-and-wants.segments.guided-01.copy.es-MX.reasons.1.label
+   - "Es solo para divertirnos"
+   + "Es solo un antojo"
+fe-69-03-needs-and-wants.segments.guided-01.copy.pt-BR.reasons.1.label
+   - "É só para brincar"
+   + "É só vontade"
+fe-69-03-needs-and-wants.segments.story-01.copy.en-US.feedback.met
+   - "Lunch first: 3 coins. The balloon can wait for another day."
+   + "Lunch first: 4 coins. The balloon can wait for another day."
+fe-69-03-needs-and-wants.segments.story-01.copy.en-US.scene
+   - "You have 5 coins. Lunch costs 3. A balloon costs 4. You cannot buy both."
+   + "You have 5 coins. Lunch costs 4. A balloon costs 3. You cannot buy both."
+fe-69-03-needs-and-wants.segments.story-01.copy.es-MX.feedback.met
+   - "Primero la comida: 3 monedas. El globo puede esperar otro día."
+   + "Primero la comida: 4 monedas. El globo puede esperar otro día."
+fe-69-03-needs-and-wants.segments.story-01.copy.es-MX.scene
+   - "Tienes 5 monedas. La comida cuesta 3. Un globo cuesta 4. No alcanza para los dos."
+   + "Tienes 5 monedas. La comida cuesta 4. Un globo cuesta 3. No alcanza para los dos."
+fe-69-03-needs-and-wants.segments.story-01.copy.pt-BR.feedback.met
+   - "Primeiro o almoço: 3 moedas. O balão pode esperar outro dia."
+   + "Primeiro o almoço: 4 moedas. O balão pode esperar outro dia."
+fe-69-03-needs-and-wants.segments.story-01.copy.pt-BR.scene
+   - "Você tem 5 moedas. O almoço custa 3. Um balão custa 4. Não dá para comprar os dois."
+   + "Você tem 5 moedas. O almoço custa 4. Um balão custa 3. Não dá para comprar os dois."
+fe-69-03-needs-and-wants.segments.practice-01.copy.en-US.help.1
+   - "A need keeps us well. A want is just fun."
+   + "A need keeps us healthy. A want is just a treat."
+fe-69-03-needs-and-wants.segments.practice-01.copy.en-US.reasons.0.label
+   - "We cannot go without it"
+   + "We can't go without it"
+fe-69-03-needs-and-wants.segments.practice-01.copy.en-US.reasons.1.label
+   - "It is just for fun"
+   + "It's just a treat"
+fe-69-03-needs-and-wants.segments.practice-01.copy.es-MX.prompt
+   - "Liruf compra otra vez. Ordena cada cosa y elige por qué."
+   + "Liruf compra otra vez. Separa cada cosa y elige por qué."
+fe-69-03-needs-and-wants.segments.practice-01.copy.es-MX.reasons.1.label
+   - "Es solo para divertirnos"
+   + "Es solo un antojo"
+fe-69-03-needs-and-wants.segments.practice-01.copy.pt-BR.reasons.1.label
+   - "É só para brincar"
+   + "É só vontade"
+fe-69-03-needs-and-wants.segments.transfer-01.rubric.accepted.item-rain-jacket.0.reason
+   - "why-will-rain"
+   + "why-cannot-go-without"
+fe-69-03-needs-and-wants.segments.transfer-01.rubric.accepted.item-rain-jacket.1
+   - undefined
+   + {"bin":"bin-need","reason":"why-will-rain"}
+fe-69-03-needs-and-wants.segments.transfer-01.copy.en-US.reasons.0.label
+   - "We cannot go without it"
+   + "We can't go without it"
+fe-69-03-needs-and-wants.segments.transfer-01.copy.en-US.reasons.1.label
+   - "It is just for fun"
+   + "It's just a treat"
+fe-69-03-needs-and-wants.segments.transfer-01.copy.es-MX.prompt
+   - "Paseo escolar: el pronóstico dice lluvia. Ordena y elige por qué."
+   + "Paseo escolar: el pronóstico dice lluvia. Separa y elige por qué."
+fe-69-03-needs-and-wants.segments.transfer-01.copy.es-MX.reasons.1.label
+   - "Es solo para divertirnos"
+   + "Es solo un antojo"
+fe-69-03-needs-and-wants.segments.transfer-01.copy.pt-BR.reasons.1.label
+   - "É só para brincar"
+   + "É só vontade"
+fe-69-04-market-stall.regional.scenarios.pt-BR.scenario
+   - "Zara ajuda na barraca de frutas e sucos da feira livre do bairro, no sábado. O feirante grita os preços, dona Marta paga no Pix e o valor tem de bater certinho, sem troco. A barraca de brinquedos ao lado funciona igual, e as moedas ficam na pochete."
+   + "Zara ajuda na barraca de frutas e sucos da feira livre do bairro, no sábado. O feirante grita os preços, dona Marta separou R$ 10 e quer gastar certinho, e paga no Pix. A barraca de brinquedos ao lado funciona igual, e as moedas ficam na pochete."
+fe-69-04-market-stall.segments.zara-hook.copy.en-US.narration.script
+   - "Every snack has a price sticker, and the cash box sits by the apples. Dana will hand over one bill, so her basket has to come out to exactly that much."
+   + "Every snack has a price sticker, and the cash box sits by the apples. Dana wants to spend her whole bill, no more and no less, so her basket has to come out to exactly $10."
+fe-69-04-market-stall.segments.zara-hook.copy.pt-BR.prompt
+   - "Sábado: Zara abre a barraca na feira livre."
+   + "Sábado: a Zara abre a barraca na feira livre."
+fe-69-04-market-stall.segments.zara-hook.copy.pt-BR.line
+   - "Dona Marta vai pagar R$ 10 no Pix. Veja como encho a cesta."
+   + "Dona Marta quer gastar R$ 10 certinho. Veja como encho a cesta."
+fe-69-04-market-stall.segments.zara-hook.copy.pt-BR.narration.script
+   - "Eu grito os preços pela feira inteira, e no Pix o valor sai certinho, sem troco. Por isso a cesta da dona Marta precisa custar exatamente o que ela quer pagar."
+   + "Eu grito os preços pela feira inteira. A dona Marta separou R$ 10 para a feira e quer gastar tudo, nem a mais nem a menos. Por isso a cesta precisa custar exatamente R$ 10."
+fe-69-04-market-stall.segments.pre-stall.copy.en-US.feedback.met
+   - "Noted. Now let us see it step by step."
+   + "Noted. Now let's see it step by step."
+fe-69-04-market-stall.segments.pre-stall.copy.en-US.feedback.not_yet
+   - "Noted. Now let us see it step by step."
+   + "Noted. Now let's see it step by step."
+fe-69-04-market-stall.segments.pre-stall.copy.es-MX.prompt
+   - "Prueba una primero: llena la canasta para que cueste justo $7."
+   + "Inténtalo tú primero: llena la canasta para que cueste justo $7."
+fe-69-04-market-stall.segments.pre-stall.copy.pt-BR.prompt
+   - "Tente uma primeiro: encha a cesta para custar exatamente R$ 7."
+   + "Tente você primeiro: encha a cesta para custar exatamente R$ 7."
+fe-69-04-market-stall.segments.ex-goal.copy.es-MX.line
+   - "Jugo $5, pan $3, manzana $2. La meta de Doña Lupe es $10."
+   + "Jugo $5, pan $3, manzana $2. La meta de doña Lupe es $10."
+fe-69-04-market-stall.segments.ex-moves.payload.narration.mode
+   - "differentiated"
+   + "text_only"
+fe-69-04-market-stall.segments.ex-moves.copy.en-US.prompt
+   - "My trick: start big, then count up."
+   + "Step 2: start at the big price, not at zero."
+fe-69-04-market-stall.segments.ex-moves.copy.en-US.line
+   - "Juice $5. Add bread: 6, 7, 8. Add apple: 9, 10."
+   + "Juice $5: already at 5. Bread: 6, 7, 8; apple: 9, 10."
+fe-69-04-market-stall.segments.ex-moves.copy.en-US.narration
+   - {"script":"Why the big price first? Counting up from 5 takes small steps, not ten. If I can start higher, I never start at zero."}
+   + undefined
+fe-69-04-market-stall.segments.ex-moves.copy.es-MX.prompt
+   - "Mi truco: empiezo con el precio grande y cuento hacia arriba."
+   + "Paso 2: empiezo en el precio grande, no en cero."
+fe-69-04-market-stall.segments.ex-moves.copy.es-MX.line
+   - "Jugo $5. Sumo pan: 6, 7, 8. Sumo manzana: 9, 10."
+   + "Jugo $5: ya estoy en 5. Pan: 6, 7, 8; manzana: 9, 10."
+fe-69-04-market-stall.segments.ex-moves.copy.es-MX.narration
+   - {"script":"¿Por qué el precio grande primero? Contar desde el 5 son pocos pasos, no diez. Si puedo empezar más arriba, nunca empiezo en cero."}
+   + undefined
+fe-69-04-market-stall.segments.ex-moves.copy.pt-BR.prompt
+   - "Meu truque: começo pelo preço maior e conto para cima."
+   + "Passo 2: começo no preço maior, não no zero."
+fe-69-04-market-stall.segments.ex-moves.copy.pt-BR.line
+   - "Suco R$ 5. Somo o pão: 6, 7, 8. Somo a maçã: 9, 10."
+   + "Suco R$ 5: já estou no 5. Pão: 6, 7, 8; maçã: 9, 10."
+fe-69-04-market-stall.segments.ex-moves.copy.pt-BR.narration
+   - {"script":"Por que o preço maior primeiro? Contar a partir do 5 dá poucos passos, não dez. Se posso começar mais alto, nunca começo do zero."}
+   + undefined
+fe-69-04-market-stall.segments.ex-check.payload.narration.mode
+   - "differentiated"
+   + "text_only"
+fe-69-04-market-stall.segments.ex-check.copy.en-US.line
+   - "The basket totals $10 and the goal is $10. They match."
+   + "Basket $10, goal $10: they match. If not, I add or remove."
+fe-69-04-market-stall.segments.ex-check.copy.en-US.narration
+   - {"script":"A basket is only done when its total matches the goal. If it said $9, I would add one small thing. If it said $11, I would take one out."}
+   + undefined
+fe-69-04-market-stall.segments.ex-check.copy.es-MX.prompt
+   - "Paso 3: Doña Lupe paga con su moneda de $10."
+   + "Paso 3: doña Lupe paga sus $10 en monedas."
+fe-69-04-market-stall.segments.ex-check.copy.es-MX.line
+   - "La canasta suma $10 y la meta es $10. Coinciden."
+   + "Canasta $10, meta $10: coinciden. Si no, agrego o quito algo."
+fe-69-04-market-stall.segments.ex-check.copy.es-MX.narration
+   - {"script":"Una canasta está lista solo cuando su total iguala la meta. Si dijera $9, agregaría algo chico. Si dijera $11, quitaría algo."}
+   + undefined
+fe-69-04-market-stall.segments.ex-check.copy.pt-BR.prompt
+   - "Passo 3: dona Marta paga R$ 10 no Pix."
+   + "Passo 3: dona Marta confere o total e paga no Pix."
+fe-69-04-market-stall.segments.ex-check.copy.pt-BR.line
+   - "A cesta soma R$ 10 e a meta é R$ 10. Bateu certinho."
+   + "Cesta R$ 10, meta R$ 10: bateu. Se não bater, ponho ou tiro algo."
+fe-69-04-market-stall.segments.ex-check.copy.pt-BR.narration
+   - {"script":"Uma cesta só está pronta quando o total bate com a meta. Se fossem R$ 9, eu poria algo pequeno. Se fossem R$ 11, tiraria algo."}
+   + undefined
+fe-69-04-market-stall.segments.guided-stall.copy.en-US.feedback.met
+   - "You counted up from a price and matched the goal."
+   + "Your basket totals exactly $8 and matches the goal."
+fe-69-04-market-stall.segments.guided-stall.copy.es-MX.feedback.met
+   - "Contaste hacia arriba desde un precio e igualaste la meta."
+   + "Tu canasta suma justo $8 y coincide con la meta."
+fe-69-04-market-stall.segments.guided-stall.copy.pt-BR.prompt
+   - "Outro freguês paga R$ 8 no Pix. Encha a cesta no valor exato."
+   + "Outro freguês quer gastar R$ 8 certinho. Encha a cesta no valor exato."
+fe-69-04-market-stall.segments.guided-stall.copy.pt-BR.feedback.met
+   - "Você contou para cima de um preço e igualou a meta."
+   + "Sua cesta soma exatos R$ 8 e bate com a meta."
+fe-69-04-market-stall.segments.practice-coins.copy.en-US.prompt
+   - "Stack cash-box coins up to the phone. See the money add up."
+   + "Stack coins up to the phone. See the money add up."
+fe-69-04-market-stall.segments.practice-coins.copy.en-US.feedback.met
+   - "The stack reached the phone. Every coin added its money."
+   + "The stack reached the phone. Every coin added what it is worth."
+fe-69-04-market-stall.segments.practice-coins.copy.es-MX.feedback.met
+   - "La pila llegó al celular. Cada moneda sumó su dinero."
+   + "La pila llegó al celular. Cada moneda sumó lo que vale."
+fe-69-04-market-stall.segments.practice-coins.copy.pt-BR.feedback.met
+   - "A pilha chegou ao celular. Cada moeda somou seu dinheiro."
+   + "A pilha chegou ao celular. Cada moeda somou o que vale."
+fe-69-04-market-stall.segments.practice-coins.copy.pt-BR.feedback.not_yet
+   - "Ainda não. Iguale o alto da pilha com o celular."
+   + "Ainda não. Iguale o topo da pilha com o celular."
+fe-69-04-market-stall.segments.ex-compare.payload.narration.mode
+   - "differentiated"
+   + "text_only"
+fe-69-04-market-stall.segments.ex-compare.copy.en-US.prompt
+   - "Trick 2: compare the money, not the pieces."
+   + "Another trick: compare the money, not the pieces."
+fe-69-04-market-stall.segments.ex-compare.copy.en-US.line
+   - "Two apples make $4 and one juice costs $5. Juice costs more."
+   + "3 caps at $4 make $12: over $10. A $9 toy: under."
+fe-69-04-market-stall.segments.ex-compare.copy.en-US.narration
+   - {"script":"Counting pieces is a trap. Pieces tell me how many there are. Only the prices tell me how much money it is."}
+   + undefined
+fe-69-04-market-stall.segments.ex-compare.copy.es-MX.prompt
+   - "Truco 2: comparo el dinero, no las piezas."
+   + "Otro truco: comparo el dinero, no las piezas."
+fe-69-04-market-stall.segments.ex-compare.copy.es-MX.line
+   - "Dos manzanas suman $4 y un jugo cuesta $5. El jugo cuesta más."
+   + "3 gorras de $4 suman $12: más de $10. Un juguete de $9: menos."
+fe-69-04-market-stall.segments.ex-compare.copy.es-MX.narration
+   - {"script":"Contar piezas es una trampa. Las piezas dicen cuántas hay. Solo los precios dicen cuánto dinero es."}
+   + undefined
+fe-69-04-market-stall.segments.ex-compare.copy.pt-BR.prompt
+   - "Truque 2: comparo o dinheiro, não as peças."
+   + "Outro truque: comparo o dinheiro, não as peças."
+fe-69-04-market-stall.segments.ex-compare.copy.pt-BR.line
+   - "Duas maçãs somam R$ 4 e um suco custa R$ 5. O suco custa mais."
+   + "3 bonés de R$ 4 dão R$ 12: passa de R$ 10."
+fe-69-04-market-stall.segments.ex-compare.copy.pt-BR.narration
+   - {"script":"Contar peças é uma armadilha. As peças dizem quantas são. Só os preços dizem quanto dinheiro é."}
+   + undefined
+fe-69-04-market-stall.segments.practice-sort.copy.es-MX.prompt
+   - "Ordena las canastas del tianguis y elige por qué."
+   + "Separa las canastas del tianguis y elige por qué."
+fe-69-04-market-stall.segments.practice-sort.copy.es-MX.items.1.label
+   - "1 balón de $12"
+   + "1 bolsa de papitas de $12"
+fe-69-04-market-stall.segments.practice-sort.copy.es-MX.items.2.label
+   - "2 tamales de $6 cada uno"
+   + "2 conchas de $6 cada una"
+fe-69-04-market-stall.segments.transfer-stall.copy.en-US.feedback.met
+   - "A new table, new prices: you counted up and matched the goal."
+   + "A new table, new prices: your basket totals exactly $11."
+fe-69-04-market-stall.segments.transfer-stall.copy.es-MX.prompt
+   - "Otro puesto vende juguetes. Llena una canasta de justo $11."
+   + "Otro puesto vende juguetes. Llena una canasta que cueste justo $11."
+fe-69-04-market-stall.segments.transfer-stall.copy.es-MX.feedback.met
+   - "Otro puesto, otros precios: contaste hacia arriba e igualaste la meta."
+   + "Otro puesto, otros precios: tu canasta suma justo $11."
+fe-69-04-market-stall.segments.transfer-stall.copy.pt-BR.prompt
+   - "Outra barraca vende brinquedos. Encha uma cesta de exatos R$ 11."
+   + "Outra barraca vende brinquedos. Encha uma cesta que custe exatamente R$ 11."
+fe-69-04-market-stall.segments.transfer-stall.copy.pt-BR.feedback.met
+   - "Outra barraca, outros preços: você contou para cima e igualou a meta."
+   + "Outra barraca, outros preços: sua cesta soma exatos R$ 11."
+
+389 changed leaves

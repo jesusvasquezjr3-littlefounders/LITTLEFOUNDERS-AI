@@ -4,7 +4,7 @@ import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
 import { horizonteFixtureDocument } from '../previewDocument';
 import { FIN1_COPY } from './copy';
-import { money, percent, spokenMoney, spokenPercent, tenths, thin, yearsText } from './format';
+import { localMoney, money, percent, spokenLocalMoney, spokenMoney, spokenPercent, tenths, thin, yearsText } from './format';
 
 vi.mock('../../../../tutor-scene/quality', () => ({
   getDeviceProbe: () => ({ cores: 8, memoryGb: 8, coarsePointer: false, devicePixelRatio: 1, webgl: 'webgl2', maxTextureSize: 8192, prefersReducedMotion: false }),
@@ -55,6 +55,31 @@ describe('fin1 boards: format helpers', () => {
     expect(spokenMoney(100, 'en-US')).toBe('1 dollar');
     expect(spokenMoney(-5, 'es-MX')).toBe('menos 5 centavos');
     expect(spokenPercent(2682, 'en-US')).toBe('26.82 percent');
+  });
+
+  it('writes money in the learner market currency and keeps the cents only when there are some', () => {
+    expect(localMoney(1250, 'es-MX')).toBe('$12.50');
+    expect(localMoney(1200, 'es-MX')).toBe('$12');
+    expect(localMoney(1250, 'en-US')).toBe('$12.50');
+    expect(localMoney(1200, 'en-US')).toBe('$12');
+    expect(localMoney(1250, 'pt-BR')).toBe('R$\u00a012,50');
+    expect(localMoney(1200, 'pt-BR')).toBe('R$\u00a012');
+    expect(localMoney(120_000_000, 'es-MX')).toBe('$1,200,000');
+    expect(localMoney(120_000_000, 'pt-BR')).toBe('R$\u00a01.200.000');
+    expect(localMoney(0, 'en-US')).toBe('$0');
+    expect(localMoney(-250, 'en-US')).toBe('-$2.50');
+  });
+
+  it('reads that money aloud in pesos, reais or dollars', () => {
+    expect(spokenLocalMoney(1250, 'es-MX')).toBe('12 pesos con 50 centavos');
+    expect(spokenLocalMoney(100, 'es-MX')).toBe('1 peso');
+    expect(spokenLocalMoney(1250, 'pt-BR')).toBe('12 reais e 50 centavos');
+    expect(spokenLocalMoney(100, 'pt-BR')).toBe('1 real');
+    expect(spokenLocalMoney(50, 'pt-BR')).toBe('50 centavos');
+    expect(spokenLocalMoney(1250, 'en-US')).toBe('12 dollars and 50 cents');
+    expect(spokenLocalMoney(100, 'en-US')).toBe('1 dollar');
+    expect(spokenLocalMoney(-5, 'es-MX')).toBe('menos 5 centavos');
+    expect(spokenMoney(1250, 'es-MX')).toBe('12 dólares con 50 centavos');
   });
 
   it('thins a series and keeps both ends', () => {

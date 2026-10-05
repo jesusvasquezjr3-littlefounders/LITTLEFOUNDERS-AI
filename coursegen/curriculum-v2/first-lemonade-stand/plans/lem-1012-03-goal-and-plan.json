@@ -1,0 +1,869 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-10-12",
+  "chapter_id": "lem-1012-school-fair-stall",
+  "lesson_id": "lem-1012-03-goal-and-plan",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.goal-planning",
+    "biz.saving-goal",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara y el grupo miran una hielera de 150 monedas para el puesto del próximo año. Primero se prueba cómo calculan las semanas con otro objeto, una manta. Luego Zara arma el plan en voz alta: la ganancia de la semana, las semanas que hacen falta (150 ÷ 30 = 5), lo que el plan marca en la caja cada semana y cómo revisarlo a media ruta con lo que falta. Después se practica con otras metas y con un ahorro propio.",
+  "title": {
+    "en-US": "A plan for the cooler",
+    "es-MX": "Un plan para la hielera",
+    "pt-BR": "Um plano para a caixa térmica"
+  },
+  "new_concepts": [
+    "life.goal-planning"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara and the class eye a cooler for next year's stall.",
+          "line": "It costs 150 coins, and the stall opens once a week. Hmm, let's build a plan."
+        },
+        "es-MX": {
+          "prompt": "Zara y el grupo miran una hielera para el puesto del próximo año.",
+          "line": "Cuesta 150 monedas y el puesto abre una vez por semana. Hmm, armemos un plan."
+        },
+        "pt-BR": {
+          "prompt": "Zara e a turma olham uma caixa térmica para a barraca do ano que vem.",
+          "line": "Custa 150 moedas e a barraca abre uma vez por semana. Hmm, vamos montar um plano."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "money-in"
+          },
+          {
+            "id": "profit-week"
+          },
+          {
+            "id": "weeks"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "profit-week",
+          "weeks"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "profit-week": "20",
+          "weeks": "6"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The class wants a 120-coin banner. The stall takes in 50 a week, spends 30: profit, then weeks?",
+          "feedback": {
+            "met": "Thanks, I see your plan. Now let's build it together.",
+            "not_yet": "Thanks, I see your plan. Now let's build it together."
+          },
+          "steps": [
+            {
+              "expression": "Money in each week",
+              "result": "50",
+              "spokenText": "The stall takes in 50 coins each week"
+            },
+            {
+              "expression": "Profit each week",
+              "result": "20",
+              "spokenText": "50 in and 30 out: the profit is 20 coins a week"
+            },
+            {
+              "expression": "Weeks to reach it",
+              "result": "6",
+              "spokenText": "The banner costs 120 and 20 comes in each week: 6 weeks"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El grupo quiere una manta de 120 monedas. El puesto recibe 50 por semana y gasta 30: ¿ganancia y semanas?",
+          "feedback": {
+            "met": "Gracias, ya veo tu plan. Ahora lo armamos juntos.",
+            "not_yet": "Gracias, ya veo tu plan. Ahora lo armamos juntos."
+          },
+          "steps": [
+            {
+              "expression": "Dinero que entra por semana",
+              "result": "50",
+              "spokenText": "El puesto recibe 50 monedas cada semana"
+            },
+            {
+              "expression": "Ganancia por semana",
+              "result": "20",
+              "spokenText": "Entran 50 y salen 30: la ganancia es de 20 monedas por semana"
+            },
+            {
+              "expression": "Semanas para llegar",
+              "result": "6",
+              "spokenText": "La manta cuesta 120 y cada semana quedan 20: son 6 semanas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A turma quer uma faixa de 120 moedas. A barraca recebe 50 por semana e gasta 30: lucro e semanas?",
+          "feedback": {
+            "met": "Já vi o seu plano. Agora vamos montá-lo juntos.",
+            "not_yet": "Já vi o seu plano. Agora vamos montá-lo juntos."
+          },
+          "steps": [
+            {
+              "expression": "Dinheiro que entra por semana",
+              "result": "50",
+              "spokenText": "A barraca recebe 50 moedas por semana"
+            },
+            {
+              "expression": "Lucro por semana",
+              "result": "20",
+              "spokenText": "Entram 50 e saem 30: o lucro é de 20 moedas por semana"
+            },
+            {
+              "expression": "Semanas para chegar",
+              "result": "6",
+              "spokenText": "A faixa custa 120 e sobram 20 por semana: são 6 semanas"
+            }
+          ]
+        }
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.savings-plan-math"
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the profit each week",
+          "line": "Hmm, the stall takes in 55 a week and spends 25. So 55 − 25 = 30 profit."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: la ganancia de cada semana",
+          "line": "Hmm, el puesto recibe 55 por semana y gasta 25. Así, 55 − 25 = 30 de ganancia."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o lucro de cada semana",
+          "line": "Hmm, a barraca recebe 55 por semana e gasta 25. Então 55 − 25 = 30 de lucro."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the weeks to the goal",
+          "line": "The cooler costs 150. Thirty fits into 150 five times, so 150 ÷ 30 = 5 weeks."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: las semanas hasta la meta",
+          "line": "La hielera cuesta 150. El 30 cabe 5 veces en 150, así que 150 ÷ 30 = 5 semanas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: as semanas até a meta",
+          "line": "A caixa térmica custa 150. O 30 cabe 5 vezes em 150, então 150 ÷ 30 = 5 semanas."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 5,
+        "minimum": 10,
+        "maximum": 50,
+        "step": 10,
+        "initial": 10,
+        "currency": "coins",
+        "unit": "week"
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: set 30 a week. The plan's target each week: 30, 60, 90, 120, 150."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: pongamos 30 por semana. El plan marca cada semana: 30, 60, 90, 120, 150."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: vamos pôr 30 por semana. O plano marca em cada semana: 30, 60, 90, 120, 150."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "money-in"
+          },
+          {
+            "id": "profit-week"
+          },
+          {
+            "id": "weeks"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "profit-week",
+          "weeks"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "profit-week": "15",
+          "weeks": "4"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The class's sign costs 60. The stall takes in 40 a week, spends 25: profit, then weeks?",
+          "feedback": {
+            "met": "You found the profit, then divided the cost by it.",
+            "not_yet": "Not yet. Follow Zara's cooler plan: profit, then divide."
+          },
+          "steps": [
+            {
+              "expression": "Money in each week",
+              "result": "40",
+              "spokenText": "The stall takes in 40 coins each week"
+            },
+            {
+              "expression": "Profit: money in − money out",
+              "result": "15",
+              "spokenText": "40 in and 25 out: the profit is 15 coins a week"
+            },
+            {
+              "expression": "Weeks: sign cost ÷ weekly profit",
+              "result": "4",
+              "spokenText": "The sign costs 60 and the profit is 15 a week: 4 weeks"
+            }
+          ],
+          "help": [
+            "Profit is money in minus money out.",
+            "Weeks are the cost divided by the weekly profit."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El letrero del grupo cuesta 60. El puesto recibe 40 por semana y gasta 25: ¿ganancia y semanas?",
+          "feedback": {
+            "met": "Hallaste la ganancia semanal y dividiste el costo entre ella.",
+            "not_yet": "Todavía no. Sigue el plan de Zara: ganancia y luego divide."
+          },
+          "steps": [
+            {
+              "expression": "Dinero que entra por semana",
+              "result": "40",
+              "spokenText": "El puesto recibe 40 monedas cada semana"
+            },
+            {
+              "expression": "Ganancia: lo que entra − lo que sale",
+              "result": "15",
+              "spokenText": "Entran 40 y salen 25: la ganancia es de 15 monedas por semana"
+            },
+            {
+              "expression": "Semanas: costo del letrero ÷ ganancia",
+              "result": "4",
+              "spokenText": "El letrero cuesta 60 y la ganancia es de 15 por semana: son 4 semanas"
+            }
+          ],
+          "help": [
+            "La ganancia es lo que entra menos lo que sale.",
+            "Las semanas son el costo entre la ganancia semanal."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A placa da turma custa 60. A barraca recebe 40 por semana e gasta 25: lucro e semanas?",
+          "feedback": {
+            "met": "Você achou o lucro semanal e dividiu o custo por ele.",
+            "not_yet": "Ainda não. Siga o plano da Zara: lucro e depois divida."
+          },
+          "steps": [
+            {
+              "expression": "Dinheiro que entra por semana",
+              "result": "40",
+              "spokenText": "A barraca recebe 40 moedas por semana"
+            },
+            {
+              "expression": "Lucro: o que entra − o que sai",
+              "result": "15",
+              "spokenText": "Entram 40 e saem 25: o lucro é de 15 moedas por semana"
+            },
+            {
+              "expression": "Semanas: custo da placa ÷ lucro",
+              "result": "4",
+              "spokenText": "A placa custa 60 e o lucro é de 15 por semana: são 4 semanas"
+            }
+          ],
+          "help": [
+            "O lucro é o que entra menos o que sai.",
+            "As semanas são o custo dividido pelo lucro semanal."
+          ]
+        }
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal"
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: check the plan at week 2",
+          "line": "The box holds 60, as planned. Left: 150 − 60 = 90, so 90 ÷ 30 = 3 weeks."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: revisar el plan en la semana 2",
+          "line": "La caja tiene 60, como marca el plan. Falta: 150 − 60 = 90, y 90 ÷ 30 = 3 semanas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: conferir o plano na semana 2",
+          "line": "A caixinha tem 60, como o plano marca. Falta: 150 − 60 = 90, e 90 ÷ 30 = 3 semanas."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 180,
+        "target": 150,
+        "step": 30,
+        "initial": 30,
+        "currency": "coins"
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Move the bar to 60. It shows 90 to go: 150 − 60 = 90."
+        },
+        "es-MX": {
+          "prompt": "Mueve la barra a 60. Muestra que faltan 90: 150 − 60 = 90."
+        },
+        "pt-BR": {
+          "prompt": "Leve a barra até 60. Ela mostra que faltam 90: 150 − 60 = 90."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "saved-so-far"
+          },
+          {
+            "id": "left-to-go"
+          },
+          {
+            "id": "weeks"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "left-to-go",
+          "weeks"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "left-to-go": "105",
+          "weeks": "7"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The class wants a 140-coin awning. It has 35, profits 15 a week: left to go, then weeks?",
+          "feedback": {
+            "met": "You subtracted the savings, then divided by the weekly profit.",
+            "not_yet": "Not yet. Follow Zara's check: goal minus saved, divide."
+          },
+          "steps": [
+            {
+              "expression": "Saved so far",
+              "result": "35",
+              "spokenText": "The class has 35 coins saved so far"
+            },
+            {
+              "expression": "Left to go: goal − saved",
+              "result": "105",
+              "spokenText": "140 minus 35 leaves 105 coins to go"
+            },
+            {
+              "expression": "Weeks: left ÷ weekly profit",
+              "result": "7",
+              "spokenText": "105 to go and 15 a week: 7 weeks"
+            }
+          ],
+          "help": [
+            "Left to go is the goal minus what is saved.",
+            "Then divide it by the weekly profit."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El grupo quiere un toldo de 140 monedas. Tiene 35 y gana 15 por semana: ¿cuánto falta y cuántas semanas?",
+          "feedback": {
+            "met": "Restaste lo ahorrado y dividiste entre la ganancia semanal.",
+            "not_yet": "Todavía no. Sigue la revisión de Zara: meta menos ahorro, y divide."
+          },
+          "steps": [
+            {
+              "expression": "Ahorrado hasta ahora",
+              "result": "35",
+              "spokenText": "El grupo ya tiene 35 monedas ahorradas"
+            },
+            {
+              "expression": "Falta: meta − ahorrado",
+              "result": "105",
+              "spokenText": "140 menos 35 deja 105 monedas por juntar"
+            },
+            {
+              "expression": "Semanas: falta ÷ ganancia semanal",
+              "result": "7",
+              "spokenText": "Faltan 105 y se ganan 15 por semana: son 7 semanas"
+            }
+          ],
+          "help": [
+            "Lo que falta es la meta menos lo ahorrado.",
+            "Luego divídelo entre la ganancia semanal."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A turma quer um toldo de 140 moedas. Tem 35 e lucra 15 por semana: quanto falta e quantas semanas?",
+          "feedback": {
+            "met": "Você tirou o que estava guardado e dividiu pelo lucro semanal.",
+            "not_yet": "Ainda não. Siga a conferência da Zara: meta menos guardado, e divida."
+          },
+          "steps": [
+            {
+              "expression": "Guardado até agora",
+              "result": "35",
+              "spokenText": "A turma já tem 35 moedas guardadas"
+            },
+            {
+              "expression": "Falta: meta − guardado",
+              "result": "105",
+              "spokenText": "140 menos 35 deixa 105 moedas para juntar"
+            },
+            {
+              "expression": "Semanas: falta ÷ lucro semanal",
+              "result": "7",
+              "spokenText": "Faltam 105 e o lucro é de 15 por semana: são 7 semanas"
+            }
+          ],
+          "help": [
+            "O que falta é a meta menos o que já está guardado.",
+            "Depois divida isso pelo lucro semanal."
+          ]
+        }
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math"
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 150,
+        "target": 125,
+        "step": 25,
+        "initial": 25,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 100
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's plan: 25 a week for a 125-coin drink dispenser. Move the bar to at least week 4's target.",
+          "help": [
+            "Each week adds 25 to the box.",
+            "The target is the weeks so far times 25."
+          ],
+          "feedback": {
+            "met": "Your bar is at or past week 4's target.",
+            "not_yet": "Not yet. Multiply the weeks so far by 25."
+          }
+        },
+        "es-MX": {
+          "prompt": "Plan de Zara: 25 por semana para un dispensador de 125 monedas. Mueve la barra al menos hasta la marca de la semana 4.",
+          "help": [
+            "Cada semana suma 25 a la caja.",
+            "La marca es las semanas que van por 25."
+          ],
+          "feedback": {
+            "met": "La barra está en la marca de la semana 4 o más allá.",
+            "not_yet": "Todavía no. Multiplica las semanas que van por 25."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Plano da Zara: 25 por semana para um dispenser de 125 moedas. Leve a barra pelo menos até a marca da semana 4.",
+          "help": [
+            "Cada semana soma 25 à caixinha.",
+            "A marca é as semanas que passaram vezes 25."
+          ],
+          "feedback": {
+            "met": "A barra está na marca da semana 4 ou além.",
+            "not_yet": "Ainda não. Multiplique as semanas que passaram por 25."
+          }
+        }
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning"
+    },
+    {
+      "id": "practice-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "saved-so-far"
+          },
+          {
+            "id": "left-to-go"
+          },
+          {
+            "id": "weeks"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "left-to-go",
+          "weeks"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "left-to-go": "80",
+          "weeks": "8"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "For the 110-coin lights, the class has 30 and profits 10 a week. Left to go, then weeks?",
+          "feedback": {
+            "met": "You took savings off the goal, then divided by profit.",
+            "not_yet": "Not yet. Goal minus saved first, then divide by profit."
+          },
+          "steps": [
+            {
+              "expression": "Saved so far",
+              "result": "30",
+              "spokenText": "The class has 30 coins saved so far"
+            },
+            {
+              "expression": "Left to go: goal − saved",
+              "result": "80",
+              "spokenText": "110 minus 30 leaves 80 coins to go"
+            },
+            {
+              "expression": "Weeks: left ÷ weekly profit",
+              "result": "8",
+              "spokenText": "80 to go and 10 a week: 8 weeks"
+            }
+          ],
+          "help": [
+            "Start with the goal minus the 30 saved.",
+            "Then see how many 10s fit into that."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Para las luces de 110 monedas, el grupo tiene 30 y gana 10 por semana. ¿Cuánto falta y cuántas semanas?",
+          "feedback": {
+            "met": "Restaste el ahorro a la meta y dividiste entre la ganancia.",
+            "not_yet": "Todavía no. Primero meta menos ahorro, luego divide entre la ganancia."
+          },
+          "steps": [
+            {
+              "expression": "Ahorrado hasta ahora",
+              "result": "30",
+              "spokenText": "El grupo ya tiene 30 monedas ahorradas"
+            },
+            {
+              "expression": "Falta: meta − ahorrado",
+              "result": "80",
+              "spokenText": "110 menos 30 deja 80 monedas por juntar"
+            },
+            {
+              "expression": "Semanas: falta ÷ ganancia semanal",
+              "result": "8",
+              "spokenText": "Faltan 80 y se ganan 10 por semana: son 8 semanas"
+            }
+          ],
+          "help": [
+            "Empieza con la meta menos los 30 ahorrados.",
+            "Luego mira cuántos 10 caben ahí."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Para as luzinhas de 110 moedas, a turma tem 30 e lucra 10 por semana. Quanto falta e quantas semanas?",
+          "feedback": {
+            "met": "Você tirou a poupança da meta e dividiu pelo lucro.",
+            "not_yet": "Ainda não. Primeiro meta menos guardado, depois divida pelo lucro."
+          },
+          "steps": [
+            {
+              "expression": "Guardado até agora",
+              "result": "30",
+              "spokenText": "A turma já tem 30 moedas guardadas"
+            },
+            {
+              "expression": "Falta: meta − guardado",
+              "result": "80",
+              "spokenText": "110 menos 30 deixa 80 moedas para juntar"
+            },
+            {
+              "expression": "Semanas: falta ÷ lucro semanal",
+              "result": "8",
+              "spokenText": "Faltam 80 e o lucro é de 10 por semana: são 8 semanas"
+            }
+          ],
+          "help": [
+            "Comece com a meta menos os 30 guardados.",
+            "Depois veja quantos 10 cabem aí."
+          ]
+        }
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math"
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "spent-week"
+          },
+          {
+            "id": "kept-week"
+          },
+          {
+            "id": "still-to-save"
+          },
+          {
+            "id": "weeks"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "kept-week",
+          "still-to-save",
+          "weeks"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "kept-week": "8",
+          "still-to-save": "72",
+          "weeks": "9"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A 90-coin robot kit: you have 18, earn 14 a week and spend 6. Weeks to go?",
+          "feedback": {
+            "met": "You found what you keep, the gap, then the weeks.",
+            "not_yet": "Not yet. Use the cooler steps: weekly profit, gap, weeks."
+          },
+          "steps": [
+            {
+              "expression": "Spent each week",
+              "result": "6",
+              "spokenText": "You spend 6 coins every week"
+            },
+            {
+              "expression": "Kept each week: earned − spent",
+              "result": "8",
+              "spokenText": "14 earned minus 6 spent leaves 8 coins a week"
+            },
+            {
+              "expression": "Still to save: goal − saved",
+              "result": "72",
+              "spokenText": "90 minus the 18 you have leaves 72 to save"
+            },
+            {
+              "expression": "Weeks: still to save ÷ kept",
+              "result": "9",
+              "spokenText": "72 to save and 8 kept a week: that is 9 weeks"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un kit de robot de 90 monedas: tienes 18, ganas 14 por semana y gastas 6. ¿Cuántas semanas faltan?",
+          "feedback": {
+            "met": "Hallaste lo que te queda y lo que falta, y luego las semanas.",
+            "not_yet": "Todavía no. Usa los pasos de la hielera: ganancia semanal, falta, semanas."
+          },
+          "steps": [
+            {
+              "expression": "Gastas por semana",
+              "result": "6",
+              "spokenText": "Gastas 6 monedas cada semana"
+            },
+            {
+              "expression": "Te queda por semana: ganas − gastas",
+              "result": "8",
+              "spokenText": "14 que ganas menos 6 que gastas dejan 8 monedas por semana"
+            },
+            {
+              "expression": "Falta ahorrar: meta − ahorrado",
+              "result": "72",
+              "spokenText": "90 menos las 18 que tienes deja 72 por ahorrar"
+            },
+            {
+              "expression": "Semanas: falta ÷ lo que te queda",
+              "result": "9",
+              "spokenText": "Faltan 72 y te quedan 8 por semana: son 9 semanas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um kit de robô de 90 moedas: você tem 18, ganha 14 por semana e gasta 6. Quantas semanas faltam?",
+          "feedback": {
+            "met": "Você achou o que sobra e o que falta, e depois as semanas.",
+            "not_yet": "Ainda não. Use os passos da caixa térmica: lucro semanal, falta, semanas."
+          },
+          "steps": [
+            {
+              "expression": "Gasta por semana",
+              "result": "6",
+              "spokenText": "Você gasta 6 moedas por semana"
+            },
+            {
+              "expression": "Sobra por semana: ganha − gasta",
+              "result": "8",
+              "spokenText": "14 que você ganha menos 6 que gasta deixam 8 moedas por semana"
+            },
+            {
+              "expression": "Falta guardar: meta − guardado",
+              "result": "72",
+              "spokenText": "90 menos as 18 que você já tem deixa 72 para guardar"
+            },
+            {
+              "expression": "Semanas: falta ÷ o que sobra",
+              "result": "9",
+              "spokenText": "Faltam 72 e sobram 8 por semana: são 9 semanas"
+            }
+          ]
+        }
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.savings-plan-math"
+    }
+  ]
+}

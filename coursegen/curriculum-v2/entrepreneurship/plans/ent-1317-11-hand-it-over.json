@@ -1,0 +1,995 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-negotiate-lead-honest",
+  "lesson_id": "ent-1317-11-hand-it-over",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.delegation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara abre tu lista de solicitudes y cuenta primero su propio error: dio el empaque a un amigo sin decir cuántos pares ni para cuándo, y cuatro pedidos salieron tarde. Luego te enseña tres pasos para entregar una tarea: escribir un resultado que se pueda contar, fijar una revisión a mitad de semana y quedarte con lo que solo tú puedes hacer. Después ordenas tableros de tareas, lees organigramas y entregas el trabajo de un puesto de calcomanías en tu escuela.",
+  "title": {
+    "es-MX": "Entregar con claridad",
+    "en-US": "Hand it over clearly",
+    "pt-BR": "Entregar com clareza"
+  },
+  "new_concepts": [
+    "biz.delegation"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara hands the packing to a friend with no expected result, so four orders go out late.",
+    "recovery": "Zara fixes it with a clear result and a check-in, and says that next time she agrees both before anyone starts."
+  },
+  "regional": {
+    "universal": "A venture story with no money amounts, places or customs; it reads the same in every market."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara opens your request list, and two helper names sit in the chat.",
+          "line": "Twelve requests this week, and you still bag every pair yourself. Two helpers are waiting for a task."
+        },
+        "es-MX": {
+          "prompt": "Zara abre tu lista de solicitudes y dos nombres de ayudantes esperan en el chat.",
+          "line": "Doce solicitudes esta semana y tú sigues embolsando cada par. Dos ayudantes esperan una tarea."
+        },
+        "pt-BR": {
+          "prompt": "A Zara abre sua lista de pedidos e dois nomes de ajudantes esperam no chat.",
+          "line": "Doze pedidos esta semana e você ainda embala cada par. Dois ajudantes esperam uma tarefa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "org-chart"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-you"
+            },
+            {
+              "id": "node-pack"
+            },
+            {
+              "id": "node-msg"
+            },
+            {
+              "id": "node-price"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-you",
+              "to": "node-pack"
+            },
+            {
+              "from": "node-you",
+              "to": "node-msg"
+            },
+            {
+              "from": "node-you",
+              "to": "node-price"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "option-1"
+            },
+            {
+              "id": "option-2"
+            },
+            {
+              "id": "option-3"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your shoe service gets 12 requests a week, and every task is yours.",
+          "feedback": {
+            "met": "Noted. Next you see what happened to Zara.",
+            "not_yet": "Noted. Next you see what happened to Zara."
+          },
+          "title": "Tasks before the helpers join",
+          "data": {
+            "nodes": [
+              {
+                "label": "You: all 12 requests"
+              },
+              {
+                "label": "Packing: same steps every time"
+              },
+              {
+                "label": "Messages: you know each customer"
+              },
+              {
+                "label": "Prices: you decide what you earn"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Two helpers join. Which task do you hand over first?",
+            "options": [
+              {
+                "label": "Prices"
+              },
+              {
+                "label": "Customer messages"
+              },
+              {
+                "label": "Packing"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Tu servicio de limpieza de tenis recibe 12 solicitudes a la semana y todo es tuyo.",
+          "feedback": {
+            "met": "Anotado. Ahora ves lo que le pasó a Zara.",
+            "not_yet": "Anotado. Ahora ves lo que le pasó a Zara."
+          },
+          "title": "Tareas antes de los ayudantes",
+          "data": {
+            "nodes": [
+              {
+                "label": "Tú: las 12 solicitudes"
+              },
+              {
+                "label": "Empaque: los mismos pasos siempre"
+              },
+              {
+                "label": "Mensajes: conoces a cada cliente"
+              },
+              {
+                "label": "Precios: tú decides cuánto ganas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Se unen dos ayudantes. ¿Qué tarea entregas primero?",
+            "options": [
+              {
+                "label": "Precios"
+              },
+              {
+                "label": "Mensajes de clientes"
+              },
+              {
+                "label": "Empaque"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Seu serviço de limpeza de tênis recebe 12 pedidos por semana e tudo é seu.",
+          "feedback": {
+            "met": "Anotado. Agora você vê o que aconteceu com a Zara.",
+            "not_yet": "Anotado. Agora você vê o que aconteceu com a Zara."
+          },
+          "title": "Tarefas antes dos ajudantes",
+          "data": {
+            "nodes": [
+              {
+                "label": "Você: os 12 pedidos"
+              },
+              {
+                "label": "Embalagem: sempre os mesmos passos"
+              },
+              {
+                "label": "Mensagens: você conhece cada cliente"
+              },
+              {
+                "label": "Preços: você decide o que ganha"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Dois ajudantes entram. Qual tarefa você entrega primeiro?",
+            "options": [
+              {
+                "label": "Preços"
+              },
+              {
+                "label": "Mensagens de clientes"
+              },
+              {
+                "label": "Embalagem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Look at what happened to Zara.",
+          "setup": "My friend Teo offered to help, so I gave him the packing and said: just get it done.",
+          "misjudgment": "I never said how many pairs or by when. On Friday, four orders went out late.",
+          "recovery": "I fixed it with a clear result and a check-in. Next time, I agree both before anyone starts."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Zara.",
+          "setup": "Mi amigo Teo se ofreció a ayudar, así que le di el empaque y le dije: solo termínalo.",
+          "misjudgment": "Nunca dije cuántos pares ni para cuándo. El viernes, cuatro pedidos salieron tarde.",
+          "recovery": "Lo arreglé con un resultado claro y una revisión. La próxima vez acuerdo ambos antes de que alguien empiece."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Zara.",
+          "setup": "Meu amigo Teo se ofereceu para ajudar, então passei a embalagem e disse: só termine isso.",
+          "misjudgment": "Nunca disse quantos pares nem até quando. Na sexta, quatro pedidos saíram atrasados.",
+          "recovery": "Resolvi com um resultado claro e uma revisão. Da próxima vez, combino os dois antes de alguém começar."
+        }
+      }
+    },
+    {
+      "id": "ex-result-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: write the result for Nico’s packing.",
+          "line": "Result first: 10 pairs bagged by Friday 5 pm. Anyone can count that, so done is clear."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: escribe el resultado del empaque de Nico.",
+          "line": "Primero el resultado: 10 pares en bolsa el viernes a las 5 pm. Se puede contar, así que terminar queda claro."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: escreva o resultado da embalagem do Nico.",
+          "line": "Primeiro o resultado: 10 pares embalados até sexta, 17h. Dá para contar, então terminar fica claro."
+        }
+      }
+    },
+    {
+      "id": "ex-check-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: set one check-in in the middle of the week.",
+          "line": "On Wednesday we check what is bagged. If we are behind, there is still time to fix it."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: fija una revisión a mitad de la semana.",
+          "line": "El miércoles revisamos lo que ya está en bolsa. Si vamos atrasados, aún hay tiempo de arreglarlo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: marque uma revisão no meio da semana.",
+          "line": "Na quarta conferimos o que já está embalado. Se estivermos atrasados, ainda dá tempo de arrumar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "kanban"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "tasks": [
+          {
+            "id": "result",
+            "after": []
+          },
+          {
+            "id": "show",
+            "after": [
+              "result"
+            ]
+          },
+          {
+            "id": "checkin",
+            "after": [
+              "result"
+            ]
+          },
+          {
+            "id": "msgs",
+            "after": []
+          },
+          {
+            "id": "start",
+            "after": [
+              "show",
+              "checkin"
+            ]
+          },
+          {
+            "id": "wed",
+            "after": [
+              "start"
+            ]
+          },
+          {
+            "id": "finish",
+            "after": [
+              "wed"
+            ]
+          }
+        ],
+        "done": [
+          "result"
+        ],
+        "limit": 3
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "doing": [
+              "show",
+              "checkin",
+              "msgs"
+            ],
+            "todo": [
+              "start",
+              "wed",
+              "finish"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nico takes your packing: 10 pairs by Friday 5 pm. Start every task that can start.",
+          "feedback": {
+            "met": "You opened only what was ready and kept the rest waiting.",
+            "not_yet": "Not yet. Check what each task is waiting for."
+          },
+          "labels": {
+            "result": "You: write the result",
+            "show": "You: show Nico one bagged pair",
+            "checkin": "You and Nico: set the check-in",
+            "msgs": "You: answer customer messages",
+            "start": "Nico: bag the first pairs",
+            "wed": "You and Nico: Wednesday check-in",
+            "finish": "Nico: finish all 10 by Friday"
+          }
+        },
+        "es-MX": {
+          "prompt": "Nico toma tu empaque: 10 pares el viernes a las 5 pm. Inicia cada tarea que ya puede empezar.",
+          "feedback": {
+            "met": "Abriste solo lo que estaba listo y dejaste esperar el resto.",
+            "not_yet": "Aún no. Revisa qué espera cada tarea."
+          },
+          "labels": {
+            "result": "Tú: escribe el resultado",
+            "show": "Tú: muestra a Nico un par en bolsa",
+            "checkin": "Tú y Nico: fijan la revisión",
+            "msgs": "Tú: responde mensajes de clientes",
+            "start": "Nico: embolsa los primeros pares",
+            "wed": "Tú y Nico: revisión del miércoles",
+            "finish": "Nico: termina los 10 el viernes"
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Nico assume sua embalagem: 10 pares até sexta, 17h. Inicie cada tarefa que já pode começar.",
+          "feedback": {
+            "met": "Você abriu só o que estava pronto e deixou o resto esperando.",
+            "not_yet": "Ainda não. Veja o que cada tarefa espera."
+          },
+          "labels": {
+            "result": "Você: escreve o resultado",
+            "show": "Você: mostra a Nico um par embalado",
+            "checkin": "Você e Nico: marcam a revisão",
+            "msgs": "Você: responde mensagens de clientes",
+            "start": "Nico: embala os primeiros pares",
+            "wed": "Você e Nico: revisão de quarta",
+            "finish": "Nico: termina os 10 até sexta"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-keep-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: keep what only you can do.",
+          "line": "Customer messages stay with you; you know each customer. Packing has clear steps, so Nico takes it."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: quédate con lo que solo tú puedes hacer.",
+          "line": "Los mensajes de clientes se quedan contigo; conoces a cada cliente. El empaque tiene pasos claros, así que lo toma Nico."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: fique com o que só você pode fazer.",
+          "line": "As mensagens de clientes ficam com você; você conhece cada cliente. A embalagem tem passos claros, então o Nico assume."
+        }
+      }
+    },
+    {
+      "id": "ex-team-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "org-chart"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-you"
+            },
+            {
+              "id": "node-nico"
+            },
+            {
+              "id": "node-mara"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-you",
+              "to": "node-nico"
+            },
+            {
+              "from": "node-you",
+              "to": "node-mara"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4, draw your first team: one name, one task, one result each.",
+          "title": "Your first team",
+          "data": {
+            "nodes": [
+              {
+                "label": "You: customers, answered same day"
+              },
+              {
+                "label": "Nico: packing, 10 pairs by Friday 5 pm"
+              },
+              {
+                "label": "Mara: deliveries, 5 orders by Thursday"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 4, dibuja tu primer equipo: un nombre, una tarea, un resultado.",
+          "title": "Tu primer equipo",
+          "data": {
+            "nodes": [
+              {
+                "label": "Tú: clientes, respuesta el mismo día"
+              },
+              {
+                "label": "Nico: empaque, 10 pares el viernes 5 pm"
+              },
+              {
+                "label": "Mara: entregas, 5 pedidos el jueves"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, desenhe sua primeira equipe: um nome, uma tarefa, um resultado.",
+          "title": "Sua primeira equipe",
+          "data": {
+            "nodes": [
+              {
+                "label": "Você: clientes, resposta no mesmo dia"
+              },
+              {
+                "label": "Nico: embalagem, 10 pares até sexta 17h"
+              },
+              {
+                "label": "Mara: entregas, 5 pedidos até quinta"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "org-chart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-you"
+            },
+            {
+              "id": "node-ari"
+            },
+            {
+              "id": "node-bo"
+            },
+            {
+              "id": "node-cam"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-you",
+              "to": "node-ari"
+            },
+            {
+              "from": "node-you",
+              "to": "node-bo"
+            },
+            {
+              "from": "node-you",
+              "to": "node-cam"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "option-1"
+            },
+            {
+              "id": "option-2"
+            },
+            {
+              "id": "option-3"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A month on, your shoe service has three more helpers. Read the team chart.",
+          "feedback": {
+            "met": "You spotted the task with no result to count.",
+            "not_yet": "Not yet. Look for the task with nothing to count."
+          },
+          "title": "Your team a month later",
+          "data": {
+            "nodes": [
+              {
+                "label": "You: customers, answered same day"
+              },
+              {
+                "label": "Ari: drying, 12 pairs by Thursday"
+              },
+              {
+                "label": "Bo: cleaning, helps when busy"
+              },
+              {
+                "label": "Cam: labels, 12 bags tagged by Friday"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which task still has no clear result?",
+            "options": [
+              {
+                "label": "Bo’s cleaning"
+              },
+              {
+                "label": "Ari’s drying"
+              },
+              {
+                "label": "Cam’s labels"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Un mes después, tu servicio de limpieza tiene tres ayudantes más. Lee el organigrama.",
+          "feedback": {
+            "met": "Detectaste la tarea sin resultado que contar.",
+            "not_yet": "Aún no. Busca la tarea sin nada que contar."
+          },
+          "title": "Tu equipo un mes después",
+          "data": {
+            "nodes": [
+              {
+                "label": "Tú: clientes, respuesta el mismo día"
+              },
+              {
+                "label": "Ari: secado, 12 pares para el jueves"
+              },
+              {
+                "label": "Bo: limpieza, ayuda si hay mucho"
+              },
+              {
+                "label": "Cam: etiquetas, 12 bolsas el viernes"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué tarea aún no tiene un resultado claro?",
+            "options": [
+              {
+                "label": "La limpieza de Bo"
+              },
+              {
+                "label": "El secado de Ari"
+              },
+              {
+                "label": "Las etiquetas de Cam"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um mês depois, seu serviço de limpeza tem mais três ajudantes. Leia o organograma.",
+          "feedback": {
+            "met": "Você achou a tarefa sem resultado para contar.",
+            "not_yet": "Ainda não. Procure a tarefa sem nada para contar."
+          },
+          "title": "Sua equipe um mês depois",
+          "data": {
+            "nodes": [
+              {
+                "label": "Você: clientes, resposta no mesmo dia"
+              },
+              {
+                "label": "Ari: secagem, 12 pares até quinta"
+              },
+              {
+                "label": "Bo: limpeza, ajuda quando precisa"
+              },
+              {
+                "label": "Cam: etiquetas, 12 sacolas até sexta"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual tarefa ainda não tem resultado claro?",
+            "options": [
+              {
+                "label": "A limpeza do Bo"
+              },
+              {
+                "label": "A secagem do Ari"
+              },
+              {
+                "label": "As etiquetas do Cam"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "kanban"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "tasks": [
+          {
+            "id": "goal",
+            "after": []
+          },
+          {
+            "id": "list",
+            "after": [
+              "goal"
+            ]
+          },
+          {
+            "id": "checkin",
+            "after": [
+              "goal"
+            ]
+          },
+          {
+            "id": "ask",
+            "after": [
+              "list"
+            ]
+          },
+          {
+            "id": "deliver",
+            "after": [
+              "ask",
+              "checkin"
+            ]
+          },
+          {
+            "id": "tell",
+            "after": [
+              "list"
+            ]
+          }
+        ],
+        "done": [
+          "goal"
+        ],
+        "limit": 2
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "doing": [
+              "list",
+              "checkin"
+            ],
+            "todo": [
+              "ask",
+              "deliver",
+              "tell"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mara takes your deliveries: 5 orders by Thursday. Start every task that can start.",
+          "feedback": {
+            "met": "You started only what was ready and kept the rest waiting.",
+            "not_yet": "Not yet. Check what each task is waiting for."
+          },
+          "labels": {
+            "goal": "You: write the result",
+            "list": "You: give Mara the order list",
+            "checkin": "You and Mara: set the check-in",
+            "ask": "Mara: ask about anything unclear",
+            "deliver": "Mara: deliver the 5 orders",
+            "tell": "You: tell customers the delivery time"
+          }
+        },
+        "es-MX": {
+          "prompt": "Mara toma tus entregas: 5 pedidos para el jueves. Inicia cada tarea que ya puede empezar.",
+          "feedback": {
+            "met": "Iniciaste solo lo que estaba listo y dejaste esperar el resto.",
+            "not_yet": "Aún no. Revisa qué espera cada tarea."
+          },
+          "labels": {
+            "goal": "Tú: escribe el resultado",
+            "list": "Tú: da a Mara la lista de pedidos",
+            "checkin": "Tú y Mara: fijan la revisión",
+            "ask": "Mara: pregunta lo que no quede claro",
+            "deliver": "Mara: entrega los 5 pedidos",
+            "tell": "Tú: avisa a los clientes la hora"
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Mara assume suas entregas: 5 pedidos até quinta. Inicie cada tarefa que já pode começar.",
+          "feedback": {
+            "met": "Você iniciou só o que estava pronto e deixou o resto esperando.",
+            "not_yet": "Ainda não. Veja o que cada tarefa espera."
+          },
+          "labels": {
+            "goal": "Você: escreve o resultado",
+            "list": "Você: dá a Mara a lista de pedidos",
+            "checkin": "Você e Mara: marcam a revisão",
+            "ask": "Mara: pergunta o que não ficou claro",
+            "deliver": "Mara: entrega os 5 pedidos",
+            "tell": "Você: avisa os clientes da hora"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "kanban"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "tasks": [
+          {
+            "id": "result",
+            "after": []
+          },
+          {
+            "id": "model",
+            "after": []
+          },
+          {
+            "id": "supplies",
+            "after": [
+              "model"
+            ]
+          },
+          {
+            "id": "checkin",
+            "after": [
+              "result"
+            ]
+          },
+          {
+            "id": "wrap",
+            "after": [
+              "supplies",
+              "checkin"
+            ]
+          },
+          {
+            "id": "tuesday",
+            "after": [
+              "wrap"
+            ]
+          },
+          {
+            "id": "tell",
+            "after": [
+              "wrap"
+            ]
+          }
+        ],
+        "done": [
+          "result",
+          "model"
+        ],
+        "limit": 2
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "doing": [
+              "supplies",
+              "checkin"
+            ],
+            "todo": [
+              "wrap",
+              "tuesday",
+              "tell"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo wraps for your school sticker stand: 40 packs by Thursday. Start every task that can start.",
+          "feedback": {
+            "met": "You opened only the ready tasks and held the rest back.",
+            "not_yet": "Not yet. Check what each task is waiting for."
+          },
+          "labels": {
+            "result": "You: write the result",
+            "model": "You: wrap one pack as a model",
+            "supplies": "Leo: gather bags and ribbon",
+            "checkin": "You and Leo: set the check-in",
+            "wrap": "Leo: wrap the 40 packs",
+            "tuesday": "You and Leo: Tuesday check-in",
+            "tell": "You: tell customers when packs are ready"
+          }
+        },
+        "es-MX": {
+          "prompt": "Leo envuelve para tu puesto de calcomanías en la escuela: 40 paquetes para el jueves. Inicia cada tarea que ya puede empezar.",
+          "feedback": {
+            "met": "Abriste solo las tareas listas y frenaste el resto.",
+            "not_yet": "Aún no. Revisa qué espera cada tarea."
+          },
+          "labels": {
+            "result": "Tú: escribe el resultado",
+            "model": "Tú: envuelve un paquete de modelo",
+            "supplies": "Leo: junta bolsas y listón",
+            "checkin": "Tú y Leo: fijan la revisión",
+            "wrap": "Leo: envuelve los 40 paquetes",
+            "tuesday": "Tú y Leo: revisión del martes",
+            "tell": "Tú: avisa a los clientes cuando estén listos"
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Leo embrulha para sua banca de adesivos na escola: 40 pacotes até quinta. Inicie cada tarefa que já pode começar.",
+          "feedback": {
+            "met": "Você abriu só as tarefas prontas e segurou o resto.",
+            "not_yet": "Ainda não. Veja o que cada tarefa espera."
+          },
+          "labels": {
+            "result": "Você: escreve o resultado",
+            "model": "Você: embrulha um pacote de modelo",
+            "supplies": "Leo: separa sacolas e fita",
+            "checkin": "Você e Leo: marcam a revisão",
+            "wrap": "Leo: embrulha os 40 pacotes",
+            "tuesday": "Você e Leo: revisão de terça",
+            "tell": "Você: avisa os clientes quando ficarem prontos"
+          }
+        }
+      }
+    }
+  ]
+}

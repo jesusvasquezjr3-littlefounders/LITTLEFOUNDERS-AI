@@ -1,0 +1,692 @@
+# Financial Education: v2 catalog structure (2026-10-04).
+#
+# The full planning record of the course: 4 age pathways, 14 chapters of 4 lessons,
+# 56 lessons. It CONTAINS the pilot (`pilot.structure.yaml` stays untouched): the 8 pilot
+# lessons keep their lesson_ids, chapter_ids, pathway_ids and fields (only `situation` is
+# added) because their plan files already exist in `plans/` and must agree.
+#
+# Shape: course -> age pathway -> chapter -> lesson -> segment (OD-16, v2). Position in
+# this file, not the NN of a lesson_id, is the teaching order. New lessons continue the
+# numbering after the pilot's (fe-69-05..., fe-1012-05...).
+#
+# Knowledge components use the real keys of database/seeds/kc_graph.v1.json. Status is the
+# seed's: every life.* KC is `draft` (pathway policy G5, OD-22); money.* and biz.* are active.
+#
+# Authoring is agentic and zero spend; nothing here publishes, calls a provider or writes
+# to Vault. A later wave writes `plans/<lesson_id>.json` from each entry below.
+
+course_id: financial-education
+authoring_locale: es-MX
+markets: [es-MX, pt-BR, en-US]
+status: "catalog-structure-v1 (2026-10-04): planned, plans not yet authored"
+
+assumptions:
+  - "Four lessons per chapter and four chapters per child/tween pathway, three per teen/adult pathway, are catalog values to be tested against the pilot rounds (docs/content/FORGE-V2-PILOT-ROUNDS.md)."
+  - "Teaching order is file order. The pilot chapters keep their own lessons in their own order; the child pathway opens with a new chapter (coins, things and help, jobs, prices) so the pilot chapter's external prerequisites (count-like-coins, subtract-money) are really taught before it."
+  - "The KC graph has the edge add-money -> subtract-money, but the pilot chapter teaches add-money (fe-69-04) after change-making (fe-69-02), which needs subtract-money. subtract-money is therefore taught in the opening chapter, before add-money: one prerequisite-order warning is left deliberately, and the pilot lessons are not reordered."
+  - "money.compare-amounts and money.estimate-total are named in pilot lessons (fe-69-04, fe-1012-02) without being new concepts there; they are declared as new concepts in the child pathway, compare-amounts in fe-69-10 and estimate-total in fe-69-11, the first lessons whose single topic is that skill."
+  - "Teen and adult pathways revisit money.* and life.* KCs at their own depth (first pay, a first account, a subscription, a phone plan, a rent split, a loan offer, a scam text) and declare them as new concepts of that pathway; they list the tier-1 and tier-2 basics as external prerequisites. No allowance framing, no Liruf at 13+."
+  - "Investing is out of scope here and simulation-only everywhere; interest and loan lessons use illustrative rates, never a named product or a promised return, and no lesson gives personal financial advice. money.linear-vs-accelerating-growth belongs to the investing course."
+  - "Lessons that name real money, institutions, products, prices or customs are `scenarios` (B.16); lessons that use only LittleFounders coins and invented shops are `universal`."
+
+pathways:
+  - pathway_id: financial-6-9
+    age_band: "6-9"
+    chapters:
+      - chapter_id: fe-69-corner-shop
+        title: { en-US: The corner shop, es-MX: La tiendita de la esquina, pt-BR: A vendinha da esquina }
+        objective: Name coins and count a pile of one coin, tell things from help and needs from wants, meet jobs and prices, and see how many coins are left after paying.
+        external_prerequisites: []
+        lessons:
+          - lesson_id: fe-69-05-name-the-coins
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [money.coin-recognition, money.count-like-coins]
+            kc_status: { money.coin-recognition: active, money.count-like-coins: active }
+            new_concepts: [money.coin-recognition, money.count-like-coins]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2, math.cpa-count.v2]
+            situation: "In the corner shop's till Zara shows coins worth 1, 5 and 10; the child names each coin by its value, then counts a pile of six 5-coins by skip counting (5, 10, 15, 20, 25, 30)."
+            tests: "Naming a coin by its value and skip-counting a pile of identical coins, with no mixed piles yet and the tier-1 vocabulary list."
+          - lesson_id: fe-69-06-things-and-help
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.goods-vs-services, biz.needs-vs-wants]
+            kc_status: { biz.goods-vs-services: active, biz.needs-vs-wants: active }
+            new_concepts: [biz.goods-vs-services, biz.needs-vs-wants]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, logic.sort-by-rule.v2, money.needs-wants.v2]
+            situation: "Four customers come to the corner shop asking for bread, a haircut, a toy and a pony ride, and the child sorts each request first as a thing or help, then as something the family needs today or only wants."
+            tests: "Two single-rule sorts over one set of cards (thing or help, need or want), the content gap goods-vs-services, and no price or coin arithmetic at all."
+          - lesson_id: fe-69-07-people-who-work
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.effort-and-work, life.jobs-help-others]
+            kc_status: { life.effort-and-work: draft, life.jobs-help-others: draft }
+            new_concepts: [life.effort-and-work, life.jobs-help-others]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, logic.euler.v2]
+            situation: "At home and at the shop the child sees who does the work (sweeping, baking, cutting hair), notices that every job takes effort and ends with someone getting what they needed, like the baker whose 12 loaves feed the street."
+            tests: "A story decision about finishing a chore, a two-circle diagram (jobs inside 'helps someone'), and effort named without any pay or coin yet."
+          - lesson_id: fe-69-08-price-and-coins-left
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.what-is-price, money.subtract-money]
+            kc_status: { biz.what-is-price: active, money.subtract-money: active }
+            new_concepts: [biz.what-is-price, money.subtract-money]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # Dina hands over all 10 coins without asking the price, recovers by counting what she should have kept, says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.coin-tray.v2, math.number-line.whole.v2]
+            situation: "The baker's loaf costs 6 coins, so a child holding 10 coins gives 6 (the price is what the buyer gives to get the loaf) and counts the 4 coins left; Dina first hands over all 10."
+            tests: "Price as what a buyer gives, subtraction of whole coins within 10 on a number line, and the B.11 episode with judgment without shame."
+      - chapter_id: fe-69-coins-and-choices
+        title: { en-US: Coins and choices, es-MX: Monedas y decisiones, pt-BR: Moedas e escolhas }
+        objective: Count and use coins, give change, tell needs from wants, and add prices at a stall.
+        external_prerequisites: [money.count-like-coins, money.subtract-money]
+        lessons:
+          - lesson_id: fe-69-01-count-coins
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [money.count-mixed-coins, money.make-amount]
+            kc_status: { money.count-mixed-coins: active, money.make-amount: active }
+            new_concepts: [money.count-mixed-coins, money.make-amount]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal   # LittleFounders coins only
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2]   # 11 segments: 6 Mentor turns, 5 trays (pre, 2 guided, practice, transfer)
+            situation: "Dina counts a mixed pile of 10-, 5- and 1-coins from the biggest coin down, then fills a light pouch with an exact total (13) using the fewest coins."
+            tests: "Plain coin counting at ages 6-9 with the tier-1 vocabulary list; fewest-pieces rubric; Copy Budget at its tightest (12-word prompts)."
+          - lesson_id: fe-69-02-change-counting-up
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [money.make-change-counting-up, money.make-amount]
+            kc_status: { money.make-change-counting-up: active, money.make-amount: active }
+            new_concepts: [money.make-change-counting-up]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.making-change.v2, money.coin-tray.v2, reasoning.decide-justify.v2]   # 10 segments; decide-justify added by the author
+            situation: "Rho runs a fair stall and gives change for Ari's notebook (it costs 35, Ari pays 50) by counting up from the price: 35 to 40, then to 50, which is 15 in change."
+            tests: "Change by counting up; the arithmetic gate (change = paid - price); transfer item after practice."
+          - lesson_id: fe-69-03-needs-and-wants
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.wants-and-choices]
+            kc_status: { life.wants-and-choices: draft }
+            new_concepts: [life.wants-and-choices]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Liruf spends first, recovers, and says what he will do next time
+            segment_types: [voice.mentor-turn.v2, money.needs-wants.v2, voice.mentor-episode.v2, story.branch.v2]   # 11 segments
+            situation: "Liruf reaches the market with few coins, buys a toy before the bread and goes without supper, then asks 'can I do without it?' and, with 6 coins, pays for the soup first."
+            tests: "The B.11 mentor episode (gate 15), judgment without shame (B.26), a story decision with no wrong-answer red."
+          - lesson_id: fe-69-04-market-stall
+            eligibility: { minimum_age: 7, maximum_age: 9 }
+            knowledge_components: [money.add-money, money.compare-amounts]
+            kc_status: { money.add-money: active, money.compare-amounts: active }
+            new_concepts: [money.add-money]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # a stall in each market's own setting and currency
+            segment_types: [voice.mentor-turn.v2, money.market-stall.v2, money.coin-stack.v2, logic.sort-by-rule.v2]   # 10 segments; sort-by-rule carries money.compare-amounts
+            situation: "Zara runs a yard-sale snack table in each market's own currency; the child adds the prices of a basket, stacks coins to reach the total and discovers that more pieces do not always cost more."
+            tests: "A Horizonte money piece (money.market-stall.v2) with per-market scenarios, real-currency facts (gate 3) and pt-BR 'R$ N' pricing."
+      - chapter_id: fe-69-market-day
+        title: { en-US: Market day, es-MX: Día de mercado, pt-BR: Dia de feira }
+        objective: Swap and trade at the market, see why everyone agrees to use coins, compare and estimate prices before buying, and pause when an ad says hurry.
+        external_prerequisites: []
+        lessons:
+          - lesson_id: fe-69-09-swap-day
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.barter, biz.trade-and-markets, biz.what-is-price]
+            kc_status: { life.barter: draft, biz.trade-and-markets: active, biz.what-is-price: active }
+            new_concepts: [life.barter, biz.trade-and-markets]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.pan-balance.v2, story.branch.v2]
+            situation: "On market day Mia has 3 apples and wants a loaf, but the baker only wants pears; she swaps 3 apples for 2 pears with the fruit seller, then the 2 pears for the loaf, and both sides of each swap go home happy."
+            tests: "A swap that gets stuck and a two-step swap that unsticks it, a pan balance showing a fair swap, and 'both leave happier' as the test of a trade."
+          - lesson_id: fe-69-10-why-coins
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.what-money-is, money.compare-amounts, money.count-mixed-coins]
+            kc_status: { life.what-money-is: draft, money.compare-amounts: active, money.count-mixed-coins: active }
+            new_concepts: [life.what-money-is, money.compare-amounts]
+            mentor: { character: liruf, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2, math.number-line.order.v2, story.dialogue-choice.v2]
+            situation: "After shells-for-fish and stones-for-bread swaps get stuck, the friends agree that one coin counts everywhere because everyone trusts it, and the child compares a pouch worth 10+5+1 with a pouch of four 5-coins to see which holds more."
+            tests: "Money as something everyone agrees to accept, and comparing two mixed amounts (16 against 20) by counting each first; the first lesson whose single skill is compare-amounts."
+          - lesson_id: fe-69-11-which-stall-is-cheaper
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [life.smart-shopping, money.estimate-total, money.compare-amounts]
+            kc_status: { life.smart-shopping: draft, money.estimate-total: active, money.compare-amounts: active }
+            new_concepts: [life.smart-shopping, money.estimate-total]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, math.number-line.whole.v2, reasoning.decide-justify.v2]
+            situation: "With 60 coins Dina must buy a kite and a book: stall A sells them for 28 and 31, stall B for 25 and 33; rounding each price to the nearest ten shows both baskets cost about 60, so the child adds exactly (59 against 58) and picks stall B."
+            tests: "Rounding to the nearest ten to check that the money is enough, then an exact comparison across two stalls; a decision with a stated reason."
+          - lesson_id: fe-69-12-pause-before-you-buy
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [life.think-before-buying, life.advertising-literacy, biz.needs-vs-wants]
+            kc_status: { life.think-before-buying: draft, life.advertising-literacy: draft, biz.needs-vs-wants: active }
+            new_concepts: [life.think-before-buying, life.advertising-literacy]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # Rho buys a 15-coin kite from the 20 coins meant for shoes after a 'free toy' banner, then pauses and says what he does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, logic.sort-by-rule.v2, reasoning.decide-justify.v2]
+            situation: "A banner shouts 'Only today! Free toy with every kite' and Rho spends 15 of the 20 coins meant for shoes, then pauses, asks whether it can wait, sees that 'free' needed a purchase, and says what he will do next time."
+            tests: "Telling a true description from an exaggeration, 'free' and 'only today' as tactics, and the pause-and-ask habit; a decision justified without shame."
+      - chapter_id: fe-69-my-coin-jar
+        title: { en-US: My coin jar, es-MX: Mi alcancía, pt-BR: Meu cofrinho }
+        objective: Earn coins and write them down, set a goal, wait and keep the jar safe, and split the coins into save, spend and share.
+        external_prerequisites: []
+        lessons:
+          - lesson_id: fe-69-13-earn-and-write-it-down
+            eligibility: { minimum_age: 7, maximum_age: 9 }
+            knowledge_components: [biz.value-of-work, life.track-earnings, money.add-money]
+            kc_status: { biz.value-of-work: active, life.track-earnings: draft, money.add-money: active }
+            new_concepts: [biz.value-of-work, life.track-earnings]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2, visual.chart.v2, story.would-you-rather.v2]
+            situation: "Dina does chores for three days and earns 5 coins on Monday, none on Tuesday and 10 on Wednesday; she writes each day in a small record, adds them to 15 and notices that earnings change from day to day and that finished work is what earns."
+            tests: "A running record of earnings that is not constant (5, 0, 10), adding the days, and work with value as the reason for pay."
+          - lesson_id: fe-69-14-goal-jar
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.saving-goal, life.saving-for-later]
+            kc_status: { biz.saving-goal: active, life.saving-for-later: draft }
+            new_concepts: [biz.saving-goal, life.saving-for-later]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.goal-bullet.v2, math.ten-frame.v2, story.branch.v2]
+            situation: "Zara wants a 10-coin kite and sets aside 2 of every 5 coins she gets; each saved coin fills a square of a ten-frame and the kite is hers after five rounds."
+            tests: "A goal with a size, a fixed amount kept each time, and each saved coin bringing the goal closer on a ten-frame."
+          - lesson_id: fe-69-15-wait-and-keep-safe
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.patience-and-waiting, life.safe-keeping, life.saving-for-later]
+            kc_status: { life.patience-and-waiting: draft, life.safe-keeping: draft, life.saving-for-later: draft }
+            new_concepts: [life.patience-and-waiting, life.safe-keeping]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # Liruf spends 2 saved coins on a sweet, then learns to keep the rest safe and keep saving after a small loss
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, story.would-you-rather.v2, story.branch.v2]
+            situation: "Liruf has 6 saved coins toward a 12-coin kite; he spends 2 on a sweet, an open jar then loses 1, and he moves the rest to a closed box and keeps saving 3 coins a week."
+            tests: "Small now against bigger later as a choice, a safe place for savings, and carrying on after a small loss; no wrong-answer red."
+          - lesson_id: fe-69-16-three-jars
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.save-spend-share, money.equal-sharing]
+            kc_status: { life.save-spend-share: draft, money.equal-sharing: active }
+            new_concepts: [life.save-spend-share, money.equal-sharing]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, money.coin-tray.v2, reasoning.decide-justify.v2]
+            situation: "Rho receives 12 coins and shares them equally into three jars (save, spend, share) of 4 coins, then chooses a different split and says why; the 4 share coins go equally to two friends, 2 each."
+            tests: "Equal sharing with nothing left over, a three-way split chosen and justified, and the first decision between equal and unequal shares."
+
+  - pathway_id: financial-10-12
+    age_band: "10-12"
+    chapters:
+      - chapter_id: fe-1012-smart-spending
+        title: { en-US: Smart spending, es-MX: Gasto inteligente, pt-BR: Gasto inteligente }
+        objective: Compare prices, plan a budget, build a saving plan and spot a suspicious message.
+        external_prerequisites: [money.subtract-money, biz.saving-goal, life.advertising-literacy]   # life.advertising-literacy is draft (G5)
+        lessons:
+          - lesson_id: fe-1012-01-unit-price
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.unit-price, money.add-money]
+            kc_status: { money.unit-price: active, money.add-money: active }
+            new_concepts: [money.unit-price]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: scenarios   # each market's own shop, prices and currency; per-market rubric
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, math.worked-example.v2, money.unit-price.v2, reasoning.decide-justify.v2]   # 11 segments
+            mentor_misjudgment: true   # added by the author: Liruf compares price tags only, then recovers by dividing
+            situation: "Liruf buys juice for his friends: a bag of 4 juices costs 24 and a bag of 10 costs 50, he first compares only the price tags, then divides to find 6 against 5 per juice."
+            tests: "Per-market answer keys (rubric_by_locale), the unit-price arithmetic gate, the B.12 decide-and-justify step, feedback.met on every graded step (ages 10+)."
+          - lesson_id: fe-1012-02-plan-the-budget
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.simple-budget, money.estimate-total]
+            kc_status: { money.simple-budget: active, money.estimate-total: active }
+            new_concepts: [money.simple-budget]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            approaches: true   # B.24: round-up-first vs add-exactly-then-compare; both chains practise money.estimate-total
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, reasoning.decide-justify.v2]   # 11 segments; round 1 also used the opportunity-cost, allocation and running-ledger boards
+            situation: "Rho plans a picnic list for Nia's club with 100 coins; the list adds up to 108, so the child checks the total by rounding up first or by adding exactly, then removes one item to fit the money."
+            tests: "Autonomy through two equally valid strategy chains; a decision that spends within a budget; every worked step shown before it is asked."
+          - lesson_id: fe-1012-03-saving-plan
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.savings-plan-math, money.simple-budget]
+            kc_status: { money.savings-plan-math: active, money.simple-budget: active }
+            new_concepts: [money.savings-plan-math]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.savings-line.v2]   # 10 segments; round 1 also used the goal-bullet board
+            situation: "Zara saves for a 90-coin ball with 30 already in the jar and 10 coins put in each week, so she works out the 60 still missing and the 6 weeks it takes, then checks it."
+            tests: "A worked example with backward fading, the savings line, a transfer item, and per-market anchors."
+          - lesson_id: fe-1012-04-suspicious-messages
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.scam-awareness]
+            kc_status: { life.scam-awareness: draft }
+            new_concepts: [life.scam-awareness]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # the scam each market's children actually meet (SMS, Pix, texts)
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.scam-check.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]   # 10 segments
+            mentor_misjudgment: true   # added by the author: Dina nearly taps a prize link, then stops and tells an adult
+            situation: "Dina nearly taps a link in a message that says she won a prize and must claim it today, then checks who sent it, where the link goes, the rush and what it asks for, and stops and tells an adult."
+            tests: "Real adaptation, not translation: different messages per market with the same answer ids; hypothesis-backed problems become Stage 3 review items."
+      - chapter_id: fe-1012-sale-season
+        title: { en-US: Sale season, es-MX: Temporada de rebajas, pt-BR: Temporada de promoções }
+        objective: Find a fraction or a percent of a price, add up a charge that repeats, and name what a bargain takes from your other choices.
+        external_prerequisites: [money.equal-sharing, money.subtract-money, money.add-money, money.estimate-total, life.wants-and-choices]
+        lessons:
+          - lesson_id: fe-1012-05-quarter-off
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.fraction-of-amount, money.equal-sharing, money.subtract-money]
+            kc_status: { money.fraction-of-amount: active, money.equal-sharing: active, money.subtract-money: active }
+            new_concepts: [money.fraction-of-amount]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.fraction-wall.v2, math.worked-example.v2, money.allocation.v2]
+            situation: "Zara's stall puts an 80-coin jacket on sale at a quarter off: the child splits 80 into 4 equal parts of 20, takes one part off to pay 60, then finds half of a 36-coin cap."
+            tests: "A fraction of a whole amount (half, a third, a quarter) built from equal sharing and checked by putting the parts back together; the first lesson that takes a part of a price."
+          - lesson_id: fe-1012-06-ten-percent-and-half
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [money.percent-intro, money.fraction-of-amount]
+            kc_status: { money.percent-intro: active, money.fraction-of-amount: active }
+            new_concepts: [money.percent-intro]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.percent-grid.v2, math.worked-example.v2, reasoning.decide-justify.v2]
+            situation: "Two banners hang over a 60-coin sneaker, '10% off' and '50% off': the child finds 10% by dividing by 10 (6 coins), 50% by halving (30 coins), builds 20% as two tens (12) and compares '20% off' with 'a quarter off' (15)."
+            tests: "Building any percent from 10% and 50% on a percent grid, and the link back to the fraction of the lesson before; tier 3 from age 11."
+          - lesson_id: fe-1012-07-charges-that-repeat
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [life.recurring-costs, money.add-money, money.estimate-total]
+            kc_status: { life.recurring-costs: draft, money.add-money: active, money.estimate-total: active }
+            new_concepts: [life.recurring-costs]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # real subscription and top-up prices in each market's currency
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.running-ledger.v2, reasoning.decide-justify.v2]
+            situation: "Nico pays 3 a week for a game pass and 5 a month for a music app: over a year that is 3 x 52 = 156 plus 5 x 12 = 60, 216 in all, and he decides which of the two to keep."
+            tests: "A small charge multiplied over a year, a ledger that shows it adding up, and a keep-or-cancel decision with a stated reason; per-market prices."
+          - lesson_id: fe-1012-08-what-a-bargain-costs
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [life.opportunity-cost, life.wants-and-choices, money.percent-intro]
+            kc_status: { life.opportunity-cost: draft, life.wants-and-choices: draft, money.percent-intro: active }
+            new_concepts: [life.opportunity-cost]
+            mentor: { character: liruf, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # Liruf grabs the 50%-off jacket because it is cheap, then sees what he gave up, and says what he does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.opportunity-cost.v2, reasoning.decide-justify.v2]
+            situation: "On sale day Liruf has 60 coins and buys the 50%-off jacket for 40 because it is cheap, then sees that the 45-coin football ticket he gave up was what he wanted most."
+            tests: "Naming what is given up (including time) before deciding, a bargain judged by need and not by the size of the discount, and the B.11 episode with judgment without shame."
+      - chapter_id: fe-1012-first-account
+        title: { en-US: My first account, es-MX: Mi primera cuenta, pt-BR: Minha primeira conta }
+        objective: See what a bank and an account are for, keep the account and its passwords private, watch savings grow a little each period and turn a wish into a goal with a date.
+        external_prerequisites: [life.safe-keeping, biz.saving-goal]
+        lessons:
+          - lesson_id: fe-1012-09-what-a-bank-is-for
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.banks-and-accounts, life.safe-keeping, money.subtract-money]
+            kc_status: { life.banks-and-accounts: draft, life.safe-keeping: draft, money.subtract-money: active }
+            new_concepts: [life.banks-and-accounts]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # cards, cash points and account types differ in each market
+            segment_types: [voice.mentor-turn.v2, money.running-ledger.v2, logic.flowchart.v2, reasoning.decide-justify.v2]
+            situation: "Ana puts 80 coins from the school kiosk into a savings account and follows the balance through a deposit of 30, a cash withdrawal of 20 and a card payment of 15, ending at 75, and sees that the card spends the money already in the account."
+            tests: "What a bank and an account are for, how money comes out, and how a card connects to saved money; a balance followed step by step, with each market's own banking setting."
+          - lesson_id: fe-1012-10-keep-it-private
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.data-privacy, life.banks-and-accounts, life.scam-awareness]
+            kc_status: { life.data-privacy: draft, life.banks-and-accounts: draft, life.scam-awareness: draft }
+            new_concepts: [life.data-privacy]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, logic.sort-by-rule.v2, logic.rule-checker.v2, story.dialogue-choice.v2]
+            situation: "A gaming friend asks Kai for his account PIN 'to move some coins', so Kai sorts what is safe to share (a nickname, a favorite team) from what stays private (password, PIN, address, a photo of a card) and checks three passwords against the rules long, unique and not a birthday."
+            tests: "Sorting private from shareable information by one rule, checking a password against written rules, and a dialogue decision to say no and tell an adult."
+          - lesson_id: fe-1012-11-money-that-grows
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [money.simple-interest-peek, money.percent-intro, money.savings-plan-math]
+            kc_status: { money.simple-interest-peek: active, money.percent-intro: active, money.savings-plan-math: active }
+            new_concepts: [money.simple-interest-peek]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal   # a classroom bank in LittleFounders coins with an illustrative rate, never a real product
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.savings-line.v2, money.running-ledger.v2]
+            situation: "Zara's classroom bank pays 10% of the original deposit each month on 50 coins, so the balance goes 55, 60, 65 after three months, and the child writes down each step and says how long to reach 80."
+            tests: "Interest worked out period by period with the 10% of the lesson before, an illustrative rate stated as illustrative, and growth read off a savings line; tier 3 from age 11."
+          - lesson_id: fe-1012-12-dream-to-plan
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.goal-planning, biz.saving-goal, money.savings-plan-math]
+            kc_status: { life.goal-planning: draft, biz.saving-goal: active, money.savings-plan-math: active }
+            new_concepts: [life.goal-planning]
+            mentor: { character: liruf, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.goal-bullet.v2, story.branch.v2, reasoning.decide-justify.v2]
+            situation: "Mia turns 'I want a bike' into a goal of 120 coins by the end of June, splits it into 12 weekly steps of 10 coins and plans ahead for an obstacle, a birthday gift of 15 coins in week 5."
+            tests: "A wish made into a goal with a size and a date, steps, and an obstacle planned for in advance; the plan is written before it is tested."
+      - chapter_id: fe-1012-class-garden
+        title: { en-US: The class garden, es-MX: El huerto del salón, pt-BR: A horta da turma }
+        objective: Care for what the class shares, see how many small contributions pay for what everyone uses, plan and review a group project, and give with care.
+        external_prerequisites: [life.save-spend-share]
+        lessons:
+          - lesson_id: fe-1012-13-share-the-garden
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.shared-resources, money.equal-sharing]
+            kc_status: { life.shared-resources: draft, money.equal-sharing: active }
+            new_concepts: [life.shared-resources]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # Zara skips her watering day and leaves the shared can empty, then fills it, takes the next shift and says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]
+            situation: "The class garden has 1 watering can and 12 pupils, so the group sets a fair rota of 3 pupils a day over 4 days, and Zara, who skipped her day, refills the can and takes the next shift."
+            tests: "A fair turn-taking rule that spreads the work, the B.11 episode with judgment without shame, and a decision about an unfair share."
+          - lesson_id: fe-1012-14-many-small-shares
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.common-good, life.shared-resources, money.equal-sharing]
+            kc_status: { life.common-good: draft, life.shared-resources: draft, money.equal-sharing: active }
+            new_concepts: [life.common-good]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # which public things are paid in common, and how, differs in each market
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, math.worked-example.v2, visual.chart.v2]
+            situation: "In Rho's town 40 families each give 5 coins a month, 200 in all, and the town splits it into 100 for street lamps, 60 for the park and 40 for the water tap, so a small share from many pays for what everyone uses."
+            tests: "Many small contributions added up and split between shared services on a donut, with each market's own public services named."
+          - lesson_id: fe-1012-15-plan-the-project
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.community-projects, life.review-and-adjust-plan, life.goal-planning]
+            kc_status: { life.community-projects: draft, life.review-and-adjust-plan: draft, life.goal-planning: draft }
+            new_concepts: [life.community-projects, life.review-and-adjust-plan]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.goal-bullet.v2, money.running-ledger.v2, reasoning.decide-justify.v2]
+            situation: "The class fundraiser aims at 150 coins for 6 garden beds in 5 weeks with the jobs split among 10 pupils; after week 3 it holds 60 instead of 90, so the group raises the weekly target from 30 to 45, thanks the neighbor who lent tools and reviews what it achieved."
+            tests: "Splitting tasks and thanking helpers, a plan checked against what really happened and one part adjusted (the amount here), and a review of what the group achieved."
+          - lesson_id: fe-1012-16-give-and-explain
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.giving, life.reflect-on-learning, life.save-spend-share]
+            kc_status: { life.giving: draft, life.reflect-on-learning: draft, life.save-spend-share: draft }
+            new_concepts: [life.giving, life.reflect-on-learning]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: scenarios   # donation customs and the groups that receive help differ in each market
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, story.would-you-rather.v2, reasoning.decide-justify.v2]
+            situation: "After the fundraiser Mia has 40 coins left: she keeps 20, gives 10 to a food bank after checking where it goes and saves 10 for the next project, then explains in her own words three ideas she learned and teaches one to a younger cousin."
+            tests: "Giving that expects nothing back with a part kept, a check on where the help goes, and the closing explanation in the learner's own words (a teach-back, not a quiz)."
+
+  - pathway_id: financial-13-17
+    age_band: "13-17"
+    chapters:
+      - chapter_id: fe-1317-first-pay
+        title: { en-US: My first pay, es-MX: Mi primer pago, pt-BR: Meu primeiro pagamento }
+        objective: Turn the hours of a first job into pay, split it with a plan, see what a phone plan costs over a year and open a first account safely.
+        external_prerequisites: [life.effort-and-work, money.add-money, money.subtract-money, money.estimate-total, life.wants-and-choices, biz.needs-vs-wants]
+        lessons:
+          - lesson_id: fe-1317-01-first-shift
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.value-of-work, life.track-earnings, life.effort-and-work]
+            kc_status: { biz.value-of-work: active, life.track-earnings: draft, life.effort-and-work: draft }
+            new_concepts: [biz.value-of-work, life.track-earnings]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # real hourly pay, tips, minimum working age and permits differ in each market
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.running-ledger.v2, story.dialogue-choice.v2]
+            situation: "Maya's first weekend job at a bakery stall pays 9 an hour: 6 hours on Saturday and 4 on Sunday make 90, plus 12 in tips, and she logs each shift in a ledger to see 102 in all and to ask what the hour is worth."
+            tests: "Hours times a rate plus a variable tip, kept in a ledger the learner fills in, and the pay as the value of the work; per-market wages and rules about age and permits."
+          - lesson_id: fe-1317-02-split-the-pay
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [money.simple-budget, money.percent-intro, money.estimate-total]
+            kc_status: { money.simple-budget: active, money.percent-intro: active, money.estimate-total: active }
+            new_concepts: [money.simple-budget, money.percent-intro]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.allocation.v2, reasoning.decision-grid.v2]
+            situation: "Maya's month of shifts brings 100, which she splits as 50% for needs (50), 30% for wants (30) and 20% for saving (20), then she re-plans when a 60 phone bill breaks the needs share."
+            tests: "A percent split of a pay amount on a donut, a plan that stays inside the money, and a re-plan that changes one share; percent built from 10% and 50% at teen depth."
+          - lesson_id: fe-1317-03-phone-plan-year
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.recurring-costs, life.opportunity-cost, biz.value-of-work]
+            kc_status: { life.recurring-costs: draft, life.opportunity-cost: draft, biz.value-of-work: active }
+            new_concepts: [life.recurring-costs, life.opportunity-cost]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # real plan prices and hours of work needed differ in each market
+            mentor_misjudgment: true   # Dina takes the bigger plan because it is 'only 8 more a month', then adds up a year and weighs the hours of work, and says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, math.worked-example.v2, money.opportunity-cost.v2]
+            situation: "Dina compares a 12-a-month phone plan with a 20-a-month plan with more data: 144 against 240 a year, and the 96 difference is about 11 hours of work at 9 an hour, so she decides whether the extra data is worth that time."
+            tests: "A small monthly charge turned into a yearly one, the difference priced in hours of work (opportunity cost with time), and the B.11 episode with judgment without shame."
+          - lesson_id: fe-1317-04-first-account
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.safe-keeping, life.banks-and-accounts, life.data-privacy]
+            kc_status: { life.safe-keeping: draft, life.banks-and-accounts: draft, life.data-privacy: draft }
+            new_concepts: [life.safe-keeping, life.banks-and-accounts, life.data-privacy]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # account types for minors, cards, apps and age rules differ in each market
+            segment_types: [voice.mentor-turn.v2, logic.flowchart.v2, logic.rule-checker.v2, story.dialogue-choice.v2]
+            situation: "Maya opens a first account for her 100 pay with a parent's help, follows the money from pay to account to card payment, picks a PIN that is not her birthday and turns off an app permission that asks to see her contacts."
+            tests: "Where money is kept and how a card draws on it, a PIN or password checked against written rules, and a decision to refuse a permission; each market's account rules for minors."
+      - chapter_id: fe-1317-eyes-open
+        title: { en-US: Eyes open, es-MX: Ojos abiertos, pt-BR: De olho aberto }
+        objective: Say why prices differ, read an ad for what it leaves out, stop a fake deal and learn to wait for what matters most.
+        external_prerequisites: [life.wants-and-choices, biz.needs-vs-wants, biz.goods-vs-services, money.compare-amounts, life.saving-for-later]
+        lessons:
+          - lesson_id: fe-1317-05-why-prices-differ
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.what-is-price, biz.trade-and-markets, life.smart-shopping]
+            kc_status: { biz.what-is-price: active, biz.trade-and-markets: active, life.smart-shopping: draft }
+            new_concepts: [biz.what-is-price, biz.trade-and-markets, life.smart-shopping]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios   # real shops, prices, shipping and second-hand markets differ in each market
+            segment_types: [voice.mentor-turn.v2, econ.supply-demand.v2, math.worked-example.v2, reasoning.decide-justify.v2]
+            situation: "A limited sneaker drop sells out at 120 while last season's pair sits at 80 and then 50, so the child links price to how many want an item and how many exist, then compares three real offers including 12 for shipping and chooses by what matters to them."
+            tests: "Price explained by wanting and scarcity on a supply and demand board, the full cost of an offer (shipping, condition, wait) compared across three sellers, and a justified choice."
+          - lesson_id: fe-1317-06-last-chance-ad
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.advertising-literacy, life.think-before-buying]
+            kc_status: { life.advertising-literacy: draft, life.think-before-buying: draft }
+            new_concepts: [life.advertising-literacy, life.think-before-buying]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # Dina buys at once after a 'last chance' video, then lists what the ad left out and sets a wait rule, and says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.spend-decision.v2, reasoning.decision-grid.v2]
+            situation: "A creator's video says 'last 5 pairs, 30% off, code ends tonight' for a 60 jacket; Dina buys at once, then lists what the ad left out (who paid for it, how many really remain, the usual price) and sets a 24-hour wait before any purchase over 20."
+            tests: "An ad read for who pays, what is claimed and what is missing, a wait rule applied to a spend decision, and judgment without shame in the B.11 episode."
+          - lesson_id: fe-1317-07-fake-deal
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.scam-awareness, life.data-privacy, life.banks-and-accounts]
+            kc_status: { life.scam-awareness: draft, life.data-privacy: draft, life.banks-and-accounts: draft }
+            new_concepts: [life.scam-awareness]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # the scam each market's teenagers actually meet (parcel texts, instant-payment requests, marketplace overpayment)
+            segment_types: [voice.mentor-turn.v2, money.scam-check.v2, logic.scam-spotter.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]
+            situation: "Two messages arrive on one evening, a parcel text that asks for 2.50 through a link and a marketplace buyer who overpays by 50 and asks for 40 back; the child marks the signs (rush, odd link, payment outside the app, overpayment) and decides to stop and report."
+            tests: "Signs read in two different scams with the same answer ids, per-market messages, and a decision to stop, not pay and report to the platform or an adult."
+          - lesson_id: fe-1317-08-wait-and-cushion
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.patience-and-waiting, biz.saving-goal, life.saving-for-later]
+            kc_status: { life.patience-and-waiting: draft, biz.saving-goal: active, life.saving-for-later: draft }
+            new_concepts: [life.patience-and-waiting, biz.saving-goal]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.goal-bullet.v2, logic.savings-rule.v2, reasoning.decide-justify.v2]
+            situation: "Jon wants a 240 console and saves 40 a month, which takes 6 months; he adds a 120 cushion for surprises, so the same 40 a month reaches both in 9 months, and he chooses which comes first and why."
+            tests: "Two goals with sizes sharing one saving rate, waiting as a choice with a visible cost and benefit, and a justified order of goals."
+      - chapter_id: fe-1317-plans-that-grow
+        title: { en-US: Plans that grow, es-MX: Planes que crecen, pt-BR: Planos que crescem }
+        objective: Work out how long a goal takes, watch interest build it, adjust a plan that slipped and decide what to share.
+        external_prerequisites: [life.saving-for-later, money.fraction-of-amount]
+        lessons:
+          - lesson_id: fe-1317-09-laptop-by-december
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [money.savings-plan-math, life.goal-planning, biz.saving-goal]
+            kc_status: { money.savings-plan-math: active, life.goal-planning: draft, biz.saving-goal: active }
+            new_concepts: [money.savings-plan-math, life.goal-planning]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.savings-line.v2, plan.schedule-board.v2]
+            situation: "Sam sets a goal of a 600 used laptop by December with 120 saved and 60 a month, which needs 8 months when only 6 are left, so he works out the 80 a month he needs and finds the 20 more to plan for."
+            tests: "A goal with a size and a date turned into a monthly amount, a plan that does not fit and the gap found, and steps placed on a schedule board; the first plan the teenager builds from the formula."
+          - lesson_id: fe-1317-10-interest-year-by-year
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [money.simple-interest-peek, money.percent-intro]
+            kc_status: { money.simple-interest-peek: active, money.percent-intro: active }
+            new_concepts: [money.simple-interest-peek]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # illustrative savings rates in each market; never an offer or a promised return
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.running-ledger.v2, reasoning.decide-justify.v2]
+            situation: "A savings account that pays 4% a year (an illustrative rate, not an offer) turns 500 into 520, then 540, then 560 after three years of simple interest, and the child compares it with the same 500 kept in a drawer."
+            tests: "Interest worked out year by year from a percent, the rate stated as illustrative, and a comparison with money earning nothing; no product, no promise."
+          - lesson_id: fe-1317-11-when-the-plan-slips
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.review-and-adjust-plan, life.goal-planning, money.savings-plan-math]
+            kc_status: { life.review-and-adjust-plan: draft, life.goal-planning: draft, money.savings-plan-math: active }
+            new_concepts: [life.review-and-adjust-plan]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # Zara drops the plan after a setback, then compares plan with reality and adjusts one part, and says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.running-ledger.v2, reasoning.decision-grid.v2]
+            situation: "After 3 months Sam has 240 instead of the planned 300 because a repair cost 60; he sets plan against what happened and adjusts one part, finishing in 9 months instead of 6, rather than giving up."
+            tests: "A plan checked against the ledger of what happened, one part adjusted (time, amount or goal) with the others held, and the B.11 episode with judgment without shame."
+          - lesson_id: fe-1317-12-share-and-teach
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [life.save-spend-share, life.giving, life.reflect-on-learning]
+            kc_status: { life.save-spend-share: draft, life.giving: draft, life.reflect-on-learning: draft }
+            new_concepts: [life.save-spend-share, life.giving, life.reflect-on-learning]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # donation customs and the groups that receive help differ in each market
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, story.would-you-rather.v2, reasoning.decide-justify.v2]
+            situation: "Sam splits a pay of 200 into 60% to spend (120), 30% to save (60) and 10% to give (20), gives to a neighborhood group after checking where the money goes, then explains in his own words what he learned about plans and teaches one idea to a younger sibling."
+            tests: "A percent split with a share kept for giving, a check on where the help goes, and the closing teach-back in the learner's own words (not a quiz)."
+
+  - pathway_id: financial-adult
+    age_band: adult
+    chapters:
+      - chapter_id: fe-adult-my-paycheck
+        title: { en-US: My paycheck, es-MX: Mi sueldo, pt-BR: Meu salário }
+        objective: Read a payslip, build a monthly budget from it, find the charges that quietly add up and price your own time.
+        external_prerequisites: [life.effort-and-work, money.add-money, money.subtract-money, money.estimate-total, money.fraction-of-amount, life.wants-and-choices, biz.needs-vs-wants]
+        lessons:
+          - lesson_id: fe-adult-01-read-the-payslip
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.track-earnings, biz.value-of-work, money.percent-intro]
+            kc_status: { life.track-earnings: draft, biz.value-of-work: active, money.percent-intro: active }
+            new_concepts: [life.track-earnings, biz.value-of-work, money.percent-intro]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # real payslip lines, withholding and contributions differ in each market
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.tax-bracket.v2, money.running-ledger.v2]
+            situation: "Lena's payslip shows 2,400 gross, 12% withheld for tax and contributions (288) and 2,112 net; she checks each line, then divides by her 160 hours a month to find that one hour of her work pays 13.20 net."
+            tests: "A payslip read line by line, a percent taken off a gross amount, and net pay turned into an hourly value; each market's own withholding lines."
+          - lesson_id: fe-adult-02-monthly-budget
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [money.simple-budget, life.track-earnings, money.estimate-total]
+            kc_status: { money.simple-budget: active, life.track-earnings: draft, money.estimate-total: active }
+            new_concepts: [money.simple-budget]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # real rent, food and transport costs and the currency of each market
+            segment_types: [voice.mentor-turn.v2, money.cash-flow.v2, money.allocation.v2, reasoning.decision-grid.v2]
+            situation: "Lena's 2,112 net pays rent 800, food 400, transport 150 and phone and subscriptions 90, which leaves 672; she keeps 200 for saving first and sees that 472 is left to choose freely."
+            tests: "Needs paid first from one net amount on a cash-flow board, a saving amount set before the rest, and what remains to choose from; the learner's own figures replace the sample at the transfer step."
+          - lesson_id: fe-adult-03-quiet-subscriptions
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.recurring-costs, life.opportunity-cost, biz.value-of-work]
+            kc_status: { life.recurring-costs: draft, life.opportunity-cost: draft, biz.value-of-work: active }
+            new_concepts: [life.recurring-costs, life.opportunity-cost]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # real services, free-trial renewals and prices differ in each market
+            mentor_misjudgment: true   # Dina forgets a free trial and pays for months, then audits every charge and cancels, and says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.running-ledger.v2, money.opportunity-cost.v2]
+            situation: "Lena audits seven subscriptions at 9.99, 12, 5, 15, 8, 4.50 and 22.50 a month, 76.99 in all or about 924 a year, which is 70 hours of her 13.20 work, and she keeps the three she used last month."
+            tests: "A list of small monthly charges added into a yearly total, the total priced in hours of work, and a keep-or-cancel choice by actual use; the B.11 episode with judgment without shame."
+          - lesson_id: fe-adult-04-price-my-time
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.what-is-price, biz.trade-and-markets, biz.value-of-work]
+            kc_status: { biz.what-is-price: active, biz.trade-and-markets: active, biz.value-of-work: active }
+            new_concepts: [biz.what-is-price, biz.trade-and-markets]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # what local clients pay, and the rules on self-employed work, differ in each market
+            segment_types: [voice.mentor-turn.v2, econ.supply-demand.v2, math.worked-example.v2, reasoning.decide-justify.v2]
+            situation: "Lena prices a weekend freelance job after seeing three local ads at 18, 22 and 30 an hour: she picks 22, quotes 8 hours at 176 and finds 154.88 left after the 12% withheld and 134.88 after 20 for materials."
+            tests: "A price set by what the market pays and not by what feels fair, the full quote worked through to take-home money, and a justified rate."
+      - chapter_id: fe-adult-spend-and-protect
+        title: { en-US: "Spend wisely and stay safe", es-MX: Gastar bien y cuidarse, pt-BR: Gastar bem e se proteger }
+        objective: Compare purchases by the price of one, read the pitch behind an offer, check an account for fees and stop a scam aimed at your money.
+        external_prerequisites: [money.add-money, money.fraction-of-amount, money.compare-amounts, life.wants-and-choices, biz.needs-vs-wants, biz.goods-vs-services]
+        lessons:
+          - lesson_id: fe-adult-05-price-of-one
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [money.unit-price, life.smart-shopping, biz.what-is-price]
+            kc_status: { money.unit-price: active, life.smart-shopping: draft, biz.what-is-price: active }
+            new_concepts: [money.unit-price, life.smart-shopping]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios   # real shops, pack sizes, prices and currency of each market
+            segment_types: [voice.mentor-turn.v2, money.unit-price.v2, math.ratio-table.v2, reasoning.decide-justify.v2]
+            situation: "Lena compares two bags of rice, 2 kg for 5.80 and 5 kg for 13.00, finds 2.90 against 2.60 per kilo and checks that the big bag saves 1.50 only if she can store and use all of it."
+            tests: "The price of one unit across two pack sizes, a saving that depends on use, and a justified buy; per-market shops and pack sizes."
+          - lesson_id: fe-adult-06-read-the-pitch
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.advertising-literacy, life.think-before-buying, money.percent-intro]
+            kc_status: { life.advertising-literacy: draft, life.think-before-buying: draft, money.percent-intro: active }
+            new_concepts: [life.advertising-literacy, life.think-before-buying]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # real financing offers, 'free' trials and consumer rules differ in each market
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.spend-decision.v2, reasoning.decision-grid.v2]
+            situation: "A shop offers a 900 television with nothing down and 12 easy payments of 85, which is 1,020 in all and 120 more than the cash price, and Lena reads what the pitch leaves out before waiting 48 hours to decide."
+            tests: "An offer's total cost compared with its cash price, a pitch read for what it hides, and a wait rule applied to a large purchase; no named lender or product."
+          - lesson_id: fe-adult-07-fees-and-accounts
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.banks-and-accounts, life.safe-keeping, life.recurring-costs]
+            kc_status: { life.banks-and-accounts: draft, life.safe-keeping: draft, life.recurring-costs: draft }
+            new_concepts: [life.banks-and-accounts, life.safe-keeping]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # real account types, fees and deposit protection differ in each market
+            segment_types: [voice.mentor-turn.v2, logic.flowchart.v2, math.worked-example.v2, reasoning.decide-justify.v2]
+            situation: "Lena compares an account with a 4 monthly fee and a free card against one with no fee but 2 per cash withdrawal; with 3 withdrawals a month the first costs 48 a year and the second 72, and she asks what protects her money if a bank fails."
+            tests: "Two fee structures priced for the learner's own use, what protects savings in the learner's market, and a justified choice of account."
+          - lesson_id: fe-adult-08-stop-the-scam
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.scam-awareness, life.data-privacy, life.banks-and-accounts]
+            kc_status: { life.scam-awareness: draft, life.data-privacy: draft, life.banks-and-accounts: draft }
+            new_concepts: [life.scam-awareness, life.data-privacy]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # the scams each market's adults actually meet (fake bank calls, instant-payment fraud, investment promises)
+            mentor_misjudgment: true   # Dina nearly reads out an SMS code to a caller who sounds like her bank, then hangs up and calls the number on her card, and says what she does next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.scam-check.v2, logic.scam-spotter.v2, story.dialogue-choice.v2]
+            situation: "A caller who says he is from Lena's bank asks her to move 1,500 to a safe account and read out the code just sent by SMS; she marks the signs (urgency, secrecy, moving money, a code), hangs up and calls the number printed on her card."
+            tests: "Signs of a pressure scam read in a live call, codes and passwords kept private, per-market scam scripts with the same answer ids, and judgment without shame in the B.11 episode."
+      - chapter_id: fe-adult-plan-ahead
+        title: { en-US: Plan what comes next, es-MX: Planear lo que sigue, pt-BR: Planejar o que vem }
+        objective: Set goals with numbers and a date, see what a small percent does over time, adjust a plan when life changes and decide what to share.
+        external_prerequisites: [life.saving-for-later, life.save-spend-share, life.shared-resources, life.patience-and-waiting, life.wants-and-choices]
+        lessons:
+          - lesson_id: fe-adult-09-goals-with-a-date
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.saving-goal, life.goal-planning, money.savings-plan-math]
+            kc_status: { biz.saving-goal: active, life.goal-planning: draft, money.savings-plan-math: active }
+            new_concepts: [biz.saving-goal, life.goal-planning, money.savings-plan-math]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios   # the learner's own currency and typical costs
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, plan.schedule-board.v2, visual.goal-bullet.v2]
+            situation: "Lena wants a 6,000 emergency cushion and a 3,000 holiday within 24 months, which needs 375 a month, and her budget leaves 472 free, so she funds both and names the first obstacle, a 600 dental bill."
+            tests: "Two goals with sizes and a date turned into one monthly amount, checked against free money from the budget, and an obstacle planned for in advance."
+          - lesson_id: fe-adult-10-interest-and-time
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [money.simple-interest-peek, money.percent-intro, life.opportunity-cost]
+            kc_status: { money.simple-interest-peek: active, money.percent-intro: active, life.opportunity-cost: draft }
+            new_concepts: [money.simple-interest-peek]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # illustrative rates in each market; never an offer, a named product or a promised return
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.savings-line.v2, reasoning.decide-justify.v2]
+            situation: "Lena compares what an illustrative 3% a year adds to her 6,000 cushion, 180 a year and 540 in three years, with what a 1,000 store credit at an illustrative 2% a month adds to a debt, 20 a month and 240 a year."
+            tests: "Simple interest worked out for money earned and for money owed with the same percent skill, rates stated as illustrative, and what waiting costs or earns."
+          - lesson_id: fe-adult-11-when-life-changes
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.review-and-adjust-plan, life.goal-planning, money.simple-budget]
+            kc_status: { life.review-and-adjust-plan: draft, life.goal-planning: draft, money.simple-budget: active }
+            new_concepts: [life.review-and-adjust-plan]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # the learner's own currency and typical costs
+            segment_types: [voice.mentor-turn.v2, money.running-ledger.v2, reasoning.decision-grid.v2, plan.schedule-board.v2]
+            situation: "Six months in, Lena's rent rises from 800 to 960 and her free money falls from 472 to 312, so the plan needs 22 more months instead of 18, and she keeps the cushion first and moves the holiday four months later."
+            tests: "A plan checked against changed numbers, one part adjusted while the rest is held, and the order of goals decided by what matters most."
+          - lesson_id: fe-adult-12-share-and-teach
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [life.common-good, life.giving, life.reflect-on-learning]
+            kc_status: { life.common-good: draft, life.giving: draft, life.reflect-on-learning: draft }
+            new_concepts: [life.common-good, life.giving, life.reflect-on-learning]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # what withheld contributions pay for, and the groups that receive gifts, differ in each market
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, visual.chart.v2, reasoning.decide-justify.v2]
+            situation: "Lena splits a 600 bonus into 300 for the cushion, 180 for herself and 120 to give, then looks at where the 288 withheld from her pay goes in public services, and explains the three ideas she values most to a friend."
+            tests: "Where many small contributions go in the learner's market, giving with a part kept and a check on where it goes, and a closing teach-back in the learner's own words (not a quiz)."
+

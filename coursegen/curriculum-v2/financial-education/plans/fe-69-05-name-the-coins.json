@@ -1,0 +1,527 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-corner-shop",
+  "lesson_id": "fe-69-05-name-the-coins",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.coin-recognition",
+    "money.count-like-coins"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara abre la caja de la tienda de la esquina y muestra monedas de 1, 5 y 10. Primero nombran cada moneda por el número que lleva; después Zara cuenta una pila de monedas iguales saltando de 5 en 5, y el niño cuenta otras pilas de monedas iguales.",
+  "title": {
+    "en-US": "Name the coins, count the pile",
+    "es-MX": "Nombra las monedas y cuenta la pila",
+    "pt-BR": "Nomeie as moedas e conte a pilha"
+  },
+  "new_concepts": [
+    "money.coin-recognition",
+    "money.count-like-coins"
+  ],
+  "regional": {
+    "universal": "The lesson uses LittleFounders coins only (1, 5 and 10), so no market price, shop, custom or real currency changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara finds coins that say 1, 5 and 10.",
+          "line": "Hmm, the cash drawer. Let me see what each coin says."
+        },
+        "es-MX": {
+          "prompt": "Zara encuentra monedas que dicen 1, 5 y 10.",
+          "line": "Mmm, la caja de la tienda. A ver qué dice cada moneda."
+        },
+        "pt-BR": {
+          "prompt": "A Zara acha moedas de 1, 5 e 10.",
+          "line": "Hum, a gaveta do caixa. Vou ver o que cada moeda mostra."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.count-like-coins",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1,
+        "initial": 0,
+        "hops": [
+          1,
+          5,
+          10
+        ]
+      },
+      "rubric": {
+        "target": 20
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's two coins say 10. Hop to the total.",
+          "feedback": {
+            "met": "Thanks. Now watch how Zara counts coins.",
+            "not_yet": "Thanks. Now watch how Zara counts coins."
+          }
+        },
+        "es-MX": {
+          "prompt": "Las dos monedas de Zara dicen 10. Salta hasta el total.",
+          "feedback": {
+            "met": "Gracias. Ahora mira cómo cuenta Zara las monedas.",
+            "not_yet": "Gracias. Ahora mira cómo cuenta Zara las monedas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "As duas moedas da Zara dizem 10. Salte até o total.",
+          "feedback": {
+            "met": "Anotado. Agora veja como a Zara conta as moedas.",
+            "not_yet": "Anotado. Agora veja como a Zara conta as moedas."
+          }
+        }
+      }
+    },
+    {
+      "id": "name-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Zara looks at the coin that says 5.",
+          "line": "Hmm, it says 5. So this coin is worth 5."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Zara mira la moneda que dice 5.",
+          "line": "Mmm, dice 5. Entonces esta moneda vale 5."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: A Zara olha a moeda que diz 5.",
+          "line": "Hum, diz 5. Então esta moeda vale 5."
+        }
+      }
+    },
+    {
+      "id": "name-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: A coin is worth the number on it.",
+          "line": "One coin, worth 5. I count 5, not 1."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Una moneda vale el número que tiene.",
+          "line": "Es una moneda, pero vale 5. Cuento 5, no 1."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: Uma moeda vale o número que ela tem.",
+          "line": "É uma moeda, mas vale 5. Eu conto 5, não 1."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.coin-recognition",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 10,
+        "fewest": true
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara needs the coin that says 10. Take it.",
+          "help": [
+            "Zara read the number on each coin.",
+            "Find the coin with 10 on it."
+          ],
+          "feedback": {
+            "met": "You found the coin that says 10. One coin, worth 10.",
+            "not_yet": "Zara read the number on the coin. Look for the 10."
+          }
+        },
+        "es-MX": {
+          "prompt": "Zara necesita la moneda que dice 10. Tómala.",
+          "help": [
+            "Zara leyó el número de cada moneda.",
+            "Busca la moneda que tiene el 10."
+          ],
+          "feedback": {
+            "met": "Encontraste la moneda que dice 10. Una moneda, vale 10.",
+            "not_yet": "Zara leyó el número de la moneda. Busca el 10."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Zara precisa da moeda que diz 10. Pegue a moeda.",
+          "help": [
+            "A Zara leu o número de cada moeda.",
+            "Procure a moeda que tem o 10."
+          ],
+          "feedback": {
+            "met": "Você achou a moeda que diz 10. Uma moeda, vale 10.",
+            "not_yet": "A Zara leu o número da moeda. Procure o 10."
+          }
+        }
+      }
+    },
+    {
+      "id": "count-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Three coins say 5. Zara hops 5 for each.",
+          "line": "Hmm, let me try this. Each hop is 5."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: Tres monedas dicen 5. Zara salta 5 por cada una.",
+          "line": "Mmm, voy a probar. Cada salto es de 5."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: Três moedas dizem 5. A Zara salta 5 por moeda.",
+          "line": "Hum, vou tentar. Cada salto é de 5."
+        }
+      }
+    },
+    {
+      "id": "count-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: Zara counts by 5s: 5, 10, 15.",
+          "line": "Three coins, three hops. The total is 15."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: Zara va de 5 en 5: 5, 10, 15.",
+          "line": "Tres monedas, tres saltos. El total es 15."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: A Zara vai de 5 em 5: 5, 10, 15.",
+          "line": "Três moedas, três saltos. O total é 15."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-like-coins",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1,
+        "initial": 0,
+        "hops": [
+          1,
+          5,
+          10
+        ]
+      },
+      "rubric": {
+        "target": 30
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara has six coins that say 5. Hop to the total.",
+          "help": [
+            "Zara hopped 5 for each coin.",
+            "Keep counting by 5s until all six coins are used."
+          ],
+          "feedback": {
+            "met": "Your total is right: six coins worth 5 each.",
+            "not_yet": "Hop 5 for each coin, like Zara. Count by 5s."
+          }
+        },
+        "es-MX": {
+          "prompt": "Zara tiene seis monedas que dicen 5. Salta hasta el total.",
+          "help": [
+            "Zara saltó 5 por cada moneda.",
+            "Sigue contando de 5 en 5 hasta usar las seis."
+          ],
+          "feedback": {
+            "met": "Tu total es correcto: seis monedas de 5 cada una.",
+            "not_yet": "Salta 5 por cada moneda, como Zara. Cuenta de 5 en 5."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Zara tem seis moedas que dizem 5. Salte até o total.",
+          "help": [
+            "A Zara saltou 5 por moeda.",
+            "Continue de 5 em 5 até usar as seis."
+          ],
+          "feedback": {
+            "met": "Seu total está certo: seis moedas de 5 cada uma.",
+            "not_yet": "Salte 5 por moeda, como a Zara. Conte de 5 em 5."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.coin-recognition",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 1,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara needs the coin that says 1. Take it.",
+          "feedback": {
+            "met": "You found the coin that says 1. It is worth 1.",
+            "not_yet": "Read the number on each coin, like Zara. Find the 1."
+          }
+        },
+        "es-MX": {
+          "prompt": "Zara necesita la moneda que dice 1. Tómala.",
+          "feedback": {
+            "met": "Encontraste la moneda que dice 1. Vale 1.",
+            "not_yet": "Lee el número de cada moneda, como Zara. Busca el 1."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Zara precisa da moeda que diz 1. Pegue a moeda.",
+          "feedback": {
+            "met": "Você achou a moeda que diz 1. Ela vale 1.",
+            "not_yet": "Leia o número de cada moeda, como a Zara. Procure o 1."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-like-coins",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1,
+        "initial": 0,
+        "hops": [
+          1,
+          5,
+          10
+        ]
+      },
+      "rubric": {
+        "target": 40
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara has four coins that say 10. Hop to the total.",
+          "help": [
+            "Each coin says 10, so each hop is 10.",
+            "Count by 10s, one hop for each coin."
+          ],
+          "feedback": {
+            "met": "Your total is right: four coins worth 10 each.",
+            "not_yet": "Each coin says 10. Hop 10 for each coin."
+          }
+        },
+        "es-MX": {
+          "prompt": "Zara tiene cuatro monedas que dicen 10. Salta hasta el total.",
+          "help": [
+            "Cada moneda dice 10, así que cada salto es de 10.",
+            "Cuenta de 10 en 10, un salto por moneda."
+          ],
+          "feedback": {
+            "met": "Tu total es correcto: cuatro monedas de 10 cada una.",
+            "not_yet": "Cada moneda dice 10. Salta 10 por cada una."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Zara tem quatro moedas que dizem 10. Salte até o total.",
+          "help": [
+            "Cada moeda diz 10, então cada salto é de 10.",
+            "Conte de 10 em 10, um salto por moeda."
+          ],
+          "feedback": {
+            "met": "Seu total está certo: quatro moedas de 10 cada uma.",
+            "not_yet": "Cada moeda diz 10. Salte 10 por moeda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.count-like-coins",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 1,
+        "initial": 0,
+        "hops": [
+          1,
+          5,
+          10
+        ]
+      },
+      "rubric": {
+        "target": 25
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the toy shop, five coins say 5. Hop to the total.",
+          "feedback": {
+            "met": "Your total is right: five coins worth 5 each.",
+            "not_yet": "Each coin says 5. Hop 5 for each coin."
+          }
+        },
+        "es-MX": {
+          "prompt": "En la juguetería, cinco monedas dicen 5. Salta hasta el total.",
+          "feedback": {
+            "met": "Tu total es correcto: cinco monedas de 5 cada una.",
+            "not_yet": "Cada moneda dice 5. Salta 5 por cada una."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na loja de brinquedos, cinco moedas dizem 5. Salte até o total.",
+          "feedback": {
+            "met": "Seu total está certo: cinco moedas de 5 cada uma.",
+            "not_yet": "Cada moeda diz 5. Salte 5 por moeda."
+          }
+        }
+      }
+    }
+  ]
+}

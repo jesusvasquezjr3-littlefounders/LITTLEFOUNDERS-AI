@@ -1,0 +1,1038 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-plan-ahead",
+  "lesson_id": "fe-adult-10-interest-and-time",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "money.simple-interest-peek",
+    "money.percent-intro",
+    "life.opportunity-cost"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina acompaña a Lena mientras compara lo que un porcentaje de ejemplo suma a su fondo en una cuenta de ahorro con lo que cobra cada mes un crédito de tienda. Con el mismo cálculo de porcentajes encuentra el interés simple de un año y de varios, y practica con otros montos y plazos. Todas las tasas son ejemplos, no ofertas.",
+  "title": {
+    "en-US": "Interest and time",
+    "es-MX": "Interés y tiempo",
+    "pt-BR": "Juros e tempo"
+  },
+  "new_concepts": [
+    "money.simple-interest-peek"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Una persona adulta en México calcula el interés simple de un fondo en una cuenta de ahorro y el de un crédito de tienda con el mismo cálculo de porcentajes. Las tasas son ejemplos ilustrativos, nunca una oferta ni asesoría.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "cuenta de ahorro",
+          "crédito de tienda"
+        ]
+      },
+      "en-US": {
+        "scenario": "A US adult works out simple interest on a cushion in a savings account and on a store credit balance using the same percent skill. The rates are illustrative examples, never an offer or advice.",
+        "problem_refs": [
+          "us-finfluencer-confidence-gap"
+        ],
+        "anchors": [
+          "savings account",
+          "store credit"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Uma pessoa adulta no Brasil calcula os juros simples de uma reserva na poupança e os de um crediário com o mesmo cálculo de porcentagens. As taxas são exemplos ilustrativos, nunca uma oferta nem aconselhamento.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "poupança",
+          "crediário"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "Lena keeps her cushion in a savings account. Her store credit charges her a percent too.",
+          "line": "The same percent skill works both ways. Every rate here is an example."
+        },
+        "es-MX": {
+          "prompt": "Lena guarda su fondo en una cuenta de ahorro. Su crédito de tienda también le cobra un porcentaje.",
+          "line": "La misma habilidad con porcentajes sirve en ambos sentidos. Toda tasa aquí es un ejemplo."
+        },
+        "pt-BR": {
+          "prompt": "Lena guarda a reserva na poupança. O crediário dela também cobra um percentual.",
+          "line": "A mesma habilidade com porcentagens vale nos dois sentidos. Toda taxa aqui é um exemplo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "about-500"
+          },
+          {
+            "id": "about-5"
+          },
+          {
+            "id": "about-50"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-percent"
+          },
+          {
+            "id": "reason-feel"
+          },
+          {
+            "id": "reason-big"
+          }
+        ]
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "pre",
+      "copy": {
+        "en-US": {
+          "prompt": "At an example 5% a year, a $1,000 savings balance adds about how much in a year?",
+          "feedback": {
+            "met": "Thanks. Now we work it out, one step at a time.",
+            "not_yet": "Thanks. Now we work it out, one step at a time."
+          },
+          "choices": [
+            {
+              "label": "About $500"
+            },
+            {
+              "label": "About $5"
+            },
+            {
+              "label": "About $50"
+            }
+          ],
+          "reasonPrompt": "How did you decide?",
+          "reasons": [
+            {
+              "label": "I took 5% of the balance"
+            },
+            {
+              "label": "It felt like a sensible amount"
+            },
+            {
+              "label": "Interest is always a big number"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Con una tasa de ejemplo de 5% anual, ¿cuánto suma en un año un saldo de $1,000 en la cuenta de ahorro?",
+          "feedback": {
+            "met": "Gracias. Ahora lo calculamos, un paso a la vez.",
+            "not_yet": "Gracias. Ahora lo calculamos, un paso a la vez."
+          },
+          "choices": [
+            {
+              "label": "Cerca de $500"
+            },
+            {
+              "label": "Cerca de $5"
+            },
+            {
+              "label": "Cerca de $50"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo decidiste?",
+          "reasons": [
+            {
+              "label": "Saqué el 5% del saldo"
+            },
+            {
+              "label": "Me pareció una cantidad razonable"
+            },
+            {
+              "label": "El interés siempre es una cifra grande"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com uma taxa de exemplo de 5% ao ano, quanto um saldo de R$ 1.000 na poupança rende em um ano?",
+          "feedback": {
+            "met": "Anotado. Agora vamos calcular, um passo de cada vez.",
+            "not_yet": "Anotado. Agora vamos calcular, um passo de cada vez."
+          },
+          "choices": [
+            {
+              "label": "Cerca de R$ 500"
+            },
+            {
+              "label": "Cerca de R$ 5"
+            },
+            {
+              "label": "Cerca de R$ 50"
+            }
+          ],
+          "reasonPrompt": "Como você decidiu?",
+          "reasons": [
+            {
+              "label": "Calculei 5% do saldo"
+            },
+            {
+              "label": "Pareceu um valor razoável"
+            },
+            {
+              "label": "Juros são sempre um número grande"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "about-50"
+        ],
+        "reasonQuality": {
+          "reason-percent": "sound",
+          "reason-feel": "partial",
+          "reason-big": "unsupported"
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Lena's cushion is $6,000. At an example 3% a year, find 1% first.",
+          "line": "1% of $6,000 is $60. Three of those make $180 a year, the interest earned."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el fondo de Lena es de $6,000. Con un 3% anual de ejemplo, encuentra primero el 1%.",
+          "line": "El 1% de $6,000 es $60. Tres de esos hacen $180 al año, el interés ganado."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a reserva da Lena é de R$ 6.000. Com 3% ao ano de exemplo, ache primeiro 1%.",
+          "line": "1% de R$ 6.000 é R$ 60. Três desses fazem R$ 180 por ano, os juros ganhos."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: simple interest repeats the same amount every year.",
+          "line": "3 × $180 = $540 after three years. Every year uses the same $6,000, so it adds the same $180."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el interés simple repite la misma cantidad cada año.",
+          "line": "3 × $180 = $540 después de tres años. Cada año usa los mismos $6,000, así que suma los mismos $180."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: os juros simples repetem o mesmo valor a cada ano.",
+          "line": "3 × R$ 180 = R$ 540 depois de três anos. Cada ano usa os mesmos R$ 6.000, então rende os mesmos R$ 180."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 12,
+        "minimum": 5,
+        "maximum": 30,
+        "step": 5,
+        "initial": 10,
+        "currency": "local",
+        "unit": "month"
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: spread the year's $180 over 12 months: $180 ÷ 12 = $15. Set Each month to $15."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: reparte los $180 del año en 12 meses: $180 ÷ 12 = $15. Pon Cada mes en $15."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: divida os R$ 180 do ano em 12 meses: R$ 180 ÷ 12 = R$ 15. Ponha Por mês em R$ 15."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "balance"
+          },
+          {
+            "id": "year"
+          },
+          {
+            "id": "three-years"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "year",
+          "three-years"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year": "40",
+          "three-years": "120"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Omar has $800 in savings at an example 5% a year. Find one year's interest, then three years'.",
+          "help": [
+            "As with Lena: percent of the balance, then times the years."
+          ],
+          "feedback": {
+            "met": "You found a year's interest and repeated it for three years.",
+            "not_yet": "Not yet. Find one year's interest first, then repeat it."
+          },
+          "steps": [
+            {
+              "expression": "Starting balance",
+              "result": "800",
+              "spokenText": "Omar keeps $800 in savings."
+            },
+            {
+              "expression": "5% of the balance",
+              "result": "40",
+              "spokenText": "5% of $800 is $40 in one year."
+            },
+            {
+              "expression": "Interest over three years",
+              "result": "120",
+              "spokenText": "$40 a year for three years is $120."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Omar tiene $800 en ahorro con un 5% anual de ejemplo. Encuentra el interés de un año y el de tres.",
+          "help": [
+            "Como con Lena: porcentaje del saldo y luego por los años."
+          ],
+          "feedback": {
+            "met": "Hallaste el interés de un año y lo repetiste durante tres años.",
+            "not_yet": "Aún no. Encuentra primero el interés de un año y luego repítelo."
+          },
+          "steps": [
+            {
+              "expression": "Saldo inicial",
+              "result": "800",
+              "spokenText": "Omar tiene $800 en ahorro."
+            },
+            {
+              "expression": "5% del saldo",
+              "result": "40",
+              "spokenText": "El 5% de $800 es $40 en un año."
+            },
+            {
+              "expression": "Interés en tres años",
+              "result": "120",
+              "spokenText": "$40 al año durante tres años son $120."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Omar tem R$ 800 na poupança com 5% ao ano de exemplo. Ache os juros de um ano e os de três.",
+          "help": [
+            "Como com a Lena: percentual do saldo e depois vezes os anos."
+          ],
+          "feedback": {
+            "met": "Você achou os juros de um ano e os repetiu por três anos.",
+            "not_yet": "Ainda não. Ache primeiro os juros de um ano e depois repita."
+          },
+          "steps": [
+            {
+              "expression": "Saldo inicial",
+              "result": "800",
+              "spokenText": "Omar tem R$ 800 na poupança."
+            },
+            {
+              "expression": "5% do saldo",
+              "result": "40",
+              "spokenText": "5% de R$ 800 são R$ 40 em um ano."
+            },
+            {
+              "expression": "Juros em três anos",
+              "result": "120",
+              "spokenText": "R$ 40 por ano durante três anos são R$ 120."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: now the debt side. A $1,000 store credit at an example 2% a month.",
+          "line": "$1,000 × 2 ÷ 100 = $20. Interest on a debt adds up every month."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: ahora la deuda. Un crédito de tienda de $1,000 con un 2% mensual de ejemplo.",
+          "line": "$1,000 × 2 ÷ 100 = $20. El interés de una deuda se suma cada mes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: agora a dívida. Um crediário de R$ 1.000 com 2% ao mês de exemplo.",
+          "line": "R$ 1.000 × 2 ÷ 100 = R$ 20. Os juros de uma dívida se somam todo mês."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: set a year of the debt beside a year of the cushion.",
+          "line": "12 × $20 = $240 owed, against $180 earned. Same skill, opposite direction."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: pon un año de la deuda junto a un año del fondo.",
+          "line": "12 × $20 = $240 de deuda contra $180 ganados. La misma habilidad, en sentido contrario."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: coloque um ano da dívida ao lado de um ano da reserva.",
+          "line": "12 × R$ 20 = R$ 240 de dívida contra R$ 180 ganhos. A mesma habilidade, em sentido oposto."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "balance"
+          },
+          {
+            "id": "month"
+          },
+          {
+            "id": "six-months"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "month",
+          "six-months"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "month": "9",
+          "six-months": "54"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Omar owes $300 on store credit at an example 3% a month. Find one month's interest, then six months'.",
+          "help": [
+            "As with Lena's credit: percent of the balance, then times the months."
+          ],
+          "feedback": {
+            "met": "You found a month's interest and repeated it for six months.",
+            "not_yet": "Not yet. Find one month's interest first, then repeat it."
+          },
+          "steps": [
+            {
+              "expression": "Amount owed",
+              "result": "300",
+              "spokenText": "Omar owes $300 on the store credit."
+            },
+            {
+              "expression": "300 × 3 ÷ 100",
+              "result": "9",
+              "spokenText": "3% of $300 is $9 in one month."
+            },
+            {
+              "expression": "Interest over six months",
+              "result": "54",
+              "spokenText": "$9 a month for six months is $54."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Omar debe $300 en crédito de tienda con un 3% mensual de ejemplo. Encuentra el interés de un mes y el de seis.",
+          "help": [
+            "Como con el crédito de Lena: porcentaje del saldo y luego por los meses."
+          ],
+          "feedback": {
+            "met": "Hallaste el interés de un mes y lo repetiste durante seis meses.",
+            "not_yet": "Aún no. Encuentra primero el interés de un mes y luego repítelo."
+          },
+          "steps": [
+            {
+              "expression": "Monto adeudado",
+              "result": "300",
+              "spokenText": "Omar debe $300 en el crédito de tienda."
+            },
+            {
+              "expression": "300 × 3 ÷ 100",
+              "result": "9",
+              "spokenText": "El 3% de $300 es $9 en un mes."
+            },
+            {
+              "expression": "Interés en seis meses",
+              "result": "54",
+              "spokenText": "$9 al mes durante seis meses son $54."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Omar deve R$ 300 no crediário com 3% ao mês de exemplo. Ache os juros de um mês e os de seis.",
+          "help": [
+            "Como no crediário da Lena: percentual do saldo e depois vezes os meses."
+          ],
+          "feedback": {
+            "met": "Você achou os juros de um mês e os repetiu por seis meses.",
+            "not_yet": "Ainda não. Ache primeiro os juros de um mês e depois repita."
+          },
+          "steps": [
+            {
+              "expression": "Valor devido",
+              "result": "300",
+              "spokenText": "Omar deve R$ 300 no crediário."
+            },
+            {
+              "expression": "300 × 3 ÷ 100",
+              "result": "9",
+              "spokenText": "3% de R$ 300 são R$ 9 em um mês."
+            },
+            {
+              "expression": "Juros em seis meses",
+              "result": "54",
+              "spokenText": "R$ 9 por mês durante seis meses são R$ 54."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "pay-credit"
+          },
+          {
+            "id": "keep-savings"
+          },
+          {
+            "id": "help-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-compare"
+          },
+          {
+            "id": "reason-feel"
+          },
+          {
+            "id": "reason-bigger"
+          }
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.opportunity-cost",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "$500 spare: savings pay an example 4% a year; store credit costs 1% a month. Which helps more?",
+          "help": [
+            "Put both on the same year: interest earned against interest owed."
+          ],
+          "feedback": {
+            "met": "Your choice holds: the debt costs more each year than savings earn.",
+            "not_yet": "Not yet. Work out a year of each side, then compare."
+          },
+          "choices": [
+            {
+              "label": "Pay down the store credit"
+            },
+            {
+              "label": "Keep it in savings"
+            },
+            {
+              "label": "They help the same"
+            }
+          ],
+          "reasonPrompt": "What decides it?",
+          "reasons": [
+            {
+              "label": "I compared a year of each interest"
+            },
+            {
+              "label": "Paying a debt feels responsible"
+            },
+            {
+              "label": "I picked the larger percent"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "$500 libres: el ahorro paga un 4% anual de ejemplo; el crédito de tienda cobra 1% al mes. ¿Qué ayuda más?",
+          "help": [
+            "Pon ambos en el mismo año: interés ganado contra interés pagado."
+          ],
+          "feedback": {
+            "met": "Se sostiene: la deuda cuesta cada año más de lo que gana el ahorro.",
+            "not_yet": "Aún no. Calcula un año de cada lado y compáralos."
+          },
+          "choices": [
+            {
+              "label": "Pagar el crédito de tienda"
+            },
+            {
+              "label": "Dejarlo en ahorro"
+            },
+            {
+              "label": "Ayudan igual"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo decide?",
+          "reasons": [
+            {
+              "label": "Comparé un año de cada interés"
+            },
+            {
+              "label": "Pagar una deuda se siente responsable"
+            },
+            {
+              "label": "Elegí el porcentaje más grande"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "R$ 500 livres: a poupança paga 4% ao ano de exemplo; o crediário cobra 1% ao mês. O que ajuda mais?",
+          "help": [
+            "Coloque os dois no mesmo ano: juros ganhos contra juros pagos."
+          ],
+          "feedback": {
+            "met": "Sua escolha se sustenta: a dívida custa mais por ano do que a poupança rende.",
+            "not_yet": "Ainda não. Calcule um ano de cada lado e compare."
+          },
+          "choices": [
+            {
+              "label": "Pagar o crediário"
+            },
+            {
+              "label": "Deixar na poupança"
+            },
+            {
+              "label": "Ajudam igual"
+            }
+          ],
+          "reasonPrompt": "O que decide?",
+          "reasons": [
+            {
+              "label": "Comparei um ano de cada juro"
+            },
+            {
+              "label": "Pagar uma dívida parece responsável"
+            },
+            {
+              "label": "Escolhi a maior porcentagem"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "pay-credit"
+        ],
+        "reasonQuality": {
+          "reason-compare": "sound",
+          "reason-feel": "partial",
+          "reason-bigger": "unsupported"
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "balance"
+          },
+          {
+            "id": "one-percent"
+          },
+          {
+            "id": "year"
+          },
+          {
+            "id": "four-years"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "one-percent",
+          "year",
+          "four-years"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "one-percent": "7",
+          "year": "21",
+          "four-years": "84"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Savings of $700 at an example 3% a year. Find 1%, then one year, then four years.",
+          "help": [
+            "One percent first, then times the percent, then times the years."
+          ],
+          "feedback": {
+            "met": "You found one percent, then scaled it to years.",
+            "not_yet": "Not yet. Find one percent first, then scale it up."
+          },
+          "steps": [
+            {
+              "expression": "Savings balance",
+              "result": "700",
+              "spokenText": "The balance is $700."
+            },
+            {
+              "expression": "1% of the balance",
+              "result": "7",
+              "spokenText": "1% of $700 is $7."
+            },
+            {
+              "expression": "Interest in one year",
+              "result": "21",
+              "spokenText": "Three times $7 is $21 a year."
+            },
+            {
+              "expression": "Interest in four years",
+              "result": "84",
+              "spokenText": "Four years of $21 is $84."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ahorro de $700 con un 3% anual de ejemplo. Encuentra el 1%, luego un año y luego cuatro años.",
+          "help": [
+            "Primero el uno por ciento, luego por el porcentaje y luego por los años."
+          ],
+          "feedback": {
+            "met": "Hallaste el uno por ciento y lo llevaste a años.",
+            "not_yet": "Aún no. Encuentra primero el uno por ciento y luego escálalo."
+          },
+          "steps": [
+            {
+              "expression": "Saldo de ahorro",
+              "result": "700",
+              "spokenText": "El saldo es de $700."
+            },
+            {
+              "expression": "1% del saldo",
+              "result": "7",
+              "spokenText": "El 1% de $700 es $7."
+            },
+            {
+              "expression": "Interés en un año",
+              "result": "21",
+              "spokenText": "Tres veces $7 son $21 al año."
+            },
+            {
+              "expression": "Interés en cuatro años",
+              "result": "84",
+              "spokenText": "Cuatro años de $21 son $84."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Poupança de R$ 700 com 3% ao ano de exemplo. Ache 1%, depois um ano e depois quatro anos.",
+          "help": [
+            "Primeiro um por cento, depois vezes o percentual e depois vezes os anos."
+          ],
+          "feedback": {
+            "met": "Você achou um por cento e levou isso até os anos.",
+            "not_yet": "Ainda não. Ache primeiro um por cento e depois amplie."
+          },
+          "steps": [
+            {
+              "expression": "Saldo da poupança",
+              "result": "700",
+              "spokenText": "O saldo é de R$ 700."
+            },
+            {
+              "expression": "1% do saldo",
+              "result": "7",
+              "spokenText": "1% de R$ 700 é R$ 7."
+            },
+            {
+              "expression": "Juros em um ano",
+              "result": "21",
+              "spokenText": "Três vezes R$ 7 são R$ 21 por ano."
+            },
+            {
+              "expression": "Juros em quatro anos",
+              "result": "84",
+              "spokenText": "Quatro anos de R$ 21 são R$ 84."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "balance"
+          },
+          {
+            "id": "one-percent"
+          },
+          {
+            "id": "month"
+          },
+          {
+            "id": "six-months"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "one-percent",
+          "month",
+          "six-months"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "one-percent": "6",
+          "month": "12",
+          "six-months": "72"
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "Your phone costs $600 on store credit at an example 2% a month. Find one month's interest, then six months'.",
+          "help": [
+            "Same method: one percent, then the percent, then the months."
+          ],
+          "feedback": {
+            "met": "You found interest owed with the same skill as interest earned.",
+            "not_yet": "Not yet. Find one percent first, then scale it to months."
+          },
+          "steps": [
+            {
+              "expression": "Amount owed",
+              "result": "600",
+              "spokenText": "The phone is $600 on credit."
+            },
+            {
+              "expression": "1% of the amount",
+              "result": "6",
+              "spokenText": "1% of $600 is $6."
+            },
+            {
+              "expression": "Interest in one month",
+              "result": "12",
+              "spokenText": "Two times $6 is $12 a month."
+            },
+            {
+              "expression": "Interest in six months",
+              "result": "72",
+              "spokenText": "Six months of $12 is $72."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu celular cuesta $600 en crédito de tienda con un 2% mensual de ejemplo. Encuentra el interés de un mes y el de seis.",
+          "help": [
+            "El mismo método: uno por ciento, luego el porcentaje y luego los meses."
+          ],
+          "feedback": {
+            "met": "Hallaste el interés de una deuda con la misma habilidad que el de un ahorro.",
+            "not_yet": "Aún no. Encuentra primero el uno por ciento y luego escálalo a meses."
+          },
+          "steps": [
+            {
+              "expression": "Monto adeudado",
+              "result": "600",
+              "spokenText": "El celular cuesta $600 a crédito."
+            },
+            {
+              "expression": "1% del monto",
+              "result": "6",
+              "spokenText": "El 1% de $600 es $6."
+            },
+            {
+              "expression": "Interés en un mes",
+              "result": "12",
+              "spokenText": "Dos veces $6 son $12 al mes."
+            },
+            {
+              "expression": "Interés en seis meses",
+              "result": "72",
+              "spokenText": "Seis meses de $12 son $72."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu celular custa R$ 600 no crediário com 2% ao mês de exemplo. Ache os juros de um mês e os de seis.",
+          "help": [
+            "O mesmo método: um por cento, depois o percentual e depois os meses."
+          ],
+          "feedback": {
+            "met": "Você achou os juros de uma dívida com a mesma habilidade dos juros de poupança.",
+            "not_yet": "Ainda não. Ache primeiro um por cento e depois amplie para meses."
+          },
+          "steps": [
+            {
+              "expression": "Valor devido",
+              "result": "600",
+              "spokenText": "O celular custa R$ 600 no crediário."
+            },
+            {
+              "expression": "1% do valor",
+              "result": "6",
+              "spokenText": "1% de R$ 600 é R$ 6."
+            },
+            {
+              "expression": "Juros em um mês",
+              "result": "12",
+              "spokenText": "Duas vezes R$ 6 são R$ 12 por mês."
+            },
+            {
+              "expression": "Juros em seis meses",
+              "result": "72",
+              "spokenText": "Seis meses de R$ 12 são R$ 72."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-smart-spending",
+  "lesson_id": "fe-1012-02-plan-the-budget",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.simple-budget",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho mide con el club de Nia una lista de picnic: muestra dos formas de revisar el total (redondear hacia arriba o sumar exacto) y qué hacer cuando la lista se pasa del dinero. Cada quien elige su camino para una práctica guiada y al final decide qué quitar en un plan nuevo.",
+  "title": {
+    "en-US": "Plan a budget that fits",
+    "es-MX": "Planea un presupuesto que alcance",
+    "pt-BR": "Planeje um orçamento que caiba"
+  },
+  "new_concepts": [
+    "money.simple-budget"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "approaches": {
+    "options": [
+      {
+        "id": "approach-round",
+        "label": {
+          "en-US": "Round up first",
+          "es-MX": "Redondear hacia arriba",
+          "pt-BR": "Arredondar para cima"
+        },
+        "segment_ids": [
+          "guided-round-01"
+        ]
+      },
+      {
+        "id": "approach-exact",
+        "label": {
+          "en-US": "Add exactly",
+          "es-MX": "Sumar exacto",
+          "pt-BR": "Somar exato"
+        },
+        "segment_ids": [
+          "guided-exact-01"
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia's club looks at the picnic basket.",
+          "line": "Observe: Nia's club plans a picnic with limited coins. Our goal: spend without going over."
+        },
+        "es-MX": {
+          "prompt": "Nia y su club miran la canasta del picnic.",
+          "line": "Observa: el club de Nia planea un picnic con monedas limitadas. Nuestra meta: gastar sin pasarnos de las monedas."
+        },
+        "pt-BR": {
+          "prompt": "O clube da Nia olha a cesta do piquenique.",
+          "line": "Observe: o clube da Nia planeja um piquenique com moedas limitadas. Nossa meta: gastar sem passar das moedas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "choices": [
+          {
+            "id": "buy-all"
+          },
+          {
+            "id": "drop-bread"
+          },
+          {
+            "id": "drop-juice"
+          },
+          {
+            "id": "drop-grapes"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fits"
+          },
+          {
+            "id": "reason-preference"
+          },
+          {
+            "id": "reason-count"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "buy-all"
+        ],
+        "reasonQuality": {
+          "reason-fits": "sound",
+          "reason-preference": "partial",
+          "reason-count": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia has 40 coins for the picnic: bread 14, juice 13, grapes 8. What should she do?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "Buy all three"
+            },
+            {
+              "label": "Drop the bread"
+            },
+            {
+              "label": "Drop the juice"
+            },
+            {
+              "label": "Drop the grapes"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "The three prices total 40 or less"
+            },
+            {
+              "label": "I would keep what I like most"
+            },
+            {
+              "label": "Three things feel like too many"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nia tiene 40 monedas para el picnic: pan 14, jugo 13, uvas 8. ¿Qué debería hacer?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Comprar los tres"
+            },
+            {
+              "label": "Quitar el pan"
+            },
+            {
+              "label": "Quitar el jugo"
+            },
+            {
+              "label": "Quitar las uvas"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Los tres precios suman 40 o menos"
+            },
+            {
+              "label": "Me quedaría con lo que más me gusta"
+            },
+            {
+              "label": "Tres cosas parecen demasiadas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nia tem 40 moedas para o piquenique: pão 14, suco 13, uvas 8. O que ela deve fazer?",
+          "feedback": {
+            "met": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Comprar os três"
+            },
+            {
+              "label": "Tirar o pão"
+            },
+            {
+              "label": "Tirar o suco"
+            },
+            {
+              "label": "Tirar as uvas"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Os três preços somam 40 ou menos"
+            },
+            {
+              "label": "Eu ficaria com o que mais gosto"
+            },
+            {
+              "label": "Três coisas parecem demais"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-goal-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the list and the goal.",
+          "line": "Nia has 70 coins and a list: bread 18, juice 23, grapes 6. The total must not pass 70."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: la lista y la meta.",
+          "line": "Nia tiene 70 monedas y una lista: pan 18, jugo 23, uvas 6. El total no debe pasar de 70."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a lista e a meta.",
+          "line": "Nia tem 70 moedas e uma lista: pão 18, suco 23, uvas 6. O total não pode passar de 70."
+        }
+      }
+    },
+    {
+      "id": "example-round-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Way 1: round up, so it is never too low.",
+          "line": "Round up: 18 to 20, 23 to 30, 6 to 10. That adds to 60, under 70, so it fits."
+        },
+        "es-MX": {
+          "prompt": "Camino 1: redondea hacia arriba y nunca te quedas corto.",
+          "line": "Redondeamos hacia arriba: 18 a 20, 23 a 30, 6 a 10. Suman 60, menos de 70, así que alcanza."
+        },
+        "pt-BR": {
+          "prompt": "Caminho 1: arredonde para cima e nunca fica baixo.",
+          "line": "Arredondamos para cima: 18 para 20, 23 para 30, 6 para 10. Somam 60, menos de 70, então dá."
+        }
+      }
+    },
+    {
+      "id": "example-exact-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Way 2: add exactly, to see what is left.",
+          "line": "Add exactly: 18 plus 23 is 41, and 41 plus 6 is 47. Then 70 minus 47 leaves 23 coins."
+        },
+        "es-MX": {
+          "prompt": "Camino 2: suma exacto y mira cuánto sobra.",
+          "line": "Sumamos exacto: 18 más 23 son 41, y 41 más 6 son 47. Luego 70 menos 47 deja 23 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Caminho 2: some os valores exatos e veja quanto sobra.",
+          "line": "Somamos os valores exatos: 18 mais 23 são 41, e 41 mais 6 são 47. Depois 70 menos 47 sobram 23 moedas."
+        }
+      }
+    },
+    {
+      "id": "guided-round-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "round-prices"
+          },
+          {
+            "id": "round-sum"
+          },
+          {
+            "id": "round-left"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "round-sum",
+          "round-left"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "round-sum": "50",
+          "round-left": "10"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia has 60 coins: cheese 11, melon 17, crackers 9. Round each price up, add, and compare with 60.",
+          "feedback": {
+            "met": "You added the rounded prices and compared the total with 60.",
+            "not_yet": "Look back at Rho's first way: round up each price, then add."
+          },
+          "help": [
+            "Do as Rho did: round up, add, then subtract from 60."
+          ],
+          "steps": [
+            {
+              "expression": "Round each price up to a ten",
+              "result": "20, 20, 10",
+              "spokenText": "We round 11 to 20, 17 to 20 and 9 to 10"
+            },
+            {
+              "expression": "20 + 20 + 10",
+              "result": "50",
+              "spokenText": "Twenty plus twenty plus ten is 50"
+            },
+            {
+              "expression": "Goal − rounded total",
+              "result": "10",
+              "spokenText": "Sixty minus 50 leaves 10"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nia tiene 60 monedas: queso 11, melón 17, galletas saladas 9. Redondea cada precio hacia arriba, suma y compara con 60.",
+          "feedback": {
+            "met": "Sumaste los precios redondeados y comparaste el total con 60.",
+            "not_yet": "Mira el primer camino de Rho: redondea cada precio y luego suma."
+          },
+          "help": [
+            "Haz como Rho: redondea, suma y réstale ese total a 60."
+          ],
+          "steps": [
+            {
+              "expression": "Redondea cada precio hacia arriba a la decena",
+              "result": "20, 20, 10",
+              "spokenText": "Redondeamos 11 a 20, 17 a 20 y 9 a 10"
+            },
+            {
+              "expression": "20 + 20 + 10",
+              "result": "50",
+              "spokenText": "Veinte más veinte más diez son 50"
+            },
+            {
+              "expression": "Meta − total redondeado",
+              "result": "10",
+              "spokenText": "Sesenta menos 50 deja 10"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nia tem 60 moedas: queijo 11, melão 17, biscoitos salgados 9. Arredonde cada preço para cima, some e compare com 60.",
+          "feedback": {
+            "met": "Você somou os preços arredondados e comparou o total com 60.",
+            "not_yet": "Veja o primeiro caminho de Rho: arredonde cada preço e depois some."
+          },
+          "help": [
+            "Faça como Rho: arredonde, some e tire esse total de 60."
+          ],
+          "steps": [
+            {
+              "expression": "Arredonde cada preço para cima até a dezena",
+              "result": "20, 20, 10",
+              "spokenText": "Arredondamos 11 para 20, 17 para 20 e 9 para 10"
+            },
+            {
+              "expression": "20 + 20 + 10",
+              "result": "50",
+              "spokenText": "Vinte mais vinte mais dez são 50"
+            },
+            {
+              "expression": "Meta − total arredondado",
+              "result": "10",
+              "spokenText": "Sessenta menos 50 sobra 10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-exact-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "first-pair"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "left"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "total",
+          "left"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "37",
+          "left": "8"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia has 45 coins: cheese 16, plums 13, crackers 8. Add the exact prices and compare with 45.",
+          "feedback": {
+            "met": "You added the exact prices and compared the total with 45.",
+            "not_yet": "Look back at Rho's second way: add two prices, then the third."
+          },
+          "help": [
+            "Do as Rho did: add two prices, then the third, then subtract from 45."
+          ],
+          "steps": [
+            {
+              "expression": "16 + 13",
+              "result": "29",
+              "spokenText": "Sixteen plus 13 is 29"
+            },
+            {
+              "expression": "29 + 8",
+              "result": "37",
+              "spokenText": "Twenty-nine plus 8 is 37"
+            },
+            {
+              "expression": "Goal − total",
+              "result": "8",
+              "spokenText": "Forty-five minus 37 leaves 8"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nia tiene 45 monedas: queso 16, ciruelas 13, galletas saladas 8. Suma los precios exactos y compara con 45.",
+          "feedback": {
+            "met": "Sumaste los precios exactos y comparaste el total con 45.",
+            "not_yet": "Mira el segundo camino de Rho: suma dos precios y luego el tercero."
+          },
+          "help": [
+            "Haz como Rho: suma dos precios, luego el tercero, y réstale ese total a 45."
+          ],
+          "steps": [
+            {
+              "expression": "16 + 13",
+              "result": "29",
+              "spokenText": "Dieciséis más 13 son 29"
+            },
+            {
+              "expression": "29 + 8",
+              "result": "37",
+              "spokenText": "Veintinueve más 8 son 37"
+            },
+            {
+              "expression": "Meta − total",
+              "result": "8",
+              "spokenText": "Cuarenta y cinco menos 37 deja 8"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nia tem 45 moedas: queijo 16, ameixas 13, biscoitos salgados 8. Some os preços exatos e compare com 45.",
+          "feedback": {
+            "met": "Você somou os preços exatos e comparou o total com 45.",
+            "not_yet": "Veja o segundo caminho de Rho: some dois preços e depois o terceiro."
+          },
+          "help": [
+            "Faça como Rho: some dois preços, depois o terceiro, e tire esse total de 45."
+          ],
+          "steps": [
+            {
+              "expression": "16 + 13",
+              "result": "29",
+              "spokenText": "Dezesseis mais 13 são 29"
+            },
+            {
+              "expression": "29 + 8",
+              "result": "37",
+              "spokenText": "Vinte e nove mais 8 são 37"
+            },
+            {
+              "expression": "Meta − total",
+              "result": "8",
+              "spokenText": "Quarenta e cinco menos 37 sobra 8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-over-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A list that goes over.",
+          "line": "Another list: bread 16, juice 9, grapes 19 add to 44. The club has 40, so it's over by 4."
+        },
+        "es-MX": {
+          "prompt": "Una lista que se pasa.",
+          "line": "Otra lista: pan 16, jugo 9, uvas 19 suman 44. El club tiene 40, así que se pasa por 4."
+        },
+        "pt-BR": {
+          "prompt": "Uma lista que ultrapassa o dinheiro.",
+          "line": "Outra lista: pão 16, suco 9, uvas 19 somam 44. O clube tem 40, então a lista ultrapassa em 4 moedas."
+        }
+      }
+    },
+    {
+      "id": "example-drop-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Drop one item, then add again.",
+          "line": "Juice matters least, and its 9 coins cover the 4 over. 44 minus 9 is 35: it fits."
+        },
+        "es-MX": {
+          "prompt": "Quita un artículo y suma otra vez.",
+          "line": "El jugo importa menos y sus 9 monedas cubren los 4 de más. 44 menos 9 son 35: el plan cabe en 40."
+        },
+        "pt-BR": {
+          "prompt": "Tire um item e some de novo.",
+          "line": "O suco importa menos, e suas 9 moedas cobrem os 4 a mais. 44 menos 9 é 35: o plano cabe em 40."
+        }
+      }
+    },
+    {
+      "id": "practice-over-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "steps": [
+          {
+            "id": "first-pair"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "over-by"
+          },
+          {
+            "id": "new-total"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "total",
+          "over-by",
+          "new-total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "55",
+          "over-by": "5",
+          "new-total": "42"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia has 50 coins: bread 17, juice 13, grapes 25. Add exactly, find how far over, then drop the juice.",
+          "feedback": {
+            "met": "You added exactly, saw how far over, and re-added without the juice.",
+            "not_yet": "Look back at Rho's over-budget list: add, compare, drop, add again."
+          },
+          "help": [
+            "Add all three prices, subtract 50, then subtract the juice price from the total."
+          ],
+          "steps": [
+            {
+              "expression": "17 + 13",
+              "result": "30",
+              "spokenText": "Seventeen plus 13 is 30"
+            },
+            {
+              "expression": "30 + 25",
+              "result": "55",
+              "spokenText": "Thirty plus 25 is 55"
+            },
+            {
+              "expression": "Total − goal",
+              "result": "5",
+              "spokenText": "Fifty-five minus 50 is 5, so the list is over by 5"
+            },
+            {
+              "expression": "Total − dropped item",
+              "result": "42",
+              "spokenText": "Fifty-five minus 13 is 42, under 50"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nia tiene 50 monedas: pan 17, jugo 13, uvas 25. Suma exacto, mira cuánto se pasa y luego quita el jugo.",
+          "feedback": {
+            "met": "Sumaste exacto, viste cuánto se pasa y volviste a sumar sin el jugo.",
+            "not_yet": "Mira la lista que se pasó con Rho: suma, compara, quita y suma otra vez."
+          },
+          "help": [
+            "Suma los tres precios, réstale 50 y luego réstale el precio del jugo al total."
+          ],
+          "steps": [
+            {
+              "expression": "17 + 13",
+              "result": "30",
+              "spokenText": "Diecisiete más 13 son 30"
+            },
+            {
+              "expression": "30 + 25",
+              "result": "55",
+              "spokenText": "Treinta más 25 son 55"
+            },
+            {
+              "expression": "Total − meta",
+              "result": "5",
+              "spokenText": "Cincuenta y cinco menos 50 son 5, así que la lista se pasa por 5"
+            },
+            {
+              "expression": "Total − artículo quitado",
+              "result": "42",
+              "spokenText": "Cincuenta y cinco menos 13 son 42, menos de 50"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Nia tem 50 moedas: pão 17, suco 13, uvas 25. Some os valores exatos, veja quanto ultrapassa e depois tire o suco.",
+          "feedback": {
+            "met": "Você somou os valores exatos, viu quanto ultrapassa e somou de novo sem o suco.",
+            "not_yet": "Veja a lista do Rho que ultrapassou: some, compare, tire e some de novo."
+          },
+          "help": [
+            "Some os três preços, tire 50 e depois tire o preço do suco do total."
+          ],
+          "steps": [
+            {
+              "expression": "17 + 13",
+              "result": "30",
+              "spokenText": "Dezessete mais 13 são 30"
+            },
+            {
+              "expression": "30 + 25",
+              "result": "55",
+              "spokenText": "Trinta mais 25 são 55"
+            },
+            {
+              "expression": "Total − meta",
+              "result": "5",
+              "spokenText": "Cinquenta e cinco menos 50 são 5, então a lista ultrapassa em 5"
+            },
+            {
+              "expression": "Total − item tirado",
+              "result": "42",
+              "spokenText": "Cinquenta e cinco menos 13 são 42, menos de 50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-kites-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "choices": [
+          {
+            "id": "buy-all"
+          },
+          {
+            "id": "drop-ribbon"
+          },
+          {
+            "id": "drop-paper"
+          },
+          {
+            "id": "drop-glue"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-refit"
+          },
+          {
+            "id": "reason-cheapest"
+          },
+          {
+            "id": "reason-least-liked"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "drop-ribbon"
+        ],
+        "reasonQuality": {
+          "reason-refit": "sound",
+          "reason-cheapest": "unsupported",
+          "reason-least-liked": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo's club has 40 coins for kites: ribbon 19, paper 24, glue 13. It must keep the paper; what now?",
+          "feedback": {
+            "met": "Drop what covers the excess, add again: it works on any list.",
+            "not_yet": "Like Rho: drop one, add again, compare with 40. The paper stays."
+          },
+          "choices": [
+            {
+              "label": "Buy all three"
+            },
+            {
+              "label": "Drop the ribbon"
+            },
+            {
+              "label": "Drop the paper"
+            },
+            {
+              "label": "Drop the glue"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Without it, the total is 40 or less"
+            },
+            {
+              "label": "It's the cheapest thing on the list"
+            },
+            {
+              "label": "It's what I like least"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El club de Leo tiene 40 monedas para papalotes: listón 19, papel 24, pegamento 13. Debe conservar el papel; ¿qué hace?",
+          "feedback": {
+            "met": "Quita lo que cubra el exceso y suma otra vez: sirve en cualquier lista.",
+            "not_yet": "Como Rho: quita uno, suma otra vez y compara con 40. El papel se queda."
+          },
+          "choices": [
+            {
+              "label": "Comprar los tres"
+            },
+            {
+              "label": "Quitar el listón"
+            },
+            {
+              "label": "Quitar el papel"
+            },
+            {
+              "label": "Quitar el pegamento"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Sin eso, el total es 40 o menos"
+            },
+            {
+              "label": "Es lo más barato de la lista"
+            },
+            {
+              "label": "Es lo que menos me gusta"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O clube do Leo tem 40 moedas para pipas: fita 19, papel 24, cola 13. Ele precisa ficar com o papel; e agora?",
+          "feedback": {
+            "met": "Tire o que cubra o excesso e some de novo: vale para qualquer lista.",
+            "not_yet": "Como o Rho: tire um, some de novo e compare com 40. O papel fica."
+          },
+          "choices": [
+            {
+              "label": "Comprar os três"
+            },
+            {
+              "label": "Tirar a fita"
+            },
+            {
+              "label": "Tirar o papel"
+            },
+            {
+              "label": "Tirar a cola"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Sem isso, o total fica em 40 ou menos"
+            },
+            {
+              "label": "É a coisa mais barata da lista"
+            },
+            {
+              "label": "É o que menos gosto"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

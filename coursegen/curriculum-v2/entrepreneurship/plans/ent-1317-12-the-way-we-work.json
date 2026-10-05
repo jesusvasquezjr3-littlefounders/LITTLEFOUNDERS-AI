@@ -1,0 +1,1188 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-negotiate-lead-honest",
+  "lesson_id": "ent-1317-12-the-way-we-work",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.team-culture",
+    "biz.delegation"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Noa limpia mal un par de gamuza en tu servicio y lo esconde en una bolsa sin decir nada. Dina te deja elegir cómo responde el equipo y luego sigue contigo lo que enseña cada camino: culpar, arreglar en silencio o compartir lo ocurrido. Después lees una espina de pescado que explica por qué Noa lo escondió y practicas tres hábitos que forman la cultura de tu equipo: una revisión semanal de 10 minutos, agradecimientos específicos y reconocer tus propios errores primero.",
+  "title": {
+    "es-MX": "Nuestra forma de trabajar",
+    "en-US": "The way we work",
+    "pt-BR": "Nosso jeito de trabalhar"
+  },
+  "new_concepts": [
+    "biz.team-culture"
+  ],
+  "regional": {
+    "universal": "A venture story with no money amounts, places or customs; it reads the same in every market."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your shoe service, Noa slips one pair into a bag without a word.",
+          "line": "She used the wrong cleaner on the suede, and the toe turned pale. Nobody else has seen it."
+        },
+        "es-MX": {
+          "prompt": "En tu servicio de limpieza de tenis, Noa mete un par en una bolsa sin decir nada.",
+          "line": "Usó el limpiador equivocado en la gamuza y la punta se puso pálida. Nadie más lo ha visto."
+        },
+        "pt-BR": {
+          "prompt": "No seu serviço de limpeza de tênis, a Noa coloca um par numa sacola sem dizer nada.",
+          "line": "Ela usou o limpador errado na camurça e a ponta ficou desbotada. Ninguém mais viu."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1",
+          "option-2",
+          "option-3"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your shoe service, you find Noa’s pale pair before pickup. What do you do first?",
+          "feedback": {
+            "met": "Noted. Next we follow where each path leads.",
+            "not_yet": "Noted. Next we follow where each path leads."
+          },
+          "scene": "The bag sits on the table. Noa and Rui are packing nearby, and both can hear you.",
+          "options": [
+            {
+              "label": "Name Noa in front of the whole team"
+            },
+            {
+              "label": "Tell the team and fix it together"
+            },
+            {
+              "label": "Re-clean the pair quietly and say nothing"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En tu servicio de limpieza, encuentras el par pálido de Noa antes de que el cliente lo recoja. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Anotado. Ahora seguimos adónde lleva cada camino.",
+            "not_yet": "Anotado. Ahora seguimos adónde lleva cada camino."
+          },
+          "scene": "La bolsa está sobre la mesa. Noa y Rui empacan cerca y los dos pueden oírte.",
+          "options": [
+            {
+              "label": "Decir el nombre de Noa ante todo el equipo"
+            },
+            {
+              "label": "Contar al equipo y arreglarlo juntos"
+            },
+            {
+              "label": "Limpiar el par de nuevo sin decir nada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No seu serviço de limpeza, você encontra o par desbotado da Noa antes de o cliente retirar. O que você faz primeiro?",
+          "feedback": {
+            "met": "Anotado. Agora seguimos aonde cada caminho leva.",
+            "not_yet": "Anotado. Agora seguimos aonde cada caminho leva."
+          },
+          "scene": "A sacola está sobre a mesa. A Noa e o Rui embalam por perto e os dois podem ouvir você.",
+          "options": [
+            {
+              "label": "Dizer o nome da Noa diante de toda a equipe"
+            },
+            {
+              "label": "Contar à equipe e arrumar juntos"
+            },
+            {
+              "label": "Limpar o par de novo sem dizer nada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-paths-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: follow the blame path and the quiet path.",
+          "line": "Blame teaches the team to hide mistakes. A quiet fix saves one pair but teaches nobody."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: sigue el camino de la culpa y el camino callado.",
+          "line": "La culpa enseña al equipo a esconder errores. Arreglar en silencio salva un par, pero no enseña a nadie."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: siga o caminho da culpa e o caminho calado.",
+          "line": "A culpa ensina a equipe a esconder erros. Arrumar em silêncio salva um par, mas não ensina ninguém."
+        }
+      }
+    },
+    {
+      "id": "ex-share-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: share what happened, not who.",
+          "line": "You say the suede got the wrong cleaner. The team adds a suede step, and Noa redoes the pair."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: comparte qué pasó, no quién.",
+          "line": "Dices que la gamuza recibió el limpiador equivocado. El equipo agrega un paso para gamuza y Noa rehace el par."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: compartilhe o que aconteceu, não quem.",
+          "line": "Você diz que a camurça recebeu o limpador errado. A equipe cria uma etapa para camurça e a Noa refaz o par."
+        }
+      }
+    },
+    {
+      "id": "ex-fish-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "ishikawa"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-effect"
+            },
+            {
+              "id": "node-task"
+            },
+            {
+              "id": "node-task-cause"
+            },
+            {
+              "id": "node-place"
+            },
+            {
+              "id": "node-place-cause"
+            },
+            {
+              "id": "node-telling"
+            },
+            {
+              "id": "node-telling-cause"
+            },
+            {
+              "id": "node-leader"
+            },
+            {
+              "id": "node-leader-cause"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-effect",
+              "to": "node-task"
+            },
+            {
+              "from": "node-effect",
+              "to": "node-place"
+            },
+            {
+              "from": "node-effect",
+              "to": "node-telling"
+            },
+            {
+              "from": "node-effect",
+              "to": "node-leader"
+            },
+            {
+              "from": "node-task",
+              "to": "node-task-cause"
+            },
+            {
+              "from": "node-place",
+              "to": "node-place-cause"
+            },
+            {
+              "from": "node-telling",
+              "to": "node-telling-cause"
+            },
+            {
+              "from": "node-leader",
+              "to": "node-leader-cause"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: read why Noa hid it. Each bone groups causes, and the first is the handoff.",
+          "title": "Why Noa hid the pair",
+          "data": {
+            "nodes": [
+              {
+                "label": "Noa hid the pale pair"
+              },
+              {
+                "label": "How the task was handed over"
+              },
+              {
+                "label": "Suede step was never written down"
+              },
+              {
+                "label": "No place to say it"
+              },
+              {
+                "label": "Mistakes never come up in team talks"
+              },
+              {
+                "label": "Telling earns nothing"
+              },
+              {
+                "label": "The last mistake got blame, not thanks"
+              },
+              {
+                "label": "The leader’s example"
+              },
+              {
+                "label": "You never share your own mistakes"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: lee por qué Noa lo escondió. Cada espina agrupa causas, y la primera es cómo se asignó la tarea.",
+          "title": "Por qué Noa escondió el par",
+          "data": {
+            "nodes": [
+              {
+                "label": "Noa escondió el par pálido"
+              },
+              {
+                "label": "Cómo se asignó la tarea"
+              },
+              {
+                "label": "El paso para gamuza nunca se escribió"
+              },
+              {
+                "label": "Sin lugar para decirlo"
+              },
+              {
+                "label": "Los errores nunca salen en las charlas"
+              },
+              {
+                "label": "Avisar no gana nada"
+              },
+              {
+                "label": "El último error trajo culpa, no gracias"
+              },
+              {
+                "label": "El ejemplo de quien lidera"
+              },
+              {
+                "label": "Nunca cuentas tus propios errores"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: leia por que a Noa escondeu. Cada espinha agrupa causas, e a primeira é como a tarefa foi passada.",
+          "title": "Por que a Noa escondeu o par",
+          "data": {
+            "nodes": [
+              {
+                "label": "A Noa escondeu o par desbotado"
+              },
+              {
+                "label": "Como a tarefa foi passada"
+              },
+              {
+                "label": "A etapa da camurça nunca foi escrita"
+              },
+              {
+                "label": "Sem lugar para dizer"
+              },
+              {
+                "label": "Os erros nunca surgem nas conversas"
+              },
+              {
+                "label": "Avisar não rende nada"
+              },
+              {
+                "label": "O último erro trouxe culpa, não elogio"
+              },
+              {
+                "label": "O exemplo de quem lidera"
+              },
+              {
+                "label": "Você nunca conta seus próprios erros"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "ishikawa"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-effect"
+            },
+            {
+              "id": "node-task"
+            },
+            {
+              "id": "node-task-cause"
+            },
+            {
+              "id": "node-talk"
+            },
+            {
+              "id": "node-talk-cause"
+            },
+            {
+              "id": "node-after"
+            },
+            {
+              "id": "node-after-cause"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-effect",
+              "to": "node-task"
+            },
+            {
+              "from": "node-effect",
+              "to": "node-talk"
+            },
+            {
+              "from": "node-effect",
+              "to": "node-after"
+            },
+            {
+              "from": "node-task",
+              "to": "node-task-cause"
+            },
+            {
+              "from": "node-talk",
+              "to": "node-talk-cause"
+            },
+            {
+              "from": "node-after",
+              "to": "node-after-cause"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "option-1"
+            },
+            {
+              "id": "option-2"
+            },
+            {
+              "id": "option-3"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your shoe service, a month on, Lia hid a late delivery. Read the fishbone.",
+          "feedback": {
+            "met": "You traced the cause back to the handoff.",
+            "not_yet": "Not yet. As in Step 3, start from the task bone."
+          },
+          "title": "Why Lia hid a late order",
+          "data": {
+            "nodes": [
+              {
+                "label": "Lia hid a late delivery"
+              },
+              {
+                "label": "The task"
+              },
+              {
+                "label": "Pickup time was never written down"
+              },
+              {
+                "label": "The team talk"
+              },
+              {
+                "label": "Late orders come up only when asked"
+              },
+              {
+                "label": "After telling"
+              },
+              {
+                "label": "Her last report got no reply"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "In Lia’s fishbone, which cause comes from how the task was handed over?",
+            "options": [
+              {
+                "label": "Her last report got no reply"
+              },
+              {
+                "label": "Pickup time was never written down"
+              },
+              {
+                "label": "Late orders come up only when asked"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "En tu servicio de limpieza, un mes después, Lia escondió una entrega tardía. Lee la espina de pescado.",
+          "feedback": {
+            "met": "Rastreaste la causa hasta el momento de asignar la tarea.",
+            "not_yet": "Aún no. Como en el Paso 3, empieza por la espina de la tarea."
+          },
+          "title": "Por qué Lia escondió un retraso",
+          "data": {
+            "nodes": [
+              {
+                "label": "Lia escondió una entrega tardía"
+              },
+              {
+                "label": "La tarea"
+              },
+              {
+                "label": "La hora de recoger nunca se anotó"
+              },
+              {
+                "label": "La charla del equipo"
+              },
+              {
+                "label": "Los retrasos solo salen si preguntan"
+              },
+              {
+                "label": "Después de avisar"
+              },
+              {
+                "label": "Su último aviso se quedó sin respuesta"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "En la espina de Lia, ¿qué causa viene de cómo se asignó la tarea?",
+            "options": [
+              {
+                "label": "Su último aviso se quedó sin respuesta"
+              },
+              {
+                "label": "La hora de recoger nunca se anotó"
+              },
+              {
+                "label": "Los retrasos solo salen si preguntan"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "No seu serviço de limpeza, um mês depois, a Lia escondeu uma entrega atrasada. Leia a espinha de peixe.",
+          "feedback": {
+            "met": "Você rastreou a causa até o momento de passar a tarefa.",
+            "not_yet": "Ainda não. Como no Passo 3, comece pela espinha da tarefa."
+          },
+          "title": "Por que a Lia escondeu um atraso",
+          "data": {
+            "nodes": [
+              {
+                "label": "A Lia escondeu uma entrega atrasada"
+              },
+              {
+                "label": "A tarefa"
+              },
+              {
+                "label": "A hora da retirada nunca foi anotada"
+              },
+              {
+                "label": "A conversa da equipe"
+              },
+              {
+                "label": "Os atrasos só surgem se perguntarem"
+              },
+              {
+                "label": "Depois de avisar"
+              },
+              {
+                "label": "O último aviso dela ficou sem resposta"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Na espinha da Lia, qual causa vem de como a tarefa foi passada?",
+            "options": [
+              {
+                "label": "O último aviso dela ficou sem resposta"
+              },
+              {
+                "label": "A hora da retirada nunca foi anotada"
+              },
+              {
+                "label": "Os atrasos só surgem se perguntarem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-review-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: a weekly review gives mistakes a place.",
+          "line": "10 minutes each week: one mistake, one win, one fix. It answers the bone “No place to say it”."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: una revisión semanal da un lugar a los errores.",
+          "line": "10 minutos cada semana: un error, un logro, un arreglo. Responde a la espina “Sin lugar para decirlo”."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: uma revisão semanal dá um lugar aos erros.",
+          "line": "10 minutos por semana: um erro, uma conquista, um ajuste. Responde à espinha “Sem lugar para dizer”."
+        }
+      }
+    },
+    {
+      "id": "ex-thanks-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: specific thanks answer “Telling earns nothing”.",
+          "line": "Skip “nice work”. Name the action and result: “Thanks for telling us; we fixed the pair before pickup.”"
+        },
+        "es-MX": {
+          "prompt": "Paso 5: un agradecimiento específico responde a “Avisar no gana nada”.",
+          "line": "Evita “buen trabajo”. Nombra la acción y el resultado: “Gracias por avisar; arreglamos el par antes de que lo recojan.”"
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: um agradecimento específico responde a “Avisar não rende nada”.",
+          "line": "Evite “bom trabalho”. Nomeie a ação e o resultado: “Agradeço por avisar; arrumamos o par antes da retirada.”"
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-1"
+          },
+          {
+            "id": "choice-2"
+          },
+          {
+            "id": "choice-3"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-1"
+          },
+          {
+            "id": "reason-2"
+          },
+          {
+            "id": "reason-3"
+          },
+          {
+            "id": "reason-4"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-1"
+        ],
+        "reasonQuality": {
+          "reason-1": "partial",
+          "reason-2": "sound",
+          "reason-3": "unsupported",
+          "reason-4": "sound"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your shoe service, Rui reports a mislabeled bag early. Which thanks do you give?",
+          "feedback": {
+            "met": "You chose the thanks that names an action and a result.",
+            "not_yet": "Not yet. Look for the thanks that names a result."
+          },
+          "help": [
+            "A specific thanks says what was done and what it saved."
+          ],
+          "choices": [
+            {
+              "label": "Thanks, telling me early saved the order"
+            },
+            {
+              "label": "Nice work, Rui, keep it up"
+            },
+            {
+              "label": "Next time, check labels before packing"
+            }
+          ],
+          "reasonPrompt": "Which reason supports your choice best?",
+          "reasons": [
+            {
+              "label": "It keeps Rui in a good mood"
+            },
+            {
+              "label": "Rui learns what to repeat next time"
+            },
+            {
+              "label": "Reporting a mistake does not deserve thanks"
+            },
+            {
+              "label": "It names the action and its result"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En tu servicio de limpieza, Rui avisa temprano de una bolsa mal etiquetada. ¿Qué agradecimiento le das?",
+          "feedback": {
+            "met": "Elegiste el agradecimiento que nombra una acción y un resultado.",
+            "not_yet": "Aún no. Busca el agradecimiento que nombra un resultado."
+          },
+          "help": [
+            "Un agradecimiento específico dice qué se hizo y qué salvó."
+          ],
+          "choices": [
+            {
+              "label": "Gracias, avisarme temprano salvó el pedido"
+            },
+            {
+              "label": "Buen trabajo, Rui, sigue así"
+            },
+            {
+              "label": "La próxima vez, revisa las etiquetas antes"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Mantiene a Rui de buen humor"
+            },
+            {
+              "label": "Rui aprende qué repetir la próxima vez"
+            },
+            {
+              "label": "Avisar de un error no merece gracias"
+            },
+            {
+              "label": "Nombra la acción y su resultado"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No seu serviço de limpeza, o Rui avisa cedo de uma sacola com etiqueta errada. Qual agradecimento você dá?",
+          "feedback": {
+            "met": "Você escolheu o agradecimento que nomeia uma ação e um resultado.",
+            "not_yet": "Ainda não. Procure o agradecimento que nomeia um resultado."
+          },
+          "help": [
+            "Um agradecimento específico diz o que foi feito e o que salvou."
+          ],
+          "choices": [
+            {
+              "label": "Agradeço, avisar cedo salvou o pedido"
+            },
+            {
+              "label": "Bom trabalho, Rui, continue assim"
+            },
+            {
+              "label": "Da próxima vez, confira as etiquetas antes"
+            }
+          ],
+          "reasonPrompt": "Qual razão apoia melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "Mantém o Rui de bom humor"
+            },
+            {
+              "label": "O Rui aprende o que repetir da próxima vez"
+            },
+            {
+              "label": "Avisar de um erro não merece agradecimento"
+            },
+            {
+              "label": "Nomeia a ação e o resultado"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-own-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: owning a mistake first answers “The leader’s example”.",
+          "line": "At the review, you share your own mistake: two pairs booked for one slot. The team copies you."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: reconocer un error primero responde a “El ejemplo de quien lidera”.",
+          "line": "En la revisión compartes tu propio error: dos pares agendados en el mismo horario. El equipo te copia."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: assumir um erro primeiro responde a “O exemplo de quem lidera”.",
+          "line": "Na revisão você conta seu próprio erro: dois pares marcados no mesmo horário. A equipe copia você."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-1"
+          },
+          {
+            "id": "choice-2"
+          },
+          {
+            "id": "choice-3"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-1"
+          },
+          {
+            "id": "reason-2"
+          },
+          {
+            "id": "reason-3"
+          },
+          {
+            "id": "reason-4"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-2"
+        ],
+        "reasonQuality": {
+          "reason-1": "sound",
+          "reason-2": "unsupported",
+          "reason-3": "sound",
+          "reason-4": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Lia’s team, late orders come up only when someone asks. Which habit helps most?",
+          "feedback": {
+            "met": "You matched the habit to the cause.",
+            "not_yet": "Not yet. Look back at what each habit answers."
+          },
+          "help": [
+            "Match what is missing in Lia’s team to a habit."
+          ],
+          "choices": [
+            {
+              "label": "Owning your own mistakes first"
+            },
+            {
+              "label": "A weekly 10-minute review"
+            },
+            {
+              "label": "Specific thanks after each report"
+            }
+          ],
+          "reasonPrompt": "Which reason supports your choice best?",
+          "reasons": [
+            {
+              "label": "The time is set, so nobody must ask"
+            },
+            {
+              "label": "Asking harder would work just as well"
+            },
+            {
+              "label": "It gives mistakes a regular place"
+            },
+            {
+              "label": "Any habit helps a little"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el equipo de Lia, los retrasos salen solo si alguien pregunta. ¿Qué hábito ayuda más?",
+          "feedback": {
+            "met": "Relacionaste el hábito con la causa.",
+            "not_yet": "Aún no. Revisa a qué espina responde cada hábito."
+          },
+          "help": [
+            "Une lo que falta en el equipo de Lia con un hábito."
+          ],
+          "choices": [
+            {
+              "label": "Reconocer primero tus errores"
+            },
+            {
+              "label": "Una revisión semanal de 10 minutos"
+            },
+            {
+              "label": "Agradecimiento específico tras cada aviso"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu elección?",
+          "reasons": [
+            {
+              "label": "La hora ya está fijada; nadie tiene que preguntar"
+            },
+            {
+              "label": "Preguntar con más fuerza funcionaría igual"
+            },
+            {
+              "label": "Da a los errores un lugar fijo"
+            },
+            {
+              "label": "Cualquier hábito ayuda un poco"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na equipe da Lia, os atrasos só surgem se alguém perguntar. Qual hábito ajuda mais?",
+          "feedback": {
+            "met": "Você ligou o hábito à causa.",
+            "not_yet": "Ainda não. Revise a que espinha cada hábito responde."
+          },
+          "help": [
+            "Ligue o que falta na equipe da Lia a um hábito."
+          ],
+          "choices": [
+            {
+              "label": "Assumir primeiro os seus erros"
+            },
+            {
+              "label": "Uma revisão semanal de 10 minutos"
+            },
+            {
+              "label": "Agradecimento específico após cada aviso"
+            }
+          ],
+          "reasonPrompt": "Qual razão apoia melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "A hora já está marcada; ninguém precisa perguntar"
+            },
+            {
+              "label": "Perguntar com mais força funcionaria igual"
+            },
+            {
+              "label": "Dá aos erros um lugar fixo"
+            },
+            {
+              "label": "Qualquer hábito ajuda um pouco"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-1"
+          },
+          {
+            "id": "choice-2"
+          },
+          {
+            "id": "choice-3"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-1"
+          },
+          {
+            "id": "reason-2"
+          },
+          {
+            "id": "reason-3"
+          },
+          {
+            "id": "reason-4"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-3"
+        ],
+        "reasonQuality": {
+          "reason-1": "partial",
+          "reason-2": "sound",
+          "reason-3": "unsupported",
+          "reason-4": "sound"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your school fair stall, you wrote the wrong day on three pickup notes. What do you do?",
+          "feedback": {
+            "met": "You owned your mistake and brought the team into the fix.",
+            "not_yet": "Not yet. Think about what your team learns from you."
+          },
+          "help": [
+            "In Step 6, the team copied what the leader did."
+          ],
+          "choices": [
+            {
+              "label": "Fix the notes without telling anyone"
+            },
+            {
+              "label": "Blame the rush and move on"
+            },
+            {
+              "label": "Tell Noa and Rui; fix the notes together"
+            }
+          ],
+          "reasonPrompt": "Which reason supports your choice best?",
+          "reasons": [
+            {
+              "label": "It fixes the notes fastest"
+            },
+            {
+              "label": "Owning it first makes telling easier for them"
+            },
+            {
+              "label": "Customers rarely check pickup notes"
+            },
+            {
+              "label": "The team copies how I treat mistakes"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En tu puesto de la feria escolar, anotaste el día equivocado en tres notas de recolección. ¿Qué haces?",
+          "feedback": {
+            "met": "Reconociste tu error y llevaste al equipo al arreglo.",
+            "not_yet": "Aún no. Piensa en qué aprende tu equipo de ti."
+          },
+          "help": [
+            "En el Paso 6, el equipo copió lo que hizo quien lidera."
+          ],
+          "choices": [
+            {
+              "label": "Corregir las notas sin decirle a nadie"
+            },
+            {
+              "label": "Culpar la prisa y seguir adelante"
+            },
+            {
+              "label": "Contar a Noa y Rui; corregir las notas juntos"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Corrige las notas más rápido"
+            },
+            {
+              "label": "Reconocerlo primero les facilita avisar"
+            },
+            {
+              "label": "Los clientes casi nunca revisan las notas"
+            },
+            {
+              "label": "El equipo copia cómo trato los errores"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na sua banca da feira da escola, você escreveu o dia errado em três notas de retirada. O que você faz?",
+          "feedback": {
+            "met": "Você assumiu seu erro e levou a equipe para a correção.",
+            "not_yet": "Ainda não. Pense no que sua equipe aprende com você."
+          },
+          "help": [
+            "No Passo 6, a equipe copiou o que quem lidera fez."
+          ],
+          "choices": [
+            {
+              "label": "Corrigir as notas sem contar a ninguém"
+            },
+            {
+              "label": "Culpar a pressa e seguir em frente"
+            },
+            {
+              "label": "Contar à Noa e ao Rui; corrigir as notas juntos"
+            }
+          ],
+          "reasonPrompt": "Qual razão apoia melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "Corrige as notas mais rápido"
+            },
+            {
+              "label": "Assumir primeiro facilita que eles avisem"
+            },
+            {
+              "label": "Os clientes quase nunca conferem as notas"
+            },
+            {
+              "label": "A equipe copia como eu trato os erros"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -16,6 +16,14 @@ export function money(cents: number, locale: Locale, whole = false): string {
   return `${sign}$${whole && abs % 100 === 0 ? decimals(locale, 0, 0).format(abs / 100) : decimals(locale, 2, 2).format(abs / 100)}`;
 }
 
+const MARKET_CURRENCY: Readonly<Record<Locale, string>> = { 'en-US': 'USD', 'es-MX': 'MXN', 'pt-BR': 'BRL' };
+
+/** Cents in the learner's market currency, cents shown only when there are some: 1250 -> "$12.50" (en-US, es-MX), "R$ 12,50" (pt-BR); 1200 -> "$12". */
+export function localMoney(cents: number, locale: Locale): string {
+  const places = cents % 100 === 0 ? 0 : 2;
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: MARKET_CURRENCY[locale], minimumFractionDigits: places, maximumFractionDigits: places }).format(cents / 100);
+}
+
 /** Whole basis points as a percent: 2682 -> "26.82%", 700 -> "7%". */
 export const percent = (bps: number, locale: Locale): string => `${decimals(locale, 0, 2).format(bps / 100)}%`;
 
@@ -34,16 +42,25 @@ const WORDS = {
   'pt-BR': { dollar: ['dólar', 'dólares'], cent: ['centavo', 'centavos'], and: 'e', minus: 'menos', percent: 'por cento' },
 } as const;
 
-/** The amount as it is read aloud: "7,612 dollars and 26 cents". Used in aria labels, never as visible text. */
-export function spokenMoney(cents: number, locale: Locale): string {
+function speak(cents: number, locale: Locale, major: readonly [string, string]): string {
   const words = WORDS[locale];
   const abs = Math.abs(cents);
-  const dollars = Math.floor(abs / 100);
+  const whole = Math.floor(abs / 100);
   const rest = abs % 100;
   const part = (count: number, unit: readonly [string, string]) => `${decimals(locale, 0, 0).format(count)} ${count === 1 ? unit[0] : unit[1]}`;
-  const text = rest === 0 ? part(dollars, words.dollar) : dollars === 0 ? part(rest, words.cent) : `${part(dollars, words.dollar)} ${words.and} ${part(rest, words.cent)}`;
+  const text = rest === 0 ? part(whole, major) : whole === 0 ? part(rest, words.cent) : `${part(whole, major)} ${words.and} ${part(rest, words.cent)}`;
   return cents < 0 ? `${words.minus} ${text}` : text;
 }
+
+/** The amount as it is read aloud: "7,612 dollars and 26 cents". Used in aria labels, never as visible text. */
+export const spokenMoney = (cents: number, locale: Locale): string => speak(cents, locale, WORDS[locale].dollar);
+
+const MARKET_MAJOR = {
+  'en-US': ['dollar', 'dollars'], 'es-MX': ['peso', 'pesos'], 'pt-BR': ['real', 'reais'],
+} as const satisfies Record<Locale, readonly [string, string]>;
+
+/** `localMoney` as it is read aloud: "12 pesos con 50 centavos", "1 real", "12 dollars and 50 cents". */
+export const spokenLocalMoney = (cents: number, locale: Locale): string => speak(cents, locale, MARKET_MAJOR[locale]);
 
 /** The rate as it is read aloud: "26.82 percent". */
 export const spokenPercent = (bps: number, locale: Locale): string => `${decimals(locale, 0, 2).format(bps / 100)} ${WORDS[locale].percent}`;

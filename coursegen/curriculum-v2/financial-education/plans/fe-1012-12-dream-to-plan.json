@@ -1,0 +1,650 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-first-account",
+  "lesson_id": "fe-1012-12-dream-to-plan",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.goal-planning",
+    "biz.saving-goal",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-a"
+  },
+  "brief": "Liruf enseña con ejemplos cómo un deseo se vuelve un plan: la bici de Mia pasa a ser una meta de 120 monedas para junio, se parte en pasos semanales de 10 y se prevé con tiempo un regalo de 15 en la semana 5. Luego quien aprende ubica totales en una barra, elige cómo prepararse para otro regalo y decide un plan de ahorro en un caso nuevo.",
+  "title": {
+    "es-MX": "De un sueño a un plan",
+    "en-US": "From dream to plan",
+    "pt-BR": "De um sonho a um plano"
+  },
+  "new_concepts": [
+    "life.goal-planning"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mia mira una bici roja en el aparador de una tienda.",
+          "line": "¡Un deseo es un buen comienzo! Vamos a volverlo un plan, un pasito a la vez."
+        },
+        "en-US": {
+          "prompt": "Mia looks at a red bike in a shop window.",
+          "line": "A wish is a fine start! Let's turn it into a plan, one small step at a time."
+        },
+        "pt-BR": {
+          "prompt": "A Mia olha uma bicicleta vermelha na vitrine de uma loja.",
+          "line": "Um desejo é um bom começo! Vamos transformá-lo em um plano, um passinho de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-hope"
+          },
+          {
+            "id": "opt-leftover"
+          },
+          {
+            "id": "opt-goal"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-goal"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué debe hacer Mia primero?",
+          "scene": "Mia quiere una bici roja. Todavía no tiene monedas ahorradas.",
+          "feedback": {
+            "met": "Gracias. Ahora hacemos un plan, paso a paso, juntos.",
+            "not_yet": "Gracias. Ahora hacemos un plan, paso a paso, juntos."
+          },
+          "options": [
+            {
+              "label": "Esperar que alguien se la compre"
+            },
+            {
+              "label": "Ahorrar lo que le sobre"
+            },
+            {
+              "label": "Elegir una cantidad y una fecha"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Before we start: what should Mia do first?",
+          "scene": "Mia wants a red bike. She has no coins saved yet.",
+          "feedback": {
+            "met": "Thanks. Now we make a plan, step by step, together.",
+            "not_yet": "Thanks. Now we make a plan, step by step, together."
+          },
+          "options": [
+            {
+              "label": "Hope someone buys it for her"
+            },
+            {
+              "label": "Save whatever is left over"
+            },
+            {
+              "label": "Choose an amount and a date"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: o que a Mia deve fazer primeiro?",
+          "scene": "A Mia quer uma bicicleta vermelha. Ela ainda não tem moedas guardadas.",
+          "feedback": {
+            "met": "Certo. Agora fazemos um plano, passo a passo, juntos.",
+            "not_yet": "Certo. Agora fazemos um plano, passo a passo, juntos."
+          },
+          "options": [
+            {
+              "label": "Esperar que alguém compre para ela"
+            },
+            {
+              "label": "Guardar o que sobrar"
+            },
+            {
+              "label": "Escolher um valor e uma data"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-goal",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: un deseo se vuelve una meta.",
+          "line": "La bici cuesta 120 monedas y Mia la quiere para junio. Eso es una meta: un tamaño y una fecha."
+        },
+        "en-US": {
+          "prompt": "Step 1: a wish becomes a goal.",
+          "line": "The bike costs 120 coins and Mia wants it by June. That is a goal: a size and a date."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: um desejo vira uma meta.",
+          "line": "A bicicleta custa 120 moedas e a Mia quer comprá-la até junho. Isso é uma meta: um tamanho e uma data."
+        }
+      }
+    },
+    {
+      "id": "ex-steps",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: partimos la meta en pasos semanales.",
+          "line": "Mia tiene 12 semanas hasta junio, y 120 ÷ 12 = 10: ahorra 10 monedas por semana."
+        },
+        "en-US": {
+          "prompt": "Step 2: cut the goal into weekly steps.",
+          "line": "Mia has 12 weeks until June, and 120 ÷ 12 = 10: she saves 10 coins each week."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: dividimos a meta em passos semanais.",
+          "line": "A Mia tem 12 semanas até junho, e 120 ÷ 12 = 10: ela guarda 10 moedas por semana."
+        }
+      }
+    },
+    {
+      "id": "ex-bar",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 150,
+        "target": 120,
+        "step": 10,
+        "initial": 10,
+        "currency": "coins"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: la barra sube 10 por semana: 10, 20, 30, y así hasta 120."
+        },
+        "en-US": {
+          "prompt": "Step 3: the bar rises 10 a week: 10, 20, 30, and so on up to 120."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a barra sobe 10 por semana: 10, 20, 30, e assim até 120."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "minimum": 0,
+        "maximum": 150,
+        "target": 120,
+        "step": 10,
+        "initial": 10,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 60
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El plan de Mia es de 10 por semana hacia 120. Mueve la barra al menos hasta su total tras la semana 6.",
+          "help": [
+            "Las semanas hasta ahora, por 10, dan el total."
+          ],
+          "feedback": {
+            "met": "Tu barra llega al total de la semana 6 o más.",
+            "not_yet": "Todavía no. Cada semana suma 10 al total."
+          }
+        },
+        "en-US": {
+          "prompt": "Mia's plan is 10 a week toward 120. Move the bar to at least her total after week 6.",
+          "help": [
+            "Weeks so far, times 10, gives the total."
+          ],
+          "feedback": {
+            "met": "Your bar is at or past week 6's total.",
+            "not_yet": "Not yet. Each week adds 10 to the total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O plano da Mia é de 10 por semana rumo a 120. Mova a barra pelo menos até o total da semana 6.",
+          "help": [
+            "As semanas até agora, vezes 10, dão o total."
+          ],
+          "feedback": {
+            "met": "Sua barra chega ao total da semana 6 ou mais.",
+            "not_yet": "Ainda não. Cada semana soma 10 ao total."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-obstacle",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: aparece un obstáculo.",
+          "line": "En la semana 5, el regalo de cumpleaños de un amigo cuesta 15 monedas. Si sale del ahorro de la bici, Mia se atrasa 15."
+        },
+        "en-US": {
+          "prompt": "Step 4: an obstacle shows up.",
+          "line": "In week 5, a friend's birthday gift costs 15 coins. If paid from her bike savings, Mia falls 15 behind."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: surge um obstáculo.",
+          "line": "Na semana 5, o presente de aniversário de um amigo custa 15 moedas. Se sair da poupança da bicicleta, a Mia atrasa 15."
+        }
+      }
+    },
+    {
+      "id": "ex-ahead",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: nos preparamos con tiempo para el obstáculo.",
+          "line": "Mia ahorra 5 de más en las semanas 2, 3 y 4. 3 × 5 = 15, así que el regalo queda cubierto."
+        },
+        "en-US": {
+          "prompt": "Step 5: plan for the obstacle early.",
+          "line": "Mia saves 5 extra in weeks 2, 3 and 4. 3 × 5 = 15, so the gift is covered."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: nos preparamos com antecedência para o obstáculo.",
+          "line": "A Mia guarda 5 a mais nas semanas 2, 3 e 4. 3 × 5 = 15, então o presente fica coberto."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-extra"
+          },
+          {
+            "id": "opt-small"
+          },
+          {
+            "id": "opt-wait"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-extra"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mia ahorra 10 por semana. ¿Cómo puede prepararse para el regalo de 12 monedas de la semana 9?",
+          "scene": "En la semana 9, la fiesta de un primo necesita un regalo de 12 monedas.",
+          "help": [
+            "Las monedas extra de cada semana deben sumar el regalo."
+          ],
+          "feedback": {
+            "met": "Elegiste un ahorro extra que cubre el regalo.",
+            "not_yet": "Todavía no. Revisa que las monedas extra sumen 12."
+          },
+          "options": [
+            {
+              "label": "Ahorrar 4 de más en las semanas 6 a 8"
+            },
+            {
+              "label": "Ahorrar 2 de más en las semanas 6 a 8"
+            },
+            {
+              "label": "Esperar a ver qué pasa en la semana 9"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Mia saves 10 a week. How can she plan for week 9's 12-coin gift?",
+          "scene": "In week 9, a cousin's party needs a gift worth 12 coins.",
+          "help": [
+            "Extra coins in each week must add up to the gift."
+          ],
+          "feedback": {
+            "met": "You chose extra savings that cover the gift.",
+            "not_yet": "Not yet. Check that the extra coins add up to 12."
+          },
+          "options": [
+            {
+              "label": "Save 4 extra in weeks 6 to 8"
+            },
+            {
+              "label": "Save 2 extra in weeks 6 to 8"
+            },
+            {
+              "label": "Wait and see in week 9"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mia guarda 10 por semana. Como ela pode se preparar para o presente de 12 moedas da semana 9?",
+          "scene": "Na semana 9, a festa de um primo precisa de um presente de 12 moedas.",
+          "help": [
+            "As moedas extras de cada semana devem somar o presente."
+          ],
+          "feedback": {
+            "met": "Você escolheu uma economia extra que cobre o presente.",
+            "not_yet": "Ainda não. Confira se as moedas extras somam 12."
+          },
+          "options": [
+            {
+              "label": "Guardar 4 a mais nas semanas 6 a 8"
+            },
+            {
+              "label": "Guardar 2 a mais nas semanas 6 a 8"
+            },
+            {
+              "label": "Esperar para ver na semana 9"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "payload": {
+        "minimum": 0,
+        "maximum": 150,
+        "target": 120,
+        "step": 5,
+        "initial": 5,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 55
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mia ahorra 10 en la semana 1 y luego 15 por semana durante 3 semanas. Mueve la barra al menos hasta su total.",
+          "help": [
+            "Empieza con los 10 de la semana 1 y suma las tres semanas de 15."
+          ],
+          "feedback": {
+            "met": "Tu barra llega a su total tras cuatro semanas, o lo pasa.",
+            "not_yet": "Todavía no. Cuenta primero la semana 1 y luego cada semana de 15."
+          }
+        },
+        "en-US": {
+          "prompt": "Mia saves 10 in week 1, then 15 weekly for 3 weeks. Move the bar to at least her total.",
+          "help": [
+            "Start with week 1's 10, then add the three weeks of 15."
+          ],
+          "feedback": {
+            "met": "Your bar is at or past her total after four weeks.",
+            "not_yet": "Not yet. Count week 1 first, then each week of 15."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Mia guarda 10 na semana 1 e depois 15 por semana durante 3 semanas. Mova a barra pelo menos até o total dela.",
+          "help": [
+            "Comece com os 10 da semana 1 e some as três semanas de 15."
+          ],
+          "feedback": {
+            "met": "Sua barra chega ao total dela após quatro semanas, ou passa dele.",
+            "not_yet": "Ainda não. Conte primeiro a semana 1 e depois cada semana de 15."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ten"
+          },
+          {
+            "id": "choice-fifteen"
+          },
+          {
+            "id": "choice-five"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-same"
+          },
+          {
+            "id": "reason-easy"
+          },
+          {
+            "id": "reason-add"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-fifteen"
+        ],
+        "reasonQuality": {
+          "reason-same": "unsupported",
+          "reason-easy": "partial",
+          "reason-add": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Noa quiere un telescopio de 90 monedas en 6 semanas. ¿Cuánto debe ahorrar cada semana?",
+          "help": [
+            "El paso semanal por las semanas debe dar la meta."
+          ],
+          "feedback": {
+            "met": "Elegiste el paso que llega a la meta a tiempo.",
+            "not_yet": "Todavía no. Los pasos semanales deben sumar la meta."
+          },
+          "choices": [
+            {
+              "label": "Ahorrar 10 por semana"
+            },
+            {
+              "label": "Ahorrar 15 por semana"
+            },
+            {
+              "label": "Ahorrar 5 por semana"
+            }
+          ],
+          "reasonPrompt": "¿Por qué funciona esa opción?",
+          "reasons": [
+            {
+              "label": "Mia ahorró 10, así que Noa también"
+            },
+            {
+              "label": "Es un número fácil de ahorrar"
+            },
+            {
+              "label": "6 semanas de eso suman 90"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Noa wants a 90-coin telescope in 6 weeks. How much should she save each week?",
+          "help": [
+            "The weekly step times the weeks should match the goal."
+          ],
+          "feedback": {
+            "met": "You chose the step that reaches the goal in time.",
+            "not_yet": "Not yet. The weekly steps must add up to the goal."
+          },
+          "choices": [
+            {
+              "label": "Save 10 a week"
+            },
+            {
+              "label": "Save 15 a week"
+            },
+            {
+              "label": "Save 5 a week"
+            }
+          ],
+          "reasonPrompt": "Why does that choice work?",
+          "reasons": [
+            {
+              "label": "Mia saved 10, so Noa should too"
+            },
+            {
+              "label": "It is an easy number to save"
+            },
+            {
+              "label": "6 weeks of it add up to 90"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Noa quer um telescópio de 90 moedas em 6 semanas. Quanto ela deve guardar por semana?",
+          "help": [
+            "O passo semanal vezes as semanas deve dar a meta."
+          ],
+          "feedback": {
+            "met": "Você escolheu o passo que chega à meta a tempo.",
+            "not_yet": "Ainda não. Os passos semanais devem somar a meta."
+          },
+          "choices": [
+            {
+              "label": "Guardar 10 por semana"
+            },
+            {
+              "label": "Guardar 15 por semana"
+            },
+            {
+              "label": "Guardar 5 por semana"
+            }
+          ],
+          "reasonPrompt": "Por que essa escolha funciona?",
+          "reasons": [
+            {
+              "label": "A Mia guardou 10, então a Noa também"
+            },
+            {
+              "label": "É um número fácil de guardar"
+            },
+            {
+              "label": "6 semanas disso somam 90"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

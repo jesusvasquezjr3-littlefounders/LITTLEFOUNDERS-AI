@@ -1,0 +1,790 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-13-17",
+  "chapter_id": "lem-1317-first-micro-business",
+  "lesson_id": "lem-1317-02-price-and-margin",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.margin",
+    "biz.pricing-strategy",
+    "biz.customer-feedback"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara cuenta cómo copió el precio del puesto de al lado sin revisar su margen y se quedó con muy poco. Luego tú calculas el margen como parte del precio, comparas precios de 12, 15 y 18 con los compradores esperados, sacas un precio a partir del margen que quieres y ves cómo reaccionan los compradores cuando el precio sube.",
+  "title": {
+    "en-US": "Set your price from your margin",
+    "es-MX": "Fija tu precio a partir de tu margen",
+    "pt-BR": "Defina seu preço pela sua margem"
+  },
+  "new_concepts": [
+    "biz.margin",
+    "biz.pricing-strategy"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara copies the stall next door and prices her muffins at 12 without checking her own margin, which leaves only 3 on a cost of 9.",
+    "recovery": "Zara works out price minus cost, sees how thin the margin is, and says that next time she will check her own margin before she looks at a rival’s price."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En la kermés de la escuela, una alumna de preparatoria vende muffins de plátano que le cuestan 9 cada uno. El puesto de al lado cobra 12 y los primeros compradores dicen que están ricos pero algo caros. Precios ilustrativos, en pesos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "kermés"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na feira da escola, uma aluna do ensino médio vende caixas com dois muffins de banana que custam 9 cada para ela. A barraca ao lado cobra 12 e os primeiros clientes dizem que estão ótimos, mas um pouco caros. Valores ilustrativos, em reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira da escola"
+        ]
+      },
+      "en-US": {
+        "scenario": "At a school bake sale, a high-school student sells boxes of six banana muffins that cost her 9 each to make. The stall next to hers charges 12, and first buyers say the muffins are good but a little pricey. Prices are illustrative, in dollars.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "bake sale"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the bake sale, 11 a.m.: two stalls side by side, one crowd.",
+          "line": "Next door sells a box at 12. Mine costs 9 to make, so what do I charge?"
+        },
+        "es-MX": {
+          "prompt": "En la kermés, 11 a.m.: dos puestos lado a lado y la misma gente.",
+          "line": "El de al lado vende el muffin a 12. A mí me cuesta 9 hacerlo, ¿cuánto cobro?"
+        },
+        "pt-BR": {
+          "prompt": "Na feira da escola, 11h: duas barracas lado a lado, o mesmo público.",
+          "line": "A do lado vende a caixa a R$ 12, e a minha custa 9 para fazer. Quanto cobro?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-match"
+          },
+          {
+            "id": "choice-undercut"
+          },
+          {
+            "id": "choice-from-margin"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rival-signal"
+          },
+          {
+            "id": "reason-cheapest"
+          },
+          {
+            "id": "reason-unknowable"
+          },
+          {
+            "id": "reason-keep-times-buyers"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-from-margin"
+        ],
+        "reasonQuality": {
+          "reason-keep-times-buyers": "sound",
+          "reason-rival-signal": "partial",
+          "reason-cheapest": "unsupported",
+          "reason-unknowable": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your box costs 9 to make, and next door sells theirs at 12. How do you set your price?",
+          "feedback": {
+            "met": "Let’s see how a price gets set.",
+            "not_yet": "Let’s see how a price gets set."
+          },
+          "choices": [
+            {
+              "label": "Match their 12 to be safe"
+            },
+            {
+              "label": "Charge 10 and win the crowd"
+            },
+            {
+              "label": "Work from what I keep and buyers"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Their price shows what buyers accept"
+            },
+            {
+              "label": "The cheapest stall always sells the most"
+            },
+            {
+              "label": "Nobody can know a good price early"
+            },
+            {
+              "label": "What I keep per sale, times buyers, pays"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A ti te cuesta 9 hacer cada muffin y el puesto de al lado cobra 12. ¿Cómo fijas tu precio?",
+          "feedback": {
+            "met": "Veamos cómo se fija un precio.",
+            "not_yet": "Veamos cómo se fija un precio."
+          },
+          "choices": [
+            {
+              "label": "Igualar su 12 por seguridad"
+            },
+            {
+              "label": "Cobrar 10 y ganarme a la gente"
+            },
+            {
+              "label": "Partir de lo que me queda y de los compradores"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Su precio muestra lo que la gente acepta"
+            },
+            {
+              "label": "El puesto más barato siempre vende más"
+            },
+            {
+              "label": "Nadie puede saber un buen precio antes"
+            },
+            {
+              "label": "Lo que me queda por venta, multiplicado por compradores, paga"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua caixa custa 9 para fazer e a barraca do lado cobra 12 pela caixa. Como você define seu preço?",
+          "feedback": {
+            "met": "Vamos ver como um preço é definido.",
+            "not_yet": "Vamos ver como um preço é definido."
+          },
+          "choices": [
+            {
+              "label": "Igualar os 12 por segurança"
+            },
+            {
+              "label": "Cobrar 10 e atrair o público"
+            },
+            {
+              "label": "Partir do que sobra e dos compradores"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "O preço deles mostra o que o público aceita"
+            },
+            {
+              "label": "A barraca mais barata sempre vende mais"
+            },
+            {
+              "label": "Ninguém sabe um bom preço de antemão"
+            },
+            {
+              "label": "O que sobra por venda, vezes compradores, paga"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Zara’s price.",
+          "setup": "Next door sold at 12, so I copied it and the boxes flew.",
+          "misjudgment": "Then I did price minus cost: 12 − 9 leaves only 3 a box.",
+          "recovery": "Thin. Next time I work out my own margin before I look at their price."
+        },
+        "es-MX": {
+          "prompt": "Mira qué pasó con el precio de Zara.",
+          "setup": "El de al lado cobraba 12, así que copié el precio y los muffins volaron.",
+          "misjudgment": "Luego hice precio menos costo: 12 − 9 deja solo 3 por muffin.",
+          "recovery": "Muy poco. La próxima vez saco mi propio margen antes de mirar su precio."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o preço da Zara.",
+          "setup": "A barraca do lado cobrava 12, então copiei o preço e as caixas voaram.",
+          "misjudgment": "Depois fiz preço menos custo: 12 − 9 deixa só 3 por caixa.",
+          "recovery": "Pouco demais. Da próxima vez, calculo minha margem antes de olhar o preço deles."
+        }
+      }
+    },
+    {
+      "id": "ex-margin-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara tries 15 a box and checks what she keeps.",
+          "line": "Step 1: margin is price minus cost, 15 − 9 = 6. As a share of price, 6 ÷ 15 = 40%."
+        },
+        "es-MX": {
+          "prompt": "Zara prueba con 15 por muffin y revisa lo que le queda.",
+          "line": "Paso 1: el margen es precio menos costo, 15 − 9 = 6. Como porcentaje del precio, 6 ÷ 15 = 40%."
+        },
+        "pt-BR": {
+          "prompt": "Zara testa 15 por caixa e confere o que sobra.",
+          "line": "Passo 1: margem é preço menos custo, 15 − 9 = 6. Em percentual do preço, 6 ÷ 15 = 40%."
+        }
+      }
+    },
+    {
+      "id": "ex-buyers-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "From her first batch Zara expects 27 buyers at 12 and 18 at 15.",
+          "line": "Step 2: profit is margin times buyers. At 12: 3 × 27 = 81; at 15: 6 × 18 = 108."
+        },
+        "es-MX": {
+          "prompt": "Con su primer lote, Zara espera 27 compradores a 12 y 18 a 15.",
+          "line": "Paso 2: la ganancia es margen por compradores. A 12: 3 × 27 = 81; a 15: 6 × 18 = 108."
+        },
+        "pt-BR": {
+          "prompt": "Pelo primeiro lote, Zara espera 27 compradores a 12 e 18 a 15.",
+          "line": "Passo 2: o lucro é margem vezes compradores. A 12: 3 × 27 = 81; a 15: 6 × 18 = 108."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "steps": [
+          {
+            "id": "margin"
+          },
+          {
+            "id": "share"
+          },
+          {
+            "id": "profit"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "share",
+          "profit"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "share": "50",
+          "profit": "81"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your turn. Cost is 9. Try a price of 18, with 9 expected buyers.",
+          "feedback": {
+            "met": "You went from margin to share to profit correctly.",
+            "not_yet": "Not yet. Start from the margin, then the share, then the buyers."
+          },
+          "help": [
+            "The margin is the price minus the cost.",
+            "Share is margin over price; profit is margin times buyers."
+          ],
+          "steps": [
+            {
+              "expression": "18 − 9",
+              "result": "9",
+              "spokenText": "Step 1: the margin is 18 minus 9, so 9"
+            },
+            {
+              "expression": "Margin ÷ price × 100",
+              "result": "50",
+              "spokenText": "Step 2: 9 divided by 18 is 50% of the price"
+            },
+            {
+              "expression": "Margin × buyers",
+              "result": "81",
+              "spokenText": "Step 3: 9 times 9 buyers is 81"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ahora tú. El costo es 9. Prueba un precio de 18, con 9 compradores esperados.",
+          "feedback": {
+            "met": "Fuiste del margen al porcentaje y a la ganancia sin errores.",
+            "not_yet": "Todavía no. Empieza por el margen, luego el porcentaje y luego los compradores."
+          },
+          "help": [
+            "El margen es el precio menos el costo.",
+            "El porcentaje es margen entre precio; la ganancia es margen por compradores."
+          ],
+          "steps": [
+            {
+              "expression": "18 − 9",
+              "result": "9",
+              "spokenText": "Paso 1: el margen es 18 menos 9, o sea 9"
+            },
+            {
+              "expression": "Margen ÷ precio × 100",
+              "result": "50",
+              "spokenText": "Paso 2: 9 entre 18 es 50% del precio"
+            },
+            {
+              "expression": "Margen × compradores",
+              "result": "81",
+              "spokenText": "Paso 3: 9 por 9 compradores es 81"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Agora você. O custo é 9. Teste um preço de 18, com 9 compradores esperados.",
+          "feedback": {
+            "met": "Você foi da margem ao percentual e ao lucro sem erro.",
+            "not_yet": "Ainda não. Comece pela margem, depois o percentual e depois os compradores."
+          },
+          "help": [
+            "A margem é o preço menos o custo.",
+            "O percentual é margem sobre preço; o lucro é margem vezes compradores."
+          ],
+          "steps": [
+            {
+              "expression": "18 − 9",
+              "result": "9",
+              "spokenText": "Passo 1: a margem é 18 menos 9, ou seja, 9"
+            },
+            {
+              "expression": "Margem ÷ preço × 100",
+              "result": "50",
+              "spokenText": "Passo 2: 9 dividido por 18 é 50% do preço"
+            },
+            {
+              "expression": "Margem × compradores",
+              "result": "81",
+              "spokenText": "Passo 3: 9 vezes 9 compradores dá 81"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-compare-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara lines up 12, 15 and 18 side by side.",
+          "line": "Step 3: profits are 81, 108 and 81. Here the best price is neither the rival’s nor the biggest margin."
+        },
+        "es-MX": {
+          "prompt": "Zara pone 12, 15 y 18 lado a lado.",
+          "line": "Paso 3: las ganancias son 81, 108 y 81. Aquí, el mejor precio no es el del rival ni el de mayor margen."
+        },
+        "pt-BR": {
+          "prompt": "Zara coloca 12, 15 e 18 lado a lado.",
+          "line": "Passo 3: os lucros são 81, 108 e 81. Aqui, o melhor preço não é o do rival nem o de maior margem."
+        }
+      }
+    },
+    {
+      "id": "ex-reverse-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Now Zara goes the other way: she wants a 40% margin on a cost of 9.",
+          "line": "Step 4: the cost is the other 60% of the price. 9 ÷ 0.60 = 15, so she charges 15."
+        },
+        "es-MX": {
+          "prompt": "Ahora Zara va al revés: quiere un margen de 40% sobre un costo de 9.",
+          "line": "Paso 4: el costo es el otro 60% del precio. 9 ÷ 0.60 = 15, así que cobra 15."
+        },
+        "pt-BR": {
+          "prompt": "Agora Zara faz o caminho inverso: quer margem de 40% sobre um custo de 9.",
+          "line": "Passo 4: o custo é o resto, 60% do preço. 9 ÷ 0,60 = 15, então ela cobra 15."
+        }
+      }
+    },
+    {
+      "id": "practice-board-01",
+      "type": "fin.margin-markup.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "margin-markup"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "cost": 12,
+        "basis": "margin",
+        "percent": 25,
+        "maxPrice": 40,
+        "start": 12
+      },
+      "rubric": {
+        "target": 16
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate’s brownies cost 12. Set the price for a 25% margin.",
+          "feedback": {
+            "met": "You priced for the margin you wanted.",
+            "not_yet": "Not yet. Check the margin the board shows at your price."
+          }
+        },
+        "es-MX": {
+          "prompt": "Los brownies de una compañera cuestan 12. Fija el precio para un margen de 25%.",
+          "feedback": {
+            "met": "Fijaste el precio para el margen que querías.",
+            "not_yet": "Todavía no. Revisa el margen que muestra el tablero con tu precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Os brownies de uma colega custam 12. Defina o preço para uma margem de 25%.",
+          "feedback": {
+            "met": "Você definiu o preço para a margem que queria.",
+            "not_yet": "Ainda não. Confira a margem que o quadro mostra no seu preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-elastic-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "From 15 to 18 the price rises 20% and buyers fall 50%, from 18 to 9.",
+          "line": "Step 5: elasticity is buyers lost ÷ price rise, 50 ÷ 20 = 2.5. Above 1, buyers leave faster than the price grows."
+        },
+        "es-MX": {
+          "prompt": "De 15 a 18 el precio sube 20% y los compradores bajan 50%, de 18 a 9.",
+          "line": "Paso 5: la elasticidad es compradores perdidos ÷ alza del precio, 50 ÷ 20 = 2.5. Arriba de 1, se van más rápido de lo que sube."
+        },
+        "pt-BR": {
+          "prompt": "De 15 a 18 o preço sobe 20% e os compradores caem 50%, de 18 para 9.",
+          "line": "Passo 5: elasticidade é compradores perdidos ÷ alta do preço, 50 ÷ 20 = 2,5. Acima de 1, eles saem mais rápido do que o preço sobe."
+        }
+      }
+    },
+    {
+      "id": "practice-board-02",
+      "type": "econ.elasticity.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "elasticity"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "pMax": 20,
+        "demand": {
+          "a": 84,
+          "b": 3
+        },
+        "goal": {
+          "num": 1,
+          "den": 1
+        },
+        "start": 5
+      },
+      "rubric": {
+        "target": 14
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The drinks stall next door: slide the price until a 1% rise loses 1% of buyers.",
+          "feedback": {
+            "met": "You found where buyers leave as fast as the price rises.",
+            "not_yet": "Not yet. Watch the elasticity reading as you slide the price."
+          }
+        },
+        "es-MX": {
+          "prompt": "El puesto de bebidas de al lado: mueve el precio hasta que subirlo 1% pierda 1% de compradores.",
+          "feedback": {
+            "met": "Encontraste dónde los compradores se van tan rápido como sube el precio.",
+            "not_yet": "Todavía no. Mira la lectura de elasticidad al mover el precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A barraca de bebidas ao lado: mova o preço até que subir 1% faça perder 1% dos compradores.",
+          "feedback": {
+            "met": "Você achou onde os compradores saem tão rápido quanto o preço sobe.",
+            "not_yet": "Ainda não. Observe a leitura de elasticidade ao mover o preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-six"
+          },
+          {
+            "id": "choice-seven"
+          },
+          {
+            "id": "choice-five"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-margin-times-buyers"
+          },
+          {
+            "id": "reason-biggest-margin"
+          },
+          {
+            "id": "reason-most-buyers"
+          },
+          {
+            "id": "reason-rival-five"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-six"
+        ],
+        "reasonQuality": {
+          "reason-margin-times-buyers": "sound",
+          "reason-most-buyers": "partial",
+          "reason-biggest-margin": "unsupported",
+          "reason-rival-five": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate’s keychains cost 4. At 5, 6 or 7 she expects 20, 15 or 8 buyers. Which price?",
+          "feedback": {
+            "met": "You compared prices by what each one earns in total.",
+            "not_yet": "Not yet. Work out margin times buyers for each price."
+          },
+          "choices": [
+            {
+              "label": "Price at 6"
+            },
+            {
+              "label": "Price at 7"
+            },
+            {
+              "label": "Price at 5"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Margin times buyers peaks at 6"
+            },
+            {
+              "label": "The biggest margin earns most"
+            },
+            {
+              "label": "The most buyers earns most"
+            },
+            {
+              "label": "Others charge 5, so I match"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los llaveros de una compañera cuestan 4. A 5, 6 o 7 espera 20, 15 u 8 compradores. ¿Qué precio?",
+          "feedback": {
+            "met": "Comparaste los precios por lo que cada uno gana en total.",
+            "not_yet": "Todavía no. Saca margen por compradores en cada precio."
+          },
+          "choices": [
+            {
+              "label": "Precio de 6"
+            },
+            {
+              "label": "Precio de 7"
+            },
+            {
+              "label": "Precio de 5"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Margen por compradores es máximo en 6"
+            },
+            {
+              "label": "El mayor margen gana más"
+            },
+            {
+              "label": "Más compradores gana más"
+            },
+            {
+              "label": "Las demás cobran 5, así que igualo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os chaveiros de uma colega custam 4. A 5, 6 ou 7 ela espera 20, 15 ou 8 compradores. Qual preço?",
+          "feedback": {
+            "met": "Você comparou os preços pelo que cada um rende no total.",
+            "not_yet": "Ainda não. Calcule margem vezes compradores em cada preço."
+          },
+          "choices": [
+            {
+              "label": "Preço de 6"
+            },
+            {
+              "label": "Preço de 7"
+            },
+            {
+              "label": "Preço de 5"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "Margem vezes compradores é máxima em 6"
+            },
+            {
+              "label": "A maior margem rende mais"
+            },
+            {
+              "label": "Mais compradores rende mais"
+            },
+            {
+              "label": "As outras cobram 5, então igualo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

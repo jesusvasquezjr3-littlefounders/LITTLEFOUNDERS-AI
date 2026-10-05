@@ -1,0 +1,971 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-sale-season",
+  "lesson_id": "fe-1012-07-charges-that-repeat",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.recurring-costs",
+    "money.add-money",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina acompaña a Nico mientras revisa su celular: un pase de juego que se cobra cada semana y una app de música que se cobra cada mes. Primero se ve el caso resuelto (un cobro semanal por 52 semanas, uno mensual por 12 meses y la suma del año, con la decisión de cuál conservar); después se anota un cobro que se repite en un registro, se calcula el año de otro cobro y se decide cuál cancelar según lo que cuesta en un año. Al final, la misma idea en un club de la escuela.",
+  "title": {
+    "en-US": "Charges that repeat",
+    "es-MX": "Cobros que se repiten",
+    "pt-BR": "Cobranças que se repetem"
+  },
+  "new_concepts": [
+    "life.recurring-costs"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Nico recarga cada semana el pase de su juego en la tiendita y paga una app de música cada mes; con esos cobros chicos que se repiten calcula cuánto le cuestan al año y decide cuál cancelar.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tiendita",
+          "recarga"
+        ]
+      },
+      "en-US": {
+        "scenario": "Max pays for a game pass every week and a music app every month out of his allowance; he works out what those small repeating charges add up to in a year and decides which one to cancel.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "allowance",
+          "game pass"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Davi paga o passe do jogo por Pix toda semana e um app de música todo mês, descontados da mesada; ele calcula quanto essas cobranças pequenas somam em um ano e decide qual cancelar.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "Pix",
+          "mesada"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s phone, with Dina beside him.",
+          "line": "Max pays from his allowance. A game pass costs coins every week, a music app every month."
+        },
+        "es-MX": {
+          "prompt": "El celular de Nico, con Dina al lado.",
+          "line": "Nico recarga el pase del juego en la tiendita cada semana y paga la app de música cada mes."
+        },
+        "pt-BR": {
+          "prompt": "O celular do Davi, com a Dina ao lado.",
+          "line": "Davi paga o passe do jogo por Pix toda semana e o app de música todo mês, com a mesada."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "about-small"
+          },
+          {
+            "id": "about-year"
+          },
+          {
+            "id": "about-mid"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-repeat"
+          },
+          {
+            "id": "reason-small"
+          },
+          {
+            "id": "reason-months"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "about-year"
+        ],
+        "reasonQuality": {
+          "reason-repeat": "sound",
+          "reason-months": "partial",
+          "reason-small": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s comic app charges 4 coins every week. About how much is that in a year?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now, step by step.",
+            "not_yet": "Thanks, that shows where you start. Now, step by step."
+          },
+          "choices": [
+            {
+              "label": "About 20 coins"
+            },
+            {
+              "label": "About 200 coins"
+            },
+            {
+              "label": "About 40 coins"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "It repeats every week"
+            },
+            {
+              "label": "It is only 4 coins each time"
+            },
+            {
+              "label": "It repeats, but I counted months"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el celular de Nico, una app de cómics cobra 5 monedas cada semana. ¿Cuánto es al año, más o menos?",
+          "feedback": {
+            "met": "Gracias, así sabemos de dónde partes. Ahora, paso a paso.",
+            "not_yet": "Gracias, así sabemos de dónde partes. Ahora, paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Unas 25 monedas"
+            },
+            {
+              "label": "Unas 250 monedas"
+            },
+            {
+              "label": "Unas 50 monedas"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Se repite cada semana"
+            },
+            {
+              "label": "Son solo 5 monedas cada vez"
+            },
+            {
+              "label": "Se repite, pero conté meses"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No celular do Davi, um app de quadrinhos cobra 3 moedas toda semana. Quanto dá por ano, mais ou menos?",
+          "feedback": {
+            "met": "Entendi, isso mostra de onde você parte. Agora, passo a passo.",
+            "not_yet": "Entendi, isso mostra de onde você parte. Agora, passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Uns 15 moedas"
+            },
+            {
+              "label": "Uns 150 moedas"
+            },
+            {
+              "label": "Uns 30 moedas"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Repete toda semana"
+            },
+            {
+              "label": "São só 3 moedas por vez"
+            },
+            {
+              "label": "Repete, mas contei meses"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-week-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a weekly charge, 52 times.",
+          "line": "No rush. We split 52 weeks into 50 + 2: 3 × 50 = 150 and 3 × 2 = 6, so 156 a year."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un cobro semanal, 52 veces.",
+          "line": "Sin prisa. Separamos 52 semanas en 50 + 2: 4 × 50 = 200 y 4 × 2 = 8, así que son 208 al año."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: uma cobrança semanal, 52 vezes.",
+          "line": "Sem pressa. Separamos 52 semanas em 50 + 2: 5 × 50 = 250 e 5 × 2 = 10, então são 260 por ano."
+        }
+      }
+    },
+    {
+      "id": "example-month-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: a monthly charge, 12 times.",
+          "line": "We split 12 months into 10 + 2: 5 × 10 = 50 and 5 × 2 = 10, so 60 a year."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: un cobro mensual, 12 veces.",
+          "line": "Separamos 12 meses en 10 + 2: 6 × 10 = 60 y 6 × 2 = 12, así que son 72 al año."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: uma cobrança mensal, 12 vezes.",
+          "line": "Separamos 12 meses em 10 + 2: 7 × 10 = 70 e 7 × 2 = 14, então são 84 por ano."
+        }
+      }
+    },
+    {
+      "id": "example-total-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: add both charges for the year.",
+          "line": "Now put them together: 156 + 60 = 216 coins in one year, from two small charges."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: suma los dos cobros del año.",
+          "line": "Ahora júntalos: 208 + 72 = 280 monedas en un año, por dos cobros chicos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: some as duas cobranças do ano.",
+          "line": "Agora junte tudo: 260 + 84 = 344 moedas em um ano, por duas cobranças pequenas."
+        }
+      }
+    },
+    {
+      "id": "guided-year-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "steps": [
+          {
+            "id": "fifty"
+          },
+          {
+            "id": "two"
+          },
+          {
+            "id": "year"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "two",
+          "year"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "two": "4",
+          "year": "104"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s sticker club costs 2 coins a week. Find what it costs in a year.",
+          "feedback": {
+            "met": "You split the 52 weeks into 50 and 2, then added.",
+            "not_yet": "Check Dina’s first step: split the year into two parts."
+          },
+          "help": [
+            "52 weeks = 50 + 2. Do each part, then add."
+          ],
+          "steps": [
+            {
+              "expression": "2 × 50",
+              "result": "100",
+              "spokenText": "Two times 50 is 100: fifty weeks of the club"
+            },
+            {
+              "expression": "2 × 2",
+              "result": "4",
+              "spokenText": "Two times 2 is 4: the last two weeks"
+            },
+            {
+              "expression": "Fifty weeks + two weeks",
+              "result": "104",
+              "spokenText": "One hundred plus 4 is 104 coins in a year"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El club de estampas de Nico cuesta 2 monedas por semana. Encuentra cuánto cuesta en un año.",
+          "feedback": {
+            "met": "Separaste las 52 semanas en 50 y 2, y luego sumaste.",
+            "not_yet": "Mira el primer paso de Dina: separa el año en dos partes."
+          },
+          "help": [
+            "52 semanas = 50 + 2. Haz cada parte y luego suma."
+          ],
+          "steps": [
+            {
+              "expression": "2 × 50",
+              "result": "100",
+              "spokenText": "Dos por 50 son 100: cincuenta semanas del club"
+            },
+            {
+              "expression": "2 × 2",
+              "result": "4",
+              "spokenText": "Dos por 2 son 4: las últimas dos semanas"
+            },
+            {
+              "expression": "Cincuenta semanas + dos semanas",
+              "result": "104",
+              "spokenText": "Cien más 4 son 104 monedas al año"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O clube de figurinhas do Davi custa 2 moedas por semana. Ache quanto custa em um ano.",
+          "feedback": {
+            "met": "Você separou as 52 semanas em 50 e 2, e depois somou.",
+            "not_yet": "Veja o primeiro passo da Dina: separe o ano em duas partes."
+          },
+          "help": [
+            "52 semanas = 50 + 2. Faça cada parte e depois some."
+          ],
+          "steps": [
+            {
+              "expression": "2 × 50",
+              "result": "100",
+              "spokenText": "Duas vezes 50 são 100: cinquenta semanas do clube"
+            },
+            {
+              "expression": "2 × 2",
+              "result": "4",
+              "spokenText": "Duas vezes 2 são 4: as últimas duas semanas"
+            },
+            {
+              "expression": "Cinquenta semanas + duas semanas",
+              "result": "104",
+              "spokenText": "Cem mais 4 são 104 moedas por ano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 20,
+        "sale": 5,
+        "cost": 2,
+        "maxEntries": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s sticker club costs 2 coins a week. Tap Supplies once per week, for 4 weeks, and watch the balance."
+        },
+        "es-MX": {
+          "prompt": "El club de estampas de Nico cuesta 2 monedas por semana. Toca Insumos una vez por semana, 4 semanas, y mira el saldo."
+        },
+        "pt-BR": {
+          "prompt": "O clube de figurinhas do Davi custa 2 moedas por semana. Toque em Insumos uma vez por semana, 4 semanas, e veja o saldo."
+        }
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "initial": 20,
+        "sale": 5,
+        "cost": 2,
+        "maxEntries": 8
+      },
+      "rubric": {
+        "target_balance": 8
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s sticker club costs 2 coins a week. Tap Supplies for 6 weeks, then type the balance.",
+          "feedback": {
+            "met": "You logged one charge for each week, and the balance matched.",
+            "not_yet": "Check the log: one Supplies tap for each week."
+          },
+          "help": [
+            "One tap on Supplies for each week. Count the taps."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El club de estampas de Nico cuesta 2 monedas por semana. Toca Insumos 6 veces y escribe el saldo.",
+          "feedback": {
+            "met": "Anotaste un cobro por cada semana y el saldo coincidió.",
+            "not_yet": "Revisa el registro: un toque en Insumos por semana."
+          },
+          "help": [
+            "Un toque en Insumos por cada semana. Cuenta los toques."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O clube de figurinhas do Davi custa 2 moedas por semana. Toque em Insumos 6 vezes e digite o saldo.",
+          "feedback": {
+            "met": "Você anotou uma cobrança por semana e o saldo bateu.",
+            "not_yet": "Confira o registro: um toque em Insumos por semana."
+          },
+          "help": [
+            "Um toque em Insumos para cada semana. Conte os toques."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-month-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "ten"
+          },
+          {
+            "id": "two"
+          },
+          {
+            "id": "year"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "two",
+          "year"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "two": "14",
+            "year": "84"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "two": "12",
+            "year": "72"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "two": "16",
+            "year": "96"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s cloud space costs 6 coins a month. Find what it costs in a year.",
+          "feedback": {
+            "met": "You split the 12 months into 10 and 2, then added.",
+            "not_yet": "Check how Dina split the year: two parts, then add."
+          },
+          "help": [
+            "12 months = 10 + 2. Do each part, then add."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 10",
+              "result": "60",
+              "spokenText": "Six times 10 is 60: ten months of the cloud"
+            },
+            {
+              "expression": "6 × 2",
+              "result": "12",
+              "spokenText": "Six times 2 is 12: the last two months"
+            },
+            {
+              "expression": "Ten months + two months",
+              "result": "72",
+              "spokenText": "Sixty plus 12 is 72 coins in a year"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El espacio en la nube de Nico cuesta 7 monedas al mes. Encuentra cuánto cuesta en un año.",
+          "feedback": {
+            "met": "Separaste los 12 meses en 10 y 2, y luego sumaste.",
+            "not_yet": "Mira cómo separó Dina el año: dos partes y luego suma."
+          },
+          "help": [
+            "12 meses = 10 + 2. Haz cada parte y luego suma."
+          ],
+          "steps": [
+            {
+              "expression": "7 × 10",
+              "result": "70",
+              "spokenText": "Siete por 10 son 70: diez meses de la nube"
+            },
+            {
+              "expression": "7 × 2",
+              "result": "14",
+              "spokenText": "Siete por 2 son 14: los últimos dos meses"
+            },
+            {
+              "expression": "Diez meses + dos meses",
+              "result": "84",
+              "spokenText": "Setenta más 14 son 84 monedas al año"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O espaço na nuvem do Davi custa 8 moedas por mês. Ache quanto custa em um ano.",
+          "feedback": {
+            "met": "Você separou os 12 meses em 10 e 2, e depois somou.",
+            "not_yet": "Veja como a Dina separou o ano: duas partes e depois some."
+          },
+          "help": [
+            "12 meses = 10 + 2. Faça cada parte e depois some."
+          ],
+          "steps": [
+            {
+              "expression": "8 × 10",
+              "result": "80",
+              "spokenText": "Oito vezes 10 são 80: dez meses da nuvem"
+            },
+            {
+              "expression": "8 × 2",
+              "result": "16",
+              "spokenText": "Oito vezes 2 são 16: os últimos dois meses"
+            },
+            {
+              "expression": "Dez meses + dois meses",
+              "result": "96",
+              "spokenText": "Oitenta mais 16 são 96 moedas por ano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-keep-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: keep one, cancel one.",
+          "line": "Max plays rarely, listens daily. At 156 against 60 a year, he keeps the app."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: quedarse con uno, cancelar otro.",
+          "line": "Nico juega poco y escucha música a diario. Con 208 contra 72 al año, se queda con la app."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: ficar com um, cancelar o outro.",
+          "line": "Davi joga pouco e ouve música todo dia. Com 260 contra 84 por ano, ele fica com o app."
+        }
+      }
+    },
+    {
+      "id": "practice-keep-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "cancel-club"
+          },
+          {
+            "id": "cancel-cloud"
+          },
+          {
+            "id": "keep-both"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-often"
+          },
+          {
+            "id": "reason-number"
+          },
+          {
+            "id": "reason-year"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "cancel-club"
+        ],
+        "reasonQuality": {
+          "reason-year": "sound",
+          "reason-often": "partial",
+          "reason-number": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same use: should Max cancel the club (2 a week) or the cloud (6 a month) to save more?",
+          "feedback": {
+            "met": "Over a year, the club costs more, so cancelling saves more.",
+            "not_yet": "Not yet. Find each charge’s cost for a year, then compare."
+          },
+          "help": [
+            "Weekly is times 52, monthly times 12. Then compare."
+          ],
+          "choices": [
+            {
+              "label": "Cancel the sticker club"
+            },
+            {
+              "label": "Cancel the cloud space"
+            },
+            {
+              "label": "Keep both"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "It is charged more often"
+            },
+            {
+              "label": "Its number is smaller"
+            },
+            {
+              "label": "It costs more over a year"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mismo uso: ¿Nico cancela el club (2 a la semana) o la nube (7 al mes) para ahorrar más?",
+          "feedback": {
+            "met": "En un año el club cuesta más, así que cancelarlo ahorra más.",
+            "not_yet": "Todavía no. Encuentra cuánto cuesta cada cobro en un año y compara."
+          },
+          "help": [
+            "Semanal es por 52, mensual por 12. Luego compara."
+          ],
+          "choices": [
+            {
+              "label": "Cancelar el club de estampas"
+            },
+            {
+              "label": "Cancelar el espacio en la nube"
+            },
+            {
+              "label": "Quedarse con los dos"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Se cobra más seguido"
+            },
+            {
+              "label": "Su número es más chico"
+            },
+            {
+              "label": "Cuesta más en un año"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesmo uso: o Davi cancela o clube (2 por semana) ou a nuvem (8 por mês) para economizar mais?",
+          "feedback": {
+            "met": "Em um ano o clube custa mais, então cancelá-lo economiza mais.",
+            "not_yet": "Ainda não. Ache quanto cada cobrança custa em um ano e compare."
+          },
+          "help": [
+            "Semanal é vezes 52, mensal vezes 12. Depois compare."
+          ],
+          "choices": [
+            {
+              "label": "Cancelar o clube de figurinhas"
+            },
+            {
+              "label": "Cancelar o espaço na nuvem"
+            },
+            {
+              "label": "Ficar com os dois"
+            }
+          ],
+          "reasonPrompt": "Qual motivo combina mais?",
+          "reasons": [
+            {
+              "label": "É cobrado com mais frequência"
+            },
+            {
+              "label": "O número dele é menor"
+            },
+            {
+              "label": "Custa mais em um ano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-club-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "pay-weekly"
+          },
+          {
+            "id": "same"
+          },
+          {
+            "id": "pay-monthly"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rule"
+          },
+          {
+            "id": "reason-year"
+          },
+          {
+            "id": "reason-often"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "pay-monthly"
+        ],
+        "reasonQuality": {
+          "reason-year": "sound",
+          "reason-often": "partial",
+          "reason-rule": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Max’s chess club: 5 coins a week or 9 a month. Which costs less over a year?",
+          "feedback": {
+            "met": "The yearly cost decides, not the size of the number.",
+            "not_yet": "Like Dina’s steps: find each cost for a year first."
+          },
+          "help": [
+            "Weekly: times 52. Monthly: times 12."
+          ],
+          "choices": [
+            {
+              "label": "Pay weekly"
+            },
+            {
+              "label": "They cost the same"
+            },
+            {
+              "label": "Pay monthly"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Monthly always costs less"
+            },
+            {
+              "label": "I found each cost for a year"
+            },
+            {
+              "label": "Weekly charges repeat more often"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el club de ajedrez de Nico: 3 monedas por semana o 8 al mes. ¿Cuál cuesta menos en un año?",
+          "feedback": {
+            "met": "Decide el costo del año, no el tamaño del número.",
+            "not_yet": "Como Dina: primero encuentra el costo de cada uno al año."
+          },
+          "help": [
+            "Semanal: por 52. Mensual: por 12."
+          ],
+          "choices": [
+            {
+              "label": "Pagar a la semana"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            },
+            {
+              "label": "Pagar al mes"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Lo mensual siempre cuesta menos"
+            },
+            {
+              "label": "Encontré el costo de cada uno en un año"
+            },
+            {
+              "label": "Lo semanal se repite más veces"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No clube de xadrez do Davi: 4 moedas por semana ou 9 por mês. Qual custa menos em um ano?",
+          "feedback": {
+            "met": "O custo do ano decide, não o tamanho do número.",
+            "not_yet": "Como a Dina: primeiro ache o custo de cada um por ano."
+          },
+          "help": [
+            "Semanal: vezes 52. Mensal: vezes 12."
+          ],
+          "choices": [
+            {
+              "label": "Pagar por semana"
+            },
+            {
+              "label": "Custam o mesmo"
+            },
+            {
+              "label": "Pagar por mês"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O mensal sempre custa menos"
+            },
+            {
+              "label": "Achei o custo de cada um em um ano"
+            },
+            {
+              "label": "O semanal se repete mais vezes"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

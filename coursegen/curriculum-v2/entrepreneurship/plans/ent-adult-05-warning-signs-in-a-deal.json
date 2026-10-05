@@ -1,0 +1,898 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-trusted-deals",
+  "lesson_id": "ent-adult-05-warning-signs-in-a-deal",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.deal-red-flags",
+    "life.scam-awareness"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Tu servicio móvil de reparación de bicicletas necesita balatas y un proveedor nuevo ofrece 10 juegos a mitad de precio, con pago total por adelantado, sin factura y con un precio que cambió después de la llamada. Zara cuenta su propio trato mal revisado, muestra una por una las cuatro señales de alerta y la contraoferta que las responde. Tú marcas las señales en mensajes reales, eliges la respuesta segura y decides en un caso nuevo: el alquiler de un local.",
+  "title": {
+    "es-MX": "Detecta las señales de alerta de un trato",
+    "en-US": "Spot warning signs in a deal",
+    "pt-BR": "Identifique os sinais de alerta de um negócio"
+  },
+  "new_concepts": [
+    "biz.deal-red-flags"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara takes a half-price brake pad offer without comparing quotes, pays everything up front by transfer with no invoice, and the parts never arrive.",
+    "recovery": "Zara says that next time she asks for the price and terms in writing and pays only part of it up front."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Tu taller móvil de bicicletas compra balatas a un proveedor nuevo que ofrece la mitad del precio, pide el pago completo por SPEI antes de enviar, no entrega factura y cambia el precio después de la llamada. Los precios son ilustrativos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "SPEI",
+          "factura"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Sua bicicletaria móvel compra pastilhas de freio de um fornecedor novo que cobra metade do preço, exige tudo antecipado por Pix, não emite nota fiscal e muda o valor depois do telefonema. Os valores são ilustrativos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "Pix",
+          "nota fiscal"
+        ]
+      },
+      "en-US": {
+        "scenario": "Your mobile bike repair business buys brake pads from a new supplier who offers half the usual price, wants full payment by Zelle before shipping, sends no invoice and moves the price after the call. Prices are illustrative.",
+        "problem_refs": [
+          "us-finfluencer-confidence-gap"
+        ],
+        "anchors": [
+          "Zelle",
+          "invoice"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu taller móvil de bicicletas necesita balatas. Un proveedor nuevo ofrece 10 juegos a $100 cada uno.",
+          "line": "La mitad del precio de siempre. Antes de contestar, leamos qué dice de verdad la oferta."
+        },
+        "en-US": {
+          "prompt": "Your bike repair business needs brake pads. A new supplier offers 10 sets at $20 each.",
+          "line": "Half the usual price. Before I reply, let's read what the offer really says."
+        },
+        "pt-BR": {
+          "prompt": "Sua bicicletaria móvel precisa de pastilhas de freio. Um fornecedor novo oferece 10 jogos a R$ 40 cada.",
+          "line": "Metade do preço de sempre. Antes de responder, vamos ler o que a oferta diz de verdade."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.deal-red-flags",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-usual"
+          },
+          {
+            "id": "msg-new"
+          },
+          {
+            "id": "msg-shop"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-new"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar, marca el mensaje que te parezca un mal trato.",
+          "feedback": {
+            "met": "Gracias, ya veo cómo lo lees. Ahora lo vemos paso a paso.",
+            "not_yet": "Gracias, ya veo cómo lo lees. Ahora lo vemos paso a paso."
+          },
+          "messages": [
+            {
+              "sender": "Proveedor de siempre",
+              "text": "Tus cámaras están listas. Factura adjunta, paga al recogerlas."
+            },
+            {
+              "sender": "Proveedor nuevo",
+              "text": "Balatas a mitad de precio. Manda todo el pago por SPEI primero."
+            },
+            {
+              "sender": "Refaccionaria",
+              "text": "Cadenas a $45. Cotización por escrito adjunta, vale 30 días."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Before we start, flag any message that looks like a bad deal.",
+          "feedback": {
+            "met": "Noted, thanks. Now we look at it step by step, together.",
+            "not_yet": "Noted, thanks. Now we look at it step by step, together."
+          },
+          "messages": [
+            {
+              "sender": "Usual supplier",
+              "text": "Your inner tubes are ready. Invoice attached, pay when you collect."
+            },
+            {
+              "sender": "New supplier",
+              "text": "Brake pads at half the price. Send full payment by Zelle first."
+            },
+            {
+              "sender": "Parts shop",
+              "text": "Chains in stock at $9. Written quote attached, valid 30 days."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar, marque a mensagem que parece um mau negócio.",
+          "feedback": {
+            "met": "Certo, já vejo como você leu. Agora vamos passo a passo.",
+            "not_yet": "Certo, já vejo como você leu. Agora vamos passo a passo."
+          },
+          "messages": [
+            {
+              "sender": "Fornecedor de sempre",
+              "text": "Suas câmaras de ar estão prontas. Nota fiscal anexa, pague na retirada."
+            },
+            {
+              "sender": "Fornecedor novo",
+              "text": "Pastilhas de freio por metade do preço. Mande tudo por Pix antes."
+            },
+            {
+              "sender": "Loja de peças",
+              "text": "Correntes a R$ 20. Orçamento anexo, vale 30 dias."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara, con un trato propio.",
+          "setup": "Un vendedor me ofreció balatas a mitad de precio. Las compré sin comparar.",
+          "misjudgment": "Pagué el 100% por adelantado con SPEI, sin factura. Nunca llegó nada.",
+          "recovery": "La próxima vez pido precio y condiciones por escrito, y pago solo una parte por adelantado."
+        },
+        "en-US": {
+          "prompt": "Zara, on a deal of her own.",
+          "setup": "A seller offered me brake pads at half price. I took it without comparing.",
+          "misjudgment": "I paid 100% up front by Zelle, with no invoice. Nothing ever arrived.",
+          "recovery": "Next time I ask for the price and terms in writing, and I pay only part up front."
+        },
+        "pt-BR": {
+          "prompt": "Zara, com um negócio dela.",
+          "setup": "Um vendedor me ofereceu pastilhas de freio por metade do preço. Comprei sem comparar.",
+          "misjudgment": "Paguei 100% adiantado por Pix, sem nota fiscal. Nada chegou.",
+          "recovery": "Da próxima vez peço preço e condições por escrito e pago só uma parte adiantado."
+        }
+      }
+    },
+    {
+      "id": "ex-price-paper",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Señal 1, el precio: normal $200, oferta $100. Señal 2, lo escrito: sin factura.",
+          "line": "Muy por debajo del mercado es una alerta, así que comparo cotizaciones. Sin factura no hay nada por escrito."
+        },
+        "en-US": {
+          "prompt": "Sign 1, the price: usual $40, offer $20. Sign 2, the paper: no invoice.",
+          "line": "Far below market is a warning, so I compare quotes. No invoice means nothing in writing."
+        },
+        "pt-BR": {
+          "prompt": "Sinal 1, o preço: normal R$ 80, oferta R$ 40. Sinal 2, o documento: sem nota fiscal.",
+          "line": "Muito abaixo do mercado é um alerta, então comparo orçamentos. Sem nota fiscal não há nada por escrito."
+        }
+      }
+    },
+    {
+      "id": "ex-upfront-moving",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Señales 3 y 4, tras la llamada: “Manda el 100% por SPEI, el precio ahora es $130.”",
+          "line": "Pagar todo primero me deja sin nada con qué reclamar. Un precio que cambió puede volver a cambiar."
+        },
+        "en-US": {
+          "prompt": "Signs 3 and 4, after the call: “Send 100% by Zelle, price is now $26.”",
+          "line": "Paying all first leaves me nothing to hold back. A price that moved can move again."
+        },
+        "pt-BR": {
+          "prompt": "Sinais 3 e 4, depois da ligação: “Mande 100% por Pix, o preço agora é R$ 52.”",
+          "line": "Pagar tudo antes me deixa sem nada para cobrar. Um preço que mudou pode mudar de novo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.deal-red-flags",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-quote"
+          },
+          {
+            "id": "msg-cassettes"
+          },
+          {
+            "id": "msg-grips"
+          },
+          {
+            "id": "msg-moved"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-price"
+          },
+          {
+            "id": "cue-writing"
+          },
+          {
+            "id": "cue-upfront"
+          },
+          {
+            "id": "cue-moving"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-cassettes",
+          "msg-moved"
+        ],
+        "cue_ids": {
+          "msg-cassettes": [
+            "cue-price",
+            "cue-writing",
+            "cue-upfront"
+          ],
+          "msg-moved": [
+            "cue-moving",
+            "cue-upfront"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En tu bandeja de proveedores, marca los malos tratos y toca las señales que ves.",
+          "feedback": {
+            "met": "Marcaste los dos malos tratos y dejaste los otros dos sin marcar.",
+            "not_yet": "Todavía no. Revisa cada mensaje con las cuatro señales de Zara."
+          },
+          "help": [
+            "Busca las cuatro señales de Zara: precio, lo escrito, pago y precio que cambia.",
+            "Un mensaje sin ninguna de las cuatro señales no se marca."
+          ],
+          "messages": [
+            {
+              "sender": "Refaccionaria",
+              "text": "Cables de freno a $50 cada uno. Cotización adjunta, paga 30% ahora."
+            },
+            {
+              "sender": "Distribuidor nuevo",
+              "text": "Cassettes a mitad de precio. Paga 100% por SPEI primero, sin factura."
+            },
+            {
+              "sender": "Proveedor de siempre",
+              "text": "Llegaron los puños, mismos $40 del último pedido. Paga al recogerlos."
+            },
+            {
+              "sender": "Cámaras Express",
+              "text": "Acordamos $45 por teléfono. Ahora son $60, paga todo primero."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Precio muy por debajo del mercado"
+            },
+            {
+              "label": "Nada por escrito"
+            },
+            {
+              "label": "Pago total por adelantado"
+            },
+            {
+              "label": "Precio que cambia"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In your supplier inbox, flag the bad deals and tap the signs you see.",
+          "feedback": {
+            "met": "You flagged both bad deals and left the other two alone.",
+            "not_yet": "Not yet. Check each message against Zara's four signs."
+          },
+          "help": [
+            "Check each message for Zara's four signs: price, paper, payment, moving price.",
+            "A message with none of the four signs stays unflagged."
+          ],
+          "messages": [
+            {
+              "sender": "Bike Wholesale",
+              "text": "Brake cables at $5 each. Written quote attached, pay 30% now."
+            },
+            {
+              "sender": "New distributor",
+              "text": "Cassettes at half price. Pay 100% by Zelle first, no invoice."
+            },
+            {
+              "sender": "Usual supplier",
+              "text": "Grips are in, same $8 as last order. Pay on pickup."
+            },
+            {
+              "sender": "Tube Express",
+              "text": "Agreed $9 on the call. Now $12, pay in full first."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Price far below market"
+            },
+            {
+              "label": "Nothing in writing"
+            },
+            {
+              "label": "Full payment up front"
+            },
+            {
+              "label": "Price that moves"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na sua caixa de fornecedores, marque os maus negócios e toque nos sinais que você vê.",
+          "feedback": {
+            "met": "Você marcou os dois maus negócios e deixou os outros dois sem marca.",
+            "not_yet": "Ainda não. Confira cada mensagem com os quatro sinais da Zara."
+          },
+          "help": [
+            "Procure os quatro sinais da Zara: preço, documento, pagamento e preço que muda.",
+            "Mensagem sem nenhum dos quatro sinais não se marca."
+          ],
+          "messages": [
+            {
+              "sender": "Loja de peças",
+              "text": "Cabos de freio a R$ 25 cada. Orçamento anexo, pague 30% agora."
+            },
+            {
+              "sender": "Distribuidor novo",
+              "text": "Pinhões pela metade do preço. Pague 100% por Pix antes, sem nota fiscal."
+            },
+            {
+              "sender": "Fornecedor de sempre",
+              "text": "Chegaram as manoplas, mesmos R$ 18 do último pedido. Pague na retirada."
+            },
+            {
+              "sender": "Câmaras Express",
+              "text": "Combinamos R$ 20 por telefone. Agora são R$ 26, pague tudo antes."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Preço muito abaixo do mercado"
+            },
+            {
+              "label": "Nada por escrito"
+            },
+            {
+              "label": "Pagamento total antecipado"
+            },
+            {
+              "label": "Preço que muda"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-counter",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, tu contraoferta: “Precio por escrito, factura, 30% ahora y el resto al entregar.”",
+          "line": "Cada parte responde a una señal. Si se niegan a ponerlo por escrito, me retiro del trato."
+        },
+        "en-US": {
+          "prompt": "Step 5, your counter-offer: “Price in writing, an invoice, 30% now, the rest on delivery.”",
+          "line": "Each part answers a sign. If they refuse to put it in writing, I walk away."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, sua contraproposta: “Preço por escrito, nota fiscal, 30% agora e o resto na entrega.”",
+          "line": "Cada parte responde a um sinal. Se recusarem pôr isso por escrito, saio do negócio."
+        }
+      }
+    },
+    {
+      "id": "practice-reply",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.deal-red-flags",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-all"
+          },
+          {
+            "id": "reply-counter"
+          },
+          {
+            "id": "reply-half"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-counter"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu proveedor de ruedas responde. ¿Qué contraoferta envías?",
+          "feedback": {
+            "met": "Pediste la factura antes de pagar y dejaste el pago parcial.",
+            "not_yet": "Todavía no. ¿Qué respuesta atiende las señales de Zara?"
+          },
+          "help": [
+            "Compara cada respuesta con las señales: lo escrito, el pago, el precio."
+          ],
+          "speaker": "Proveedor",
+          "line": "Ruedas a $600 cada una, lo normal es $1,100. Todo primero, factura después.",
+          "replies": [
+            {
+              "label": "Trato hecho, 100% por SPEI ahora, factura después."
+            },
+            {
+              "label": "Primero factura con $600, luego pago 30%."
+            },
+            {
+              "label": "La mitad ahora por SPEI, factura al entregar."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Your wheel supplier replies. Which counter do you send?",
+          "feedback": {
+            "met": "You asked for the invoice before paying and kept payment partial.",
+            "not_yet": "Not yet. Which reply answers the signs Zara listed?"
+          },
+          "help": [
+            "Match each reply to the signs: paper, payment, moving price."
+          ],
+          "speaker": "Supplier",
+          "line": "Wheels at $60 each, usual is $110. Pay everything first, invoice later.",
+          "replies": [
+            {
+              "label": "Deal, 100% by Zelle now, invoice later."
+            },
+            {
+              "label": "Invoice showing $60 first, then 30% now."
+            },
+            {
+              "label": "Half now by Zelle, invoice on delivery."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu fornecedor de rodas responde. Qual contraproposta você envia?",
+          "feedback": {
+            "met": "Você pediu a nota fiscal antes de pagar e deixou o pagamento parcial.",
+            "not_yet": "Ainda não. Qual resposta atende os sinais da Zara?"
+          },
+          "help": [
+            "Compare cada resposta com os sinais: documento, pagamento e preço."
+          ],
+          "speaker": "Fornecedor",
+          "line": "Rodas a R$ 150 cada, o normal é R$ 280. Tudo antes, nota fiscal depois.",
+          "replies": [
+            {
+              "label": "Fechado, 100% por Pix agora, nota fiscal depois."
+            },
+            {
+              "label": "Primeiro nota fiscal com R$ 150, depois pago 30%."
+            },
+            {
+              "label": "Metade agora por Pix, nota fiscal na entrega."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-spot",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-saddles"
+          },
+          {
+            "id": "msg-rims"
+          },
+          {
+            "id": "msg-pads"
+          },
+          {
+            "id": "msg-courier"
+          },
+          {
+            "id": "msg-lights"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-saddles",
+          "msg-lights"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "De vuelta en tu bandeja de proveedores, marca cada mensaje que sea un mal trato.",
+          "feedback": {
+            "met": "Marcaste el trato prepagado muy barato y el precio que cambió.",
+            "not_yet": "Todavía no. Busca precio, lo escrito, pago y precio que cambia."
+          },
+          "help": [
+            "Revisa cada mensaje con las cuatro señales, una por una.",
+            "Una cotización escrita con pago parcial no es señal."
+          ],
+          "messages": [
+            {
+              "sender": "Asientos Mayoreo",
+              "text": "Asientos a $150, normal $300. Paga 100% primero, enviamos el lunes."
+            },
+            {
+              "sender": "Proveedor de rines",
+              "text": "Cotización adjunta, vale 30 días. Paga 40% ahora y el resto al entregar."
+            },
+            {
+              "sender": "Proveedor de siempre",
+              "text": "Llegaron las balatas, $200 el juego como antes. La factura viene con ellas."
+            },
+            {
+              "sender": "Mensajería",
+              "text": "Tu pedido de herramientas sale el viernes. Guía y factura llegan por correo."
+            },
+            {
+              "sender": "Luces Directo",
+              "text": "Dijimos $150 por teléfono, ahora $190. Lo tomas o lo dejas."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Back in your supplier inbox, flag each message that is a bad deal.",
+          "feedback": {
+            "met": "You flagged the prepaid below-market deal and the moved price.",
+            "not_yet": "Not yet. Look for price, paper, payment and a moving price."
+          },
+          "help": [
+            "Check each message for the four signs, one at a time.",
+            "A written quote with a part payment is not a sign."
+          ],
+          "messages": [
+            {
+              "sender": "Saddle Pro",
+              "text": "Saddles at $14, usual $30. Pay 100% first, we ship Monday."
+            },
+            {
+              "sender": "Rim Supply",
+              "text": "Quote attached, valid 30 days. Pay 40% now, rest on delivery."
+            },
+            {
+              "sender": "Usual supplier",
+              "text": "Pads are in, $40 a set as before. Invoice comes along."
+            },
+            {
+              "sender": "Courier",
+              "text": "Your tool order ships Friday. Tracking and invoice follow by email."
+            },
+            {
+              "sender": "Lights Direct",
+              "text": "Said $15 by phone, now $19. Take it or leave it."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "De volta à sua caixa de fornecedores, marque cada mensagem que seja um mau negócio.",
+          "feedback": {
+            "met": "Você marcou o negócio barato demais, pago antes, e o preço que mudou.",
+            "not_yet": "Ainda não. Procure preço, documento, pagamento e preço que muda."
+          },
+          "help": [
+            "Confira cada mensagem com os quatro sinais, um por um.",
+            "Orçamento escrito com pagamento parcial não é sinal."
+          ],
+          "messages": [
+            {
+              "sender": "Selins Atacado",
+              "text": "Selins a R$ 70, normal R$ 150. Pague 100% antes, enviamos segunda."
+            },
+            {
+              "sender": "Fornecedor de aros",
+              "text": "Orçamento anexo, vale 30 dias. Pague 40% agora e o resto na entrega."
+            },
+            {
+              "sender": "Fornecedor de sempre",
+              "text": "Chegaram as pastilhas, R$ 80 o jogo como antes. A nota fiscal vem junto."
+            },
+            {
+              "sender": "Transportadora",
+              "text": "Seu pedido de ferramentas sai sexta. Rastreio e nota fiscal chegam por e-mail."
+            },
+            {
+              "sender": "Luzes Direto",
+              "text": "Era R$ 70 por telefone, agora R$ 90. É pegar ou largar."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.deal-red-flags",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-six"
+          },
+          {
+            "id": "choice-three"
+          },
+          {
+            "id": "choice-contract"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-compare"
+          },
+          {
+            "id": "reason-writing"
+          },
+          {
+            "id": "reason-other"
+          },
+          {
+            "id": "reason-upfront"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-contract"
+        ],
+        "reasonQuality": {
+          "reason-writing": "sound",
+          "reason-upfront": "sound",
+          "reason-compare": "partial",
+          "reason-other": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un desconocido te ofrece un espacio de taller a mitad de renta: seis meses por SPEI primero, contrato después. ¿Qué haces?",
+          "feedback": {
+            "met": "Pusiste el contrato antes del pago, el paso que mostró Zara.",
+            "not_yet": "Todavía no. ¿Qué opción atiende las señales de esta oferta?"
+          },
+          "help": [
+            "Nombra primero las señales de esta oferta: lo escrito y el pago."
+          ],
+          "choices": [
+            {
+              "label": "Pago seis meses por SPEI ahora"
+            },
+            {
+              "label": "Pago tres meses ahora, contrato después"
+            },
+            {
+              "label": "Contrato primero, luego pago un mes"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda tu elección?",
+          "reasons": [
+            {
+              "label": "La mitad de renta merece compararse con otras rentas"
+            },
+            {
+              "label": "Nada está por escrito antes de pagar"
+            },
+            {
+              "label": "Otra persona pagó todo y le fue bien"
+            },
+            {
+              "label": "Pagar todo primero no deja nada con qué reclamar"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A stranger offers you a bay at half rent: six months by Zelle first, contract later. Your move?",
+          "feedback": {
+            "met": "You put the contract before payment, the move Zara showed.",
+            "not_yet": "Not yet. Which choice answers the signs in this offer?"
+          },
+          "help": [
+            "Name the signs in this offer first: paper and payment."
+          ],
+          "choices": [
+            {
+              "label": "Pay six months by Zelle now"
+            },
+            {
+              "label": "Pay three months now, contract later"
+            },
+            {
+              "label": "Contract first, then pay one month"
+            }
+          ],
+          "reasonPrompt": "Which reason backs your choice?",
+          "reasons": [
+            {
+              "label": "Half rent is worth comparing with other rents"
+            },
+            {
+              "label": "Nothing is in writing before payment"
+            },
+            {
+              "label": "Someone else paid in full and was fine"
+            },
+            {
+              "label": "Paying everything first leaves nothing to hold back"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um desconhecido oferece um espaço de oficina por metade do aluguel: seis meses por Pix antes, contrato depois. O que você faz?",
+          "feedback": {
+            "met": "Você pôs o contrato antes do pagamento, o passo que a Zara mostrou.",
+            "not_yet": "Ainda não. Qual opção atende os sinais desta oferta?"
+          },
+          "help": [
+            "Nomeie primeiro os sinais desta oferta: documento e pagamento."
+          ],
+          "choices": [
+            {
+              "label": "Pago seis meses por Pix agora"
+            },
+            {
+              "label": "Pago três meses agora, contrato depois"
+            },
+            {
+              "label": "Contrato primeiro, depois pago um mês"
+            }
+          ],
+          "reasonPrompt": "Qual razão sustenta sua escolha?",
+          "reasons": [
+            {
+              "label": "Metade do aluguel merece comparação com outros aluguéis"
+            },
+            {
+              "label": "Nada está por escrito antes de pagar"
+            },
+            {
+              "label": "Outra pessoa pagou tudo e deu certo"
+            },
+            {
+              "label": "Pagar tudo antes não deixa nada para cobrar"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

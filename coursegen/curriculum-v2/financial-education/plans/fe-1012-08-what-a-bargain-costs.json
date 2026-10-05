@@ -1,0 +1,877 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-sale-season",
+  "lesson_id": "fe-1012-08-what-a-bargain-costs",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.opportunity-cost",
+    "life.wants-and-choices",
+    "money.percent-intro"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-a"
+  },
+  "brief": "Liruf llega a un día de rebajas con 60 monedas y compra la chamarra con 50% de descuento porque estaba barata; después ve que el boleto de 45 monedas para el partido era lo que más quería. Primero se cuenta lo que pasó, luego se calcula el precio con descuento, lo que queda y a qué se renuncia (también con el tiempo), y al final se decide qué comprar por lo que se necesita y no por el tamaño del descuento.",
+  "title": {
+    "en-US": "What a bargain costs",
+    "es-MX": "Lo que cuesta una ganga",
+    "pt-BR": "O que custa uma pechincha"
+  },
+  "new_concepts": [
+    "life.opportunity-cost"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf buys the 50%-off jacket for 40 coins because it is cheap, then sees that the 45-coin game ticket he wanted most is now out of reach.",
+    "recovery": "Liruf names what he gave up, says he could not have both, and promises to name what he gives up before he buys next time."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sale day: Liruf with his 60 coins.",
+          "line": "Look at the sign: 50% off! I have 60 coins and jackets are everywhere."
+        },
+        "es-MX": {
+          "prompt": "Día de rebajas: Liruf y sus 60 monedas.",
+          "line": "Mira el letrero: ¡50% de descuento! Tengo 60 monedas y hay chamarras por todos lados."
+        },
+        "pt-BR": {
+          "prompt": "Dia de promoção: o Liruf e suas 60 moedas.",
+          "line": "Olhe a placa: 50% de desconto! Tenho 60 moedas e tem jaquetas por todo lado."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "choices": [
+          {
+            "id": "buy-now"
+          },
+          {
+            "id": "ask-else"
+          },
+          {
+            "id": "biggest"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-half"
+          },
+          {
+            "id": "reason-gone"
+          },
+          {
+            "id": "reason-compare"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "ask-else"
+        ],
+        "reasonQuality": {
+          "reason-gone": "sound",
+          "reason-compare": "partial",
+          "reason-half": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 60 coins, and a 50%-off sign catches his eye. What should he do first?",
+          "feedback": {
+            "met": "Thanks, I see how you think. We will look at it together.",
+            "not_yet": "Thanks, I see how you think. We will look at it together."
+          },
+          "choices": [
+            {
+              "label": "Buy it now, it is a bargain"
+            },
+            {
+              "label": "Think what else 60 coins could buy"
+            },
+            {
+              "label": "Look for an even bigger discount"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A sale is always a good deal"
+            },
+            {
+              "label": "Spent coins are gone for other things"
+            },
+            {
+              "label": "It helps to compare before buying"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 60 monedas y un letrero de 50% de descuento le llama la atención. ¿Qué debe hacer primero?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Lo vemos juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Lo vemos juntos."
+          },
+          "choices": [
+            {
+              "label": "Comprarla ya, es una ganga"
+            },
+            {
+              "label": "Pensar qué más pagan 60 monedas"
+            },
+            {
+              "label": "Buscar un descuento aún mayor"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Una rebaja siempre conviene"
+            },
+            {
+              "label": "Las monedas gastadas ya no sirven para otra cosa"
+            },
+            {
+              "label": "Conviene comparar antes de comprar"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf tem 60 moedas, e uma placa de 50% de desconto chama a atenção dele. O que ele deve fazer primeiro?",
+          "feedback": {
+            "met": "Entendi como você pensa. Vamos ver juntos.",
+            "not_yet": "Entendi como você pensa. Vamos ver juntos."
+          },
+          "choices": [
+            {
+              "label": "Comprar já, é uma pechincha"
+            },
+            {
+              "label": "Pensar no que mais 60 moedas pagam"
+            },
+            {
+              "label": "Procurar um desconto ainda maior"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Promoção sempre vale a pena"
+            },
+            {
+              "label": "Moedas gastas não servem para outra coisa"
+            },
+            {
+              "label": "Vale comparar antes de comprar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "The 80-coin jacket was 50% off. It was cheap, so I bought it for 40.",
+          "misjudgment": "Then I saw the 45-coin game ticket. I wanted it most, but only 20 coins were left.",
+          "recovery": "I gave up what I wanted most. Next time I name what I give up before I buy."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Liruf.",
+          "setup": "La chamarra de 80 monedas estaba con 50% de descuento. Estaba barata y la compré en 40.",
+          "misjudgment": "Luego vi el boleto de 45 monedas para el partido. Era lo que más quería, pero solo me quedaban 20.",
+          "recovery": "Renuncié a lo que más quería. La próxima vez digo a qué renuncio antes de comprar."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "A jaqueta de 80 moedas estava com 50% de desconto. Era barata e comprei por 40.",
+          "misjudgment": "Depois vi o ingresso de 45 moedas para o jogo. Era o que eu mais queria, mas só sobraram 20.",
+          "recovery": "Abri mão do que mais queria. Da próxima vez, digo de que vou abrir mão antes de comprar."
+        }
+      }
+    },
+    {
+      "id": "example-half-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: 50% off means half.",
+          "line": "The tag said 80 coins. Half off means half of 80, so I paid 40."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: 50% de descuento es la mitad.",
+          "line": "La etiqueta decía 80 monedas. La mitad de 80 es 40, así que pagué 40."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: 50% de desconto é a metade.",
+          "line": "A etiqueta dizia 80 moedas. A metade de 80 é 40, então paguei 40."
+        }
+      }
+    },
+    {
+      "id": "example-give-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: name what you give up.",
+          "line": "60 − 40 leaves 20. The 45-coin ticket does not fit: I gave up the ticket."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: di a qué renuncias.",
+          "line": "60 − 40 deja 20. El boleto de 45 monedas no cabe: renuncié al boleto."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: diga de que você abre mão.",
+          "line": "60 − 40 deixa 20. O ingresso de 45 moedas não cabe: abri mão do ingresso."
+        }
+      }
+    },
+    {
+      "id": "guided-kite-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "choices": [
+          {
+            "id": "give-stickers"
+          },
+          {
+            "id": "give-nothing"
+          },
+          {
+            "id": "give-comic"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-costs-more"
+          },
+          {
+            "id": "reason-half"
+          },
+          {
+            "id": "reason-left"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "give-comic"
+        ],
+        "reasonQuality": {
+          "reason-left": "sound",
+          "reason-costs-more": "partial",
+          "reason-half": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 50 coins and buys a 70-coin kite at 50% off. What does he give up?",
+          "feedback": {
+            "met": "Coins left after the kite show what he gives up.",
+            "not_yet": "Like the jacket: halve the price, subtract it, then compare."
+          },
+          "help": [
+            "Half of 70 first. Then take it from 50."
+          ],
+          "choices": [
+            {
+              "label": "The stickers (10 coins)"
+            },
+            {
+              "label": "Nothing, he can buy all"
+            },
+            {
+              "label": "The comic book (25 coins)"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "The comic costs more than the stickers"
+            },
+            {
+              "label": "Half price means he gives up nothing"
+            },
+            {
+              "label": "The coins left cannot pay for it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 50 monedas y compra un papalote de 70 con 50% de descuento. ¿A qué renuncia?",
+          "feedback": {
+            "met": "Las monedas que quedan después del papalote muestran a qué renuncia.",
+            "not_yet": "Como con la chamarra: saca la mitad, réstala y compara."
+          },
+          "help": [
+            "Primero la mitad de 70. Luego réstala de 50."
+          ],
+          "choices": [
+            {
+              "label": "Las estampas (10 monedas)"
+            },
+            {
+              "label": "A nada, puede comprar todo"
+            },
+            {
+              "label": "El cómic (25 monedas)"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "El cómic cuesta más que las estampas"
+            },
+            {
+              "label": "A mitad de precio no se renuncia a nada"
+            },
+            {
+              "label": "Las monedas que quedan no alcanzan"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf tem 50 moedas e compra uma pipa de 70 com 50% de desconto. De que ele abre mão?",
+          "feedback": {
+            "met": "As moedas que sobram depois da pipa mostram de que ele abre mão.",
+            "not_yet": "Como na jaqueta: tire a metade, subtraia e compare."
+          },
+          "help": [
+            "Primeiro a metade de 70. Depois tire de 50."
+          ],
+          "choices": [
+            {
+              "label": "As figurinhas (10 moedas)"
+            },
+            {
+              "label": "De nada, ele pode comprar tudo"
+            },
+            {
+              "label": "A revista em quadrinhos (25 moedas)"
+            }
+          ],
+          "reasonPrompt": "Qual motivo combina mais?",
+          "reasons": [
+            {
+              "label": "A revista custa mais que as figurinhas"
+            },
+            {
+              "label": "Pela metade do preço, não se abre mão de nada"
+            },
+            {
+              "label": "As moedas que sobram não pagam"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-time-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: time is a price too.",
+          "line": "Waiting in the sale line took 2 hours. I gave up 2 hours of play, too."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el tiempo también cuesta.",
+          "line": "Esperar en la fila de las rebajas tomó 2 horas. También renuncié a 2 horas de juego."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o tempo também custa.",
+          "line": "Esperar na fila da promoção levou 2 horas. Também abri mão de 2 horas de brincadeira."
+        }
+      }
+    },
+    {
+      "id": "example-board-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "tokens": 4,
+        "options": [
+          {
+            "id": "opt-line",
+            "cost": 2
+          },
+          {
+            "id": "opt-friends",
+            "cost": 2
+          },
+          {
+            "id": "opt-read",
+            "cost": 1
+          },
+          {
+            "id": "opt-draw",
+            "cost": 1
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 4 hours: one token per hour. Pick what to do, then see what you gave up.",
+          "options": [
+            {
+              "label": "Wait in the sale line"
+            },
+            {
+              "label": "Play with friends"
+            },
+            {
+              "label": "Read a book"
+            },
+            {
+              "label": "Draw a picture"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 4 horas, una ficha por hora. Elige y mira a qué renunciaste.",
+          "options": [
+            {
+              "label": "Esperar en la fila de rebajas"
+            },
+            {
+              "label": "Jugar con amigos"
+            },
+            {
+              "label": "Leer un libro"
+            },
+            {
+              "label": "Hacer un dibujo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf tem 4 horas, uma ficha por hora. Escolha e veja de que você abriu mão.",
+          "options": [
+            {
+              "label": "Esperar na fila da promoção"
+            },
+            {
+              "label": "Brincar com amigos"
+            },
+            {
+              "label": "Ler um livro"
+            },
+            {
+              "label": "Fazer um desenho"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-need-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: need first, discount second.",
+          "line": "I had a warm jacket already. The sale did not make a new one a need."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: primero lo que necesito, luego el descuento.",
+          "line": "Ya tenía una chamarra abrigadora. El descuento no hizo que una nueva fuera una necesidad."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: primeiro o que preciso, depois o desconto.",
+          "line": "Eu já tinha uma jaqueta quentinha. A promoção não fez uma nova virar uma necessidade."
+        }
+      }
+    },
+    {
+      "id": "practice-need-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "choices": [
+          {
+            "id": "buy-bottle"
+          },
+          {
+            "id": "buy-candy"
+          },
+          {
+            "id": "buy-both"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-need"
+          },
+          {
+            "id": "reason-discount"
+          },
+          {
+            "id": "reason-fewer"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "buy-bottle"
+        ],
+        "reasonQuality": {
+          "reason-need": "sound",
+          "reason-fewer": "partial",
+          "reason-discount": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf’s water bottle broke. At the sale, what should he buy with his 50 coins?",
+          "feedback": {
+            "met": "What he needs comes before the size of a discount.",
+            "not_yet": "Ask what he needs most, not which sign is biggest."
+          },
+          "help": [
+            "Say what you give up, then ask what matters most."
+          ],
+          "choices": [
+            {
+              "label": "The new bottle, 20 coins"
+            },
+            {
+              "label": "The candy box, 70% off, 35 coins"
+            },
+            {
+              "label": "Both, since both are on sale"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "He needs the bottle more than candy"
+            },
+            {
+              "label": "A bigger discount is a better buy"
+            },
+            {
+              "label": "The bottle costs fewer coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A Liruf se le rompió la botella de agua. En las rebajas, ¿qué compra con sus 50 monedas?",
+          "feedback": {
+            "met": "Lo que necesita va antes que el tamaño del descuento.",
+            "not_yet": "Pregunta qué necesita más, no cuál letrero es más grande."
+          },
+          "help": [
+            "Di a qué renuncias y luego qué importa más."
+          ],
+          "choices": [
+            {
+              "label": "La botella nueva, 20 monedas"
+            },
+            {
+              "label": "La caja de dulces, 70% de descuento, 35 monedas"
+            },
+            {
+              "label": "Las dos, porque están en oferta"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Necesita la botella más que los dulces"
+            },
+            {
+              "label": "Un descuento mayor es mejor compra"
+            },
+            {
+              "label": "La botella cuesta menos monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A garrafinha de água do Liruf quebrou. Na promoção, o que ele compra com suas 50 moedas?",
+          "feedback": {
+            "met": "O que ele precisa vem antes do tamanho do desconto.",
+            "not_yet": "Pergunte do que ele mais precisa, não qual placa é maior."
+          },
+          "help": [
+            "Diga de que abre mão e depois o que importa mais."
+          ],
+          "choices": [
+            {
+              "label": "A garrafinha nova, 20 moedas"
+            },
+            {
+              "label": "A caixa de doces, 70% de desconto, 35 moedas"
+            },
+            {
+              "label": "As duas, porque estão em promoção"
+            }
+          ],
+          "reasonPrompt": "Qual motivo combina mais?",
+          "reasons": [
+            {
+              "label": "Ele precisa mais da garrafinha que dos doces"
+            },
+            {
+              "label": "Um desconto maior é melhor compra"
+            },
+            {
+              "label": "A garrafinha custa menos moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-hours-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "choices": [
+          {
+            "id": "give-fish"
+          },
+          {
+            "id": "give-bike"
+          },
+          {
+            "id": "give-nothing"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-longer"
+          },
+          {
+            "id": "reason-fit"
+          },
+          {
+            "id": "reason-free"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "give-bike"
+        ],
+        "reasonQuality": {
+          "reason-fit": "sound",
+          "reason-longer": "partial",
+          "reason-free": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 3 free hours and waits 2 in the sale line. What does he give up?",
+          "feedback": {
+            "met": "Hours count like coins: what no longer fits is given up.",
+            "not_yet": "Like coins: take the line’s hours away, then compare."
+          },
+          "help": [
+            "Take the line’s hours from 3. What still fits?"
+          ],
+          "choices": [
+            {
+              "label": "Feeding the fish (1 hour)"
+            },
+            {
+              "label": "Biking in the park (2 hours)"
+            },
+            {
+              "label": "Nothing, 3 hours is enough"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Biking takes longer than feeding fish"
+            },
+            {
+              "label": "The hours left cannot fit it"
+            },
+            {
+              "label": "Waiting in line is free"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 3 horas libres y espera 2 en la fila de rebajas. ¿A qué renuncia?",
+          "feedback": {
+            "met": "Las horas cuentan como las monedas: a lo que ya no cabe, se renuncia.",
+            "not_yet": "Como con las monedas: resta las horas de la fila y compara."
+          },
+          "help": [
+            "Resta las horas de la fila a 3. ¿Qué cabe todavía?"
+          ],
+          "choices": [
+            {
+              "label": "Darle de comer a los peces (1 hora)"
+            },
+            {
+              "label": "Andar en bici en el parque (2 horas)"
+            },
+            {
+              "label": "A nada, 3 horas alcanzan"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Andar en bici toma más que dar de comer"
+            },
+            {
+              "label": "Las horas que quedan no le alcanzan"
+            },
+            {
+              "label": "Esperar en la fila no cuesta nada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf tem 3 horas livres e espera 2 na fila da promoção. De que ele abre mão?",
+          "feedback": {
+            "met": "As horas contam como moedas: do que não cabe mais, se abre mão.",
+            "not_yet": "Como com as moedas: tire as horas da fila e compare."
+          },
+          "help": [
+            "Tire as horas da fila de 3. O que ainda cabe?"
+          ],
+          "choices": [
+            {
+              "label": "Dar comida aos peixes (1 hora)"
+            },
+            {
+              "label": "Andar de bicicleta no parque (2 horas)"
+            },
+            {
+              "label": "De nada, 3 horas bastam"
+            }
+          ],
+          "reasonPrompt": "Qual motivo combina mais?",
+          "reasons": [
+            {
+              "label": "Pedalar leva mais tempo que dar comida"
+            },
+            {
+              "label": "As horas que sobram não cabem nisso"
+            },
+            {
+              "label": "Esperar na fila não custa nada"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,938 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-time-rates-and-risk",
+  "lesson_id": "inv-adult-02-the-cost-of-starting-late",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.start-early",
+    "invest.cost-of-delay",
+    "invest.compound-growth"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina muestra que el mismo depósito anual de 12,000 a una tasa ilustrativa de 6% termina muy distinto según cuándo empieza: Lena desde los 30 y Omar desde los 40. La persona adulta ve el saldo año por año, calcula cuánto cuesta esperar, practica con cifras nuevas y decide entre empezar ahora con menos o esperar con más.",
+  "title": {
+    "en-US": "The cost of starting late",
+    "es-MX": "El costo de empezar tarde",
+    "pt-BR": "O custo de começar tarde"
+  },
+  "new_concepts": [
+    "invest.start-early",
+    "invest.cost-of-delay"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, dos compañeros aportan el mismo monto anual a la cuenta individual de su Afore, el tipo de cuenta para el retiro. La tasa de 6% es ilustrativa, nunca un pronóstico ni una oferta, y la lección no da consejo personal.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "Afore"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, dois colegas depositam o mesmo valor por ano em um plano de previdência, um tipo de conta para a aposentadoria. A taxa de 6% é ilustrativa, nunca uma previsão nem uma oferta, e a lição não dá conselho pessoal.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "previdência"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, two coworkers pay the same yearly amount into a 401(k), a retirement account type. The 6% rate is illustrative, never a forecast or an offer, and the lesson gives no personal advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "401(k)"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena and Omar each save $12,000 a year in a 401(k) until 65.",
+          "line": "Illustrative 6% a year, not an offer. Lena starts at 30; Omar waits until 40."
+        },
+        "es-MX": {
+          "prompt": "Lena y Omar ahorran $12,000 al año en la cuenta Afore de cada uno, hasta los 65.",
+          "line": "Tasa ilustrativa de 6% anual, no una oferta. Lena empieza a los 30; Omar espera hasta los 40."
+        },
+        "pt-BR": {
+          "prompt": "Lena e Omar guardam R$ 12.000 por ano em um plano de previdência até os 65 anos.",
+          "line": "Taxa ilustrativa de 6% ao ano, não uma oferta. Lena começa aos 30; Omar espera até os 40."
+        }
+      }
+    },
+    {
+      "id": "pre-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "choices": [
+          {
+            "id": "close"
+          },
+          {
+            "id": "half"
+          },
+          {
+            "id": "two-thirds"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fewer"
+          },
+          {
+            "id": "reason-growth"
+          },
+          {
+            "id": "reason-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "half"
+        ],
+        "reasonQuality": {
+          "reason-fewer": "partial",
+          "reason-growth": "sound",
+          "reason-same": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Both stop at 65, so Omar saves ten fewer years. What will his balance be next to Lena’s?",
+          "feedback": {
+            "met": "Noted. Dina shows the working next.",
+            "not_yet": "Noted. Dina shows the working next."
+          },
+          "choices": [
+            {
+              "label": "Close to Lena’s balance"
+            },
+            {
+              "label": "About half of Lena’s balance"
+            },
+            {
+              "label": "About two thirds of Lena’s"
+            }
+          ],
+          "reasonPrompt": "What is your main reason?",
+          "reasons": [
+            {
+              "label": "Ten fewer years, so ten fewer deposits"
+            },
+            {
+              "label": "Early deposits also had more years to grow"
+            },
+            {
+              "label": "Same yearly amount and rate, so similar"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ambos paran a los 65, así que Omar ahorra diez años menos. ¿Cómo será su saldo frente al de Lena?",
+          "feedback": {
+            "met": "Anotado. Dina muestra el procedimiento a continuación.",
+            "not_yet": "Anotado. Dina muestra el procedimiento a continuación."
+          },
+          "choices": [
+            {
+              "label": "Cercano al saldo de Lena"
+            },
+            {
+              "label": "Cerca de la mitad del de Lena"
+            },
+            {
+              "label": "Cerca de dos tercios del de Lena"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón principal?",
+          "reasons": [
+            {
+              "label": "Diez años menos, diez depósitos menos"
+            },
+            {
+              "label": "Los depósitos tempranos también crecieron más años"
+            },
+            {
+              "label": "Mismo monto y tasa, resultado parecido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os dois param aos 65, então Omar poupa dez anos a menos. Como fica o saldo dele ao lado do de Lena?",
+          "feedback": {
+            "met": "Anotado. Dina mostra o cálculo a seguir.",
+            "not_yet": "Anotado. Dina mostra o cálculo a seguir."
+          },
+          "choices": [
+            {
+              "label": "Perto do saldo de Lena"
+            },
+            {
+              "label": "Cerca da metade do de Lena"
+            },
+            {
+              "label": "Cerca de dois terços do de Lena"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo principal?",
+          "reasons": [
+            {
+              "label": "Dez anos a menos, dez depósitos a menos"
+            },
+            {
+              "label": "Os depósitos antigos também cresceram mais anos"
+            },
+            {
+              "label": "Mesmo valor e taxa, resultado parecido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-deposits-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: deposits at the end of each year, then growth.",
+          "line": "Lena’s year 1 ends at $12,000. Year 2 grows it 6%, then adds another $12,000: $24,720."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: depósitos al final de cada año, y luego crecimiento.",
+          "line": "El año 1 de Lena cierra en $12,000. En el año 2 crece 6% y suma otros $12,000: $24,720."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: depósitos no fim de cada ano, depois o crescimento.",
+          "line": "O ano 1 de Lena termina em R$ 12.000. No ano 2 cresce 6% e soma outros R$ 12.000: R$ 24.720."
+        }
+      }
+    },
+    {
+      "id": "example-years-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: each deposit grows for the years it stays in.",
+          "line": "Lena’s first $12,000 grows 34 years, to about $87,012. Omar’s first grows 24 years, to about $48,587."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: cada depósito crece los años que permanece.",
+          "line": "Los primeros $12,000 de Lena crecen 34 años, hasta unos $87,012. Los de Omar, 24 años, hasta unos $48,587."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: cada depósito cresce pelos anos em que fica.",
+          "line": "Os primeiros R$ 12.000 de Lena crescem 34 anos, até cerca de R$ 87.012. Os de Omar, 24 anos, até cerca de R$ 48.587."
+        }
+      }
+    },
+    {
+      "id": "example-chart-02",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "age-30"
+            },
+            {
+              "id": "age-35"
+            },
+            {
+              "id": "age-40"
+            },
+            {
+              "id": "age-45"
+            },
+            {
+              "id": "age-50"
+            },
+            {
+              "id": "age-55"
+            },
+            {
+              "id": "age-60"
+            },
+            {
+              "id": "age-65"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-lena",
+              "values": [
+                0,
+                67645,
+                158170,
+                279312,
+                441427,
+                658374,
+                948698,
+                1337217
+              ]
+            },
+            {
+              "id": "series-omar",
+              "values": [
+                0,
+                0,
+                0,
+                67645,
+                158170,
+                279312,
+                441427,
+                658374
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: at 65, Lena holds $1,337,217 and Omar $658,374, what Lena held at 55.",
+          "title": "Balance by age at 6%",
+          "data": {
+            "categories": [
+              {
+                "label": "30"
+              },
+              {
+                "label": "35"
+              },
+              {
+                "label": "40"
+              },
+              {
+                "label": "45"
+              },
+              {
+                "label": "50"
+              },
+              {
+                "label": "55"
+              },
+              {
+                "label": "60"
+              },
+              {
+                "label": "65"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lena, starts at 30"
+              },
+              {
+                "label": "Omar, starts at 40"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: a los 65, Lena tiene $1,337,217 y Omar $658,374, lo que Lena tenía a los 55.",
+          "title": "Saldo en pesos por edad al 6%",
+          "data": {
+            "categories": [
+              {
+                "label": "30"
+              },
+              {
+                "label": "35"
+              },
+              {
+                "label": "40"
+              },
+              {
+                "label": "45"
+              },
+              {
+                "label": "50"
+              },
+              {
+                "label": "55"
+              },
+              {
+                "label": "60"
+              },
+              {
+                "label": "65"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lena, empieza a los 30"
+              },
+              {
+                "label": "Omar, empieza a los 40"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: aos 65, Lena tem R$ 1.337.217 e Omar R$ 658.374, o que Lena tinha aos 55.",
+          "title": "Saldo em reais por idade a 6%",
+          "data": {
+            "categories": [
+              {
+                "label": "30"
+              },
+              {
+                "label": "35"
+              },
+              {
+                "label": "40"
+              },
+              {
+                "label": "45"
+              },
+              {
+                "label": "50"
+              },
+              {
+                "label": "55"
+              },
+              {
+                "label": "60"
+              },
+              {
+                "label": "65"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lena, começa aos 30"
+              },
+              {
+                "label": "Omar, começa aos 40"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-delay-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "steps": [
+          {
+            "id": "deposit-now"
+          },
+          {
+            "id": "deposit-later"
+          },
+          {
+            "id": "cost-of-wait"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "deposit-later",
+          "cost-of-wait"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "deposit-later": "112360",
+          "cost-of-wait": "6741.6"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At 6%, compare $100,000 deposited now (3 years) with one deposited a year later. Fill the blanks.",
+          "feedback": {
+            "met": "You grew the later deposit and priced the wait.",
+            "not_yet": "The later deposit gets one year less growth than the first."
+          },
+          "help": [
+            "Grow the deposit once for each year it stays in."
+          ],
+          "steps": [
+            {
+              "expression": "Now: $100,000 × 1.06³ (3 years)",
+              "result": "$119,101.60",
+              "spokenText": "Three years of growth take $100,000 to $119,101.60"
+            },
+            {
+              "expression": "A year later: $100,000 × 1.06² (2 years)",
+              "result": "$112,360",
+              "spokenText": "With two years of growth, $100,000 reaches $112,360"
+            },
+            {
+              "expression": "Cost of waiting a year: value now − value a year later",
+              "result": "$6,741.60",
+              "spokenText": "Waiting one year costs $6,741.60"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Al 6%, compara $100,000 depositados hoy (3 años) con otros depositados un año después. Completa los valores.",
+          "feedback": {
+            "met": "Hiciste crecer el depósito tardío y pusiste precio a la espera.",
+            "not_yet": "El depósito tardío tiene un año menos de crecimiento que el primero."
+          },
+          "help": [
+            "Haz crecer el depósito una vez por cada año que permanece."
+          ],
+          "steps": [
+            {
+              "expression": "Hoy: $100,000 × 1.06³ (3 años)",
+              "result": "$119,101.60",
+              "spokenText": "Tres años de crecimiento llevan $100,000 a $119,101.60"
+            },
+            {
+              "expression": "Un año después: $100,000 × 1.06² (2 años)",
+              "result": "$112,360",
+              "spokenText": "Con dos años de crecimiento, $100,000 llegan a $112,360"
+            },
+            {
+              "expression": "Costo de esperar un año: valor hoy − valor un año después",
+              "result": "$6,741.60",
+              "spokenText": "Esperar un año cuesta $6,741.60"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A 6%, compare R$ 100.000 depositados hoje (3 anos) com outros depositados um ano depois. Preencha os valores.",
+          "feedback": {
+            "met": "Você fez o depósito tardio crescer e deu preço à espera.",
+            "not_yet": "O depósito tardio tem um ano a menos de crescimento que o primeiro."
+          },
+          "help": [
+            "Faça o depósito crescer uma vez por cada ano em que fica."
+          ],
+          "steps": [
+            {
+              "expression": "Hoje: R$ 100.000 × 1,06³ (3 anos)",
+              "result": "R$ 119.101,60",
+              "spokenText": "Três anos de crescimento levam R$ 100.000 a R$ 119.101,60"
+            },
+            {
+              "expression": "Um ano depois: R$ 100.000 × 1,06² (2 anos)",
+              "result": "R$ 112.360",
+              "spokenText": "Com dois anos de crescimento, R$ 100.000 chegam a R$ 112.360"
+            },
+            {
+              "expression": "Custo de esperar um ano: valor hoje − valor um ano depois",
+              "result": "R$ 6.741,60",
+              "spokenText": "Esperar um ano custa R$ 6.741,60"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-compound-02",
+      "type": "money.compound-interest.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "compound-interest"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "principalCents": 2000000,
+        "scenario": {
+          "rate": 6,
+          "years": 20
+        },
+        "options": [
+          {
+            "id": "opt-a",
+            "cents": 3200000
+          },
+          {
+            "id": "opt-b",
+            "cents": 4400000
+          },
+          {
+            "id": "opt-c",
+            "cents": 5200000
+          },
+          {
+            "id": "opt-d",
+            "cents": 6400000
+          },
+          {
+            "id": "opt-e",
+            "cents": 8000000
+          }
+        ],
+        "challenge": {
+          "minimumCents": 10000000,
+          "maximumYears": 28
+        },
+        "explain": [
+          "rate-grows",
+          "interest-on-interest",
+          "deposit-grows"
+        ]
+      },
+      "rubric": {
+        "predictOption": "opt-d",
+        "explainId": "interest-on-interest"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict a one-time $20,000 after 20 years at an illustrative 6%, then reach $100,000 within 28 years.",
+          "feedback": {
+            "met": "You predicted the compounded value, explained why and reached the goal.",
+            "not_yet": "Recheck Lena’s first deposit, your reason, and the slider goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice un depósito único de $20,000 a 20 años con una tasa ilustrativa de 6%; luego llega a $100,000 en 28 años o menos.",
+          "feedback": {
+            "met": "Predijiste el valor compuesto, explicaste por qué y llegaste a la meta.",
+            "not_yet": "Revisa el primer depósito de Lena, tu razón y la meta de los controles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja um depósito único de R$ 20.000 em 20 anos com taxa ilustrativa de 6%; depois chegue a R$ 100.000 em até 28 anos.",
+          "feedback": {
+            "met": "Você previu o valor composto, explicou por quê e atingiu a meta.",
+            "not_yet": "Revise o primeiro depósito de Lena, seu motivo e a meta dos controles."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-gap-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the delay costs more than the missing deposits.",
+          "line": "Omar deposits $120,000 less in total, yet ends $678,843 behind. The difference is growth he never got."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: la demora cuesta más que los depósitos que faltan.",
+          "line": "Omar deposita $120,000 menos en total, pero termina $678,843 atrás. La diferencia es crecimiento que nunca tuvo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o atraso custa mais que os depósitos que faltam.",
+          "line": "Omar deposita R$ 120.000 a menos no total, mas termina R$ 678.843 atrás. A diferença é crescimento que ele nunca teve."
+        }
+      }
+    },
+    {
+      "id": "example-timing-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: a deposit made a year earlier is worth 6% more at the end.",
+          "line": "Five $10,000 deposits made at the end of each year reach $56,371. Made at the start of each year: $59,753."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: un depósito hecho un año antes vale 6% más al final.",
+          "line": "Cinco depósitos de $10,000 al final de cada año llegan a $56,371. Al inicio de cada año: $59,753."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: um depósito feito um ano antes vale 6% a mais no fim.",
+          "line": "Cinco depósitos de R$ 10.000 no fim de cada ano chegam a R$ 56.371. No início de cada ano: R$ 59.753."
+        }
+      }
+    },
+    {
+      "id": "practice-timing-02",
+      "type": "money.time-value.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "time-value"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "rateBps": 600,
+        "ask": "future",
+        "task": {
+          "kind": "annuity",
+          "timing": "start",
+          "amountCents": 800000,
+          "count": 4
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "year-0": [
+              "payment"
+            ],
+            "year-1": [
+              "payment"
+            ],
+            "year-2": [
+              "payment"
+            ],
+            "year-3": [
+              "payment"
+            ]
+          }
+        ],
+        "tolerance": {
+          "absolute": "1"
+        },
+        "review": {
+          "absolute": "25"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At an illustrative 6%, place four $8,000 deposits at each year’s start. Type the end worth as a whole number.",
+          "feedback": {
+            "met": "You placed each deposit at the year’s start and typed the worth.",
+            "not_yet": "Recheck the placement and your typed worth against the example."
+          }
+        },
+        "es-MX": {
+          "prompt": "Con una tasa ilustrativa de 6%, coloca cuatro depósitos de $8,000 al inicio de cada año. Escribe su valor final como número entero.",
+          "feedback": {
+            "met": "Colocaste cada depósito al inicio de su año y escribiste el valor.",
+            "not_yet": "Revisa la colocación y tu valor escrito frente al ejemplo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Com uma taxa ilustrativa de 6%, coloque quatro depósitos de R$ 8.000 no início de cada ano. Digite o valor final como número inteiro.",
+          "feedback": {
+            "met": "Você colocou cada depósito no início do ano e digitou o valor.",
+            "not_yet": "Revise a colocação e o valor digitado em relação ao exemplo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-freelancer-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "choices": [
+          {
+            "id": "about-equal"
+          },
+          {
+            "id": "wait"
+          },
+          {
+            "id": "start-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-pause"
+          },
+          {
+            "id": "reason-years"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "start-now"
+        ],
+        "reasonQuality": {
+          "reason-bigger": "unsupported",
+          "reason-pause": "partial",
+          "reason-years": "sound"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A freelancer has 40 years to 65. At an illustrative 6%, which plan ends higher?",
+          "feedback": {
+            "met": "Starting now ends higher: more years of growth beat the larger deposit.",
+            "not_yet": "Compare years of growth in Omar’s chart, not only the deposits."
+          },
+          "choices": [
+            {
+              "label": "Both end about equal"
+            },
+            {
+              "label": "Wait ten years: $9,000 a year"
+            },
+            {
+              "label": "Start now: $6,000 a year"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "The bigger yearly deposit always wins"
+            },
+            {
+              "label": "A wait with an end date is fine"
+            },
+            {
+              "label": "More years of growth beat the bigger deposit"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una persona independiente tiene 40 años para llegar a los 65. Con una tasa ilustrativa de 6%, ¿qué plan termina más alto?",
+          "feedback": {
+            "met": "Empezar hoy termina más alto: más años de crecimiento superan el depósito mayor.",
+            "not_yet": "Compara los años de crecimiento en la gráfica de Omar, no solo los depósitos."
+          },
+          "choices": [
+            {
+              "label": "Ambos terminan casi iguales"
+            },
+            {
+              "label": "Esperar diez años: $9,000 al año"
+            },
+            {
+              "label": "Empezar hoy: $6,000 al año"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "El depósito anual mayor siempre gana"
+            },
+            {
+              "label": "Una pausa con fecha de fin es válida"
+            },
+            {
+              "label": "Más años de crecimiento superan el depósito mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma pessoa autônoma tem 40 anos até os 65. Com uma taxa ilustrativa de 6%, qual plano termina mais alto?",
+          "feedback": {
+            "met": "Começar hoje termina mais alto: mais anos de crescimento superam o depósito maior.",
+            "not_yet": "Compare os anos de crescimento no gráfico de Omar, não só os depósitos."
+          },
+          "choices": [
+            {
+              "label": "Os dois terminam quase iguais"
+            },
+            {
+              "label": "Esperar dez anos: R$ 9.000 por ano"
+            },
+            {
+              "label": "Começar hoje: R$ 6.000 por ano"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O depósito anual maior sempre ganha"
+            },
+            {
+              "label": "Uma pausa com data de fim é válida"
+            },
+            {
+              "label": "Mais anos de crescimento superam o depósito maior"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

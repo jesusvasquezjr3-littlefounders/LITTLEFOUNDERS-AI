@@ -1,0 +1,827 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-pitch-price-budget",
+  "lesson_id": "ent-1012-09-the-twenty-second-pitch",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.communicate-value",
+    "biz.solution-ideas"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara arma con el equipo un pitch de veinte segundos para Teo, un alumno nuevo: para quién es, el problema y la prueba de que funciona. Primero lo ve paso a paso, luego prueba una respuesta con Ana y una regla de tarjetas para revisar afirmaciones, y al final revisa el pitch de otro equipo.",
+  "title": {
+    "en-US": "The twenty-second pitch",
+    "es-MX": "El pitch de veinte segundos",
+    "pt-BR": "O pitch de vinte segundos"
+  },
+  "new_concepts": [
+    "biz.communicate-value"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Teo is new, and he reads our poster.",
+          "line": "Teo, the new student, asks what our lunch bag does. We get twenty seconds, so let's build the answer."
+        },
+        "es-MX": {
+          "prompt": "Teo es nuevo y lee nuestro cartel.",
+          "line": "Teo, el alumno nuevo, pregunta qué hace nuestra bolsa de comida. Tenemos veinte segundos, así que armemos la respuesta."
+        },
+        "pt-BR": {
+          "prompt": "Teo é novo e lê o nosso cartaz.",
+          "line": "Teo, o aluno novo, pergunta o que a nossa sacola de almoço faz. Temos vinte segundos, então vamos montar a resposta."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "best-ever"
+          },
+          {
+            "id": "last-slot"
+          },
+          {
+            "id": "handle"
+          },
+          {
+            "id": "trust-us"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-short"
+          },
+          {
+            "id": "reason-big"
+          },
+          {
+            "id": "reason-who"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "last-slot"
+        ],
+        "reasonQuality": {
+          "reason-who": "sound",
+          "reason-short": "partial",
+          "reason-big": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Teo asks what our lunch bag does. Which opening line would you try first?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "Our bag is the best ever."
+            },
+            {
+              "label": "Last-slot students get only 10 minutes."
+            },
+            {
+              "label": "It has a strong handle."
+            },
+            {
+              "label": "Trust us, you will love it."
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "It is short and easy to say"
+            },
+            {
+              "label": "Big words make people listen"
+            },
+            {
+              "label": "It tells who has the trouble"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Teo pregunta qué hace nuestra bolsa de comida. ¿Con qué frase de apertura empezarías?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Nuestra bolsa es la mejor del mundo."
+            },
+            {
+              "label": "Los del último turno solo tienen 10 minutos."
+            },
+            {
+              "label": "Tiene un asa resistente."
+            },
+            {
+              "label": "Confía en nosotros, te va a encantar."
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Es corta y fácil de decir"
+            },
+            {
+              "label": "Las palabras grandes hacen que escuchen"
+            },
+            {
+              "label": "Dice quién tiene el problema"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Teo pergunta o que a nossa sacola de almoço faz. Com qual frase de abertura você começaria?",
+          "feedback": {
+            "met": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Nossa sacola é a melhor de todas."
+            },
+            {
+              "label": "Quem almoça no último horário tem só 10 minutos."
+            },
+            {
+              "label": "Ela tem uma alça resistente."
+            },
+            {
+              "label": "Confie em nós, você vai adorar."
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "É curta e fácil de dizer"
+            },
+            {
+              "label": "Palavras grandes fazem as pessoas ouvirem"
+            },
+            {
+              "label": "Diz quem tem o problema"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-who-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: who it is for.",
+          "line": "Thinking out loud: a pitch starts with who. Ours is for students in the last lunch slot."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: para quién es.",
+          "line": "Pensando en voz alta: un pitch empieza por el para quién. El nuestro es para alumnos del último turno del comedor."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: para quem é.",
+          "line": "Pensando em voz alta: um pitch começa pelo para quem. O nosso é para alunos do último horário do almoço."
+        }
+      }
+    },
+    {
+      "id": "example-problem-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the problem they have.",
+          "line": "Next piece: those students wait in the long line and get only 10 minutes to eat."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el problema que tienen.",
+          "line": "Siguiente pieza: esos alumnos esperan en la fila larga y solo tienen 10 minutos para comer."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o problema que eles têm.",
+          "line": "Próxima peça: esses alunos esperam na fila longa e têm só 10 minutos para comer."
+        }
+      }
+    },
+    {
+      "id": "example-proof-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: proof that it works.",
+          "line": "Saying “fast” is not proof. We timed it: students with our bag avoid the long line and save 6 minutes."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: la prueba de que funciona.",
+          "line": "Decir “rápido” no es prueba. Lo cronometramos: con nuestra bolsa, los alumnos evitan la fila larga y ahorran 6 minutos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a prova de que funciona.",
+          "line": "Dizer que é rápido não é prova. Cronometramos: com a nossa sacola, os alunos evitam a fila longa e economizam 6 minutos."
+        }
+      }
+    },
+    {
+      "id": "guided-proof-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-timed"
+          },
+          {
+            "id": "reply-everyone"
+          },
+          {
+            "id": "reply-trust"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-timed"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Answer Ana the way the proof step did.",
+          "feedback": {
+            "met": "You chose a measured result over a loud claim.",
+            "not_yet": "Look back at the proof step and what it used."
+          },
+          "speaker": "Ana",
+          "line": "How do I know it is really sturdy?",
+          "replies": [
+            {
+              "label": "We tested it: it carried 5 books."
+            },
+            {
+              "label": "Everyone says our bag is the best."
+            },
+            {
+              "label": "Trust us, it is very strong."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Responde a Ana como en el paso de la prueba.",
+          "feedback": {
+            "met": "Elegiste un resultado medido en vez de una frase fuerte.",
+            "not_yet": "Mira otra vez el paso de la prueba y qué usó."
+          },
+          "speaker": "Ana",
+          "line": "¿Cómo sé que de verdad es resistente?",
+          "replies": [
+            {
+              "label": "La probamos: aguantó 5 libros."
+            },
+            {
+              "label": "Todos dicen que nuestra bolsa es la mejor."
+            },
+            {
+              "label": "Confía en nosotros, aguanta muchísimo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Responda à Ana como no passo da prova.",
+          "feedback": {
+            "met": "Você escolheu um resultado medido, não uma frase forte.",
+            "not_yet": "Veja de novo o passo da prova e o que ele usou."
+          },
+          "speaker": "Ana",
+          "line": "Como sei que ela é mesmo resistente?",
+          "replies": [
+            {
+              "label": "Testamos: ela aguentou 5 livros."
+            },
+            {
+              "label": "Todo mundo diz que nossa sacola é a melhor."
+            },
+            {
+              "label": "Confie em nós, ela aguenta muito."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-hype-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Side by side: a hype draft and our pitch.",
+          "line": "Hype draft: best bag ever. It has no who, no problem, no proof; ours has all three."
+        },
+        "es-MX": {
+          "prompt": "Lado a lado: un borrador exagerado y nuestro pitch.",
+          "line": "Borrador exagerado: la mejor bolsa del mundo. No tiene para quién, ni problema, ni prueba; el nuestro tiene los tres."
+        },
+        "pt-BR": {
+          "prompt": "Lado a lado: um rascunho exagerado e o nosso pitch.",
+          "line": "Rascunho exagerado: a melhor sacola do mundo. Não tem para quem, nem problema, nem prova; o nosso tem os três."
+        }
+      }
+    },
+    {
+      "id": "example-rule-a-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A rule to check: if a card says sturdy, its back shows a test result.",
+          "line": "We turn the sturdy card: if its back shows no result, the rule breaks."
+        },
+        "es-MX": {
+          "prompt": "Una regla para revisar: si una tarjeta dice resistente, su reverso muestra un resultado de prueba.",
+          "line": "Giramos la tarjeta resistente: si su reverso no muestra resultado, la regla se rompe."
+        },
+        "pt-BR": {
+          "prompt": "Uma regra para conferir: se um cartão diz resistente, o verso mostra um resultado de teste.",
+          "line": "Viramos o cartão resistente: se o verso não mostra resultado, a regra quebra."
+        }
+      }
+    },
+    {
+      "id": "example-rule-b-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2 of the check: the card with no result.",
+          "line": "We turn it too: its front might say sturdy. Tasty cards and cards with results cannot break the rule."
+        },
+        "es-MX": {
+          "prompt": "Paso 2 de la revisión: la tarjeta sin resultado.",
+          "line": "Giramos esa también: su frente podría decir resistente. Las tarjetas sabrosas y las que ya tienen resultado no pueden romper la regla."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2 da conferência: o cartão sem resultado.",
+          "line": "Viramos esse também: a frente pode dizer resistente. Cartões gostosos e cartões com resultado não podem quebrar a regra."
+        }
+      }
+    },
+    {
+      "id": "practice-rule-01",
+      "type": "logic.rule-checker.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "cards": [
+          {
+            "id": "card-timed"
+          },
+          {
+            "id": "card-faster"
+          },
+          {
+            "id": "card-no-time"
+          },
+          {
+            "id": "card-tasty"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-faster",
+          "card-no-time"
+        ],
+        "roles": {
+          "card-timed": "q",
+          "card-faster": "p",
+          "card-no-time": "not_q",
+          "card-tasty": "not_p"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which cards must you turn to test the rule?",
+          "feedback": {
+            "met": "You turned only the cards that could break the rule.",
+            "not_yet": "Re-read the rule, then ask which cards could break it."
+          },
+          "rule": "If a line says faster, its back shows a timed result.",
+          "cards": [
+            {
+              "face": "Timed: 6 min"
+            },
+            {
+              "face": "Says: faster"
+            },
+            {
+              "face": "No time shown"
+            },
+            {
+              "face": "Says: tasty"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué tarjetas debes girar para probar la regla?",
+          "feedback": {
+            "met": "Giraste solo las tarjetas que podían romper la regla.",
+            "not_yet": "Lee otra vez la regla y pregunta qué tarjetas podrían romperla."
+          },
+          "rule": "Si una frase dice más rápido, su reverso muestra un tiempo medido.",
+          "cards": [
+            {
+              "face": "Con tiempo: 6 min"
+            },
+            {
+              "face": "Dice: más rápido"
+            },
+            {
+              "face": "Sin tiempo medido"
+            },
+            {
+              "face": "Dice: sabroso"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quais cartões você deve virar para testar a regra?",
+          "feedback": {
+            "met": "Você virou só os cartões que podiam quebrar a regra.",
+            "not_yet": "Leia a regra de novo e pergunte quais cartões poderiam quebrá-la."
+          },
+          "rule": "Se uma frase diz mais rápido, o verso mostra um tempo medido.",
+          "cards": [
+            {
+              "face": "Tempo: 6 min"
+            },
+            {
+              "face": "Diz: mais rápido"
+            },
+            {
+              "face": "Sem tempo medido"
+            },
+            {
+              "face": "Diz: gostoso"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-gap-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-proof"
+          },
+          {
+            "id": "reply-slogan"
+          },
+          {
+            "id": "reply-problem"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-problem"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Our draft pitch is missing a part. What do we add?",
+          "feedback": {
+            "met": "You checked the draft part by part and found the gap.",
+            "not_yet": "Check the draft for who, problem and proof, one by one."
+          },
+          "speaker": "Our draft",
+          "line": "For last-slot students: we timed it, and the bag saves 6 minutes.",
+          "replies": [
+            {
+              "label": "Add proof it works"
+            },
+            {
+              "label": "Add a louder slogan"
+            },
+            {
+              "label": "Add the problem it fixes"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A nuestro borrador le falta una parte. ¿Qué agregamos?",
+          "feedback": {
+            "met": "Revisaste el borrador parte por parte y hallaste el hueco.",
+            "not_yet": "Revisa el borrador: para quién, problema y prueba, una por una."
+          },
+          "speaker": "Nuestro borrador",
+          "line": "Para alumnos del último turno: lo cronometramos y la bolsa ahorra 6 minutos.",
+          "replies": [
+            {
+              "label": "Agregar la prueba de que funciona"
+            },
+            {
+              "label": "Agregar un eslogan más fuerte"
+            },
+            {
+              "label": "Agregar el problema que resuelve"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Falta uma parte no nosso rascunho de pitch. O que acrescentamos?",
+          "feedback": {
+            "met": "Você revisou o rascunho parte por parte e achou a lacuna.",
+            "not_yet": "Revise o rascunho: para quem, problema e prova, uma por uma."
+          },
+          "speaker": "Nosso rascunho",
+          "line": "Para alunos do último horário: cronometramos, e a sacola economiza 6 minutos.",
+          "replies": [
+            {
+              "label": "Acrescentar a prova de que funciona"
+            },
+            {
+              "label": "Acrescentar um slogan mais forte"
+            },
+            {
+              "label": "Acrescentar o problema que ela resolve"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-bookmark-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "slogan"
+          },
+          {
+            "id": "problem"
+          },
+          {
+            "id": "proof"
+          },
+          {
+            "id": "who"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-three"
+          },
+          {
+            "id": "reason-parts"
+          },
+          {
+            "id": "reason-bigger"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "who"
+        ],
+        "reasonQuality": {
+          "reason-parts": "sound",
+          "reason-three": "partial",
+          "reason-bigger": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia pitches a bookmark clip: “Pages get lost, but our clip held 8 of 8 tests.” What is missing?",
+          "feedback": {
+            "met": "You checked the draft for who, problem and proof.",
+            "not_yet": "Check each part in turn: who, problem, proof. Which one is absent?"
+          },
+          "choices": [
+            {
+              "label": "A louder slogan"
+            },
+            {
+              "label": "The problem it fixes"
+            },
+            {
+              "label": "Proof it works"
+            },
+            {
+              "label": "Who it is for"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "A pitch needs all three parts"
+            },
+            {
+              "label": "It names the problem and proof, not who"
+            },
+            {
+              "label": "A bigger slogan sells more"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mia presenta un clip para libros: “Las páginas se pierden, pero nuestro clip pasó 8 de 8 pruebas.” ¿Qué falta?",
+          "feedback": {
+            "met": "Revisaste el borrador: para quién, problema y prueba.",
+            "not_yet": "Revisa cada parte: para quién, problema, prueba. ¿Cuál no está?"
+          },
+          "choices": [
+            {
+              "label": "Un eslogan más fuerte"
+            },
+            {
+              "label": "El problema que resuelve"
+            },
+            {
+              "label": "La prueba de que funciona"
+            },
+            {
+              "label": "Para quién es"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Un pitch necesita las tres partes"
+            },
+            {
+              "label": "Nombra problema y prueba, pero no para quién"
+            },
+            {
+              "label": "Un eslogan más grande vende más"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mia apresenta um clipe de livro: “As páginas se perdem, mas nosso clipe passou em 8 de 8 testes.” O que falta?",
+          "feedback": {
+            "met": "Você revisou o rascunho: para quem, problema e prova.",
+            "not_yet": "Revise cada parte: para quem, problema, prova. Qual falta?"
+          },
+          "choices": [
+            {
+              "label": "Um slogan mais forte"
+            },
+            {
+              "label": "O problema que resolve"
+            },
+            {
+              "label": "A prova de que funciona"
+            },
+            {
+              "label": "Para quem é"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Um pitch precisa das três partes"
+            },
+            {
+              "label": "Cita problema e prova, mas não para quem"
+            },
+            {
+              "label": "Um slogan maior vende mais"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

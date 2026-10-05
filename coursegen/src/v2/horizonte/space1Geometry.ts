@@ -458,7 +458,7 @@ export const REFERENCE_MARKS = [
 ] as const;
 export type ReferenceId = (typeof REFERENCE_MARKS)[number]['id'];
 
-/** Values are whole cents of a generic currency: no real currency is named. */
+/** Values are whole cents; the board prints them in the learner's market currency (pesos, reais, dollars), so the plan stays locale-neutral. */
 export type CoinGoal = { kind: 'amount'; total: number } | { kind: 'height'; mm: number };
 export interface CoinPayload { piece: CoinPiece; value: number; goal: CoinGoal; step: number; max: number }
 
@@ -519,7 +519,7 @@ export const STALL_LIMITS = {
 
 export const isStallId = (value: unknown): value is StallId => typeof value === 'string' && (STALL_IDS as readonly string[]).includes(value);
 
-/** Prices are whole cents of a generic currency: no real currency is named. */
+/** Prices are whole cents; the board prints them in the learner's market currency (pesos, reais, dollars), so the plan stays locale-neutral. */
 export interface StallItem { id: StallId; price: number; stock: number }
 export type StallGoal =
   | { kind: 'exact'; total: number }

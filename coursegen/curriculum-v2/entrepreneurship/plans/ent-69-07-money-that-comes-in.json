@@ -1,0 +1,788 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-stall",
+  "lesson_id": "ent-69-07-money-that-comes-in",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.revenue",
+    "money.add-money"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara, la inventora, abre el puesto de la clase en un día de venta. Muestra un caso completo: lista las ventas, suma los papalotes, suma los libros, junta las barras y ve que las monedas que entraron son todas las ventas juntas, sin quitar nada todavía. El niño arma con las ventas el total que entró, suma las barras de una gráfica y lo repite en la feria con gorras y plumas.",
+  "title": {
+    "en-US": "Coins that come in",
+    "es-MX": "Monedas que entran",
+    "pt-BR": "Moedas que entram"
+  },
+  "new_concepts": [
+    "biz.revenue"
+  ],
+  "regional": {
+    "universal": "A class stall counted in story coins; any amount on the stall boards is written with each market's own currency sign. No places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sale day: Zara and the class open the stall.",
+          "line": "An empty cash box. Kites sell for 9 coins, books for 4."
+        },
+        "es-MX": {
+          "prompt": "Día de venta: Zara y la clase abren el puesto.",
+          "line": "Una caja vacía. Los papalotes se venden a 9 monedas, los libros a 4."
+        },
+        "pt-BR": {
+          "prompt": "Dia de venda: Zara e a turma abrem a barraquinha.",
+          "line": "Uma caixa vazia. As pipas são vendidas a 9 moedas, os livros a 4."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.market-stall.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.revenue",
+      "payload": {
+        "items": [
+          {
+            "id": "kite",
+            "price": 900,
+            "stock": 3
+          },
+          {
+            "id": "book",
+            "price": 400,
+            "stock": 3
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 1300
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "kite": [
+              "item"
+            ],
+            "book": [
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Try first: 13 came in. Show which sales made that.",
+          "feedback": {
+            "met": "Noted. Now we look at it step by step.",
+            "not_yet": "Noted. Now we look at it step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Inténtalo primero: entraron 13. Muestra qué ventas fueron.",
+          "feedback": {
+            "met": "Anotado. Ahora lo vemos paso a paso.",
+            "not_yet": "Anotado. Ahora lo vemos paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tente primeiro: entraram 13. Mostre quais vendas foram essas.",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver passo a passo.",
+            "not_yet": "Anotado. Agora vamos ver passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: list every sale.",
+          "line": "Let me look: three kites at 9 coins, two books at 4."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: anota cada venta.",
+          "line": "A ver: tres papalotes a 9 monedas, dos libros a 4."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: anote cada venda.",
+          "line": "Vou ver: três pipas a 9 moedas, dois livros a 4."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: add the kites.",
+          "line": "Hmm, three kites means three 9s: 9 + 9 + 9 = 27."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: suma los papalotes.",
+          "line": "Hmm, tres papalotes, tres veces 9: 9 + 9 + 9 = 27."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: some as pipas.",
+          "line": "Hmm, três pipas, três vezes 9: 9 + 9 + 9 = 27."
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: add the books.",
+          "line": "Now the books: two 4s, so 4 + 4 = 8."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: suma los libros.",
+          "line": "Ahora los libros: dos veces 4, o sea 4 + 4 = 8."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: some os livros.",
+          "line": "Agora os livros: duas vezes 4, ou seja 4 + 4 = 8."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.market-stall.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.revenue",
+      "payload": {
+        "items": [
+          {
+            "id": "kite",
+            "price": 900,
+            "stock": 3
+          },
+          {
+            "id": "book",
+            "price": 400,
+            "stock": 4
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 2200
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "kite": [
+              "item",
+              "item"
+            ],
+            "book": [
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's stall: 22 came in. Which sales made that?",
+          "help": [
+            "Zara added the price of each sale.",
+            "Here the Cost line is your sales total. Match the goal."
+          ],
+          "feedback": {
+            "met": "You added sale prices until the basket matched the goal.",
+            "not_yet": "Not yet. Add each sale's price, like Zara did."
+          }
+        },
+        "es-MX": {
+          "prompt": "Puesto de Zara: entraron 22. ¿Qué ventas fueron?",
+          "help": [
+            "Zara sumó el precio de cada venta.",
+            "Aquí la línea Costo es el total de tus ventas. Iguala la meta."
+          ],
+          "feedback": {
+            "met": "Sumaste los precios de las ventas hasta igualar la meta.",
+            "not_yet": "Aún no. Suma el precio de cada venta, como Zara."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Barraquinha da Zara: entraram 22. Quais vendas foram?",
+          "help": [
+            "A Zara somou o preço de cada venda.",
+            "Aqui a linha Custo é o total das suas vendas. Iguale a meta."
+          ],
+          "feedback": {
+            "met": "Você somou os preços das vendas até igualar a meta.",
+            "not_yet": "Ainda não. Some o preço de cada venda, como a Zara."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "visual.chart.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-kites"
+            },
+            {
+              "id": "cat-books"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-coins",
+              "values": [
+                27,
+                8
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: each bar is the coins from one item.",
+          "title": "Coins from each item",
+          "data": {
+            "categories": [
+              {
+                "label": "Kites"
+              },
+              {
+                "label": "Books"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 4: cada barra muestra las monedas de una cosa.",
+          "title": "Monedas de cada cosa",
+          "data": {
+            "categories": [
+              {
+                "label": "Papalotes"
+              },
+              {
+                "label": "Libros"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: cada barra mostra as moedas de uma coisa.",
+          "title": "Moedas de cada coisa",
+          "data": {
+            "categories": [
+              {
+                "label": "Pipas"
+              },
+              {
+                "label": "Livros"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-05",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: put the bars together.",
+          "line": "Hmm, 27 + 8 = 35. That is every coin that came in."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: junta las barras.",
+          "line": "Hmm, 27 + 8 = 35. Son todas las monedas que entraron."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: junte as barras.",
+          "line": "Hmm, 27 + 8 = 35. São todas as moedas que entraram."
+        }
+      }
+    },
+    {
+      "id": "ex-06",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: that number has a name.",
+          "line": "Coins that came in are revenue. We take none away yet."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: ese número tiene nombre.",
+          "line": "Las monedas que entran son los ingresos. Aún no quitamos ninguna."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: esse número tem nome.",
+          "line": "As moedas que entram são a receita. Ainda não tiramos nenhuma."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.market-stall.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "items": [
+          {
+            "id": "kite",
+            "price": 900,
+            "stock": 3
+          },
+          {
+            "id": "book",
+            "price": 400,
+            "stock": 3
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 2600
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "kite": [
+              "item",
+              "item"
+            ],
+            "book": [
+              "item",
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's stall again: 26 came in. Show the sales.",
+          "help": [
+            "Add each sale's price, one at a time.",
+            "Stop when your total matches the goal."
+          ],
+          "feedback": {
+            "met": "You added each sale's price to match the goal.",
+            "not_yet": "Not yet. Compare your total with the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Puesto de Zara otra vez: entraron 26. Muestra las ventas.",
+          "help": [
+            "Suma el precio de cada venta, una por una.",
+            "Detente cuando tu total sea igual a la meta."
+          ],
+          "feedback": {
+            "met": "Sumaste el precio de cada venta hasta igualar la meta.",
+            "not_yet": "Aún no. Compara tu total con la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Barraquinha da Zara de novo: entraram 26. Mostre as vendas.",
+          "help": [
+            "Some o preço de cada venda, uma por vez.",
+            "Pare quando seu total for igual à meta."
+          ],
+          "feedback": {
+            "met": "Você somou o preço de cada venda até igualar a meta.",
+            "not_yet": "Ainda não. Compare seu total com a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.revenue",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-kites"
+            },
+            {
+              "id": "cat-books"
+            },
+            {
+              "id": "cat-marks"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-coins",
+              "values": [
+                18,
+                12,
+                6
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-thirty"
+            },
+            {
+              "id": "opt-thirty-six"
+            },
+            {
+              "id": "opt-eighteen"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-thirty-six"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's stall, sale day two. Read the bars.",
+          "help": [
+            "Each bar is the coins from one item.",
+            "Add all three bars, not just one."
+          ],
+          "feedback": {
+            "met": "You added every bar to count all the coins.",
+            "not_yet": "Not yet. Zara put all the bars together."
+          },
+          "title": "Coins from each item",
+          "data": {
+            "categories": [
+              {
+                "label": "Kites"
+              },
+              {
+                "label": "Books"
+              },
+              {
+                "label": "Bookmarks"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many coins came in?",
+            "options": [
+              {
+                "label": "30 coins"
+              },
+              {
+                "label": "36 coins"
+              },
+              {
+                "label": "18 coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Puesto de Zara, segundo día de venta. Lee las barras.",
+          "help": [
+            "Cada barra son las monedas de una cosa.",
+            "Suma las tres barras, no solo una."
+          ],
+          "feedback": {
+            "met": "Sumaste cada barra para contar todas las monedas.",
+            "not_yet": "Aún no. Zara juntó todas las barras."
+          },
+          "title": "Monedas de cada cosa",
+          "data": {
+            "categories": [
+              {
+                "label": "Papalotes"
+              },
+              {
+                "label": "Libros"
+              },
+              {
+                "label": "Marcapáginas"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántas monedas entraron?",
+            "options": [
+              {
+                "label": "30 monedas"
+              },
+              {
+                "label": "36 monedas"
+              },
+              {
+                "label": "18 monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Barraquinha da Zara, segundo dia de venda. Leia as barras.",
+          "help": [
+            "Cada barra mostra as moedas de uma coisa.",
+            "Some as três barras, não só uma."
+          ],
+          "feedback": {
+            "met": "Você somou cada barra para contar todas as moedas.",
+            "not_yet": "Ainda não. A Zara juntou todas as barras."
+          },
+          "title": "Moedas de cada coisa",
+          "data": {
+            "categories": [
+              {
+                "label": "Pipas"
+              },
+              {
+                "label": "Livros"
+              },
+              {
+                "label": "Marcadores"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantas moedas entraram?",
+            "options": [
+              {
+                "label": "30 moedas"
+              },
+              {
+                "label": "36 moedas"
+              },
+              {
+                "label": "18 moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.market-stall.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.revenue",
+      "payload": {
+        "items": [
+          {
+            "id": "cap",
+            "price": 500,
+            "stock": 4
+          },
+          {
+            "id": "pen",
+            "price": 200,
+            "stock": 4
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 1900
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "cap": [
+              "item",
+              "item",
+              "item"
+            ],
+            "pen": [
+              "item",
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fair day, Zara's class: 19 came in. Show the sales.",
+          "help": [
+            "Add each sale's price, like at the class stall.",
+            "Stop when your total matches the goal."
+          ],
+          "feedback": {
+            "met": "Same move at a new stall: you added every price.",
+            "not_yet": "Not yet. Add each price, like Zara at the class stall."
+          }
+        },
+        "es-MX": {
+          "prompt": "Día de feria, la clase de Zara: entraron 19. Muestra las ventas.",
+          "help": [
+            "Suma el precio de cada venta, como en el puesto.",
+            "Detente cuando tu total sea igual a la meta."
+          ],
+          "feedback": {
+            "met": "Mismo paso en otro puesto: sumaste cada precio.",
+            "not_yet": "Aún no. Suma cada precio, como Zara en el puesto de la clase."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dia da feira, turma da Zara: entraram 19. Mostre as vendas.",
+          "help": [
+            "Some o preço de cada venda, como na barraquinha.",
+            "Pare quando seu total for igual à meta."
+          ],
+          "feedback": {
+            "met": "Mesmo passo em outra barraquinha: você somou cada preço.",
+            "not_yet": "Ainda não. Some cada preço, como a Zara na barraquinha da turma."
+          }
+        }
+      }
+    }
+  ]
+}

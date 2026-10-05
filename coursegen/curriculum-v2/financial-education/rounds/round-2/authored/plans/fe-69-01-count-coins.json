@@ -1,0 +1,606 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-01-count-coins",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.count-mixed-coins",
+    "money.make-amount"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina cuenta una pila de monedas por valor: junta las iguales, va de mayor a menor y muestra que cada moneda suma lo que vale, no uno. Después arma totales con las menos monedas posibles, eligiendo siempre la más grande que quepa, para que su bolsita quede ligera.",
+  "title": {
+    "en-US": "Count coins, fill a light pouch",
+    "es-MX": "Cuenta monedas, llena la bolsita",
+    "pt-BR": "Conte moedas, encha a bolsinha"
+  },
+  "new_concepts": [
+    "money.count-mixed-coins",
+    "money.make-amount"
+  ],
+  "regional": {
+    "universal": "The lesson uses LittleFounders coins only, so no market price, shop, custom or real currency changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina tiene una pila de monedas.",
+          "line": "Sin prisa: cuento cuánto vale y luego lleno una bolsita ligera.",
+          "narration": {
+            "script": "Nunca me apuro. Cada moneda vale algo distinto, así que voy despacio y reviso cada una."
+          }
+        },
+        "en-US": {
+          "prompt": "Dina has a pile of coins.",
+          "line": "No rush. I count what it's worth, then fill a light pouch.",
+          "narration": {
+            "script": "I never hurry. Every coin is worth something different, so I go slowly and check each one."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina tem uma pilha de moedas.",
+          "line": "Sem pressa: conto quanto vale e depois encho uma bolsinha leve.",
+          "narration": {
+            "script": "Eu nunca me apresso. Cada moeda vale algo diferente, então vou devagar e confiro cada uma."
+          }
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 13,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Llena la bolsita de Dina con un total de 13, con las menos monedas.",
+          "feedback": {
+            "met": "Armaste tu total. Ahora vemos cómo lo hace Dina, paso a paso.",
+            "not_yet": "Sin problema. Ahora vemos cómo lo hace Dina, paso a paso."
+          }
+        },
+        "en-US": {
+          "prompt": "Dina's pouch needs a total of 13. Use the fewest coins.",
+          "feedback": {
+            "met": "Thanks, you built it. Now let's see Dina's way, step by step.",
+            "not_yet": "No problem. Now let's see how Dina does it, step by step."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Forme 13 na bolsinha da Dina com o menor número de moedas.",
+          "feedback": {
+            "met": "Você montou o seu total. Agora vamos ver como a Dina faz, passo a passo.",
+            "not_yet": "Tudo bem. Vamos ver como a Dina faz, passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "count-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina cuenta su pila: 10, 10, 5, 1, 1, 1.",
+          "line": "Primero junto las iguales: dos de 10, una de 5, tres de 1.",
+          "narration": {
+            "script": "Si junto las monedas iguales, la cuenta se ordena. Sin prisa, así es más fácil."
+          }
+        },
+        "en-US": {
+          "prompt": "Dina counts her pile: 10, 10, 5, 1, 1, 1.",
+          "line": "First I put like coins together: two 10s, one 5, three 1s.",
+          "narration": {
+            "script": "When I put the same coins together, the count stays tidy. No rush, it's easier this way."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina conta a pilha dela: 10, 10, 5, 1, 1, 1.",
+          "line": "Primeiro junto as moedas iguais: duas de 10, uma de 5, três de 1.",
+          "narration": {
+            "script": "Quando junto as moedas iguais, a conta fica organizada. Sem pressa, assim é mais fácil."
+          }
+        }
+      }
+    },
+    {
+      "id": "count-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las de 10: 10, 20; la de 5: 25; las de 1: 26, 27, 28.",
+          "line": "Seis monedas, pero valen 28: cada una suma su valor.",
+          "narration": {
+            "script": "Contar de 10 en 10 es más rápido que de 1 en 1. Por eso empiezo por las más grandes."
+          }
+        },
+        "en-US": {
+          "prompt": "The 10s: 10, 20; the 5: 25; the 1s: 26, 27, 28.",
+          "line": "Six coins, but worth 28: each one adds its own value.",
+          "narration": {
+            "script": "Counting by 10s is faster than counting by 1s. That is why I start with the biggest coins."
+          }
+        },
+        "pt-BR": {
+          "prompt": "As de 10: 10, 20; a de 5: 25; as de 1: 26, 27, 28.",
+          "line": "Seis moedas, mas valem 28: cada uma soma o seu valor.",
+          "narration": {
+            "script": "Contar de 10 em 10 é mais rápido do que de 1 em 1. Por isso começo pelas maiores."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-mixed-coins",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 24,
+        "fewest": false
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La segunda pila de Dina vale 24. Arma esa pila, de mayor a menor.",
+          "feedback": {
+            "met": "Tus monedas suman 24: cada una aportó su valor, no uno.",
+            "not_yet": "Mira cómo contó Dina: de mayor a menor, cada moneda con su valor."
+          },
+          "help": [
+            "Sin prisa. Dina empezó por las de 10 y fue contando.",
+            "Después mira cuánto falta y agrega la moneda que quepa."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's second pile is worth 24. Build it, biggest coins first.",
+          "feedback": {
+            "met": "Your coins make 24: each one added its value, not one.",
+            "not_yet": "Look at how Dina counted: biggest first, each coin by its value."
+          },
+          "help": [
+            "No rush. Dina started with the 10s and counted up.",
+            "Then see how much is left and add the coin that fits."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A segunda pilha da Dina vale 24. Monte-a, das maiores às menores.",
+          "feedback": {
+            "met": "Suas moedas fazem 24: cada uma somou o seu valor, não um.",
+            "not_yet": "Veja como a Dina contou: das maiores às menores, cada uma com seu valor."
+          },
+          "help": [
+            "Sem pressa. A Dina começou pelas de 10 e foi contando.",
+            "Depois veja quanto falta e acrescente a moeda que couber."
+          ]
+        }
+      }
+    },
+    {
+      "id": "fewest-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La bolsita ligera de Dina necesita 17.",
+          "line": "Menos monedas, bolsita más ligera. Pongo la más grande que quepa.",
+          "narration": {
+            "script": "Si empiezo con monedas chicas, necesito muchas. Con las grandes termino antes y la bolsita pesa menos."
+          }
+        },
+        "en-US": {
+          "prompt": "Dina's light pouch needs a total of 17.",
+          "line": "Fewer coins, lighter pouch. I add the biggest that fits.",
+          "narration": {
+            "script": "If I start with small coins, I need lots of them. Big coins get me there sooner, and the pouch stays lighter."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A bolsinha leve da Dina precisa de 17.",
+          "line": "Menos moedas, bolsinha mais leve. Coloco a maior que couber.",
+          "narration": {
+            "script": "Se começo com moedas pequenas, preciso de muitas. Com as grandes chego mais rápido e a bolsinha fica mais leve."
+          }
+        }
+      }
+    },
+    {
+      "id": "fewest-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cabe una de 10: faltan 7.",
+          "line": "Otra de 10 no cabe. Cabe la de 5: faltan 2.",
+          "narration": {
+            "script": "Si una moneda se pasa del total, no la pongo. Pruebo con la siguiente más chica."
+          }
+        },
+        "en-US": {
+          "prompt": "A 10 fits: 7 left.",
+          "line": "Another 10 is too big. The 5 fits: 2 left.",
+          "narration": {
+            "script": "If a coin goes over the total, I don't add it. I try the next smaller one."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cabe uma de 10: faltam 7.",
+          "line": "Outra de 10 não cabe. A de 5 cabe: faltam 2.",
+          "narration": {
+            "script": "Se uma moeda passa do total, eu não coloco. Tento a próxima menor."
+          }
+        }
+      }
+    },
+    {
+      "id": "fewest-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dos de 1 completan los 2 que faltan.",
+          "line": "Reviso: 10, 5, 1, 1 suman 17, en solo cuatro monedas.",
+          "narration": {
+            "script": "Al final siempre reviso: sumo otra vez y miro que el total sea justo el que busco."
+          }
+        },
+        "en-US": {
+          "prompt": "Two 1s fill the 2 left.",
+          "line": "I check: 10, 5, 1, 1 makes 17, in just four coins.",
+          "narration": {
+            "script": "At the end I always check: I add it up again and see that it is exactly the total I want."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Duas de 1 completam os 2 que faltam.",
+          "line": "Confiro: 10, 5, 1, 1 somam 17, em só quatro moedas.",
+          "narration": {
+            "script": "No fim eu sempre confiro: somo de novo e vejo se é exatamente o total que quero."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 19,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La bolsita de Dina necesita 19. Usa las menos monedas posibles.",
+          "feedback": {
+            "met": "Con 10, 5 y cuatro de 1 llegaste a 19, en seis monedas.",
+            "not_yet": "Mira cómo hizo Dina: la más grande que cabe, luego cuánto falta."
+          },
+          "help": [
+            "Pon la moneda más grande que quepa en 19 y mira cuánto falta.",
+            "Si una moneda se pasa, prueba con la siguiente más chica."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's pouch needs a total of 19. Use the fewest coins.",
+          "feedback": {
+            "met": "A 10, a 5 and four 1s make 19: six coins.",
+            "not_yet": "Dina's way: the biggest that fits, then see what is left."
+          },
+          "help": [
+            "Add the biggest coin that fits, then see what is left.",
+            "If a coin goes over, try the next smaller one."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A bolsinha da Dina precisa de 19. Use o menor número de moedas.",
+          "feedback": {
+            "met": "Uma de 10, uma de 5 e quatro de 1 fazem 19: seis moedas.",
+            "not_yet": "Veja o jeito da Dina: a maior que couber, depois quanto falta."
+          },
+          "help": [
+            "Coloque a maior moeda que couber em 19 e veja quanto falta.",
+            "Se uma moeda passar, tente a próxima menor."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-mixed-coins",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 33,
+        "fewest": false
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La tercera pila de Dina vale 33. Arma esa pila con tus monedas.",
+          "feedback": {
+            "met": "Contaste por valor y llegaste a 33. Cada moneda sumó lo que vale.",
+            "not_yet": "Cuenta como Dina: cada moneda suma su valor. Revisa el total."
+          },
+          "help": [
+            "Sin prisa. Cuenta por valor: primero las de 10, luego las demás.",
+            "Mira cuánto falta después de cada moneda."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's third pile is worth 33. Build that pile.",
+          "feedback": {
+            "met": "You counted by value and reached 33. Each coin added its value.",
+            "not_yet": "Count like Dina: each coin adds its value. Check the total."
+          },
+          "help": [
+            "No rush. Count by value: the 10s first, then the rest.",
+            "See how much is left after each coin."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A terceira pilha da Dina vale 33. Monte essa pilha.",
+          "feedback": {
+            "met": "Você contou pelo valor e chegou a 33. Cada moeda somou o seu valor.",
+            "not_yet": "Conte como a Dina: cada moeda soma o seu valor. Confira o total."
+          },
+          "help": [
+            "Sem pressa. Conte pelo valor: primeiro as de 10, depois as outras.",
+            "Veja quanto falta depois de cada moeda."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 4
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 27,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina llena otra bolsita con 27, usando las menos monedas.",
+          "feedback": {
+            "met": "La moneda más grande que cabe también sirvió con la de 2: cuatro monedas.",
+            "not_yet": "Recuerda a Dina: la moneda más grande que cabe y luego cuánto falta."
+          },
+          "help": [
+            "Piensa en la más grande que quepa. Luego mira cuánto falta."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina fills another pouch with 27, using the fewest coins.",
+          "feedback": {
+            "met": "The biggest coin that fits also worked with the 2: four coins.",
+            "not_yet": "Remember Dina: the biggest coin that fits, then see what is left."
+          },
+          "help": [
+            "Think of the biggest that fits. Then see what is left."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Dina enche outra bolsinha com 27, usando o menor número de moedas.",
+          "feedback": {
+            "met": "A maior moeda que couber também serviu com a de 2: quatro moedas.",
+            "not_yet": "Lembre da Dina: a maior moeda que couber e depois quanto falta."
+          },
+          "help": [
+            "Pense na maior que couber. Depois veja quanto falta."
+          ]
+        }
+      }
+    }
+  ]
+}

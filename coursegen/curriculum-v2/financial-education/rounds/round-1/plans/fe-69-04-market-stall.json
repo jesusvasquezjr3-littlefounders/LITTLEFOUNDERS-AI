@@ -1,0 +1,849 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-04-market-stall",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.add-money",
+    "money.compare-amounts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara atiende un puesto en el tianguis. El niño junta precios para llenar una canasta que cueste justo la meta, aprende a contar hacia arriba desde un precio, y descubre que una canasta con más piezas no siempre vale más.",
+  "title": {
+    "en-US": "A yard sale table",
+    "es-MX": "Un puesto en el tianguis",
+    "pt-BR": "Uma barraca na feira livre"
+  },
+  "new_concepts": [
+    "money.add-money"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Zara atiende un puesto en el tianguis del domingo y suma los precios para cobrar justo lo que toca.",
+        "problem_refs": [
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "en-US": {
+        "scenario": "Zara runs a table at a Saturday yard sale with her family and adds up the prices for each buyer.",
+        "problem_refs": [
+          "us-parent-silence"
+        ],
+        "anchors": [
+          "yard sale"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Zara atende uma barraca na feira livre do bairro e soma os preços para cobrar certo.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira livre"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "zara-intro",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "Today we run a yard sale table. Each thing has a price.",
+          "narration": {
+            "script": "When several things go in the basket, you put their prices together to learn what you pay. Today we practice adding with kites, books and caps."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Hoy atendemos un puesto en el tianguis. Cada cosa tiene su precio.",
+          "narration": {
+            "script": "Cuando varias cosas van en la canasta, juntas sus precios para saber cuánto pagas. Hoy practicamos sumar con papalotes, libros y gorras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Hoje cuidamos de uma barraca na feira livre. Cada coisa tem seu preço.",
+          "narration": {
+            "script": "Quando várias coisas vão na cesta, você junta os preços para saber quanto vai pagar. Hoje praticamos somar com pipas, livros e bonés."
+          }
+        }
+      }
+    },
+    {
+      "id": "zara-worked-example",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "Watch how I put two prices together.",
+          "narration": {
+            "script": "The book costs 4 and the kite costs 2. I start at 4 and count two more: five, six. Together they cost 6. Now you try."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Mira cómo junto dos precios.",
+          "narration": {
+            "script": "El libro cuesta 4 y el papalote cuesta 2. Empiezo en 4 y cuento dos más: cinco, seis. Juntos cuestan 6. Ahora tú."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Veja como eu junto dois preços.",
+          "narration": {
+            "script": "O livro custa 4 e a pipa custa 2. Começo no 4 e conto mais dois: cinco, seis. Juntos custam 6. Agora é com você."
+          }
+        }
+      }
+    },
+    {
+      "id": "stall-guided",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "items": [
+          {
+            "id": "kite",
+            "price": 200,
+            "stock": 2
+          },
+          {
+            "id": "cap",
+            "price": 300,
+            "stock": 2
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 500
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "kite": [
+              "item"
+            ],
+            "cap": [
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fill the basket so it costs exactly 5 coins.",
+          "help": [
+            "Pick one thing and see how much is left.",
+            "Count up from the price you picked."
+          ],
+          "feedback": {
+            "met": "You put the prices together and reached the goal.",
+            "not_yet": "Not yet. Add up the basket and check the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Llena la canasta para que cueste justo 5 monedas.",
+          "help": [
+            "Elige una cosa y mira cuánto falta para la meta.",
+            "Cuenta hacia arriba desde el precio que elegiste."
+          ],
+          "feedback": {
+            "met": "Juntaste los precios y llegaste a la meta.",
+            "not_yet": "Aún no. Suma lo que hay en la canasta y mira la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Encha a cesta para que custe exatamente 5 moedas.",
+          "help": [
+            "Escolha uma coisa e veja quanto falta para a meta.",
+            "Conte para cima a partir do preço que você escolheu."
+          ],
+          "feedback": {
+            "met": "Você juntou os preços e chegou à meta.",
+            "not_yet": "Ainda não. Some o que está na cesta e olhe a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "stall-practice",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "items": [
+          {
+            "id": "book",
+            "price": 400,
+            "stock": 2
+          },
+          {
+            "id": "pen",
+            "price": 100,
+            "stock": 4
+          },
+          {
+            "id": "cap",
+            "price": 300,
+            "stock": 3
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 700
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "pen": [
+              "item"
+            ],
+            "cap": [
+              "item",
+              "item"
+            ]
+          },
+          {
+            "pen": [
+              "item",
+              "item",
+              "item",
+              "item"
+            ],
+            "cap": [
+              "item"
+            ]
+          },
+          {
+            "book": [
+              "item"
+            ],
+            "cap": [
+              "item"
+            ]
+          },
+          {
+            "book": [
+              "item"
+            ],
+            "pen": [
+              "item",
+              "item",
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fill another basket so it costs exactly 7 coins.",
+          "help": [
+            "Pick a price and count up to 7."
+          ],
+          "feedback": {
+            "met": "You counted up from one price to reach the goal.",
+            "not_yet": "Not yet. Start from one price and count up to the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Llena otra canasta para que cueste justo 7 monedas.",
+          "help": [
+            "Elige un precio y cuenta hacia arriba hasta 7."
+          ],
+          "feedback": {
+            "met": "Contaste hacia arriba desde un precio hasta la meta.",
+            "not_yet": "Aún no. Empieza en un precio y cuenta hacia arriba hasta la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Encha outra cesta para que custe exatamente 7 moedas.",
+          "help": [
+            "Escolha um preço e conte para cima até 7."
+          ],
+          "feedback": {
+            "met": "Você contou para cima de um preço até a meta.",
+            "not_yet": "Ainda não. Comece em um preço e conte para cima até a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "sort-more-or-less",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-more"
+          },
+          {
+            "id": "bin-less"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-pens"
+          },
+          {
+            "id": "item-book"
+          },
+          {
+            "id": "item-book-cap"
+          },
+          {
+            "id": "item-two-books"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-worth"
+          },
+          {
+            "id": "why-count"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-pens": [
+            {
+              "bin": "bin-less",
+              "reason": "why-worth"
+            }
+          ],
+          "item-book": [
+            {
+              "bin": "bin-less",
+              "reason": "why-worth"
+            }
+          ],
+          "item-book-cap": [
+            {
+              "bin": "bin-more",
+              "reason": "why-worth"
+            }
+          ],
+          "item-two-books": [
+            {
+              "bin": "bin-more",
+              "reason": "why-worth"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort each basket and pick why.",
+          "rule": "Does it cost more or less than $6?",
+          "bins": [
+            {
+              "label": "More than $6"
+            },
+            {
+              "label": "Less than $6"
+            }
+          ],
+          "items": [
+            {
+              "label": "5 pens at $1 each"
+            },
+            {
+              "label": "1 book at $4"
+            },
+            {
+              "label": "Book $4 and cap $3"
+            },
+            {
+              "label": "2 books at $4 each"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "I added the prices"
+            },
+            {
+              "label": "It has more things"
+            }
+          ],
+          "feedback": {
+            "met": "You looked at how much it all costs, not how many pieces.",
+            "not_yet": "Not yet. Think about all the money together, not the pieces."
+          }
+        },
+        "es-MX": {
+          "prompt": "Ordena cada canasta y elige por qué.",
+          "rule": "¿Cuesta más o menos de $6?",
+          "bins": [
+            {
+              "label": "Más de $6"
+            },
+            {
+              "label": "Menos de $6"
+            }
+          ],
+          "items": [
+            {
+              "label": "5 plumas de $1 cada una"
+            },
+            {
+              "label": "1 libro de $4"
+            },
+            {
+              "label": "Libro $4 y gorra $3"
+            },
+            {
+              "label": "2 libros de $4 cada uno"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Sumé los precios"
+            },
+            {
+              "label": "Tiene más cosas"
+            }
+          ],
+          "feedback": {
+            "met": "Miraste cuánto cuesta todo junto, no cuántas piezas son.",
+            "not_yet": "Aún no. Piensa en todo el dinero junto, no en las piezas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Separe cada cesta e escolha o motivo.",
+          "rule": "Custa mais ou menos de R$ 6?",
+          "bins": [
+            {
+              "label": "Mais de R$ 6"
+            },
+            {
+              "label": "Menos de R$ 6"
+            }
+          ],
+          "items": [
+            {
+              "label": "5 canetas, R$ 1 cada"
+            },
+            {
+              "label": "1 livro de R$ 4"
+            },
+            {
+              "label": "Livro R$ 4 e boné R$ 3"
+            },
+            {
+              "label": "2 livros, R$ 4 cada"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Somei os preços"
+            },
+            {
+              "label": "Tem mais coisas"
+            }
+          ],
+          "feedback": {
+            "met": "Você olhou quanto custa tudo junto, não quantas peças são.",
+            "not_yet": "Ainda não. Pense em todo o dinheiro junto, não nas peças."
+          }
+        }
+      }
+    },
+    {
+      "id": "coin-stack-phone",
+      "type": "money.coin-stack.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "height",
+          "mm": 8
+        },
+        "step": 1,
+        "max": 10
+      },
+      "rubric": {
+        "target": "4"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stack coins up to the phone's height. Watch the money add up.",
+          "feedback": {
+            "met": "The stack reached the phone. Each coin added its money.",
+            "not_yet": "Not yet. Match the top of the stack to the phone."
+          }
+        },
+        "es-MX": {
+          "prompt": "Apila monedas hasta la altura del celular. Mira cuánto dinero sumas.",
+          "feedback": {
+            "met": "La pila llegó al celular. Cada moneda sumó su dinero.",
+            "not_yet": "Aún no. Iguala la parte de arriba de la pila con el celular."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Empilhe moedas até a altura do celular. Veja quanto dinheiro você soma.",
+          "feedback": {
+            "met": "A pilha chegou ao celular. Cada moeda somou seu dinheiro.",
+            "not_yet": "Ainda não. Iguale o alto da pilha com o celular."
+          }
+        }
+      }
+    },
+    {
+      "id": "stall-transfer",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "items": [
+          {
+            "id": "book",
+            "price": 400,
+            "stock": 2
+          },
+          {
+            "id": "kite",
+            "price": 200,
+            "stock": 3
+          },
+          {
+            "id": "shell",
+            "price": 500,
+            "stock": 2
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 900
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "book": [
+              "item"
+            ],
+            "shell": [
+              "item"
+            ]
+          },
+          {
+            "shell": [
+              "item"
+            ],
+            "kite": [
+              "item",
+              "item"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new customer has 9 coins. Fill a basket for exactly that.",
+          "feedback": {
+            "met": "You put the prices together and reached the goal.",
+            "not_yet": "Not yet. Add up the basket and compare it with the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Llega un cliente nuevo con 9 monedas. Llena una canasta que cueste justo eso.",
+          "feedback": {
+            "met": "Juntaste los precios y llegaste a la meta.",
+            "not_yet": "Aún no. Suma la canasta y compárala con la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Chega um cliente novo com 9 moedas. Encha uma cesta que custe exatamente isso.",
+          "feedback": {
+            "met": "Você juntou os preços e chegou à meta.",
+            "not_yet": "Ainda não. Some a cesta e compare com a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "sort-transfer",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-more"
+          },
+          {
+            "id": "bin-less"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-six-pens"
+          },
+          {
+            "id": "item-cap-kite"
+          },
+          {
+            "id": "item-three-books"
+          },
+          {
+            "id": "item-five-caps"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-worth"
+          },
+          {
+            "id": "why-count"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-six-pens": [
+            {
+              "bin": "bin-less",
+              "reason": "why-worth"
+            }
+          ],
+          "item-cap-kite": [
+            {
+              "bin": "bin-less",
+              "reason": "why-worth"
+            }
+          ],
+          "item-three-books": [
+            {
+              "bin": "bin-more",
+              "reason": "why-worth"
+            }
+          ],
+          "item-five-caps": [
+            {
+              "bin": "bin-more",
+              "reason": "why-worth"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort each basket again and pick why.",
+          "rule": "Does it cost more or less than $8?",
+          "bins": [
+            {
+              "label": "More than $8"
+            },
+            {
+              "label": "Less than $8"
+            }
+          ],
+          "items": [
+            {
+              "label": "6 pens at $1 each"
+            },
+            {
+              "label": "Cap $3 and kite $2"
+            },
+            {
+              "label": "3 books at $4 each"
+            },
+            {
+              "label": "5 caps at $3 each"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "I added the prices"
+            },
+            {
+              "label": "It has more things"
+            }
+          ],
+          "feedback": {
+            "met": "You added the prices, not the number of pieces.",
+            "not_yet": "Not yet. Add the prices together and compare with $8."
+          }
+        },
+        "es-MX": {
+          "prompt": "Ordena otra vez cada canasta y elige por qué.",
+          "rule": "¿Cuesta más o menos de $8?",
+          "bins": [
+            {
+              "label": "Más de $8"
+            },
+            {
+              "label": "Menos de $8"
+            }
+          ],
+          "items": [
+            {
+              "label": "6 plumas de $1 cada una"
+            },
+            {
+              "label": "Gorra $3 y papalote $2"
+            },
+            {
+              "label": "3 libros de $4 cada uno"
+            },
+            {
+              "label": "5 gorras de $3 cada una"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Sumé los precios"
+            },
+            {
+              "label": "Tiene más cosas"
+            }
+          ],
+          "feedback": {
+            "met": "Sumaste los precios, no contaste las piezas.",
+            "not_yet": "Aún no. Junta los precios y compara con $8."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Separe cada cesta de novo e escolha o motivo.",
+          "rule": "Custa mais ou menos de R$ 8?",
+          "bins": [
+            {
+              "label": "Mais de R$ 8"
+            },
+            {
+              "label": "Menos de R$ 8"
+            }
+          ],
+          "items": [
+            {
+              "label": "6 canetas, R$ 1 cada"
+            },
+            {
+              "label": "Boné R$ 3 e pipa R$ 2"
+            },
+            {
+              "label": "3 livros, R$ 4 cada"
+            },
+            {
+              "label": "5 bonés, R$ 3 cada"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Somei os preços"
+            },
+            {
+              "label": "Tem mais coisas"
+            }
+          ],
+          "feedback": {
+            "met": "Você somou os preços, não contou as peças.",
+            "not_yet": "Ainda não. Junte os preços e compare com R$ 8."
+          }
+        }
+      }
+    },
+    {
+      "id": "zara-wrap",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "wrap",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "You added prices to reach the goal. That works at any table.",
+          "narration": {
+            "script": "Remember: pick a price, count up to the goal, and look at how much all the money is, not how many pieces there are."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Sumaste precios para llegar a la meta. Eso sirve en cualquier puesto.",
+          "narration": {
+            "script": "Recuerda: elige un precio, cuenta hacia arriba hasta la meta, y fíjate en cuánto dinero es todo, no en cuántas piezas hay."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Você somou preços para chegar à meta. Isso vale em qualquer barraca.",
+          "narration": {
+            "script": "Lembre: escolha um preço, conte para cima até a meta, e olhe quanto dinheiro é tudo junto, não quantas peças há."
+          }
+        }
+      }
+    }
+  ]
+}

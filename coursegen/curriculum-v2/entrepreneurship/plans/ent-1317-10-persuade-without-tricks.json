@@ -1,0 +1,895 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-negotiate-lead-honest",
+  "lesson_id": "ent-1317-10-persuade-without-tricks",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.ethical-persuasion",
+    "life.advertising-literacy",
+    "biz.consultative-selling"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho enseña con ejemplos a convencer sin trucos: cuenta los lugares que de verdad están libres, revisa quién escribió una reseña, busca una razón verdadera para reservar pronto y aplica una prueba a cada afirmación: que el comprador pueda comprobarla. Con tres borradores de promo para el grupo de vecinos, tú marcas las trampas, aconsejas a una amiga, lees cuatro anuncios y eliges la línea honesta para el puesto de tu primo.",
+  "title": {
+    "es-MX": "Convence sin trucos",
+    "en-US": "Persuade without tricks",
+    "pt-BR": "Convença sem truques"
+  },
+  "new_concepts": [
+    "biz.ethical-persuasion"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México muchos negocios chicos se anuncian en el grupo de vecinos, donde un mensaje con prisa o una reseña inventada se ve igual que uno real. Se practica con tres borradores de promo, y se elige el que el comprador puede comprobar. Las cantidades van en monedas.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "grupo de vecinos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil é comum anunciar no grupo do condomínio, onde uma vaga quase esgotada ou uma avaliação inventada parece igual a uma verdadeira. Pratica-se com três rascunhos de promoção, escolhendo o que o comprador consegue conferir. Os valores ficam em moedas.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "grupo do condomínio"
+        ]
+      },
+      "en-US": {
+        "scenario": "Teens in the US see creators and shops push urgency and five-star Google reviews every day, and confidence often runs ahead of checking. Practice with three promo drafts, and choose the one a buyer can check. Amounts stay in coins.",
+        "problem_refs": [
+          "us-finfluencer-confidence-gap"
+        ],
+        "anchors": [
+          "Google review"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho opens his booking list next to three promo drafts for his Google review page.",
+          "line": "The list says 12 spots are open this week. Counted twice: twelve."
+        },
+        "es-MX": {
+          "prompt": "Rho abre su lista de citas junto a tres borradores de promo para el grupo de vecinos.",
+          "line": "La lista dice que hay 12 lugares libres esta semana. Los conté dos veces: doce."
+        },
+        "pt-BR": {
+          "prompt": "O Rho abre a lista de reservas ao lado de três rascunhos de promoção para o grupo do condomínio.",
+          "line": "A lista diz que há 12 vagas abertas esta semana. Contei duas vezes: doze."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.ethical-persuasion",
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia is posting her first promo for 12 bracelets. Choose the advice you give her.",
+          "feedback": {
+            "met": "Noted. Next you see how Rho checks a promo.",
+            "not_yet": "Noted. Next you see how Rho checks a promo."
+          },
+          "scene": "Mia has 12 handmade bracelets in stock and a camera.",
+          "options": [
+            {
+              "label": "Say only 2 are left."
+            },
+            {
+              "label": "Show real photos and the real stock."
+            },
+            {
+              "label": "Post five-star reviews she wrote."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mia publica su primera promo de 12 pulseras. Elige el consejo que le das.",
+          "feedback": {
+            "met": "Anotado. Ahora ves cómo Rho revisa una promo.",
+            "not_yet": "Anotado. Ahora ves cómo Rho revisa una promo."
+          },
+          "scene": "Mia tiene 12 pulseras hechas a mano y una cámara.",
+          "options": [
+            {
+              "label": "Decir que quedan solo 2."
+            },
+            {
+              "label": "Mostrar fotos reales y las piezas que hay."
+            },
+            {
+              "label": "Publicar reseñas de 5 estrellas que ella escribió."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mia vai publicar a primeira promoção de 12 pulseiras. Escolha o conselho que você dá.",
+          "feedback": {
+            "met": "Anotado. Agora você vê como o Rho confere uma promoção.",
+            "not_yet": "Anotado. Agora você vê como o Rho confere uma promoção."
+          },
+          "scene": "A Mia tem 12 pulseiras feitas à mão e uma câmera.",
+          "options": [
+            {
+              "label": "Dizer que só restam 2."
+            },
+            {
+              "label": "Mostrar fotos reais e o estoque real."
+            },
+            {
+              "label": "Postar avaliações de 5 estrelas escritas por ela."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-count-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Rho checks the page’s number against his list.",
+          "line": "Draft B says 2 spots are left, but my list shows 12 open. That number is false."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Rho compara el número del borrador con su lista.",
+          "line": "El borrador B dice que quedan 2 lugares, pero mi lista muestra 12 libres. Ese número es falso."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o Rho compara o número do rascunho com a lista dele.",
+          "line": "O rascunho B diz que restam 2 vagas, mas minha lista mostra 12 abertas. Esse número é falso."
+        }
+      }
+    },
+    {
+      "id": "ex-proof-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Rho checks who wrote the five-star review.",
+          "line": "Draft C quotes a customer I invented. A real review needs a real person who agreed to it."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Rho revisa quién escribió la reseña de cinco estrellas.",
+          "line": "El borrador C cita a un cliente que inventé. Una reseña real necesita a una persona real que aceptó."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o Rho confere quem escreveu a avaliação de cinco estrelas.",
+          "line": "O rascunho C cita um cliente que inventei. Uma avaliação real precisa de uma pessoa real que concordou."
+        }
+      }
+    },
+    {
+      "id": "ex-reason-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Rho looks for a true reason to book early.",
+          "line": "Draft A shows a real before-and-after, and it is true that spots fill on Fridays. Anyone can check both."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: Rho busca una razón verdadera para reservar pronto.",
+          "line": "El borrador A muestra un antes y después real, y es cierto que los viernes se llenan. Todo se puede comprobar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o Rho procura um motivo verdadeiro para reservar cedo.",
+          "line": "O rascunho A mostra um antes e depois real, e é verdade que as sextas lotam. Dá para conferir tudo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.scam-spotter.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.advertising-literacy",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-a"
+          },
+          {
+            "id": "msg-b"
+          },
+          {
+            "id": "msg-c"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-number"
+          },
+          {
+            "id": "cue-proof"
+          },
+          {
+            "id": "cue-hurry"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-a",
+          "msg-c"
+        ],
+        "cue_ids": {
+          "msg-a": [
+            "cue-number",
+            "cue-hurry"
+          ],
+          "msg-c": [
+            "cue-proof"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho wrote three more drafts. Flag the ones that use tricks, then tap each trick.",
+          "feedback": {
+            "met": "You flagged both tricks and left the honest draft alone.",
+            "not_yet": "Not yet. Compare each claim with what Rho can count or show."
+          },
+          "help": [
+            "Ask: can a buyer check this claim?"
+          ],
+          "messages": [
+            {
+              "sender": "Draft D",
+              "text": "Only 4 spots left this week. Book now or wait a month."
+            },
+            {
+              "sender": "Draft E",
+              "text": "12 spots open this week. Real photos, shared with each client’s OK."
+            },
+            {
+              "sender": "Draft F",
+              "text": "5-star review: “Best cleaning in town.” Signed: a happy customer."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Number that doesn’t hold up"
+            },
+            {
+              "label": "Proof you cannot trace"
+            },
+            {
+              "label": "Pressure to hurry"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho escribió tres borradores más. Marca los que usan trucos y toca cada truco.",
+          "feedback": {
+            "met": "Marcaste las dos trampas y dejaste en paz el borrador honesto.",
+            "not_yet": "Aún no. Compara cada afirmación con lo que Rho puede contar o mostrar."
+          },
+          "help": [
+            "Pregunta: ¿un comprador puede comprobar esta afirmación?"
+          ],
+          "messages": [
+            {
+              "sender": "Borrador D",
+              "text": "Solo quedan 4 lugares esta semana. Reserva ya o espera un mes."
+            },
+            {
+              "sender": "Borrador E",
+              "text": "12 lugares libres esta semana. Fotos reales, con permiso de cada cliente."
+            },
+            {
+              "sender": "Borrador F",
+              "text": "Reseña de 5 estrellas: “La mejor limpieza de la ciudad.” Firma: un cliente feliz."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Número que no se sostiene"
+            },
+            {
+              "label": "Prueba que no puedes rastrear"
+            },
+            {
+              "label": "Presión para apurarse"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Rho escreveu mais três rascunhos. Marque os que usam truques e toque em cada truque.",
+          "feedback": {
+            "met": "Você marcou os dois truques e deixou o rascunho honesto em paz.",
+            "not_yet": "Ainda não. Compare cada afirmação com o que o Rho pode contar ou mostrar."
+          },
+          "help": [
+            "Pergunte: um comprador consegue conferir essa afirmação?"
+          ],
+          "messages": [
+            {
+              "sender": "Rascunho D",
+              "text": "Só restam 4 vagas esta semana. Reserve já ou espere um mês."
+            },
+            {
+              "sender": "Rascunho E",
+              "text": "12 vagas abertas esta semana. Fotos reais, com o OK de cada cliente."
+            },
+            {
+              "sender": "Rascunho F",
+              "text": "Avaliação 5 estrelas: “A melhor limpeza da cidade.” Assinado: um cliente feliz."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Número que não se sustenta"
+            },
+            {
+              "label": "Prova que não dá para rastrear"
+            },
+            {
+              "label": "Pressão para correr"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-test-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: Rho runs one test on any claim.",
+          "line": "My test: a buyer must be able to check the claim. If not, it stays off the page."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: Rho aplica una prueba a cualquier afirmación.",
+          "line": "Mi prueba: un comprador debe poder comprobar la afirmación. Si no, no entra a la página."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o Rho aplica um teste a qualquer afirmação.",
+          "line": "Meu teste: um comprador precisa poder conferir a afirmação. Se não puder, ela fica fora da página."
+        }
+      }
+    },
+    {
+      "id": "ex-need-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: Rho ties the true reason to what the customer needs.",
+          "line": "Many customers want clean shoes for the weekend, so Friday is a real reason to book early."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: Rho une la razón verdadera con lo que necesita el cliente.",
+          "line": "Muchos quieren los tenis limpios para el fin de semana, así que el viernes es una razón real para reservar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o Rho liga o motivo verdadeiro ao que o cliente precisa.",
+          "line": "Muitos querem o tênis limpo para o fim de semana, então a sexta é um motivo real para reservar cedo."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your stand a customer asks if spots are nearly gone, but 12 are open. Choose your answer.",
+          "feedback": {
+            "met": "You gave the true number and a reason they can check.",
+            "not_yet": "Not yet. Answer with what you can count and they can verify."
+          },
+          "scene": "Your list shows 12 open, and Fridays always fill first.",
+          "options": [
+            {
+              "label": "Yes, book now before they vanish."
+            },
+            {
+              "label": "I can’t tell; just trust the page."
+            },
+            {
+              "label": "12 are open; Fridays fill first."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Alguien en tu puesto pregunta si ya casi no hay lugares, pero hay 12 libres. Elige tu respuesta.",
+          "feedback": {
+            "met": "Diste el número real y una razón que pueden comprobar.",
+            "not_yet": "Aún no. Responde con lo que puedes contar y pueden comprobar."
+          },
+          "scene": "Tu lista muestra 12 libres, y los viernes siempre se llenan primero.",
+          "options": [
+            {
+              "label": "Sí, reserva ya, antes de que se acaben."
+            },
+            {
+              "label": "No sé decirte; confía en la página."
+            },
+            {
+              "label": "Hay 12 libres; los viernes se llenan primero."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Alguém na sua banca pergunta se as vagas quase acabaram, mas há 12 abertas. Escolha sua resposta.",
+          "feedback": {
+            "met": "Você deu o número real e um motivo que dá para conferir.",
+            "not_yet": "Ainda não. Responda com o que você pode contar e dá para conferir."
+          },
+          "scene": "Sua lista mostra 12 abertas, e as sextas sempre lotam primeiro.",
+          "options": [
+            {
+              "label": "Sim, reserve já, antes que acabem."
+            },
+            {
+              "label": "Não sei dizer; confie na página."
+            },
+            {
+              "label": "Há 12 abertas; as sextas lotam primeiro."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "logic.scam-spotter.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.advertising-literacy",
+      "payload": {
+        "messages": [
+          {
+            "id": "ad-course"
+          },
+          {
+            "id": "ad-shop"
+          },
+          {
+            "id": "ad-app"
+          },
+          {
+            "id": "ad-club"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-number"
+          },
+          {
+            "id": "cue-proof"
+          },
+          {
+            "id": "cue-hurry"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "ad-course",
+          "ad-app"
+        ],
+        "cue_ids": {
+          "ad-course": [
+            "cue-number",
+            "cue-hurry"
+          ],
+          "ad-app": [
+            "cue-proof"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You scroll past four ads. Flag the ones using tricks, then tap each trick you see.",
+          "feedback": {
+            "met": "You flagged the two tricks and kept the checkable ads.",
+            "not_yet": "Not yet. Ask of each ad: can a buyer check this?"
+          },
+          "messages": [
+            {
+              "sender": "Course creator",
+              "text": "Last 3 seats in my course. The price doubles at midnight."
+            },
+            {
+              "sender": "Shoe-care shop",
+              "text": "Photos shared by three customers, with their OK. Open Tuesday to Saturday."
+            },
+            {
+              "sender": "Gift app",
+              "text": "5 stars from 9,999 users. No names, no links, just trust us."
+            },
+            {
+              "sender": "School club",
+              "text": "Car wash Saturday, 10 to 2, at the school gate. Prices posted."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Number that doesn’t hold up"
+            },
+            {
+              "label": "Proof you cannot trace"
+            },
+            {
+              "label": "Pressure to hurry"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pasas frente a cuatro anuncios. Marca los que usan trucos y toca cada truco que ves.",
+          "feedback": {
+            "met": "Marcaste las dos trampas y dejaste los anuncios comprobables.",
+            "not_yet": "Aún no. Pregunta de cada anuncio: ¿se puede comprobar?"
+          },
+          "messages": [
+            {
+              "sender": "Creador de cursos",
+              "text": "Quedan 3 lugares en mi curso. El precio se duplica a medianoche."
+            },
+            {
+              "sender": "Tienda de limpieza",
+              "text": "Fotos de tres clientes que aceptaron compartirlas. Abierto de martes a sábado."
+            },
+            {
+              "sender": "App de regalos",
+              "text": "Calificada con 5 estrellas por 9,999 usuarios. Sin nombres ni enlaces, solo confía."
+            },
+            {
+              "sender": "Club escolar",
+              "text": "Lavado de autos el sábado, 10 a 2, en la escuela. Precios a la vista."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Número que no se sostiene"
+            },
+            {
+              "label": "Prueba que no puedes rastrear"
+            },
+            {
+              "label": "Presión para apurarse"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você passa por quatro anúncios. Marque os que usam truques e toque em cada truque que vê.",
+          "feedback": {
+            "met": "Você marcou os dois truques e confiou nos anúncios verificáveis.",
+            "not_yet": "Ainda não. Pergunte de cada anúncio: dá para conferir?"
+          },
+          "messages": [
+            {
+              "sender": "Criador de cursos",
+              "text": "Restam 3 vagas no meu curso. O preço dobra à meia-noite."
+            },
+            {
+              "sender": "Loja de limpeza",
+              "text": "Fotos de três clientes que aceitaram compartilhar. Aberta de terça a sábado."
+            },
+            {
+              "sender": "App de presentes",
+              "text": "Nota 5 estrelas de 9 mil usuários. Sem nomes, sem links, só confie."
+            },
+            {
+              "sender": "Clube da escola",
+              "text": "Lavagem de carros no sábado, das 10h às 14h, na escola. Preços à vista."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Número que não se sustenta"
+            },
+            {
+              "label": "Prova que não dá para rastrear"
+            },
+            {
+              "label": "Pressão para correr"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.ethical-persuasion",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-1"
+          },
+          {
+            "id": "choice-2"
+          },
+          {
+            "id": "choice-3"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-1"
+          },
+          {
+            "id": "reason-2"
+          },
+          {
+            "id": "reason-3"
+          },
+          {
+            "id": "reason-4"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-1"
+        ],
+        "reasonQuality": {
+          "reason-1": "sound",
+          "reason-2": "sound",
+          "reason-3": "unsupported",
+          "reason-4": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your cousin runs a phone-repair stand with 12 slots open. Choose the promo line to post.",
+          "feedback": {
+            "met": "You picked the post a buyer can check, claim by claim.",
+            "not_yet": "Not yet. Check each claim against what you can count or show."
+          },
+          "help": [
+            "A line is honest if a buyer can check it."
+          ],
+          "choices": [
+            {
+              "label": "Real repair photo; 12 slots open."
+            },
+            {
+              "label": "Only 2 slots left, book tonight."
+            },
+            {
+              "label": "A five-star review you wrote yourself."
+            }
+          ],
+          "reasonPrompt": "Which reason supports your choice best?",
+          "reasons": [
+            {
+              "label": "A buyer can check every claim."
+            },
+            {
+              "label": "Real numbers keep buyers coming back."
+            },
+            {
+              "label": "Fake urgency sells faster, so it is fine."
+            },
+            {
+              "label": "It includes a real photo."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu primo tiene un puesto de reparación de celulares con 12 lugares libres. Elige la línea de promo.",
+          "feedback": {
+            "met": "Elegiste el anuncio que un comprador puede comprobar, afirmación por afirmación.",
+            "not_yet": "Aún no. Revisa cada afirmación con lo que puedes contar o mostrar."
+          },
+          "help": [
+            "Una línea es honesta si el comprador puede comprobarla."
+          ],
+          "choices": [
+            {
+              "label": "Foto de una reparación real; 12 lugares libres."
+            },
+            {
+              "label": "Solo quedan 2 lugares, reserva esta noche."
+            },
+            {
+              "label": "Una reseña de cinco estrellas escrita por ti."
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu elección?",
+          "reasons": [
+            {
+              "label": "El comprador puede comprobar cada afirmación."
+            },
+            {
+              "label": "Con números reales, los clientes regresan."
+            },
+            {
+              "label": "La falsa urgencia vende más rápido, así que sirve."
+            },
+            {
+              "label": "Incluye una foto real."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu primo tem uma banca de conserto de celulares com 12 vagas abertas. Escolha a linha da promoção.",
+          "feedback": {
+            "met": "Você escolheu o anúncio que o comprador pode conferir, afirmação por afirmação.",
+            "not_yet": "Ainda não. Confira cada afirmação com o que você pode contar ou mostrar."
+          },
+          "help": [
+            "Uma linha é honesta se o comprador pode conferi-la."
+          ],
+          "choices": [
+            {
+              "label": "Foto de um conserto real; 12 vagas abertas."
+            },
+            {
+              "label": "Só restam 2 vagas, reserve esta noite."
+            },
+            {
+              "label": "Uma avaliação de cinco estrelas escrita por você."
+            }
+          ],
+          "reasonPrompt": "Qual razão apoia melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "O comprador pode conferir cada afirmação."
+            },
+            {
+              "label": "Com números reais, os clientes voltam."
+            },
+            {
+              "label": "Falsa urgência vende mais rápido, então serve."
+            },
+            {
+              "label": "Inclui uma foto real."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

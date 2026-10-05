@@ -1,0 +1,934 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-trusted-deals",
+  "lesson_id": "ent-adult-07-negotiate-with-a-limit",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.negotiation",
+    "biz.margin",
+    "biz.consultative-selling"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "La gerente de flota de Mensajería Metro pide 20% de descuento en 40 visitas de servicio, y tu límite por visita es $800. Dina te guía con calma: fijas el límite antes de hablar, descubres qué necesita ella, cambias lo que te cuesta poco por lo que ella valora y calculas el margen de cada oferta. Practicas ordenar ofertas, decir un no respetuoso y negociar una compra. Las cifras son ilustrativas.",
+  "title": {
+    "es-MX": "Negocia con un límite",
+    "en-US": "Negotiate with a limit",
+    "pt-BR": "Negocie com um limite"
+  },
+  "new_concepts": [
+    "biz.negotiation"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Tu taller móvil de bicicletas da servicio a la flota de una empresa de mensajería. Su gerente de flota pide 20% de descuento en 40 visitas de $1,000 cada una. Tu costo es $500 por visita y cobras por SPEI contra factura. Las cifras son ilustrativas.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "SPEI",
+          "factura"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Sua bicicletaria móvel atende a frota de uma empresa de entregas. A gerente de frota pede 20% de desconto em 40 visitas de R$ 300 cada uma. Seu custo é R$ 150 por visita e você recebe por Pix contra nota fiscal. Os valores são ilustrativos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "Pix",
+          "nota fiscal"
+        ]
+      },
+      "en-US": {
+        "scenario": "Your mobile bike repair business services a courier company's fleet. Its fleet manager asks for 20% off 40 service visits listed at $200 each. Your cost is $100 a visit, paid by Zelle against an invoice. Figures are illustrative.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "Zelle",
+          "invoice"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La gerente de flota de Mensajería Metro pide 20% de descuento en 40 visitas de servicio. Tu precio de lista es $1,000 por visita.",
+          "line": "Con calma. Antes de responder, fijamos tu límite."
+        },
+        "en-US": {
+          "prompt": "Metro Couriers' fleet manager asks for 20% off 40 service visits. Your list price is $200 a visit.",
+          "line": "Take your time. Before you answer, we set your limit."
+        },
+        "pt-BR": {
+          "prompt": "A gerente de frota da Metro Entregas pede 20% de desconto em 40 visitas. Seu preço de tabela é R$ 300 a visita.",
+          "line": "Com calma. Antes de responder, definimos seu limite."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-accept"
+          },
+          {
+            "id": "reply-counter"
+          },
+          {
+            "id": "reply-refuse"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-counter"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Otra sucursal de Metro también quiere un trato. Tu precio de lista es $1,000 y tu límite, $800.",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos un paso a la vez.",
+            "not_yet": "Gracias. Ahora lo vemos un paso a la vez."
+          },
+          "speaker": "Gerente de sucursal",
+          "line": "25% menos en estas 12 visitas, o llamo a otro taller.",
+          "replies": [
+            {
+              "label": "Trato hecho, 25% menos en las doce visitas."
+            },
+            {
+              "label": "15% menos, si pagan en 7 días."
+            },
+            {
+              "label": "Sin descuentos, lo tomas o lo dejas."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A second Metro depot wants a deal too. Your list price is $200 and your limit is $160.",
+          "feedback": {
+            "met": "Thank you. Now we take it one step at a time.",
+            "not_yet": "Thank you. Now we take it one step at a time."
+          },
+          "speaker": "Depot manager",
+          "line": "25% off these 12 visits, or I call another shop.",
+          "replies": [
+            {
+              "label": "Deal, 25% off all twelve visits."
+            },
+            {
+              "label": "15% off, if you pay in 7 days."
+            },
+            {
+              "label": "No discounts, take it or leave it."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outra unidade da Metro também quer um acordo. Seu preço de tabela é R$ 300 e seu limite, R$ 240.",
+          "feedback": {
+            "met": "Certo. Agora vemos um passo de cada vez.",
+            "not_yet": "Certo. Agora vemos um passo de cada vez."
+          },
+          "speaker": "Gerente da unidade",
+          "line": "25% de desconto nessas 12 visitas, ou chamo outra bicicletaria.",
+          "replies": [
+            {
+              "label": "Fechado, 25% de desconto nas doze visitas."
+            },
+            {
+              "label": "15% de desconto, se pagarem em 7 dias."
+            },
+            {
+              "label": "Sem desconto, é pegar ou largar."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-limit",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, fija tu límite antes de la llamada: costo $500 más tu tiempo $300 son $800.",
+          "line": "Al precio de lista tu margen es $500 por visita, o sea $20,000 en 40 visitas."
+        },
+        "en-US": {
+          "prompt": "Step 1, set your limit before the call: cost $100 plus your time $60 is $160.",
+          "line": "At list price your margin is $100 a visit, so $4,000 over 40 visits."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, defina seu limite antes da conversa: custo R$ 150 mais seu tempo R$ 90 dá R$ 240.",
+          "line": "No preço de tabela sua margem é R$ 150 por visita, ou seja, R$ 6.000 em 40 visitas."
+        }
+      }
+    },
+    {
+      "id": "ex-need",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, preguntas qué importa más. Ella nombra un gasto estable y días de servicio fijos.",
+          "line": "Ella pidió 20%, pero necesita estabilidad. Eso abre un intercambio."
+        },
+        "en-US": {
+          "prompt": "Step 2, you ask what matters most. She names a steady bill and set service days.",
+          "line": "The ask was 20%, but the need is steadiness. That opens a trade."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, você pergunta o que mais importa. Ela cita um gasto estável e dias de serviço fixos.",
+          "line": "O pedido foi 20%, mas a necessidade é estabilidade. Isso abre uma troca."
+        }
+      }
+    },
+    {
+      "id": "ex-give",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, un reporte con fotos tras cada visita te cuesta poco, y ella lo valora.",
+          "line": "Da lo que te cuesta poco y ella valora. Guarda lo caro para negociar."
+        },
+        "en-US": {
+          "prompt": "Step 3, a photo report after each visit costs you little, and she values it.",
+          "line": "Give what is cheap for you and valued by her. Keep the costly ones to trade."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, um relatório com fotos após cada visita custa pouco a você, e ela valoriza.",
+          "line": "Dê o que custa pouco a você e ela valoriza. Guarde o que custa caro para trocar."
+        }
+      }
+    },
+    {
+      "id": "guided-grid",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "pieces": [
+          "tire-check",
+          "price-10",
+          "same-day",
+          "paint",
+          "sticker",
+          "callback"
+        ],
+        "points": [
+          [
+            8,
+            2
+          ],
+          [
+            9,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            2,
+            8
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            8,
+            3
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "paint"
+            ],
+            "top-right": [
+              "price-10",
+              "same-day"
+            ],
+            "bottom-left": [
+              "sticker"
+            ],
+            "bottom-right": [
+              "tire-check",
+              "callback"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "For Metro, sort each offer by its cost to you and its value to them.",
+          "feedback": {
+            "met": "You sorted by cost to you and value to them.",
+            "not_yet": "Not yet. Read each dot’s cost and value against the middle."
+          },
+          "labels": {
+            "x-name": "Value to Metro",
+            "y-name": "Cost to me",
+            "x-low": "Low value",
+            "x-high": "High value",
+            "y-low": "Low cost",
+            "y-high": "High cost",
+            "tire-check": "Free tire-pressure check",
+            "price-10": "Price cut of 10%",
+            "same-day": "Same-day emergency visits",
+            "paint": "Free paint touch-ups",
+            "sticker": "Logo sticker on each bike",
+            "callback": "Reply within one hour"
+          }
+        },
+        "es-MX": {
+          "prompt": "Para Metro, ordena cada oferta por su costo para ti y su valor para ellos.",
+          "feedback": {
+            "met": "Ordenaste por costo para ti y valor para ellos.",
+            "not_yet": "Aún no. Lee el costo y el valor de cada punto frente al centro."
+          },
+          "labels": {
+            "x-name": "Valor para Metro",
+            "y-name": "Costo para mí",
+            "x-low": "Poco valor",
+            "x-high": "Mucho valor",
+            "y-low": "Poco costo",
+            "y-high": "Mucho costo",
+            "tire-check": "Revisión gratis de presión de llantas",
+            "price-10": "Descuento de 10% en el precio",
+            "same-day": "Visitas de emergencia el mismo día",
+            "paint": "Retoques de pintura gratis",
+            "sticker": "Calcomanía con logo en cada bici",
+            "callback": "Respuesta en menos de una hora"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Para a Metro, ordene cada oferta pelo custo para você e pelo valor para eles.",
+          "feedback": {
+            "met": "Você ordenou por custo para você e valor para eles.",
+            "not_yet": "Ainda não. Leia o custo e o valor de cada ponto contra o meio."
+          },
+          "labels": {
+            "x-name": "Valor para a Metro",
+            "y-name": "Custo para mim",
+            "x-low": "Pouco valor",
+            "x-high": "Muito valor",
+            "y-low": "Pouco custo",
+            "y-high": "Muito custo",
+            "tire-check": "Checagem grátis da pressão dos pneus",
+            "price-10": "Desconto de 10% no preço",
+            "same-day": "Visitas de emergência no mesmo dia",
+            "paint": "Retoques de pintura de graça",
+            "sticker": "Adesivo com logo em cada bike",
+            "callback": "Resposta em até uma hora"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-counter",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, tu contraoferta: 10% menos, si ella paga en 15 días y reserva bloques de tiempo fijos.",
+          "line": "Tú das un descuento menor; ella da fechas que le cuestan poco."
+        },
+        "en-US": {
+          "prompt": "Step 4, your counter: 10% off, if she pays in 15 days and books fixed time blocks.",
+          "line": "You give a smaller discount; she gives dates that cost her little."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, sua contraproposta: 10% de desconto, se ela pagar em 15 dias e reservar blocos de horário fixos.",
+          "line": "Você dá um desconto menor; ela dá datas que custam pouco a ela."
+        }
+      }
+    },
+    {
+      "id": "guided-margin",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "steps": [
+          {
+            "id": "discount-part"
+          },
+          {
+            "id": "price-after"
+          },
+          {
+            "id": "margin-per-visit"
+          },
+          {
+            "id": "margin-total"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "price-after",
+          "margin-per-visit",
+          "margin-total"
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "expectedValues": {
+            "price-after": "180",
+            "margin-per-visit": "80",
+            "margin-total": "3200"
+          }
+        },
+        "es-MX": {
+          "expectedValues": {
+            "price-after": "900",
+            "margin-per-visit": "400",
+            "margin-total": "16000"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "price-after": "270",
+            "margin-per-visit": "120",
+            "margin-total": "4800"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Metro accepts your 10% counter. Cost is $100 a visit; find the margin per visit and for 40 visits.",
+          "feedback": {
+            "met": "You found the margin per visit, then the total across the visits.",
+            "not_yet": "Not yet. Subtract your cost from the price after the discount."
+          },
+          "steps": [
+            {
+              "expression": "10% × 200",
+              "result": "20",
+              "spokenText": "Ten percent of the 200 list price is 20"
+            },
+            {
+              "expression": "200 − 20",
+              "result": "180",
+              "spokenText": "The list price minus the discount leaves 180"
+            },
+            {
+              "expression": "Price after discount − cost",
+              "result": "80",
+              "spokenText": "The price after the discount minus your cost leaves 80 a visit"
+            },
+            {
+              "expression": "Margin per visit × 40 visits",
+              "result": "3200",
+              "spokenText": "The margin per visit times 40 visits is 3200"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Metro acepta tu contraoferta de 10%. El costo es $500 por visita; calcula el margen por visita y por 40 visitas.",
+          "feedback": {
+            "met": "Calculaste el margen por visita y luego el total de las visitas.",
+            "not_yet": "Aún no. Resta tu costo al precio con el descuento."
+          },
+          "steps": [
+            {
+              "expression": "10% × 1,000",
+              "result": "100",
+              "spokenText": "El diez por ciento del precio de lista de 1,000 es 100"
+            },
+            {
+              "expression": "1,000 − 100",
+              "result": "900",
+              "spokenText": "El precio de lista menos el descuento deja 900"
+            },
+            {
+              "expression": "Precio con descuento − costo",
+              "result": "400",
+              "spokenText": "El precio con descuento menos tu costo deja 400 por visita"
+            },
+            {
+              "expression": "Margen por visita × 40 visitas",
+              "result": "16000",
+              "spokenText": "El margen por visita por 40 visitas es 16000"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Metro aceita sua contraproposta de 10%. O custo é R$ 150 por visita; calcule a margem por visita e por 40 visitas.",
+          "feedback": {
+            "met": "Você calculou a margem por visita e depois o total das visitas.",
+            "not_yet": "Ainda não. Subtraia seu custo do preço com o desconto."
+          },
+          "steps": [
+            {
+              "expression": "10% × 300",
+              "result": "30",
+              "spokenText": "Dez por cento do preço de tabela de 300 é 30"
+            },
+            {
+              "expression": "300 − 30",
+              "result": "270",
+              "spokenText": "O preço de tabela menos o desconto deixa 270"
+            },
+            {
+              "expression": "Preço com desconto − custo",
+              "result": "120",
+              "spokenText": "O preço com desconto menos seu custo deixa 120 por visita"
+            },
+            {
+              "expression": "Margem por visita × 40 visitas",
+              "result": "4800",
+              "spokenText": "A margem por visita vezes 40 visitas é 4800"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-no",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, tu no respetuoso: “Puedo darte 10% con estas condiciones, no 20%.”",
+          "line": "Con 20% tu precio toca tu límite de $800 y ganas $4,000 menos. El no es por el precio, no por ella."
+        },
+        "en-US": {
+          "prompt": "Step 5, your respectful no: “I can do 10% on these terms, not 20%.”",
+          "line": "At 20% you hit your $160 limit and keep $800 less. The no is for the price, not her."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, seu não respeitoso: “Posso dar 10% com estas condições, não 20%.”",
+          "line": "Com 20% você chega ao limite de R$ 240 e fica com R$ 1.200 a menos. O não é pelo preço, não por ela."
+        }
+      }
+    },
+    {
+      "id": "practice-grid",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "pieces": [
+          "weekly-slot",
+          "invoice-1d",
+          "chain-lube",
+          "price-15",
+          "grips",
+          "early-visit"
+        ],
+        "points": [
+          [
+            9,
+            2
+          ],
+          [
+            8,
+            1
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            9
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "grips",
+              "early-visit"
+            ],
+            "top-right": [
+              "price-15"
+            ],
+            "bottom-left": [
+              "chain-lube"
+            ],
+            "bottom-right": [
+              "weekly-slot",
+              "invoice-1d"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "This depot wants set routines and quick billing. Sort each offer by cost to you and value to them.",
+          "feedback": {
+            "met": "You sorted by cost to you and value to this depot.",
+            "not_yet": "Not yet. Match each dot to what the depot needs."
+          },
+          "labels": {
+            "x-name": "Value to the depot",
+            "y-name": "Cost to me",
+            "x-low": "Low value",
+            "x-high": "High value",
+            "y-low": "Low cost",
+            "y-high": "High cost",
+            "weekly-slot": "Reserved weekly slot",
+            "invoice-1d": "Invoice sent within one day",
+            "chain-lube": "Free chain lube",
+            "price-15": "Price cut of 15%",
+            "grips": "Free handlebar grips",
+            "early-visit": "Visit at 5 am"
+          }
+        },
+        "es-MX": {
+          "prompt": "Esta sucursal quiere rutinas fijas y facturación rápida. Ordena cada oferta por costo para ti y valor para ellos.",
+          "feedback": {
+            "met": "Ordenaste por costo para ti y valor para esta sucursal.",
+            "not_yet": "Aún no. Une cada punto con lo que necesita la sucursal."
+          },
+          "labels": {
+            "x-name": "Valor para la sucursal",
+            "y-name": "Costo para mí",
+            "x-low": "Poco valor",
+            "x-high": "Mucho valor",
+            "y-low": "Poco costo",
+            "y-high": "Mucho costo",
+            "weekly-slot": "Horario semanal reservado",
+            "invoice-1d": "Factura enviada en un día",
+            "chain-lube": "Lubricante de cadena gratis",
+            "price-15": "Descuento de 15% en el precio",
+            "grips": "Puños de manubrio gratis",
+            "early-visit": "Visita a las 5 am"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esta unidade quer rotinas fixas e cobrança rápida. Ordene cada oferta por custo para você e valor para eles.",
+          "feedback": {
+            "met": "Você ordenou por custo para você e valor para esta unidade.",
+            "not_yet": "Ainda não. Ligue cada ponto ao que a unidade precisa."
+          },
+          "labels": {
+            "x-name": "Valor para a unidade",
+            "y-name": "Custo para mim",
+            "x-low": "Pouco valor",
+            "x-high": "Muito valor",
+            "y-low": "Pouco custo",
+            "y-high": "Muito custo",
+            "weekly-slot": "Horário semanal reservado",
+            "invoice-1d": "Nota fiscal enviada em um dia",
+            "chain-lube": "Lubrificante de corrente grátis",
+            "price-15": "Desconto de 15% no preço",
+            "grips": "Manoplas de guidão grátis",
+            "early-visit": "Visita às 5 da manhã"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-no",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-free"
+          },
+          {
+            "id": "reply-harsh"
+          },
+          {
+            "id": "reply-fee"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-fee"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Con 10% menos tu precio queda $100 sobre tu límite; cada inspección te cuesta cerca de $150. ¿Cómo respondes?",
+          "feedback": {
+            "met": "Rechazaste la inspección gratis y ofreciste cobrarla.",
+            "not_yet": "Aún no. Compara cada respuesta con tu límite."
+          },
+          "help": [
+            "Un no respetuoso mantiene tu límite y ofrece otro camino."
+          ],
+          "speaker": "Gerente de flota",
+          "line": "Está bien, 10%. Agrega una inspección completa gratis en cada visita.",
+          "replies": [
+            {
+              "label": "Sí, agrego la inspección gratis."
+            },
+            {
+              "label": "No; lo tomas o lo dejas."
+            },
+            {
+              "label": "Gratis no; puedo cotizarlo con un costo."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "At 10% off your price sits $20 above your limit; each inspection costs about $30. How do you answer?",
+          "feedback": {
+            "met": "You refused the free inspection and offered it for a fee.",
+            "not_yet": "Not yet. Compare each reply with your limit."
+          },
+          "help": [
+            "A respectful no keeps your limit and offers a different way forward."
+          ],
+          "speaker": "Fleet manager",
+          "line": "Fine, 10%. Add a free full inspection on every visit.",
+          "replies": [
+            {
+              "label": "Yes, I will add the inspection free."
+            },
+            {
+              "label": "No; take the deal or leave it."
+            },
+            {
+              "label": "Not free; I can quote a fee."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com 10% de desconto seu preço fica R$ 30 acima do limite; cada inspeção custa cerca de R$ 45. Como responde?",
+          "feedback": {
+            "met": "Você recusou a inspeção grátis e ofereceu cobrar por ela.",
+            "not_yet": "Ainda não. Compare cada resposta com seu limite."
+          },
+          "help": [
+            "Um não respeitoso mantém seu limite e oferece outro caminho."
+          ],
+          "speaker": "Gerente de frota",
+          "line": "Tudo bem, 10%. Inclua uma inspeção completa grátis a cada visita.",
+          "replies": [
+            {
+              "label": "Sim, incluo a inspeção de graça."
+            },
+            {
+              "label": "Não; é pegar ou largar."
+            },
+            {
+              "label": "De graça não; posso cotar uma taxa."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-trade"
+          },
+          {
+            "id": "reply-pay"
+          },
+          {
+            "id": "reply-leave"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-trade"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Compras balatas y tu límite es $170 por juego. Elige la respuesta que respete tu límite y dé algo que te cueste poco.",
+          "feedback": {
+            "met": "Cambiaste volumen y pago rápido por un mejor precio.",
+            "not_yet": "Aún no. Compara cada respuesta con tu límite."
+          },
+          "speaker": "Proveedor",
+          "line": "Las balatas cuestan $200 el juego, y prefiero pedidos grandes pagados rápido.",
+          "replies": [
+            {
+              "label": "40 juegos, SPEI en 7 días, a $160."
+            },
+            {
+              "label": "Está bien, $200 el juego."
+            },
+            {
+              "label": "Muy caro; buscaré otro proveedor."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Buying brake pads, your limit is $34 a set. Pick the reply that keeps it and gives something cheap.",
+          "feedback": {
+            "met": "You traded volume and quick payment for a better price.",
+            "not_yet": "Not yet. Compare each reply with your limit."
+          },
+          "speaker": "Supplier",
+          "line": "Pads are $40 a set, and I prefer big orders paid fast.",
+          "replies": [
+            {
+              "label": "40 sets, Zelle in 7 days, at $32."
+            },
+            {
+              "label": "Fine, $40 a set."
+            },
+            {
+              "label": "Too high; I will find another supplier."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você compra pastilhas de freio e seu limite é R$ 68 por jogo. Escolha a resposta que o respeita e dá algo barato.",
+          "feedback": {
+            "met": "Você trocou volume e pagamento rápido por um preço melhor.",
+            "not_yet": "Ainda não. Compare cada resposta com seu limite."
+          },
+          "speaker": "Fornecedor",
+          "line": "As pastilhas custam R$ 80 o jogo, e prefiro pedidos grandes pagos rápido.",
+          "replies": [
+            {
+              "label": "40 jogos, Pix em 7 dias, a R$ 64."
+            },
+            {
+              "label": "Tudo bem, R$ 80 o jogo."
+            },
+            {
+              "label": "Caro demais; vou buscar outro fornecedor."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

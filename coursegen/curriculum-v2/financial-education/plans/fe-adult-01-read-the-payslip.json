@@ -1,0 +1,882 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-my-paycheck",
+  "lesson_id": "fe-adult-01-read-the-payslip",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.track-earnings",
+    "biz.value-of-work",
+    "money.percent-intro"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho sigue con Lena su primer recibo de nómina: separa el sueldo bruto de las retenciones, calcula cada una como porcentaje del bruto y llega al neto con el que sí puede planear. Luego convierte ese neto en lo que paga una hora de trabajo y lo practica con otros recibos y con dos ofertas de empleo.",
+  "title": {
+    "en-US": "Read the pay stub",
+    "es-MX": "Lee el recibo de nómina",
+    "pt-BR": "Leia o contracheque"
+  },
+  "new_concepts": [
+    "life.track-earnings",
+    "biz.value-of-work",
+    "money.percent-intro"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "A US pay stub shows gross pay, then federal income tax and FICA payroll contributions withheld, then net pay. The rates in this lesson are made-up examples, not current rates.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "FICA"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Un recibo de nómina mexicano separa el sueldo bruto de las retenciones, como el ISR y la cuota del IMSS, y llega al neto. Las tasas de la lección son supuestos de ejemplo, no tasas vigentes.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "ISR",
+          "IMSS"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Um contracheque brasileiro mostra o salário bruto, descontos como o INSS e o IRRF, e o líquido. As alíquotas da lição são suposições de exemplo, não valores vigentes.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "INSS",
+          "IRRF"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena opens her first pay stub.",
+          "line": "The top line says $2,400; the bottom line says less. Let's measure the gap."
+        },
+        "es-MX": {
+          "prompt": "Lena abre su primer recibo de nómina.",
+          "line": "La línea de arriba dice $2,400; la de abajo, menos. Midamos la diferencia."
+        },
+        "pt-BR": {
+          "prompt": "Lena abre seu primeiro contracheque.",
+          "line": "A linha de cima diz R$ 2.400; a de baixo, menos. Vamos medir a diferença."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "choices": [
+          {
+            "id": "plan-gross"
+          },
+          {
+            "id": "plan-net"
+          },
+          {
+            "id": "plan-larger"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-arrives"
+          },
+          {
+            "id": "reason-work"
+          },
+          {
+            "id": "reason-room"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "plan-net"
+        ],
+        "reasonQuality": {
+          "reason-arrives": "sound",
+          "reason-work": "partial",
+          "reason-room": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's pay stub lists gross $2,000 and net $1,700. For rent, which figure does she plan with?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now we follow the lines.",
+            "not_yet": "Thanks, that shows where you start. Now we follow the lines."
+          },
+          "choices": [
+            {
+              "label": "Gross: $2,000"
+            },
+            {
+              "label": "Net: $1,700"
+            },
+            {
+              "label": "Whichever is larger"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "It is what reaches her account"
+            },
+            {
+              "label": "It is the pay for her work"
+            },
+            {
+              "label": "A larger figure leaves more room"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El recibo de Lena muestra bruto de $2,000 y neto de $1,700. Para la renta, ¿con qué cifra planea?",
+          "feedback": {
+            "met": "Gracias, eso muestra de dónde partes. Ahora seguimos las líneas.",
+            "not_yet": "Gracias, eso muestra de dónde partes. Ahora seguimos las líneas."
+          },
+          "choices": [
+            {
+              "label": "Bruto: $2,000"
+            },
+            {
+              "label": "Neto: $1,700"
+            },
+            {
+              "label": "La que sea mayor"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Es lo que llega a su cuenta"
+            },
+            {
+              "label": "Es el pago por su trabajo"
+            },
+            {
+              "label": "La cifra mayor deja más margen"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O contracheque da Lena traz bruto de R$ 2.000 e líquido de R$ 1.700. Para o aluguel, qual valor ela usa?",
+          "feedback": {
+            "met": "Obrigado, isso mostra de onde você parte. Agora seguimos as linhas.",
+            "not_yet": "Obrigado, isso mostra de onde você parte. Agora seguimos as linhas."
+          },
+          "choices": [
+            {
+              "label": "Bruto: R$ 2.000"
+            },
+            {
+              "label": "Líquido: R$ 1.700"
+            },
+            {
+              "label": "O que for maior"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "É o que cai na conta dela"
+            },
+            {
+              "label": "É o pagamento pelo trabalho"
+            },
+            {
+              "label": "O maior valor deixa mais folga"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-gross-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: gross pay.",
+          "line": "Gross is $2,400, her pay before anything is withheld. One percent of it is $24."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el sueldo bruto.",
+          "line": "El bruto es $2,400: su sueldo antes de cualquier retención. El 1% de esa cifra es $24."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o salário bruto.",
+          "line": "O bruto é R$ 2.400, o salário dela antes de qualquer desconto. 1% disso é R$ 24."
+        }
+      }
+    },
+    {
+      "id": "example-lines-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: two withheld lines, income tax and FICA (Social Security and Medicare).",
+          "line": "At example rates, income tax is 8%: 8 × 24 = $192; FICA is 4%: 4 × 24 = $96. Together, $288 is withheld."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: las dos retenciones, el ISR y la cuota del IMSS (seguro social).",
+          "line": "Con tasas de ejemplo, el ISR es 8%: 8 × 24 = $192; el IMSS es 4%: 4 × 24 = $96. En total se retienen $288."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: os dois descontos, o IRRF (imposto de renda) e o INSS (contribuição previdenciária).",
+          "line": "Com alíquotas de exemplo, o IRRF é 8%: 8 × 24 = R$ 192; o INSS é 4%: 4 × 24 = R$ 96. Juntos, descontam R$ 288."
+        }
+      }
+    },
+    {
+      "id": "example-net-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: net pay.",
+          "line": "Net is gross minus withheld: 2,400 − 288 = $2,112. This is the amount Lena can plan with."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el sueldo neto.",
+          "line": "El neto es el bruto menos lo retenido: 2,400 − 288 = $2,112. Con esa cifra Lena puede planear."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o salário líquido.",
+          "line": "O líquido é o bruto menos o descontado: 2.400 − 288 = R$ 2.112. Com esse valor a Lena pode planejar."
+        }
+      }
+    },
+    {
+      "id": "guided-withheld-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "steps": [
+          {
+            "id": "one-percent"
+          },
+          {
+            "id": "withheld"
+          },
+          {
+            "id": "net"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "withheld",
+          "net"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "withheld": "350",
+          "net": "2150"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's next pay stub: gross $2,500, income tax 9%, FICA 5%. Find the amount withheld, then the net.",
+          "feedback": {
+            "met": "You added both rates, applied them to 1%, and subtracted.",
+            "not_yet": "Each line is a percent of gross: start from one percent."
+          },
+          "help": [
+            "Add both percents, multiply by the 1% amount, subtract."
+          ],
+          "steps": [
+            {
+              "expression": "2,500 ÷ 100",
+              "result": "25",
+              "spokenText": "One percent of $2,500 is $25."
+            },
+            {
+              "expression": "(9 + 5) × 25",
+              "result": "350",
+              "spokenText": "Together, 14 percent: 14 times 25 is $350 withheld."
+            },
+            {
+              "expression": "Gross − withheld",
+              "result": "2,150",
+              "spokenText": "Gross minus withheld: $2,500 − $350 leaves $2,150."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Siguiente recibo de Lena: bruto $2,500, ISR 9%, IMSS 5%. Encuentra lo retenido y luego el neto.",
+          "feedback": {
+            "met": "Sumaste ambas tasas, las aplicaste al 1% y restaste.",
+            "not_yet": "Cada línea es un porcentaje del bruto: parte del uno por ciento."
+          },
+          "help": [
+            "Suma ambos porcentajes, multiplica por el 1% y resta del bruto."
+          ],
+          "steps": [
+            {
+              "expression": "2,500 ÷ 100",
+              "result": "25",
+              "spokenText": "El 1% de $2,500 son $25."
+            },
+            {
+              "expression": "(9 + 5) × 25",
+              "result": "350",
+              "spokenText": "Juntos, 14%: 14 por 25 son $350 retenidos."
+            },
+            {
+              "expression": "Bruto − retenido",
+              "result": "2,150",
+              "spokenText": "Bruto menos retenido: $2,500 − $350 deja $2,150."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Próximo contracheque da Lena: bruto R$ 2.500, IRRF 9%, INSS 5%. Ache o descontado e depois o líquido.",
+          "feedback": {
+            "met": "Você somou as duas alíquotas, aplicou a 1% e subtraiu.",
+            "not_yet": "Cada linha é um percentual do bruto: parta de um por cento."
+          },
+          "help": [
+            "Some os dois percentuais, multiplique pelo 1% e subtraia do bruto."
+          ],
+          "steps": [
+            {
+              "expression": "2500 ÷ 100",
+              "result": "25",
+              "spokenText": "1% de R$ 2.500 é R$ 25."
+            },
+            {
+              "expression": "(9 + 5) × 25",
+              "result": "350",
+              "spokenText": "Juntos, 14%: 14 vezes 25 são R$ 350 descontados."
+            },
+            {
+              "expression": "Bruto − descontado",
+              "result": "2150",
+              "spokenText": "Bruto menos descontado: R$ 2.500 − R$ 350 sobra R$ 2.150."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-hour-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: one hour of work.",
+          "line": "Lena works 160 hours a month. 2,112 ÷ 160 = $13.20: one hour of her work pays $13.20 net."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: una hora de trabajo.",
+          "line": "Lena trabaja 160 horas al mes. 2,112 ÷ 160 = $13.20: una hora de su trabajo paga $13.20 netos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: uma hora de trabalho.",
+          "line": "A Lena trabalha 160 horas por mês. 2.112 ÷ 160 = R$ 13,20: uma hora do trabalho dela rende R$ 13,20 líquidos."
+        }
+      }
+    },
+    {
+      "id": "practice-hour-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "one-percent"
+          },
+          {
+            "id": "withheld"
+          },
+          {
+            "id": "net"
+          },
+          {
+            "id": "hourly"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "withheld",
+          "net",
+          "hourly"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "withheld": "180",
+          "net": "1020",
+          "hourly": "12.75"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's part-time month: gross $1,200, 80 hours, income tax 11%, FICA 4%. Find the net per hour.",
+          "feedback": {
+            "met": "You found the net, then divided it by the 80 hours.",
+            "not_yet": "Divide net pay by the hours worked."
+          },
+          "help": [
+            "Both rates times 1%, subtract, then divide by the hours."
+          ],
+          "steps": [
+            {
+              "expression": "1,200 ÷ 100",
+              "result": "12",
+              "spokenText": "One percent of $1,200 is $12."
+            },
+            {
+              "expression": "(11 + 4) × 12",
+              "result": "180",
+              "spokenText": "Together, 15 percent: 15 times 12 is $180 withheld."
+            },
+            {
+              "expression": "Gross − withheld",
+              "result": "1,020",
+              "spokenText": "Gross minus withheld: $1,200 − $180 leaves $1,020 net."
+            },
+            {
+              "expression": "Net ÷ hours",
+              "result": "12.75",
+              "spokenText": "$1,020 over 80 hours is $12.75 net per hour."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mes de medio tiempo de Lena: bruto $1,200, 80 horas, ISR 11%, IMSS 4%. Encuentra el neto por hora.",
+          "feedback": {
+            "met": "Hallaste el neto y lo dividiste entre las 80 horas.",
+            "not_yet": "Divide el neto entre las horas trabajadas."
+          },
+          "help": [
+            "Ambas tasas por el 1%, resta y divide entre las horas."
+          ],
+          "steps": [
+            {
+              "expression": "1,200 ÷ 100",
+              "result": "12",
+              "spokenText": "El 1% de $1,200 son $12."
+            },
+            {
+              "expression": "(11 + 4) × 12",
+              "result": "180",
+              "spokenText": "Juntos, 15%: 15 por 12 son $180 retenidos."
+            },
+            {
+              "expression": "Bruto − retenido",
+              "result": "1,020",
+              "spokenText": "Bruto menos retenido: $1,200 − $180 deja $1,020 netos."
+            },
+            {
+              "expression": "Neto ÷ horas",
+              "result": "12.75",
+              "spokenText": "$1,020 entre 80 horas son $12.75 netos por hora."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mês de meio período da Lena: bruto R$ 1.200, 80 horas, IRRF 11%, INSS 4%. Ache o líquido por hora.",
+          "feedback": {
+            "met": "Você achou o líquido e dividiu pelas 80 horas.",
+            "not_yet": "Divida o líquido pelas horas trabalhadas."
+          },
+          "help": [
+            "As duas alíquotas vezes 1%, subtraia e divida pelas horas."
+          ],
+          "steps": [
+            {
+              "expression": "1200 ÷ 100",
+              "result": "12",
+              "spokenText": "1% de R$ 1.200 é R$ 12."
+            },
+            {
+              "expression": "(11 + 4) × 12",
+              "result": "180",
+              "spokenText": "Juntos, 15%: 15 vezes 12 são R$ 180 descontados."
+            },
+            {
+              "expression": "Bruto − descontado",
+              "result": "1020",
+              "spokenText": "Bruto menos descontado: sobram R$ 1.020 líquidos."
+            },
+            {
+              "expression": "Líquido ÷ horas",
+              "result": "12,75",
+              "spokenText": "R$ 1.020 por 80 horas dão R$ 12,75 líquidos por hora."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-offers-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "choices": [
+          {
+            "id": "offer-b"
+          },
+          {
+            "id": "offer-a"
+          },
+          {
+            "id": "same-rate"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-divide"
+          },
+          {
+            "id": "reason-fewer"
+          },
+          {
+            "id": "reason-larger"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "offer-b"
+        ],
+        "reasonQuality": {
+          "reason-divide": "sound",
+          "reason-fewer": "partial",
+          "reason-larger": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "For Lena: A is $2,040 net for 170 hours; B is $1,800 for 144. Which pays more per hour?",
+          "feedback": {
+            "met": "Net divided by hours puts both offers on one scale.",
+            "not_yet": "Divide each net by its own hours, then compare."
+          },
+          "choices": [
+            {
+              "label": "Offer B"
+            },
+            {
+              "label": "Offer A"
+            },
+            {
+              "label": "They pay the same"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "I divided each net by its hours"
+            },
+            {
+              "label": "B asks for fewer hours"
+            },
+            {
+              "label": "A pays the larger net"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Las ofertas de Lena: A da $2,040 netos por 170 horas; B da $1,800 por 144. ¿Cuál paga más por hora?",
+          "feedback": {
+            "met": "El neto entre las horas pone ambas ofertas en la misma escala.",
+            "not_yet": "Divide cada neto entre sus propias horas y compara."
+          },
+          "choices": [
+            {
+              "label": "Oferta B"
+            },
+            {
+              "label": "Oferta A"
+            },
+            {
+              "label": "Pagan lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Dividí cada neto entre sus horas"
+            },
+            {
+              "label": "B pide menos horas"
+            },
+            {
+              "label": "A paga el neto más grande"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As ofertas da Lena: A paga R$ 2.040 líquidos por 170 horas; B paga R$ 1.800 por 144. Qual paga mais por hora?",
+          "feedback": {
+            "met": "O líquido dividido pelas horas coloca as ofertas na mesma escala.",
+            "not_yet": "Divida cada líquido pelas próprias horas e compare."
+          },
+          "choices": [
+            {
+              "label": "Oferta B"
+            },
+            {
+              "label": "Oferta A"
+            },
+            {
+              "label": "Pagam igual"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Dividi cada líquido pelas horas"
+            },
+            {
+              "label": "B pede menos horas"
+            },
+            {
+              "label": "A paga o líquido maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-check-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "choices": [
+          {
+            "id": "net-added"
+          },
+          {
+            "id": "net-ok"
+          },
+          {
+            "id": "net-fixed"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-percent"
+          },
+          {
+            "id": "reason-lower"
+          },
+          {
+            "id": "reason-printed"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "net-fixed"
+        ],
+        "reasonQuality": {
+          "reason-percent": "sound",
+          "reason-lower": "partial",
+          "reason-printed": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At a new employer, Lena's stub shows gross $2,200, 15% withheld, net $1,980. Check the net.",
+          "feedback": {
+            "met": "Rebuilding net from the lines works on any pay stub.",
+            "not_yet": "Take the withheld percent of the gross, then compare."
+          },
+          "choices": [
+            {
+              "label": "The net should be $2,530"
+            },
+            {
+              "label": "The net is correct"
+            },
+            {
+              "label": "The net should be $1,870"
+            }
+          ],
+          "reasonPrompt": "Which check did you use?",
+          "reasons": [
+            {
+              "label": "Take 15% of $2,200 off $2,200"
+            },
+            {
+              "label": "The net must be lower than gross"
+            },
+            {
+              "label": "A printed net is always right"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En su segundo empleo, el recibo de Lena muestra bruto $2,200, 15% retenido, neto $1,980. Revisa el neto.",
+          "feedback": {
+            "met": "Reconstruir el neto con las líneas sirve en cualquier recibo.",
+            "not_yet": "Calcula el porcentaje retenido del bruto y compara."
+          },
+          "choices": [
+            {
+              "label": "El neto debería ser $2,530"
+            },
+            {
+              "label": "El neto es correcto"
+            },
+            {
+              "label": "El neto debería ser $1,870"
+            }
+          ],
+          "reasonPrompt": "¿Qué revisión usaste?",
+          "reasons": [
+            {
+              "label": "Calculé el 15% de $2,200 y lo resté"
+            },
+            {
+              "label": "El neto debe ser menor que el bruto"
+            },
+            {
+              "label": "Una cifra impresa siempre es correcta"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No segundo emprego, o contracheque da Lena traz bruto de R$ 2.200, 15% descontado, líquido de R$ 1.980. Confira o líquido.",
+          "feedback": {
+            "met": "Refazer o líquido pelas linhas funciona em qualquer contracheque.",
+            "not_yet": "Calcule o percentual descontado do bruto e compare."
+          },
+          "choices": [
+            {
+              "label": "O líquido deveria ser R$ 2.530"
+            },
+            {
+              "label": "O líquido está correto"
+            },
+            {
+              "label": "O líquido deveria ser R$ 1.870"
+            }
+          ],
+          "reasonPrompt": "Que conferência você usou?",
+          "reasons": [
+            {
+              "label": "Subtraí 15% do bruto, R$ 2.200"
+            },
+            {
+              "label": "O líquido deve ser menor que o bruto"
+            },
+            {
+              "label": "Um valor impresso está sempre certo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

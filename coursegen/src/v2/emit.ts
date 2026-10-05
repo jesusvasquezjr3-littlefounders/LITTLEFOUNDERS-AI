@@ -132,15 +132,15 @@ export function forgeVersionId(runId: string): string {
   return version;
 }
 
-export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; markets?: MarketInventory }): V2EmitResult {
+export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; markets?: MarketInventory; requireLessonDesign?: boolean }): V2EmitResult {
   const markets = options.markets ?? loadMarketInventory();
   const problems: V2EmitProblem[] = [];
   const review: Array<V2Finding & { locale?: V2Locale }> = [];
 
   // Plan-level lesson-policy gates (14-16), decided before any document exists.
-  const policy = analyzeV2Plan(plan, markets);
+  const policy = analyzeV2Plan(plan, markets, { required: options.requireLessonDesign });
   for (const finding of policy.findings) {
-    if (finding.severity === 'block') problems.push({ gate: finding.gate, message: finding.message });
+    if (finding.severity === 'block') problems.push({ gate: finding.gate, ...(finding.segmentId ? { segmentId: finding.segmentId } : {}), message: finding.message });
     else review.push(finding);
   }
 

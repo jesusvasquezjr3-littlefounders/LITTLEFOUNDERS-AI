@@ -1,0 +1,889 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-my-paycheck",
+  "lesson_id": "fe-adult-02-monthly-budget",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "money.simple-budget",
+    "life.track-earnings",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara arma con Lena su mes a partir de un neto de $2,112: primero suma las necesidades, luego aparta el ahorro antes de gastar y ve cuánto queda libre para elegir. Después practica con otros montos, ordena un mes en sus líneas, reparte una cantidad y revisa un plan nuevo.",
+  "title": {
+    "en-US": "Plan your month",
+    "es-MX": "Planea tu mes",
+    "pt-BR": "Planeje seu mês"
+  },
+  "new_concepts": [
+    "money.simple-budget"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "A US paycheck often arrives every two weeks, while rent, food and transport are paid monthly; the lesson uses one monthly net. The amounts are illustrative examples, not real wages or prices.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "paycheck"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Mucha gente en México cobra por quincena y paga renta, comida y transporte cada mes; la lección suma los dos pagos en un neto mensual. Los montos son ejemplos ilustrativos, no sueldos ni precios reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, o salário líquido cai uma vez por mês e as parcelas já assumidas, como a de um celular parcelado sem juros, entram nas despesas fixas antes de qualquer escolha. Os valores da lição são exemplos ilustrativos, não salários nem preços reais.",
+        "problem_refs": [
+          "br-installment-culture"
+        ],
+        "anchors": [
+          "parcelado sem juros"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Payday for Lena.",
+          "line": "Lena's $2,112 paycheck just landed. Rent, food and her phone are waiting; let me try a split."
+        },
+        "es-MX": {
+          "prompt": "Día de pago de Lena.",
+          "line": "Lena juntó sus dos pagos de quincena: $2,112 netos al mes. La renta, la comida y su celular esperan; déjame probar un reparto."
+        },
+        "pt-BR": {
+          "prompt": "Dia de pagamento da Lena.",
+          "line": "Caíram R$ 2.112 líquidos na conta da Lena. O aluguel, a comida e o celular parcelado sem juros esperam; vou testar uma divisão."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "choices": [
+          {
+            "id": "save-end"
+          },
+          {
+            "id": "save-spare"
+          },
+          {
+            "id": "save-first"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-same"
+          },
+          {
+            "id": "reason-protected"
+          },
+          {
+            "id": "reason-spare"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "save-first"
+        ],
+        "reasonQuality": {
+          "reason-protected": "sound",
+          "reason-same": "partial",
+          "reason-spare": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "After needs, Lena has $750 and wants $150 saved. When does she set the saving aside?",
+          "feedback": {
+            "met": "Thanks, that shows how you plan. Next we build a month.",
+            "not_yet": "Thanks, that shows how you plan. Next we build a month."
+          },
+          "choices": [
+            {
+              "label": "At month end, from what remains"
+            },
+            {
+              "label": "Only when money feels spare"
+            },
+            {
+              "label": "First, before the rest is spent"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Saved amount is the same either way"
+            },
+            {
+              "label": "Money set aside first cannot be spent"
+            },
+            {
+              "label": "Money is always left at month end"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tras las necesidades, a Lena le quedan $750 y quiere ahorrar $150. ¿Cuándo aparta el ahorro?",
+          "feedback": {
+            "met": "Gracias, eso muestra cómo planeas. Ahora armamos un mes.",
+            "not_yet": "Gracias, eso muestra cómo planeas. Ahora armamos un mes."
+          },
+          "choices": [
+            {
+              "label": "Al final del mes, con lo que sobre"
+            },
+            {
+              "label": "Solo cuando el dinero sobre"
+            },
+            {
+              "label": "Primero, antes de gastar el resto"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "La cantidad ahorrada es la misma de cualquier forma"
+            },
+            {
+              "label": "Lo apartado primero ya no se puede gastar"
+            },
+            {
+              "label": "Siempre sobra dinero al final del mes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Depois do essencial, sobram R$ 750 para a Lena, que quer poupar R$ 150. Quando ela separa a poupança?",
+          "feedback": {
+            "met": "Obrigada, isso mostra como você planeja. Agora montamos um mês.",
+            "not_yet": "Obrigada, isso mostra como você planeja. Agora montamos um mês."
+          },
+          "choices": [
+            {
+              "label": "No fim do mês, com o que sobrar"
+            },
+            {
+              "label": "Só quando o dinheiro parecer sobrar"
+            },
+            {
+              "label": "Primeiro, antes de gastar o resto"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "O valor poupado é o mesmo de qualquer jeito"
+            },
+            {
+              "label": "O que se separa primeiro não pode ser gasto"
+            },
+            {
+              "label": "Sempre sobra dinheiro no fim do mês"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-needs-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: needs first.",
+          "line": "Needs must be paid, so they go first: rent 800 + food 400 + transport 150 + phone 90 = $1,440."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: primero las necesidades.",
+          "line": "Las necesidades se pagan sí o sí, por eso van primero: renta 800 + comida 400 + transporte 150 + celular 90 = $1,440."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: primeiro o essencial.",
+          "line": "O essencial precisa ser pago, por isso vem primeiro: aluguel 800 + comida 400 + transporte 150 + celular 90 = R$ 1.440."
+        }
+      }
+    },
+    {
+      "id": "example-left-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: what is left.",
+          "line": "Needs took about two thirds, so 2,112 − 1,440 = $672 is left, less than I expected."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: lo que queda.",
+          "line": "Las necesidades tomaron cerca de dos tercios, así que quedan 2,112 − 1,440 = $672, menos de lo que esperaba."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o que sobra.",
+          "line": "O essencial levou cerca de dois terços, então sobram 2.112 − 1.440 = R$ 672, menos do que eu esperava."
+        }
+      }
+    },
+    {
+      "id": "example-saving-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: saving before choosing.",
+          "line": "Lena sets $200 aside first so it cannot be spent: 672 − 200 = $472 is free to choose."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: ahorrar antes de elegir.",
+          "line": "Lena aparta $200 primero para no gastarlos: 672 − 200 = $472 quedan libres para elegir."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: poupar antes de escolher.",
+          "line": "A Lena separa R$ 200 primeiro para não gastá-los: 672 − 200 = R$ 472 ficam livres para escolher."
+        }
+      }
+    },
+    {
+      "id": "guided-rent-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "needs"
+          },
+          {
+            "id": "left"
+          },
+          {
+            "id": "free"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "left",
+          "free"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "left": "572",
+          "free": "372"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's rent is now $900. Net $2,112, saving $200: find what is left, then what is free.",
+          "feedback": {
+            "met": "You took needs, then saving, from the net.",
+            "not_yet": "Try it in order: needs from net, then saving."
+          },
+          "help": [
+            "Net minus needs gives what is left; then take saving."
+          ],
+          "steps": [
+            {
+              "expression": "900 + 400 + 150 + 90",
+              "result": "1,540",
+              "spokenText": "The needs now add up to $1,540."
+            },
+            {
+              "expression": "2,112 − 1,540",
+              "result": "572",
+              "spokenText": "Net minus needs: $2,112 − $1,540 leaves $572."
+            },
+            {
+              "expression": "Left − saving",
+              "result": "372",
+              "spokenText": "Left minus saving: $572 − $200 leaves $372 free."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La renta de Lena ahora es $900. Neto $2,112, ahorro $200: encuentra lo que queda y luego lo libre.",
+          "feedback": {
+            "met": "Restaste las necesidades y luego el ahorro del neto.",
+            "not_yet": "Hazlo en orden: necesidades del neto y luego el ahorro."
+          },
+          "help": [
+            "Neto menos necesidades da lo que queda; luego quita el ahorro."
+          ],
+          "steps": [
+            {
+              "expression": "900 + 400 + 150 + 90",
+              "result": "1,540",
+              "spokenText": "Las necesidades ahora suman $1,540."
+            },
+            {
+              "expression": "2,112 − 1,540",
+              "result": "572",
+              "spokenText": "Neto menos necesidades: $2,112 − $1,540 deja $572."
+            },
+            {
+              "expression": "Queda − ahorro",
+              "result": "372",
+              "spokenText": "Queda menos ahorro: $572 − $200 deja $372 libres."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O aluguel da Lena agora é R$ 900. Líquido R$ 2.112, poupança R$ 200: ache o que sobra e depois o que fica livre.",
+          "feedback": {
+            "met": "Você tirou o essencial e depois a poupança do líquido.",
+            "not_yet": "Faça na ordem: essencial do líquido e depois a poupança."
+          },
+          "help": [
+            "Líquido menos essencial dá o que sobra; depois tire a poupança."
+          ],
+          "steps": [
+            {
+              "expression": "900 + 400 + 150 + 90",
+              "result": "1540",
+              "spokenText": "O essencial agora soma R$ 1.540."
+            },
+            {
+              "expression": "2112 − 1540",
+              "result": "572",
+              "spokenText": "Líquido menos essencial: R$ 2.112 − R$ 1.540 sobra R$ 572."
+            },
+            {
+              "expression": "Sobra − poupança",
+              "result": "372",
+              "spokenText": "Sobra menos poupança: R$ 572 − R$ 200 deixa R$ 372 livres."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-month-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "steps": [
+          {
+            "id": "needs"
+          },
+          {
+            "id": "left"
+          },
+          {
+            "id": "free"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "left",
+          "free"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "left": "500",
+          "free": "360"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's short month: net $1,800, rent 780, food 340, transport 110, phone 70, saving $140. What is free?",
+          "feedback": {
+            "met": "You went from net to what is free, in order.",
+            "not_yet": "Work in the same order as the earlier example."
+          },
+          "help": [
+            "Net minus needs, then minus saving."
+          ],
+          "steps": [
+            {
+              "expression": "780 + 340 + 110 + 70",
+              "result": "1,300",
+              "spokenText": "The needs add up to $1,300."
+            },
+            {
+              "expression": "Net − needs",
+              "result": "500",
+              "spokenText": "Net minus needs: $1,800 − $1,300 leaves $500."
+            },
+            {
+              "expression": "Left − saving",
+              "result": "360",
+              "spokenText": "Left minus saving: $500 − $140 leaves $360 free."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mes corto de Lena: neto $1,800, renta 780, comida 340, transporte 110, celular 70, ahorro $140. ¿Cuánto queda libre?",
+          "feedback": {
+            "met": "Fuiste del neto al dinero libre en orden.",
+            "not_yet": "Sigue el mismo orden del ejemplo anterior."
+          },
+          "help": [
+            "Neto menos necesidades, y menos el ahorro."
+          ],
+          "steps": [
+            {
+              "expression": "780 + 340 + 110 + 70",
+              "result": "1,300",
+              "spokenText": "Las necesidades suman $1,300."
+            },
+            {
+              "expression": "Neto − necesidades",
+              "result": "500",
+              "spokenText": "Neto menos necesidades: $1,800 − $1,300 deja $500."
+            },
+            {
+              "expression": "Queda − ahorro",
+              "result": "360",
+              "spokenText": "Queda menos ahorro: $500 − $140 deja $360 libres."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mês curto da Lena: líquido R$ 1.800, aluguel 780, comida 340, transporte 110, celular 70, poupança R$ 140. Quanto fica livre?",
+          "feedback": {
+            "met": "Você foi do líquido ao dinheiro livre na ordem certa.",
+            "not_yet": "Siga a mesma ordem do exemplo anterior."
+          },
+          "help": [
+            "Líquido menos essencial, e menos a poupança."
+          ],
+          "steps": [
+            {
+              "expression": "780 + 340 + 110 + 70",
+              "result": "1300",
+              "spokenText": "O essencial soma R$ 1.300."
+            },
+            {
+              "expression": "Líquido − essencial",
+              "result": "500",
+              "spokenText": "Líquido menos essencial: R$ 1.800 − R$ 1.300 sobra R$ 500."
+            },
+            {
+              "expression": "Sobra − poupança",
+              "result": "360",
+              "spokenText": "Sobra menos poupança: R$ 500 − R$ 140 deixa R$ 360 livres."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-lines-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the month in lines.",
+          "line": "Pay is earned income; rent and food are expenses; savings are assets; interest is passive income; debts are liabilities."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: el mes en líneas.",
+          "line": "El sueldo es ingreso por trabajo; renta y comida, gastos; el ahorro, un activo; el interés, ingreso pasivo; las deudas, pasivos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o mês em linhas.",
+          "line": "O salário é renda do trabalho; aluguel e comida, despesas; a poupança, um ativo; seu rendimento, renda passiva; dívidas, passivos."
+        }
+      }
+    },
+    {
+      "id": "practice-statement-01",
+      "type": "money.cash-flow.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "statement-board"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "items": [
+          {
+            "id": "pay",
+            "amount": 2000
+          },
+          {
+            "id": "tutoring",
+            "amount": 240
+          },
+          {
+            "id": "rent",
+            "amount": 820
+          },
+          {
+            "id": "food",
+            "amount": 360
+          },
+          {
+            "id": "transport",
+            "amount": 120
+          },
+          {
+            "id": "phone",
+            "amount": 80
+          },
+          {
+            "id": "savings",
+            "amount": 1500
+          },
+          {
+            "id": "interest",
+            "amount": 5
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "earned": [
+              "pay",
+              "tutoring"
+            ],
+            "passive": [
+              "interest"
+            ],
+            "expenses": [
+              "rent",
+              "food",
+              "transport",
+              "phone"
+            ],
+            "assets": [
+              "savings"
+            ],
+            "liabilities": [],
+            "goal": [
+              "goal-short"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place Lena's month with weekend tutoring on its lines, then say if passive income beats expenses.",
+          "feedback": {
+            "met": "You sorted every item and read the goal from the totals.",
+            "not_yet": "For each item ask: does it earn, cost, or sit saved?"
+          },
+          "labels": {
+            "pay": "Pay after withholding",
+            "tutoring": "Weekend tutoring fees",
+            "rent": "Rent",
+            "food": "Food",
+            "transport": "Transport",
+            "phone": "Phone plan",
+            "savings": "Savings balance",
+            "interest": "Interest on savings"
+          }
+        },
+        "es-MX": {
+          "prompt": "Coloca el mes de Lena, con tutorías de fin de semana, en sus líneas y di si el ingreso pasivo supera los gastos.",
+          "feedback": {
+            "met": "Ordenaste cada partida y leíste la meta en los totales.",
+            "not_yet": "Pregunta por cada partida: ¿gana, cuesta o está ahorrada?"
+          },
+          "labels": {
+            "pay": "Sueldo neto",
+            "tutoring": "Pago por tutorías de fin de semana",
+            "rent": "Renta",
+            "food": "Comida",
+            "transport": "Transporte",
+            "phone": "Plan del celular",
+            "savings": "Saldo de ahorro",
+            "interest": "Interés del ahorro"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque o mês da Lena, com aulas particulares no fim de semana, nas linhas e diga se a renda passiva supera as despesas.",
+          "feedback": {
+            "met": "Você classificou cada item e leu a meta nos totais.",
+            "not_yet": "Para cada item pergunte: rende, custa ou está guardado?"
+          },
+          "labels": {
+            "pay": "Salário líquido",
+            "tutoring": "Aulas particulares no fim de semana",
+            "rent": "Aluguel",
+            "food": "Comida",
+            "transport": "Transporte",
+            "phone": "Plano do celular",
+            "savings": "Saldo da poupança",
+            "interest": "Rendimento da poupança"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-split-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "total": 600,
+        "step": 50,
+        "currency": "local"
+      },
+      "rubric": {
+        "minimumSave": 200
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's next month leaves $600 after needs. Set saving first, $200 or more, then assign the rest.",
+          "feedback": {
+            "met": "Saving meets the minimum and every amount has a place.",
+            "not_yet": "Raise saving to the minimum, then assign what remains."
+          }
+        },
+        "es-MX": {
+          "prompt": "El próximo mes de Lena deja $600 tras las necesidades. Fija primero el ahorro, $200 o más, y asigna el resto.",
+          "feedback": {
+            "met": "El ahorro cumple el mínimo y cada monto tiene su lugar.",
+            "not_yet": "Sube el ahorro al mínimo y asigna lo que queda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O próximo mês da Lena deixa R$ 600 depois do essencial. Defina primeiro a poupança, R$ 200 ou mais, e distribua o resto.",
+          "feedback": {
+            "met": "A poupança cumpre o mínimo e cada valor tem seu lugar.",
+            "not_yet": "Suba a poupança ao mínimo e distribua o que sobra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-flat-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "choices": [
+          {
+            "id": "over-100"
+          },
+          {
+            "id": "holds-800"
+          },
+          {
+            "id": "holds-later"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-order"
+          },
+          {
+            "id": "reason-needs"
+          },
+          {
+            "id": "reason-chosen"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "over-100"
+        ],
+        "reasonQuality": {
+          "reason-order": "sound",
+          "reason-needs": "partial",
+          "reason-chosen": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's shared-apartment plan: net $2,300, needs $1,500, saving $300, free spending $600. Does it hold?",
+          "feedback": {
+            "met": "Subtracting needs and saving first works in any month.",
+            "not_yet": "Take needs and saving off the net, then compare."
+          },
+          "choices": [
+            {
+              "label": "It is $100 over: $500 is free"
+            },
+            {
+              "label": "It holds: $800 is free"
+            },
+            {
+              "label": "It holds: she saves what remains"
+            }
+          ],
+          "reasonPrompt": "Which check did you use?",
+          "reasons": [
+            {
+              "label": "Net minus needs and saving, then compare"
+            },
+            {
+              "label": "Needs covered, so the rest is free"
+            },
+            {
+              "label": "She chose $600, so it is her plan"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Plan de Lena en su departamento compartido: neto $2,300, necesidades $1,500, ahorro $300, gasto libre $600. ¿Alcanza?",
+          "feedback": {
+            "met": "Restar primero necesidades y ahorro sirve en cualquier mes.",
+            "not_yet": "Quita necesidades y ahorro del neto y compara."
+          },
+          "choices": [
+            {
+              "label": "Se pasa por $100: quedan $500 libres"
+            },
+            {
+              "label": "Alcanza: hay $800 libres"
+            },
+            {
+              "label": "Alcanza: ahorra lo que sobre"
+            }
+          ],
+          "reasonPrompt": "¿Qué revisión usaste?",
+          "reasons": [
+            {
+              "label": "Neto menos necesidades y ahorro, y comparé"
+            },
+            {
+              "label": "Las necesidades están cubiertas; el resto es libre"
+            },
+            {
+              "label": "Ella eligió $600, así que es su plan"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Plano da Lena no apartamento compartilhado: líquido R$ 2.300, essencial R$ 1.500, poupança R$ 300, gasto livre R$ 600. Cabe?",
+          "feedback": {
+            "met": "Subtrair primeiro essencial e poupança serve em qualquer mês.",
+            "not_yet": "Tire essencial e poupança do líquido e compare."
+          },
+          "choices": [
+            {
+              "label": "Excede em R$ 100: sobram R$ 500 livres"
+            },
+            {
+              "label": "Cabe: há R$ 800 livres"
+            },
+            {
+              "label": "Cabe: ela poupa o que sobrar"
+            }
+          ],
+          "reasonPrompt": "Que conferência você usou?",
+          "reasons": [
+            {
+              "label": "Líquido menos essencial e poupança, e comparei"
+            },
+            {
+              "label": "O essencial está coberto; o resto é livre"
+            },
+            {
+              "label": "Ela escolheu R$ 600, então é o plano dela"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,934 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-my-paycheck",
+  "lesson_id": "fe-adult-04-price-my-time",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.what-is-price",
+    "biz.trade-and-markets",
+    "biz.value-of-work"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho ayuda a Lena a ponerle precio a sus tutorías de fin de semana: lee lo que piden tres anuncios locales, ve cómo cambian la oferta y la demanda, y calcula cuánto le queda después de apartar el ISR y pagar materiales. Luego repite el cálculo con otras cifras y fija una tarifa para otro servicio.",
+  "title": {
+    "en-US": "Price my time",
+    "es-MX": "Ponle precio a tu tiempo",
+    "pt-BR": "Dê preço ao seu tempo"
+  },
+  "new_concepts": [
+    "biz.what-is-price",
+    "biz.trade-and-markets"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "In the US, people paid for weekend work often set aside part of each payment for self-employment tax and costs; the lesson starts from local ad prices and works out what is left. The amounts and the percentage are illustrative examples, not real rates.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "self-employment tax"
+        ]
+      },
+      "es-MX": {
+        "scenario": "En México quien trabaja por su cuenta suele apartar una parte de cada cobro para el ISR y los gastos; la lección parte de los precios que piden otros y calcula lo que queda. Los montos y el porcentaje son ejemplos ilustrativos, no tarifas reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "ISR"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, quem trabalha por conta própria costuma separar parte de cada recebimento para impostos, como o carnê-leão, e para despesas; a lição parte dos preços dos anúncios e calcula o que sobra. Os valores e o percentual são exemplos ilustrativos, não tarifas reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "carnê-leão"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena has weekend tutoring to price.",
+          "line": "One measurement first. Three local ads for weekend tutoring ask 18, 22 and 30 an hour."
+        },
+        "es-MX": {
+          "prompt": "Lena debe ponerle precio a sus tutorías de fin de semana.",
+          "line": "Primero una medida. Tres anuncios locales de tutorías de fin de semana piden 18, 22 y 30 por hora."
+        },
+        "pt-BR": {
+          "prompt": "A Lena precisa dar preço às aulas de fim de semana.",
+          "line": "Primeiro uma medida. Três anúncios locais de aulas de fim de semana pedem 18, 22 e 30 por hora."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "from-ads"
+          },
+          {
+            "id": "from-fair"
+          },
+          {
+            "id": "below-all"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fair"
+          },
+          {
+            "id": "reason-pays"
+          },
+          {
+            "id": "reason-cheap"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "from-ads"
+        ],
+        "reasonQuality": {
+          "reason-pays": "sound",
+          "reason-cheap": "partial",
+          "reason-fair": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena must price her weekend tutoring. How does she set her hourly rate?",
+          "feedback": {
+            "met": "Noted. Now we measure what the ads show.",
+            "not_yet": "Noted. Now we measure what the ads show."
+          },
+          "choices": [
+            {
+              "label": "From what the local ads ask"
+            },
+            {
+              "label": "From what feels fair to her"
+            },
+            {
+              "label": "Below every ad, to win clients"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Her time feels worth more"
+            },
+            {
+              "label": "Clients already pay that range"
+            },
+            {
+              "label": "A cheap rate brings more clients"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Lena debe poner precio a sus tutorías de fin de semana. ¿Cómo fija su tarifa por hora?",
+          "feedback": {
+            "met": "Anotado. Ahora medimos lo que muestran los anuncios.",
+            "not_yet": "Anotado. Ahora medimos lo que muestran los anuncios."
+          },
+          "choices": [
+            {
+              "label": "Según lo que piden los anuncios"
+            },
+            {
+              "label": "Según lo que le parece justo"
+            },
+            {
+              "label": "Debajo de todos, para ganar clientes"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Su tiempo le parece valer más"
+            },
+            {
+              "label": "Los clientes ya pagan ese rango"
+            },
+            {
+              "label": "Una tarifa baja trae más clientes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Lena precisa dar preço às aulas de fim de semana. Como ela define o valor por hora?",
+          "feedback": {
+            "met": "Anotado. Agora medimos o que os anúncios mostram.",
+            "not_yet": "Anotado. Agora medimos o que os anúncios mostram."
+          },
+          "choices": [
+            {
+              "label": "Pelo que os anúncios pedem"
+            },
+            {
+              "label": "Pelo que ela acha justo"
+            },
+            {
+              "label": "Abaixo de todos, para ganhar clientes"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "O tempo dela parece valer mais"
+            },
+            {
+              "label": "Os clientes já pagam essa faixa"
+            },
+            {
+              "label": "Um valor baixo traz mais clientes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-market-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the market sets it.",
+          "line": "Ads at 18, 22 and 30 show what clients pay. Lena picks 22, inside that range."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el mercado lo fija.",
+          "line": "Los anuncios de 18, 22 y 30 muestran lo que pagan los clientes. Lena elige 22, dentro de ese rango."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o mercado define.",
+          "line": "Os anúncios de 18, 22 e 30 mostram o que os clientes pagam. A Lena escolhe 22, dentro dessa faixa."
+        }
+      }
+    },
+    {
+      "id": "example-demand-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: more clients want help.",
+          "line": "Exam season: more families want tutoring than tutors can give, so they pay more per hour."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: más clientes quieren ayuda.",
+          "line": "Época de exámenes: más familias quieren tutorías de las que los tutores pueden dar, así que pagan más por hora."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: mais clientes querem ajuda.",
+          "line": "Época de provas: mais famílias querem aulas do que os professores podem dar, então pagam mais por hora."
+        }
+      }
+    },
+    {
+      "id": "example-supply-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: more tutors offer help.",
+          "line": "A training course adds ten tutors for the same families, so each asks less per hour."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: más tutores ofrecen ayuda.",
+          "line": "Un curso de formación suma diez tutores para las mismas familias, así que cada uno pide menos por hora."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: mais professores oferecem ajuda.",
+          "line": "Um curso de formação soma dez professores para as mesmas famílias, então cada um pede menos por hora."
+        }
+      }
+    },
+    {
+      "id": "guided-supply-01",
+      "type": "econ.supply-demand.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "supply-demand"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.trade-and-markets",
+      "payload": {
+        "demand": {
+          "intercept": 40,
+          "slope": 1
+        },
+        "supply": {
+          "intercept": 4,
+          "slope": 1
+        },
+        "shift_step": 5,
+        "max_shift": 2
+      },
+      "rubric": {
+        "curve": "supply",
+        "direction": 1
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Lena's town, half the tutors leave for the summer. Move one curve one step, then read the rate.",
+          "feedback": {
+            "met": "You cut the tutors’ supply and saw the rate rise.",
+            "not_yet": "Ask who changed here: the clients or the tutors."
+          },
+          "help": [
+            "Who changed here, the clients or the tutors? Move that curve."
+          ],
+          "labels": {
+            "price": "Hourly rate",
+            "quantity": "Hours booked",
+            "demand": "What clients pay",
+            "supply": "What tutors ask"
+          }
+        },
+        "es-MX": {
+          "prompt": "En el pueblo de Lena, la mitad de los tutores se va el verano. Mueve una curva un paso y lee la tarifa.",
+          "feedback": {
+            "met": "Redujiste la oferta de tutores y viste subir la tarifa.",
+            "not_yet": "Pregunta quién cambió aquí: los clientes o los tutores."
+          },
+          "help": [
+            "¿Quién cambió aquí, los clientes o los tutores? Mueve esa curva."
+          ],
+          "labels": {
+            "price": "Tarifa por hora",
+            "quantity": "Horas contratadas",
+            "demand": "Lo que pagan los clientes",
+            "supply": "Lo que piden los tutores"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na cidade da Lena, metade dos professores sai no verão. Mova uma curva um passo e leia o valor.",
+          "feedback": {
+            "met": "Você reduziu a oferta de professores e viu o valor subir.",
+            "not_yet": "Pergunte quem mudou aqui: os clientes ou os professores."
+          },
+          "help": [
+            "Quem mudou aqui, os clientes ou os professores? Mova essa curva."
+          ],
+          "labels": {
+            "price": "Valor por hora",
+            "quantity": "Horas contratadas",
+            "demand": "O que os clientes pagam",
+            "supply": "O que os professores pedem"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-demand-01",
+      "type": "econ.supply-demand.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "supply-demand"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.trade-and-markets",
+      "payload": {
+        "demand": {
+          "intercept": 40,
+          "slope": 1
+        },
+        "supply": {
+          "intercept": 4,
+          "slope": 1
+        },
+        "shift_step": 5,
+        "max_shift": 2
+      },
+      "rubric": {
+        "curve": "demand",
+        "direction": -1
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Lena's town, free school tutoring starts. Move one curve one step, then read the rate.",
+          "feedback": {
+            "met": "You cut what clients pay and saw the rate fall.",
+            "not_yet": "Ask who changed: the clients or the tutors."
+          },
+          "help": [
+            "Who changed here, the clients or the tutors? Move that curve."
+          ],
+          "labels": {
+            "price": "Hourly rate",
+            "quantity": "Hours booked",
+            "demand": "What clients pay",
+            "supply": "What tutors ask"
+          }
+        },
+        "es-MX": {
+          "prompt": "En el pueblo de Lena empiezan tutorías gratis en la escuela. Mueve una curva un paso y lee la tarifa.",
+          "feedback": {
+            "met": "Redujiste lo que pagan los clientes y viste bajar la tarifa.",
+            "not_yet": "Pregunta quién cambió: los clientes o los tutores."
+          },
+          "help": [
+            "¿Quién cambió aquí, los clientes o los tutores? Mueve esa curva."
+          ],
+          "labels": {
+            "price": "Tarifa por hora",
+            "quantity": "Horas contratadas",
+            "demand": "Lo que pagan los clientes",
+            "supply": "Lo que piden los tutores"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na cidade da Lena começam aulas grátis na escola. Mova uma curva um passo e leia o valor.",
+          "feedback": {
+            "met": "Você reduziu o que os clientes pagam e viu o valor cair.",
+            "not_yet": "Pergunte quem mudou: os clientes ou os professores."
+          },
+          "help": [
+            "Quem mudou aqui, os clientes ou os professores? Mova essa curva."
+          ],
+          "labels": {
+            "price": "Valor por hora",
+            "quantity": "Horas contratadas",
+            "demand": "O que os clientes pagam",
+            "supply": "O que os professores pedem"
+          }
+        }
+      }
+    },
+    {
+      "id": "example-quote-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: quote the hours.",
+          "line": "Lena quotes 8 hours at $22 an hour: 8 × 22 = $176 before anything is taken out."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: cotiza las horas.",
+          "line": "Lena cotiza 8 horas a $22 la hora: 8 × 22 = $176 antes de descontar nada."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: orce as horas.",
+          "line": "A Lena orça 8 horas a R$ 22 por hora: 8 × 22 = R$ 176 antes de descontar qualquer coisa."
+        }
+      }
+    },
+    {
+      "id": "example-aside-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: set tax aside.",
+          "line": "Suppose, as an example, 12% is set aside for self-employment tax: 176 × 0.12 = 21.12, so 154.88 is left."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: aparta el impuesto.",
+          "line": "Supón, como ejemplo, que se aparta 12% para el ISR: 176 × 0.12 = 21.12, así que quedan 154.88."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: separe o imposto.",
+          "line": "Suponha, como exemplo, que 12% sejam separados para o carnê-leão: 176 × 0,12 = 21,12, então sobram 154,88."
+        }
+      }
+    },
+    {
+      "id": "example-materials-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: take out materials.",
+          "line": "Materials cost $20: 154.88 − 20 = $134.88, which is $16.86 for each of her 8 hours."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: descuenta los materiales.",
+          "line": "Los materiales cuestan $20: 154.88 − 20 = $134.88, o sea $16.86 por cada una de sus 8 horas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: desconte os materiais.",
+          "line": "Os materiais custam R$ 20: 154,88 − 20 = R$ 134,88, ou seja, R$ 16,86 por cada uma das 8 horas."
+        }
+      }
+    },
+    {
+      "id": "guided-quote-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "quote"
+          },
+          {
+            "id": "kept"
+          },
+          {
+            "id": "take"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "kept",
+          "take"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "kept": "135",
+          "take": "123"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's next quote: 6 hours at $25, with 10% set aside and $12 for materials. What does she keep?",
+          "feedback": {
+            "met": "You set the tax aside, then took out materials.",
+            "not_yet": "Follow Lena’s order: quote, set-aside, then materials."
+          },
+          "help": [
+            "Quote first, then the set-aside, then materials."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 25",
+              "result": "150",
+              "spokenText": "Quote: 6 hours × $25 an hour is $150."
+            },
+            {
+              "expression": "Quote − 10% of quote",
+              "result": "135",
+              "spokenText": "Setting aside 10% of 150 is 15, so $135 is left."
+            },
+            {
+              "expression": "Left − materials",
+              "result": "123",
+              "spokenText": "Take-home: $135 − $12 = $123."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La siguiente cotización de Lena: 6 horas a $25, con 10% apartado y $12 de materiales. ¿Cuánto se queda?",
+          "feedback": {
+            "met": "Apartaste el impuesto y luego descontaste los materiales.",
+            "not_yet": "Sigue el orden de Lena: cotización, apartado y luego materiales."
+          },
+          "help": [
+            "Primero la cotización, luego el apartado y luego los materiales."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 25",
+              "result": "150",
+              "spokenText": "Cotización: 6 horas × $25 la hora son $150."
+            },
+            {
+              "expression": "Cotización − 10% de la cotización",
+              "result": "135",
+              "spokenText": "Apartar el 10% de 150 son 15, así que quedan $135."
+            },
+            {
+              "expression": "Queda − materiales",
+              "result": "123",
+              "spokenText": "Neto: $135 − $12 = $123."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O próximo orçamento da Lena: 6 horas a R$ 25, com 10% separado e R$ 12 de materiais. Quanto fica?",
+          "feedback": {
+            "met": "Você separou o imposto e depois descontou os materiais.",
+            "not_yet": "Siga a ordem da Lena: orçamento, separado e depois materiais."
+          },
+          "help": [
+            "Primeiro o orçamento, depois o separado e depois os materiais."
+          ],
+          "steps": [
+            {
+              "expression": "6 × 25",
+              "result": "150",
+              "spokenText": "Orçamento: 6 horas × R$ 25 por hora são R$ 150."
+            },
+            {
+              "expression": "Orçamento − 10% do orçamento",
+              "result": "135",
+              "spokenText": "Separar 10% de 150 dá 15, então sobram R$ 135."
+            },
+            {
+              "expression": "Sobra − materiais",
+              "result": "123",
+              "spokenText": "Líquido: R$ 135 − R$ 12 = R$ 123."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-quote-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "quote"
+          },
+          {
+            "id": "kept"
+          },
+          {
+            "id": "take"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "kept",
+          "take"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "kept": "160.16",
+          "take": "146.16"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's Sunday quote: 7 hours at $26, 12% set aside, $14 for materials. What is left to keep?",
+          "feedback": {
+            "met": "You went from quote to take-home money.",
+            "not_yet": "Use Lena’s order: quote, set-aside, then materials."
+          },
+          "help": [
+            "Take the set-aside off the quote, then the materials."
+          ],
+          "steps": [
+            {
+              "expression": "7 × 26",
+              "result": "182",
+              "spokenText": "Quote: 7 hours × $26 an hour is $182."
+            },
+            {
+              "expression": "Quote − 12% of quote",
+              "result": "160.16",
+              "spokenText": "12% of 182 is 21.84, so $160.16 is left."
+            },
+            {
+              "expression": "Left − materials",
+              "result": "146.16",
+              "spokenText": "Take-home: $160.16 − $14 = $146.16."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La cotización de domingo de Lena: 7 horas a $26, 12% apartado, $14 de materiales. ¿Cuánto le queda?",
+          "feedback": {
+            "met": "Fuiste de la cotización al dinero que te queda.",
+            "not_yet": "Usa el orden de Lena: cotización, apartado y luego materiales."
+          },
+          "help": [
+            "Quita el apartado de la cotización y luego los materiales."
+          ],
+          "steps": [
+            {
+              "expression": "7 × 26",
+              "result": "182",
+              "spokenText": "Cotización: 7 horas × $26 la hora son $182."
+            },
+            {
+              "expression": "Cotización − 12% de la cotización",
+              "result": "160.16",
+              "spokenText": "El 12% de 182 son 21.84, así que quedan $160.16."
+            },
+            {
+              "expression": "Queda − materiales",
+              "result": "146.16",
+              "spokenText": "Neto: $160.16 − $14 = $146.16."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O orçamento de domingo da Lena: 7 horas a R$ 26, 12% separado, R$ 14 de materiais. Quanto sobra?",
+          "feedback": {
+            "met": "Você foi do orçamento ao dinheiro que fica.",
+            "not_yet": "Use a ordem da Lena: orçamento, separado e depois materiais."
+          },
+          "help": [
+            "Tire o separado do orçamento e depois os materiais."
+          ],
+          "steps": [
+            {
+              "expression": "7 × 26",
+              "result": "182",
+              "spokenText": "Orçamento: 7 horas × R$ 26 por hora são R$ 182."
+            },
+            {
+              "expression": "Orçamento − 12% do orçamento",
+              "result": "160,16",
+              "spokenText": "12% de 182 dá 21,84, então sobram R$ 160,16."
+            },
+            {
+              "expression": "Sobra − materiais",
+              "result": "146,16",
+              "spokenText": "Líquido: R$ 160,16 − R$ 14 = R$ 146,16."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-bikes-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "rate-40"
+          },
+          {
+            "id": "rate-14"
+          },
+          {
+            "id": "rate-24"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-worth"
+          },
+          {
+            "id": "reason-ads"
+          },
+          {
+            "id": "reason-low"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "rate-24"
+        ],
+        "reasonQuality": {
+          "reason-ads": "sound",
+          "reason-low": "partial",
+          "reason-worth": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena fixes bikes on weekends; local ads ask 20, 24 and 28 an hour. Which rate does she quote?",
+          "feedback": {
+            "met": "A rate inside the ads’ range is one clients already pay.",
+            "not_yet": "Look at the three ads again before pricing."
+          },
+          "choices": [
+            {
+              "label": "$40, what her time is worth"
+            },
+            {
+              "label": "$14, below every ad"
+            },
+            {
+              "label": "$24, inside the ads’ range"
+            }
+          ],
+          "reasonPrompt": "Which fact decides it?",
+          "reasons": [
+            {
+              "label": "Repairs deserve a high rate"
+            },
+            {
+              "label": "A low rate wins the work"
+            },
+            {
+              "label": "The ads show what clients pay"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Lena arregla bicicletas los fines de semana; los anuncios locales piden 20, 24 y 28 por hora. ¿Qué tarifa cotiza?",
+          "feedback": {
+            "met": "Una tarifa dentro del rango es la que ya pagan los clientes.",
+            "not_yet": "Mira otra vez los tres anuncios antes de cotizar."
+          },
+          "choices": [
+            {
+              "label": "$40, lo que vale su tiempo"
+            },
+            {
+              "label": "$14, debajo de todos los anuncios"
+            },
+            {
+              "label": "$24, dentro del rango de los anuncios"
+            }
+          ],
+          "reasonPrompt": "¿Qué dato lo decide?",
+          "reasons": [
+            {
+              "label": "Las reparaciones merecen una tarifa alta"
+            },
+            {
+              "label": "Una tarifa baja gana el trabajo"
+            },
+            {
+              "label": "Los anuncios muestran lo que pagan los clientes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Lena conserta bicicletas nos fins de semana; os anúncios locais pedem 20, 24 e 28 por hora. Que valor ela orça?",
+          "feedback": {
+            "met": "Um valor dentro da faixa é o que os clientes já pagam.",
+            "not_yet": "Olhe de novo os três anúncios antes de orçar."
+          },
+          "choices": [
+            {
+              "label": "R$ 40, o que o tempo dela vale"
+            },
+            {
+              "label": "R$ 14, abaixo de todos os anúncios"
+            },
+            {
+              "label": "R$ 24, dentro da faixa dos anúncios"
+            }
+          ],
+          "reasonPrompt": "Qual fato decide?",
+          "reasons": [
+            {
+              "label": "Consertos merecem um valor alto"
+            },
+            {
+              "label": "Um valor baixo ganha o trabalho"
+            },
+            {
+              "label": "Os anúncios mostram o que os clientes pagam"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

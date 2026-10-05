@@ -1,0 +1,648 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-stall",
+  "lesson_id": "ent-69-08-what-is-left",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.profit",
+    "biz.revenue",
+    "biz.cost-vs-price"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf, el dino juguetón, cuenta la caja de la clase después del día de venta. Se equivoca: cree que las 35 monedas son todas suyas. Luego quita las 20 de los materiales y ve que la ganancia son 15. El niño apila la ganancia de otro día, calcula la de un día nuevo y la de un solo papalote, y lo repite en la feria con gorras y plumas.",
+  "title": {
+    "en-US": "What is left",
+    "es-MX": "Lo que queda",
+    "pt-BR": "O que sobra"
+  },
+  "new_concepts": [
+    "biz.profit"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf counts all 35 coins that came in as his own and forgets that 20 of them already paid for the parts.",
+    "recovery": "Liruf takes the 20 coins of costs away, finds that 35 - 20 = 15 is the profit, and says he will take costs away first next time."
+  },
+  "regional": {
+    "universal": "A class stall counted in story coins; any amount on the coin stack is written with each market's own currency sign. No places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sale day is over. Liruf peeks into the cash box.",
+          "line": "Look at my box. It is full of coins."
+        },
+        "es-MX": {
+          "prompt": "Terminó el día de venta. Liruf mira la caja.",
+          "line": "Mira mi caja. Está llena de monedas."
+        },
+        "pt-BR": {
+          "prompt": "O dia de venda acabou. Liruf olha a caixa.",
+          "line": "Olhe minha caixa. Está cheia de moedas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-all"
+          },
+          {
+            "id": "reply-left"
+          },
+          {
+            "id": "reply-sum"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-left"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Try first: how many coins are left for us?",
+          "feedback": {
+            "met": "Noted. Now we look at it step by step.",
+            "not_yet": "Noted. Now we look at it step by step."
+          },
+          "speaker": "Liruf",
+          "line": "35 coins came in. We paid 20 for parts.",
+          "replies": [
+            {
+              "label": "35 coins"
+            },
+            {
+              "label": "15 coins"
+            },
+            {
+              "label": "55 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Inténtalo primero: ¿cuántas monedas nos quedan?",
+          "feedback": {
+            "met": "Anotado. Ahora lo vemos paso a paso.",
+            "not_yet": "Anotado. Ahora lo vemos paso a paso."
+          },
+          "speaker": "Liruf",
+          "line": "Entraron 35 monedas. Pagamos 20 por los materiales.",
+          "replies": [
+            {
+              "label": "35 monedas"
+            },
+            {
+              "label": "15 monedas"
+            },
+            {
+              "label": "55 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Tente primeiro: quantas moedas sobram para nós?",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver passo a passo.",
+            "not_yet": "Anotado. Agora vamos ver passo a passo."
+          },
+          "speaker": "Liruf",
+          "line": "Entraram 35 moedas. Pagamos 20 pelos materiais.",
+          "replies": [
+            {
+              "label": "35 moedas"
+            },
+            {
+              "label": "15 moedas"
+            },
+            {
+              "label": "55 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what Liruf did with his box.",
+          "setup": "35 coins came in. We paid 20 for parts.",
+          "misjudgment": "All 35 are mine! I keep every coin.",
+          "recovery": "Oh, the parts took 20. Next time I take costs away first."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que hizo Liruf con su caja.",
+          "setup": "Entraron 35 monedas. Pagamos 20 por los materiales.",
+          "misjudgment": "¡Las 35 son mías! Me quedo con todas.",
+          "recovery": "Espera, los materiales costaron 20. La próxima vez quito primero los costos."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que Liruf fez com a caixa.",
+          "setup": "Entraram 35 moedas. Pagamos 20 pelos materiais.",
+          "misjudgment": "As 35 são minhas! Eu fico com todas.",
+          "recovery": "Espera, os materiais custaram 20. Da próxima vez tiro primeiro os custos."
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the 20 coins for parts are costs.",
+          "line": "Those coins went to the parts. We cannot keep them."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: las 20 monedas de los materiales son costos.",
+          "line": "Esas monedas se fueron en los materiales. No son para guardar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: as 20 moedas dos materiais são custos.",
+          "line": "Essas moedas foram para os materiais. Não podemos guardá-las."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: revenue minus costs is profit.",
+          "line": "Count with me: 35 - 20 = 15. Profit is 15."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: ingresos menos costos son la ganancia.",
+          "line": "Cuenta conmigo: 35 - 20 = 15. La ganancia es 15."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: receita menos custos é o lucro.",
+          "line": "Conte comigo: 35 - 20 = 15. O lucro é 15."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-stack.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "amount",
+          "total": 1200
+        },
+        "step": 1,
+        "max": 20
+      },
+      "rubric": {
+        "target": "12"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Next day: 20 came in, parts cost 8. Stack the profit.",
+          "feedback": {
+            "met": "You stacked what was left after the costs.",
+            "not_yet": "Not yet. Do what Liruf did: take the costs off first."
+          },
+          "help": [
+            "Liruf took the costs off the coins that came in.",
+            "Take 8 away from 20. Then stack what is left."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Otro día: entraron 20, los materiales costaron 8. Apila la ganancia.",
+          "feedback": {
+            "met": "Apilaste lo que quedó después de los costos.",
+            "not_yet": "Aún no. Haz lo que hizo Liruf: primero quita los costos."
+          },
+          "help": [
+            "Liruf quitó los costos de lo que entró.",
+            "Quita 8 de 20. Luego apila lo que queda."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outro dia: entraram 20, os materiais custaram 8. Empilhe o lucro.",
+          "feedback": {
+            "met": "Você empilhou o que sobrou depois dos custos.",
+            "not_yet": "Ainda não. Faça como o Liruf: primeiro tire os custos."
+          },
+          "help": [
+            "Liruf tirou os custos do que entrou.",
+            "Tire 8 de 20. Depois empilhe o que sobra."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: check by adding the costs back.",
+          "line": "Back to my box: 15 + 20 = 35. It fits."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: comprueba sumando de nuevo los costos.",
+          "line": "De vuelta a mi caja: 15 + 20 = 35. Sí coincide."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: confira somando os custos de volta.",
+          "line": "De volta à minha caixa: 15 + 20 = 35. Confere."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-sum"
+          },
+          {
+            "id": "reply-all"
+          },
+          {
+            "id": "reply-left"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-left"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the class stall, what is the profit?",
+          "feedback": {
+            "met": "You picked what is left after the costs.",
+            "not_yet": "Not yet. Remember Liruf’s move: revenue minus costs."
+          },
+          "help": [
+            "Profit is what is left after the costs.",
+            "Take the costs off the coins that came in."
+          ],
+          "speaker": "Liruf",
+          "line": "Next sale day: 24 coins came in. Parts cost 10.",
+          "replies": [
+            {
+              "label": "34 coins"
+            },
+            {
+              "label": "24 coins"
+            },
+            {
+              "label": "14 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el puesto de la clase, ¿cuál es la ganancia?",
+          "feedback": {
+            "met": "Elegiste lo que queda tras los costos.",
+            "not_yet": "Aún no. Recuerda lo de Liruf: ingresos menos costos."
+          },
+          "help": [
+            "La ganancia es lo que queda tras los costos.",
+            "Quita los costos de las monedas que entraron."
+          ],
+          "speaker": "Liruf",
+          "line": "Otro día de venta: entraron 24 monedas. Los materiales costaron 10.",
+          "replies": [
+            {
+              "label": "34 monedas"
+            },
+            {
+              "label": "24 monedas"
+            },
+            {
+              "label": "14 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na barraquinha da turma, qual é o lucro?",
+          "feedback": {
+            "met": "Você escolheu o que sobra depois dos custos.",
+            "not_yet": "Ainda não. Lembre do Liruf: receita menos custos."
+          },
+          "help": [
+            "O lucro é o que sobra depois dos custos.",
+            "Tire os custos das moedas que entraram."
+          ],
+          "speaker": "Liruf",
+          "line": "Outro dia de venda: entraram 24 moedas. Os materiais custaram 10.",
+          "replies": [
+            {
+              "label": "34 moedas"
+            },
+            {
+              "label": "24 moedas"
+            },
+            {
+              "label": "14 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-left"
+          },
+          {
+            "id": "reply-price"
+          },
+          {
+            "id": "reply-sum"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-left"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Class stall: what is the profit on one kite?",
+          "feedback": {
+            "met": "You picked what the buyer pays, minus the cost.",
+            "not_yet": "Not yet. Spot the price and the cost in the line."
+          },
+          "help": [
+            "The buyer pays the price.",
+            "The stall pays the cost. Take it off."
+          ],
+          "speaker": "Liruf",
+          "line": "A kite sells for 9. Its parts cost 6.",
+          "replies": [
+            {
+              "label": "3 coins"
+            },
+            {
+              "label": "9 coins"
+            },
+            {
+              "label": "15 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Puesto de la clase: ¿cuál es la ganancia de un papalote?",
+          "feedback": {
+            "met": "Elegiste lo que paga quien compra, menos el costo.",
+            "not_yet": "Aún no. Busca el precio y el costo en la línea."
+          },
+          "help": [
+            "Quien compra paga el precio.",
+            "El puesto paga el costo. Quítalo."
+          ],
+          "speaker": "Liruf",
+          "line": "Un papalote se vende en 9. Sus materiales costaron 6.",
+          "replies": [
+            {
+              "label": "3 monedas"
+            },
+            {
+              "label": "9 monedas"
+            },
+            {
+              "label": "15 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Barraquinha da turma: qual é o lucro de uma pipa?",
+          "feedback": {
+            "met": "Você escolheu o que quem compra paga, menos o custo.",
+            "not_yet": "Ainda não. Ache o preço e o custo na fala."
+          },
+          "help": [
+            "Quem compra paga o preço.",
+            "A barraquinha paga o custo. Tire-o."
+          ],
+          "speaker": "Liruf",
+          "line": "Uma pipa se vende por 9. Os materiais dela custaram 6.",
+          "replies": [
+            {
+              "label": "3 moedas"
+            },
+            {
+              "label": "9 moedas"
+            },
+            {
+              "label": "15 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-all"
+          },
+          {
+            "id": "reply-left"
+          },
+          {
+            "id": "reply-sum"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-left"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the school fair, what is the profit?",
+          "feedback": {
+            "met": "Same move at the fair: you picked what is left.",
+            "not_yet": "Not yet. Start from what came in, then take costs off."
+          },
+          "help": [
+            "Use Liruf's move from Step 2.",
+            "Take the costs off the coins that came in."
+          ],
+          "speaker": "Liruf",
+          "line": "Fair day: 19 coins came in. Caps and pens cost 8.",
+          "replies": [
+            {
+              "label": "19 coins"
+            },
+            {
+              "label": "11 coins"
+            },
+            {
+              "label": "27 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria de la escuela, ¿cuál es la ganancia?",
+          "feedback": {
+            "met": "Mismo paso en la feria: elegiste lo que queda.",
+            "not_yet": "Aún no. Empieza con lo que entró y quita los costos."
+          },
+          "help": [
+            "Usa lo que hizo Liruf en el Paso 2.",
+            "Quita los costos de las monedas que entraron."
+          ],
+          "speaker": "Liruf",
+          "line": "Día de feria: entraron 19 monedas. Las gorras y plumas costaron 8.",
+          "replies": [
+            {
+              "label": "19 monedas"
+            },
+            {
+              "label": "11 monedas"
+            },
+            {
+              "label": "27 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira da escola, qual é o lucro?",
+          "feedback": {
+            "met": "Mesmo passo na feira: você escolheu o que sobra.",
+            "not_yet": "Ainda não. Comece pelo que entrou e tire os custos."
+          },
+          "help": [
+            "Use o que o Liruf fez no Passo 2.",
+            "Tire os custos das moedas que entraram."
+          ],
+          "speaker": "Liruf",
+          "line": "Dia da feira: entraram 19 moedas. Bonés e canetas custaram 8.",
+          "replies": [
+            {
+              "label": "19 moedas"
+            },
+            {
+              "label": "11 moedas"
+            },
+            {
+              "label": "27 moedas"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

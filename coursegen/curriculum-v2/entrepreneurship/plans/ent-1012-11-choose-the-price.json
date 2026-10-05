@@ -1,0 +1,882 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-pitch-price-budget",
+  "lesson_id": "ent-1012-11-choose-the-price",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.pricing-strategy",
+    "biz.cost-vs-price",
+    "biz.profit"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho mide con el equipo tres precios para la misma bolsa: cuánta ganancia deja cada día y por qué el precio más alto no siempre gana. Luego ve hasta dónde se puede rebajar sin perder, practica con un descuento y un segundo experimento, y al final compara las pruebas de Mia.",
+  "title": {
+    "en-US": "Choose the price",
+    "es-MX": "Elige el precio",
+    "pt-BR": "Escolha o preço"
+  },
+  "new_concepts": [
+    "biz.pricing-strategy"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three days, three prices.",
+          "line": "Observe: our bag costs 7 to make. The team will price it at 8, 10 and 12 coins."
+        },
+        "es-MX": {
+          "prompt": "Tres días, tres precios.",
+          "line": "Observa: hacer una bolsa nos cuesta 7. El equipo la venderá a 8, 10 y 12 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Três dias, três preços.",
+          "line": "Observe: nossa sacola custa 7 para fazer. A equipe vai vendê-la a 8, 10 e 12 moedas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "highest"
+          },
+          {
+            "id": "test"
+          },
+          {
+            "id": "lowest"
+          },
+          {
+            "id": "copy"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-big"
+          },
+          {
+            "id": "reason-low"
+          },
+          {
+            "id": "reason-depends"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "test"
+        ],
+        "reasonQuality": {
+          "reason-depends": "sound",
+          "reason-low": "partial",
+          "reason-big": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The team can charge 8, 10 or 12 coins. How should it choose?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "Pick the highest price"
+            },
+            {
+              "label": "Try each price and compare profits"
+            },
+            {
+              "label": "Pick the lowest so everyone buys"
+            },
+            {
+              "label": "Copy the stall next door"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Big numbers mean big profit"
+            },
+            {
+              "label": "Buyers like low prices"
+            },
+            {
+              "label": "Profit depends on price and bags sold"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El equipo puede cobrar 8, 10 o 12 monedas. ¿Cómo debería elegir?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Elegir el precio más alto"
+            },
+            {
+              "label": "Probar cada precio y comparar ganancias"
+            },
+            {
+              "label": "Elegir el más bajo para que todos compren"
+            },
+            {
+              "label": "Copiar el puesto de al lado"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Los números grandes dan mucha ganancia"
+            },
+            {
+              "label": "A los compradores les gustan los precios bajos"
+            },
+            {
+              "label": "La ganancia depende del precio y de las bolsas vendidas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe pode cobrar 8, 10 ou 12 moedas. Como deve escolher?",
+          "feedback": {
+            "met": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Escolher o preço mais alto"
+            },
+            {
+              "label": "Testar cada preço e comparar lucros"
+            },
+            {
+              "label": "Escolher o mais baixo para todos comprarem"
+            },
+            {
+              "label": "Copiar a barraca ao lado"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Números grandes dão muito lucro"
+            },
+            {
+              "label": "Os compradores gostam de preços baixos"
+            },
+            {
+              "label": "O lucro depende do preço e das sacolas vendidas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-sold-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "column"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-eight"
+            },
+            {
+              "id": "cat-ten"
+            },
+            {
+              "id": "cat-twelve"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-sold",
+              "values": [
+                10,
+                8,
+                4
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "We measure how many bags sold at each price.",
+          "title": "Bags sold at each price",
+          "data": {
+            "categories": [
+              {
+                "label": "Price 8"
+              },
+              {
+                "label": "Price 10"
+              },
+              {
+                "label": "Price 12"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bags sold"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Medimos cuántas bolsas se vendieron con cada precio.",
+          "title": "Bolsas vendidas con cada precio",
+          "data": {
+            "categories": [
+              {
+                "label": "Precio 8"
+              },
+              {
+                "label": "Precio 10"
+              },
+              {
+                "label": "Precio 12"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bolsas vendidas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Medimos quantas sacolas foram vendidas em cada preço.",
+          "title": "Sacolas vendidas em cada preço",
+          "data": {
+            "categories": [
+              {
+                "label": "Preço 8"
+              },
+              {
+                "label": "Preço 10"
+              },
+              {
+                "label": "Preço 12"
+              }
+            ],
+            "series": [
+              {
+                "label": "Sacolas vendidas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-day1-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Day 1: price 8, our first measurement.",
+          "line": "Day 1: 8 minus 7 leaves 1 coin per bag, and 10 bags sold make 10 coins."
+        },
+        "es-MX": {
+          "prompt": "Día 1: precio 8, nuestra primera medición.",
+          "line": "Día 1: 8 menos 7 deja 1 moneda por bolsa, y 10 bolsas vendidas dan 10 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Dia 1: preço 8, nossa primeira medição.",
+          "line": "Dia 1: 8 menos 7 deixa 1 moeda por sacola, e 10 sacolas vendidas rendem 10 moedas."
+        }
+      }
+    },
+    {
+      "id": "example-day2-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "We measure day 2: price 10.",
+          "line": "Day 2: 10 minus 7 leaves 3 coins per bag, and 8 bags sold make 24 coins."
+        },
+        "es-MX": {
+          "prompt": "Medimos el día 2: precio 10.",
+          "line": "Día 2: 10 menos 7 deja 3 monedas por bolsa, y 8 bolsas vendidas dan 24 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Medimos o dia 2: preço 10.",
+          "line": "Dia 2: 10 menos 7 deixa 3 moedas por sacola, e 8 sacolas vendidas rendem 24 moedas."
+        }
+      }
+    },
+    {
+      "id": "guided-day3-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "steps": [
+          {
+            "id": "per-bag"
+          },
+          {
+            "id": "day-profit"
+          },
+          {
+            "id": "drop"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "day-profit",
+          "drop"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "day-profit": "20",
+          "drop": "4"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Day 3: price 12, 4 bags sold. Find the profit, then how far it falls below day 2's 24.",
+          "feedback": {
+            "met": "You found the profit and compared it with the day before.",
+            "not_yet": "Look back at day 2: profit per bag, times bags sold."
+          },
+          "help": [
+            "Multiply the profit per bag by 4, then subtract from 24."
+          ],
+          "steps": [
+            {
+              "expression": "12 − 7",
+              "result": "5",
+              "spokenText": "Twelve minus 7 leaves 5 coins per bag"
+            },
+            {
+              "expression": "Profit per bag × bags sold",
+              "result": "20",
+              "spokenText": "Five times 4 is 20 coins"
+            },
+            {
+              "expression": "Day 2 profit − day 3 profit",
+              "result": "4",
+              "spokenText": "Twenty-four minus 20 is 4"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Día 3: precio 12, 4 bolsas vendidas. Encuentra la ganancia y cuánto baja respecto a las 24 del día 2.",
+          "feedback": {
+            "met": "Hallaste la ganancia y la comparaste con la del día anterior.",
+            "not_yet": "Mira el día 2: ganancia por bolsa por bolsas vendidas."
+          },
+          "help": [
+            "Multiplica la ganancia por bolsa por 4 y réstala de 24."
+          ],
+          "steps": [
+            {
+              "expression": "12 − 7",
+              "result": "5",
+              "spokenText": "Doce menos 7 deja 5 monedas por bolsa"
+            },
+            {
+              "expression": "Ganancia por bolsa × bolsas vendidas",
+              "result": "20",
+              "spokenText": "Cinco por 4 son 20 monedas"
+            },
+            {
+              "expression": "Ganancia del día 2 − ganancia del día 3",
+              "result": "4",
+              "spokenText": "Veinticuatro menos 20 son 4"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dia 3: preço 12, 4 sacolas vendidas. Ache o lucro e quanto cai em relação às 24 do dia 2.",
+          "feedback": {
+            "met": "Você achou o lucro e o comparou com o do dia anterior.",
+            "not_yet": "Veja o dia 2: lucro por sacola vezes sacolas vendidas."
+          },
+          "help": [
+            "Multiplique o lucro por sacola por 4 e subtraia de 24."
+          ],
+          "steps": [
+            {
+              "expression": "12 − 7",
+              "result": "5",
+              "spokenText": "Doze menos 7 deixa 5 moedas por sacola"
+            },
+            {
+              "expression": "Lucro por sacola × sacolas vendidas",
+              "result": "20",
+              "spokenText": "Cinco vezes 4 são 20 moedas"
+            },
+            {
+              "expression": "Lucro do dia 2 − lucro do dia 3",
+              "result": "4",
+              "spokenText": "Vinte e quatro menos 20 são 4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-compare-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Let's note the result.",
+          "line": "Profits: 10, 24 and 20. The middle price earns most; at 12, only 4 bags sold."
+        },
+        "es-MX": {
+          "prompt": "Anotemos el resultado.",
+          "line": "Ganancias: 10, 24 y 20. El precio del medio gana más; con 12, solo se vendieron 4 bolsas."
+        },
+        "pt-BR": {
+          "prompt": "Anotemos o resultado.",
+          "line": "Lucros: 10, 24 e 20. O preço do meio rende mais; com 12, só 4 sacolas foram vendidas."
+        }
+      }
+    },
+    {
+      "id": "example-room-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 10,
+        "step": 10,
+        "initialPercent": 30,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At 30% off, price 10 falls to 7, exactly the cost. Any deeper cut loses money."
+        },
+        "es-MX": {
+          "prompt": "Con 30% de descuento, el precio 10 baja a 7, justo el costo. Un descuento mayor pierde dinero."
+        },
+        "pt-BR": {
+          "prompt": "Com 30% de desconto, o preço 10 cai para 7, exatamente o custo. Um corte maior dá prejuízo."
+        }
+      }
+    },
+    {
+      "id": "practice-room-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "baseUnits": 20,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "rubric": {
+        "target_percent": 20
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A bag sells for 20 and costs 16. Find the discount that brings the price down to cost.",
+          "feedback": {
+            "met": "You set the discount that brings the price down to the cost.",
+            "not_yet": "Find how many coins the price must fall to reach cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "Una bolsa se vende en 20 y cuesta 16. Encuentra el descuento que baja el precio hasta el costo.",
+          "feedback": {
+            "met": "Elegiste el descuento que baja el precio hasta el costo.",
+            "not_yet": "Busca cuántas monedas debe bajar el precio para llegar al costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma sacola vende por 20 e custa 16. Ache o desconto que leva o preço até o custo.",
+          "feedback": {
+            "met": "Você escolheu o desconto que leva o preço até o custo.",
+            "not_yet": "Descubra quantas moedas o preço precisa cair para chegar ao custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-test-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "steps": [
+          {
+            "id": "per-key"
+          },
+          {
+            "id": "profit-eight"
+          },
+          {
+            "id": "profit-ten"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "profit-eight",
+          "profit-ten",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "profit-eight": "18",
+          "profit-ten": "15",
+          "gap": "3"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A keychain costs 5: price 8 sold 6, price 10 sold 3. Find each profit and the gap.",
+          "feedback": {
+            "met": "You found the profit at each price and compared the two.",
+            "not_yet": "Profit is price minus cost, times the keychains sold."
+          },
+          "help": [
+            "Work out profit per keychain, times keychains sold, for each price."
+          ],
+          "steps": [
+            {
+              "expression": "8 − 5",
+              "result": "3",
+              "spokenText": "Eight minus 5 leaves 3 coins per keychain"
+            },
+            {
+              "expression": "3 × 6",
+              "result": "18",
+              "spokenText": "Three times 6 is 18, the profit at 8"
+            },
+            {
+              "expression": "(10 − 5) × 3",
+              "result": "15",
+              "spokenText": "Ten minus 5 is 5, times 3 is 15, the profit at 10"
+            },
+            {
+              "expression": "Profit at 8 − profit at 10",
+              "result": "3",
+              "spokenText": "Eighteen minus 15 is 3, so price 8 earned more"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un llavero cuesta 5: precio 8 vendió 6, precio 10 vendió 3. Encuentra cada ganancia y la diferencia.",
+          "feedback": {
+            "met": "Hallaste la ganancia con cada precio y comparaste las dos.",
+            "not_yet": "La ganancia es precio menos costo, por los llaveros vendidos."
+          },
+          "help": [
+            "Multiplica la ganancia de cada llavero por los vendidos, con cada precio."
+          ],
+          "steps": [
+            {
+              "expression": "8 − 5",
+              "result": "3",
+              "spokenText": "Ocho menos 5 deja 3 monedas por llavero"
+            },
+            {
+              "expression": "3 × 6",
+              "result": "18",
+              "spokenText": "Tres por 6 son 18, la ganancia con 8"
+            },
+            {
+              "expression": "(10 − 5) × 3",
+              "result": "15",
+              "spokenText": "Diez menos 5 son 5, por 3 son 15, la ganancia con 10"
+            },
+            {
+              "expression": "Ganancia con 8 − ganancia con 10",
+              "result": "3",
+              "spokenText": "Dieciocho menos 15 son 3, así que el precio 8 ganó más"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um chaveiro custa 5: preço 8 vendeu 6, preço 10 vendeu 3. Ache cada lucro e a diferença.",
+          "feedback": {
+            "met": "Você achou o lucro de cada preço e comparou os dois.",
+            "not_yet": "O lucro é preço menos custo, vezes os chaveiros vendidos."
+          },
+          "help": [
+            "Calcule o lucro por chaveiro vezes os vendidos, em cada preço."
+          ],
+          "steps": [
+            {
+              "expression": "8 − 5",
+              "result": "3",
+              "spokenText": "Oito menos 5 deixa 3 moedas por chaveiro"
+            },
+            {
+              "expression": "3 × 6",
+              "result": "18",
+              "spokenText": "Três vezes 6 são 18, o lucro com 8"
+            },
+            {
+              "expression": "(10 − 5) × 3",
+              "result": "15",
+              "spokenText": "Dez menos 5 são 5, vezes 3 são 15, o lucro com 10"
+            },
+            {
+              "expression": "Lucro com 8 − lucro com 10",
+              "result": "3",
+              "spokenText": "Dezoito menos 15 são 3, então o preço 8 rendeu mais"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-bracelets-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "price-8"
+          },
+          {
+            "id": "price-7"
+          },
+          {
+            "id": "price-6"
+          },
+          {
+            "id": "price-5"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fair"
+          },
+          {
+            "id": "reason-product"
+          },
+          {
+            "id": "reason-highest"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "price-6"
+        ],
+        "reasonQuality": {
+          "reason-product": "sound",
+          "reason-fair": "partial",
+          "reason-highest": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia's bracelets cost 4 each. Which test price earned the most profit?",
+          "feedback": {
+            "met": "Price 6 earned the most, balancing profit per bracelet and sales.",
+            "not_yet": "Compare profit at each price: price minus cost, times bracelets."
+          },
+          "choices": [
+            {
+              "label": "Price 8: sold 2"
+            },
+            {
+              "label": "Price 7: sold 5"
+            },
+            {
+              "label": "Price 6: sold 9"
+            },
+            {
+              "label": "Price 5: sold 12"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Each sale earns a fair profit"
+            },
+            {
+              "label": "Profit per bracelet times bracelets sold is highest"
+            },
+            {
+              "label": "Highest price means highest profit"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Las pulseras de Mia cuestan 4 cada una. ¿Qué precio de prueba dio más ganancia?",
+          "feedback": {
+            "met": "El precio 6 ganó más, al equilibrar ganancia por pulsera y ventas.",
+            "not_yet": "Compara la ganancia de cada precio: precio menos costo, por pulseras."
+          },
+          "choices": [
+            {
+              "label": "Precio 8: vendió 2"
+            },
+            {
+              "label": "Precio 7: vendió 5"
+            },
+            {
+              "label": "Precio 6: vendió 9"
+            },
+            {
+              "label": "Precio 5: vendió 12"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Cada venta deja una ganancia justa"
+            },
+            {
+              "label": "Ganancia por pulsera por pulseras vendidas es la mayor"
+            },
+            {
+              "label": "El precio más alto da la mayor ganancia"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As pulseiras da Mia custam 4 cada. Qual preço de teste rendeu mais lucro?",
+          "feedback": {
+            "met": "O preço 6 rendeu mais, equilibrando lucro por pulseira e vendas.",
+            "not_yet": "Compare o lucro de cada preço: preço menos custo, vezes pulseiras."
+          },
+          "choices": [
+            {
+              "label": "Preço 8: vendeu 2"
+            },
+            {
+              "label": "Preço 7: vendeu 5"
+            },
+            {
+              "label": "Preço 6: vendeu 9"
+            },
+            {
+              "label": "Preço 5: vendeu 12"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Cada venda deixa um lucro justo"
+            },
+            {
+              "label": "Lucro por pulseira vezes pulseiras vendidas é o maior"
+            },
+            {
+              "label": "O preço mais alto dá o maior lucro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

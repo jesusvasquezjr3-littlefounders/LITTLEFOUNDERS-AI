@@ -1,0 +1,556 @@
+# Entrepreneurship: v2 catalog structure (2026-10-04).
+#
+# Planning record for the whole course: four age pathways, 11 chapters of 4 lessons, 44 lessons.
+# A later wave authors one `plans/<lesson_id>.json` per lesson from this file, so every entry names
+# its situation, its KCs, its Mentor and the segment types it will use. No plan exists yet.
+#
+# Arc: 6-9 little inventors (a problem, ideas, a first build, listening, then coin math for cost,
+# revenue and profit); 10-12 a first small venture with real decisions (opportunity, first version,
+# pitch, price, budget); 13-17 the learner's own venture (customers, numbers, deals, a first team);
+# adult a real business (own numbers in local currency, deals, trust, leading, lasting).
+#
+# Chart kinds ride in a plan's `visual.type`, not in `segment_types`; each `visual.chart.v2` entry
+# below says which kind it is meant to draw (funnel 10+, pareto, org-chart, ishikawa, marimekko 13+).
+#
+# Knowledge components use the real keys of database/seeds/kc_graph.v1.json. Draft KCs keep
+# `kc_status: draft`. The six foundations (needs-vs-wants, goods-vs-services, what-is-price,
+# saving-goal, trade-and-markets, value-of-work) and every money.* and life.* KC belong to
+# financial-education: they appear here only as reviewed KCs or external prerequisites.
+
+course_id: entrepreneurship
+authoring_locale: es-MX
+markets: [es-MX, pt-BR, en-US]
+status: "catalog-structure-v1 (2026-10-04): planned, plans not yet authored"
+
+assumptions:
+  - "Eight, twelve, twelve and twelve lessons per pathway in chapters of four (11 chapters, 44 lessons). The 34 owned biz.* KCs are fewer than the 44 lesson slots, so 10 lessons re-teach a KC at greater depth (B.6) and name it as a new concept of their own pathway."
+  - "Re-taught KCs: ages 10-12 real-problems, solution-ideas, customer-feedback, communicate-value, cost-vs-price; ages 13-17 pricing-strategy; adults opportunity-evaluation, break-even, pricing-strategy, negotiation."
+  - "Under 18 every amount is a LittleFounders coin; only the adult lessons use the local currency of each market (currency: local). Adult lessons give a general checklist and never legal, tax or personal financial advice."
+  - "Each lesson is one topic through one situation. Pathways 13+ use the learner's own venture (no toys, no allowance) and a Mentor who asks and steps back; Liruf is used only up to age 12."
+  - "Prerequisites taught in a younger pathway or in financial-education (money.add-money, money.subtract-money, money.simple-budget, money.percent-intro, money.unit-price, life.advertising-literacy, life.scam-awareness) are external prerequisites of the chapters that need them."
+  - "Tier floors hold: tier-1 KCs from age 6, tier-2 from 8, tier-3 from 11, so every tier-3 lesson at 10-12 narrows its eligibility to 11-12."
+  - "Segment types respect both the generated age scope and the Horizonte ranges: no fin.* below 12, no econ.* or money.cash-flow below 13, money.market-stall only up to 12."
+  - "Twenty-eight of the 34 owned KCs are draft in the seed (G5, OD-22); only pricing-strategy, risk-and-reward and the tier-2 four (cost-vs-price, revenue, profit, budget-decisions) are active, so most lessons stay draft until the owner accepts the pathway policy."
+
+pathways:
+  - pathway_id: entrepreneurship-6-9
+    age_band: "6-9"
+    chapters:
+      - chapter_id: ent-69-little-inventors
+        title: { en-US: Little inventors, es-MX: Pequeños inventores, pt-BR: Pequenos inventores }
+        objective: Notice a problem that keeps happening, invent ideas to fix it, build and test a first try, and listen to what people say about it.
+        external_prerequisites: []
+        lessons:
+          - lesson_id: ent-69-01-who-has-the-problem
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.real-problems]
+            kc_status: { biz.real-problems: draft }
+            new_concepts: [biz.real-problems]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.sort-by-rule.v2]
+            situation: "A class notices that the sandwiches in 4 of 6 lunch bags arrive squashed every single day, and the learner sorts what keeps happening from what happened once and names who has the problem."
+            tests: "A child separates a problem that keeps happening from a one-off and says who has it, without offering a solution yet (tier-1 vocabulary, 12-word prompts)."
+          - lesson_id: ent-69-02-many-ideas
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.solution-ideas, biz.real-problems]
+            kc_status: { biz.solution-ideas: draft, biz.real-problems: draft }
+            new_concepts: [biz.solution-ideas]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.would-you-rather.v2, visual.chart.v2]   # chart: pictogram or bar of how many squashed lunches each idea would save
+            situation: "Three ideas for the squashed sandwich (a hard box, a soft wrap, a bigger bag) are compared by how many of the 6 squashed lunches each would save (5, 2 and 3), and the class picks one."
+            tests: "Turning one problem into several ideas and choosing by a stated reason (the idea that helps the most people), not by liking."
+          - lesson_id: ent-69-03-build-and-test
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.make-and-test, biz.solution-ideas]
+            kc_status: { biz.make-and-test: draft, biz.solution-ideas: draft }
+            new_concepts: [biz.make-and-test]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Liruf glues the whole box shut before any test, sees it fail, and says he will test one corner first next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, story.branch.v2, logic.rule-checker.v2]
+            situation: "The class builds a cardboard lunch box and drops it 5 times from table height; the test passes only when the sandwich stays whole, and a box that failed 2 of 5 drops gets a stronger lid."
+            tests: "The B.11 mentor episode, a test with a pass rule written before the build, and using a failed test to improve rather than to give up."
+          - lesson_id: ent-69-04-listen-and-improve
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.customer-feedback, biz.make-and-test]
+            kc_status: { biz.customer-feedback: draft, biz.make-and-test: draft }
+            new_concepts: [biz.customer-feedback]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.sort-by-rule.v2, visual.chart.v2]   # chart: pictogram of the five comments
+            situation: "Five classmates try the lunch box: 3 say the lid is hard to open, 1 says it is blue and 1 says it is perfect, so the learner picks the comment that changes the box, fixes the lid and asks again."
+            tests: "Listening without defending, choosing which comment should change the product (3 of 5 is a pattern, 1 of 5 is a taste) and checking the change."
+      - chapter_id: ent-69-little-stall
+        title: { en-US: Our little stall, es-MX: Nuestro puestito, pt-BR: Nossa barraquinha }
+        objective: Explain why a product helps, then use coins to tell cost from price, count the money that comes in and find what is left.
+        external_prerequisites: [money.add-money, money.subtract-money, biz.what-is-price]
+        lessons:
+          - lesson_id: ent-69-05-say-why-it-helps
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.communicate-value, biz.solution-ideas]
+            kc_status: { biz.communicate-value: draft, biz.solution-ideas: draft }
+            new_concepts: [biz.communicate-value]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.rule-checker.v2]
+            situation: "The class writes a sign for the sturdy lunch box, and the rule 'say what it does, who it is for and which problem it solves' shows why 'Your sandwich arrives whole, made for kids who carry lunch' beats 'Best box ever'."
+            tests: "A three-part explanation (what, for whom, which problem) checked with a rule, with no hype words in the child's own sign."
+          - lesson_id: ent-69-06-cost-and-price
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [biz.cost-vs-price, biz.what-is-price]
+            kc_status: { biz.cost-vs-price: active, biz.what-is-price: active }
+            new_concepts: [biz.cost-vs-price]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2, logic.sort-by-rule.v2]
+            situation: "A lunch box costs 6 coins to make (cardboard 3, tape 2, ribbon 1) and sells for 9 coins, and the learner counts out the 6 coins the stall paid and the 9 coins a buyer pays."
+            tests: "Cost (what the stall pays to make it) versus price (what a buyer pays), shown with two coin trays and a sort into cost and price bins."
+          - lesson_id: ent-69-07-money-that-comes-in
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [biz.revenue, money.add-money]
+            kc_status: { biz.revenue: active, money.add-money: active }
+            new_concepts: [biz.revenue]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.market-stall.v2, visual.chart.v2]   # chart: bar of money taken in per item
+            situation: "On sale day the stall sells 3 lunch boxes at 9 coins each and 2 stickers at 4 coins each, and the learner adds 9+9+9+4+4 to find the 35 coins that came in."
+            tests: "Revenue as all the money taken in (not what is left), by adding several prices in a Horizonte stall piece."
+          - lesson_id: ent-69-08-what-is-left
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [biz.profit, biz.revenue, biz.cost-vs-price]
+            kc_status: { biz.profit: active, biz.revenue: active, biz.cost-vs-price: active }
+            new_concepts: [biz.profit]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Liruf calls all 35 coins his, then takes the 20 coins of costs away and says he will always subtract first
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.coin-stack.v2, story.dialogue-choice.v2]
+            situation: "The stall took in 35 coins and spent 20 coins on boxes (3 x 6) and stickers (2 x 1), so the learner takes the costs away and finds 15 coins of profit."
+            tests: "Profit as money that came in minus costs (35 - 20 = 15), the B.11 mentor episode, and a stack of coins that shows what stays."
+
+  - pathway_id: entrepreneurship-10-12
+    age_band: "10-12"
+    chapters:
+      - chapter_id: ent-1012-find-opportunity
+        title: { en-US: Is it worth trying?, es-MX: ¿Vale la pena intentarlo?, pt-BR: Vale a pena tentar? }
+        objective: Spot a problem worth solving, read the signals around it, weigh what can be lost against what can be gained and decide whether it is a real opportunity.
+        external_prerequisites: [biz.profit]
+        lessons:
+          - lesson_id: ent-1012-01-the-problem-behind-the-complaint
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.real-problems]
+            kc_status: { biz.real-problems: draft }
+            new_concepts: [biz.real-problems]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.sort-by-rule.v2, visual.chart.v2]   # chart: bar of complaints per school day
+            situation: "A class hears 'the lunch line is so long I barely get to eat' from 9 of 24 students over 5 days, and the learner names who has the problem (the last kids in line), how often (every day) and why it matters (under 10 minutes to eat)."
+            tests: "Re-taught at tween depth: who, how often and why it matters, with a rule that separates a repeated problem from a loud one-off (B.6)."
+          - lesson_id: ent-1012-02-opportunity-signals
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.market-signals, biz.real-problems]
+            kc_status: { biz.market-signals: draft, biz.real-problems: draft }
+            new_concepts: [biz.market-signals]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # the repeated complaint, the recent change and the gap are drawn from each market's own school or neighbourhood
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, visual.chart.v2, logic.rule-checker.v2]   # chart: line of how often the complaint is heard each week
+            situation: "Three signals around the lunch line (9 repeated complaints in 2 weeks, a new rule that closes the snack bar early, no stall that sells ready lunches) are each checked with three quick questions before anyone builds."
+            tests: "Telling a signal (repeated, recent, a gap) from a hunch, and checking it with a question to a real person; per-market signals with the same answer ids."
+          - lesson_id: ent-1012-03-weigh-the-risk
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.risk-and-reward, biz.profit]
+            kc_status: { biz.risk-and-reward: active, biz.profit: active }
+            new_concepts: [biz.risk-and-reward]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Liruf puts all 56 coins on the big batch because the best case looks great, then compares worst cases and starts with 3 bags
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.opportunity-cost.v2, reasoning.decide-justify.v2]
+            situation: "The team can risk 21 coins on a test batch of 3 bags (best case +9 coins, worst case -21) or 56 coins on 8 bags (best case +24, worst case -56), and weighs what it can afford to lose."
+            tests: "Weighing the worst case against the best case before deciding, a B.12 decide-and-justify step, and the mentor episode; risk is not shown as a thing to avoid."
+          - lesson_id: ent-1012-04-is-it-a-real-opportunity
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.opportunity-evaluation, biz.market-signals, biz.risk-and-reward]
+            kc_status: { biz.opportunity-evaluation: draft, biz.market-signals: draft, biz.risk-and-reward: active }
+            new_concepts: [biz.opportunity-evaluation]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, logic.rule-builder.v2, logic.flowchart.v2, reasoning.decide-justify.v2]   # rule-builder at level and/or
+            situation: "Four checks (200 students could buy, 1 snack bar competes, the team eats in that line itself, food could spoil) decide go, change or stop for a grab-and-go lunch bag."
+            tests: "Combining four checks into one rule (go if the market is big AND the team has an edge) and walking a go/change/stop flowchart, with the decision justified."
+      - chapter_id: ent-1012-first-version
+        title: { en-US: Build the first version, es-MX: Construye la primera versión, pt-BR: Construa a primeira versão }
+        objective: Choose the idea that helps most, shrink it to the smallest version that solves the problem, build it within a real budget and change it after the first customers speak.
+        external_prerequisites: [biz.make-and-test, money.simple-budget]
+        lessons:
+          - lesson_id: ent-1012-05-pick-the-best-idea
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.solution-ideas, biz.real-problems]
+            kc_status: { biz.solution-ideas: draft, biz.real-problems: draft }
+            new_concepts: [biz.solution-ideas]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.would-you-rather.v2, money.spend-decision.v2, reasoning.decide-justify.v2]
+            situation: "Three ideas for the long lunch line (pre-order slips, a second serving line, grab-and-go bags) are compared on first cost (20, 90 and 7 coins) and minutes saved (4, 8 and 6), and the team picks one and says why."
+            tests: "Re-taught at tween depth: comparing ideas on stated criteria and walking a decision tree to a reasoned choice (B.6, B.12)."
+          - lesson_id: ent-1012-06-the-smallest-version
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.mvp, biz.make-and-test, biz.opportunity-evaluation]
+            kc_status: { biz.mvp: draft, biz.make-and-test: draft, biz.opportunity-evaluation: draft }
+            new_concepts: [biz.mvp]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, logic.sort-by-rule.v2, logic.euler.v2, reasoning.decide-justify.v2]   # euler nesting: version 1 sits inside the full dream product
+            situation: "Eight possible features for the grab-and-go bag (sandwich, juice, napkin, sticker, name label, reusable box, coupon, music card) are sorted into the 3 that solve 'no time to eat' and the 5 that wait for version 2."
+            tests: "The smallest version that already solves the real problem, and saying what it leaves out for now; nested circles show version 1 inside the full idea."
+          - lesson_id: ent-1012-07-build-within-limits
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.build-within-constraints, biz.mvp, money.simple-budget]
+            kc_status: { biz.build-within-constraints: draft, biz.mvp: draft, money.simple-budget: active }
+            new_concepts: [biz.build-within-constraints]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Zara adds ribbon and printed labels first, runs out of coins before the handle, then cuts the extras and keeps the sandwich and the handle
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.allocation.v2, money.running-ledger.v2]   # allocation as a donut split of the 40 coins
+            situation: "The team has 40 coins, two weekends and only scissors, a stapler and tape to build 5 test bags at 7 coins each, so it cuts the printed labels and fancy ribbon and keeps the sandwich and the carry handle."
+            tests: "Planning a prototype inside a real budget (5 x 7 = 35 of 40 coins) and cutting extras without breaking the essential part; the mentor episode."
+          - lesson_id: ent-1012-08-first-customers-speak
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.customer-feedback, biz.make-and-test]
+            kc_status: { biz.customer-feedback: draft, biz.make-and-test: draft }
+            new_concepts: [biz.customer-feedback]
+            mentor: { character: liruf, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, visual.chart.v2, logic.sort-by-rule.v2]   # chart: bar of the 10 comments grouped by theme
+            situation: "After day one the bags get 10 comments (4 say the handle tears, 2 want more colors, 3 love the speed, 1 says too expensive), and the team picks the comment that changes the bag and plans how to check the change next day."
+            tests: "Re-taught at tween depth: sorting comments into change, keep and ignore, counting themes, and checking the change with a second round of feedback (B.6)."
+      - chapter_id: ent-1012-pitch-price-budget
+        title: { en-US: "Pitch it, price it, budget it", es-MX: "Preséntalo, ponle precio y presupuéstalo", pt-BR: "Apresente, precifique e planeje o orçamento" }
+        objective: Explain the product in three parts, tell cost from price, choose a price buyers accept and decide what to fund when the money does not cover everything.
+        external_prerequisites: [biz.profit, biz.what-is-price, money.percent-intro, money.simple-budget]
+        lessons:
+          - lesson_id: ent-1012-09-the-twenty-second-pitch
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.communicate-value, biz.solution-ideas]
+            kc_status: { biz.communicate-value: draft, biz.solution-ideas: draft }
+            new_concepts: [biz.communicate-value]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.rule-checker.v2, reasoning.decide-justify.v2]
+            situation: "The team writes a 20-second pitch and a poster for a new student that names who it is for (students in the last lunch slot), the problem (only 10 minutes to eat) and the proof (6 minutes saved)."
+            tests: "Re-taught at tween depth: a pitch with who, problem and proof, checked with a rule card and compared with a hype version (B.6)."
+          - lesson_id: ent-1012-10-cost-and-price-per-bag
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.cost-vs-price, biz.profit]
+            kc_status: { biz.cost-vs-price: active, biz.profit: active }
+            new_concepts: [biz.cost-vs-price]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.running-ledger.v2, visual.chart.v2]   # chart: stacked bar of the cost parts of one bag
+            situation: "A bag costs 7 coins to make (bag 3, food 3, label 1) and sells for 10, so 8 bags cost 56 coins and bring 80 coins, leaving 24 coins of profit."
+            tests: "Re-taught at tween depth: listing every cost before choosing a price and carrying cost per unit to a batch, with each worked step shown first (B.6)."
+          - lesson_id: ent-1012-11-choose-the-price
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.pricing-strategy, biz.cost-vs-price, biz.profit]
+            kc_status: { biz.pricing-strategy: active, biz.cost-vs-price: active, biz.profit: active }
+            new_concepts: [biz.pricing-strategy]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.market-stall.v2, visual.percent-grid.v2, reasoning.decide-justify.v2]
+            situation: "The team tests prices of 8, 10 and 12 coins against a cost of 7 coins a bag; it sells 10, 8 and 4 bags, so profits are 10, 24 and 20 coins and the middle price wins."
+            tests: "A price that covers cost, leaves a profit and buyers still accept, chosen from a three-day test and justified (B.12), with a percent-grid view of the markup."
+          - lesson_id: ent-1012-12-spend-what-you-have
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.budget-decisions, money.simple-budget, biz.profit]
+            kc_status: { biz.budget-decisions: active, money.simple-budget: active, biz.profit: active }
+            new_concepts: [biz.budget-decisions]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Rho funds the banner first because it looks good, then sees the bags cannot be restocked and ranks what the business needs first
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.allocation.v2, money.spend-decision.v2]
+            situation: "With 48 coins to spend the team ranks four needs (restock bags 30, sturdier handles 12, a banner 15, a team treat 10, 67 coins in all) and must choose what to fund."
+            tests: "Choosing what a small business spends on when it cannot pay for everything, ranking by what keeps the business running, with the mentor episode."
+
+  - pathway_id: entrepreneurship-13-17
+    age_band: "13-17"
+    chapters:
+      - chapter_id: ent-1317-prove-demand
+        title: { en-US: Prove people want it, es-MX: Demuestra que la gente lo quiere, pt-BR: Prove que as pessoas querem }
+        objective: Interview real customers, find the pattern in what they say, sell by helping them decide and count how many people each step of the sale keeps.
+        external_prerequisites: [biz.customer-feedback, biz.communicate-value, money.percent-intro]
+        lessons:
+          - lesson_id: ent-1317-01-ask-before-you-build
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.customer-interviews, biz.customer-feedback]
+            kc_status: { biz.customer-interviews: draft, biz.customer-feedback: draft }
+            new_concepts: [biz.customer-interviews]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.rule-checker.v2, reasoning.decide-justify.v2]   # rule-checker: open versus leading question cards
+            situation: "A teen planning a sneaker-cleaning service prepares 5 interviews with classmates who own white sneakers and rewrites 'Would you pay 25 coins?' into 'Tell me about the last time you cleaned your shoes'."
+            tests: "Open, non-leading questions checked card by card, and a live interview choice where the Mentor asks one question and steps back; the first teen lesson of the learner's own venture."
+          - lesson_id: ent-1317-02-one-comment-is-a-clue
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.evidence-from-customers, biz.customer-interviews]
+            kc_status: { biz.evidence-from-customers: draft, biz.customer-interviews: draft }
+            new_concepts: [biz.evidence-from-customers]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Zara builds a whole menu from one excited comment, then recounts the 8 interviews and says she will look for the pattern first
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart: pareto of the pain points named across the 8 interviews
+            situation: "Eight interviews give 5 who describe a cleaning kit that failed, 1 who says 'I would pay right now' and 2 who do not care, and the learner separates facts from opinions and finds the pattern."
+            tests: "One comment is a clue and 5 of 8 repeating is a pattern; facts versus opinions in the learner's own interview notes; the mentor episode; a pareto chart read."
+          - lesson_id: ent-1317-03-sell-by-asking
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.consultative-selling, biz.communicate-value]
+            kc_status: { biz.consultative-selling: draft, biz.communicate-value: draft }
+            new_concepts: [biz.consultative-selling]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, logic.flowchart.v2, reasoning.decide-justify.v2]   # flowchart: ask, connect, close with a next step
+            situation: "Before offering the 25-coin deep clean, the teen asks 3 questions (how often do you wear them, what went wrong before, what is the occasion), connects only the relevant part of the service and closes with a clear next step."
+            tests: "A sales conversation built on the customer's problem, a flowchart the learner builds (ask, connect, close), and a choice between pitching everything and pitching the relevant part."
+          - lesson_id: ent-1317-04-where-the-funnel-leaks
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.sales-funnel, biz.consultative-selling, money.percent-intro]
+            kc_status: { biz.sales-funnel: draft, biz.consultative-selling: draft, money.percent-intro: active }
+            new_concepts: [biz.sales-funnel]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # the channels teens really sell through (messaging apps, social pages, marketplaces) differ by market; amounts stay in coins
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, math.worked-example.v2, reasoning.decide-justify.v2]   # chart: funnel of 200 saw, 60 clicked, 18 messaged, 6 bought
+            situation: "Of 200 people who saw the offer post, 60 clicked, 18 messaged and 6 bought, so the conversions are 30%, 30% and 33% and the biggest loss (140 people) is between seeing and clicking."
+            tests: "Counting people at each stage, finding each conversion rate with a worked example, and fixing the stage that loses the most people; per-market channels."
+      - chapter_id: ent-1317-know-your-numbers
+        title: { en-US: Know your numbers, es-MX: Conoce tus números, pt-BR: Conheça seus números }
+        objective: Add up the full cost of one unit, find the margin, locate the break-even point and use all three to choose a price.
+        external_prerequisites: [biz.cost-vs-price, biz.profit, money.unit-price, money.percent-intro]
+        lessons:
+          - lesson_id: ent-1317-05-the-real-cost-of-one
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.full-costing, biz.cost-vs-price, money.unit-price]
+            kc_status: { biz.full-costing: draft, biz.cost-vs-price: active, money.unit-price: active }
+            new_concepts: [biz.full-costing]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, fin.cost-structure.v2, math.worked-example.v2, visual.chart.v2]   # chart: stacked bar of fixed share, variable, hidden and time per pair
+            situation: "A sneaker clean has 80 coins of fixed costs a month across 20 pairs (4 each), supplies 3, packaging 2, transport 4 and 6 coins for the teen's own half hour, so the real cost per pair is 19 coins."
+            tests: "Fixed, variable and hidden costs plus the value of the learner's own time summed into one real cost per unit (4 + 3 + 2 + 4 + 6 = 19)."
+          - lesson_id: ent-1317-06-how-much-is-kept
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.margin, biz.profit, money.percent-intro]
+            kc_status: { biz.margin: draft, biz.profit: active, money.percent-intro: active }
+            new_concepts: [biz.margin]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, fin.margin-markup.v2, money.running-ledger.v2, reasoning.decide-justify.v2]
+            situation: "At 25 coins with a cost of 19 the margin is 6 coins or 24% of the price, and a 4-coin discount to 21 cuts it to 2 coins, about 9.5%."
+            tests: "Margin in coins and as a percent of the price, margin versus markup on the same numbers, and how a discount shrinks margin faster than it looks."
+          - lesson_id: ent-1317-07-the-break-even-point
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.break-even, biz.full-costing, biz.margin]
+            kc_status: { biz.break-even: draft, biz.full-costing: draft, biz.margin: draft }
+            new_concepts: [biz.break-even]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Rho divides fixed costs by the whole price and promises 4 pairs, then uses the gap per pair and says he will check what each pair really leaves
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, fin.break-even.v2, visual.chart.v2]   # chart: line of cost against revenue crossing at the break-even
+            situation: "With 80 coins of monthly fixed costs, a price of 25 and 9 coins of variable cost per pair, each pair leaves 16, so the teen needs 5 pairs a month to break even and sees how a 100-coin tool moves that point."
+            tests: "Break-even as fixed costs divided by what each unit leaves (80 / 16 = 5), how price and fixed costs move it, and the mentor episode; a Horizonte fin.break-even piece."
+          - lesson_id: ent-1317-08-price-and-demand
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.pricing-strategy, biz.margin, biz.profit]
+            kc_status: { biz.pricing-strategy: active, biz.margin: draft, biz.profit: active }
+            new_concepts: [biz.pricing-strategy]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, econ.elasticity.v2, reasoning.decision-grid.v2, reasoning.decide-justify.v2]   # decision-grid: two-by-two of price against volume
+            situation: "The same service is tested at 20, 25 and 30 coins over three months with 24, 20 and 11 pairs sold, so with 9 coins of variable cost the totals are 264, 320 and 231 coins and 25 wins."
+            tests: "Re-taught at teen depth: choosing a price from a real test with margin and demand together, and saying what buyers accept (B.6); elasticity read from the learner's own numbers."
+      - chapter_id: ent-1317-negotiate-lead-honest
+        title: { en-US: "Negotiate, lead, stay honest", es-MX: "Negocia, lidera y sé honesto", pt-BR: "Negocie, lidere e seja honesto" }
+        objective: Negotiate a fair deal, persuade with real reasons, hand work over clearly and shape the culture of a first small team.
+        external_prerequisites: [life.advertising-literacy, biz.value-of-work]
+        lessons:
+          - lesson_id: ent-1317-09-a-deal-both-accept
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.negotiation, biz.margin, biz.consultative-selling]
+            kc_status: { biz.negotiation: draft, biz.margin: draft, biz.consultative-selling: draft }
+            new_concepts: [biz.negotiation]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # haggling and bulk-deal customs differ (tianguis, feira, flea market); amounts stay in coins
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, reasoning.decision-grid.v2, reasoning.decide-justify.v2]   # decision-grid: concessions cheap to me and valuable to them
+            situation: "A school club wants 10 pairs cleaned at 20 coins instead of 25, the teen's walk-away limit is 18, and she trades free pick-up and a 5-pair monthly commitment for 22 coins a pair."
+            tests: "Setting a limit before negotiating, finding what the other side really wants, trading low-cost concessions and saying no respectfully; per-market customs."
+          - lesson_id: ent-1317-10-persuade-without-tricks
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.ethical-persuasion, life.advertising-literacy, biz.consultative-selling]
+            kc_status: { biz.ethical-persuasion: draft, life.advertising-literacy: draft, biz.consultative-selling: draft }
+            new_concepts: [biz.ethical-persuasion]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # the platforms, review customs and advertising rules teens meet differ by market
+            segment_types: [voice.mentor-turn.v2, logic.scam-spotter.v2, story.branch.v2, reasoning.decide-justify.v2]
+            situation: "A promo page can say 'Only 2 spots left!' when 12 are open, show a made-up 5-star review or show a real before-and-after with 'spots fill on Fridays', and the learner picks the honest version and says why."
+            tests: "Telling persuasion with real reasons from fake urgency and invented reviews, spotting the manipulation cues in three drafts, and choosing the honest one; per-market examples."
+          - lesson_id: ent-1317-11-hand-it-over
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.delegation]
+            kc_status: { biz.delegation: draft }
+            new_concepts: [biz.delegation]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Zara hands the packing to a friend with no expected result, sees the late orders, and says what she will agree next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, plan.schedule-board.v2, visual.chart.v2]   # schedule-board: kanban of who owns what; chart: org-chart of the first team
+            situation: "The venture gets 12 requests a week and 2 helpers join, so the teen hands over packing with a clear result (10 pairs bagged by Friday 5 pm) and a Wednesday check-in, and keeps the customer messages."
+            tests: "Choosing what to hand over, to whom, with a clear expected result and agreed check-ins; a first team drawn as an org chart; the mentor episode."
+          - lesson_id: ent-1317-12-the-way-we-work
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.team-culture, biz.delegation]
+            kc_status: { biz.team-culture: draft, biz.delegation: draft }
+            new_concepts: [biz.team-culture]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart: ishikawa of why a mistake was hidden
+            situation: "A helper cleans a pair wrongly and hides it, and the team chooses between blame, a quiet fix and sharing the mistake, then sets three habits (a weekly 10-minute review, specific thanks, owning mistakes) that become its culture."
+            tests: "How habits, specific recognition, the handling of mistakes and the leader's example shape a culture; an ishikawa read of why the mistake was hidden; a story choice with no red wrong answer."
+
+  - pathway_id: entrepreneurship-adult
+    age_band: adult
+    chapters:
+      - chapter_id: ent-adult-real-business
+        title: { en-US: Is my business real?, es-MX: ¿Mi negocio es real?, pt-BR: Meu negócio é real? }
+        objective: Judge whether your own idea is a real opportunity, work out the jobs you need to break even, choose a price with evidence and join the pieces into one business model.
+        external_prerequisites: [biz.cost-vs-price, biz.revenue, biz.profit, biz.market-signals, biz.risk-and-reward, biz.full-costing, biz.margin, biz.mvp, biz.consultative-selling]
+        lessons:
+          - lesson_id: ent-adult-01-is-it-a-real-opportunity
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.opportunity-evaluation, biz.market-signals, biz.risk-and-reward]
+            kc_status: { biz.opportunity-evaluation: draft, biz.market-signals: draft, biz.risk-and-reward: active }
+            new_concepts: [biz.opportunity-evaluation]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # each market's own commuter, neighbourhood and competitor details; local currency
+            segment_types: [voice.mentor-turn.v2, reasoning.decision-grid.v2, visual.chart.v2, reasoning.decide-justify.v2]   # decision-grid: decision-matrix; chart: marimekko of market segments
+            situation: "An adult weighs a mobile bike-repair service on four checks (3,000 commuters in two neighbourhoods, 2 shops with 5-day waits, a certified mechanic as the advantage, rainy months as the risk) and decides go, change or stop."
+            tests: "Re-taught at adult depth: weighing market size, competition, own advantage and risk for the learner's own idea in a decision matrix, with the decision justified (B.6)."
+          - lesson_id: ent-adult-02-how-many-jobs-to-break-even
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.break-even, biz.full-costing, biz.margin]
+            kc_status: { biz.break-even: draft, biz.full-costing: draft, biz.margin: draft }
+            new_concepts: [biz.break-even]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # local currency, local tool and rent prices, and the loan or lease customs of each market (a general illustration, not advice)
+            segment_types: [voice.mentor-turn.v2, fin.break-even.v2, money.cash-flow.v2, math.worked-example.v2]
+            situation: "A mobile repair service with 3,000 a month of fixed costs, a price of 250 per job and 100 of variable cost per job needs 20 jobs to break even, and 24 jobs once a 600 monthly loan payment is added."
+            tests: "Re-taught at adult depth: break-even in local currency, how a new fixed cost moves it, and a cash-flow view of when the money actually arrives (B.6); a general illustration, never advice."
+          - lesson_id: ent-adult-03-the-price-you-can-defend
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.pricing-strategy, biz.margin, biz.profit]
+            kc_status: { biz.pricing-strategy: active, biz.margin: draft, biz.profit: active }
+            new_concepts: [biz.pricing-strategy]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # how each market prices a service call (flat fee, hourly, package); local currency
+            mentor_misjudgment: true   # B.11: Dina underprices to win the first clients, sees the margin vanish after costs, and says she will test three prices before she commits
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, fin.margin-markup.v2, econ.elasticity.v2, reasoning.decide-justify.v2]
+            situation: "The same service tried at 220, 250 and 290 per job sells 30, 26 and 17 jobs a month, so with 100 of variable cost the contribution is 3,600, 3,900 and 3,230 and 250 is the price to defend."
+            tests: "Re-taught at adult depth: choosing and defending a price from a real test with margin and elasticity together, and what happens to margin under a 10% discount (B.6); the mentor episode."
+          - lesson_id: ent-adult-04-the-whole-model-on-one-page
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.business-model, biz.pricing-strategy, biz.mvp]
+            kc_status: { biz.business-model: draft, biz.pricing-strategy: active, biz.mvp: draft }
+            new_concepts: [biz.business-model]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # the channels, partners and customer habits of each market
+            segment_types: [voice.mentor-turn.v2, reasoning.decision-grid.v2, logic.flowchart.v2, reasoning.decide-justify.v2]   # decision-grid: business-canvas
+            situation: "The mechanic joins problem (a 5-day wait), customer (commuters at 2 stations), product (a 45-minute on-site repair), price (250), channel (a messaging group and a station flyer) and team (one helper) into one page and finds the weakest link."
+            tests: "Problem, customer, product, price, channel and team connected into one coherent model on a business canvas, with the weakest link named and a change chosen."
+      - chapter_id: ent-adult-trusted-deals
+        title: { en-US: Deals you can trust, es-MX: Tratos en los que puedes confiar, pt-BR: Negócios em que você pode confiar }
+        objective: Spot the warning signs of a risky deal, check that an agreement says what matters, negotiate with a limit and protect the reputation that brings the next customer.
+        external_prerequisites: [life.scam-awareness, biz.margin, biz.consultative-selling, biz.customer-feedback]
+        lessons:
+          - lesson_id: ent-adult-05-warning-signs-in-a-deal
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.deal-red-flags, life.scam-awareness]
+            kc_status: { biz.deal-red-flags: draft, life.scam-awareness: draft }
+            new_concepts: [biz.deal-red-flags]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios   # the supplier pitches, payment channels and typical frauds each market actually meets
+            mentor_misjudgment: true   # B.11: Zara pays 100% up front for 'half-price parts', gets nothing, and says what she will ask for in writing first next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, logic.scam-spotter.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]
+            situation: "A supplier offers parts at half price, asks for 100% up front by transfer, has no invoice and changes the price after the call, and the learner marks the 4 warning signs and picks a safer counter-offer."
+            tests: "Warning signs of a risky deal (too good to be true, nothing in writing, full payment up front, a moving price) found in a message list and answered with a safer counter-offer; per-market examples."
+          - lesson_id: ent-adult-06-an-agreement-that-says-it
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.agreements, biz.deal-red-flags]
+            kc_status: { biz.agreements: draft, biz.deal-red-flags: draft }
+            new_concepts: [biz.agreements]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # how a small service agreement is usually written and signed in each market; a general checklist, not legal advice
+            segment_types: [voice.mentor-turn.v2, logic.rule-checker.v2, plan.schedule-board.v2, reasoning.decide-justify.v2]   # schedule-board: timeline of the 12 monthly visits
+            situation: "A work agreement with a company for 12 monthly visits at 2,400 in total is checked for what is delivered, when, for how much and what happens if someone does not comply, and the learner finds the 2 missing parts (delivery dates and late payment)."
+            tests: "A four-part check of an agreement (what, when, how much, what if not) on a short written text, and knowing when to ask a professional; no legal advice is given."
+          - lesson_id: ent-adult-07-negotiate-with-a-limit
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.negotiation, biz.margin, biz.consultative-selling]
+            kc_status: { biz.negotiation: draft, biz.margin: draft, biz.consultative-selling: draft }
+            new_concepts: [biz.negotiation]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # negotiation and discount customs differ by market (relationship-first, direct, list-price culture); local currency
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, reasoning.decision-grid.v2, math.worked-example.v2]   # decision-grid: concessions cheap to me and valuable to them
+            situation: "A fleet manager asks for 20% off 40 service jobs, the learner's walk-away limit is 160 per job (cost 100 plus time), and she trades payment in 15 days and fixed time blocks for a smaller discount and says no to the rest."
+            tests: "Re-taught at adult depth: a limit set before the talk, what the other side really wants, low-cost concessions traded for value, and a respectful no, with the margin effect worked out (B.6)."
+          - lesson_id: ent-adult-08-trust-after-a-bad-review
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.reputation, biz.customer-feedback]
+            kc_status: { biz.reputation: draft, biz.customer-feedback: draft }
+            new_concepts: [biz.reputation]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # the review sites and word-of-mouth habits each market really uses
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart: pareto of the causes behind complaints, or line of the rating over three months
+            situation: "A 2-star review says a repair 'never lasted', and the learner chooses between deleting it, arguing, or replying with thanks, facts and an offer to fix it, while the average rating moves from 4.6 to 4.7 over three months."
+            tests: "Reputation as the trust earned from past dealings, and a reply to criticism that protects it; a reply choice with a rubric per market, never a script to hide a real problem."
+      - chapter_id: ent-adult-lead-and-last
+        title: { en-US: Lead it and make it last, es-MX: Lidéralo y haz que dure, pt-BR: Lidere e faça durar }
+        objective: Settle a conflict inside the team, lead a growing business, say no to unethical requests and set a one-year vision that measures more than money.
+        external_prerequisites: [biz.delegation, biz.team-culture, biz.ethical-persuasion, biz.business-model]
+        lessons:
+          - lesson_id: ent-adult-09-two-sides-of-a-conflict
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.conflict-resolution, biz.team-culture]
+            kc_status: { biz.conflict-resolution: draft, biz.team-culture: draft }
+            new_concepts: [biz.conflict-resolution]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # workplace norms for raising a disagreement differ across the three markets
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.flowchart.v2, reasoning.decide-justify.v2]   # flowchart: hear both sides, name the interest, decide, repair
+            situation: "The helper and the mechanic disagree about who owned a missed appointment that cost one client, and they hear both sides, name the interest (a calendar everyone trusts), decide a shared calendar rule and repair trust."
+            tests: "Hearing both sides, addressing the problem and not the person, finding the interest behind the conflict, deciding and repairing; a dialogue path with no villain."
+          - lesson_id: ent-adult-10-growing-from-two-to-five
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.leading-growth, biz.delegation, biz.team-culture]
+            kc_status: { biz.leading-growth: draft, biz.delegation: draft, biz.team-culture: draft }
+            new_concepts: [biz.leading-growth]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # hiring and onboarding customs of each market (formal contracts, probation habits), described in general and without legal advice
+            mentor_misjudgment: true   # B.11: Dina keeps every decision at first, then names 3 roles and a first-week plan and says she will hand over a whole role next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, visual.chart.v2, plan.schedule-board.v2]   # chart: org-chart before and after growth; schedule-board: kanban of the first-week plan
+            situation: "The service grows from 2 to 5 people in six months, and the owner defines 3 roles, a first-week plan for new hires and a respectful response for a person whose role does not fit."
+            tests: "Clear roles, welcoming new people well, and responding respectfully when a role does not fit; org charts before and after growth; the mentor episode."
+          - lesson_id: ent-adult-11-three-requests-one-answer
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.business-ethics, biz.ethical-persuasion]
+            kc_status: { biz.business-ethics: draft, biz.ethical-persuasion: draft }
+            new_concepts: [biz.business-ethics]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios   # the consumer-protection and data-privacy expectations each market's customers hold, in general terms and not legal advice
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, reasoning.decision-grid.v2, reasoning.decide-justify.v2]
+            situation: "Three requests arrive in one week: inflate a repair estimate by 15% 'because insurance pays', share the customer phone list with a partner, and advertise a 'lifetime warranty' that lasts 6 months, and the learner says yes or no with a reason."
+            tests: "Fair treatment, honest claims, protecting customer data, noticing conflicts of interest and saying no to a request, each with a stated reason; no legal conclusions are drawn."
+          - lesson_id: ent-adult-12-the-year-ahead
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.long-term-vision, biz.business-model]
+            kc_status: { biz.long-term-vision: draft, biz.business-model: draft }
+            new_concepts: [biz.long-term-vision]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # local currency and each market's seasonal rhythm of work; an illustration, not a forecast
+            segment_types: [voice.mentor-turn.v2, plan.schedule-board.v2, money.cash-flow.v2, visual.chart.v2, reasoning.decide-justify.v2]   # schedule-board: twelve-month timeline; chart: bar of the success measures beyond money
+            situation: "A one-year plan sets a concrete goal (60 jobs a month by month 12), one thing to stop (discount-only clients), a contingency of 3 months of fixed costs (10,800 with 3,600 a month) and success measures beyond money (60% repeat customers, no weekend work)."
+            tests: "A concrete one-year goal, what to stop doing, a contingency plan and success measured beyond money, built on the learner's own business model."

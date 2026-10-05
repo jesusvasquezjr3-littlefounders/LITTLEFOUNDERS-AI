@@ -1,0 +1,241 @@
+# My First Lemonade Stand: v2 catalog structure (2026-10-04).
+#
+# The PROJECT course. One small venture runs through all four age pathways and
+# grows with the learner: a table with LittleFounders coins (6-9), a school-fair
+# stall with a budget (10-12), a first micro-business (13-17) and a weekend
+# market stall or small online side hustle (adult). The course owns no
+# knowledge component of its own: every lesson reuses KCs from
+# database/seeds/kc_graph.v1.json, applied to the stand.
+#
+# Shape: course -> age pathway -> chapter -> lesson. One chapter per pathway,
+# four lessons per chapter (the same pilot values the financial-education
+# structure uses). Plans (`plans/<lesson_id>.json`) are authored later from this
+# file, so `situation` and `tests` are written to be authored from.
+#
+# Prerequisite skills that another course teaches earlier in the same stage are
+# listed in the chapter's `external_prerequisites`. Each lesson still explains
+# its own situation, so a learner who starts here is not lost.
+#
+# The v1 lemonade course (counting coins, exact change, a fair price, needs vs
+# wants, saving what is left; Liruf, an 80-peso guitar, a 5-peso cup) is not
+# repeated. Every lesson here goes deeper or sideways (cost per cup, revenue vs
+# what is left, profit, a plan that survives a bad day, margin, break-even, a
+# floor price, records, reinvest or stop).
+
+course_id: first-lemonade-stand
+authoring_locale: es-MX
+markets: [es-MX, pt-BR, en-US]
+status: "catalog-structure-v1 (2026-10-04): planned, plans not yet authored"
+
+assumptions:
+  - "One chapter of four lessons per pathway (16 lessons) is a catalog-structure value, not a spec value; the first authored round decides whether it holds."
+  - "The same venture grows with the learner, but each pathway restarts from its own opening scene, so a learner may begin the course at any stage."
+  - "Skills that other courses teach earlier in the same stage (coin counting, change, budgets, unit price, saving plans, advertising literacy, consultative selling) are external prerequisites; the lemonade lessons revisit them without teaching them."
+  - "A KC may be a new concept here at a greater depth than in a younger pathway (B.6): profit, revenue and cost-vs-price recur in 10-12, and full costing, margin, break-even and negotiation recur in the adult pathway."
+  - "Under 18 the stand uses LittleFounders coins or invented shop prices; money amounts, shops, platforms and customs are market-specific (scenarios) only where a real price changes the answer."
+  - "Adult lessons name no tax, permit or legal rule and give no personal financial advice; the weekend stall and the online side hustle are worked examples with illustrative numbers."
+  - "Mentors rotate across the course. Liruf, the youngest voice, appears only in 6-12; 13-17 and adult lessons use rho, zara or dina and the Mentor steps back."
+  - "Segment types follow the Horizonte per-type age scopes, not only the open list of v2:brief: market-stall is 7-12 only, coin-tray is 6-9 only, break-even, cost-structure and margin-markup are 12-17 and adult, and the concept boards other than the lemonade stand and opportunity cost are 13+."
+
+pathways:
+  - pathway_id: lemonade-6-9
+    age_band: "6-9"
+    chapters:
+      - chapter_id: lem-69-open-the-stand
+        title: { en-US: Open the stand, es-MX: Abre tu puesto, pt-BR: Abra a sua banca }
+        objective: Set up a lemonade table with a price tag, count what customers paid, price a cup so the stand does not lose money, and see what is left at the end of the day.
+        external_prerequisites: [biz.needs-vs-wants, money.coin-recognition, money.count-like-coins, money.count-mixed-coins, money.make-amount, money.add-money, money.subtract-money, money.make-change-counting-up]
+        lessons:
+          - lesson_id: lem-69-01-set-up-the-table
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [biz.what-is-price, biz.goods-vs-services]
+            kc_status: { biz.what-is-price: active, biz.goods-vs-services: active }
+            new_concepts: [biz.what-is-price, biz.goods-vs-services]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal   # LittleFounders coins only
+            segment_types: [voice.mentor-turn.v2, logic.sort-by-rule.v2, money.coin-tray.v2, story.branch.v2]
+            situation: "Two cousins set a table in front of the house with a jug, ten cups and a card that says one cup of lemonade costs 3 coins, and they sort what they hand over (a cup, a straw) from what they do for the customer (pour, carry it to the shade)."
+            tests: "A price as the coins a customer gives for one thing, and things sold versus help given, with the tightest 12-word prompts and no arithmetic beyond reading one price tag."
+          - lesson_id: lem-69-02-count-the-cash-box
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [biz.revenue, money.make-change-counting-up, money.count-mixed-coins]
+            kc_status: { biz.revenue: active, money.make-change-counting-up: active, money.count-mixed-coins: active }
+            new_concepts: [biz.revenue]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2, money.making-change.v2, money.coin-stack.v2]
+            situation: "After the morning rush the cash box holds two 5-coin pieces, four 2-coin pieces and three 1-coin pieces (21 coins) and the stand began with 6 coins of its own, so the 15 coins customers paid are the 5 cups sold at 3 coins; one customer paid 5 coins for a 3-coin cup and got 2 coins back."
+            tests: "The money customers paid in (revenue) told apart from the coins that were already in the box, using one cash-box count and one change-giving step."
+          - lesson_id: lem-69-03-a-fair-price-for-a-cup
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [biz.cost-vs-price, biz.what-is-price]
+            kc_status: { biz.cost-vs-price: active, biz.what-is-price: active }
+            new_concepts: [biz.cost-vs-price]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # Liruf prices a cup at 1 coin because it feels friendly, counts the stack, sees every cup loses a coin, and says what he will do next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.coin-stack.v2, story.dialogue-choice.v2]
+            situation: "One cup costs the stand 2 coins to make (lemon, sugar, water, the cup itself); Liruf first prices it at 1 coin to be friendly, then stacks the coins and sees each cup loses a coin, and the children choose between 2, 3 and 6 coins as the price."
+            tests: "A price set from what one cup costs to make, with a Mentor who underprices first and recovers, and a choice explained in one sentence."
+          - lesson_id: lem-69-04-spent-and-left
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [biz.profit, money.subtract-money]
+            kc_status: { biz.profit: active, money.subtract-money: active }
+            new_concepts: [biz.profit]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.coin-stack.v2, money.lemonade-stand.v2, reasoning.decide-justify.v2]
+            situation: "Supplies for 8 cups cost 16 coins and only 6 cups sell at 3 coins, so 18 coins come in and 2 are left, while making just 6 cups would have left 6; the children use the stand board to pick how many cups to make and reach a day that leaves at least 6."
+            tests: "What is left after spending (coins in minus coins spent) read from a running ledger and a waterfall, and unsold cups as a cost the day still pays."
+  - pathway_id: lemonade-10-12
+    age_band: "10-12"
+    chapters:
+      - chapter_id: lem-1012-school-fair-stall
+        title: { en-US: The school-fair stall, es-MX: El puesto de la feria escolar, pt-BR: A banca da feira da escola }
+        objective: Run a school-fair stall on a budget, from the real cost of one cup to profit, a saving goal and a plan that survives a bad day.
+        external_prerequisites: [biz.what-is-price, money.add-money, money.subtract-money, money.estimate-total, money.simple-budget, money.unit-price, biz.saving-goal, money.savings-plan-math, life.wants-and-choices]
+        lessons:
+          - lesson_id: lem-1012-01-jar-to-cup-cost
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.cost-vs-price, money.unit-price, money.estimate-total]
+            kc_status: { biz.cost-vs-price: active, money.unit-price: active, money.estimate-total: active }
+            new_concepts: [biz.cost-vs-price]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # each market's own shop items and prices, per-market answer keys
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, money.unit-price.v2, money.running-ledger.v2]
+            situation: "For the class fair stall a bag of 20 cups costs 20, a bottle of lemon concentrate costs 24 and makes 12 cups, and a bag of sugar costs 18 and sweetens 18 cups, so one cup costs 1 + 2 + 1 = 4 and the price per jar or bottle becomes a price per cup."
+            tests: "Turning the price of a pack into the cost of one cup and adding the parts into a cost per cup, with each market's own shop prices and answer keys."
+          - lesson_id: lem-1012-02-fair-day-profit
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [biz.profit, biz.revenue, biz.cost-vs-price]
+            kc_status: { biz.profit: active, biz.revenue: active, biz.cost-vs-price: active }
+            new_concepts: [biz.revenue, biz.profit]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # Liruf calls the whole cash box his profit, then subtracts what the fair cost and says what he will check next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.market-stall.v2, money.lemonade-stand.v2, reasoning.decide-justify.v2]
+            situation: "At the school fair the stall sells 25 cups at 6 coins (150 coins in) after spending 100 on supplies and 20 on the table fee, so the profit is 150 - 120 = 30 coins, not the 150 Liruf first announces."
+            tests: "Revenue and profit kept apart on one stall day (price times cups, minus every cost), with a decide-and-justify step on whether the day was worth it."
+          - lesson_id: lem-1012-03-goal-and-plan
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.goal-planning, biz.saving-goal, money.savings-plan-math]
+            kc_status: { life.goal-planning: draft, biz.saving-goal: active, money.savings-plan-math: active }
+            new_concepts: [life.goal-planning]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.goal-bullet.v2, visual.savings-line.v2]
+            situation: "The stall saves its 30-coin profit per fair day toward a 150-coin portable cooler for next year, so the plan is 5 fair days, shown as a goal bar and a savings line with a target after each day."
+            tests: "A goal turned into a written plan with a target per step, read on a goal bar and a savings line, with the saving arithmetic already shown before it is asked."
+          - lesson_id: lem-1012-04-bad-day-good-day
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [biz.risk-and-reward, life.review-and-adjust-plan, biz.profit]
+            kc_status: { biz.risk-and-reward: active, life.review-and-adjust-plan: draft, biz.profit: active }
+            new_concepts: [biz.risk-and-reward, life.review-and-adjust-plan]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, stats.dot-plot.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]
+            situation: "Over six fair days the stall's profits are 30, 34, -12 (rain), 31, 58 (heat) and 29, so one wet day pushes the 150-coin cooler goal from 5 days to 6 and the team decides to halve the batch when rain is forecast."
+            tests: "Day-to-day variation read from a dot plot as the risk and reward of a stall, and a saving plan adjusted after a bad day without dropping the goal."
+  - pathway_id: lemonade-13-17
+    age_band: "13-17"
+    chapters:
+      - chapter_id: lem-1317-first-micro-business
+        title: { en-US: My first micro-business, es-MX: Mi primer microemprendimiento, pt-BR: Meu primeiro microempreendimento }
+        objective: Cost, price and sell homemade snacks at school events as a first micro-business, from the full cost of one item to margin, break-even and a customer who haggles.
+        external_prerequisites: [biz.cost-vs-price, biz.profit, money.unit-price, money.percent-intro, biz.make-and-test, biz.customer-feedback, biz.consultative-selling, life.advertising-literacy]   # biz.customer-feedback, biz.make-and-test and life.advertising-literacy are draft
+        lessons:
+          - lesson_id: lem-1317-01-true-cost-of-a-muffin
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.full-costing, biz.cost-vs-price, money.unit-price]
+            kc_status: { biz.full-costing: draft, biz.cost-vs-price: active, money.unit-price: active }
+            new_concepts: [biz.full-costing]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # real ingredient, packaging and energy prices in each market's own currency
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, fin.cost-structure.v2, money.running-ledger.v2]
+            situation: "Before a school bake sale a student prices 30 homemade banana muffins: 150 of ingredients, 30 of bags and labels, 15 for the share of oven energy and 75 for baking and packing time at a minimum hourly rate, so the full cost is 270 or 9 per muffin, not the 5 the ingredients alone suggest."
+            tests: "Every cost in one batch (materials, packaging, energy, own time) summed into a full cost per item, with each market's own prices and an hourly value the student chooses and justifies."
+          - lesson_id: lem-1317-02-price-and-margin
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.margin, biz.pricing-strategy, biz.customer-feedback]
+            kc_status: { biz.margin: draft, biz.pricing-strategy: active, biz.customer-feedback: draft }
+            new_concepts: [biz.margin, biz.pricing-strategy]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # a competing stall's real price differs in each market
+            mentor_misjudgment: true   # Zara copies the neighbouring stall's lower price without checking her own margin, sees the thin result, and says what she will check next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, fin.margin-markup.v2, econ.elasticity.v2, reasoning.decide-justify.v2]
+            situation: "With a full cost of 9 per muffin, selling at 15 leaves a margin of 6 (40% of the price), the neighbouring stall sells at 12, and first-batch buyers say the muffins are good but a little pricey, so the student compares prices of 12, 15 and 18 (margins of 3, 6 and 9) against expected buyers."
+            tests: "Margin as a share of price and a price chosen from margin, a rival's price and first customer comments, not copied from a rival."
+          - lesson_id: lem-1317-03-break-even-night
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.break-even, biz.margin, biz.full-costing]
+            kc_status: { biz.break-even: draft, biz.margin: draft, biz.full-costing: draft }
+            new_concepts: [biz.break-even]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # table fees and equipment prices differ by market
+            segment_types: [voice.mentor-turn.v2, fin.break-even.v2, money.cash-flow.v2, reasoning.decision-grid.v2]
+            situation: "A talent-night stall must pay 450 up front for a table fee, a warming box and a banner, each muffin has a full cost of 9 and sells for 15, so the margin of 6 per muffin means 75 muffins to break even against about 120 guests, and the student decides whether to book the table."
+            tests: "Break-even as fixed costs divided by margin per item, read from a break-even chart, and a go or no-go decision against the expected audience."
+          - lesson_id: lem-1317-04-the-haggling-customer
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [biz.negotiation, biz.ethical-persuasion, biz.margin]
+            kc_status: { biz.negotiation: draft, biz.ethical-persuasion: draft, biz.margin: draft }
+            new_concepts: [biz.negotiation, biz.ethical-persuasion]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # school-trip orders and the claims a poster may make differ by market
+            segment_types: [voice.mentor-turn.v2, story.dialogue-choice.v2, logic.flowchart.v2, reasoning.decide-justify.v2]
+            situation: "A teacher planning a school trip asks for 40 muffins and wants 20% off the 15 price, so the student works out a floor price of 11 (the 9 cost plus a minimum margin of 2), offers 13 each for payment in advance, and refuses to put 'preservative-free' on the poster because it is not true."
+            tests: "A floor price set from margin before the haggling starts, a counter-offer that trades something for the discount, and a marketing claim checked against the facts."
+  - pathway_id: lemonade-adult
+    age_band: adult
+    chapters:
+      - chapter_id: lem-adult-weekend-stall
+        title: { en-US: The weekend stall, es-MX: El puesto de fin de semana, pt-BR: A banca de fim de semana }
+        objective: Run a weekend market stall or a small online side hustle on its real numbers, from all-in costs and a floor price to break-even, records and the decision to reinvest or stop.
+        external_prerequisites: [biz.cost-vs-price, biz.revenue, biz.profit, money.unit-price, money.percent-intro, money.add-money, biz.consultative-selling, life.wants-and-choices, life.track-earnings]   # life.track-earnings and life.wants-and-choices are draft
+        lessons:
+          - lesson_id: lem-adult-01-all-in-costs
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.full-costing, life.recurring-costs, money.unit-price]
+            kc_status: { biz.full-costing: draft, life.recurring-costs: draft, money.unit-price: active }
+            new_concepts: [biz.full-costing, life.recurring-costs]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # es-MX market stall (tianguis), pt-BR craft fair (feirinha), en-US farmers market; each with its own fees, jar and ingredient prices
+            segment_types: [voice.mentor-turn.v2, fin.cost-structure.v2, money.unit-price.v2, money.cash-flow.v2]
+            situation: "A weekend seller of hand-poured candles pays a pitch fee every Saturday, a monthly phone and listing plan for online orders, jars and wax per batch and travel, and the all-in cost of one candle is 40% higher than the materials alone because of the recurring costs."
+            tests: "All-in cost per unit for a stall and an online listing side by side, separating costs that repeat every weekend from costs that scale with each item."
+          - lesson_id: lem-adult-02-floor-price-and-margin
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.margin, biz.pricing-strategy, biz.negotiation]
+            kc_status: { biz.margin: draft, biz.pricing-strategy: active, biz.negotiation: draft }
+            new_concepts: [biz.margin, biz.pricing-strategy, biz.negotiation]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # what a comparable item sells for, and how haggling goes, differs in each market
+            segment_types: [voice.mentor-turn.v2, fin.margin-markup.v2, econ.market-shift.v2, story.dialogue-choice.v2]
+            situation: "A candle with an all-in cost of 70 listed at 120 has a margin of 50 (about 42% of the price), a market customer at 4 pm asks for three candles for the price of two, and the seller works out the floor price below which a sale loses money before answering."
+            tests: "Margin and a floor price worked out before a negotiation, a counter-offer that keeps the floor, and how the price moves when the market shifts."
+          - lesson_id: lem-adult-03-break-even-and-records
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.break-even, life.track-earnings, biz.margin]
+            kc_status: { biz.break-even: draft, life.track-earnings: draft, biz.margin: draft }
+            new_concepts: [biz.break-even]
+            mentor: { character: dina, scene: diorama-a }
+            regional: scenarios   # pitch fees and platform fees differ in each market
+            segment_types: [voice.mentor-turn.v2, fin.break-even.v2, money.running-ledger.v2, visual.chart.v2]
+            situation: "Eight weekends of notebook records show a fixed cost of 700 per weekend and a margin of 50 per candle, so 14 candles break even, and the weekly line shows weekends 3 and 6 below it because of rain and a clash with a local festival."
+            tests: "Break-even read from the seller's own weekly records, and what a simple ledger must contain to answer it, with no tax or legal rule involved."
+          - lesson_id: lem-adult-04-reinvest-or-stop
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [biz.risk-and-reward, life.opportunity-cost, biz.budget-decisions]
+            kc_status: { biz.risk-and-reward: active, life.opportunity-cost: draft, biz.budget-decisions: active }
+            new_concepts: [biz.risk-and-reward, life.opportunity-cost]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # what extra shifts or a larger pitch would cost differs in each market
+            mentor_misjudgment: true   # Dina puts the whole profit into a bigger pitch after one good weekend, sees the next quiet weekend, and says what she will check next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, reasoning.decision-grid.v2, money.opportunity-cost.v2, reasoning.decide-justify.v2]
+            situation: "After eight weekends the side hustle has earned 1,200 in profit for about 64 hours, a double pitch would cost 600 more per weekend, and the seller compares reinvesting, keeping the stall as it is and stopping, counting the other uses of those Saturdays."
+            tests: "A reinvest-or-stop decision made from profit per hour, a loss the seller can afford and what the same weekends could earn elsewhere, with no promised return."
+
+counts:
+  pathways: 4
+  chapters: 4
+  lessons: 16

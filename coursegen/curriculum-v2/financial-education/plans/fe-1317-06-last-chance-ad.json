@@ -1,0 +1,1291 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-eyes-open",
+  "lesson_id": "fe-1317-06-last-chance-ad",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.advertising-literacy",
+    "life.think-before-buying"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina cuenta cómo compró una chamarra por un anuncio de último momento y después enseña a leer lo que ese anuncio omitió: quién pagó, cuántas piezas quedan de verdad y el precio de siempre. Quien aprende ordena lo que un anuncio muestra y lo que deja fuera, y aplica una espera de 24 horas antes de comprar algo de más de 20.",
+  "title": {
+    "es-MX": "El anuncio de última hora",
+    "en-US": "The last-chance ad",
+    "pt-BR": "O anúncio de última hora"
+  },
+  "new_concepts": [
+    "life.advertising-literacy",
+    "life.think-before-buying"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina sees a creator's video that says last 5 left, 30% off, code ends tonight, and buys the 60 jacket at once without asking what the ad leaves out.",
+    "recovery": "Dina lists what the ad left out (who paid for it, how many really remain, the usual price) and sets a 24-hour wait before any purchase over 20."
+  },
+  "regional": {
+    "universal": "The lesson uses plain amounts with no currency, shop, brand or custom of any market, so no market changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En un video, un creador muestra una chamarra de 60: quedan 5, 30% de descuento, el código vence hoy.",
+          "line": "Vi este video el mes pasado. Mi dedo ya estaba sobre Comprar."
+        },
+        "en-US": {
+          "prompt": "A creator’s video shows a 60 jacket: last 5 left, 30% off, code ends tonight.",
+          "line": "I watched this one last month. My thumb was already over Buy."
+        },
+        "pt-BR": {
+          "prompt": "Um vídeo de criador de conteúdo mostra uma jaqueta de 60: restam 5, 30% de desconto, código vence hoje.",
+          "line": "Vi este vídeo no mês passado. Meu dedo já estava sobre Comprar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "start": "q-plan",
+        "nodes": [
+          {
+            "id": "q-plan",
+            "kind": "question",
+            "yes": "q-money",
+            "no": "out-think"
+          },
+          {
+            "id": "q-money",
+            "kind": "question",
+            "yes": "out-buy",
+            "no": "out-save"
+          },
+          {
+            "id": "out-think",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-buy",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-save",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-hoodie"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-hoodie": [
+            "q-plan",
+            "out-think"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un video hizo que quisieras una sudadera. Sigue el diagrama hasta su resultado.",
+          "feedback": {
+            "met": "Gracias. Ahora Dina enseña cómo lee un anuncio.",
+            "not_yet": "Gracias. Ahora Dina enseña cómo lee un anuncio."
+          },
+          "nodes": [
+            {
+              "label": "¿Lo planeé antes del video?"
+            },
+            {
+              "label": "¿Ya tengo el dinero apartado?"
+            },
+            {
+              "label": "Pensarlo primero"
+            },
+            {
+              "label": "Comprarlo"
+            },
+            {
+              "label": "Ahorrar para comprarlo"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Sudadera de 40 no planeada"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A video made you want a hoodie. Follow the chart to its outcome.",
+          "feedback": {
+            "met": "Thanks. Now Dina shows how she reads an ad.",
+            "not_yet": "Thanks. Now Dina shows how she reads an ad."
+          },
+          "nodes": [
+            {
+              "label": "Did I plan this before the video?"
+            },
+            {
+              "label": "Is the money already set aside?"
+            },
+            {
+              "label": "Think it over first"
+            },
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Save for it first"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Unplanned 40 hoodie"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um vídeo fez você querer um moletom. Siga o fluxograma até o resultado.",
+          "feedback": {
+            "met": "Certo. Agora a Dina mostra como lê um anúncio.",
+            "not_yet": "Certo. Agora a Dina mostra como lê um anúncio."
+          },
+          "nodes": [
+            {
+              "label": "Eu planejei isso antes do vídeo?"
+            },
+            {
+              "label": "O dinheiro já está separado?"
+            },
+            {
+              "label": "Pensar primeiro"
+            },
+            {
+              "label": "Comprar"
+            },
+            {
+              "label": "Juntar para comprar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Moletom de 40 sem plano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira lo que hizo Dina con este video.",
+          "setup": "Quise esa chamarra en cuanto la vi.",
+          "misjudgment": "Pagué 42 en menos de un minuto y no cuestioné nada del anuncio.",
+          "recovery": "Omitió quién pagó, cuántas quedan y el precio de siempre. Ahora espero un día antes."
+        },
+        "en-US": {
+          "prompt": "See what Dina did with this video.",
+          "setup": "I wanted that jacket the moment I saw it.",
+          "misjudgment": "I paid 42 within a minute and asked nothing about the ad.",
+          "recovery": "It left out who paid, how many remain, the usual price. Now I wait a day first."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que a Dina fez com este vídeo.",
+          "setup": "Quis aquela jaqueta assim que a vi.",
+          "misjudgment": "Paguei 42 em menos de um minuto e não questionei nada no anúncio.",
+          "recovery": "Ele omitiu quem pagou, quantas restam e o preço de sempre. Agora espero um dia antes."
+        }
+      }
+    },
+    {
+      "id": "ex-paid-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: Dina revisa quién pagó por el video.",
+          "line": "Patrocinado significa que la marca le pagó al creador. Por eso el video muestra lo que vende."
+        },
+        "en-US": {
+          "prompt": "Step 1: Dina checks who paid for the video.",
+          "line": "Sponsored means the brand paid the creator. So the video shows what sells."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a Dina confere quem pagou pelo vídeo.",
+          "line": "Patrocinado quer dizer que a marca pagou o criador. Por isso o vídeo mostra o que vende."
+        }
+      }
+    },
+    {
+      "id": "ex-usual-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: Dina busca el precio de siempre: esta chamarra costó 45 todo el mes.",
+          "line": "30% menos en 60 son 18, o sea 42. Contra los 45 de siempre, ahorro 3."
+        },
+        "en-US": {
+          "prompt": "Step 2: Dina finds the usual price: this jacket was 45 all month.",
+          "line": "30% off 60 is 18 off, so 42. Against the usual 45, I save 3."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Dina busca o preço de sempre: esta jaqueta custou 45 o mês inteiro.",
+          "line": "30% de desconto em 60 são 18, ou seja, 42. Contra os 45 de sempre, economizo 3."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.advertising-literacy",
+      "payload": {
+        "pieces": [
+          "usual-price",
+          "who-paid",
+          "fabric",
+          "clock",
+          "face",
+          "camera"
+        ],
+        "points": [
+          [
+            2,
+            8
+          ],
+          [
+            4,
+            7
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            7,
+            2
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "usual-price",
+              "who-paid"
+            ],
+            "top-right": [
+              "fabric"
+            ],
+            "bottom-left": [
+              "camera"
+            ],
+            "bottom-right": [
+              "clock",
+              "face"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ordena cada pieza del anuncio de la chamarra: ¿se muestra y ayuda a decidir?",
+          "feedback": {
+            "met": "Ordenaste por lo que el anuncio muestra y lo que ayuda.",
+            "not_yet": "Aún no. Lee cada punto frente a los dos ejes."
+          },
+          "help": [
+            "Izquierda es lo que el anuncio omite. Arriba es lo que ayuda a decidir."
+          ],
+          "labels": {
+            "x-name": "¿El anuncio lo muestra?",
+            "y-name": "¿Ayuda a decidir?",
+            "x-low": "Omitido",
+            "x-high": "Mostrado",
+            "y-low": "Poco",
+            "y-high": "Mucho",
+            "usual-price": "El precio de siempre de la chamarra",
+            "who-paid": "Quién pagó por el video",
+            "fabric": "Tela y tallas en pantalla",
+            "clock": "El reloj de cuenta regresiva",
+            "face": "La cara famosa del creador",
+            "camera": "La cámara con que se grabó"
+          }
+        },
+        "en-US": {
+          "prompt": "Sort each piece of the jacket ad: is it shown, and does it help you decide?",
+          "feedback": {
+            "met": "You sorted by what the ad shows and what helps.",
+            "not_yet": "Not yet. Read each dot against both axes."
+          },
+          "help": [
+            "Left means the ad leaves it out. Top means it helps your decision."
+          ],
+          "labels": {
+            "x-name": "Does the ad show it?",
+            "y-name": "Does it help you decide?",
+            "x-low": "Left out",
+            "x-high": "Shown",
+            "y-low": "Little",
+            "y-high": "A lot",
+            "usual-price": "The jacket’s usual price",
+            "who-paid": "Who paid for the video",
+            "fabric": "Fabric and sizes on screen",
+            "clock": "The countdown clock",
+            "face": "The creator’s famous face",
+            "camera": "The camera used to film"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordene cada peça do anúncio da jaqueta: ela aparece e ajuda a decidir?",
+          "feedback": {
+            "met": "Você ordenou pelo que o anúncio mostra e pelo que ajuda.",
+            "not_yet": "Ainda não. Leia cada ponto contra os dois eixos."
+          },
+          "help": [
+            "Esquerda é o que o anúncio omite. Em cima é o que ajuda a decidir."
+          ],
+          "labels": {
+            "x-name": "O anúncio mostra?",
+            "y-name": "Ajuda a decidir?",
+            "x-low": "Omitido",
+            "x-high": "Mostrado",
+            "y-low": "Pouco",
+            "y-high": "Muito",
+            "usual-price": "O preço de sempre da jaqueta",
+            "who-paid": "Quem pagou pelo vídeo",
+            "fabric": "Tecido e tamanhos na tela",
+            "clock": "O relógio de contagem regressiva",
+            "face": "O rosto famoso do criador",
+            "camera": "A câmera usada na gravação"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-count-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: una semana después, el video sigue diciendo que quedan 5.",
+          "line": "Decir que quedan 5 no cuesta nada y es difícil de comprobar. Lo trato como presión."
+        },
+        "en-US": {
+          "prompt": "Step 3: a week later, the video still says last 5 left.",
+          "line": "Last 5 costs nothing to type and is hard to check. I treat it as pressure."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: uma semana depois, o vídeo ainda diz que restam 5.",
+          "line": "Dizer que restam 5 não custa nada e é difícil de conferir. Trato isso como pressão."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.advertising-literacy",
+      "payload": {
+        "pieces": [
+          "real-stock",
+          "last-month",
+          "sponsor",
+          "sizes",
+          "label",
+          "timer",
+          "editor"
+        ],
+        "points": [
+          [
+            3,
+            9
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            4,
+            8
+          ],
+          [
+            9,
+            8
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            2,
+            2
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "real-stock",
+              "last-month",
+              "sponsor"
+            ],
+            "top-right": [
+              "sizes"
+            ],
+            "bottom-left": [
+              "editor"
+            ],
+            "bottom-right": [
+              "label",
+              "timer"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ordena cada pieza de la historia de la sudadera: ¿se muestra y ayuda a decidir?",
+          "feedback": {
+            "met": "Colocaste cada pieza por lo que se muestra y lo que ayuda.",
+            "not_yet": "Aún no. Pregunta de cada punto: ¿se muestra y me ayuda a decidir?"
+          },
+          "help": [
+            "Piensa qué te diría cada pieza y luego si la historia de verdad la muestra."
+          ],
+          "labels": {
+            "x-name": "¿El anuncio lo muestra?",
+            "y-name": "¿Ayuda a decidir?",
+            "x-low": "Omitido",
+            "x-high": "Mostrado",
+            "y-low": "Poco",
+            "y-high": "Mucho",
+            "real-stock": "Cuántas quedan de verdad",
+            "last-month": "El precio de la sudadera el mes pasado",
+            "sponsor": "Quién pagó por esta historia",
+            "sizes": "La tabla de tallas mostrada",
+            "label": "La etiqueta que dice quedan 3",
+            "timer": "El reloj de oferta de dos horas",
+            "editor": "Qué app editó el video"
+          }
+        },
+        "en-US": {
+          "prompt": "Sort each piece of a hoodie ad in a creator’s story: is it shown, and does it help you decide?",
+          "feedback": {
+            "met": "You placed each piece by what is shown and what helps.",
+            "not_yet": "Not yet. Ask: is it shown, and does it help?"
+          },
+          "help": [
+            "Ask what a piece would tell you, then whether the story actually shows it."
+          ],
+          "labels": {
+            "x-name": "Does the ad show it?",
+            "y-name": "Does it help you decide?",
+            "x-low": "Left out",
+            "x-high": "Shown",
+            "y-low": "Little",
+            "y-high": "A lot",
+            "real-stock": "How many are really left",
+            "last-month": "The hoodie’s price last month",
+            "sponsor": "Who paid for this story",
+            "sizes": "The size chart shown",
+            "label": "The label saying 3 left",
+            "timer": "The two-hour sale timer",
+            "editor": "Which app edited the video"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordene cada peça do story do moletom: ela aparece e ajuda a decidir?",
+          "feedback": {
+            "met": "Você colocou cada peça pelo que aparece e pelo que ajuda.",
+            "not_yet": "Ainda não. Pergunte de cada ponto: aparece e me ajuda a decidir?"
+          },
+          "help": [
+            "Pense no que cada peça diria e depois se o story de fato a mostra."
+          ],
+          "labels": {
+            "x-name": "O anúncio mostra?",
+            "y-name": "Ajuda a decidir?",
+            "x-low": "Omitido",
+            "x-high": "Mostrado",
+            "y-low": "Pouco",
+            "y-high": "Muito",
+            "real-stock": "Quantas restam de verdade",
+            "last-month": "O preço do moletom no mês passado",
+            "sponsor": "Quem pagou por este story",
+            "sizes": "A tabela de tamanhos mostrada",
+            "label": "A etiqueta que diz restam 3",
+            "timer": "O cronômetro de oferta de duas horas",
+            "editor": "Qual app editou o vídeo"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-wait-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: en toda compra de más de 20, Dina espera 24 horas.",
+          "line": "Un día después pregunto: ¿todavía lo quiero? Si no, el anuncio quería por mí."
+        },
+        "en-US": {
+          "prompt": "Step 4: for any purchase over 20, Dina waits 24 hours first.",
+          "line": "A day later I ask: do I still want it? If not, the ad did the wanting."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: em toda compra acima de 20, a Dina espera 24 horas.",
+          "line": "Um dia depois pergunto: ainda quero? Se não, foi o anúncio que quis por mim."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "start": "q-over",
+        "nodes": [
+          {
+            "id": "q-over",
+            "kind": "question",
+            "yes": "q-wait",
+            "no": "out-fine"
+          },
+          {
+            "id": "q-wait",
+            "kind": "question",
+            "yes": "q-want",
+            "no": "out-wait"
+          },
+          {
+            "id": "q-want",
+            "kind": "question",
+            "yes": "out-buy",
+            "no": "out-skip"
+          },
+          {
+            "id": "out-fine",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-wait",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-buy",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-skip",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-cap"
+          },
+          {
+            "id": "case-jacket"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-cap": [
+            "q-over",
+            "out-fine"
+          ],
+          "case-jacket": [
+            "q-over",
+            "q-wait",
+            "out-wait"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Sigue la regla de 24 horas de Dina en cada compra, de la primera pregunta al resultado.",
+          "feedback": {
+            "met": "Seguiste la regla del precio al resultado en cada compra.",
+            "not_yet": "Aún no. Empieza por el precio y pregunta si esperaste."
+          },
+          "nodes": [
+            {
+              "label": "¿Cuesta más de 20?"
+            },
+            {
+              "label": "¿Ya esperé 24 horas?"
+            },
+            {
+              "label": "¿Todavía lo quiero?"
+            },
+            {
+              "label": "No hace falta esperar"
+            },
+            {
+              "label": "Esperar 24 horas primero"
+            },
+            {
+              "label": "Comprarlo"
+            },
+            {
+              "label": "Dejarlo pasar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Gorra de 15, vista en un video"
+            },
+            {
+              "label": "Chamarra de 60, vista hace un minuto"
+            }
+          ],
+          "help": [
+            "Más de 20 significa esperar 24 horas antes que nada."
+          ]
+        },
+        "en-US": {
+          "prompt": "Follow Dina’s 24-hour rule for each purchase, from the first question to the outcome.",
+          "feedback": {
+            "met": "You followed the rule from price to outcome each time.",
+            "not_yet": "Not yet. Begin at the price, then ask if you waited."
+          },
+          "nodes": [
+            {
+              "label": "Does it cost more than 20?"
+            },
+            {
+              "label": "Have I waited 24 hours?"
+            },
+            {
+              "label": "Do I still want it?"
+            },
+            {
+              "label": "No wait needed"
+            },
+            {
+              "label": "Wait 24 hours first"
+            },
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Skip it"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "15 cap, seen in a video"
+            },
+            {
+              "label": "60 jacket, seen a minute ago"
+            }
+          ],
+          "help": [
+            "Over 20 means waiting 24 hours before anything else."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Siga a regra de 24 horas da Dina em cada compra, da primeira pergunta ao resultado.",
+          "feedback": {
+            "met": "Você seguiu a regra do preço ao resultado em cada compra.",
+            "not_yet": "Ainda não. Comece pelo preço e pergunte se esperou."
+          },
+          "nodes": [
+            {
+              "label": "Custa mais de 20?"
+            },
+            {
+              "label": "Já esperei 24 horas?"
+            },
+            {
+              "label": "Ainda quero?"
+            },
+            {
+              "label": "Não precisa esperar"
+            },
+            {
+              "label": "Esperar 24 horas primeiro"
+            },
+            {
+              "label": "Comprar"
+            },
+            {
+              "label": "Deixar passar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Boné de 15, visto em um vídeo"
+            },
+            {
+              "label": "Jaqueta de 60, vista há um minuto"
+            }
+          ],
+          "help": [
+            "Acima de 20 é esperar 24 horas antes de qualquer outra coisa."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "start": "q-over",
+        "nodes": [
+          {
+            "id": "q-over",
+            "kind": "question",
+            "yes": "q-wait",
+            "no": "out-fine"
+          },
+          {
+            "id": "q-wait",
+            "kind": "question",
+            "yes": "q-want",
+            "no": "out-wait"
+          },
+          {
+            "id": "q-want",
+            "kind": "question",
+            "yes": "out-buy",
+            "no": "out-skip"
+          },
+          {
+            "id": "out-fine",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-wait",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-buy",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-skip",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-headset"
+          },
+          {
+            "id": "case-sneakers"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-headset": [
+            "q-over",
+            "q-wait",
+            "q-want",
+            "out-buy"
+          ],
+          "case-sneakers": [
+            "q-over",
+            "q-wait",
+            "q-want",
+            "out-skip"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las dos compras ya esperaron 24 horas. Sigue el diagrama hasta el resultado de cada una.",
+          "feedback": {
+            "met": "Seguiste el diagrama más allá de la espera hasta cada resultado.",
+            "not_yet": "Aún no. La espera ya pasó, así que lee la siguiente pregunta."
+          },
+          "nodes": [
+            {
+              "label": "¿Cuesta más de 20?"
+            },
+            {
+              "label": "¿Ya esperé 24 horas?"
+            },
+            {
+              "label": "¿Todavía lo quiero?"
+            },
+            {
+              "label": "No hace falta esperar"
+            },
+            {
+              "label": "Esperar 24 horas primero"
+            },
+            {
+              "label": "Comprarlo"
+            },
+            {
+              "label": "Dejarlo pasar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Audífonos de 40: esperé y aún los quiero"
+            },
+            {
+              "label": "Tenis de 55: esperé, ya no los quiero"
+            }
+          ],
+          "help": [
+            "Después de esperar, el diagrama pregunta una cosa: ¿todavía lo quieres?"
+          ]
+        },
+        "en-US": {
+          "prompt": "Both purchases already waited 24 hours. Follow the chart to the outcome for each.",
+          "feedback": {
+            "met": "You followed the chart past the wait to each outcome.",
+            "not_yet": "Not yet. The wait is done, so read the next question."
+          },
+          "nodes": [
+            {
+              "label": "Does it cost more than 20?"
+            },
+            {
+              "label": "Have I waited 24 hours?"
+            },
+            {
+              "label": "Do I still want it?"
+            },
+            {
+              "label": "No wait needed"
+            },
+            {
+              "label": "Wait 24 hours first"
+            },
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Skip it"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "40 headset, waited, still wanted"
+            },
+            {
+              "label": "55 sneakers, waited, lost interest"
+            }
+          ],
+          "help": [
+            "After the wait, the chart asks one thing: do you still want it?"
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As duas compras já esperaram 24 horas. Siga o fluxograma até o resultado de cada uma.",
+          "feedback": {
+            "met": "Você seguiu o fluxograma além da espera até cada resultado.",
+            "not_yet": "Ainda não. A espera já passou, então leia a próxima pergunta."
+          },
+          "nodes": [
+            {
+              "label": "Custa mais de 20?"
+            },
+            {
+              "label": "Já esperei 24 horas?"
+            },
+            {
+              "label": "Ainda quero?"
+            },
+            {
+              "label": "Não precisa esperar"
+            },
+            {
+              "label": "Esperar 24 horas primeiro"
+            },
+            {
+              "label": "Comprar"
+            },
+            {
+              "label": "Deixar passar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Fone de 40: esperei e ainda quero"
+            },
+            {
+              "label": "Tênis de 55: esperei e perdi o interesse"
+            }
+          ],
+          "help": [
+            "Depois de esperar, o fluxograma pergunta uma coisa: você ainda quer?"
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "start": "q-over",
+        "nodes": [
+          {
+            "id": "q-over",
+            "kind": "question",
+            "yes": "q-wait",
+            "no": "out-fine"
+          },
+          {
+            "id": "q-wait",
+            "kind": "question",
+            "yes": "q-facts",
+            "no": "out-wait"
+          },
+          {
+            "id": "q-facts",
+            "kind": "question",
+            "yes": "q-want",
+            "no": "out-check"
+          },
+          {
+            "id": "q-want",
+            "kind": "question",
+            "yes": "out-buy",
+            "no": "out-skip"
+          },
+          {
+            "id": "out-fine",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-wait",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-check",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-buy",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-skip",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-earbuds"
+          },
+          {
+            "id": "case-jacket-70"
+          },
+          {
+            "id": "case-pass"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-earbuds": [
+            "q-over",
+            "q-wait",
+            "out-wait"
+          ],
+          "case-jacket-70": [
+            "q-over",
+            "q-wait",
+            "q-facts",
+            "q-want",
+            "out-buy"
+          ],
+          "case-pass": [
+            "q-over",
+            "q-wait",
+            "q-facts",
+            "out-check"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El diagrama de Dina gana una revisión: lo que el anuncio omitió. Síguelo en cada compra.",
+          "feedback": {
+            "met": "Seguiste el diagrama por la nueva revisión en cada compra.",
+            "not_yet": "Aún no. Lee las preguntas en orden hasta llegar a un resultado."
+          },
+          "nodes": [
+            {
+              "label": "¿Cuesta más de 20?"
+            },
+            {
+              "label": "¿Ya esperé 24 horas?"
+            },
+            {
+              "label": "¿Revisé lo que el anuncio omitió?"
+            },
+            {
+              "label": "¿Todavía lo quiero?"
+            },
+            {
+              "label": "No hace falta esperar"
+            },
+            {
+              "label": "Esperar 24 horas primero"
+            },
+            {
+              "label": "Revisar el anuncio primero"
+            },
+            {
+              "label": "Comprarlo"
+            },
+            {
+              "label": "Dejarlo pasar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Audífonos de 45, vistos hace minutos"
+            },
+            {
+              "label": "Chamarra de 70: esperé, revisé, la quiero"
+            },
+            {
+              "label": "Skin de juego de 30: esperé, sin revisar"
+            }
+          ],
+          "help": [
+            "Cada etiqueta da los datos. Responde cada pregunta con ellos, en orden."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina’s chart gains one check: what the ad left out. Follow it for each purchase.",
+          "feedback": {
+            "met": "You followed the chart through the new check each time.",
+            "not_yet": "Not yet. Read the questions in order until an outcome."
+          },
+          "nodes": [
+            {
+              "label": "Does it cost more than 20?"
+            },
+            {
+              "label": "Have I waited 24 hours?"
+            },
+            {
+              "label": "Did I check what the ad left out?"
+            },
+            {
+              "label": "Do I still want it?"
+            },
+            {
+              "label": "No wait needed"
+            },
+            {
+              "label": "Wait 24 hours first"
+            },
+            {
+              "label": "Check the ad first"
+            },
+            {
+              "label": "Buy it"
+            },
+            {
+              "label": "Skip it"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "45 earbuds, seen minutes ago"
+            },
+            {
+              "label": "70 jacket: waited, checked, still wanted"
+            },
+            {
+              "label": "30 in-game skin: waited, nothing checked"
+            }
+          ],
+          "help": [
+            "Each label gives the facts. Answer each question from them, in order."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O fluxograma da Dina ganha uma checagem: o que o anúncio omitiu. Siga-o em cada compra.",
+          "feedback": {
+            "met": "Você seguiu o fluxograma pela nova checagem em cada compra.",
+            "not_yet": "Ainda não. Leia as perguntas em ordem até chegar a um resultado."
+          },
+          "nodes": [
+            {
+              "label": "Custa mais de 20?"
+            },
+            {
+              "label": "Já esperei 24 horas?"
+            },
+            {
+              "label": "Conferi o que o anúncio omitiu?"
+            },
+            {
+              "label": "Ainda quero?"
+            },
+            {
+              "label": "Não precisa esperar"
+            },
+            {
+              "label": "Esperar 24 horas primeiro"
+            },
+            {
+              "label": "Conferir o anúncio primeiro"
+            },
+            {
+              "label": "Comprar"
+            },
+            {
+              "label": "Deixar passar"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Fones de 45, vistos há minutos"
+            },
+            {
+              "label": "Jaqueta de 70: esperei, conferi, ainda quero"
+            },
+            {
+              "label": "Skin de jogo de 30: esperei, sem conferir"
+            }
+          ],
+          "help": [
+            "Cada rótulo traz os fatos. Responda cada pergunta com eles, em ordem."
+          ]
+        }
+      }
+    }
+  ]
+}

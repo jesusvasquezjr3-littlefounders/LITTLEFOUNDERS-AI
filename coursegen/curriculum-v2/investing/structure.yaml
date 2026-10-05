@@ -1,0 +1,378 @@
+# Investing: v2 catalog structure (2026-10-04).
+#
+# Planning record for the Investing course: course -> age pathway -> chapter -> lesson.
+# Plans (`plans/<lesson_id>.json`) are authored later from this file and must agree with it.
+# Knowledge components use the real keys of database/seeds/kc_graph.v1.json. Every invest.* KC and
+# money.linear-vs-accelerating-growth is a draft tier-3 KC (pathway policy G5 pending).
+#
+# Hard limits (owner decision): investing is SIMULATION-ONLY at every age.
+#   - Under 18: LittleFounders coins in a sandbox ('a pretend fund', 'a growth simulator'); never real
+#     money, never real securities.
+#   - Adults: illustrative rates and product CATEGORIES (a savings account, a broad index fund, a
+#     retirement-account type of the learner's market, a fixed-income instrument); never a named
+#     security, never a promised or predicted return, never personal advice.
+#   - Risk is taught honestly: loss is possible, there is no free lunch, fraud and pyramid schemes are
+#     real. Fraud cues are realistic (promised returns, urgency, recruiting), never sensational.
+#
+# Segment-type notes (checked against the real age scopes, not only `v2:brief --types`):
+#   - There is no 6-9 pathway: the KC graph has no investing KC below tier 3 and tier 3 starts at 11.
+#   - Concept boards (money.inflation, money.rule-of-72, money.diversification) open to 13-17 and adult only.
+#   - money.time-value.v2 is ages 14-17 and adult, money.rate-return.v2 is 15-17 and adult: both are used
+#     only in the adult pathway so every 13-17 lesson keeps the full 13-17 eligibility.
+#   - math.chance-sim.v2 is ages 10-14 and not adult: used in the 10-12 pathway only.
+#   - money.compound-interest.v2 is 10-17 and adult; money.life-sim.v2, prob.tree.v2, reasoning.decision-grid.v2
+#     and plan.schedule-board.v2 are 13-17 (decision-grid and schedule-board 12-17) and adult, so none is used at 11-12.
+#   - visual.chart.v2 kinds named in the comments are open to the band and the investing subject (fan-chart,
+#     treemap, candlestick, step need 13+; timeline, venn, slope, line, column are open from 10).
+
+course_id: investing
+authoring_locale: es-MX
+markets: [es-MX, pt-BR, en-US]
+status: "catalog-structure-v1 (2026-10-04): planned, plans not yet authored"
+
+assumptions:
+  - "Four lessons per chapter and 28 lessons in 7 chapters (tween 8, teen 12, adult 8) are catalog-structure values to be tested against real learner data."
+  - "There is no 6-9 pathway: no investing KC sits below tier 3 and tier 3 starts at age 11, so the 10-12 lessons are eligible for ages 11-12 only."
+  - "Investing is simulation-only at every age. Under 18 uses LittleFounders coins in a sandbox; adults use illustrative rates and product categories, never a named security, a promised or predicted return, or personal advice."
+  - "KCs taught for the first time in the 10-12 pathway (linear-vs-accelerating-growth, time-value, compound-growth, simple-vs-compound, expected-value, no-free-lunch, cost-of-delay, simulate-before-deciding) are taught again at greater depth in 13-17 and adult (B.6), and are then new concepts of that pathway's first lesson that teaches them."
+  - "Prerequisite KCs owned by other courses (money.simple-interest-peek, money.percent-intro, money.add-money, biz.risk-and-reward, life.patience-and-waiting, life.think-before-buying, life.goal-planning, life.scam-awareness) are assumed taught earlier in Financial Education and Entrepreneurship; the course requires both."
+  - "Lessons that name real prices, local currency, institutions or products (inflation, retirement-account types, fraud cues) are market-specific; lessons that use only coins or illustrative units are universal."
+  - "Adults skip tier-1 and tier-2 basics and the toy framing: each adult lesson is education about how things work and how to judge an offer, built on the learner's own horizon, work and decisions."
+
+pathways:
+  - pathway_id: investing-10-12
+    age_band: "10-12"
+    chapters:
+      - chapter_id: inv-1012-growth-you-can-see
+        title: { en-US: Growth you can see, es-MX: Crecimiento que se ve, pt-BR: Crescimento que dá para ver }
+        objective: Tell steady growth from accelerating growth, see why waiting changes what coins are worth, and watch a pretend fund grow round by round with sums done by hand.
+        external_prerequisites: [money.add-money, money.percent-intro, money.simple-interest-peek, life.patience-and-waiting]   # life.patience-and-waiting is draft (G5)
+        lessons:
+          - lesson_id: inv-1012-01-steady-or-faster
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [money.linear-vs-accelerating-growth, money.add-money]
+            kc_status: { money.linear-vs-accelerating-growth: draft, money.add-money: active }
+            new_concepts: [money.linear-vs-accelerating-growth]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal   # LittleFounders coins only
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.chart.v2, money.running-ledger.v2, reasoning.decide-justify.v2]   # chart kinds: line, column
+            situation: "Two coin jars start with 10 coins: jar A gets +5 coins every week, jar B gets +2 coins the first week, +4 the second, +6 the third and so on; the learner reads both as a table and a line chart over eight weeks (A ends at 50, B at 82) and describes the shape of each curve."
+            tests: "Telling 'the same amount each step' from 'more each step' on a table and a curve, the first lesson of the course and the bridge from arithmetic to compounding."
+          - lesson_id: inv-1012-02-coins-now-or-later
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.time-value, life.patience-and-waiting]
+            kc_status: { invest.time-value: draft, life.patience-and-waiting: draft }
+            new_concepts: [invest.time-value]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Liruf grabs 20 coins now, misses the 30 a month away that he could have waited for, and says how he will weigh it next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, story.would-you-rather.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: timeline
+            situation: "A sandbox shop offers 20 coins today or 30 coins in four weeks; the learner places both on a timeline, asks what the coins could do in between and whether the wait is worth it, then repeats with 20 now against 22 in four weeks."
+            tests: "Comparing the same coins at two moments and deciding when waiting is worth it, with a justification that names the size of the reward and the length of the wait."
+          - lesson_id: inv-1012-03-the-pretend-fund
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.compound-growth, money.percent-intro, money.simple-interest-peek]
+            kc_status: { invest.compound-growth: draft, money.percent-intro: active, money.simple-interest-peek: active }
+            new_concepts: [invest.compound-growth]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.compound-interest.v2, visual.percent-grid.v2, math.worked-example.v2, visual.chart.v2]   # chart kind: column
+            situation: "A pretend fund starts with 1,000 coins and earns 10 percent a round; the learner works out round 1 (100 coins), leaves the earnings in, finds round 2 pays 110 and round 3 pays 121, then takes the earnings out in one round and sees the next gain shrink."
+            tests: "Why leaving earnings in makes each round's gain larger, and what an interruption costs, using percentages the learner can do by hand (10 percent of the pot)."
+          - lesson_id: inv-1012-04-simple-or-compound
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.simple-vs-compound, invest.compound-growth]
+            kc_status: { invest.simple-vs-compound: draft, invest.compound-growth: draft }
+            new_concepts: [invest.simple-vs-compound]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, math.ratio-table.v2, visual.chart.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]   # chart kinds: line (two series), slope
+            situation: "Two pretend funds start at 1,000 coins at 10 percent: fund S pays 100 coins every round on the start amount (1,600 after six rounds), fund C pays 10 percent on the growing pot (1,772 after six, rounded to the nearest coin); the learner fills a ratio table and picks the better fund for a 2-round goal (1,200 against 1,210) and for a 6-round goal."
+            tests: "Comparing simple and compound on the same amount and rate, and seeing that the better choice depends on the time frame (two rounds barely differ, six rounds clearly do)."
+      - chapter_id: inv-1012-luck-risk-and-the-simulator
+        title: { en-US: Luck, risk and the simulator, es-MX: Suerte, riesgo y simulador, pt-BR: Sorte, risco e simulador }
+        objective: Judge a risky reward by how often it pays, notice that no offer is big, safe and fast at once, put a deadline on a decision, and practise in a growth simulator that trains judgment.
+        external_prerequisites: [biz.risk-and-reward, life.think-before-buying]   # life.think-before-buying is draft (G5)
+        lessons:
+          - lesson_id: inv-1012-05-one-win-proves-nothing
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.expected-value, biz.risk-and-reward]
+            kc_status: { invest.expected-value: draft, biz.risk-and-reward: active }
+            new_concepts: [invest.expected-value]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Rho wins a coin game twice, calls it proof, loses the third time with a bigger bet, and says what he will check next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, math.chance-sim.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: column
+            situation: "A carnival booth pays 8 coins one time in five for a 2-coin ticket; the learner runs the seeded chance simulator 5 times then 100 times, reads the average per ticket, and explains why one win proves nothing."
+            tests: "Judging a risky option by how often it pays and how much, over many tries, and rejecting 'it paid once, so it works'."
+          - lesson_id: inv-1012-06-big-safe-fast
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.no-free-lunch, biz.risk-and-reward]
+            kc_status: { invest.no-free-lunch: draft, biz.risk-and-reward: active }
+            new_concepts: [invest.no-free-lunch]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, logic.sort-by-rule.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]   # chart kind: venn (big, safe, fast)
+            situation: "Six sandbox offers (a locked jar, a growing fund, a 'triple your coins by Friday' poster and others) are placed on a big-safe-fast diagram; none lands in all three, and the learner asks who carries the risk in the poster that claims to."
+            tests: "No option is at once big, safe and fast; asking 'who carries the risk' of an offer that claims to be, before any fraud vocabulary is introduced."
+          - lesson_id: inv-1012-07-the-deadline
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.cost-of-delay, invest.time-value, life.think-before-buying]
+            kc_status: { invest.cost-of-delay: draft, invest.time-value: draft, life.think-before-buying: draft }
+            new_concepts: [invest.cost-of-delay]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, story.branch.v2, visual.savings-line.v2, money.opportunity-cost.v2, reasoning.decide-justify.v2]
+            situation: "A learner keeps saying 'I'll decide next week' about a 60-coin pretend fund; each week of waiting pushes the savings line to the goal one week later, the learner tells a useful pause (one more week to check a price) from endless putting off, and sets a deadline."
+            tests: "Not deciding has a cost; a pause with a reason and an end date is different from postponing, and a decision gets a deadline."
+          - lesson_id: inv-1012-08-growth-simulator
+            eligibility: { minimum_age: 11, maximum_age: 12 }
+            knowledge_components: [invest.simulate-before-deciding, invest.compound-growth, invest.expected-value]
+            kc_status: { invest.simulate-before-deciding: draft, invest.compound-growth: draft, invest.expected-value: draft }
+            new_concepts: [invest.simulate-before-deciding]
+            mentor: { character: liruf, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.compound-interest.v2, money.running-ledger.v2, money.spend-decision.v2, reasoning.decide-justify.v2]
+            situation: "In the growth simulator the learner moves the rate and the number of rounds on a 1,000-coin pretend fund, predicts the result before each run, compares to the ledger, and writes one rule they learned (the simulator trains judgment; it does not say what to do with real money)."
+            tests: "Using a simulation to practise decisions without real money: predict first, run, compare, and say what the simulator can and cannot tell you."
+  - pathway_id: investing-13-17
+    age_band: "13-17"
+    chapters:
+      - chapter_id: inv-1317-the-clock-and-your-money
+        title: { en-US: The clock and your money, es-MX: El reloj y tu dinero, pt-BR: O relógio e o seu dinheiro }
+        objective: Read compound growth in tables and charts, price waiting and starting early, and see what rising prices do to a goal.
+        external_prerequisites: [money.linear-vs-accelerating-growth, money.simple-interest-peek, money.percent-intro, life.patience-and-waiting, life.think-before-buying, life.goal-planning]   # the life.* KCs are draft (G5); linear-vs-accelerating-growth is taught in investing-10-12
+        lessons:
+          - lesson_id: inv-1317-01-compound-in-a-table
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.compound-growth, invest.simple-vs-compound, money.linear-vs-accelerating-growth]
+            kc_status: { invest.compound-growth: draft, invest.simple-vs-compound: draft, money.linear-vs-accelerating-growth: draft }
+            new_concepts: [invest.compound-growth, invest.simple-vs-compound]   # taught again at table-and-chart depth (B.6); first met at 10-12
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal   # LittleFounders coins only
+            segment_types: [voice.mentor-turn.v2, money.compound-interest.v2, visual.growth-comparison.v2, math.worked-example.v2, reasoning.decide-justify.v2]
+            situation: "Two sandbox funds start at 2,000 coins at 8 percent a year: fund S pays 160 coins a year on the start amount (3,600 after ten years), fund C reinvests (about 4,318 after ten); the learner reads the year-by-year table and the growth chart, finds the year each fund passes 3,000 coins (S in year 7, C in year 6) and chooses the better fund for a 5-year and a 15-year goal."
+            tests: "Reading compounding off a table and a chart, and choosing simple or compound for a goal and time frame, at the table depth the 10-12 hand arithmetic did not reach."
+          - lesson_id: inv-1317-02-money-now-or-later
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.time-value, invest.cost-of-delay, life.think-before-buying]
+            kc_status: { invest.time-value: draft, invest.cost-of-delay: draft, life.think-before-buying: draft }
+            new_concepts: [invest.time-value, invest.cost-of-delay]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Dina keeps postponing the choice 'until I know more', loses three months of growth, and sets herself a decision date
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, math.worked-example.v2, visual.chart.v2, reasoning.decision-grid.v2, reasoning.decide-justify.v2]   # chart kind: timeline
+            situation: "A sandbox sponsor offers 1,000 coins now or 1,300 coins in three years; the learner tests both against a pretend fund at 6 percent a year (1,000 becomes about 1,191, so the 1,300 wins), then prices three months of 'I'll decide later' on a 500-coin monthly deposit and sets a decision date."
+            tests: "Money at two moments measured against what waiting could earn, and the price of not deciding, with a deadline as the fix (a useful pause has a reason and an end date)."
+          - lesson_id: inv-1317-03-the-early-starter
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.start-early, invest.compound-growth]
+            kc_status: { invest.start-early: draft, invest.compound-growth: draft }
+            new_concepts: [invest.start-early]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, money.running-ledger.v2, math.worked-example.v2, reasoning.decide-justify.v2]   # chart kinds: line (two savers), area
+            situation: "Two savers put 100 coins a year into a pretend fund at 7 percent: Ana from age 15 to 25 (10 deposits), Bruno from 25 to 45 (20 deposits); at 45 Ana's fund holds about 5,350 coins and Bruno's about 4,100, and the learner reads both ledgers and the chart to say why the earlier start wins."
+            tests: "Same yearly amount, different start: the earlier start ends with more even with half the deposits, read from two ledgers and a chart."
+          - lesson_id: inv-1317-04-prices-that-rise
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.inflation-buffer, money.percent-intro, life.goal-planning]
+            kc_status: { invest.inflation-buffer: draft, money.percent-intro: active, life.goal-planning: draft }
+            new_concepts: [invest.inflation-buffer]
+            mentor: { character: rho, scene: diorama-b }
+            regional: scenarios   # a real everyday item priced in each market's own currency and local price history; the saving stays in coins
+            segment_types: [voice.mentor-turn.v2, money.inflation.v2, visual.chart.v2, math.worked-example.v2, visual.goal-bullet.v2]   # chart kind: slope (price a year ago against today)
+            situation: "A learner saving for a pair of sneakers sees the same pair priced 10 percent higher a year later (400 becomes 440 in the learner's own currency); the learner works the rise in currency and in percent, then adds a buffer to a two-year goal so a price rise does not leave it short."
+            tests: "Price rise in currency and in percent, and a buffer added to a goal; per-market prices and local price history (rubric_by_locale), no investing of real money."
+      - chapter_id: inv-1317-risk-and-baskets
+        title: { en-US: Risk and baskets, es-MX: Riesgo y canastas, pt-BR: Risco e cestas }
+        objective: Judge a risky reward by how often it pays, match risk to the time frame and the loss you can afford, and spread money across pieces that do not all fail for the same reason.
+        external_prerequisites: [biz.risk-and-reward]
+        lessons:
+          - lesson_id: inv-1317-05-how-often-and-how-much
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.expected-value, invest.no-free-lunch, biz.risk-and-reward]
+            kc_status: { invest.expected-value: draft, invest.no-free-lunch: draft, biz.risk-and-reward: active }
+            new_concepts: [invest.expected-value, invest.no-free-lunch]   # taught again at outcome-tree depth (B.6); first met at 10-12
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Zara sees the sandbox booster pay twice in a row, calls it safe, loses on the third, and says what she will ask first next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, prob.tree.v2, visual.chart.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]   # chart kind: histogram
+            situation: "A sandbox 'booster' pays 500 coins one time in six for a 100-coin stake; the learner builds the outcome tree (about 83 coins back per 100 staked, a loss on average), reads a histogram of 60 simulated runs, and explains why a 'big, safe and fast' claim means someone else is carrying the risk."
+            tests: "Expected value from an outcome tree and a histogram (how often times how much), and 'who carries the risk' asked of a claim that is big, safe and fast at once."
+          - lesson_id: inv-1317-06-risk-and-the-clock
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.risk-tolerance, biz.risk-and-reward]
+            kc_status: { invest.risk-tolerance: draft, biz.risk-and-reward: active }
+            new_concepts: [invest.risk-tolerance]
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, visual.chart.v2, reasoning.decision-grid.v2, reasoning.decide-justify.v2]   # chart kind: fan-chart (a forecast that widens); allocation kind: stacked-bar
+            situation: "Two sandbox goals, a 300-coin trip due in one year and a long plan due in twelve, are matched to a safer and a riskier pretend fund; the fan chart shows the riskier fund's one-year range running from 75 to 130 coins per 100, and the learner decides how much loss each goal can afford."
+            tests: "Matching how much risk to take to the time left and to the loss the learner can afford; a short goal cannot ride out a bad year, a long one can."
+          - lesson_id: inv-1317-07-baskets-not-eggs
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.funds-and-shares, invest.diversification, biz.risk-and-reward]
+            kc_status: { invest.funds-and-shares: draft, invest.diversification: draft, biz.risk-and-reward: active }
+            new_concepts: [invest.funds-and-shares, invest.diversification]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, money.diversification.v2, logic.euler.v2, reasoning.decide-justify.v2]   # chart kind: treemap (pieces by sector)
+            situation: "In the sandbox a share is a small piece of a pretend company and a fund is a basket of twenty pieces someone manages; the learner spreads 1,000 coins over four sectors on a treemap, then one sector falls 40 percent (the single-piece holder loses 400 coins, the four-sector mix loses 100) and the risk is reduced but never gone."
+            tests: "Shares as pieces and funds as managed baskets, and diversification as pieces that do not fail for the same reason; it reduces risk without removing it."
+          - lesson_id: inv-1317-08-the-mix-and-the-index
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.index-funds, invest.portfolio-mix, invest.risk-tolerance]
+            kc_status: { invest.index-funds: draft, invest.portfolio-mix: draft, invest.risk-tolerance: draft }
+            new_concepts: [invest.index-funds, invest.portfolio-mix]
+            mentor: { character: zara, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.allocation.v2, money.life-sim.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: stacked-area-100 (the mix drifting); allocation kind: donut
+            situation: "In the simulator the learner picks a 60/40 mix of a riskier whole-market index fund and a steadier fund, runs five yearly rounds, finds the mix has drifted to about 64/36 after a strong year (riskier piece up 20 percent, steadier up 2) and rebalances, then compares one hand-picked piece with the index that holds the whole group."
+            tests: "How an index follows a whole group, why nobody picks the winner every time, and choosing, simulating and rebalancing a mix for a risk profile."
+      - chapter_id: inv-1317-a-plan-that-holds
+        title: { en-US: A plan that holds, es-MX: Un plan que aguanta, pt-BR: Um plano que se sustenta }
+        objective: Recognize investment fraud and pyramid schemes, keep a sound plan through a bad season, and build and stress-test a long-term plan in a simulator.
+        external_prerequisites: [life.scam-awareness, biz.risk-and-reward]   # life.scam-awareness is draft (G5)
+        lessons:
+          - lesson_id: inv-1317-09-offers-that-smell
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.fraud-signals, invest.no-free-lunch, life.scam-awareness]
+            kc_status: { invest.fraud-signals: draft, invest.no-free-lunch: draft, life.scam-awareness: draft }
+            new_concepts: [invest.fraud-signals]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # the channel and wording of the investment scam each market's teens actually meet (chat app, social post, payment link)
+            segment_types: [voice.mentor-turn.v2, money.scam-check.v2, logic.scam-spotter.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]
+            situation: "A direct message from a 'coach' promises to turn 100 coins into 300 in a week, 'only for the first ten people, decide today' and 'do not tell your parents'; the learner marks each cue (guaranteed profit, urgency, unexplained source of money, secrecy), stops, sends nothing and tells a trusted adult."
+            tests: "Spotting the cues of investment fraud in a realistic message and the stop-and-tell response, with per-market channels and wording but the same answer ids."
+          - lesson_id: inv-1317-10-the-pyramid
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.pyramid-schemes, invest.fraud-signals]
+            kc_status: { invest.pyramid-schemes: draft, invest.fraud-signals: draft }
+            new_concepts: [invest.pyramid-schemes]
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # how the recruiting pitch is framed in each market (a 'club', a 'network', a 'circle'), same arithmetic
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.chart.v2, logic.flowchart.v2, story.branch.v2]   # chart kinds: tree (recruits), sankey (where the money goes)
+            situation: "A 'club' pays members from what new members pay in: with a 100-coin entry and every member recruiting three, the learner builds the recruit tree (3, 9, 27 ... 6,561 at round 8, more people than a town of 5,000), follows the money in a flow diagram and tells it apart from a business that sells something real."
+            tests: "Why paying earlier members with newer members' money must collapse (the arithmetic of recruiting), and telling a scheme from a real business by where the money comes from."
+          - lesson_id: inv-1317-11-the-bad-season
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.stay-the-course, invest.risk-tolerance, invest.portfolio-mix]
+            kc_status: { invest.stay-the-course: draft, invest.risk-tolerance: draft, invest.portfolio-mix: draft }
+            new_concepts: [invest.stay-the-course]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Zara panic-sells at the bottom of the simulated fall, misses the recovery, and says what rule she will set before the next season
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, visual.chart.v2, money.running-ledger.v2, story.branch.v2, reasoning.decide-justify.v2]   # chart kind: candlestick (the fall and the recovery)
+            situation: "In the simulator a diversified 1,000-coin mix falls 25 percent in a bad season; the learner replays the same seeded season selling at the bottom and then holding the plan, compares the two ledgers, and spots the 'buy my sure thing now' message that shows up in the middle of the fall."
+            tests: "Panic selling against waiting in a downturn, and keeping a sound plan while turning down an offer that feeds on fear."
+          - lesson_id: inv-1317-12-your-long-term-plan
+            eligibility: { minimum_age: 13, maximum_age: 17 }
+            knowledge_components: [invest.long-term-plan, invest.simulate-before-deciding, invest.start-early]
+            kc_status: { invest.long-term-plan: draft, invest.simulate-before-deciding: draft, invest.start-early: draft }
+            new_concepts: [invest.long-term-plan, invest.simulate-before-deciding]   # simulate-before-deciding taught again as a habit (B.6); first met at 10-12
+            mentor: { character: dina, scene: diorama-b }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.life-sim.v2, money.allocation.v2, visual.goal-bullet.v2, reasoning.decide-justify.v2]
+            situation: "The learner builds a one-page plan for a 15-year sandbox goal (a goal in coins, a buffer for rising prices, a diversified mix, a regular deposit and a rule for a bad season), stress-tests it in the simulator before deciding, and writes what a simulation can and cannot promise."
+            tests: "Combining goal, buffer, mix, horizon and protection from interruptions into one plan, and the simulate-before-deciding habit: a simulation trains judgment, it gives no instruction."
+  - pathway_id: investing-adult
+    age_band: adult
+    chapters:
+      - chapter_id: inv-adult-time-rates-and-risk
+        title: { en-US: Time, rates and risk, es-MX: Tiempo, tasas y riesgo, pt-BR: Tempo, taxas e risco }
+        objective: Work out what time does to a sum at an illustrative rate, what starting late costs, what a rate buys once prices rise, and what a risky offer is worth against a steady one.
+        external_prerequisites: [money.linear-vs-accelerating-growth, money.simple-interest-peek, money.percent-intro, life.patience-and-waiting, life.think-before-buying, life.goal-planning, biz.risk-and-reward]   # the life.* KCs are draft (G5); adults skip tier-1/2 basics and start from their own money
+        lessons:
+          - lesson_id: inv-adult-01-a-rate-and-ten-years
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.compound-growth, invest.simple-vs-compound, invest.time-value]
+            kc_status: { invest.compound-growth: draft, invest.simple-vs-compound: draft, invest.time-value: draft }
+            new_concepts: [invest.compound-growth, invest.simple-vs-compound, invest.time-value]   # taught again at the adult's own-money depth (B.6)
+            mentor: { character: rho, scene: diorama-a }
+            regional: scenarios   # each market's savings-account and fixed-income categories and currency; the rate is always labelled illustrative, never an offer
+            segment_types: [voice.mentor-turn.v2, money.time-value.v2, money.compound-interest.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: line (simple and compound paths)
+            situation: "A learner weighing 100,000 units kept for ten years at an illustrative 4 percent compares interest paid only on the start amount (140,000) with interest left in to compound (about 148,000), and shows that a payment of 100,000 promised in five years is worth about 82,000 today at that same rate."
+            tests: "Simple against compound and present against future value at an illustrative rate, with per-market account categories and currency (rubric_by_locale) and no rate presented as an offer or a forecast."
+          - lesson_id: inv-adult-02-the-cost-of-starting-late
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.start-early, invest.cost-of-delay, invest.compound-growth]
+            kc_status: { invest.start-early: draft, invest.cost-of-delay: draft, invest.compound-growth: draft }
+            new_concepts: [invest.start-early, invest.cost-of-delay]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # the retirement-account type of each market (MX Afore, BR previdência, US 401(k)/IRA), as a category and never a product
+            segment_types: [voice.mentor-turn.v2, money.running-ledger.v2, plan.schedule-board.v2, visual.growth-comparison.v2, reasoning.decide-justify.v2]
+            situation: "Two colleagues pay 12,000 units a year into a retirement-account type at an illustrative 6 percent until 65: Lena starts at 30 (about 1.34 million at 65), Omar keeps saying 'next year' and starts at 40 (about 0.66 million), and the learner prices the ten years of delay, then sets a start date and a contribution schedule of their own."
+            tests: "Same yearly amount with a different start, and the price of postponing read from two ledgers, ending in a dated start decision (a useful pause has a reason and an end date); no personal advice, only the arithmetic."
+          - lesson_id: inv-adult-03-what-a-rate-really-buys
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.inflation-buffer, money.percent-intro, life.goal-planning]
+            kc_status: { invest.inflation-buffer: draft, money.percent-intro: active, life.goal-planning: draft }
+            new_concepts: [invest.inflation-buffer]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios   # each market's own price history and everyday basket, in its own currency
+            segment_types: [voice.mentor-turn.v2, money.inflation.v2, money.rule-of-72.v2, visual.chart.v2, visual.goal-bullet.v2]   # chart kind: slope (nominal balance against what it buys)
+            situation: "A balance of 100,000 units earning an illustrative 3 percent while prices rise an illustrative 5 percent grows to about 134,000 in ten years but buys what about 82,500 buys today (prices double in about 14 years by the rule of 72), so a 500,000 goal in today's prices needs a buffer to about 814,000."
+            tests: "A price rise in currency and percent, a rate read against inflation, and a buffer added to a goal; per-market price history (rubric_by_locale), illustrative rates only."
+          - lesson_id: inv-adult-04-what-a-risky-offer-is-worth
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.expected-value, invest.no-free-lunch, invest.risk-tolerance]
+            kc_status: { invest.expected-value: draft, invest.no-free-lunch: draft, invest.risk-tolerance: draft }
+            new_concepts: [invest.expected-value, invest.no-free-lunch, invest.risk-tolerance]
+            mentor: { character: rho, scene: diorama-b }
+            regional: universal   # illustrative units and a generic steady instrument against a generic market-linked fund; no named product
+            mentor_misjudgment: true   # B.11: Rho takes the higher average for a goal due in three years, meets the one-in-four 20 percent loss, and says which question she asks first next time
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, prob.tree.v2, money.rate-return.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: histogram (200 simulated one-year outcomes)
+            situation: "On 100,000 units for one year the learner compares a steady instrument paying 5 percent with a market-linked fund whose illustrative outcomes (minus 20, plus 10, plus 40 percent, with chances of 1 in 4, 1 in 2 and 1 in 4) average plus 10 percent, builds the outcome tree, sees the one-in-four chance of a 20,000 loss, asks who carries the risk when an offer says 'high return, no risk', and decides how much loss a goal due in 3 years and a goal due in 25 years can afford."
+            tests: "Expected value from a tree, the risk behind a higher average, 'who carries the risk' asked of a big, safe and fast claim, and matching risk to the time left and the loss the learner can bear; outcomes are labelled illustrative, never a forecast."
+      - chapter_id: inv-adult-baskets-offers-and-a-plan
+        title: { en-US: Baskets, offers and a plan, es-MX: Canastas, ofertas y un plan, pt-BR: Cestas, ofertas e um plano }
+        objective: Read what a fund holds, test a mix in a simulator, judge an investment offer against the signs of fraud, and keep a written long-term plan through a bad season.
+        external_prerequisites: [life.scam-awareness, biz.risk-and-reward]   # life.scam-awareness is draft (G5)
+        lessons:
+          - lesson_id: inv-adult-05-whats-in-the-basket
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.funds-and-shares, invest.diversification, invest.index-funds]
+            kc_status: { invest.funds-and-shares: draft, invest.diversification: draft, invest.index-funds: draft }
+            new_concepts: [invest.funds-and-shares, invest.diversification, invest.index-funds]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # the fund menu of each market's retirement-account type, as categories (broad index, sector, fixed income), no named fund
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, money.diversification.v2, reasoning.decision-grid.v2, reasoning.decide-justify.v2]   # chart kinds: treemap (holdings by sector), bump (last year's winners change places)
+            situation: "A retirement-account menu offers three fund categories (a broad index fund of 500 companies, a single-sector fund and a fixed-income fund); the learner reads each one's holdings on a treemap, watches the sector fund fall 40 percent against the broad fund's 12 in an illustrative year, and sees on a rank chart that last year's top fund is rarely first again."
+            tests: "A share as a piece and a fund as a managed basket, what an index follows and why nobody picks the winner every time, and diversification as pieces that do not fail together (risk reduced, never removed); product categories only."
+          - lesson_id: inv-adult-06-test-a-mix-in-the-simulator
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.portfolio-mix, invest.simulate-before-deciding, invest.risk-tolerance]
+            kc_status: { invest.portfolio-mix: draft, invest.simulate-before-deciding: draft, invest.risk-tolerance: draft }
+            new_concepts: [invest.portfolio-mix, invest.simulate-before-deciding]   # simulate-before-deciding is taught again as a habit (B.6)
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal   # the simulator in illustrative units, no real account and no local product
+            segment_types: [voice.mentor-turn.v2, money.life-sim.v2, money.allocation.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: stacked-area-100 (the mix drifting); allocation kind: donut
+            situation: "In the simulator the learner builds a 75/25 mix of a broad index category and a fixed-income category for a 25-year goal, runs ten seeded yearly rounds, finds the mix drifted to about 78/22 after a strong year (riskier piece up 20 percent, steadier up 2) and rebalances, then sets a steadier mix for a goal 5 years away and writes what a simulation can and cannot say."
+            tests: "Choosing, simulating and rebalancing a mix for a risk profile and a horizon, and the habit of simulating before deciding: a simulation trains judgment, it gives no instruction and no forecast."
+          - lesson_id: inv-adult-07-the-offer-in-the-group-chat
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.fraud-signals, invest.pyramid-schemes, invest.no-free-lunch]
+            kc_status: { invest.fraud-signals: draft, invest.pyramid-schemes: draft, invest.no-free-lunch: draft }
+            new_concepts: [invest.fraud-signals, invest.pyramid-schemes]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # the channel, wording and registry of each market (chat group, social post, payment link; the market's financial regulator and entity lookup)
+            mentor_misjudgment: true   # B.11: Dina nearly sends a first deposit because a friend already got paid, then stops at the recruiting line and checks the registry
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, logic.scam-spotter.v2, logic.flowchart.v2, visual.chart.v2, reasoning.decide-justify.v2]   # chart kind: sankey (where the payouts come from)
+            situation: "A friend forwards a group-chat offer to put in 10,000 units and receive a guaranteed 5 percent a week, with the fee waived for bringing two people and the window closing tonight; the learner marks the cues (guaranteed return far above any ordinary rate, urgency, recruiting, no registered entity), traces where the payouts come from, sees the recruit count double from 2 to 1,024 by round 10, checks the entity with the regulator's lookup and sends nothing."
+            tests: "The cues of investment fraud in a realistic message, why paying earlier members with newer members' money must collapse, and telling a scheme from a real business by where the money comes from; per-market channels and registries with the same answer ids."
+          - lesson_id: inv-adult-08-the-plan-in-a-bad-season
+            eligibility: { minimum_age: 18, maximum_age: 119 }
+            knowledge_components: [invest.stay-the-course, invest.long-term-plan, invest.portfolio-mix]
+            kc_status: { invest.stay-the-course: draft, invest.long-term-plan: draft, invest.portfolio-mix: draft }
+            new_concepts: [invest.stay-the-course, invest.long-term-plan]
+            mentor: { character: zara, scene: diorama-a }
+            regional: universal   # a simulated plan in illustrative units; no local product is needed
+            segment_types: [voice.mentor-turn.v2, visual.chart.v2, money.cash-flow.v2, story.branch.v2, visual.goal-bullet.v2, reasoning.decide-justify.v2]   # chart kind: candlestick (an illustrative yearly series: the fall and the recovery)
+            situation: "In year 8 of a simulated 25-year plan (a goal in today's prices, an inflation buffer, a diversified mix, a monthly contribution and a written rule for bad seasons) the balance falls 30 percent; the learner replays selling at the bottom against keeping the plan, reads both cash-flow ledgers, and rejects a 'move everything into my sure thing' message that arrives mid-fall."
+            tests: "Panic selling against waiting in a downturn, one written plan that combines goal, buffer, mix, horizon and protection from interruptions, and turning down an offer that feeds on fear; illustrative series, no forecast."
+
+counts:
+  pathways: 3
+  chapters: 7
+  lessons: 28   # 8 (10-12) + 12 (13-17) + 8 (adult); no 6-9 pathway: the KC graph has no investing KC below tier 3

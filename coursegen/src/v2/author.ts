@@ -26,6 +26,7 @@ import { V2_LOCALES, type V2Locale } from './contract.js';
 import { horizonteGuidanceFor } from './horizonte/index.js';
 import { emitV2Lesson } from './emit.js';
 import { v2LessonPlanSchema, type V2LessonPlan } from './plan.js';
+import { writingSkillsPrompt } from './writingSkills.js';
 import type { GateNumber } from '../pipeline/gates.js';
 
 export type V2Responder = (request: ChatCompleteRequest, options: CompleteOptions) => Promise<ChatCompleteResult>;
@@ -62,13 +63,14 @@ export function authoringMessages(skeleton: V2Skeleton, problems: string[] = [])
     title: skeleton.title,
     copy: Object.fromEntries(skeleton.segments.map((segment) => [segment.id, segment.copy])),
   };
-  const kinds = skeleton.segments.map((segment) => `${segment.id}: ${segment.type} (${segment.grading === 'server' ? 'graded on Core' : 'explored'})`).join('; ');
+  const kinds = skeleton.segments.map((segment) => `${segment.id}: ${segment.type} (${segment.teaching_role ? `${segment.teaching_role}, ` : ''}${segment.grading === 'server' ? 'graded on Core' : 'explored'})`).join('; ');
   const system = [
     'You author learner-visible copy for one LittleFounders financial-literacy lesson in the v2 lesson format.',
     `Audience: ages ${skeleton.eligibility.minimum_age}-${skeleton.eligibility.maximum_age} (pathway ${skeleton.age_band}). Author in Mexican Spanish (es-MX) first, then adapt, never literally translate, into US English (en-US) and Brazilian Portuguese (pt-BR).`,
     'Fill EVERY empty string in the JSON shape you are given and nothing else: same keys, same array lengths, no new fields. Numbers, ids and rubrics are fixed by the skeleton and are never written in the copy.',
     'Never state or hint the answer of a graded segment in its prompt. Prompts are one or two short sentences; option labels are a few words; Mentor lines are at most two short sentences.',
     'Law 2 tone: speak like a mentor, never like a bank; no hype, urgency, shame, loss or "lives". The in-app currency is coins.',
+    ...writingSkillsPrompt(skeleton),
     glossaryPromptLines('es-MX'), glossaryPromptLines('en-US'), glossaryPromptLines('pt-BR'),
     ...horizonteGuidanceFor(skeleton.segments.map((segment) => segment.type)),
     'Output ONLY the JSON object {"title": {...}, "copy": {...}} with every string filled.',

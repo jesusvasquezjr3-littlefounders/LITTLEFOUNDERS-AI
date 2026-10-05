@@ -1,0 +1,760 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-stall",
+  "lesson_id": "ent-69-05-say-why-it-helps",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.communicate-value",
+    "biz.solution-ideas"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho y la clase miran dos letreros para la lonchera resistente del puestito. El letrero «La mejor lonchera del mundo» no nombra nada; el otro dice qué hace, para quién es y qué problema resuelve. Rho muestra las tres partes paso a paso y prueba una regla de letreros con tarjetas. El niño elige la línea que dice qué hace y para quién es, revisa una regla con tarjetas y lo usa en un letrero de marcapáginas para la feria del libro.",
+  "title": {
+    "en-US": "Say why it helps",
+    "es-MX": "Cuenta por qué ayuda",
+    "pt-BR": "Diga por que ajuda"
+  },
+  "new_concepts": [
+    "biz.communicate-value"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders signs and a classroom stall only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho and the class look at their lunch box stall.",
+          "line": "Two signs lie on the table. Let's observe the words."
+        },
+        "es-MX": {
+          "prompt": "Rho y la clase miran el puestito de la lonchera.",
+          "line": "Hay dos letreros en la mesa. Observemos las palabras."
+        },
+        "pt-BR": {
+          "prompt": "O Rho e a turma olham a barraquinha da lancheira.",
+          "line": "Há dois cartazes na mesa. Vamos observar as palavras."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-best"
+          },
+          {
+            "id": "reply-whole"
+          },
+          {
+            "id": "reply-blue"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-whole"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Try one first. What do you tell the buyer?",
+          "feedback": {
+            "met": "Thank you. Let's look at it step by step.",
+            "not_yet": "Thank you. Let's look at it step by step."
+          },
+          "speaker": "Buyer",
+          "line": "Why should I buy this box?",
+          "replies": [
+            {
+              "label": "Best box ever"
+            },
+            {
+              "label": "Your sandwich arrives whole"
+            },
+            {
+              "label": "It is blue"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Prueba primero. ¿Qué le respondes al cliente?",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos paso a paso.",
+            "not_yet": "Gracias. Ahora lo vemos paso a paso."
+          },
+          "speaker": "Cliente",
+          "line": "¿Por qué comprar esta lonchera?",
+          "replies": [
+            {
+              "label": "La mejor lonchera"
+            },
+            {
+              "label": "Tu sándwich llega entero"
+            },
+            {
+              "label": "Es azul"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Tente primeiro. O que você responde ao cliente?",
+          "feedback": {
+            "met": "Vamos ver isso passo a passo, juntos.",
+            "not_yet": "Vamos ver isso passo a passo, juntos."
+          },
+          "speaker": "Cliente",
+          "line": "Por que comprar esta lancheira?",
+          "replies": [
+            {
+              "label": "A melhor lancheira"
+            },
+            {
+              "label": "Seu sanduíche chega inteiro"
+            },
+            {
+              "label": "Ela é azul"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Sign A says “Best box ever”.",
+          "line": "Nothing is named. A good sign has three parts."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el letrero A dice “La mejor lonchera del mundo”.",
+          "line": "No nombra nada. Un buen letrero tiene tres partes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o cartaz A diz “A melhor lancheira do mundo”.",
+          "line": "Não diz nada útil. Um bom cartaz tem três partes."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sign B: “Your sandwich arrives whole, made for kids who carry lunch.”",
+          "line": "Step 2: part one is what it does. It keeps lunch whole."
+        },
+        "es-MX": {
+          "prompt": "Letrero B: “Tu sándwich llega entero, hecho para niños que llevan almuerzo.”",
+          "line": "Paso 2: la parte uno es qué hace. Mantiene tu sándwich entero."
+        },
+        "pt-BR": {
+          "prompt": "Cartaz B: “Seu sanduíche chega inteiro, feito para crianças que levam lanche.”",
+          "line": "Passo 2: a parte um é o que faz. Ele mantém o lanche inteiro."
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Sign B has part two and part three.",
+          "line": "Kids who carry lunch: who it is for. Squashed lunch: the problem."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el letrero B tiene la parte dos y la parte tres.",
+          "line": "Niños que llevan almuerzo: para quién es. Almuerzo aplastado: el problema."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o cartaz B tem a parte dois e a parte três.",
+          "line": "Crianças que levam lanche: para quem é. Lanche amassado: o problema."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-cool"
+          },
+          {
+            "id": "reply-best"
+          },
+          {
+            "id": "reply-bike"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-bike"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which line says who it is for?",
+          "feedback": {
+            "met": "You picked the line that says who it is for.",
+            "not_yet": "Not yet. Rho named who a sign is for."
+          },
+          "help": [
+            "Rho’s part two names who the sign is for.",
+            "Read each line. Which one names a kind of kid?"
+          ],
+          "speaker": "Buyer",
+          "line": "I bike to school. Is it for me?",
+          "replies": [
+            {
+              "label": "Super cool box"
+            },
+            {
+              "label": "Best box ever"
+            },
+            {
+              "label": "For kids who bike"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué línea dice para quién es?",
+          "feedback": {
+            "met": "Elegiste la línea que dice para quién es.",
+            "not_yet": "Todavía no. Rho mostró para quién es un letrero."
+          },
+          "help": [
+            "La parte dos de Rho dice para quién es el letrero.",
+            "Lee cada línea. ¿Cuál nombra a un tipo de niño?"
+          ],
+          "speaker": "Cliente",
+          "line": "Voy en bici a la escuela. ¿Es para mí?",
+          "replies": [
+            {
+              "label": "Lonchera súper genial"
+            },
+            {
+              "label": "La mejor lonchera"
+            },
+            {
+              "label": "Para niños en bici"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Qual linha diz para quem é?",
+          "feedback": {
+            "met": "Você escolheu a linha que diz para quem é.",
+            "not_yet": "Ainda não. O Rho mostrou para quem é um cartaz."
+          },
+          "help": [
+            "A parte dois do Rho diz para quem é o cartaz.",
+            "Leia cada linha. Qual nomeia um tipo de criança?"
+          ],
+          "speaker": "Cliente",
+          "line": "Vou de bicicleta para a escola. É para mim?",
+          "replies": [
+            {
+              "label": "Lancheira super legal"
+            },
+            {
+              "label": "A melhor lancheira"
+            },
+            {
+              "label": "Para crianças de bicicleta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rule: a box sign says who it is for.",
+          "line": "Step 4: turn the box sign. It must say who."
+        },
+        "es-MX": {
+          "prompt": "Regla: un letrero de lonchera dice para quién es.",
+          "line": "Paso 4: voltea el letrero de la lonchera. Debe decir para quién."
+        },
+        "pt-BR": {
+          "prompt": "Regra: um cartaz da lancheira diz para quem ela é.",
+          "line": "Passo 4: vire o cartaz da lancheira. Ele deve dizer para quem."
+        }
+      }
+    },
+    {
+      "id": "ex-05",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: now the card “Does not say who”.",
+          "line": "If it is a box sign, it breaks the rule. Turn it."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: ahora la tarjeta “No dice para quién”.",
+          "line": "Si es un letrero de lonchera, rompe la regla. Voltéala."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: agora o cartão “Não diz para quem”.",
+          "line": "Se for um cartaz da lancheira, ele quebra a regra. Vire-o."
+        }
+      }
+    },
+    {
+      "id": "ex-06",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: two cards stay face down.",
+          "line": "A hat sign cannot break it. “Says who” cannot either."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: dos tarjetas se quedan boca abajo.",
+          "line": "Un letrero de gorra no la rompe. “Dice para quién” tampoco."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: dois cartões ficam virados para baixo.",
+          "line": "Um cartaz de boné não quebra a regra. “Diz para quem” também não."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.rule-checker.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "rule_kind": "permission",
+        "cards": [
+          {
+            "id": "card-says-who"
+          },
+          {
+            "id": "card-box"
+          },
+          {
+            "id": "card-no-who"
+          },
+          {
+            "id": "card-hat"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-box",
+          "card-no-who"
+        ],
+        "roles": {
+          "card-box": "p",
+          "card-hat": "not_p",
+          "card-says-who": "q",
+          "card-no-who": "not_q"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which cards could break the rule?",
+          "feedback": {
+            "met": "You turned the box sign and “Does not say who”.",
+            "not_yet": "Not yet. Remember which cards Rho turned, and why."
+          },
+          "help": [
+            "Rho turned the box sign first, then “Does not say who”.",
+            "A hat sign cannot break a rule about box signs."
+          ],
+          "rule": "A box sign says who it is for.",
+          "cards": [
+            {
+              "face": "Says who"
+            },
+            {
+              "face": "Box sign"
+            },
+            {
+              "face": "Does not say who"
+            },
+            {
+              "face": "Hat sign"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué tarjetas podrían romper la regla?",
+          "feedback": {
+            "met": "Volteaste el letrero de lonchera y “No dice para quién”.",
+            "not_yet": "Todavía no. Recuerda qué tarjetas volteó Rho, y por qué."
+          },
+          "help": [
+            "Rho volteó primero el letrero de lonchera y luego “No dice para quién”.",
+            "Un letrero de gorra no puede romper una regla de loncheras."
+          ],
+          "rule": "Un letrero de lonchera dice para quién es.",
+          "cards": [
+            {
+              "face": "Dice para quién"
+            },
+            {
+              "face": "Letrero de lonchera"
+            },
+            {
+              "face": "No dice para quién"
+            },
+            {
+              "face": "Letrero de gorra"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quais cartões podem quebrar a regra?",
+          "feedback": {
+            "met": "Você virou o cartaz da lancheira e “Não diz para quem”.",
+            "not_yet": "Ainda não. Lembre quais cartões o Rho virou, e por quê."
+          },
+          "help": [
+            "O Rho virou primeiro o cartaz da lancheira e depois “Não diz para quem”.",
+            "Um cartaz de boné não pode quebrar uma regra sobre lancheiras."
+          ],
+          "rule": "Um cartaz da lancheira diz para quem ela é.",
+          "cards": [
+            {
+              "face": "Diz para quem"
+            },
+            {
+              "face": "Cartaz da lancheira"
+            },
+            {
+              "face": "Não diz para quem"
+            },
+            {
+              "face": "Cartaz do boné"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-lid"
+          },
+          {
+            "id": "reply-fun"
+          },
+          {
+            "id": "reply-pretty"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-lid"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick the line that says what it does.",
+          "feedback": {
+            "met": "You picked the line that says what the box does.",
+            "not_yet": "Not yet. Look back at Rho’s first part: what it does."
+          },
+          "help": [
+            "Part one is what it does.",
+            "A good line tells what the box does for you."
+          ],
+          "speaker": "Buyer",
+          "line": "What does this box do?",
+          "replies": [
+            {
+              "label": "Its lid stays shut"
+            },
+            {
+              "label": "So cool, so fun"
+            },
+            {
+              "label": "A pretty blue box"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Elige la línea que dice qué hace.",
+          "feedback": {
+            "met": "Elegiste la línea que dice qué hace la lonchera.",
+            "not_yet": "Todavía no. Mira la primera parte de Rho: lo que hace."
+          },
+          "help": [
+            "La parte uno es qué hace.",
+            "Una buena línea cuenta qué hace la lonchera por ti."
+          ],
+          "speaker": "Cliente",
+          "line": "¿Qué hace esta lonchera?",
+          "replies": [
+            {
+              "label": "Su tapa cierra bien"
+            },
+            {
+              "label": "Súper genial y divertida"
+            },
+            {
+              "label": "Una lonchera azul bonita"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Escolha a linha que diz o que ela faz.",
+          "feedback": {
+            "met": "Você escolheu a linha que diz o que a lancheira faz.",
+            "not_yet": "Ainda não. Olhe a primeira parte do Rho: o que ela faz."
+          },
+          "help": [
+            "A parte um é o que ela faz.",
+            "Uma boa linha conta o que a lancheira faz por você."
+          ],
+          "speaker": "Cliente",
+          "line": "O que faz esta lancheira?",
+          "replies": [
+            {
+              "label": "A tampa fecha bem"
+            },
+            {
+              "label": "Super legal e divertida"
+            },
+            {
+              "label": "Uma lancheira azul bonita"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-best"
+          },
+          {
+            "id": "reply-marks"
+          },
+          {
+            "id": "reply-red"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-marks"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Book fair: which sign helps?",
+          "feedback": {
+            "met": "You picked the sign that says what a bookmark does.",
+            "not_yet": "Not yet. Which sign says what it does for a reader?"
+          },
+          "help": [
+            "Use Rho’s three parts for a bookmark.",
+            "Read each sign. Which one says what it does?"
+          ],
+          "speaker": "Buyer",
+          "line": "I read a lot. I lose my page.",
+          "replies": [
+            {
+              "label": "Best bookmark ever"
+            },
+            {
+              "label": "Marks your page"
+            },
+            {
+              "label": "A red shiny one"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Feria del libro: ¿qué letrero ayuda?",
+          "feedback": {
+            "met": "Elegiste el letrero que dice qué hace un marcapáginas.",
+            "not_yet": "Todavía no. ¿Qué letrero dice qué hace por un lector?"
+          },
+          "help": [
+            "Usa las tres partes de Rho con el marcapáginas.",
+            "Lee cada letrero. ¿Cuál dice qué hace?"
+          ],
+          "speaker": "Cliente",
+          "line": "Leo mucho. Pierdo mi página.",
+          "replies": [
+            {
+              "label": "El mejor marcapáginas"
+            },
+            {
+              "label": "Marca tu página"
+            },
+            {
+              "label": "Uno rojo y brillante"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Feira do livro: qual cartaz ajuda?",
+          "feedback": {
+            "met": "Você escolheu o cartaz que diz o que um marcador faz.",
+            "not_yet": "Ainda não. Qual cartaz diz o que ele faz por um leitor?"
+          },
+          "help": [
+            "Use as três partes do Rho no marcador.",
+            "Leia cada cartaz. Qual diz o que faz?"
+          ],
+          "speaker": "Cliente",
+          "line": "Leio muito. Perco minha página.",
+          "replies": [
+            {
+              "label": "O melhor marcador"
+            },
+            {
+              "label": "Marca sua página"
+            },
+            {
+              "label": "Um vermelho brilhante"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

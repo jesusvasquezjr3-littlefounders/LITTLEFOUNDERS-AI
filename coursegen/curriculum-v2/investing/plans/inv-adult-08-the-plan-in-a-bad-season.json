@@ -1,0 +1,1206 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-baskets-offers-and-a-plan",
+  "lesson_id": "inv-adult-08-the-plan-in-a-bad-season",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.stay-the-course",
+    "invest.long-term-plan",
+    "invest.portfolio-mix"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara enseña con ejemplos qué hacer con un plan a 25 años cuando el saldo cae 30% en el año 8: vender convierte la pérdida en papel en pérdida firme, y un plan escrito en un año tranquilo decide de antemano. La persona compara dos cuadros del año 25, uno de quien vendió y otro de quien mantuvo el plan, y cierra rechazando un mensaje que ofrece certeza a mitad de la caída.",
+  "title": {
+    "es-MX": "El plan en una mala temporada",
+    "en-US": "The plan in a bad season",
+    "pt-BR": "O plano em uma temporada ruim"
+  },
+  "new_concepts": [
+    "invest.stay-the-course",
+    "invest.long-term-plan"
+  ],
+  "regional": {
+    "universal": "A simulated plan in illustrative units and rates: no real account, no named product and no market-specific rule is needed."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Year 8 of a 25-year plan. The balance reads 70,000; last year it read 100,000.",
+          "line": "Down 30%. The plan was written for a year like this, so I read it first."
+        },
+        "es-MX": {
+          "prompt": "Año 8 de un plan a 25 años. El saldo marca 70,000; el año pasado marcaba 100,000.",
+          "line": "Un 30% menos. El plan se escribió para un año como este, así que primero lo leo."
+        },
+        "pt-BR": {
+          "prompt": "Ano 8 de um plano de 25 anos. O saldo mostra 70.000; no ano passado mostrava 100.000.",
+          "line": "Queda de 30%. O plano foi escrito para um ano assim, então primeiro eu o leio."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-sell"
+          },
+          {
+            "id": "opt-keep"
+          },
+          {
+            "id": "opt-switch"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-keep"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we start: what would you do first?",
+          "feedback": {
+            "met": "Noted. We come back to this at the end.",
+            "not_yet": "Noted. We come back to this at the end."
+          },
+          "scene": "A 25-year plan, now in year 8. The balance fell 30% this year.",
+          "options": [
+            {
+              "label": "Sell everything and wait for calm"
+            },
+            {
+              "label": "Keep contributing the same amount"
+            },
+            {
+              "label": "Move to this year's best performer"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué harías primero?",
+          "feedback": {
+            "met": "Anotado. Volvemos a esto al final.",
+            "not_yet": "Anotado. Volvemos a esto al final."
+          },
+          "scene": "Un plan a 25 años, ahora en el año 8. El saldo cayó 30% este año.",
+          "options": [
+            {
+              "label": "Vender todo y esperar la calma"
+            },
+            {
+              "label": "Seguir aportando la misma cantidad"
+            },
+            {
+              "label": "Pasar a lo que más rindió este año"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: o que você faria primeiro?",
+          "feedback": {
+            "met": "Anotado. Voltamos a isso no final.",
+            "not_yet": "Anotado. Voltamos a isso no final."
+          },
+          "scene": "Um plano de 25 anos, agora no ano 8. O saldo caiu 30% este ano.",
+          "options": [
+            {
+              "label": "Vender tudo e esperar a calma"
+            },
+            {
+              "label": "Seguir aportando o mesmo valor"
+            },
+            {
+              "label": "Migrar para o que mais rendeu este ano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01-the-fall",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "candlestick"
+      },
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "ohlc": [
+            {
+              "id": "year-7",
+              "open": 96,
+              "high": 102,
+              "low": 94,
+              "close": 100
+            },
+            {
+              "id": "year-8",
+              "open": 100,
+              "high": 101,
+              "low": 68,
+              "close": 70
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the fall. In year 8, 100 units in the mix drop to 70.",
+          "title": "Value of 100 units held in the mix",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Year 7"
+              },
+              {
+                "label": "Year 8"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: la caída. En el año 8, 100 unidades en la mezcla bajan a 70.",
+          "title": "Valor de 100 unidades en la mezcla",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Año 7"
+              },
+              {
+                "label": "Año 8"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a queda. No ano 8, 100 unidades na mistura caem para 70.",
+          "title": "Valor de 100 unidades na mistura",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Ano 7"
+              },
+              {
+                "label": "Ano 8"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-02-locking-in",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: a loss on paper is not a loss yet. It becomes one when I sell.",
+          "line": "A 30% fall needs a 43% rise to return: 30 on a base of 70."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: una pérdida en papel todavía no es pérdida. Lo es cuando vendo.",
+          "line": "Una caída de 30% necesita una subida de 43% para volver: 30 sobre una base de 70."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: uma perda no papel ainda não é perda. Passa a ser quando eu vendo.",
+          "line": "Uma queda de 30% precisa de uma alta de 43% para voltar: 30 sobre uma base de 70."
+        }
+      }
+    },
+    {
+      "id": "ex-03-written-plan",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the plan, written in a calm year. Five parts, one page.",
+          "line": "Goal, price buffer, mix, years left, one rule: rebalance, keep contributing, no other change for 30 days."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el plan, escrito en un año tranquilo. Cinco partes, una página.",
+          "line": "Meta, colchón de precios, mezcla, años restantes, una regla: rebalancear, seguir aportando, ningún otro cambio por 30 días."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o plano, escrito num ano tranquilo. Cinco partes, uma página.",
+          "line": "Meta, margem de preços, mistura, anos restantes, uma regra: rebalancear, seguir aportando, nenhuma outra mudança por 30 dias."
+        }
+      }
+    },
+    {
+      "id": "g-01-follow-the-rule",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-sell-all"
+          },
+          {
+            "id": "opt-wait"
+          },
+          {
+            "id": "opt-rebalance"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-rebalance"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Replay the season by the written rule. What is the first move?",
+          "help": [
+            "Step 3: the rule names two actions and a wait.",
+            "Compare 64/36 with the 75/25 the plan asks for."
+          ],
+          "feedback": {
+            "met": "You applied the written rule, not the mood of the season.",
+            "not_yet": "Not yet. Reread the rule, then compare 64/36 with 75/25."
+          },
+          "scene": "Balance 70,000. The plan says 75/25 stocks to fixed income; the mix now reads about 64/36.",
+          "options": [
+            {
+              "label": "Sell everything to stop the losses"
+            },
+            {
+              "label": "Leave the mix alone until it recovers"
+            },
+            {
+              "label": "Rebalance to 75/25 and keep contributing"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Repite la temporada con la regla escrita. ¿Cuál es el primer movimiento?",
+          "help": [
+            "Paso 3: la regla nombra dos acciones y una espera.",
+            "Compara 64/36 con el 75/25 que pide el plan."
+          ],
+          "feedback": {
+            "met": "Aplicaste la regla escrita, no el ánimo de la temporada.",
+            "not_yet": "Aún no. Relee la regla y compara 64/36 con 75/25."
+          },
+          "scene": "Saldo 70,000. El plan dice 75/25 de acciones a renta fija; la mezcla marca ahora cerca de 64/36.",
+          "options": [
+            {
+              "label": "Vender todo para frenar las pérdidas"
+            },
+            {
+              "label": "Dejar la mezcla hasta que se recupere"
+            },
+            {
+              "label": "Rebalancear a 75/25 y seguir aportando"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Repita a temporada com a regra escrita. Qual é o primeiro movimento?",
+          "help": [
+            "Passo 3: a regra nomeia duas ações e uma espera.",
+            "Compare 64/36 com o 75/25 que o plano pede."
+          ],
+          "feedback": {
+            "met": "Você aplicou a regra escrita, não o humor da temporada.",
+            "not_yet": "Ainda não. Releia a regra e compare 64/36 com 75/25."
+          },
+          "scene": "Saldo 70.000. O plano diz 75/25 de ações para renda fixa; a mistura agora mostra cerca de 64/36.",
+          "options": [
+            {
+              "label": "Vender tudo para parar as perdas"
+            },
+            {
+              "label": "Deixar a mistura até ela se recuperar"
+            },
+            {
+              "label": "Rebalancear para 75/25 e seguir aportando"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-04-goal",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bullet"
+      },
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "minimum": 0,
+        "maximum": 2000,
+        "target": 1000,
+        "step": 50,
+        "initial": 500,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: today's monthly goal is the 1,000 marker. A 25% buffer adds 250; slide Saved to 1,250."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: la meta mensual de hoy es la marca de 1,000. Un colchón de 25% suma 250; desliza Guardado a 1,250."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a meta mensal de hoje é a marca de 1.000. Uma margem de 25% soma 250; deslize Guardado até 1.250."
+        }
+      }
+    },
+    {
+      "id": "p-01-buffered-goal",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "minimum": 0,
+        "maximum": 3000,
+        "target": 1600,
+        "step": 100,
+        "initial": 1000,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 2000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Another plan: the marker is today's 1,600. Slide Saved to cover it plus a 25% buffer.",
+          "help": [
+            "Step 4: the buffer is 25% of today's cost, added on top.",
+            "Find 25% of the marker first, then add it."
+          ],
+          "feedback": {
+            "met": "The goal now covers today's cost plus the buffer.",
+            "not_yet": "Not yet. Add 25% of today's cost to today's cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "Otro plan: la marca es el 1,600 de hoy. Desliza Guardado para cubrirla más un colchón de 25%.",
+          "help": [
+            "Paso 4: el colchón es 25% del costo de hoy, sumado encima.",
+            "Calcula primero el 25% de la marca y luego súmalo."
+          ],
+          "feedback": {
+            "met": "La meta ya cubre el costo de hoy más el colchón.",
+            "not_yet": "Aún no. Suma 25% del costo de hoy al costo de hoy."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Outro plano: a marca é o 1.600 de hoje. Deslize Guardado para cobri-la mais uma margem de 25%.",
+          "help": [
+            "Passo 4: a margem é 25% do custo de hoje, somada por cima.",
+            "Calcule primeiro 25% da marca e depois some."
+          ],
+          "feedback": {
+            "met": "A meta agora cobre o custo de hoje mais a margem.",
+            "not_yet": "Ainda não. Some 25% do custo de hoje ao custo de hoje."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-05-two-ledgers",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the year-25 ledger. This plan draws 4% of the balance a year as passive income.",
+          "line": "The goal is met when passive income is above expenses. Earned income does not count toward it."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: el cuadro del año 25. Este plan retira 4% del saldo al año como ingreso pasivo.",
+          "line": "La meta se cumple cuando el ingreso pasivo supera los gastos. El ingreso por trabajo no cuenta para ella."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o quadro do ano 25. Este plano retira 4% do saldo por ano como renda passiva.",
+          "line": "A meta é cumprida quando a renda passiva supera as despesas. A renda do trabalho não conta para ela."
+        }
+      }
+    },
+    {
+      "id": "g-02-seller-ledger",
+      "type": "money.cash-flow.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "statement-board"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "items": [
+          {
+            "id": "s-food",
+            "amount": 400
+          },
+          {
+            "id": "s-saved",
+            "amount": 195000
+          },
+          {
+            "id": "s-work",
+            "amount": 900
+          },
+          {
+            "id": "s-housing",
+            "amount": 650
+          },
+          {
+            "id": "s-income",
+            "amount": 650
+          },
+          {
+            "id": "s-loan",
+            "amount": 3000
+          },
+          {
+            "id": "s-health",
+            "amount": 200
+          },
+          {
+            "id": "s-reserve",
+            "amount": 8000
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "earned": [
+              "s-work"
+            ],
+            "passive": [
+              "s-income"
+            ],
+            "expenses": [
+              "s-food",
+              "s-housing",
+              "s-health"
+            ],
+            "assets": [
+              "s-saved",
+              "s-reserve"
+            ],
+            "liabilities": [
+              "s-loan"
+            ],
+            "goal": [
+              "goal-short"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Replay one: sold at the lowest point, in cash since. Sort the year-25 lines, then check the goal.",
+          "help": [
+            "Step 5: passive income is paid by the balance, not by work.",
+            "Add passive income and expenses separately, then compare."
+          ],
+          "feedback": {
+            "met": "You sorted every line and named the goal check.",
+            "not_yet": "Not yet. Sort by what each line does, then compare totals."
+          },
+          "labels": {
+            "s-food": "Food and transport",
+            "s-saved": "Savings held in cash since year 8",
+            "s-work": "Part-time work pay",
+            "s-housing": "Housing and utilities",
+            "s-income": "Monthly income drawn from savings",
+            "s-loan": "Car loan balance",
+            "s-health": "Health and insurance",
+            "s-reserve": "Emergency cash reserve"
+          }
+        },
+        "es-MX": {
+          "prompt": "Repetición uno: vendió en el punto más bajo, en efectivo desde entonces. Ordena las líneas del año 25 y revisa la meta.",
+          "help": [
+            "Paso 5: el ingreso pasivo lo paga el saldo, no el trabajo.",
+            "Suma por separado el ingreso pasivo y los gastos, y compara."
+          ],
+          "feedback": {
+            "met": "Ordenaste cada línea y nombraste la revisión de la meta.",
+            "not_yet": "Aún no. Ordena por lo que hace cada línea y compara los totales."
+          },
+          "labels": {
+            "s-food": "Comida y transporte",
+            "s-saved": "Ahorro en efectivo desde el año 8",
+            "s-work": "Pago por trabajo de medio tiempo",
+            "s-housing": "Vivienda y servicios",
+            "s-income": "Ingreso mensual retirado del ahorro",
+            "s-loan": "Saldo del préstamo del auto",
+            "s-health": "Salud y seguros",
+            "s-reserve": "Reserva de emergencia en efectivo"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Repetição um: vendeu no ponto mais baixo e segue em dinheiro. Organize as linhas do ano 25 e faça a checagem da meta.",
+          "help": [
+            "Passo 5: a renda passiva é paga pelo saldo, não pelo trabalho.",
+            "Some separadamente a renda passiva e as despesas e compare."
+          ],
+          "feedback": {
+            "met": "Você organizou cada linha e nomeou a checagem da meta.",
+            "not_yet": "Ainda não. Organize pelo que cada linha faz e compare os totais."
+          },
+          "labels": {
+            "s-food": "Alimentação e transporte",
+            "s-saved": "Valor guardado em dinheiro desde o ano 8",
+            "s-work": "Pagamento do trabalho de meio período",
+            "s-housing": "Moradia e contas da casa",
+            "s-income": "Renda mensal retirada do valor guardado",
+            "s-loan": "Saldo do financiamento do carro",
+            "s-health": "Saúde e seguros",
+            "s-reserve": "Reserva de emergência em dinheiro"
+          }
+        }
+      }
+    },
+    {
+      "id": "p-02-keeper-ledger",
+      "type": "money.cash-flow.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "statement-board"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "items": [
+          {
+            "id": "k-reserve",
+            "amount": 8000
+          },
+          {
+            "id": "k-housing",
+            "amount": 650
+          },
+          {
+            "id": "k-income",
+            "amount": 1400
+          },
+          {
+            "id": "k-transport",
+            "amount": 100
+          },
+          {
+            "id": "k-loan",
+            "amount": 3000
+          },
+          {
+            "id": "k-work",
+            "amount": 300
+          },
+          {
+            "id": "k-portfolio",
+            "amount": 420000
+          },
+          {
+            "id": "k-food",
+            "amount": 300
+          },
+          {
+            "id": "k-health",
+            "amount": 200
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "earned": [
+              "k-work"
+            ],
+            "passive": [
+              "k-income"
+            ],
+            "expenses": [
+              "k-housing",
+              "k-transport",
+              "k-food",
+              "k-health"
+            ],
+            "assets": [
+              "k-portfolio",
+              "k-reserve"
+            ],
+            "liabilities": [
+              "k-loan"
+            ],
+            "goal": [
+              "goal-met"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Replay two: kept the plan through the fall. Sort the year-25 lines, then run the goal check.",
+          "feedback": {
+            "met": "Every line is placed and the goal check is named.",
+            "not_yet": "Not yet. Ask what each line pays or costs, then compare totals."
+          },
+          "labels": {
+            "k-reserve": "Emergency cash reserve",
+            "k-housing": "Housing and utilities",
+            "k-income": "Monthly income drawn from the portfolio",
+            "k-transport": "Transport",
+            "k-loan": "Car loan balance",
+            "k-work": "Part-time work pay",
+            "k-portfolio": "Portfolio balance, kept in the mix",
+            "k-food": "Food",
+            "k-health": "Health and insurance"
+          }
+        },
+        "es-MX": {
+          "prompt": "Repetición dos: mantuvo el plan durante la caída. Ordena las líneas del año 25 y revisa la meta.",
+          "feedback": {
+            "met": "Cada línea está colocada y la revisión de la meta, nombrada.",
+            "not_yet": "Aún no. Pregunta qué paga o cuesta cada línea y compara los totales."
+          },
+          "labels": {
+            "k-reserve": "Reserva de emergencia en efectivo",
+            "k-housing": "Vivienda y servicios",
+            "k-income": "Ingreso mensual retirado del portafolio",
+            "k-transport": "Transporte",
+            "k-loan": "Saldo del préstamo del auto",
+            "k-work": "Pago por trabajo de medio tiempo",
+            "k-portfolio": "Saldo del portafolio, dentro de la mezcla",
+            "k-food": "Comida",
+            "k-health": "Salud y seguros"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Repetição dois: manteve o plano durante a queda. Organize as linhas do ano 25 e confira a meta.",
+          "feedback": {
+            "met": "Cada linha está no lugar e a checagem da meta, nomeada.",
+            "not_yet": "Ainda não. Pergunte o que cada linha paga ou custa e compare os totais."
+          },
+          "labels": {
+            "k-reserve": "Reserva de emergência em dinheiro",
+            "k-housing": "Moradia e contas da casa",
+            "k-income": "Renda mensal retirada da carteira",
+            "k-transport": "Transporte",
+            "k-loan": "Saldo do financiamento do carro",
+            "k-work": "Pagamento do trabalho de meio período",
+            "k-portfolio": "Saldo da carteira, mantido na mistura",
+            "k-food": "Alimentação",
+            "k-health": "Saúde e seguros"
+          }
+        }
+      }
+    },
+    {
+      "id": "p-03-sold-or-held",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "candlestick"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "ohlc": [
+            {
+              "id": "year-7",
+              "open": 96,
+              "high": 102,
+              "low": 94,
+              "close": 100
+            },
+            {
+              "id": "year-8",
+              "open": 100,
+              "high": 101,
+              "low": 68,
+              "close": 70
+            },
+            {
+              "id": "year-9",
+              "open": 70,
+              "high": 76,
+              "low": 64,
+              "close": 72
+            },
+            {
+              "id": "year-10",
+              "open": 72,
+              "high": 86,
+              "low": 70,
+              "close": 84
+            },
+            {
+              "id": "year-11",
+              "open": 84,
+              "high": 98,
+              "low": 82,
+              "close": 96
+            },
+            {
+              "id": "year-12",
+              "open": 96,
+              "high": 108,
+              "low": 94,
+              "close": 106
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-36"
+            },
+            {
+              "id": "opt-30"
+            },
+            {
+              "id": "opt-none"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-36"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An illustrative path, not a forecast. One person sold at the year-8 close and held cash.",
+          "help": [
+            "Read the close of year 8, then the close of year 12.",
+            "The seller still holds what year 8 closed at."
+          ],
+          "feedback": {
+            "met": "You read both closes and compared holding with selling.",
+            "not_yet": "Not yet. Compare the year-12 close with the year-8 close."
+          },
+          "title": "Value of 100 units held in the mix",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Year 7"
+              },
+              {
+                "label": "Year 8"
+              },
+              {
+                "label": "Year 9"
+              },
+              {
+                "label": "Year 10"
+              },
+              {
+                "label": "Year 11"
+              },
+              {
+                "label": "Year 12"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Cash earns nothing here. At the year-12 close, how far behind is the seller, per 100 units?",
+            "options": [
+              {
+                "label": "36 units: held 106, cash 70"
+              },
+              {
+                "label": "30 units, the size of the fall"
+              },
+              {
+                "label": "Nothing; selling avoided the fall"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Una trayectoria ilustrativa, no un pronóstico. Una persona vendió al cierre del año 8 y mantuvo efectivo.",
+          "help": [
+            "Lee el cierre del año 8 y luego el del año 12.",
+            "Quien vendió conserva lo que cerró el año 8."
+          ],
+          "feedback": {
+            "met": "Leíste ambos cierres y comparaste mantener con vender.",
+            "not_yet": "Aún no. Compara el cierre del año 12 con el del año 8."
+          },
+          "title": "Valor de 100 unidades en la mezcla",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Año 7"
+              },
+              {
+                "label": "Año 8"
+              },
+              {
+                "label": "Año 9"
+              },
+              {
+                "label": "Año 10"
+              },
+              {
+                "label": "Año 11"
+              },
+              {
+                "label": "Año 12"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Aquí el efectivo no rinde nada. Al cierre del año 12, ¿cuánto se atrasa quien vendió, por cada 100 unidades?",
+            "options": [
+              {
+                "label": "36 unidades: 106 si se mantuvo, 70 en efectivo"
+              },
+              {
+                "label": "30 unidades, el tamaño de la caída"
+              },
+              {
+                "label": "Nada; vender evitó la caída"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma trajetória ilustrativa, não uma previsão. Uma pessoa vendeu no fechamento do ano 8 e ficou em dinheiro.",
+          "help": [
+            "Leia o fechamento do ano 8 e depois o do ano 12.",
+            "Quem vendeu mantém o que fechou o ano 8."
+          ],
+          "feedback": {
+            "met": "Você leu os dois fechamentos e comparou manter com vender.",
+            "not_yet": "Ainda não. Compare o fechamento do ano 12 com o do ano 8."
+          },
+          "title": "Valor de 100 unidades na mistura",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Ano 7"
+              },
+              {
+                "label": "Ano 8"
+              },
+              {
+                "label": "Ano 9"
+              },
+              {
+                "label": "Ano 10"
+              },
+              {
+                "label": "Ano 11"
+              },
+              {
+                "label": "Ano 12"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Aqui o dinheiro parado não rende nada. No fechamento do ano 12, quanto fica atrás quem vendeu, a cada 100 unidades?",
+            "options": [
+              {
+                "label": "36 unidades: 106 se manteve, 70 em dinheiro"
+              },
+              {
+                "label": "30 unidades, o tamanho da queda"
+              },
+              {
+                "label": "Nada; vender evitou a queda"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-06-the-sure-thing",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: mid-fall, a message: “Move everything into my sure thing today. Guaranteed 12%.”",
+          "line": "It sells certainty to someone afraid. My rule: wait 30 days, and ask where 12% comes from."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: a mitad de la caída llega un mensaje: “Pasa todo a mi opción segura hoy. 12% garantizado.”",
+          "line": "El mensaje vende certeza a alguien con miedo. Mi regla: esperar 30 días y preguntar de dónde sale el 12%."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: no meio da queda chega uma mensagem: “Passe tudo para a minha opção segura hoje. 12% garantido.”",
+          "line": "A mensagem vende certeza a quem está com medo. Minha regra: esperar 30 dias e perguntar de onde vêm os 12%."
+        }
+      }
+    },
+    {
+      "id": "t-01-the-message",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-move"
+          },
+          {
+            "id": "choice-wait"
+          },
+          {
+            "id": "choice-ask"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "r-safer"
+          },
+          {
+            "id": "r-pressure"
+          },
+          {
+            "id": "r-recovers"
+          },
+          {
+            "id": "r-details"
+          },
+          {
+            "id": "r-rule"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-wait"
+        ],
+        "reasonQuality": {
+          "r-safer": "unsupported",
+          "r-pressure": "sound",
+          "r-recovers": "unsupported",
+          "r-details": "partial",
+          "r-rule": "sound"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your plan is down 25%. A colleague writes: “Everything into my sure thing by Friday; it never falls.”",
+          "help": [
+            "Step 6: what does the message sell, and by when?",
+            "Compare it with what the written rule says."
+          ],
+          "feedback": {
+            "met": "You turned down the offer and kept to the written rule.",
+            "not_yet": "Not yet. Name the pressure in the message, then reread the rule."
+          },
+          "choices": [
+            {
+              "label": "Move it all by Friday"
+            },
+            {
+              "label": "Decline; follow the written 30-day rule"
+            },
+            {
+              "label": "Ask for details, then decide by Friday"
+            }
+          ],
+          "reasonPrompt": "Pick the reason that best supports your choice.",
+          "reasons": [
+            {
+              "label": "A sure thing beats a falling plan"
+            },
+            {
+              "label": "Fear and a Friday deadline push the decision"
+            },
+            {
+              "label": "A fall this size always recovers"
+            },
+            {
+              "label": "Details could show whether it is real"
+            },
+            {
+              "label": "The rule was written before the fall"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu plan va 25% abajo. Un colega escribe: “Todo a mi opción segura antes del viernes; nunca baja.”",
+          "help": [
+            "Paso 6: ¿qué vende el mensaje y para cuándo?",
+            "Compáralo con lo que dice la regla escrita."
+          ],
+          "feedback": {
+            "met": "Rechazaste la oferta y seguiste la regla escrita.",
+            "not_yet": "Aún no. Nombra la presión del mensaje y relee la regla."
+          },
+          "choices": [
+            {
+              "label": "Pasar todo antes del viernes"
+            },
+            {
+              "label": "Rechazar; seguir la regla escrita de 30 días"
+            },
+            {
+              "label": "Pedir detalles y decidir antes del viernes"
+            }
+          ],
+          "reasonPrompt": "Elige la razón que mejor respalda tu elección.",
+          "reasons": [
+            {
+              "label": "Algo seguro vale más que un plan en caída"
+            },
+            {
+              "label": "El miedo y un plazo empujan la decisión"
+            },
+            {
+              "label": "Una caída así siempre se recupera"
+            },
+            {
+              "label": "Los detalles podrían mostrar si es real"
+            },
+            {
+              "label": "La regla se escribió antes de la caída"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu plano está 25% abaixo. Um colega escreve: “Tudo na minha opção segura até sexta; nunca cai.”",
+          "help": [
+            "Passo 6: o que a mensagem vende e para quando?",
+            "Compare com o que diz a regra escrita."
+          ],
+          "feedback": {
+            "met": "Você recusou a oferta e seguiu a regra escrita.",
+            "not_yet": "Ainda não. Nomeie a pressão da mensagem e releia a regra."
+          },
+          "choices": [
+            {
+              "label": "Passar tudo até sexta"
+            },
+            {
+              "label": "Recusar; seguir a regra escrita de 30 dias"
+            },
+            {
+              "label": "Pedir detalhes e decidir até sexta"
+            }
+          ],
+          "reasonPrompt": "Escolha o motivo que melhor sustenta sua escolha.",
+          "reasons": [
+            {
+              "label": "Algo seguro vale mais que um plano em queda"
+            },
+            {
+              "label": "O medo e um prazo empurram a decisão"
+            },
+            {
+              "label": "Uma queda assim sempre se recupera"
+            },
+            {
+              "label": "Os detalhes poderiam mostrar se é real"
+            },
+            {
+              "label": "A regra foi escrita antes da queda"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

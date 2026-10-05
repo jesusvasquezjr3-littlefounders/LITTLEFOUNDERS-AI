@@ -1,0 +1,1628 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-the-clock-and-your-money",
+  "lesson_id": "inv-1317-03-the-early-starter",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.start-early",
+    "invest.compound-growth"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara pone lado a lado dos registros de práctica: Ana ahorra 100 monedas al año de los 15 a los 25 y Bruno de los 25 a los 45, ambos al 7%. El aprendiz sigue la regla del registro año por año, lee la gráfica de líneas y la de áreas, compara el primer depósito de cada uno y ve por qué quien empieza antes termina con más; al final decide en otro caso, los planes del fondo de un primo.",
+  "title": {
+    "en-US": "The early starter",
+    "es-MX": "El que empieza temprano",
+    "pt-BR": "Quem começa cedo"
+  },
+  "new_concepts": [
+    "invest.start-early"
+  ],
+  "regional": {
+    "universal": "Only LittleFounders coins and a pretend fund at a labelled rate; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara sets two sandbox ledgers side by side: Ana's and Bruno's. Both save 100 coins a year at 7%.",
+          "line": "Ana saves from 15 to 25, Bruno from 25 to 45. We compare them at 45."
+        },
+        "es-MX": {
+          "prompt": "Zara pone dos registros de práctica lado a lado: el de Ana y el de Bruno. Ambos ahorran 100 monedas al año al 7%.",
+          "line": "Ana ahorra de los 15 a los 25, Bruno de los 25 a los 45. Los comparamos a los 45."
+        },
+        "pt-BR": {
+          "prompt": "Zara põe dois registros lado a lado: o da Ana e o do Bruno. Os dois poupam 100 moedas por ano, a 7%.",
+          "line": "Ana poupa dos 15 aos 25, Bruno dos 25 aos 45. Vamos comparar os dois aos 45."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-bruno"
+          },
+          {
+            "id": "choice-same"
+          },
+          {
+            "id": "choice-ana"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rule"
+          },
+          {
+            "id": "reason-compared"
+          },
+          {
+            "id": "reason-guess"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-ana"
+        ],
+        "reasonQuality": {
+          "reason-compared": "sound",
+          "reason-rule": "partial",
+          "reason-guess": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Zara's ledgers, Ana saved 15 to 25, Bruno 25 to 45. Who holds more at 45?",
+          "feedback": {
+            "met": "Noted, I see your thinking. Now we count it out.",
+            "not_yet": "Noted, I see your thinking. Now we count it out."
+          },
+          "choices": [
+            {
+              "label": "Bruno holds more"
+            },
+            {
+              "label": "They hold the same"
+            },
+            {
+              "label": "Ana holds more"
+            }
+          ],
+          "reasonPrompt": "What is your answer based on?",
+          "reasons": [
+            {
+              "label": "I used a rule of thumb"
+            },
+            {
+              "label": "I compared how long each fund grows"
+            },
+            {
+              "label": "It is only a hunch"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara anota: Ana ahorró de los 15 a los 25 y Bruno de los 25 a los 45. ¿Quién tiene más a los 45?",
+          "feedback": {
+            "met": "Anotado, así veo cómo piensas. Ahora lo contamos.",
+            "not_yet": "Anotado, así veo cómo piensas. Ahora lo contamos."
+          },
+          "choices": [
+            {
+              "label": "Bruno tiene más"
+            },
+            {
+              "label": "Tienen lo mismo"
+            },
+            {
+              "label": "Ana tiene más"
+            }
+          ],
+          "reasonPrompt": "¿En qué basas tu respuesta?",
+          "reasons": [
+            {
+              "label": "Usé una regla general"
+            },
+            {
+              "label": "Comparé cuánto tiempo crece cada fondo"
+            },
+            {
+              "label": "Solo es una corazonada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nos registros da Zara, Ana poupou dos 15 aos 25 e Bruno dos 25 aos 45. Quem tem mais aos 45?",
+          "feedback": {
+            "met": "Anotado, assim vejo como você pensa. Agora vamos contar.",
+            "not_yet": "Anotado, assim vejo como você pensa. Agora vamos contar."
+          },
+          "choices": [
+            {
+              "label": "Bruno tem mais"
+            },
+            {
+              "label": "Têm o mesmo valor"
+            },
+            {
+              "label": "Ana tem mais"
+            }
+          ],
+          "reasonPrompt": "No que você baseia sua resposta?",
+          "reasons": [
+            {
+              "label": "Usei uma regra geral"
+            },
+            {
+              "label": "Comparei por quanto tempo cada fundo cresce"
+            },
+            {
+              "label": "É só um palpite"
+            }
+          ]
+        }
+      },
+      "item_phase": "pre"
+    },
+    {
+      "id": "example-rule-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. Ana's ledger rule: multiply last year's balance by 1.07, then add her 100.",
+          "line": "Year 1: 100; year 2: 100 × 1.07 + 100 = 207; year 3: 207 × 1.07 + 100 = 321.49."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. La regla del registro de Ana: multiplica el saldo del año anterior por 1.07 y suma sus 100.",
+          "line": "Año 1: 100; año 2: 100 × 1.07 + 100 = 207; año 3: 207 × 1.07 + 100 = 321.49."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. A regra do registro da Ana: multiplique o saldo do ano anterior por 1,07 e some os 100 dela.",
+          "line": "Ano 1: 100; ano 2: 100 × 1,07 + 100 = 207; ano 3: 207 × 1,07 + 100 = 321,49."
+        }
+      }
+    },
+    {
+      "id": "example-ana-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Ten years of the rule take Ana to 1,381.64 at 25, and she stops.",
+          "line": "Twenty more years of 7% take it to about 5,350. She deposited only 1,000."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Diez años de la regla llevan a Ana a 1,381.64 a los 25, y ella se detiene.",
+          "line": "Veinte años más al 7% lo llevan a unos 5,350. Depositó solo 1,000."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Dez anos da regra levam a Ana a 1.381,64 aos 25, e ela para.",
+          "line": "Mais vinte anos a 7% levam o fundo a cerca de 5.350. Ela depositou só 1.000."
+        }
+      }
+    },
+    {
+      "id": "example-bruno-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. Bruno runs the same rule for 20 years and holds about 4,100 at 45.",
+          "line": "He deposited 2,000, twice Ana's total, and still ends about 1,250 behind her."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Bruno aplica la misma regla por 20 años y tiene unos 4,100 a los 45.",
+          "line": "Depositó 2,000, el doble que Ana, y aun así termina unos 1,250 por debajo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Bruno aplica a mesma regra por 20 anos e tem cerca de 4.100 aos 45.",
+          "line": "Ele depositou 2.000, o dobro da Ana, e ainda termina cerca de 1.250 abaixo dela."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "steps": [
+          {
+            "id": "year-1"
+          },
+          {
+            "id": "year-2"
+          },
+          {
+            "id": "year-3"
+          },
+          {
+            "id": "year-4"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "year-2",
+          "year-3",
+          "year-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year-2": "210",
+          "year-3": "331",
+          "year-4": "464.1"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara tests a faster sandbox fund: 100 a year at 10%. Predict each year's balance.",
+          "feedback": {
+            "met": "You applied the ledger rule to each new balance, year by year.",
+            "not_yet": "Not yet. Each year: last balance times 1.10, then add 100."
+          },
+          "help": [
+            "Like Ana's ledger: grow the last balance, then add the deposit.",
+            "Year 2 grows the year 1 balance, then adds 100."
+          ],
+          "steps": [
+            {
+              "expression": "First deposit",
+              "result": "100",
+              "spokenText": "The first deposit is 100"
+            },
+            {
+              "expression": "Year 1 balance × 1.10 + 100",
+              "result": "210",
+              "spokenText": "The year 1 balance times 1.10 plus 100 is 210"
+            },
+            {
+              "expression": "Year 2 balance × 1.10 + 100",
+              "result": "331",
+              "spokenText": "The year 2 balance times 1.10 plus 100 is 331"
+            },
+            {
+              "expression": "Year 3 balance × 1.10 + 100",
+              "result": "464.1",
+              "spokenText": "The year 3 balance times 1.10 plus 100 is 464.1"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara prueba un fondo más rápido: 100 al año al 10%. Predice el saldo de cada año.",
+          "feedback": {
+            "met": "Aplicaste la regla del registro a cada saldo nuevo, año por año.",
+            "not_yet": "Aún no. Cada año: saldo anterior por 1.10 y luego suma 100."
+          },
+          "help": [
+            "Como el registro de Ana: crece el último saldo y luego suma el depósito.",
+            "El año 2 hace crecer el saldo del año 1 y suma 100."
+          ],
+          "steps": [
+            {
+              "expression": "Primer depósito",
+              "result": "100",
+              "spokenText": "El primer depósito es 100"
+            },
+            {
+              "expression": "Saldo del año 1 × 1.10 + 100",
+              "result": "210",
+              "spokenText": "El saldo del año 1 por 1.10 más 100 es 210"
+            },
+            {
+              "expression": "Saldo del año 2 × 1.10 + 100",
+              "result": "331",
+              "spokenText": "El saldo del año 2 por 1.10 más 100 es 331"
+            },
+            {
+              "expression": "Saldo del año 3 × 1.10 + 100",
+              "result": "464.1",
+              "spokenText": "El saldo del año 3 por 1.10 más 100 es 464.1"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Zara testa um fundo mais rápido: 100 por ano a 10%. Preveja o saldo de cada ano.",
+          "feedback": {
+            "met": "Você aplicou a regra do registro a cada saldo novo, ano a ano.",
+            "not_yet": "Ainda não. A cada ano: saldo anterior vezes 1,10 e depois some 100."
+          },
+          "help": [
+            "Como o registro da Ana: faça o último saldo crescer e some o depósito.",
+            "O ano 2 faz o saldo do ano 1 crescer e soma 100."
+          ],
+          "steps": [
+            {
+              "expression": "Primeiro depósito",
+              "result": "100",
+              "spokenText": "O primeiro depósito é 100"
+            },
+            {
+              "expression": "Saldo do ano 1 × 1,10 + 100",
+              "result": "210",
+              "spokenText": "O saldo do ano 1 vezes 1,10 mais 100 é 210"
+            },
+            {
+              "expression": "Saldo do ano 2 × 1,10 + 100",
+              "result": "331",
+              "spokenText": "O saldo do ano 2 vezes 1,10 mais 100 é 331"
+            },
+            {
+              "expression": "Saldo do ano 3 × 1,10 + 100",
+              "result": "464,1",
+              "spokenText": "O saldo do ano 3 vezes 1,10 mais 100 é 464,1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-lines-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "age-15"
+            },
+            {
+              "id": "age-20"
+            },
+            {
+              "id": "age-25"
+            },
+            {
+              "id": "age-30"
+            },
+            {
+              "id": "age-35"
+            },
+            {
+              "id": "age-40"
+            },
+            {
+              "id": "age-45"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-ana",
+              "values": [
+                0,
+                575,
+                1382,
+                1938,
+                2718,
+                3812,
+                5347
+              ]
+            },
+            {
+              "id": "series-bruno",
+              "values": [
+                0,
+                0,
+                0,
+                575,
+                1382,
+                2513,
+                4100
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4. Zara charts both ledgers from 15 to 45. Ana's line keeps climbing after she stops.",
+          "title": "Ana and Bruno, 100 a year at 7%",
+          "data": {
+            "categories": [
+              {
+                "label": "Age 15"
+              },
+              {
+                "label": "Age 20"
+              },
+              {
+                "label": "Age 25"
+              },
+              {
+                "label": "Age 30"
+              },
+              {
+                "label": "Age 35"
+              },
+              {
+                "label": "Age 40"
+              },
+              {
+                "label": "Age 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ana (saves 15 to 25)"
+              },
+              {
+                "label": "Bruno (saves 25 to 45)"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 4. Zara grafica ambos registros de los 15 a los 45. La línea de Ana sigue subiendo sin nuevos depósitos.",
+          "title": "Ana y Bruno, 100 al año al 7%",
+          "data": {
+            "categories": [
+              {
+                "label": "Edad 15"
+              },
+              {
+                "label": "Edad 20"
+              },
+              {
+                "label": "Edad 25"
+              },
+              {
+                "label": "Edad 30"
+              },
+              {
+                "label": "Edad 35"
+              },
+              {
+                "label": "Edad 40"
+              },
+              {
+                "label": "Edad 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ana (ahorra de 15 a 25)"
+              },
+              {
+                "label": "Bruno (ahorra de 25 a 45)"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 4. A Zara faz o gráfico dos dois registros dos 15 aos 45. A linha da Ana segue subindo sem depósitos.",
+          "title": "Ana e Bruno, 100 por ano a 7%",
+          "data": {
+            "categories": [
+              {
+                "label": "Idade 15"
+              },
+              {
+                "label": "Idade 20"
+              },
+              {
+                "label": "Idade 25"
+              },
+              {
+                "label": "Idade 30"
+              },
+              {
+                "label": "Idade 35"
+              },
+              {
+                "label": "Idade 40"
+              },
+              {
+                "label": "Idade 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ana (poupa dos 15 aos 25)"
+              },
+              {
+                "label": "Bruno (poupa dos 25 aos 45)"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-first-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5. Compare each saver's first 100: Ana's grows 29 years, Bruno's 19.",
+          "line": "Ana's first 100 reaches about 711, Bruno's about 362. Ten extra years nearly double it."
+        },
+        "es-MX": {
+          "prompt": "Paso 5. Compara el primer 100 de cada uno: el de Ana crece 29 años, el de Bruno 19.",
+          "line": "El primer 100 de Ana llega a unos 711; el de Bruno, a unos 362. Diez años más casi lo duplican."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5. Compare o primeiro 100 de cada um: o da Ana rende 29 anos, o do Bruno 19.",
+          "line": "O primeiro 100 da Ana chega a cerca de 711; o do Bruno, a cerca de 362. Dez anos a mais quase dobram o valor."
+        }
+      }
+    },
+    {
+      "id": "practice-first-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "steps": [
+          {
+            "id": "one-year"
+          },
+          {
+            "id": "two-years"
+          },
+          {
+            "id": "three-years"
+          },
+          {
+            "id": "extra"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "two-years",
+          "three-years",
+          "extra"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "two-years": "72",
+          "three-years": "86.4",
+          "extra": "26.4"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara compares two 50-coin deposits at 20%: the early one works 3 years, the late one 1 year.",
+          "feedback": {
+            "met": "You grew one deposit year by year, then compared early with late.",
+            "not_yet": "Not yet. Each extra year multiplies the previous value by 1.20."
+          },
+          "help": [
+            "Like Zara's first 100s: more years at work, more growth.",
+            "Then subtract the late deposit from the early one."
+          ],
+          "steps": [
+            {
+              "expression": "50 × 1.20",
+              "result": "60",
+              "spokenText": "50 times 1.20 is 60"
+            },
+            {
+              "expression": "One-year value × 1.20",
+              "result": "72",
+              "spokenText": "The one-year value times 1.20 is 72"
+            },
+            {
+              "expression": "Two-year value × 1.20",
+              "result": "86.4",
+              "spokenText": "The two-year value times 1.20 is 86.4"
+            },
+            {
+              "expression": "Three-year value − one-year value",
+              "result": "26.4",
+              "spokenText": "The three-year value minus the one-year value is 26.4"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara compara dos depósitos de 50 monedas al 20%: el temprano rinde 3 años, el tardío 1.",
+          "feedback": {
+            "met": "Hiciste crecer un depósito año por año y comparaste el temprano con el tardío.",
+            "not_yet": "Aún no. Cada año extra multiplica el valor anterior por 1.20."
+          },
+          "help": [
+            "Como los primeros 100 de Zara: más años trabajando, más crecimiento.",
+            "Luego resta el depósito tardío del temprano."
+          ],
+          "steps": [
+            {
+              "expression": "50 × 1.20",
+              "result": "60",
+              "spokenText": "50 por 1.20 es 60"
+            },
+            {
+              "expression": "Valor de 1 año × 1.20",
+              "result": "72",
+              "spokenText": "El valor de 1 año por 1.20 es 72"
+            },
+            {
+              "expression": "Valor de 2 años × 1.20",
+              "result": "86.4",
+              "spokenText": "El valor de 2 años por 1.20 es 86.4"
+            },
+            {
+              "expression": "Valor de 3 años − valor de 1 año",
+              "result": "26.4",
+              "spokenText": "El valor de 3 años menos el de 1 año es 26.4"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Zara compara dois depósitos de 50 moedas a 20%: o feito cedo rende 3 anos, o feito tarde 1.",
+          "feedback": {
+            "met": "Você fez o depósito crescer ano a ano e comparou cedo com tarde.",
+            "not_yet": "Ainda não. Cada ano extra multiplica o valor anterior por 1,20."
+          },
+          "help": [
+            "Como os primeiros 100 da Zara: mais anos rendendo, mais crescimento.",
+            "Depois subtraia o depósito feito tarde do feito cedo."
+          ],
+          "steps": [
+            {
+              "expression": "50 × 1,20",
+              "result": "60",
+              "spokenText": "50 vezes 1,20 é 60"
+            },
+            {
+              "expression": "Valor de 1 ano × 1,20",
+              "result": "72",
+              "spokenText": "O valor de 1 ano vezes 1,20 é 72"
+            },
+            {
+              "expression": "Valor de 2 anos × 1,20",
+              "result": "86,4",
+              "spokenText": "O valor de 2 anos vezes 1,20 é 86,4"
+            },
+            {
+              "expression": "Valor de 3 anos − valor de 1 ano",
+              "result": "26,4",
+              "spokenText": "O valor de 3 anos menos o de 1 ano é 26,4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-split-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "stacked-area"
+      },
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "age-15"
+            },
+            {
+              "id": "age-20"
+            },
+            {
+              "id": "age-25"
+            },
+            {
+              "id": "age-30"
+            },
+            {
+              "id": "age-35"
+            },
+            {
+              "id": "age-40"
+            },
+            {
+              "id": "age-45"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-deposits",
+              "values": [
+                0,
+                500,
+                1000,
+                1000,
+                1000,
+                1000,
+                1000
+              ]
+            },
+            {
+              "id": "series-growth",
+              "values": [
+                0,
+                75,
+                382,
+                938,
+                1718,
+                2812,
+                4347
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6. Zara splits Ana's fund: by 45, 1,000 is deposits and about 4,350 is growth.",
+          "title": "Ana's fund: deposits and growth",
+          "data": {
+            "categories": [
+              {
+                "label": "Age 15"
+              },
+              {
+                "label": "Age 20"
+              },
+              {
+                "label": "Age 25"
+              },
+              {
+                "label": "Age 30"
+              },
+              {
+                "label": "Age 35"
+              },
+              {
+                "label": "Age 40"
+              },
+              {
+                "label": "Age 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Deposits"
+              },
+              {
+                "label": "Growth"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 6. Zara separa el fondo de Ana: a los 45, 1,000 son depósitos y unos 4,350 son crecimiento.",
+          "title": "El fondo de Ana: depósitos y crecimiento",
+          "data": {
+            "categories": [
+              {
+                "label": "Edad 15"
+              },
+              {
+                "label": "Edad 20"
+              },
+              {
+                "label": "Edad 25"
+              },
+              {
+                "label": "Edad 30"
+              },
+              {
+                "label": "Edad 35"
+              },
+              {
+                "label": "Edad 40"
+              },
+              {
+                "label": "Edad 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Depósitos"
+              },
+              {
+                "label": "Crecimiento"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 6. A Zara separa o fundo da Ana: aos 45, 1.000 são depósitos e cerca de 4.350 são crescimento.",
+          "title": "O fundo da Ana: depósitos e crescimento",
+          "data": {
+            "categories": [
+              {
+                "label": "Idade 15"
+              },
+              {
+                "label": "Idade 20"
+              },
+              {
+                "label": "Idade 25"
+              },
+              {
+                "label": "Idade 30"
+              },
+              {
+                "label": "Idade 35"
+              },
+              {
+                "label": "Idade 40"
+              },
+              {
+                "label": "Idade 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Depósitos"
+              },
+              {
+                "label": "Crescimento"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-split-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "stacked-area"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "age-15"
+            },
+            {
+              "id": "age-20"
+            },
+            {
+              "id": "age-25"
+            },
+            {
+              "id": "age-30"
+            },
+            {
+              "id": "age-35"
+            },
+            {
+              "id": "age-40"
+            },
+            {
+              "id": "age-45"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-deposits",
+              "values": [
+                0,
+                0,
+                0,
+                500,
+                1000,
+                1500,
+                2000
+              ]
+            },
+            {
+              "id": "series-growth",
+              "values": [
+                0,
+                0,
+                0,
+                75,
+                382,
+                1013,
+                2100
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-much"
+            },
+            {
+              "id": "opt-little"
+            },
+            {
+              "id": "opt-equal"
+            },
+            {
+              "id": "opt-deposits"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-deposits"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara splits Bruno's fund the same way: coins he put in and growth the fund added.",
+          "feedback": {
+            "met": "You compared the two parts of Bruno's fund at the same age.",
+            "not_yet": "Not yet. Read the deposits and growth values at age 35."
+          },
+          "help": [
+            "Like Ana's split: the two parts stack into the whole fund."
+          ],
+          "title": "Bruno's fund: deposits and growth",
+          "data": {
+            "categories": [
+              {
+                "label": "Age 15"
+              },
+              {
+                "label": "Age 20"
+              },
+              {
+                "label": "Age 25"
+              },
+              {
+                "label": "Age 30"
+              },
+              {
+                "label": "Age 35"
+              },
+              {
+                "label": "Age 40"
+              },
+              {
+                "label": "Age 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Deposits"
+              },
+              {
+                "label": "Growth"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "At 35, how do Bruno's deposits and growth compare?",
+            "options": [
+              {
+                "label": "Growth is much larger"
+              },
+              {
+                "label": "Growth is a little larger"
+              },
+              {
+                "label": "They are exactly equal"
+              },
+              {
+                "label": "Deposits are larger"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Zara separa el fondo de Bruno igual: monedas que puso y crecimiento que sumó el fondo.",
+          "feedback": {
+            "met": "Comparaste las dos partes del fondo de Bruno a la misma edad.",
+            "not_yet": "Aún no. Lee los valores de depósitos y crecimiento a los 35."
+          },
+          "help": [
+            "Como con Ana: las dos partes se apilan en el fondo completo."
+          ],
+          "title": "El fondo de Bruno: depósitos y crecimiento",
+          "data": {
+            "categories": [
+              {
+                "label": "Edad 15"
+              },
+              {
+                "label": "Edad 20"
+              },
+              {
+                "label": "Edad 25"
+              },
+              {
+                "label": "Edad 30"
+              },
+              {
+                "label": "Edad 35"
+              },
+              {
+                "label": "Edad 40"
+              },
+              {
+                "label": "Edad 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Depósitos"
+              },
+              {
+                "label": "Crecimiento"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "A los 35, ¿cómo se comparan los depósitos y el crecimiento de Bruno?",
+            "options": [
+              {
+                "label": "El crecimiento es mucho mayor"
+              },
+              {
+                "label": "El crecimiento es un poco mayor"
+              },
+              {
+                "label": "Son exactamente iguales"
+              },
+              {
+                "label": "Los depósitos son mayores"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Zara separa o fundo do Bruno do mesmo jeito: moedas que ele pôs e crescimento que o fundo somou.",
+          "feedback": {
+            "met": "Você comparou as duas partes do fundo do Bruno na mesma idade.",
+            "not_yet": "Ainda não. Leia os valores de depósitos e crescimento aos 35."
+          },
+          "help": [
+            "Como com a Ana: as duas partes se empilham no fundo inteiro."
+          ],
+          "title": "O fundo do Bruno: depósitos e crescimento",
+          "data": {
+            "categories": [
+              {
+                "label": "Idade 15"
+              },
+              {
+                "label": "Idade 20"
+              },
+              {
+                "label": "Idade 25"
+              },
+              {
+                "label": "Idade 30"
+              },
+              {
+                "label": "Idade 35"
+              },
+              {
+                "label": "Idade 40"
+              },
+              {
+                "label": "Idade 45"
+              }
+            ],
+            "series": [
+              {
+                "label": "Depósitos"
+              },
+              {
+                "label": "Crescimento"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Aos 35, como se comparam os depósitos e o crescimento do Bruno?",
+            "options": [
+              {
+                "label": "O crescimento é bem maior"
+              },
+              {
+                "label": "O crescimento é um pouco maior"
+              },
+              {
+                "label": "São exatamente iguais"
+              },
+              {
+                "label": "Os depósitos são maiores"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-lines-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "age-20"
+            },
+            {
+              "id": "age-25"
+            },
+            {
+              "id": "age-30"
+            },
+            {
+              "id": "age-35"
+            },
+            {
+              "id": "age-40"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-cleo",
+              "values": [
+                0,
+                575,
+                1382,
+                1938,
+                2718
+              ]
+            },
+            {
+              "id": "series-dev",
+              "values": [
+                0,
+                0,
+                0,
+                575,
+                1382
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-cleo-twice"
+            },
+            {
+              "id": "opt-dev-twice"
+            },
+            {
+              "id": "opt-same"
+            },
+            {
+              "id": "opt-cleo-ten"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-cleo-twice"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's new pair at 7%: Cleo saves 100 a year from 20 to 30, Dev from 30 to 40.",
+          "feedback": {
+            "met": "You compared both lines at the same age.",
+            "not_yet": "Not yet. Read both lines at age 40 and compare their heights."
+          },
+          "help": [
+            "Dev starts ten years after Cleo and saves the same amount."
+          ],
+          "title": "Cleo and Dev, 100 a year at 7%",
+          "data": {
+            "categories": [
+              {
+                "label": "Age 20"
+              },
+              {
+                "label": "Age 25"
+              },
+              {
+                "label": "Age 30"
+              },
+              {
+                "label": "Age 35"
+              },
+              {
+                "label": "Age 40"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cleo (saves 20 to 30)"
+              },
+              {
+                "label": "Dev (saves 30 to 40)"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "At age 40, how do their funds compare?",
+            "options": [
+              {
+                "label": "Cleo holds about twice as much"
+              },
+              {
+                "label": "Dev holds about twice as much"
+              },
+              {
+                "label": "They hold about the same"
+              },
+              {
+                "label": "Cleo holds about 10% more"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Nuevo par de Zara al 7%: Cleo ahorra 100 al año de los 20 a los 30, Dev de los 30 a los 40.",
+          "feedback": {
+            "met": "Comparaste las dos líneas a la misma edad.",
+            "not_yet": "Aún no. Lee las dos líneas a los 40 y compara sus alturas."
+          },
+          "help": [
+            "Dev empieza diez años después de Cleo y ahorra lo mismo."
+          ],
+          "title": "Cleo y Dev, 100 al año al 7%",
+          "data": {
+            "categories": [
+              {
+                "label": "Edad 20"
+              },
+              {
+                "label": "Edad 25"
+              },
+              {
+                "label": "Edad 30"
+              },
+              {
+                "label": "Edad 35"
+              },
+              {
+                "label": "Edad 40"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cleo (ahorra de 20 a 30)"
+              },
+              {
+                "label": "Dev (ahorra de 30 a 40)"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "A los 40, ¿cómo se comparan sus fondos?",
+            "options": [
+              {
+                "label": "Cleo tiene casi el doble"
+              },
+              {
+                "label": "Dev tiene casi el doble"
+              },
+              {
+                "label": "Tienen más o menos lo mismo"
+              },
+              {
+                "label": "Cleo tiene un 10% más"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Novo par da Zara a 7%: Cleo poupa 100 por ano dos 20 aos 30, Dev dos 30 aos 40.",
+          "feedback": {
+            "met": "Você comparou as duas linhas na mesma idade.",
+            "not_yet": "Ainda não. Leia as duas linhas aos 40 e compare as alturas."
+          },
+          "help": [
+            "Dev começa dez anos depois da Cleo e poupa o mesmo valor."
+          ],
+          "title": "Cleo e Dev, 100 por ano a 7%",
+          "data": {
+            "categories": [
+              {
+                "label": "Idade 20"
+              },
+              {
+                "label": "Idade 25"
+              },
+              {
+                "label": "Idade 30"
+              },
+              {
+                "label": "Idade 35"
+              },
+              {
+                "label": "Idade 40"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cleo (poupa dos 20 aos 30)"
+              },
+              {
+                "label": "Dev (poupa dos 30 aos 40)"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Aos 40, como se comparam os fundos deles?",
+            "options": [
+              {
+                "label": "Cleo tem quase o dobro"
+              },
+              {
+                "label": "Dev tem quase o dobro"
+              },
+              {
+                "label": "Têm mais ou menos o mesmo"
+              },
+              {
+                "label": "Cleo tem 10% a mais"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-plan-b"
+          },
+          {
+            "id": "choice-plan-a"
+          },
+          {
+            "id": "choice-level"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-first"
+          },
+          {
+            "id": "reason-time"
+          },
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-plan-a"
+        ],
+        "reasonQuality": {
+          "reason-time": "sound",
+          "reason-first": "partial",
+          "reason-more": "unsupported",
+          "reason-same": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two plans for your cousin's sandbox fund at 7%, 50 coins a year each. Which holds more at 30?",
+          "feedback": {
+            "met": "You picked the earlier start over the larger total deposited.",
+            "not_yet": "Not yet. Follow one deposit from each plan to age 30."
+          },
+          "choices": [
+            {
+              "label": "Plan B: saves from age 10 to 30"
+            },
+            {
+              "label": "Plan A: saves from birth to age 10"
+            },
+            {
+              "label": "Both plans end level"
+            }
+          ],
+          "reasonPrompt": "Which reason best explains your pick?",
+          "reasons": [
+            {
+              "label": "One plan simply starts first"
+            },
+            {
+              "label": "Earlier deposits get more years to grow"
+            },
+            {
+              "label": "Plan B puts in twice as much"
+            },
+            {
+              "label": "Same rate, so they end level"
+            }
+          ],
+          "help": [
+            "Compare one early deposit with one late one, like Zara's first 100s."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dos planes para el fondo de práctica de tu primo al 7%, 50 monedas al año cada uno. ¿Cuál tiene más a los 30?",
+          "feedback": {
+            "met": "Elegiste el inicio temprano sobre el mayor total depositado.",
+            "not_yet": "Aún no. Sigue un depósito de cada plan hasta los 30."
+          },
+          "choices": [
+            {
+              "label": "Plan B: ahorra de los 10 a los 30"
+            },
+            {
+              "label": "Plan A: ahorra del nacimiento a los 10"
+            },
+            {
+              "label": "Los dos planes terminan igual"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón explica mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Un plan simplemente empieza antes"
+            },
+            {
+              "label": "Los depósitos tempranos tienen más años para crecer"
+            },
+            {
+              "label": "El plan B pone el doble"
+            },
+            {
+              "label": "Misma tasa, así que terminan igual"
+            }
+          ],
+          "help": [
+            "Compara un depósito temprano con uno tardío, como los primeros 100 de Zara."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dois planos para o fundo de simulação do seu primo a 7%, 50 moedas por ano cada um. Qual tem mais aos 30?",
+          "feedback": {
+            "met": "Você escolheu o início cedo em vez do maior total depositado.",
+            "not_yet": "Ainda não. Acompanhe um depósito de cada plano até os 30."
+          },
+          "choices": [
+            {
+              "label": "Plano B: poupa dos 10 aos 30"
+            },
+            {
+              "label": "Plano A: poupa do nascimento aos 10"
+            },
+            {
+              "label": "Os dois planos terminam iguais"
+            }
+          ],
+          "reasonPrompt": "Qual motivo explica melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "Um plano simplesmente começa antes"
+            },
+            {
+              "label": "Depósitos feitos cedo têm mais anos para crescer"
+            },
+            {
+              "label": "O plano B coloca o dobro"
+            },
+            {
+              "label": "Mesma taxa, então terminam iguais"
+            }
+          ],
+          "help": [
+            "Compare um depósito feito cedo com um feito tarde, como os primeiros 100 da Zara."
+          ]
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

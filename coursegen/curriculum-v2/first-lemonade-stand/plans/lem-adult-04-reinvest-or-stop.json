@@ -1,0 +1,1041 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-adult",
+  "chapter_id": "lem-adult-weekend-stall",
+  "lesson_id": "lem-adult-04-reinvest-or-stop",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.risk-and-reward",
+    "life.opportunity-cost",
+    "biz.budget-decisions"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina cuenta primero su error: puso toda la ganancia en un puesto doble después de un buen fin de semana. Luego ves cómo decidir con tus cifras: la ganancia por hora, una pérdida que puedes aguantar y lo que esos sábados ganarían en otro lado. Comparas reinvertir, dejar igual o parar, y decides un caso nuevo sin promesas de resultado.",
+  "title": {
+    "en-US": "Reinvest, keep it or stop",
+    "es-MX": "Reinvertir, dejarlo igual o parar",
+    "pt-BR": "Reinvestir, manter ou parar"
+  },
+  "new_concepts": [
+    "biz.risk-and-reward",
+    "life.opportunity-cost"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina puts all her profit into a double booth after one strong weekend, then meets a quiet weekend with the extra cost still due.",
+    "recovery": "Dina names three checks: profit per hour, the loss she can afford and what else those Saturdays could earn. She says that next time she will run them before spending the profit."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En un tianguis de fin de semana, quien vende velas decide qué hacer con la ganancia de ocho fines de semana: duplicar el puesto, dejarlo igual o parar. Las cifras son de ejemplo y no prometen resultados; lo que cuesta un puesto mayor o un turno extra cambia en cada mercado.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na feira de artesanato, quem vende velas decide o que fazer com o lucro de oito fins de semana: dobrar a barraca, manter ou parar. Os valores são de exemplo e não prometem resultado; o custo de uma barraca maior ou de um turno extra muda em cada mercado.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira de artesanato"
+        ]
+      },
+      "en-US": {
+        "scenario": "At a US farmers market, a candle seller decides what to do with eight weekends of profit: double the booth, keep it, or stop. Figures are examples with no promised return, and booth costs and other weekend work differ by market.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Eight weekends in, notebook open after the farmers market. Amounts here are examples in your currency.",
+          "line": "Three choices: reinvest, keep the booth as it is, or stop. Your numbers will tell us which fits."
+        },
+        "es-MX": {
+          "prompt": "Ocho fines de semana después, cuaderno abierto tras el tianguis. Las cifras son ejemplos en tu moneda.",
+          "line": "Tres caminos: reinvertir, dejar el puesto como está o parar. Tus cifras dicen cuál conviene."
+        },
+        "pt-BR": {
+          "prompt": "Oito fins de semana depois, caderno aberto após a feira de artesanato. Os valores aqui são exemplos na sua moeda.",
+          "line": "Três caminhos: reinvestir, manter a barraca como está ou parar. Seus números dizem qual faz mais sentido."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-afford"
+          },
+          {
+            "id": "reply-yes"
+          },
+          {
+            "id": "reply-no"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-afford"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ira stops by your booth. What do you answer?",
+          "feedback": {
+            "met": "Noted. Now we weigh it with your notebook, step by step.",
+            "not_yet": "Noted. Now we weigh it with your notebook, step by step."
+          },
+          "speaker": "Ira",
+          "line": "I hear a double booth costs 600 more each weekend. Will you take it?",
+          "replies": [
+            {
+              "label": "Only if I can afford to lose it."
+            },
+            {
+              "label": "Yes, the booth is doing well."
+            },
+            {
+              "label": "No, anything bigger is too risky."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tomás pasa por tu puesto. ¿Qué respondes?",
+          "feedback": {
+            "met": "Anotado. Ahora lo pesamos con tu cuaderno, paso a paso.",
+            "not_yet": "Anotado. Ahora lo pesamos con tu cuaderno, paso a paso."
+          },
+          "speaker": "Tomás",
+          "line": "Oí que un puesto doble cuesta 600 más cada fin de semana. ¿Lo vas a tomar?",
+          "replies": [
+            {
+              "label": "Solo si puedo aguantar la pérdida."
+            },
+            {
+              "label": "Sí, el puesto va muy bien."
+            },
+            {
+              "label": "No, crecer siempre es demasiado riesgoso."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Tiago passa pela sua barraca. O que você responde?",
+          "feedback": {
+            "met": "Anotado. Agora pesamos isso com o seu caderno, passo a passo.",
+            "not_yet": "Anotado. Agora pesamos isso com o seu caderno, passo a passo."
+          },
+          "speaker": "Tiago",
+          "line": "Soube que uma barraca dupla custa 600 a mais por fim de semana. Vai topar?",
+          "replies": [
+            {
+              "label": "Só se eu aguentar a perda."
+            },
+            {
+              "label": "Sim, a barraca vai muito bem."
+            },
+            {
+              "label": "Não, crescer é arriscado demais."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Look at what happened to Dina.",
+          "setup": "After one strong weekend, I put all my profit into a double booth.",
+          "misjudgment": "I thought good weekends would keep coming. The next was quiet, and the booth still cost double.",
+          "recovery": "Now I check profit per hour, the loss I can afford, and what else Saturday could earn."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Dina.",
+          "setup": "Después de un fin de semana muy bueno, puse toda mi ganancia en un puesto doble.",
+          "misjudgment": "Creí que los buenos fines de semana seguirían llegando. El siguiente tuvo pocas ventas y el puesto seguía costando el doble.",
+          "recovery": "Ahora reviso la ganancia por hora, la pérdida que puedo aguantar y qué más ganaría ese sábado."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Dina.",
+          "setup": "Depois de um fim de semana muito bom, pus todo o meu lucro numa barraca dupla.",
+          "misjudgment": "Achei que os bons fins de semana continuariam. O seguinte foi fraco e a barraca continuou custando o dobro.",
+          "recovery": "Agora confiro o lucro por hora, a perda que posso suportar e o que mais aquele sábado renderia."
+        }
+      }
+    },
+    {
+      "id": "ex-hour-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1, profit per hour. Your notebook shows 1,200 profit over eight weekends and about 60 hours.",
+          "line": "1,200 ÷ 60 = 20 an hour. A new plan has to beat that, after its own costs."
+        },
+        "es-MX": {
+          "prompt": "Paso 1, la ganancia por hora. Tu cuaderno marca 1,200 de ganancia en ocho fines de semana y unas 60 horas.",
+          "line": "1,200 ÷ 60 = 20 por hora. Un plan nuevo debe superar eso, ya descontados sus propios gastos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, o lucro por hora. Seu caderno mostra 1.200 de lucro em oito fins de semana e cerca de 60 horas.",
+          "line": "1.200 ÷ 60 = 20 por hora. Um plano novo precisa superar isso, já descontados os próprios custos."
+        }
+      }
+    },
+    {
+      "id": "ex-risk-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2, the loss you can afford. A double booth adds 600 to every weekend, sales or not.",
+          "line": "At 50 margin, 600 ÷ 50 = 12 more candles. Break-even moves from 14 to 26; your best weekend sold 22."
+        },
+        "es-MX": {
+          "prompt": "Paso 2, la pérdida que puedes aguantar. Un puesto doble suma 600 a cada fin de semana, se venda o no.",
+          "line": "Con margen de 50, 600 ÷ 50 = 12 velas más. El equilibrio sube de 14 a 26; tu mejor fin de semana vendió 22."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, a perda que você aguenta. Uma barraca dupla soma 600 a cada fim de semana, venda ou não.",
+          "line": "Com margem de 50, 600 ÷ 50 = 12 velas a mais. O equilíbrio sobe de 14 para 26; seu melhor fim de semana vendeu 22."
+        }
+      }
+    },
+    {
+      "id": "guided-grid-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.budget-decisions",
+      "payload": {
+        "pieces": [
+          "piece-double",
+          "piece-keep",
+          "piece-stop"
+        ],
+        "criteria": [
+          {
+            "id": "crit-reward",
+            "weight": 3
+          },
+          {
+            "id": "crit-loss",
+            "weight": 2
+          }
+        ],
+        "scores": [
+          [
+            4,
+            1
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            1,
+            5
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "piece-keep"
+            ],
+            "rank-2": [
+              "piece-double"
+            ],
+            "rank-3": [
+              "piece-stop"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rank the three options by weighted total, highest first.",
+          "feedback": {
+            "met": "You multiplied each score by its weight and ranked the totals.",
+            "not_yet": "Not yet. Multiply each score by its weight, then add."
+          },
+          "help": [
+            "Weighted total: each score times its weight, added up."
+          ],
+          "labels": {
+            "piece-double": "Double the booth",
+            "piece-keep": "Keep it as it is",
+            "piece-stop": "Stop selling",
+            "crit-reward": "Profit per hour if it works",
+            "crit-loss": "Loss I can afford if it fails"
+          }
+        },
+        "es-MX": {
+          "prompt": "Ordena las tres opciones por total ponderado, de mayor a menor.",
+          "feedback": {
+            "met": "Multiplicaste cada puntaje por su peso y ordenaste los totales.",
+            "not_yet": "Todavía no. Multiplica cada puntaje por su peso y suma."
+          },
+          "help": [
+            "Total ponderado: cada puntaje por su peso, sumados."
+          ],
+          "labels": {
+            "piece-double": "Duplicar el puesto",
+            "piece-keep": "Dejarlo como está",
+            "piece-stop": "Dejar de vender",
+            "crit-reward": "Ganancia por hora si funciona",
+            "crit-loss": "Pérdida que aguanto si falla"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordene as três opções pelo total ponderado, do maior ao menor.",
+          "feedback": {
+            "met": "Você multiplicou cada nota pelo seu peso e ordenou os totais.",
+            "not_yet": "Ainda não. Multiplique cada nota pelo seu peso e some."
+          },
+          "help": [
+            "Total ponderado: cada nota vezes o seu peso, somadas."
+          ],
+          "labels": {
+            "piece-double": "Dobrar a barraca",
+            "piece-keep": "Manter como está",
+            "piece-stop": "Parar de vender",
+            "crit-reward": "Lucro por hora se der certo",
+            "crit-loss": "Perda que aguento se falhar"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-else-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3, what else those Saturdays could earn. A weekend shift pays 15 an hour.",
+          "line": "Keeping the booth gives up that 15 an hour. At 20 an hour, it still comes out ahead."
+        },
+        "es-MX": {
+          "prompt": "Paso 3, qué más podrían ganar esos sábados. Un turno de fin de semana paga 15 por hora.",
+          "line": "Quedarte con el puesto deja pasar esos 15 por hora. A 20 por hora, aun así sale ganando."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, o que mais esses sábados poderiam render. Um turno de fim de semana paga 15 por hora.",
+          "line": "Manter a barraca abre mão desses 15 por hora. A 20 por hora, ela ainda sai na frente."
+        }
+      }
+    },
+    {
+      "id": "ex-tokens-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "tokens": 4,
+        "options": [
+          {
+            "id": "opt-booth",
+            "cost": 2
+          },
+          {
+            "id": "opt-shift",
+            "cost": 2
+          },
+          {
+            "id": "opt-rest",
+            "cost": 1
+          },
+          {
+            "id": "opt-course",
+            "cost": 1
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have 4 free Saturdays this month. Each token is one Saturday; pick how to spend them.",
+          "options": [
+            {
+              "label": "Run the booth"
+            },
+            {
+              "label": "Work a paid shift"
+            },
+            {
+              "label": "Rest or see family"
+            },
+            {
+              "label": "Take a short course"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tienes 4 sábados libres este mes. Cada ficha es un sábado; elige cómo usarlos.",
+          "options": [
+            {
+              "label": "Atender el puesto"
+            },
+            {
+              "label": "Trabajar un turno pagado"
+            },
+            {
+              "label": "Descansar o ver a la familia"
+            },
+            {
+              "label": "Tomar un curso corto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você tem 4 sábados livres neste mês. Cada ficha é um sábado; escolha como usá-los.",
+          "options": [
+            {
+              "label": "Atender a barraca"
+            },
+            {
+              "label": "Fazer um turno pago"
+            },
+            {
+              "label": "Descansar ou ver a família"
+            },
+            {
+              "label": "Fazer um curso curto"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-else-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-fees"
+          },
+          {
+            "id": "reply-paid"
+          },
+          {
+            "id": "reply-skip"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-skip"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ira has a Saturday shift to offer. Choose your reply.",
+          "feedback": {
+            "met": "You counted the shift pay you skip as a cost.",
+            "not_yet": "Not yet. Look again at Ira's offer: 15 an hour."
+          },
+          "speaker": "Ira",
+          "line": "My shop needs help Saturday, 15 an hour. What would you give up by keeping your booth?",
+          "replies": [
+            {
+              "label": "Only the booth fee and supplies."
+            },
+            {
+              "label": "Nothing; the booth is already paid."
+            },
+            {
+              "label": "The costs plus the shift pay I skip."
+            }
+          ],
+          "help": [
+            "Ask what else that Saturday could have earned."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tomás tiene un trabajo de sábado que ofrecerte. Elige tu respuesta.",
+          "feedback": {
+            "met": "Contaste el turno que dejas pasar como parte del costo.",
+            "not_yet": "Todavía no. Vuelve a la oferta de Tomás: 15 por hora."
+          },
+          "speaker": "Tomás",
+          "line": "Mi negocio necesita ayuda el sábado, 15 por hora. ¿Qué dejarías de ganar por quedarte con tu puesto?",
+          "replies": [
+            {
+              "label": "Solo la cuota del puesto y los insumos."
+            },
+            {
+              "label": "Nada; el puesto ya está pagado."
+            },
+            {
+              "label": "Esos gastos más el turno que dejo pasar."
+            }
+          ],
+          "help": [
+            "Pregunta qué más habría ganado ese sábado."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Tiago tem um trabalho de sábado para oferecer. Escolha sua resposta.",
+          "feedback": {
+            "met": "Você contou o turno que deixa passar como parte do custo.",
+            "not_yet": "Ainda não. Releia a oferta do Tiago: 15 por hora."
+          },
+          "speaker": "Tiago",
+          "line": "Meu negócio precisa de ajuda no sábado, 15 por hora. O que você deixaria de ganhar ao manter a barraca?",
+          "replies": [
+            {
+              "label": "Só a taxa da barraca e os insumos."
+            },
+            {
+              "label": "Nada; a barraca já está paga."
+            },
+            {
+              "label": "Esses custos mais o turno que eu dispenso."
+            }
+          ],
+          "help": [
+            "Pergunte o que mais aquele sábado teria rendido."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-grid-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.budget-decisions",
+      "payload": {
+        "pieces": [
+          "piece-double",
+          "piece-soaps",
+          "piece-cushion"
+        ],
+        "criteria": [
+          {
+            "id": "crit-reward",
+            "weight": 2
+          },
+          {
+            "id": "crit-loss",
+            "weight": 3
+          },
+          {
+            "id": "crit-sat",
+            "weight": 1
+          }
+        ],
+        "scores": [
+          [
+            4,
+            1,
+            3
+          ],
+          [
+            4,
+            4,
+            3
+          ],
+          [
+            1,
+            5,
+            4
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "piece-soaps"
+            ],
+            "rank-2": [
+              "piece-cushion"
+            ],
+            "rank-3": [
+              "piece-double"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have 600 of profit to use. Rank the options by weighted total, highest first.",
+          "feedback": {
+            "met": "You applied each weight before ranking.",
+            "not_yet": "Not yet. Score times weight, then add, for each option."
+          },
+          "help": [
+            "Add score times weight across all three criteria."
+          ],
+          "labels": {
+            "piece-double": "Double the booth",
+            "piece-soaps": "Add soaps",
+            "piece-cushion": "Keep it as a cushion",
+            "crit-reward": "Profit per hour if it works",
+            "crit-loss": "Loss I can afford if it fails",
+            "crit-sat": "Saturdays well spent"
+          }
+        },
+        "es-MX": {
+          "prompt": "Tienes 600 de ganancia para usar. Ordena las opciones por total ponderado, de mayor a menor.",
+          "feedback": {
+            "met": "Aplicaste cada peso antes de ordenar.",
+            "not_yet": "Todavía no. Puntaje por peso y suma, en cada opción."
+          },
+          "help": [
+            "Suma puntaje por peso en los tres criterios."
+          ],
+          "labels": {
+            "piece-double": "Duplicar el puesto",
+            "piece-soaps": "Añadir jabones",
+            "piece-cushion": "Guardarlo como colchón",
+            "crit-reward": "Ganancia por hora si funciona",
+            "crit-loss": "Pérdida que aguanto si falla",
+            "crit-sat": "Sábados bien aprovechados"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Você tem 600 de lucro para usar. Ordene as opções pelo total ponderado, do maior ao menor.",
+          "feedback": {
+            "met": "Você aplicou cada peso antes de ordenar.",
+            "not_yet": "Ainda não. Nota vezes peso e some, em cada opção."
+          },
+          "help": [
+            "Some nota vezes peso nos três critérios."
+          ],
+          "labels": {
+            "piece-double": "Dobrar a barraca",
+            "piece-soaps": "Incluir sabonetes",
+            "piece-cushion": "Guardar como reserva",
+            "crit-reward": "Lucro por hora se der certo",
+            "crit-loss": "Perda que aguento se falhar",
+            "crit-sat": "Sábados bem aproveitados"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-risk-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-keep"
+          },
+          {
+            "id": "choice-double"
+          },
+          {
+            "id": "choice-stop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-cheap"
+          },
+          {
+            "id": "reason-unseen"
+          },
+          {
+            "id": "reason-repeat"
+          },
+          {
+            "id": "reason-pays"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-keep"
+        ],
+        "reasonQuality": {
+          "reason-unseen": "sound",
+          "reason-pays": "sound",
+          "reason-cheap": "partial",
+          "reason-repeat": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your best weekend sold 22 candles; a double booth needs 26. The booth still earns 20 an hour.",
+          "feedback": {
+            "met": "You kept the booth: double needs more than your best weekend.",
+            "not_yet": "Not yet. Check the sales needed and what the booth earns."
+          },
+          "help": [
+            "Compare what the double booth needs with what you have sold."
+          ],
+          "choices": [
+            {
+              "label": "Keep the booth as it is"
+            },
+            {
+              "label": "Take the double booth now"
+            },
+            {
+              "label": "Stop and take shifts instead"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "It is the cheapest of the three"
+            },
+            {
+              "label": "It needs more sales than I have seen"
+            },
+            {
+              "label": "Strong weekends always repeat"
+            },
+            {
+              "label": "The booth still pays for my Saturdays"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu mejor fin de semana vendió 22 velas; un puesto doble necesita 26. El puesto aún gana 20 por hora.",
+          "feedback": {
+            "met": "Dejaste el puesto: el doble necesita más que tu mejor fin de semana.",
+            "not_yet": "Todavía no. Revisa las ventas necesarias y lo que gana el puesto."
+          },
+          "help": [
+            "Compara lo que necesita el puesto doble con lo que has vendido."
+          ],
+          "choices": [
+            {
+              "label": "Dejar el puesto como está"
+            },
+            {
+              "label": "Tomar el puesto doble ya"
+            },
+            {
+              "label": "Parar y tomar turnos pagados"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "Es la opción más barata de las tres"
+            },
+            {
+              "label": "Necesita más ventas de las que he visto"
+            },
+            {
+              "label": "Los fines de semana buenos siempre se repiten"
+            },
+            {
+              "label": "El puesto aún paga mis sábados"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu melhor fim de semana vendeu 22 velas; uma barraca dupla precisa de 26. A barraca ainda rende 20 por hora.",
+          "feedback": {
+            "met": "Você manteve a barraca: a dupla exige mais que seu melhor fim de semana.",
+            "not_yet": "Ainda não. Confira as vendas necessárias e o que a barraca rende."
+          },
+          "help": [
+            "Compare o que a barraca dupla precisa com o que você já vendeu."
+          ],
+          "choices": [
+            {
+              "label": "Manter a barraca como está"
+            },
+            {
+              "label": "Pegar a barraca dupla agora"
+            },
+            {
+              "label": "Parar e fazer turnos pagos"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "É a opção mais barata das três"
+            },
+            {
+              "label": "Precisa de mais vendas do que já vi"
+            },
+            {
+              "label": "Fins de semana bons sempre se repetem"
+            },
+            {
+              "label": "A barraca ainda paga os meus sábados"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-season"
+          },
+          {
+            "id": "choice-no"
+          },
+          {
+            "id": "choice-test"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-less"
+          },
+          {
+            "id": "reason-data"
+          },
+          {
+            "id": "reason-afford"
+          },
+          {
+            "id": "reason-promise"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-test"
+        ],
+        "reasonQuality": {
+          "reason-afford": "sound",
+          "reason-data": "sound",
+          "reason-less": "partial",
+          "reason-promise": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A second market costs 150 a Sunday. Your Sundays are free, and you have 450 saved.",
+          "feedback": {
+            "met": "You limited the bet to a loss you can afford.",
+            "not_yet": "Not yet. Size the bet to what you can afford."
+          },
+          "help": [
+            "Compare the cost of each choice with what you have saved."
+          ],
+          "choices": [
+            {
+              "label": "Book eight Sundays up front"
+            },
+            {
+              "label": "Say no to any new market"
+            },
+            {
+              "label": "Try one Sunday, then review"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "It costs less than the full season"
+            },
+            {
+              "label": "It gives me sales numbers first"
+            },
+            {
+              "label": "One Sunday fits within what I can lose"
+            },
+            {
+              "label": "New markets always sell more"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Otro tianguis cuesta 150 cada domingo. Tus domingos están libres y tienes 450 ahorrados.",
+          "feedback": {
+            "met": "Limitaste la apuesta a una pérdida que puedes aguantar.",
+            "not_yet": "Todavía no. Ajusta la apuesta a lo que puedes aguantar."
+          },
+          "help": [
+            "Compara el costo de cada opción con lo que tienes ahorrado."
+          ],
+          "choices": [
+            {
+              "label": "Apartar ocho domingos desde ya"
+            },
+            {
+              "label": "Rechazar cualquier lugar nuevo"
+            },
+            {
+              "label": "Probar un domingo y revisar"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "Cuesta menos que toda la temporada"
+            },
+            {
+              "label": "Me da cifras de ventas primero"
+            },
+            {
+              "label": "Un domingo cabe en lo que puedo perder"
+            },
+            {
+              "label": "Los lugares nuevos siempre venden más"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outra feira de artesanato custa 150 por domingo. Seus domingos estão livres e você tem 450 guardados.",
+          "feedback": {
+            "met": "Você limitou a aposta a uma perda que aguenta.",
+            "not_yet": "Ainda não. Ajuste a aposta ao que você aguenta."
+          },
+          "help": [
+            "Compare o custo de cada opção com o que você tem guardado."
+          ],
+          "choices": [
+            {
+              "label": "Reservar oito domingos já"
+            },
+            {
+              "label": "Recusar qualquer feira nova"
+            },
+            {
+              "label": "Testar um domingo e revisar"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "Custa menos que a temporada toda"
+            },
+            {
+              "label": "Me dá números de vendas primeiro"
+            },
+            {
+              "label": "Um domingo cabe no que posso perder"
+            },
+            {
+              "label": "Feiras novas sempre vendem mais"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

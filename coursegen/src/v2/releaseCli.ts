@@ -5,6 +5,8 @@
 //   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --max-usd <n>       (paid, owner-run)
 //   npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir> --dry-run
 //   npm run v2:publish -- --plans <dir> --course <slug> --run-id <id> --out <dir>     (writes to Vault)
+//   --lesson-ids <ids.json> (from v2:hierarchy) rewrites each plan's slug lesson_id to its public.lessons uuid first.
+//   --require-lesson-design blocks a plan that names no teaching_role (gate 14, lessonDesign.ts).
 //   A Vault write of a Horizonte segment type also needs --core-has-horizonte: the owner's
 //   confirmation that Core, which parses the type, is deployed first.
 //
@@ -29,6 +31,7 @@ import { spendCeilingRefusal } from '../pipeline/spendGuard.js';
 import { getConfig } from '../env.js';
 import { GateSubmissionLog, formatFirstSubmissionPassRates } from '../pipeline/gateSubmissionLog.js';
 import { authorV2Plan, fixtureResponder, skeletonOf, type V2FirstSubmission, type V2Responder } from './author.js';
+import { applyLessonIds, HierarchyError, parseLessonIds } from './hierarchy.js';
 import { loadV2Plans, v2LessonPlanSchema } from './plan.js';
 import { releaseV2Lessons } from './release.js';
 
@@ -96,7 +99,7 @@ export async function author(args: Args, responderOverride?: V2Responder): Promi
   return 0;
 }
 
-async function publish(args: Args): Promise<number> {
+export async function publish(args: Args): Promise<number> {
   const dryRun = args['dry-run'] === true;
   if (typeof args.plans !== 'string' || typeof args.course !== 'string' || typeof args['run-id'] !== 'string' || typeof args.out !== 'string') {
     console.error('v2:publish: --plans <dir> --course <slug> --run-id <id> --out <dir> are required');
@@ -116,10 +119,24 @@ async function publish(args: Args): Promise<number> {
   };
   // B.18 (GAP-FIX-R3): `--audio-manifest <file>` (audio_ref -> asset) checks differentiated narration; `--require-narration-audio` blocks on a gap.
   const audioManifest = typeof args['audio-manifest'] === 'string' ? JSON.parse(readFileSync(path.resolve(args['audio-manifest']), 'utf8')) as Record<string, unknown> : {};
-  const result = await releaseV2Lessons(loaded.map((entry) => entry.plan!), {
+  // `--lesson-ids <ids.json>` (from v2:hierarchy): rewrite each plan's slug lesson_id to its public.lessons uuid, so document.lesson_id equals p_lesson_id (0221).
+  let plans = loaded.map((entry) => entry.plan!);
+  if (args['lesson-ids'] !== undefined) {
+    if (typeof args['lesson-ids'] !== 'string') { console.error('v2:publish: --lesson-ids needs a file (the ids.json from v2:hierarchy)'); return 2; }
+    try {
+      const mapped = applyLessonIds(plans, parseLessonIds(JSON.parse(readFileSync(path.resolve(args['lesson-ids']), 'utf8'))));
+      if (mapped.problems.length) { for (const problem of mapped.problems) console.error(`v2:publish: ${problem}`); return 1; }
+      plans = mapped.plans;
+    } catch (error) {
+      console.error(`v2:publish: --lesson-ids ${args['lesson-ids']}: ${error instanceof HierarchyError ? error.problems.join('; ') : error instanceof Error ? error.message : String(error)}`);
+      return 1;
+    }
+  }
+  const result = await releaseV2Lessons(plans, {
     runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun, deps: rpc ? { rpc } : {},
     audioManifest, requireNarrationAudio: args['require-narration-audio'] === true,
     coreServesHorizonte: args['core-has-horizonte'] === true,
+    requireLessonDesign: args['require-lesson-design'] === true,
   });
   if (!result.ok) { console.error(`v2:publish: stopped at ${result.stage}:\n  ${result.problems.join('\n  ')}`); return 1; }
   console.log(`v2:publish: ${result.stage} — ${result.documents.length} document(s), ${result.calls.length} publication call(s)${dryRun ? ' written to publish-calls.json, nothing sent' : ' accepted by Vault'}`);

@@ -1,0 +1,828 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-plans-that-grow",
+  "lesson_id": "fe-1317-09-laptop-by-december",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "money.savings-plan-math",
+    "life.goal-planning",
+    "biz.saving-goal"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho muestra, con Sam, cómo una meta con tamaño y fecha se vuelve una cantidad mensual: primero lo que falta (la meta menos lo ahorrado), luego lo que hay que guardar cada mes (lo que falta entre los meses que quedan) y se comprueba. Cuando el plan no alcanza, se mide la diferencia por mes y los pasos se acomodan en un calendario respetando su orden. Primero se ve el caso resuelto; los ejercicios solo lo repasan.",
+  "title": {
+    "en-US": "A laptop by December",
+    "es-MX": "Una laptop para diciembre",
+    "pt-BR": "Um notebook até dezembro"
+  },
+  "new_concepts": [
+    "money.savings-plan-math",
+    "life.goal-planning"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "Sam scrolls a used laptop listing, with Rho beside him.",
+          "line": "It costs 600 coins. He has 120, adds 60 a month, and wants it by December, six months away."
+        },
+        "es-MX": {
+          "prompt": "Sam mira el anuncio de una laptop usada, con Rho a su lado.",
+          "line": "Cuesta 600 monedas. Tiene 120, ahorra 60 al mes y la quiere para diciembre, dentro de seis meses."
+        },
+        "pt-BR": {
+          "prompt": "O Sam olha o anúncio de um notebook usado, com o Rho ao lado.",
+          "line": "Custa 600 moedas. Ele tem 120, guarda 60 por mês e quer o notebook até dezembro, daqui a seis meses."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "months"
+          },
+          {
+            "id": "missing"
+          },
+          {
+            "id": "monthly"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "missing",
+          "monthly"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "missing": "480",
+          "monthly": "80"
+        }
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "pre",
+      "copy": {
+        "en-US": {
+          "prompt": "Sam has 120 of 600 and six months left: write what is missing, then the monthly amount.",
+          "feedback": {
+            "met": "Noted. Now the plan, one measurement at a time.",
+            "not_yet": "Noted. Now the plan, one measurement at a time."
+          },
+          "steps": [
+            {
+              "expression": "Months left",
+              "result": "6",
+              "spokenText": "Six months are left until December."
+            },
+            {
+              "expression": "What is missing",
+              "result": "480",
+              "spokenText": "From 600 I take away the 120 he has: 480 are missing."
+            },
+            {
+              "expression": "Needed each month",
+              "result": "80",
+              "spokenText": "480 spread over 6 months: 80 a month."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sam lleva 120 de 600 y le quedan seis meses: escribe lo que falta y cuánto debe guardar al mes.",
+          "feedback": {
+            "met": "Anotado. Ahora el plan, una medición a la vez.",
+            "not_yet": "Anotado. Ahora el plan, una medición a la vez."
+          },
+          "steps": [
+            {
+              "expression": "Meses que quedan",
+              "result": "6",
+              "spokenText": "Quedan seis meses hasta diciembre."
+            },
+            {
+              "expression": "Lo que falta",
+              "result": "480",
+              "spokenText": "A 600 le quito los 120 que lleva: faltan 480."
+            },
+            {
+              "expression": "Lo que hay que guardar al mes",
+              "result": "80",
+              "spokenText": "480 repartidos en 6 meses: son 80 al mes."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sam já juntou 120 dos 600 e tem seis meses: escreva o que falta e quanto guardar por mês.",
+          "feedback": {
+            "met": "Anotado. Agora o plano, uma medição de cada vez.",
+            "not_yet": "Anotado. Agora o plano, uma medição de cada vez."
+          },
+          "steps": [
+            {
+              "expression": "Meses restantes",
+              "result": "6",
+              "spokenText": "Faltam seis meses até dezembro."
+            },
+            {
+              "expression": "O que falta",
+              "result": "480",
+              "spokenText": "De 600 tiro os 120 que ele já juntou: faltam 480."
+            },
+            {
+              "expression": "O que guardar por mês",
+              "result": "80",
+              "spokenText": "480 divididos em 6 meses: são 80 por mês."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: what is missing",
+          "line": "Size first: 600 is the goal and he has 120, so 600 − 120 = 480 is missing."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: lo que falta",
+          "line": "Primero el tamaño: la meta es 600 y lleva 120, así que 600 − 120 = 480 es lo que falta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o que falta",
+          "line": "Primeiro o tamanho: a meta é 600 e ele tem 120, então 600 − 120 = 480 é o que falta."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the monthly amount",
+          "line": "Now the date: six months to cover 480, so 480 ÷ 6 = 80 a month."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: la cantidad al mes",
+          "line": "Ahora la fecha: seis meses para juntar 480, así que 480 ÷ 6 = 80 al mes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o valor por mês",
+          "line": "Agora o prazo: seis meses para juntar 480, então 480 ÷ 6 = 80 por mês."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 6,
+        "minimum": 40,
+        "maximum": 100,
+        "step": 20,
+        "initial": 80,
+        "currency": "coins",
+        "unit": "month"
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: I test 80 a month. Over 6 months, 6 × 80 = 480, and 120 + 480 = 600."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: pruebo con 80 al mes. En 6 meses, 6 × 80 = 480, y 120 + 480 = 600."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: eu testo 80 por mês. Em 6 meses, 6 × 80 = 480, e 120 + 480 = 600."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "months"
+          },
+          {
+            "id": "missing"
+          },
+          {
+            "id": "monthly"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "missing",
+          "monthly"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "missing": "420",
+          "monthly": "70"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Ana wants a 500-coin phone and has 80, with six months left: finish the steps.",
+          "help": [
+            "Same order as Sam: subtract what she has, then spread what is missing over the months."
+          ],
+          "feedback": {
+            "met": "You subtracted what Ana has, then spread the rest over the months.",
+            "not_yet": "Not yet. Look back at Sam's two steps and try again."
+          },
+          "steps": [
+            {
+              "expression": "Months left",
+              "result": "6",
+              "spokenText": "Six months are left."
+            },
+            {
+              "expression": "500 − 80",
+              "result": "420",
+              "spokenText": "From 500 I take away the 80 Ana has: 420 are missing."
+            },
+            {
+              "expression": "What is missing ÷ 6",
+              "result": "70",
+              "spokenText": "420 spread over 6 months: 70 a month."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ana quiere un celular de 500 monedas, tiene 80 y le quedan seis meses: completa los pasos.",
+          "help": [
+            "Mismo orden que con Sam: resta lo que ya tiene y reparte lo que falta entre los meses."
+          ],
+          "feedback": {
+            "met": "Restaste lo que ya tiene Ana y repartiste el resto entre los meses.",
+            "not_yet": "Aún no. Repasa los dos pasos de Sam y prueba de nuevo."
+          },
+          "steps": [
+            {
+              "expression": "Meses que quedan",
+              "result": "6",
+              "spokenText": "Quedan seis meses."
+            },
+            {
+              "expression": "500 − 80",
+              "result": "420",
+              "spokenText": "A 500 le quito los 80 que Ana ya tiene: faltan 420."
+            },
+            {
+              "expression": "Lo que falta ÷ 6",
+              "result": "70",
+              "spokenText": "420 repartidos en 6 meses: son 70 al mes."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Ana quer um celular de 500 moedas, já tem 80 e faltam seis meses: complete as etapas.",
+          "help": [
+            "Mesma ordem do Sam: tire o que ela já tem e divida o que falta pelos meses."
+          ],
+          "feedback": {
+            "met": "Você tirou o que a Ana já tem e dividiu o resto pelos meses.",
+            "not_yet": "Ainda não. Reveja os dois passos do Sam e tente de novo."
+          },
+          "steps": [
+            {
+              "expression": "Meses restantes",
+              "result": "6",
+              "spokenText": "Faltam seis meses."
+            },
+            {
+              "expression": "500 − 80",
+              "result": "420",
+              "spokenText": "De 500 tiro os 80 que a Ana já tem: faltam 420."
+            },
+            {
+              "expression": "O que falta ÷ 6",
+              "result": "70",
+              "spokenText": "420 divididos em 6 meses: são 70 por mês."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the gap",
+          "line": "At 60 a month, 480 ÷ 60 = 8 months, not 6. He is 80 − 60 = 20 short each month."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: la diferencia",
+          "line": "Con 60 al mes, 480 ÷ 60 = 8 meses, no 6. Le faltan 80 − 60 = 20 cada mes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a diferença",
+          "line": "Com 60 por mês, 480 ÷ 60 = 8 meses, não 6. Faltam 80 − 60 = 20 a cada mês."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the order of the steps",
+          "line": "A monthly transfer needs the savings account first. Steps with no link between them can run together."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: el orden de los pasos",
+          "line": "Una transferencia mensual necesita primero la cuenta de ahorro. Los pasos que no dependen uno de otro pueden ir juntos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: a ordem das etapas",
+          "line": "Uma transferência mensal precisa antes da conta para guardar. Etapas que não dependem uma da outra podem andar juntas."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "saves"
+          },
+          {
+            "id": "missing"
+          },
+          {
+            "id": "monthly"
+          },
+          {
+            "id": "short"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "missing",
+          "monthly",
+          "short"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "missing": "360",
+          "monthly": "90",
+          "short": "15"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Eli wants a 450-coin tablet in four months. She has 90 and saves 75 a month: finish the steps.",
+          "help": [
+            "First what is missing, then what each month needs, then compare it with what she saves."
+          ],
+          "feedback": {
+            "met": "You found what is missing, what each month needs and the gap.",
+            "not_yet": "Not yet. Revisit Sam's gap and compare both monthly amounts."
+          },
+          "steps": [
+            {
+              "expression": "Saved each month",
+              "result": "75",
+              "spokenText": "Eli saves 75 coins a month."
+            },
+            {
+              "expression": "What is missing",
+              "result": "360",
+              "spokenText": "From 450 I take away the 90 she has: 360 are missing."
+            },
+            {
+              "expression": "Needed each month",
+              "result": "90",
+              "spokenText": "360 spread over 4 months: 90 a month."
+            },
+            {
+              "expression": "Short each month",
+              "result": "15",
+              "spokenText": "She needs 90 and saves 75: 15 short each month."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Eli quiere una tableta de 450 monedas en cuatro meses. Tiene 90 y ahorra 75 al mes: completa los pasos.",
+          "help": [
+            "Primero lo que falta, luego lo que pide cada mes y luego compáralo con lo que ahorra."
+          ],
+          "feedback": {
+            "met": "Hallaste lo que falta, lo que pide cada mes y la diferencia.",
+            "not_yet": "Aún no. Vuelve a la diferencia de Sam y compara los dos montos mensuales."
+          },
+          "steps": [
+            {
+              "expression": "Ahorra por mes",
+              "result": "75",
+              "spokenText": "Eli ahorra 75 monedas al mes."
+            },
+            {
+              "expression": "Lo que falta",
+              "result": "360",
+              "spokenText": "A 450 le quito los 90 que tiene: faltan 360."
+            },
+            {
+              "expression": "Lo que pide cada mes",
+              "result": "90",
+              "spokenText": "360 repartidos en 4 meses: son 90 al mes."
+            },
+            {
+              "expression": "Lo que le falta cada mes",
+              "result": "15",
+              "spokenText": "Necesita 90 y ahorra 75: le faltan 15 cada mes."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Eli quer um tablet de 450 moedas em quatro meses. Ela tem 90 e guarda 75 por mês: complete as etapas.",
+          "help": [
+            "Primeiro o que falta, depois o que cada mês exige e depois compare com o que ela guarda."
+          ],
+          "feedback": {
+            "met": "Você achou o que falta, o que cada mês exige e a diferença.",
+            "not_yet": "Ainda não. Volte à diferença do Sam e compare os dois valores mensais."
+          },
+          "steps": [
+            {
+              "expression": "Guarda por mês",
+              "result": "75",
+              "spokenText": "A Eli guarda 75 moedas por mês."
+            },
+            {
+              "expression": "O que falta",
+              "result": "360",
+              "spokenText": "De 450 tiro os 90 que ela tem: faltam 360."
+            },
+            {
+              "expression": "O que cada mês exige",
+              "result": "90",
+              "spokenText": "360 divididos em 4 meses: são 90 por mês."
+            },
+            {
+              "expression": "O que falta por mês",
+              "result": "15",
+              "spokenText": "Ela precisa de 90 e guarda 75: faltam 15 por mês."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "visual": {
+        "type": "gantt"
+      },
+      "payload": {
+        "tasks": [
+          {
+            "id": "compare-prices",
+            "after": [],
+            "duration": 2
+          },
+          {
+            "id": "open-account",
+            "after": [],
+            "duration": 1
+          },
+          {
+            "id": "move-savings",
+            "after": [
+              "open-account"
+            ],
+            "duration": 1
+          },
+          {
+            "id": "work-out-monthly",
+            "after": [
+              "compare-prices"
+            ],
+            "duration": 1
+          },
+          {
+            "id": "set-transfer",
+            "after": [
+              "work-out-monthly",
+              "open-account"
+            ],
+            "duration": 1
+          }
+        ],
+        "periods": 5,
+        "workers": 2
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "period-1": [
+              "compare-prices",
+              "open-account"
+            ],
+            "period-2": [
+              "move-savings"
+            ],
+            "period-3": [
+              "work-out-monthly"
+            ],
+            "period-4": [
+              "set-transfer"
+            ]
+          }
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Sam has five weeks and can do two steps at once: place each step in its start week.",
+          "feedback": {
+            "met": "You kept every step after the ones it needs.",
+            "not_yet": "Check which steps must wait for another to finish."
+          },
+          "labels": {
+            "compare-prices": "Compare used laptop prices",
+            "open-account": "Open a savings account",
+            "move-savings": "Move the 120 into it",
+            "work-out-monthly": "Work out the monthly amount",
+            "set-transfer": "Set the monthly transfer"
+          }
+        },
+        "es-MX": {
+          "prompt": "Sam tiene cinco semanas y puede hacer dos pasos a la vez: coloca cada paso en su semana de inicio.",
+          "feedback": {
+            "met": "Dejaste cada paso después de los que necesita.",
+            "not_yet": "Revisa qué pasos deben esperar a que otro termine."
+          },
+          "labels": {
+            "compare-prices": "Comparar precios de laptops usadas",
+            "open-account": "Abrir una cuenta de ahorro",
+            "move-savings": "Pasarle los 120",
+            "work-out-monthly": "Calcular la cantidad mensual",
+            "set-transfer": "Programar la transferencia mensual"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sam tem cinco semanas e pode fazer duas etapas ao mesmo tempo: coloque cada etapa na semana em que começa.",
+          "feedback": {
+            "met": "Você deixou cada etapa depois das que ela precisa.",
+            "not_yet": "Veja quais etapas precisam esperar outra terminar."
+          },
+          "labels": {
+            "compare-prices": "Comparar preços de notebooks usados",
+            "open-account": "Abrir uma conta para guardar",
+            "move-savings": "Passar os 120 para ela",
+            "work-out-monthly": "Calcular o valor mensal",
+            "set-transfer": "Programar a transferência mensal"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "saves"
+          },
+          {
+            "id": "missing"
+          },
+          {
+            "id": "monthly"
+          },
+          {
+            "id": "short"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "missing",
+          "monthly",
+          "short"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "missing": "320",
+          "monthly": "40",
+          "short": "5"
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "A school trip costs 400 coins in eight months. You have 80 and save 35: finish the steps.",
+          "help": [
+            "Same steps as Eli: what is missing, what each month needs, then the gap."
+          ],
+          "feedback": {
+            "met": "You found the missing amount, need and gap. Same steps, any goal.",
+            "not_yet": "Not yet. Go back to the examples and compare step by step."
+          },
+          "steps": [
+            {
+              "expression": "Saved each month",
+              "result": "35",
+              "spokenText": "You save 35 coins a month."
+            },
+            {
+              "expression": "What is missing",
+              "result": "320",
+              "spokenText": "From 400 I take away the 80 you have: 320 are missing."
+            },
+            {
+              "expression": "Needed each month",
+              "result": "40",
+              "spokenText": "320 spread over 8 months: 40 a month."
+            },
+            {
+              "expression": "Short each month",
+              "result": "5",
+              "spokenText": "You need 40 and save 35: 5 short each month."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un viaje escolar cuesta 400 monedas y es en ocho meses. Tienes 80 y ahorras 35: completa los pasos.",
+          "help": [
+            "Los mismos pasos que con Eli: lo que falta, lo que pide cada mes y la diferencia."
+          ],
+          "feedback": {
+            "met": "Hallaste lo que falta, el monto mensual y la diferencia. Mismos pasos, cualquier meta.",
+            "not_yet": "Aún no. Vuelve a los ejemplos y compara paso por paso."
+          },
+          "steps": [
+            {
+              "expression": "Ahorras por mes",
+              "result": "35",
+              "spokenText": "Ahorras 35 monedas al mes."
+            },
+            {
+              "expression": "Lo que falta",
+              "result": "320",
+              "spokenText": "A 400 le quito los 80 que tienes: faltan 320."
+            },
+            {
+              "expression": "Lo que pide cada mes",
+              "result": "40",
+              "spokenText": "320 repartidos en 8 meses: son 40 al mes."
+            },
+            {
+              "expression": "Lo que te falta cada mes",
+              "result": "5",
+              "spokenText": "Necesitas 40 y ahorras 35: te faltan 5 cada mes."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma viagem da escola custa 400 moedas e será daqui a oito meses. Você tem 80 e guarda 35: complete as etapas.",
+          "help": [
+            "Mesmas etapas da Eli: o que falta, o que cada mês exige e a diferença."
+          ],
+          "feedback": {
+            "met": "Você achou o que falta, o valor mensal e a diferença. Mesmas etapas, qualquer meta.",
+            "not_yet": "Ainda não. Volte aos exemplos e compare etapa por etapa."
+          },
+          "steps": [
+            {
+              "expression": "Guarda por mês",
+              "result": "35",
+              "spokenText": "Você guarda 35 moedas por mês."
+            },
+            {
+              "expression": "O que falta",
+              "result": "320",
+              "spokenText": "De 400 tiro os 80 que você tem: faltam 320."
+            },
+            {
+              "expression": "O que cada mês exige",
+              "result": "40",
+              "spokenText": "320 divididos em 8 meses: são 40 por mês."
+            },
+            {
+              "expression": "O que falta por mês",
+              "result": "5",
+              "spokenText": "Você precisa de 40 e guarda 35: faltam 5 por mês."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -24,7 +24,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 const exactKeys = (value: Record<string, unknown>, keys: readonly string[]): boolean => Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 const whole = (value: unknown, minimum: number, maximum: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= minimum && value <= maximum;
 
-/** Values are whole cents of a generic currency: no real currency is named. */
+/** Values are whole cents; the board prints them in the learner's market currency (pesos, reais, dollars), so the plan stays locale-neutral. */
 export type CoinGoal = { kind: 'amount'; total: number } | { kind: 'height'; mm: number };
 export interface CoinPayload { piece: CoinPiece; value: number; goal: CoinGoal; step: number; max: number }
 

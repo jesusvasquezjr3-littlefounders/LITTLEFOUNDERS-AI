@@ -1,0 +1,222 @@
+# kc-misconceptions.proposal.yaml
+#
+# STATUS: PROPOSAL ONLY. Nothing in this file is written to
+# database/seeds/kc_graph.v1.json, to Vault (Supabase), or anywhere else.
+# It is a review artifact. Acceptance of the draft knowledge components (KCs),
+# and with them these misconceptions, stays with the owner (OD-22; acceptance
+# gate G5 in docs/rebuild/sprints/S05-B6-PATHWAY-POLICY.md: new KCs stay `draft`
+# until the owner accepts the policy; activation is an edit to the seed file
+# followed by `npm run seed:kc`, never a manual SQL update).
+#
+# WHICH KCs THE PILOT LESSONS USE (checked against plans/*.json and
+# pilot.structure.yaml):
+#   life.wants-and-choices   fe-69-03-needs-and-wants (ages 6-9, Liruf). Five
+#                            graded segments: pre-01, guided-01, story-01,
+#                            practice-01, transfer-01.
+#   life.scam-awareness      fe-1012-04-suspicious-messages (ages 10-12, Dina).
+#                            Four graded segments: pre-01, guided-01, reply-01,
+#                            transfer-01.
+#   life.advertising-literacy  NO pilot lesson teaches or grades it. It appears
+#                            only as an external prerequisite of the chapter
+#                            fe-1012-smart-spending (pilot.structure.yaml,
+#                            marked draft / G5). Its entries below are grounded
+#                            in the KC objective and in the legacy topic titles
+#                            under faro-de-la-confianza/anuncios-y-trampas, not
+#                            in anything a pilot item tests.
+#
+# THE SEED'S SHAPE (backend/src/scripts/seed-kc-graph.ts, SeedSchema):
+#   `misconceptions` is a TOP-LEVEL array of
+#     { kc, code, description, remediation_hint, distractor_patterns }
+#   - kc: an existing KC key.
+#   - code: ^[a-z0-9][a-z0-9_.-]{2,95}$, unique per (kc, code).
+#   - description: staff-facing wrong belief, localized (en-US, es-MX, pt-BR).
+#   - remediation_hint: OUR correction cue for the Mentor, localized. It reaches
+#     the model as the sealed `misconceptionHint`, so it must be at most 240
+#     characters (oracle/src/context/schema.ts) and, because the prompt wraps it
+#     in double quotes (oracle/src/tutor/prompt.ts), it contains none.
+#   - distractor_patterns: the deterministic detector. These entries use
+#     `option_tags` only (no numeric pattern applies to these KCs).
+#   The 32 existing misconceptions cover the 28 active KCs with 1 or 2 each
+#   (24 with one, 4 with two). This proposal gives every draft KC two.
+#
+# HOW TO APPLY (owner or engineering, after review): paste the six entries under
+# `misconceptions:` into the `misconceptions` array of the seed, unchanged. The
+# `rationale` and `held_back` sections below are NOT part of the seed shape and
+# stay here.
+#
+# WHAT THE OWNER MUST KNOW ABOUT DETECTION (read before relying on these rows):
+#   1. option_tags only fire when an authored Mentor-session item carries
+#      `misconception_tags` on `payload.options[i]`
+#      (backend/src/services/pedagogy/recordAttempt.ts, chosenOptionTags).
+#      Nothing in coursegen or in the pilot plans emits `misconception_tags`
+#      today, and the pilot's v2 segment payloads use `items`, `replies`,
+#      `choices`, not `options`.
+#   2. Course-lesson evidence (backend/src/services/pedagogy/
+#      courseLessonEvidence.ts) records the lesson score against the primary KC
+#      with `submission: null`, so it can never match a tag.
+#   So, as the pilot is built, these rows supply the Mentor's correction cue
+#   once the KC is active and a tagged item exists; they do not diagnose
+#   anything from the pilot lessons by themselves. Tagging the distractors is a
+#   separate piece of work, not done here.
+#
+# LANGUAGE: this header and the notes are repo documentation (English). The
+# localized strings are learner-facing content: es-MX for Mexico, pt-BR for
+# Brazil, at a 6-12 reading level, no slang. Plural imperatives ("Pregunten",
+# "Perguntem") follow the seed's existing hints, which address the child and
+# the adult together. Every string needs a native-speaker read before release.
+
+misconceptions:
+  # ---------------------------------------------------------------------------
+  # life.wants-and-choices (tier_min 1). Lesson: fe-69-03-needs-and-wants (6-9).
+  # ---------------------------------------------------------------------------
+  - kc: "life.wants-and-choices"
+    code: "want-feels-like-need"
+    description:
+      en-US: "Calls something a need because they want it a lot, like candy or a toy."
+      es-MX: "Dice que algo es una necesidad porque lo quiere mucho, como un dulce o un juguete."
+      pt-BR: "Diz que algo é uma necessidade porque quer muito, como um doce ou um brinquedo."
+    remediation_hint:
+      en-US: "Ask: can I go without it? Compare bread and a toy. Without bread we get hungry; without the toy we only feel sad. Wanting something a lot does not make it a need."
+      es-MX: "Pregunten: ¿puedo pasar sin eso? Comparen el pan con un juguete. Sin pan hay hambre; sin el juguete solo hay tristeza. Querer mucho algo no lo vuelve una necesidad."
+      pt-BR: "Perguntem: posso ficar sem isso? Comparem o pão com um brinquedo. Sem pão dá fome; sem o brinquedo só dá tristeza. Querer muito algo não o torna uma necessidade."
+    distractor_patterns:
+      option_tags:
+        - "desire-as-need"
+
+  - kc: "life.wants-and-choices"
+    code: "buys-the-want-first"
+    description:
+      en-US: "Spends coins on what they want most first, so none are left for what they need."
+      es-MX: "Gasta las monedas primero en lo que más quiere y ya no le quedan para lo que necesita."
+      pt-BR: "Gasta as moedas primeiro no que mais quer e não sobram para o que precisa."
+    remediation_hint:
+      en-US: "Count the coins left after the first buy. Put the need first, then see if the want still fits. Wanting is fine: the want just waits its turn."
+      es-MX: "Cuenten las monedas que quedan después de la primera compra. Primero la necesidad; luego vean si todavía alcanza para el deseo. Querer está bien: el deseo solo espera su turno."
+      pt-BR: "Contem as moedas que sobram depois da primeira compra. Primeiro a necessidade; depois vejam se ainda dá para o desejo. Querer é normal: o desejo só espera a vez."
+    distractor_patterns:
+      option_tags:
+        - "want-first"
+
+  # ---------------------------------------------------------------------------
+  # life.scam-awareness (tier_min 2). Lesson: fe-1012-04-suspicious-messages (10-12).
+  # ---------------------------------------------------------------------------
+  - kc: "life.scam-awareness"
+    code: "replies-to-check-the-sender"
+    description:
+      en-US: "Thinks replying to ask who is writing is a safe way to check a strange message."
+      es-MX: "Cree que responder para preguntar quién escribe es una forma segura de revisar un mensaje raro."
+      pt-BR: "Acredita que responder para perguntar quem escreve é um jeito seguro de conferir uma mensagem estranha."
+    remediation_hint:
+      en-US: "Anyone can type any name, so a reply proves nothing. Stop, do not tap, do not answer, and ask a trusted adult to check using the usual number."
+      es-MX: "Cualquiera puede escribir cualquier nombre, así que responder no prueba nada. Paren, no toquen, no contesten y pidan a un adulto de confianza que lo compruebe por el número de siempre."
+      pt-BR: "Qualquer pessoa pode escrever qualquer nome, então responder não prova nada. Parem, não toquem, não respondam e peçam a um adulto de confiança que confira pelo número de sempre."
+    distractor_patterns:
+      option_tags:
+        - "reply-to-check"
+
+  - kc: "life.scam-awareness"
+    code: "obeys-the-rush"
+    description:
+      en-US: "Believes a message that says today or now must be answered at once, or something will be lost."
+      es-MX: "Cree que un mensaje que dice hoy o ahora debe contestarse de inmediato, o se pierde algo."
+      pt-BR: "Acredita que uma mensagem que diz hoje ou agora precisa ser respondida na hora, ou algo se perde."
+    remediation_hint:
+      en-US: "Name the rush as a warning sign: today or now is meant to stop us from thinking. Pause first, do nothing, and show the message to a trusted adult."
+      es-MX: "Señalen la prisa como señal de alerta: hoy o ahora busca que no pensemos. Primero pausen, no hagan nada y enseñen el mensaje a un adulto de confianza."
+      pt-BR: "Apontem a pressa como sinal de alerta: hoje ou agora serve para a gente não pensar. Primeiro façam uma pausa, não façam nada e mostrem a mensagem a um adulto de confiança."
+    distractor_patterns:
+      option_tags:
+        - "obeys-the-rush"
+
+  # ---------------------------------------------------------------------------
+  # life.advertising-literacy (tier_min 2). No pilot lesson uses this KC.
+  # ---------------------------------------------------------------------------
+  - kc: "life.advertising-literacy"
+    code: "ad-claims-are-facts"
+    description:
+      en-US: "Believes an ad only tells the truth, so every claim in it can be trusted."
+      es-MX: "Cree que un anuncio solo dice la verdad, así que se puede confiar en todo lo que afirma."
+      pt-BR: "Acredita que um anúncio só diz a verdade, então dá para confiar em tudo o que ele afirma."
+    remediation_hint:
+      en-US: "Ask who made the ad and what they want. Then split one claim in two: what can be checked, like size or price, and what is only boasting, like the best ever."
+      es-MX: "Pregunten quién hizo el anuncio y qué quiere. Luego separen una frase en dos: lo que se puede comprobar, como el tamaño o el precio, y lo que es solo presumir, como el mejor del mundo."
+      pt-BR: "Perguntem quem fez o anúncio e o que ele quer. Depois separem uma frase em duas: o que dá para conferir, como o tamanho ou o preço, e o que é só exagero, como o melhor do mundo."
+    distractor_patterns:
+      option_tags:
+        - "ad-is-true"
+
+  - kc: "life.advertising-literacy"
+    code: "free-offer-has-no-catch"
+    description:
+      en-US: "Believes a free offer has no catch, so it is always right to take it."
+      es-MX: "Cree que una oferta gratis no tiene trampa y que siempre conviene aceptarla."
+      pt-BR: "Acredita que uma oferta grátis não tem armadilha e que sempre vale a pena aceitar."
+    remediation_hint:
+      en-US: "Ask what the seller gets if you say yes: your information, your money later, or your attention. Free does not always mean no cost. Pause and ask an adult first."
+      es-MX: "Pregunten qué gana quien ofrece si dicen que sí: sus datos, su dinero después o su atención. Gratis no siempre quiere decir sin costo. Pausen y pregunten antes a un adulto."
+      pt-BR: "Perguntem o que ganha quem oferece se vocês disserem sim: seus dados, seu dinheiro depois ou sua atenção. Grátis nem sempre quer dizer sem custo. Façam uma pausa e perguntem antes a um adulto."
+    distractor_patterns:
+      option_tags:
+        - "free-means-free"
+
+# ---------------------------------------------------------------------------
+# NOT PART OF THE SEED SHAPE. One line of grounding per entry, keyed kc/code.
+# `tests` says what in the pilot (if anything) puts the wrong idea in front of a
+# child; `source` is the evidence. Where a source is external it is named only
+# because it is known to exist; every external pointer still needs an educator
+# or the owner to confirm the exact citation before it is quoted outside this file.
+# ---------------------------------------------------------------------------
+rationale:
+  life.wants-and-choices/want-feels-like-need:
+    tests: "fe-69-03 need/want sort bins: wants a child could file under Need are the balloon (pre-01), candy (guided-01), stickers and toy robot (practice-01), toy camera (transfer-01)."
+    source: "Same wrong idea as the active biz.needs-vs-wants entry of the same code, deliberately reusing code and tag (the seed already repeats counts-coins-not-value across two KCs); fe-69-03 plan; wording is practitioner judgement, needs educator confirmation."
+  life.wants-and-choices/buys-the-want-first:
+    tests: "fe-69-03 story-01 distractor opt-balloon-first (the order-01 turn models the correct order), and Liruf's own mentor_misjudgment (buys the toy first, no coins left for bread)."
+    source: "Pilot round-2 correctness finding 10 (story-01 prices now make the balloon the cheaper item, so 'buy the cheaper one' cannot pass); Council for Economic Education, Voluntary National Content Standards in Economics, Standard 1 (scarcity forces choices)."
+  life.scam-awareness/replies-to-check-the-sender:
+    tests: "fe-1012-04 reply-01 second reply (text back and ask who it is) and transfer-01 choice-ask (reply and ask who it is)."
+    source: "Pilot round-2 pedagogy finding 10 (replying was graded as a distractor but never modelled; tell-adult-01 now models do-not-reply); FTC consumer.ftc.gov scam-avoidance guidance on not engaging with unexpected messages."
+  life.scam-awareness/obeys-the-rush:
+    tests: "fe-1012-04 reply-01 first reply (send it before it locks), transfer-01 choice-send plus the reason-hurry distractor, and the cue-rush cue in guided-01."
+    source: "Pilot lesson fe-1012-04 (cue-rush; look-ask-01 models today as pressure not to think); FTC consumer.ftc.gov lists pressure to act at once as a scam tactic."
+  life.advertising-literacy/ad-claims-are-facts:
+    tests: "No pilot item. Matches the KC objective (true description versus exaggeration) and the title of legacy topic faro-de-la-confianza/anuncios-y-trampas/verdad-o-exageracion; the topic's lessons were not read for this proposal."
+    source: "John (1999), Journal of Consumer Research 26(3), consumer-socialization stages; APA Task Force on Advertising and Children (2004) report; FTC Admongo ad-literacy materials (archived, confirm availability); wording is practitioner judgement."
+  life.advertising-literacy/free-offer-has-no-catch:
+    tests: "No pilot item. Matches the KC objective (fake free offers) and the title of legacy topic gratis-que-no-es-gratis (lessons not read); fe-1012-04 guided-01 msg-newplayer (free game pass for a password) is the nearest pilot item but grades scam-awareness, not this KC."
+    source: "Practitioner judgement, needs owner or educator confirmation; FTC consumer-education material on free-offer scams is the likely citation."
+
+# ---------------------------------------------------------------------------
+# NOT PART OF THE SEED SHAPE. Wrong ideas considered and deliberately held back
+# to keep to the seed's 1-2 per KC. Each could replace an entry above; none has
+# localized text yet, so nothing unreviewed can be pasted by accident.
+# ---------------------------------------------------------------------------
+held_back:
+  - kc: "life.wants-and-choices"
+    code: "wants-are-bad"
+    belief: "Wanting things is bad or greedy."
+    why_held_back: "No pilot item grades it. The buys-the-want-first hint already says wanting is fine. Practitioner judgement: promote it if the owner wants a guard against moralizing."
+  - kc: "life.wants-and-choices"
+    code: "need-is-a-fixed-label"
+    belief: "An object is always a need or always a want, whatever the situation."
+    why_held_back: "Only transfer-01 (rain jacket, reason will-rain) touches it, and round-2 correctness blocker 1 was about that item's key. Practitioner judgement."
+  - kc: "life.scam-awareness"
+    code: "familiar-name-means-safe"
+    belief: "A message that carries a familiar name or role (Mom, Dad, a shop, a game) is safe."
+    why_held_back: "Seen in transfer-01 (a new number claiming to be a relative) and round-2 pedagogy finding 13, but it surfaces in flag-set items (pre-01, guided-01), which carry no per-option tags, so it has no choice distractor to tag."
+  - kc: "life.scam-awareness"
+    code: "prize-means-good-news"
+    belief: "An unexpected prize or gift message is real luck, so tap it."
+    why_held_back: "It is Dina's own mentor_misjudgment, but it is modelled in the episode rather than graded as a distractor. It overlaps free-offer-has-no-catch."
+  - kc: "life.scam-awareness"
+    code: "flags-everything"
+    belief: "Every message with a link or a request is a scam."
+    why_held_back: "Round-2 pedagogy finding 12 added example-fine-01 because guided-01 grades it; it is over-suspicion, not a wrong idea about scams, and needs a different correction cue."
+  - kc: "life.advertising-literacy"
+    code: "paid-recommendation-is-opinion"
+    belief: "When a creator or celebrity recommends something, it is their honest opinion, not paid."
+    why_held_back: "Covers the objective's paid endorsements (legacy topic title quien-paga-por-el-anuncio). No lesson exists yet to test it."
+  - kc: "life.advertising-literacy"
+    code: "rush-deal-is-real"
+    belief: "Only today or only 3 left means the deal will really disappear."
+    why_held_back: "Covers the objective's rush tactics (legacy topic title trucos-para-que-compres-rapido). Overlaps obeys-the-rush in the scam KC."

@@ -1,0 +1,564 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-6-9",
+  "chapter_id": "lem-69-open-the-stand",
+  "lesson_id": "lem-69-02-count-the-cash-box",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.revenue",
+    "money.make-change-counting-up",
+    "money.count-mixed-coins"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho acompaña a Nico y Lia a abrir la caja del puesto después de la venta. Primero cuentan monedas de 5, de 2 y de 1. Luego separan las 6 monedas propias del puesto y ven que lo que pagaron los clientes son los ingresos. Después ven cómo dar cambio contando hacia arriba desde el precio. El niño arma los ingresos con monedas mixtas, apila lo que pagaron varios clientes y da cambio, también en la mesa de una feria.",
+  "title": {
+    "en-US": "Count the cash box",
+    "es-MX": "Cuenta la caja",
+    "pt-BR": "Conte a caixa"
+  },
+  "new_concepts": [
+    "biz.revenue"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The stand starts each day with 6 coins of its own.",
+          "line": "Nico and Lia's sale is over. Let's open the box."
+        },
+        "es-MX": {
+          "prompt": "El puesto empieza cada día con 6 monedas propias.",
+          "line": "La venta de Nico y Lia terminó. Abramos la caja."
+        },
+        "pt-BR": {
+          "prompt": "A barraca começa cada dia com 6 moedas próprias.",
+          "line": "A venda do Nico e da Lia acabou. Vamos abrir a caixa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 8,
+        "fewest": false
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.revenue",
+      "copy": {
+        "en-US": {
+          "prompt": "After the sale, the box holds 14 coins. Build what customers paid.",
+          "feedback": {
+            "met": "I noted your answer. Now we watch it step by step.",
+            "not_yet": "I noted your answer. Now we watch it step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Tras la venta, la caja tiene 14 monedas. Arma lo que pagaron los clientes.",
+          "feedback": {
+            "met": "Anoté tu respuesta. Ahora lo vemos paso a paso.",
+            "not_yet": "Anoté tu respuesta. Ahora lo vemos paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Depois da venda, a caixa tem 14 moedas. Monte o que os clientes pagaram.",
+          "feedback": {
+            "met": "Anotei sua resposta. Agora vamos ver passo a passo.",
+            "not_yet": "Anotei sua resposta. Agora vamos ver passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "count-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. The box has two 5s, four 2s and three 1s.",
+          "line": "We count on: 5, 10, 12, 14, 16, 18, 19, 20, 21."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Hay 2 monedas de 5, 4 de 2 y 3 de 1.",
+          "line": "Contamos: 5, 10, 12, 14, 16, 18, 19, 20, 21."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Há 2 moedas de 5, 4 de 2 e 3 de 1.",
+          "line": "Contamos: 5, 10, 12, 14, 16, 18, 19, 20, 21."
+        }
+      }
+    },
+    {
+      "id": "own-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. The stand's own 6 coins did not come from customers.",
+          "line": "We set them aside. 21 take away 6 is 15."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Las 6 monedas propias del puesto no vienen de los clientes.",
+          "line": "Las apartamos. 21 menos 6 son 15."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. As 6 moedas próprias da barraca não vieram dos clientes.",
+          "line": "Vamos separá-las. 21 menos 6 são 15."
+        }
+      }
+    },
+    {
+      "id": "revenue-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. The 15 coins customers paid are the revenue.",
+          "line": "Check: 5 cups at 3 coins is 3, 6, 9, 12, 15."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Las 15 monedas que pagaron los clientes son los ingresos.",
+          "line": "Comprobamos: 5 vasos de 3 monedas son 3, 6, 9, 12, 15."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. As 15 moedas que os clientes pagaram são a receita.",
+          "line": "Conferimos: 5 copos de 3 moedas são 3, 6, 9, 12, 15."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-stack.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "amount",
+          "total": 1200
+        },
+        "step": 1,
+        "max": 15
+      },
+      "rubric": {
+        "target": "12"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.revenue",
+      "copy": {
+        "en-US": {
+          "prompt": "Four customers paid 3 coins each. Stack their coins.",
+          "feedback": {
+            "met": "Four customers at 3 coins each: your stack shows their revenue.",
+            "not_yet": "Not yet. Count by 3s, one count for each customer."
+          },
+          "help": [
+            "One customer paid 3 coins. Count by 3s for each customer.",
+            "Set the number of coins until the stack matches the goal."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Cuatro clientes pagaron 3 monedas cada uno. Apila sus monedas.",
+          "feedback": {
+            "met": "Cuatro clientes con 3 monedas cada uno: tu pila muestra sus ingresos.",
+            "not_yet": "Todavía no. Cuenta de 3 en 3, una vez por cliente."
+          },
+          "help": [
+            "Un cliente pagó 3 monedas. Cuenta de 3 en 3, una vez por cliente.",
+            "Cambia la cantidad de monedas hasta que la pila llegue a la meta."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quatro clientes pagaram 3 moedas cada. Empilhe as moedas deles.",
+          "feedback": {
+            "met": "Quatro clientes com 3 moedas cada: sua pilha mostra a receita deles.",
+            "not_yet": "Ainda não. Conte de 3 em 3, uma vez por cliente."
+          },
+          "help": [
+            "Um cliente pagou 3 moedas. Conte de 3 em 3, uma vez por cliente.",
+            "Mude a quantidade de moedas até a pilha chegar à meta."
+          ]
+        }
+      }
+    },
+    {
+      "id": "change-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. A customer pays 5 coins for a 3-coin cup.",
+          "line": "Watch. We owe the customer some coins back."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Un cliente paga 5 monedas por un vaso de 3 monedas.",
+          "line": "Observa. Le debemos unas monedas al cliente."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Um cliente paga 5 moedas por um copo de 3 moedas.",
+          "line": "Observe. Devemos algumas moedas ao cliente."
+        }
+      }
+    },
+    {
+      "id": "change-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Count up from 3: add a 1-coin and say 4.",
+          "line": "Add another 1-coin and say 5, the amount paid."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Cuenta desde 3: agrega una moneda de 1 y di 4.",
+          "line": "Agrega otra moneda de 1 y di 5, lo que se pagó."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Conte a partir de 3: some uma moeda de 1 e diga 4.",
+          "line": "Some outra moeda de 1 e diga 5, o valor pago."
+        }
+      }
+    },
+    {
+      "id": "change-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. Two 1-coins went back, so the change is 2 coins.",
+          "line": "We counted up from the price. Let's note the result."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Volvieron dos monedas de 1: el cambio es de 2 monedas.",
+          "line": "Contamos desde el precio. Anotemos el resultado."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Voltaram duas moedas de 1: o troco é de 2 moedas.",
+          "line": "Contamos a partir do preço. Vamos anotar o resultado."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.making-change.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ],
+        "price_minor": 2,
+        "paid_minor": 5
+      },
+      "rubric": {
+        "change_minor": 3
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "copy": {
+        "en-US": {
+          "prompt": "A customer pays 5 coins for a 2-coin cookie. Give the change.",
+          "feedback": {
+            "met": "Right change. The price plus your change makes what was paid.",
+            "not_yet": "Not yet. Count up from the price to the amount paid."
+          },
+          "help": [
+            "Start at the price, 2. Add coins and say each count.",
+            "Stop when you say the amount paid."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un cliente paga 5 monedas por una galleta de 2 monedas. Da el cambio.",
+          "feedback": {
+            "met": "Cambio correcto. El precio más tu cambio da lo que se pagó.",
+            "not_yet": "Todavía no. Cuenta hacia arriba del precio a lo pagado."
+          },
+          "help": [
+            "Empieza en el precio, 2. Agrega monedas y di cada cuenta.",
+            "Para cuando digas lo que se pagó."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um cliente paga 5 moedas por um biscoito de 2 moedas. Dê o troco.",
+          "feedback": {
+            "met": "Troco certo. O preço mais o seu troco dá o valor pago.",
+            "not_yet": "Ainda não. Conte para cima do preço até o valor pago."
+          },
+          "help": [
+            "Comece no preço, 2. Some moedas e diga cada conta.",
+            "Pare quando disser o valor pago."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 1
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 11,
+        "fewest": false
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-mixed-coins",
+      "copy": {
+        "en-US": {
+          "prompt": "Another day, the box holds 17 coins. Build what customers paid.",
+          "feedback": {
+            "met": "You built what the customers paid, without the stand's own coins.",
+            "not_yet": "Not yet. Take the stand's own coins away from the box total."
+          },
+          "help": [
+            "Remember: the stand starts each day with 6 coins.",
+            "Take those away first. Then build what is left."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Otro día, la caja tiene 17 monedas. Arma lo que pagaron los clientes.",
+          "feedback": {
+            "met": "Armaste lo que pagaron los clientes, sin las monedas propias del puesto.",
+            "not_yet": "Todavía no. Quita las monedas propias del total de la caja."
+          },
+          "help": [
+            "Recuerda: el puesto empieza cada día con 6 monedas.",
+            "Quítalas primero. Luego arma lo que queda."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outro dia, a caixa tem 17 moedas. Monte o que os clientes pagaram.",
+          "feedback": {
+            "met": "Você montou o que os clientes pagaram, sem as moedas próprias da barraca.",
+            "not_yet": "Ainda não. Tire as moedas próprias do total da caixa."
+          },
+          "help": [
+            "Lembre: a barraca começa cada dia com 6 moedas.",
+            "Tire essas primeiro. Depois monte o que sobrar."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 2
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 14,
+        "fewest": false
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.revenue",
+      "copy": {
+        "en-US": {
+          "prompt": "The fair table sold 7 bracelets at 2 coins. Build the revenue.",
+          "feedback": {
+            "met": "You built the fair table's revenue: the coins customers paid.",
+            "not_yet": "Not yet. Each bracelet paid 2 coins: count by 2s."
+          },
+          "help": [
+            "Revenue is the coins customers paid.",
+            "Rho counted by 3s for cups. Count by 2s here."
+          ]
+        },
+        "es-MX": {
+          "prompt": "La mesa de la feria vendió 7 pulseras a 2 monedas. Arma los ingresos.",
+          "feedback": {
+            "met": "Armaste los ingresos de la mesa: lo que pagaron los clientes.",
+            "not_yet": "Todavía no. Cada pulsera pagó 2 monedas: cuenta de 2 en 2."
+          },
+          "help": [
+            "Los ingresos son las monedas que pagaron los clientes.",
+            "Rho contó de 3 en 3 con los vasos. Aquí cuenta de 2 en 2."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mesa da feira vendeu 7 pulseiras a 2 moedas. Monte a receita.",
+          "feedback": {
+            "met": "Você montou a receita da mesa: o que os clientes pagaram.",
+            "not_yet": "Ainda não. Cada pulseira pagou 2 moedas: conte de 2 em 2."
+          },
+          "help": [
+            "A receita é o total de moedas que os clientes pagaram.",
+            "O Rho contou de 3 em 3 nos copos. Aqui conte de 2 em 2."
+          ]
+        }
+      }
+    }
+  ]
+}

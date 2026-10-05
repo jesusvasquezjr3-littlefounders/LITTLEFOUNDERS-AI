@@ -1,0 +1,1475 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "chapter_id": "inv-1012-growth-you-can-see",
+  "lesson_id": "inv-1012-01-steady-or-faster",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.linear-vs-accelerating-growth",
+    "money.add-money"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho observa dos frascos de monedas que empiezan con 10: el A suma 5 cada semana y el B suma 2, luego 4, luego 6. El aprendiz sigue ambos durante ocho semanas en tabla y gráfica, distingue el crecimiento parejo del que se acelera y lo aplica a dos fondos de práctica nuevos.",
+  "title": {
+    "en-US": "Steady or faster growth?",
+    "es-MX": "¿Crece parejo o cada vez más?",
+    "pt-BR": "Cresce igual ou cada vez mais?"
+  },
+  "new_concepts": [
+    "money.linear-vs-accelerating-growth"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two jars, ten coins each.",
+          "line": "Observe: jars A and B each hold 10 coins. We watch both for eight weeks."
+        },
+        "es-MX": {
+          "prompt": "Dos frascos, diez monedas cada uno.",
+          "line": "Observa: los frascos A y B tienen 10 monedas cada uno. Los seguimos durante ocho semanas."
+        },
+        "pt-BR": {
+          "prompt": "Dois potes, dez moedas em cada.",
+          "line": "Observe: os potes A e B têm 10 moedas cada um. Vamos acompanhar os dois por oito semanas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.linear-vs-accelerating-growth",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-a"
+          },
+          {
+            "id": "choice-tie"
+          },
+          {
+            "id": "choice-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-five"
+          },
+          {
+            "id": "reason-grows"
+          },
+          {
+            "id": "reason-unsure"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-b"
+        ],
+        "reasonQuality": {
+          "reason-five": "partial",
+          "reason-grows": "sound",
+          "reason-unsure": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Jar A adds 5 a week; jar B adds 2, 4, 6, 8… Who leads at week eight?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "Jar A"
+            },
+            {
+              "label": "They tie"
+            },
+            {
+              "label": "Jar B"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A adds 5; B starts with 2"
+            },
+            {
+              "label": "B's gain gets bigger each week"
+            },
+            {
+              "label": "I'm not sure yet"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El frasco A suma 5 por semana; el B suma 2, 4, 6, 8… ¿Quién va adelante en la semana ocho?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Frasco A"
+            },
+            {
+              "label": "Empatan"
+            },
+            {
+              "label": "Frasco B"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "El A suma 5; el B empieza con 2"
+            },
+            {
+              "label": "Lo que suma el B crece cada semana"
+            },
+            {
+              "label": "Aún no lo sé"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O pote A soma 5 por semana; o B soma 2, 4, 6, 8… Quem está na frente na semana oito?",
+          "feedback": {
+            "met": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Pote A"
+            },
+            {
+              "label": "Empatam"
+            },
+            {
+              "label": "Pote B"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "O A soma 5; o B começa com 2"
+            },
+            {
+              "label": "O que o B soma cresce a cada semana"
+            },
+            {
+              "label": "Ainda não sei"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-steady-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: jar A adds the same 5 each week.",
+          "line": "Week by week it reads 10, 15, 20, 25, 30. Every gain is 5."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el frasco A suma los mismos 5 cada semana.",
+          "line": "Semana a semana marca 10, 15, 20, 25, 30. Cada semana suma lo mismo: 5."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o pote A soma os mesmos 5 a cada semana.",
+          "line": "Semana a semana marca 10, 15, 20, 25, 30. Toda semana soma o mesmo: 5."
+        }
+      }
+    },
+    {
+      "id": "example-faster-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: jar B's gain grows by 2 each week.",
+          "line": "Jar B adds 2, 4, 6, 8, so it reads 10, 12, 16, 22, 30."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: lo que suma el B crece 2 cada semana.",
+          "line": "El B suma 2, 4, 6 y 8, así que marca 10, 12, 16, 22, 30."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o que o B soma cresce 2 a cada semana.",
+          "line": "O B soma 2, 4, 6 e 8, então marca 10, 12, 16, 22, 30."
+        }
+      }
+    },
+    {
+      "id": "example-line-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk0"
+            },
+            {
+              "id": "wk1"
+            },
+            {
+              "id": "wk2"
+            },
+            {
+              "id": "wk3"
+            },
+            {
+              "id": "wk4"
+            },
+            {
+              "id": "wk5"
+            },
+            {
+              "id": "wk6"
+            },
+            {
+              "id": "wk7"
+            },
+            {
+              "id": "wk8"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-a",
+              "values": [
+                10,
+                15,
+                20,
+                25,
+                30,
+                35,
+                40,
+                45,
+                50
+              ]
+            },
+            {
+              "id": "series-b",
+              "values": [
+                10,
+                12,
+                16,
+                22,
+                30,
+                40,
+                52,
+                66,
+                82
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: jar A is a straight line; jar B bends upward and passes it after week 4.",
+          "title": "Coins in each jar",
+          "data": {
+            "categories": [
+              {
+                "label": "Wk 0"
+              },
+              {
+                "label": "Wk 1"
+              },
+              {
+                "label": "Wk 2"
+              },
+              {
+                "label": "Wk 3"
+              },
+              {
+                "label": "Wk 4"
+              },
+              {
+                "label": "Wk 5"
+              },
+              {
+                "label": "Wk 6"
+              },
+              {
+                "label": "Wk 7"
+              },
+              {
+                "label": "Wk 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Jar A"
+              },
+              {
+                "label": "Jar B"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el frasco A es una recta; el B se curva hacia arriba y lo pasa después de la semana 4.",
+          "title": "Monedas en cada frasco",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 0"
+              },
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              },
+              {
+                "label": "Sem 7"
+              },
+              {
+                "label": "Sem 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Frasco A"
+              },
+              {
+                "label": "Frasco B"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o pote A é uma reta; o B se curva para cima e o ultrapassa depois da semana 4.",
+          "title": "Moedas em cada pote",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 0"
+              },
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              },
+              {
+                "label": "Sem 7"
+              },
+              {
+                "label": "Sem 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pote A"
+              },
+              {
+                "label": "Pote B"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "steps": [
+          {
+            "id": "wk5-gain"
+          },
+          {
+            "id": "wk5-total"
+          },
+          {
+            "id": "wk6-total"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "wk5-total",
+          "wk6-total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wk5-total": "40",
+          "wk6-total": "52"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Jar B reads 30 at week 4, and each gain grows by 2. Find weeks 5 and 6.",
+          "feedback": {
+            "met": "You added each week's gain to the running total.",
+            "not_yet": "Check Rho's jar B: last total plus this gain."
+          },
+          "help": [
+            "Week 5 adds 10: add it to the 30.",
+            "Week 6 adds 2 more than week 5."
+          ],
+          "steps": [
+            {
+              "expression": "Week 5 gain: 8 + 2",
+              "result": "10",
+              "spokenText": "Week 5 adds 8 plus 2, which is 10"
+            },
+            {
+              "expression": "30 + 10",
+              "result": "40",
+              "spokenText": "Thirty plus 10 is 40"
+            },
+            {
+              "expression": "Week 5 total + week 6 gain",
+              "result": "52",
+              "spokenText": "Forty plus 12 is 52"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El frasco B marca 30 en la semana 4 y cada suma crece 2. Encuentra las semanas 5 y 6.",
+          "feedback": {
+            "met": "Sumaste lo de cada semana al total acumulado.",
+            "not_yet": "Mira el frasco B de Rho: total anterior más lo de esta semana."
+          },
+          "help": [
+            "La semana 5 suma 10: súmalo a los 30.",
+            "La semana 6 suma 2 más que la 5."
+          ],
+          "steps": [
+            {
+              "expression": "Suma de la semana 5: 8 + 2",
+              "result": "10",
+              "spokenText": "La semana 5 suma 8 más 2, que son 10"
+            },
+            {
+              "expression": "30 + 10",
+              "result": "40",
+              "spokenText": "Treinta más 10 son 40"
+            },
+            {
+              "expression": "Total de la semana 5 + suma de la semana 6",
+              "result": "52",
+              "spokenText": "Cuarenta más 12 son 52"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O pote B marca 30 na semana 4 e cada soma cresce 2. Encontre as semanas 5 e 6.",
+          "feedback": {
+            "met": "Você somou o ganho de cada semana ao total acumulado.",
+            "not_yet": "Veja o pote B do Rho: total anterior mais o desta semana."
+          },
+          "help": [
+            "A semana 5 soma 10: some aos 30.",
+            "A semana 6 soma 2 a mais que a 5."
+          ],
+          "steps": [
+            {
+              "expression": "Soma da semana 5: 8 + 2",
+              "result": "10",
+              "spokenText": "A semana 5 soma 8 mais 2, que são 10"
+            },
+            {
+              "expression": "30 + 10",
+              "result": "40",
+              "spokenText": "Trinta mais 10 são 40"
+            },
+            {
+              "expression": "Total da semana 5 + soma da semana 6",
+              "result": "52",
+              "spokenText": "Quarenta mais 12 são 52"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-column-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "column"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk1"
+            },
+            {
+              "id": "wk2"
+            },
+            {
+              "id": "wk3"
+            },
+            {
+              "id": "wk4"
+            },
+            {
+              "id": "wk5"
+            },
+            {
+              "id": "wk6"
+            },
+            {
+              "id": "wk7"
+            },
+            {
+              "id": "wk8"
+            }
+          ],
+          "series": [
+            {
+              "id": "gain-a",
+              "values": [
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5
+              ]
+            },
+            {
+              "id": "gain-b",
+              "values": [
+                2,
+                4,
+                6,
+                8,
+                10,
+                12,
+                14,
+                16
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the columns show each week's gain. A's stay equal; B's keep growing.",
+          "title": "Coins added each week",
+          "data": {
+            "categories": [
+              {
+                "label": "Wk 1"
+              },
+              {
+                "label": "Wk 2"
+              },
+              {
+                "label": "Wk 3"
+              },
+              {
+                "label": "Wk 4"
+              },
+              {
+                "label": "Wk 5"
+              },
+              {
+                "label": "Wk 6"
+              },
+              {
+                "label": "Wk 7"
+              },
+              {
+                "label": "Wk 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Jar A"
+              },
+              {
+                "label": "Jar B"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 4: las columnas muestran lo que suma cada semana. Las de A son iguales; las de B crecen.",
+          "title": "Monedas que suma cada semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              },
+              {
+                "label": "Sem 7"
+              },
+              {
+                "label": "Sem 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Frasco A"
+              },
+              {
+                "label": "Frasco B"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: as colunas mostram o que soma a cada semana. As de A são iguais; as de B crescem.",
+          "title": "Moedas somadas a cada semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              },
+              {
+                "label": "Sem 7"
+              },
+              {
+                "label": "Sem 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pote A"
+              },
+              {
+                "label": "Pote B"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-line-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.linear-vs-accelerating-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk0"
+            },
+            {
+              "id": "wk1"
+            },
+            {
+              "id": "wk2"
+            },
+            {
+              "id": "wk3"
+            },
+            {
+              "id": "wk4"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-g",
+              "values": [
+                10,
+                13,
+                16,
+                19,
+                22
+              ]
+            },
+            {
+              "id": "series-h",
+              "values": [
+                10,
+                11,
+                13,
+                16,
+                20
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-h"
+            },
+            {
+              "id": "opt-g"
+            },
+            {
+              "id": "opt-neither"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-h"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho charts two new jars, G and H. Read each line's shape.",
+          "feedback": {
+            "met": "You read the bend: its gain grows every week.",
+            "not_yet": "Compare with Rho's jar A: a straight line adds the same."
+          },
+          "title": "Rho's new jars",
+          "data": {
+            "categories": [
+              {
+                "label": "Wk 0"
+              },
+              {
+                "label": "Wk 1"
+              },
+              {
+                "label": "Wk 2"
+              },
+              {
+                "label": "Wk 3"
+              },
+              {
+                "label": "Wk 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Jar G"
+              },
+              {
+                "label": "Jar H"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which jar bends upward?",
+            "options": [
+              {
+                "label": "Jar H"
+              },
+              {
+                "label": "Jar G"
+              },
+              {
+                "label": "Neither"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Rho grafica dos frascos nuevos, G y H. Lee la forma de cada línea.",
+          "feedback": {
+            "met": "Leíste la curva: lo que suma crece cada semana.",
+            "not_yet": "Compara con el frasco A de Rho: la recta suma lo mismo."
+          },
+          "title": "Los frascos nuevos de Rho",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 0"
+              },
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Frasco G"
+              },
+              {
+                "label": "Frasco H"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál frasco se curva hacia arriba?",
+            "options": [
+              {
+                "label": "Frasco H"
+              },
+              {
+                "label": "Frasco G"
+              },
+              {
+                "label": "Ninguno"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Rho faz o gráfico de dois potes novos, G e H. Leia a forma de cada linha.",
+          "feedback": {
+            "met": "Você leu a curva: o que soma cresce a cada semana.",
+            "not_yet": "Compare com o pote A do Rho: a reta soma o mesmo."
+          },
+          "title": "Os potes novos do Rho",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 0"
+              },
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pote G"
+              },
+              {
+                "label": "Pote H"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual pote se curva para cima?",
+            "options": [
+              {
+                "label": "Pote H"
+              },
+              {
+                "label": "Pote G"
+              },
+              {
+                "label": "Nenhum"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-add-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "steps": [
+          {
+            "id": "wk1-total"
+          },
+          {
+            "id": "wk2-total"
+          },
+          {
+            "id": "wk3-total"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "wk2-total",
+          "wk3-total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wk2-total": "28",
+          "wk3-total": "32"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Jar C starts at 20 and adds 4 each week. Find its totals after weeks 2 and 3.",
+          "feedback": {
+            "met": "You added the same 4 to each running total.",
+            "not_yet": "Check Rho's jar A: every week adds the same."
+          },
+          "help": [
+            "Add 4 to week 1, then 4 to week 2."
+          ],
+          "steps": [
+            {
+              "expression": "20 + 4",
+              "result": "24",
+              "spokenText": "Twenty plus 4 is 24"
+            },
+            {
+              "expression": "Week 1 total + 4",
+              "result": "28",
+              "spokenText": "Twenty-four plus 4 is 28"
+            },
+            {
+              "expression": "Week 2 total + 4",
+              "result": "32",
+              "spokenText": "Twenty-eight plus 4 is 32"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El frasco C empieza en 20 y suma 4 cada semana. Encuentra sus totales en las semanas 2 y 3.",
+          "feedback": {
+            "met": "Sumaste los mismos 4 a cada total acumulado.",
+            "not_yet": "Mira el frasco A de Rho: cada semana suma lo mismo."
+          },
+          "help": [
+            "Suma 4 a la semana 1 y luego 4 a la 2."
+          ],
+          "steps": [
+            {
+              "expression": "20 + 4",
+              "result": "24",
+              "spokenText": "Veinte más 4 son 24"
+            },
+            {
+              "expression": "Total de la semana 1 + 4",
+              "result": "28",
+              "spokenText": "Veinticuatro más 4 son 28"
+            },
+            {
+              "expression": "Total de la semana 2 + 4",
+              "result": "32",
+              "spokenText": "Veintiocho más 4 son 32"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O pote C começa em 20 e soma 4 a cada semana. Encontre os totais nas semanas 2 e 3.",
+          "feedback": {
+            "met": "Você somou os mesmos 4 a cada total acumulado.",
+            "not_yet": "Veja o pote A do Rho: toda semana soma o mesmo."
+          },
+          "help": [
+            "Some 4 à semana 1 e depois 4 à 2."
+          ],
+          "steps": [
+            {
+              "expression": "20 + 4",
+              "result": "24",
+              "spokenText": "Vinte mais 4 são 24"
+            },
+            {
+              "expression": "Total da semana 1 + 4",
+              "result": "28",
+              "spokenText": "Vinte e quatro mais 4 são 28"
+            },
+            {
+              "expression": "Total da semana 2 + 4",
+              "result": "32",
+              "spokenText": "Vinte e oito mais 4 são 32"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-column-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "column"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.linear-vs-accelerating-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk1"
+            },
+            {
+              "id": "wk2"
+            },
+            {
+              "id": "wk3"
+            },
+            {
+              "id": "wk4"
+            },
+            {
+              "id": "wk5"
+            }
+          ],
+          "series": [
+            {
+              "id": "gain-e",
+              "values": [
+                3,
+                3,
+                3,
+                3,
+                3
+              ]
+            },
+            {
+              "id": "gain-f",
+              "values": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-f"
+            },
+            {
+              "id": "opt-e"
+            },
+            {
+              "id": "opt-neither"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-e"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho charts the weekly gains of jars E and F. Read the columns.",
+          "feedback": {
+            "met": "You spotted the jar whose columns stay equal.",
+            "not_yet": "Look at the column heights: equal heights mean a steady jar."
+          },
+          "title": "Coins added each week",
+          "data": {
+            "categories": [
+              {
+                "label": "Wk 1"
+              },
+              {
+                "label": "Wk 2"
+              },
+              {
+                "label": "Wk 3"
+              },
+              {
+                "label": "Wk 4"
+              },
+              {
+                "label": "Wk 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Jar E"
+              },
+              {
+                "label": "Jar F"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which jar adds the same every week?",
+            "options": [
+              {
+                "label": "Jar F"
+              },
+              {
+                "label": "Jar E"
+              },
+              {
+                "label": "Neither"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Rho grafica lo que suman cada semana los frascos E y F. Lee las columnas.",
+          "feedback": {
+            "met": "Encontraste el frasco de columnas iguales.",
+            "not_yet": "Mira la altura de las columnas: alturas iguales son un frasco parejo."
+          },
+          "title": "Monedas que suma cada semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Frasco E"
+              },
+              {
+                "label": "Frasco F"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál frasco suma lo mismo cada semana?",
+            "options": [
+              {
+                "label": "Frasco F"
+              },
+              {
+                "label": "Frasco E"
+              },
+              {
+                "label": "Ninguno"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Rho faz o gráfico do que os potes E e F somam por semana. Leia as colunas.",
+          "feedback": {
+            "met": "Você achou o pote de colunas iguais.",
+            "not_yet": "Veja a altura das colunas: alturas iguais são um pote constante."
+          },
+          "title": "Moedas somadas a cada semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pote E"
+              },
+              {
+                "label": "Pote F"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual pote soma o mesmo a cada semana?",
+            "options": [
+              {
+                "label": "Pote F"
+              },
+              {
+                "label": "Pote E"
+              },
+              {
+                "label": "Nenhum"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.linear-vs-accelerating-growth",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-s"
+          },
+          {
+            "id": "choice-f"
+          },
+          {
+            "id": "choice-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-grows"
+          },
+          {
+            "id": "reason-start"
+          },
+          {
+            "id": "reason-both"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-f"
+        ],
+        "reasonQuality": {
+          "reason-grows": "sound",
+          "reason-start": "partial",
+          "reason-both": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pretend funds start at 0: S adds 8 a round, F adds 3, 6, 9… Who leads after six rounds?",
+          "feedback": {
+            "met": "You picked the fund whose gain keeps growing.",
+            "not_yet": "Like Rho's jars: add each round's gain, then compare."
+          },
+          "choices": [
+            {
+              "label": "Fund S"
+            },
+            {
+              "label": "Fund F"
+            },
+            {
+              "label": "Same amount"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "F's gains keep getting bigger"
+            },
+            {
+              "label": "S adds more in round one"
+            },
+            {
+              "label": "Both just add coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los fondos de práctica parten de 0: S suma 8 por ronda y F suma 3, 6, 9… ¿Quién va arriba tras seis rondas?",
+          "feedback": {
+            "met": "Elegiste el fondo cuya suma sigue creciendo.",
+            "not_yet": "Como los frascos de Rho: suma lo de cada ronda y compara."
+          },
+          "choices": [
+            {
+              "label": "Fondo S"
+            },
+            {
+              "label": "Fondo F"
+            },
+            {
+              "label": "Lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Lo que suma F crece cada ronda"
+            },
+            {
+              "label": "S suma más en la primera ronda"
+            },
+            {
+              "label": "Los dos solo suman monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os fundos de prática partem de 0: S soma 8 por rodada e F soma 3, 6, 9… Quem lidera após seis rodadas?",
+          "feedback": {
+            "met": "Você escolheu o fundo cuja soma continua crescendo.",
+            "not_yet": "Como os potes do Rho: some o de cada rodada e compare."
+          },
+          "choices": [
+            {
+              "label": "Fundo S"
+            },
+            {
+              "label": "Fundo F"
+            },
+            {
+              "label": "O mesmo valor"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O que F soma cresce a cada rodada"
+            },
+            {
+              "label": "S soma mais na primeira rodada"
+            },
+            {
+              "label": "Os dois só somam moedas"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

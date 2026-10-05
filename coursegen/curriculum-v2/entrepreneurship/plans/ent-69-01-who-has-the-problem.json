@@ -1,0 +1,1050 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-inventors",
+  "lesson_id": "ent-69-01-who-has-the-problem",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.real-problems"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina acompaña a la mesa de Mía en la clase: 4 de 6 sándwiches llegan aplastados cada día. Dina cuenta con calma, compara con la manzana de Sam, que rodó una sola vez, y dice quién tiene el problema. El niño separa lo que se repite de lo que pasó una vez, nombra a quién le pasa, no salta a arreglarlo y lo repite en el autobús escolar.",
+  "title": {
+    "en-US": "Who has the problem?",
+    "es-MX": "¿Quién tiene el problema?",
+    "pt-BR": "Quem tem o problema?"
+  },
+  "new_concepts": [
+    "biz.real-problems"
+  ],
+  "regional": {
+    "universal": "No money amounts, places or customs; a classroom story that reads the same in every market."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mía's table opens the lunch bags.",
+          "line": "Six bags, six sandwiches. Some look very flat."
+        },
+        "es-MX": {
+          "prompt": "La mesa de Mía abre sus bolsas del almuerzo.",
+          "line": "Seis bolsas, seis sándwiches. Algunos se ven muy aplastados."
+        },
+        "pt-BR": {
+          "prompt": "A mesa da Mía abre as lancheiras.",
+          "line": "Seis lancheiras, seis sanduíches. Alguns parecem bem amassados."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-fix-now"
+          },
+          {
+            "id": "reply-watch"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-watch"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo's juice spilled today. What do you say?",
+          "feedback": {
+            "met": "Thanks, I see how you think. Now we look together.",
+            "not_yet": "Thanks, I see how you think. Now we look together."
+          },
+          "speaker": "Leo",
+          "line": "My juice spilled in my bag.",
+          "replies": [
+            {
+              "label": "Fix it for everyone now"
+            },
+            {
+              "label": "Let's see if it repeats"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Hoy se derramó el jugo de Leo. ¿Qué dices?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora lo vemos juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora lo vemos juntos."
+          },
+          "speaker": "Leo",
+          "line": "Mi jugo se derramó en mi bolsa.",
+          "replies": [
+            {
+              "label": "Arreglémoslo ya para todos"
+            },
+            {
+              "label": "Veamos si se repite"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O suco do Leo derramou hoje. O que você diz?",
+          "feedback": {
+            "met": "Vejo como você pensa. Agora vamos olhar juntos.",
+            "not_yet": "Vejo como você pensa. Agora vamos olhar juntos."
+          },
+          "speaker": "Leo",
+          "line": "Meu suco derramou na minha lancheira.",
+          "replies": [
+            {
+              "label": "Vamos consertar para todos agora"
+            },
+            {
+              "label": "Vamos ver se isso se repete"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: count what we see.",
+          "line": "No rush. 4 of the 6 sandwiches are squashed."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: contamos lo que vemos.",
+          "line": "Sin prisa. 4 de los 6 sándwiches están aplastados."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: contamos o que vemos.",
+          "line": "Sem pressa. 4 dos 6 sanduíches estão amassados."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: look at three days.",
+          "line": "Monday, Tuesday, Wednesday: squashed again. It keeps happening."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: miramos tres días.",
+          "line": "Lunes, martes, miércoles: aplastados otra vez. Se repite."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: olhamos três dias.",
+          "line": "Segunda, terça, quarta: amassados de novo. Isso se repete."
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: compare with Sam's apple.",
+          "line": "Sam's apple rolled away once. One time only, so we watch."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: comparamos con la manzana de Sam.",
+          "line": "La manzana de Sam rodó una vez. Una sola vez: solo observamos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: comparamos com a maçã do Sam.",
+          "line": "A maçã do Sam rolou uma vez. Só uma vez: apenas observamos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-again"
+          },
+          {
+            "id": "bin-once"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-crumbs"
+          },
+          {
+            "id": "item-rain"
+          },
+          {
+            "id": "item-fruit"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-days"
+          },
+          {
+            "id": "why-one-day"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-crumbs": [
+            {
+              "bin": "bin-again",
+              "reason": "why-days"
+            }
+          ],
+          "item-rain": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one-day"
+            }
+          ],
+          "item-fruit": [
+            {
+              "bin": "bin-again",
+              "reason": "why-days"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Mía's class, sort what Nia noticed.",
+          "help": [
+            "Dina counted the days. Does this one come back?",
+            "One day is once. Day after day keeps happening."
+          ],
+          "feedback": {
+            "met": "You checked what repeats. The rainy day was just once.",
+            "not_yet": "Think of Sam's apple. Does this one happen again?"
+          },
+          "rule": "Does it keep happening, or happen once?",
+          "bins": [
+            {
+              "label": "Keeps happening"
+            },
+            {
+              "label": "Happened once"
+            }
+          ],
+          "items": [
+            {
+              "label": "Crumbs in bags every day"
+            },
+            {
+              "label": "Wet bags one rainy day"
+            },
+            {
+              "label": "Bruised fruit all week"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It happens day after day"
+            },
+            {
+              "label": "It was just one day"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la clase de Mía, ordena lo que notó Nia.",
+          "help": [
+            "Dina contó los días. ¿Esto vuelve a pasar?",
+            "Un día es una vez. Día tras día se repite."
+          ],
+          "feedback": {
+            "met": "Revisaste qué se repite. La lluvia fue solo una vez.",
+            "not_yet": "Piensa en la manzana de Sam. ¿Esto se repite?"
+          },
+          "rule": "¿Se repite o pasó una sola vez?",
+          "bins": [
+            {
+              "label": "Se repite"
+            },
+            {
+              "label": "Pasó una vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Migas en las bolsas cada día"
+            },
+            {
+              "label": "Bolsas mojadas un día de lluvia"
+            },
+            {
+              "label": "Fruta golpeada toda la semana"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Pasa día tras día"
+            },
+            {
+              "label": "Fue solo un día"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na turma da Mía, separe o que a Nia notou.",
+          "help": [
+            "A Dina contou os dias. Isso volta a acontecer?",
+            "Um dia é uma vez. Dia após dia se repete."
+          ],
+          "feedback": {
+            "met": "Você viu o que se repete. A chuva foi só uma vez.",
+            "not_yet": "Pense na maçã do Sam. Isso se repete?"
+          },
+          "rule": "Isso se repete ou foi uma vez só?",
+          "bins": [
+            {
+              "label": "Se repete"
+            },
+            {
+              "label": "Foi uma vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Migalhas nas lancheiras todo dia"
+            },
+            {
+              "label": "Lancheiras molhadas num dia de chuva"
+            },
+            {
+              "label": "Fruta machucada a semana inteira"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Acontece dia após dia"
+            },
+            {
+              "label": "Foi só um dia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: name who has it.",
+          "line": "4 children eat flat sandwiches. Those children have the problem."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: decimos quién lo tiene.",
+          "line": "4 niños comen sándwiches aplastados. Ellos tienen el problema."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: dizemos quem tem o problema.",
+          "line": "4 crianças comem sanduíches amassados. Elas têm o problema."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-children"
+          },
+          {
+            "id": "reply-baker"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-children"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Mía's class, who has the crumbs problem?",
+          "help": [
+            "A problem belongs to the people it bothers.",
+            "Dina named the children who eat the flat sandwiches."
+          ],
+          "feedback": {
+            "met": "You named the children who feel the problem.",
+            "not_yet": "Think of who feels it each day."
+          },
+          "speaker": "Nia",
+          "line": "Crumbs fill my bag every day.",
+          "replies": [
+            {
+              "label": "Children with crumbs in bags"
+            },
+            {
+              "label": "The baker who made it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la clase de Mía, ¿quién tiene el problema de las migas?",
+          "help": [
+            "Un problema es de la gente a la que le afecta.",
+            "Dina nombró a los niños que comen los sándwiches aplastados."
+          ],
+          "feedback": {
+            "met": "Nombraste a los niños que sienten el problema.",
+            "not_yet": "Piensa en quién lo siente cada día."
+          },
+          "speaker": "Nia",
+          "line": "Mi bolsa se llena de migas cada día.",
+          "replies": [
+            {
+              "label": "Los niños con migas en la bolsa"
+            },
+            {
+              "label": "El panadero que lo hizo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na turma da Mía, quem tem o problema das migalhas?",
+          "help": [
+            "Um problema é das pessoas que ele incomoda.",
+            "A Dina nomeou as crianças que comem os sanduíches amassados."
+          ],
+          "feedback": {
+            "met": "Você nomeou as crianças que sentem o problema.",
+            "not_yet": "Pense em quem sente isso todo dia."
+          },
+          "speaker": "Nia",
+          "line": "Minha lancheira enche de migalhas todo dia.",
+          "replies": [
+            {
+              "label": "As crianças com migalhas nas lancheiras"
+            },
+            {
+              "label": "O padeiro que fez o pão"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-05",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: write the problem down.",
+          "line": "First write the problem: flat sandwiches, 4 children. Ideas come later."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: anotamos el problema.",
+          "line": "Primero anotamos el problema: sándwiches aplastados, 4 niños. Las ideas, después."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: anotamos o problema.",
+          "line": "Primeiro anotamos o problema: sanduíches amassados, 4 crianças. Ideias depois."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-again"
+          },
+          {
+            "id": "bin-once"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-glove"
+          },
+          {
+            "id": "item-pencil"
+          },
+          {
+            "id": "item-seat"
+          },
+          {
+            "id": "item-crayon"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-days"
+          },
+          {
+            "id": "why-one-day"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-glove": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one-day"
+            }
+          ],
+          "item-pencil": [
+            {
+              "bin": "bin-again",
+              "reason": "why-days"
+            }
+          ],
+          "item-seat": [
+            {
+              "bin": "bin-again",
+              "reason": "why-days"
+            }
+          ],
+          "item-crayon": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one-day"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Mía's class, sort what the children noticed.",
+          "help": [
+            "Take one thing. Did it happen on many days?",
+            "One day only: it happened once."
+          ],
+          "feedback": {
+            "met": "You asked if each one repeats, then sorted it.",
+            "not_yet": "Ask each one: did it come back? Dina counted days."
+          },
+          "rule": "Does it keep happening, or happen once?",
+          "bins": [
+            {
+              "label": "Keeps happening"
+            },
+            {
+              "label": "Happened once"
+            }
+          ],
+          "items": [
+            {
+              "label": "Nia lost one glove today"
+            },
+            {
+              "label": "Sam's pencil breaks every day"
+            },
+            {
+              "label": "Leo's seat wobbles all week"
+            },
+            {
+              "label": "Sam dropped his crayon once"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It happens day after day"
+            },
+            {
+              "label": "It was just one day"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la clase de Mía, ordena lo que notaron los niños.",
+          "help": [
+            "Toma una cosa. ¿Pasó en muchos días?",
+            "Un solo día: pasó una vez."
+          ],
+          "feedback": {
+            "met": "Preguntaste si cada uno se repite y lo ordenaste.",
+            "not_yet": "Pregunta a cada uno: ¿volvió? Dina contó los días."
+          },
+          "rule": "¿Se repite o pasó una sola vez?",
+          "bins": [
+            {
+              "label": "Se repite"
+            },
+            {
+              "label": "Pasó una vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Nia perdió un guante hoy"
+            },
+            {
+              "label": "Sam rompe su lápiz cada día"
+            },
+            {
+              "label": "Asiento de Leo flojo toda la semana"
+            },
+            {
+              "label": "Sam tiró su crayón una vez"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Pasa día tras día"
+            },
+            {
+              "label": "Fue solo un día"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na turma da Mía, separe o que as crianças notaram.",
+          "help": [
+            "Pegue uma coisa. Aconteceu em muitos dias?",
+            "Só um dia: foi uma vez."
+          ],
+          "feedback": {
+            "met": "Você perguntou se cada um se repete e separou.",
+            "not_yet": "Pergunte a cada um: voltou? A Dina contou os dias."
+          },
+          "rule": "Isso se repete ou foi uma vez só?",
+          "bins": [
+            {
+              "label": "Se repete"
+            },
+            {
+              "label": "Foi uma vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "A Nia perdeu uma luva hoje"
+            },
+            {
+              "label": "O lápis do Sam quebra todo dia"
+            },
+            {
+              "label": "A cadeira do Leo balança todo dia"
+            },
+            {
+              "label": "Sam derrubou giz de cera uma vez"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Acontece dia após dia"
+            },
+            {
+              "label": "Foi só um dia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-buy-now"
+          },
+          {
+            "id": "reply-who-first"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-who-first"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia wants a fix for Leo's seat. What do you say?",
+          "help": [
+            "Dina wrote the problem down before any idea.",
+            "Name who has it first. Ideas come later."
+          ],
+          "feedback": {
+            "met": "You named the problem before choosing a fix.",
+            "not_yet": "Remember Dina's page: problem first, ideas later."
+          },
+          "speaker": "Nia",
+          "line": "Let's buy new seats right now!",
+          "replies": [
+            {
+              "label": "Yes, buy new seats now"
+            },
+            {
+              "label": "First, who has the problem?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nia quiere arreglar el asiento de Leo. ¿Qué dices?",
+          "help": [
+            "Dina anotó el problema antes de cualquier idea.",
+            "Primero di quién lo tiene. Las ideas, después."
+          ],
+          "feedback": {
+            "met": "Nombraste el problema antes de elegir un arreglo.",
+            "not_yet": "Recuerda la hoja de Dina: primero el problema, luego ideas."
+          },
+          "speaker": "Nia",
+          "line": "¡Compremos asientos nuevos ya!",
+          "replies": [
+            {
+              "label": "Sí, compremos asientos ya"
+            },
+            {
+              "label": "Primero, ¿quién tiene el problema?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Nia quer consertar a cadeira do Leo. O que você diz?",
+          "help": [
+            "A Dina anotou o problema antes de qualquer ideia.",
+            "Diga primeiro quem tem. As ideias vêm depois."
+          ],
+          "feedback": {
+            "met": "Você nomeou o problema antes de escolher uma solução.",
+            "not_yet": "Lembre da folha da Dina: primeiro o problema, depois ideias."
+          },
+          "speaker": "Nia",
+          "line": "Vamos comprar cadeiras novas já!",
+          "replies": [
+            {
+              "label": "Sim, vamos comprar agora"
+            },
+            {
+              "label": "Primeiro, quem tem o problema?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-again"
+          },
+          {
+            "id": "bin-once"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-bump"
+          },
+          {
+            "id": "item-cold"
+          },
+          {
+            "id": "item-late"
+          },
+          {
+            "id": "item-hat"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-days"
+          },
+          {
+            "id": "why-one-day"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-bump": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one-day"
+            }
+          ],
+          "item-cold": [
+            {
+              "bin": "bin-again",
+              "reason": "why-days"
+            }
+          ],
+          "item-late": [
+            {
+              "bin": "bin-again",
+              "reason": "why-days"
+            }
+          ],
+          "item-hat": [
+            {
+              "bin": "bin-once",
+              "reason": "why-one-day"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On the school bus, sort what Mía noticed.",
+          "help": [
+            "Same question as in class: does it repeat?",
+            "One time only means we just watch."
+          ],
+          "feedback": {
+            "met": "You checked each one for repeats, even on the bus.",
+            "not_yet": "Use Dina's check: did it come back on other days?"
+          },
+          "rule": "Does it keep happening, or happen once?",
+          "bins": [
+            {
+              "label": "Keeps happening"
+            },
+            {
+              "label": "Happened once"
+            }
+          ],
+          "items": [
+            {
+              "label": "One big bump today"
+            },
+            {
+              "label": "Cold seats every morning"
+            },
+            {
+              "label": "Late bus every day"
+            },
+            {
+              "label": "Sam's hat blew away once"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It happens day after day"
+            },
+            {
+              "label": "It was just one day"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el autobús escolar, ordena lo que notó Mía.",
+          "help": [
+            "La misma pregunta que en clase: ¿se repite?",
+            "Una sola vez: solo observamos."
+          ],
+          "feedback": {
+            "met": "Revisaste si cada uno se repite, también en el autobús.",
+            "not_yet": "Usa la revisión de Dina: ¿volvió otros días?"
+          },
+          "rule": "¿Se repite o pasó una sola vez?",
+          "bins": [
+            {
+              "label": "Se repite"
+            },
+            {
+              "label": "Pasó una vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Un bache grande hoy"
+            },
+            {
+              "label": "Asientos fríos cada mañana"
+            },
+            {
+              "label": "El autobús llega tarde a diario"
+            },
+            {
+              "label": "El sombrero de Sam voló una vez"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Pasa día tras día"
+            },
+            {
+              "label": "Fue solo un día"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No ônibus escolar, separe o que a Mía notou.",
+          "help": [
+            "A mesma pergunta da turma: isso se repete?",
+            "Uma vez só: apenas observamos."
+          ],
+          "feedback": {
+            "met": "Você viu se cada um se repete, até no ônibus.",
+            "not_yet": "Use a pergunta da Dina: voltou em outros dias?"
+          },
+          "rule": "Isso se repete ou foi uma vez só?",
+          "bins": [
+            {
+              "label": "Se repete"
+            },
+            {
+              "label": "Foi uma vez"
+            }
+          ],
+          "items": [
+            {
+              "label": "Um buraco grande hoje"
+            },
+            {
+              "label": "Bancos frios toda manhã"
+            },
+            {
+              "label": "O ônibus atrasa todo dia"
+            },
+            {
+              "label": "O boné do Sam voou uma vez"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Acontece dia após dia"
+            },
+            {
+              "label": "Foi só um dia"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

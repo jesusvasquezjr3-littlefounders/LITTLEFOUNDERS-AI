@@ -1,0 +1,429 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-smart-spending",
+  "lesson_id": "fe-1012-03-saving-plan",
+  "age_band": "10-12",
+  "eligibility": { "minimum_age": 10, "maximum_age": 12 },
+  "knowledge_component_ids": ["money.savings-plan-math", "money.simple-budget"],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": { "character": "zara", "scene": "diorama-a" },
+  "brief": "Zara muestra, con Nico, que guarda en su alcancía lo que gana en la tiendita de su abuela, cómo se calcula en cuántas semanas llega a un balón de 90 monedas: primero lo que falta (la meta menos lo que ya tiene), luego las semanas (lo que falta entre lo que guarda por semana) y se comprueba. Después, lo que sobra de lo que entra menos los gastos es lo que se puede guardar. Primero se ve el caso resuelto; los ejercicios solo lo repasan.",
+  "title": {
+    "en-US": "How many weeks to your goal?",
+    "es-MX": "¿Cuántas semanas para tu meta?",
+    "pt-BR": "Quantas semanas até a meta?"
+  },
+  "new_concepts": ["money.savings-plan-math"],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Nico guarda en su alcancía lo que gana ayudando los sábados en la tiendita de su abuela, y calcula cuántas semanas faltan para comprar un balón.",
+        "problem_refs": ["mx-cash-and-informal-commerce"],
+        "anchors": ["alcancía", "tiendita"]
+      },
+      "en-US": {
+        "scenario": "Max walks the neighbors' dogs, gets a weekly allowance and saves in his piggy bank for a telescope at a neighborhood yard sale, then works out how many weeks it takes.",
+        "problem_refs": ["us-parent-silence"],
+        "anchors": ["piggy bank", "yard sale"]
+      },
+      "pt-BR": {
+        "scenario": "Davi guarda a mesada no cofrinho, vê um kit de robô na barraca da feira livre do bairro e calcula quantas semanas faltam; o que sobra depois de gastar com figurinhas é o que ele guarda.",
+        "problem_refs": ["br-baseline-literacy-gap"],
+        "anchors": ["cofrinho", "feira livre"]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "text_only" } },
+      "teaching_role": "hook",
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Los sábados, Nico ayuda en la tiendita de su abuela y guarda sus monedas en una alcancía. Hoy sueña con un balón."
+        },
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "Max walks dogs and saves coins in his piggy bank. Today he spots a telescope at the neighbors' yard sale."
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Davi guarda a mesada no cofrinho. Hoje, na feira livre, ele vê um kit de robô e sonha em comprar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "saved" }, { "id": "missing" }, { "id": "weeks" }],
+        "fade_count": 2,
+        "response_step_ids": ["missing", "weeks"]
+      },
+      "rubric": { "expectedValues": { "missing": "60", "weeks": "6" } },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "pre",
+      "copy": {
+        "es-MX": {
+          "prompt": "Nico quiere un balón de 90 monedas y ya tiene 30. Guarda 10 por semana: escribe lo que falta y las semanas.",
+          "help": ["Piensa primero cuántas monedas le faltan a Nico. Luego, en cuántas semanas las junta."],
+          "feedback": {
+            "met": "Gracias. Ahora vemos el plan de Nico paso a paso.",
+            "not_yet": "Gracias. Revisa los datos y prueba otra vez; luego lo vemos paso a paso."
+          },
+          "steps": [
+            { "expression": "Nico guarda por semana", "result": "10", "spokenText": "Nico guarda 10 monedas cada semana." },
+            { "expression": "Lo que falta", "result": "60", "spokenText": "A 90 le quito las 30 que ya tiene: faltan 60 monedas." },
+            { "expression": "Semanas para llegar", "result": "6", "spokenText": "Faltan 60 y guarda 10 por semana: son 6 semanas." }
+          ]
+        },
+        "en-US": {
+          "prompt": "Max wants a 90-coin telescope and has 30. He saves 10 a week: write what is missing, then the weeks.",
+          "help": ["First think how many coins Max still needs. Then, how many weeks it takes to save them."],
+          "feedback": {
+            "met": "Thanks. Now let's see Max's plan step by step.",
+            "not_yet": "Thanks. Check the numbers, try again, then we go step by step."
+          },
+          "steps": [
+            { "expression": "Max saves each week", "result": "10", "spokenText": "Max saves 10 coins every week." },
+            { "expression": "What is missing", "result": "60", "spokenText": "From 90 I take away the 30 he has: 60 coins are missing." },
+            { "expression": "Weeks to reach it", "result": "6", "spokenText": "60 are missing and he saves 10 a week: that is 6 weeks." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Davi quer um kit de robô de 90 moedas. Já tem 30 e guarda 10 por semana: escreva o que falta e as semanas.",
+          "help": ["Pense primeiro em quantas moedas faltam para o Davi. Depois, em quantas semanas ele junta."],
+          "feedback": {
+            "met": "Anotado. Agora vemos o plano do Davi passo a passo.",
+            "not_yet": "Anotado. Confira os dados e tente de novo; depois vemos passo a passo."
+          },
+          "steps": [
+            { "expression": "Davi guarda por semana", "result": "10", "spokenText": "Davi guarda 10 moedas por semana." },
+            { "expression": "O que falta", "result": "60", "spokenText": "De 90 tiro as 30 que ele já tem: faltam 60 moedas." },
+            { "expression": "Semanas para chegar", "result": "6", "spokenText": "Faltam 60 e ele guarda 10 por semana: são 6 semanas." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "teaching_role": "example",
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Mira el truco: lo que ya tienes no se vuelve a juntar. Nico tiene 30 de 90, así que faltan 90 − 30 = 60."
+        },
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "Watch this: coins Max already has need no saving. He has 30 of 90, so 90 − 30 = 60 to go."
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Olha o truque: o que você já tem não precisa ser guardado de novo. Davi tem 30 de 90, então faltam 90 − 30 = 60."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "teaching_role": "example",
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Ahora, las semanas: Nico guarda 10 por semana, y en 60 caben 6 veces 10. Por eso 60 ÷ 10 = 6 semanas."
+        },
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "Now the weeks: Max saves 10 a week, and 10 fits into 60 six times. So 60 ÷ 10 = 6 weeks."
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Agora, as semanas: Davi guarda 10 por semana, e em 60 cabem 6 vezes 10. Por isso 60 ÷ 10 = 6 semanas."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": { "type": "line" },
+      "payload": { "periods": 6, "minimum": 5, "maximum": 20, "step": 5, "initial": 20, "currency": "coins", "unit": "week" },
+      "teaching_role": "example",
+      "copy": {
+        "es-MX": { "prompt": "Comprobemos: elige 10 por semana. En 6 semanas Nico junta 60, y 60 + 30 = 90." },
+        "en-US": { "prompt": "Check it: set 10 a week. In 6 weeks Max saves 60, and 60 + 30 = 90." },
+        "pt-BR": { "prompt": "Vamos conferir: escolha 10 por semana. Em 6 semanas Davi junta 60, e 60 + 30 = 90." }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "missing" }, { "id": "weeks" }, { "id": "check" }],
+        "fade_count": 1,
+        "response_step_ids": ["weeks", "check"]
+      },
+      "rubric": { "expectedValues": { "weeks": "10", "check": "50" } },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "guided",
+      "copy": {
+        "es-MX": {
+          "prompt": "Lía también quiere un balón de 90 monedas. Ya tiene 40 y guarda 5 por semana: completa los pasos.",
+          "help": ["Igual que con Nico: resta lo que ya tiene y divide lo que falta entre lo que guarda por semana."],
+          "feedback": {
+            "met": "Dividiste lo que falta entre lo que guarda y comprobaste con una multiplicación.",
+            "not_yet": "Aún no. Repasa el ejemplo de Nico y prueba de nuevo."
+          },
+          "steps": [
+            { "expression": "90 − 40", "result": "50", "spokenText": "A 90 le quito las 40 que Lía ya tiene: faltan 50 monedas." },
+            { "expression": "Lo que falta ÷ 5", "result": "10", "spokenText": "Faltan 50 monedas y Lía guarda 5 por semana: son 10 semanas." },
+            { "expression": "Semanas × 5", "result": "50", "spokenText": "En 10 semanas, 10 por 5 son 50 monedas: justo lo que faltaba." }
+          ]
+        },
+        "en-US": {
+          "prompt": "Lia wants a 90-coin telescope too. She has 40 and saves 5 a week: finish the steps.",
+          "help": ["Same as Max: subtract what she has, then divide what is missing by her weekly saving."],
+          "feedback": {
+            "met": "You divided what was missing by her saving and checked by multiplying.",
+            "not_yet": "Not yet. Review Max's example and try again."
+          },
+          "steps": [
+            { "expression": "90 − 40", "result": "50", "spokenText": "From 90 I take away the 40 Lia already has: 50 coins are missing." },
+            { "expression": "What is missing ÷ 5", "result": "10", "spokenText": "50 coins are missing and Lia saves 5 a week: that is 10 weeks." },
+            { "expression": "Weeks × 5", "result": "50", "spokenText": "In 10 weeks, 10 times 5 is 50 coins: exactly what was missing." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Lia também quer um kit de robô de 90 moedas. Já tem 40 e guarda 5 por semana: complete as etapas.",
+          "help": ["Como com o Davi: tire o que ela já tem e divida o que falta pelo que ela guarda por semana."],
+          "feedback": {
+            "met": "Você dividiu o que faltava pelo que ela guarda e conferiu multiplicando.",
+            "not_yet": "Ainda não. Reveja o exemplo do Davi e tente de novo."
+          },
+          "steps": [
+            { "expression": "90 − 40", "result": "50", "spokenText": "De 90 tiro as 40 que a Lia já tem: faltam 50 moedas." },
+            { "expression": "O que falta ÷ 5", "result": "10", "spokenText": "Faltam 50 moedas e a Lia guarda 5 por semana: são 10 semanas." },
+            { "expression": "Semanas × 5", "result": "50", "spokenText": "Em 10 semanas, 10 vezes 5 são 50 moedas: exatamente o que faltava." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "teaching_role": "example",
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Esas 10 monedas salen de lo que sobra. Nico gana 18 por semana en la tiendita y gasta 8: 18 − 8 = 10 para guardar."
+        },
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "Those 10 coins are what is left. Max earns 18 a week, spends 8, and 18 − 8 = 10 to save."
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Esses 10 saem do que sobra. Davi ganha 18 de mesada por semana e gasta 8 em figurinhas: 18 − 8 = 10 para guardar."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "missing" }, { "id": "left" }, { "id": "weeks" }, { "id": "check" }],
+        "fade_count": 2,
+        "response_step_ids": ["left", "weeks", "check"]
+      },
+      "rubric": { "expectedValues": { "left": "8", "weeks": "5", "check": "40" } },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "teaching_role": "guided",
+      "copy": {
+        "es-MX": {
+          "prompt": "Quieres unos patines de 60 monedas y ya tienes 20. Ganas 15 por semana ayudando y gastas 7: completa los pasos.",
+          "help": ["Primero lo que sobra cada semana: lo que ganas menos lo que gastas. Luego divide lo que falta entre eso."],
+          "feedback": {
+            "met": "Calculaste lo que sobra por semana y lo usaste para dividir lo que faltaba.",
+            "not_yet": "Aún no. Repasa cómo sacó Nico lo que sobra y prueba de nuevo."
+          },
+          "steps": [
+            { "expression": "60 − 20", "result": "40", "spokenText": "A 60 le quito las 20 que ya tienes: faltan 40 monedas." },
+            { "expression": "15 − 7", "result": "8", "spokenText": "De 15 monedas que ganas, quitando 7 de gastos, te sobran 8." },
+            { "expression": "Lo que falta ÷ lo que sobra", "result": "5", "spokenText": "Faltan 40 y te sobran 8 por semana: son 5 semanas." },
+            { "expression": "Semanas × lo que sobra", "result": "40", "spokenText": "En 5 semanas, 5 por 8 son 40: justo lo que faltaba." }
+          ]
+        },
+        "en-US": {
+          "prompt": "You want a 60-coin scooter and have 20. Allowance is 15 a week and you spend 7: finish the steps.",
+          "help": ["First what is left each week: allowance minus spending. Then divide what is missing by that."],
+          "feedback": {
+            "met": "You found the weekly leftover and divided what was missing by it.",
+            "not_yet": "Not yet. Review how Max found what is left, then try again."
+          },
+          "steps": [
+            { "expression": "60 − 20", "result": "40", "spokenText": "From 60 I take away the 20 you have: 40 coins are missing." },
+            { "expression": "15 − 7", "result": "8", "spokenText": "From a 15-coin allowance, taking away 7 of spending leaves 8." },
+            { "expression": "What is missing ÷ what is left", "result": "5", "spokenText": "40 are missing and 8 are left each week: that is 5 weeks." },
+            { "expression": "Weeks × what is left", "result": "40", "spokenText": "In 5 weeks, 5 times 8 is 40: exactly what was missing." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você quer uma bola de 60 moedas e já tem 20. Sua mesada é 15 por semana e você gasta 7: complete as etapas.",
+          "help": ["Primeiro o que sobra por semana: a mesada menos o que você gasta. Depois divida o que falta por isso."],
+          "feedback": {
+            "met": "Você achou o que sobra por semana e dividiu o que faltava por isso.",
+            "not_yet": "Ainda não. Reveja como o Davi achou o que sobra e tente de novo."
+          },
+          "steps": [
+            { "expression": "60 − 20", "result": "40", "spokenText": "De 60 tiro as 20 que você já tem: faltam 40 moedas." },
+            { "expression": "15 − 7", "result": "8", "spokenText": "De 15 moedas de mesada, tirando 7 de gastos, sobram 8." },
+            { "expression": "O que falta ÷ o que sobra", "result": "5", "spokenText": "Faltam 40 e sobram 8 por semana: são 5 semanas." },
+            { "expression": "Semanas × o que sobra", "result": "40", "spokenText": "Em 5 semanas, 5 vezes 8 são 40: exatamente o que faltava." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "saved" }, { "id": "missing" }, { "id": "weeks" }],
+        "fade_count": 2,
+        "response_step_ids": ["missing", "weeks"]
+      },
+      "rubric": { "expectedValues": { "missing": "56", "weeks": "7" } },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "practice",
+      "copy": {
+        "es-MX": {
+          "prompt": "Quieres una bocina de 100 monedas y ya tienes 44. Guardas 8 por semana: escribe lo que falta y las semanas.",
+          "help": ["Primero, cuánto falta para la meta. Después, cuántas veces cabe lo que guardas en eso."],
+          "feedback": {
+            "met": "Restaste lo que ya tienes y dividiste lo que falta entre lo que guardas.",
+            "not_yet": "Aún no. Recuerda el truco: lo que ya tienes no se junta otra vez."
+          },
+          "steps": [
+            { "expression": "Guardas por semana", "result": "8", "spokenText": "Guardas 8 monedas cada semana." },
+            { "expression": "Lo que falta", "result": "56", "spokenText": "A 100 le quito las 44 que ya tienes: faltan 56 monedas." },
+            { "expression": "Semanas para llegar", "result": "7", "spokenText": "Faltan 56 y guardas 8 por semana: son 7 semanas." }
+          ]
+        },
+        "en-US": {
+          "prompt": "You want a 100-coin skateboard and have 44. You save 8 a week: write what is missing, then the weeks.",
+          "help": ["First, how much is missing to the goal. Then, how many times your weekly saving fits in it."],
+          "feedback": {
+            "met": "You subtracted what you have, then divided what was missing.",
+            "not_yet": "Not yet. Remember: coins you already have need no saving."
+          },
+          "steps": [
+            { "expression": "Saved each week", "result": "8", "spokenText": "You save 8 coins every week." },
+            { "expression": "What is missing", "result": "56", "spokenText": "From 100 I take away the 44 you have: 56 coins are missing." },
+            { "expression": "Weeks to reach it", "result": "7", "spokenText": "56 are missing and you save 8 a week: that is 7 weeks." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você quer um jogo de 100 moedas e já tem 44. Guarda 8 por semana: escreva o que falta e as semanas.",
+          "help": ["Primeiro, quanto falta para a meta. Depois, quantas vezes o que você guarda cabe nisso."],
+          "feedback": {
+            "met": "Você tirou o que já tem e dividiu o que faltava pelo que guarda.",
+            "not_yet": "Ainda não. Lembre do truque: o que você já tem não se guarda de novo."
+          },
+          "steps": [
+            { "expression": "Guarda por semana", "result": "8", "spokenText": "Você guarda 8 moedas por semana." },
+            { "expression": "O que falta", "result": "56", "spokenText": "De 100 tiro as 44 que você já tem: faltam 56 moedas." },
+            { "expression": "Semanas para chegar", "result": "7", "spokenText": "Faltam 56 e você guarda 8 por semana: são 7 semanas." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "spent" }, { "id": "left" }, { "id": "missing" }, { "id": "weeks" }],
+        "fade_count": 3,
+        "response_step_ids": ["left", "missing", "weeks"]
+      },
+      "rubric": { "expectedValues": { "left": "12", "missing": "84", "weeks": "7" } },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "transfer",
+      "copy": {
+        "es-MX": {
+          "prompt": "Quieres una bici de 120 monedas y ya tienes 36. Ganas 20 por semana y gastas 8: completa lo que sigue.",
+          "help": ["Piensa en lo que ganas, lo que gastas y lo que ya tienes."],
+          "feedback": {
+            "met": "Hallaste lo que sobra y lo que falta, y dividiste: sirve para cualquier meta.",
+            "not_yet": "Aún no. Repasa los ejemplos de Zara y prueba de nuevo."
+          },
+          "steps": [
+            { "expression": "Gastas por semana", "result": "8", "spokenText": "Gastas 8 monedas cada semana." },
+            { "expression": "Te sobra por semana", "result": "12", "spokenText": "De 20 monedas que ganas, quitando 8 de gastos, te sobran 12." },
+            { "expression": "Falta para la meta", "result": "84", "spokenText": "A la meta de 120 le quito las 36 que ya tienes: faltan 84." },
+            { "expression": "Semanas para llegar", "result": "7", "spokenText": "Faltan 84 y te sobran 12 por semana: son 7 semanas." }
+          ]
+        },
+        "en-US": {
+          "prompt": "You want a 120-coin bike and have 36. You earn 20 a week and spend 8: finish the steps.",
+          "help": ["Think about what you earn, what you spend, and what you already have."],
+          "feedback": {
+            "met": "You found what is left and what is missing, then divided.",
+            "not_yet": "Not yet. Review Zara's examples and try again."
+          },
+          "steps": [
+            { "expression": "Spent each week", "result": "8", "spokenText": "You spend 8 coins every week." },
+            { "expression": "Left each week", "result": "12", "spokenText": "From 20 coins earned, taking away 8 of spending leaves 12." },
+            { "expression": "Still missing", "result": "84", "spokenText": "From the goal of 120 I take away the 36 you have: 84 are missing." },
+            { "expression": "Weeks to reach it", "result": "7", "spokenText": "84 are missing and you keep 12 a week: that is 7 weeks." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você quer uma bicicleta de 120 moedas e já tem 36. Ganha 20 por semana e gasta 8: complete as etapas.",
+          "help": ["Pense no que você ganha, no que gasta e no que já tem."],
+          "feedback": {
+            "met": "Você achou o que sobra e o que falta e depois dividiu.",
+            "not_yet": "Ainda não. Reveja os exemplos da Zara e tente de novo."
+          },
+          "steps": [
+            { "expression": "Gasta por semana", "result": "8", "spokenText": "Você gasta 8 moedas por semana." },
+            { "expression": "Sobra por semana", "result": "12", "spokenText": "De 20 moedas que você ganha, tirando 8 de gastos, sobram 12." },
+            { "expression": "Falta para a meta", "result": "84", "spokenText": "Da meta de 120 tiro as 36 que você já tem: faltam 84." },
+            { "expression": "Semanas para chegar", "result": "7", "spokenText": "Faltam 84 e sobram 12 por semana: são 7 semanas." }
+          ]
+        }
+      }
+    }
+  ]
+}

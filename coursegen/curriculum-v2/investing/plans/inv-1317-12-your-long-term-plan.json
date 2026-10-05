@@ -1,0 +1,833 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-a-plan-that-holds",
+  "lesson_id": "inv-1317-12-your-long-term-plan",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.long-term-plan",
+    "invest.simulate-before-deciding",
+    "invest.start-early"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina guía al alumno para escribir un plan de una página para una meta simulada a 16 años: una meta en monedas con un colchón por alza de precios, un depósito regular que se paga primero, y una mezcla que respeta una regla para la mala temporada. Luego prueba el plan en el simulador antes de decidir y aprende que una simulación entrena el criterio, no da instrucciones ni pronósticos, y que empezar antes cuesta menos crecimiento.",
+  "title": {
+    "es-MX": "Tu plan a largo plazo",
+    "en-US": "Your long-term plan",
+    "pt-BR": "Seu plano de longo prazo"
+  },
+  "new_concepts": [
+    "invest.long-term-plan",
+    "invest.simulate-before-deciding"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; the plan, prices and simulator are made up, with no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "16 years from now, one page with five empty lines: goal, buffer, mix, deposit, rule.",
+          "line": "That page is the plan. We fill one line at a time, then test the page."
+        },
+        "es-MX": {
+          "prompt": "Dentro de 16 años, una hoja con cinco líneas vacías: meta, colchón, mezcla, depósito, regla.",
+          "line": "Esa hoja es el plan. Llenamos una línea a la vez y luego probamos la hoja."
+        },
+        "pt-BR": {
+          "prompt": "Daqui a 16 anos, uma folha com cinco linhas vazias: meta, margem, mistura, aporte, regra.",
+          "line": "Essa folha é o plano. Preenchemos uma linha por vez e depois testamos a folha."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-chase"
+          },
+          {
+            "id": "opt-wait"
+          },
+          {
+            "id": "opt-goal"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-goal"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we write anything, what do you do first?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now, line by line.",
+            "not_yet": "Thanks, that shows where you start. Now, line by line."
+          },
+          "scene": "You have 400 sandbox coins and a goal 16 years away. A friend says to buy whatever grew most last year.",
+          "options": [
+            {
+              "label": "Buy what grew most last year"
+            },
+            {
+              "label": "Wait until I know everything"
+            },
+            {
+              "label": "Write the goal in coins first"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de escribir nada, ¿qué haces primero?",
+          "feedback": {
+            "met": "Gracias, así veo desde dónde partes. Ahora, línea por línea.",
+            "not_yet": "Gracias, así veo desde dónde partes. Ahora, línea por línea."
+          },
+          "scene": "Tienes 400 monedas del simulador y una meta a 16 años. Un amigo dice que compres lo que más creció el año pasado.",
+          "options": [
+            {
+              "label": "Comprar lo que más creció el año pasado"
+            },
+            {
+              "label": "Esperar hasta saberlo todo"
+            },
+            {
+              "label": "Escribir primero la meta en monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de escrever qualquer coisa, o que você faz primeiro?",
+          "feedback": {
+            "met": "Certo, isso mostra de onde você parte. Agora, linha por linha.",
+            "not_yet": "Certo, isso mostra de onde você parte. Agora, linha por linha."
+          },
+          "scene": "Você tem 400 moedas do simulador e uma meta daqui a 16 anos. Um amigo diz para comprar o que mais cresceu no ano passado.",
+          "options": [
+            {
+              "label": "Comprar o que mais cresceu no ano passado"
+            },
+            {
+              "label": "Esperar até saber tudo"
+            },
+            {
+              "label": "Escrever primeiro a meta em moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-goal",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "visual": {
+        "type": "bullet"
+      },
+      "teaching_role": "example",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "minimum": 0,
+        "maximum": 800,
+        "target": 600,
+        "step": 20,
+        "initial": 480,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the goal. Slide from today’s 480 to 600: a 25% price buffer adds 120."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: la meta. Desliza de los 480 de hoy a 600: un colchón de 25% por alza de precios suma 120."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a meta. Deslize dos 480 de hoje até 600: uma margem de 25% para a alta dos preços soma 120."
+        }
+      }
+    },
+    {
+      "id": "ex-deposit",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Four chapters make the 16 years. Each begins with a 40-coin deposit, before any spending.",
+          "line": "Step 2: the deposit. 400 + 4 × 40 = 560 in total, so growth supplies 600 − 560 = 40."
+        },
+        "es-MX": {
+          "prompt": "Cuatro capítulos forman los 16 años. Cada uno empieza con un depósito de 40 monedas, antes de gastar.",
+          "line": "Paso 2: el depósito. 400 + 4 × 40 = 560 en total, así que el crecimiento aporta 600 − 560 = 40."
+        },
+        "pt-BR": {
+          "prompt": "Quatro capítulos formam os 16 anos. Cada um começa com um aporte de 40 moedas, antes de qualquer gasto.",
+          "line": "Passo 2: o aporte. 400 + 4 × 40 = 560 no total, então o crescimento entra com 600 − 560 = 40."
+        }
+      }
+    },
+    {
+      "id": "ex-mix",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rule: never end a chapter under 440. In the worst simulated chapter, stocks lose 30% and bonds gain 10%.",
+          "line": "Step 3: the mix. A 50/50 mix nets −15% + 5% = −10%, so 440 falls to 396."
+        },
+        "es-MX": {
+          "prompt": "Regla: ningún capítulo termina bajo 440. En el peor capítulo simulado, las acciones pierden 30% y los bonos ganan 10%.",
+          "line": "Paso 3: la mezcla. Una mezcla 50/50 da −15% + 5% = −10%, así que 440 baja a 396."
+        },
+        "pt-BR": {
+          "prompt": "Regra: nenhum capítulo termina abaixo de 440. No pior capítulo simulado, as ações perdem 30% e os títulos ganham 10%.",
+          "line": "Passo 3: a mistura. Uma mistura 50/50 dá −15% + 5% = −10%, então 440 cai para 396."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.start-early",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          },
+          {
+            "id": "step-4"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "step-2",
+          "step-3",
+          "step-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "520",
+          "step-3": "80",
+          "step-4": "40"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same plan, started one chapter late. The first step is shown; type the other three.",
+          "feedback": {
+            "met": "You priced the delay in coins of extra growth.",
+            "not_yet": "Not yet. Rebuild it from the deposits you still make."
+          },
+          "steps": [
+            {
+              "expression": "Waiting a chapter: 3 × 40",
+              "result": "120",
+              "spokenText": "Waiting a chapter: 3 times 40"
+            },
+            {
+              "expression": "Coins put in: 400 + 120",
+              "result": "520",
+              "spokenText": "Coins put in: 400 plus 120"
+            },
+            {
+              "expression": "Growth must supply: 600 − coins put in",
+              "result": "80",
+              "spokenText": "Growth must supply: 600 minus coins put in"
+            },
+            {
+              "expression": "Extra growth versus starting now: growth needed − 40",
+              "result": "40",
+              "spokenText": "Extra growth versus starting now: growth needed minus 40"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El mismo plan, pero un capítulo tarde. El primer paso ya está; escribe los otros tres.",
+          "feedback": {
+            "met": "Calculaste el costo de la demora en monedas de crecimiento extra.",
+            "not_yet": "Todavía no. Reconstruye desde los depósitos que sí haces."
+          },
+          "steps": [
+            {
+              "expression": "Esperar un capítulo: 3 × 40",
+              "result": "120",
+              "spokenText": "Esperar un capítulo: 3 por 40"
+            },
+            {
+              "expression": "Monedas depositadas: 400 + 120",
+              "result": "520",
+              "spokenText": "Monedas depositadas: 400 más 120"
+            },
+            {
+              "expression": "El crecimiento debe aportar: 600 − monedas depositadas",
+              "result": "80",
+              "spokenText": "El crecimiento debe aportar: 600 menos monedas depositadas"
+            },
+            {
+              "expression": "Crecimiento extra frente a empezar ya: crecimiento necesario − 40",
+              "result": "40",
+              "spokenText": "Crecimiento extra frente a empezar ya: crecimiento necesario menos 40"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O mesmo plano, começado um capítulo depois. O primeiro passo já está pronto; digite os outros três.",
+          "feedback": {
+            "met": "Você calculou o custo do atraso em moedas de crescimento extra.",
+            "not_yet": "Ainda não. Refaça a conta a partir dos aportes que você ainda faz."
+          },
+          "steps": [
+            {
+              "expression": "Esperar um capítulo: 3 × 40",
+              "result": "120",
+              "spokenText": "Esperar um capítulo: 3 vezes 40"
+            },
+            {
+              "expression": "Moedas aportadas: 400 + 120",
+              "result": "520",
+              "spokenText": "Moedas aportadas: 400 mais 120"
+            },
+            {
+              "expression": "O crescimento precisa entrar com: 600 − moedas aportadas",
+              "result": "80",
+              "spokenText": "O crescimento precisa entrar com: 600 menos moedas aportadas"
+            },
+            {
+              "expression": "Crescimento extra frente a começar já: crescimento necessário − 40",
+              "result": "40",
+              "spokenText": "Crescimento extra frente a começar já: crescimento necessário menos 40"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-test",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The simulator replays your plan in 100 futures. Each chapter draws one of eight listed outcomes.",
+          "line": "Step 4: the test. The plan holds if 90 of 100 futures reach the goal and keep the rule."
+        },
+        "es-MX": {
+          "prompt": "El simulador repite tu plan en 100 futuros. Cada capítulo sortea uno de ocho resultados listados.",
+          "line": "Paso 4: la prueba. El plan aguanta si 90 de 100 futuros llegan a la meta y respetan la regla."
+        },
+        "pt-BR": {
+          "prompt": "O simulador repete o seu plano em 100 futuros. Cada capítulo sorteia um de oito resultados listados.",
+          "line": "Passo 4: o teste. O plano se sustenta se 90 de 100 futuros chegam à meta e respeitam a regra."
+        }
+      }
+    },
+    {
+      "id": "ex-limit",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Passing in 90 of 100 futures is not a promise. It shows a spread, never a forecast.",
+          "line": "Step 5: the limit. A simulation trains judgment; it gives no instruction, so the decision stays yours."
+        },
+        "es-MX": {
+          "prompt": "Pasar en 90 de 100 futuros no es una promesa. Muestra un rango de resultados, nunca un pronóstico.",
+          "line": "Paso 5: el límite. Una simulación entrena tu criterio; no da instrucciones, así que la decisión sigue siendo tuya."
+        },
+        "pt-BR": {
+          "prompt": "Passar em 90 de 100 futuros não é uma promessa. Mostra uma faixa de resultados, nunca uma previsão.",
+          "line": "Passo 5: o limite. Uma simulação treina o seu julgamento; ela não dá instruções, então a decisão continua sendo sua."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "donut"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "total": 120,
+        "step": 10,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 40
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "120 coins arrive this chapter. At least a third, the plan’s deposit, goes in Save; split the rest.",
+          "feedback": {
+            "met": "Save covers the plan’s deposit; the rest is yours to split.",
+            "not_yet": "Not yet. Is Save at least the plan’s share?"
+          }
+        },
+        "es-MX": {
+          "prompt": "Llegan 120 monedas este capítulo. Al menos un tercio, el depósito del plan, va en Guardar; reparte el resto.",
+          "feedback": {
+            "met": "Guardar cubre el depósito del plan; el resto lo repartes tú.",
+            "not_yet": "Todavía no. ¿Guardar llega al menos a la parte del plan?"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Chegam 120 moedas neste capítulo. Pelo menos um terço, o aporte do plano, vai em Guardar; divida o resto.",
+          "feedback": {
+            "met": "Guardar cobre o aporte do plano; o resto você divide.",
+            "not_yet": "Ainda não. Guardar chega pelo menos à parte do plano?"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          },
+          {
+            "id": "step-4"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "step-2",
+          "step-3",
+          "step-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "500",
+          "step-3": "440",
+          "step-4": "60"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Goal: 400 coins today plus a 25% buffer. Start with 320, deposit 30 each of 4 chapters.",
+          "feedback": {
+            "met": "You built the goal line, then compared it with what goes in.",
+            "not_yet": "Not yet. The buffer is a percent of today’s cost."
+          },
+          "steps": [
+            {
+              "expression": "Deposits: 4 × 30",
+              "result": "120",
+              "spokenText": "Deposits: 4 times 30"
+            },
+            {
+              "expression": "Goal line: 400 + 25% × 400",
+              "result": "500",
+              "spokenText": "Goal line: 400 plus 25 percent of 400"
+            },
+            {
+              "expression": "Coins put in: 320 + 120",
+              "result": "440",
+              "spokenText": "Coins put in: 320 plus 120"
+            },
+            {
+              "expression": "Growth must supply: goal line − coins put in",
+              "result": "60",
+              "spokenText": "Growth must supply: goal line minus coins put in"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Meta: 400 monedas de hoy más 25% de colchón. Empieza con 320 y deposita 30 en cada uno de 4 capítulos.",
+          "feedback": {
+            "met": "Armaste la línea de la meta y la comparaste con lo que depositas.",
+            "not_yet": "Todavía no. El colchón es un porcentaje del costo de hoy."
+          },
+          "steps": [
+            {
+              "expression": "Depósitos: 4 × 30",
+              "result": "120",
+              "spokenText": "Depósitos: 4 por 30"
+            },
+            {
+              "expression": "Línea de la meta: 400 + 25% × 400",
+              "result": "500",
+              "spokenText": "Línea de la meta: 400 más 25 por ciento de 400"
+            },
+            {
+              "expression": "Monedas depositadas: 320 + 120",
+              "result": "440",
+              "spokenText": "Monedas depositadas: 320 más 120"
+            },
+            {
+              "expression": "El crecimiento debe aportar: línea de la meta − monedas depositadas",
+              "result": "60",
+              "spokenText": "El crecimiento debe aportar: línea de la meta menos monedas depositadas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Meta: 400 moedas de hoje mais 25% de margem. Comece com 320 e aporte 30 em cada um dos 4 capítulos.",
+          "feedback": {
+            "met": "Você montou a linha da meta e a comparou com o que aporta.",
+            "not_yet": "Ainda não. A margem é uma porcentagem do custo de hoje."
+          },
+          "steps": [
+            {
+              "expression": "Aportes: 4 × 30",
+              "result": "120",
+              "spokenText": "Aportes: 4 vezes 30"
+            },
+            {
+              "expression": "Linha da meta: 400 + 25% × 400",
+              "result": "500",
+              "spokenText": "Linha da meta: 400 mais 25 por cento de 400"
+            },
+            {
+              "expression": "Moedas aportadas: 320 + 120",
+              "result": "440",
+              "spokenText": "Moedas aportadas: 320 mais 120"
+            },
+            {
+              "expression": "O crescimento precisa entrar com: linha da meta − moedas aportadas",
+              "result": "60",
+              "spokenText": "O crescimento precisa entrar com: linha da meta menos moedas aportadas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "money.life-sim.v2",
+      "grading": "server",
+      "visual": {
+        "type": "life-sim"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simulate-before-deciding",
+      "payload": {
+        "scenario": "portfolio",
+        "periods": 4,
+        "cash": 400,
+        "debt": 0,
+        "flow": 40,
+        "finish": 600,
+        "floor": 440,
+        "goal": 90,
+        "choices": [
+          0,
+          10,
+          25,
+          60,
+          80,
+          100
+        ],
+        "start": 80
+      },
+      "rubric": {
+        "target": {
+          "answers": [
+            25
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick the highest stock share that reaches 600 with no chapter under 440, in 90 of 100 futures.",
+          "feedback": {
+            "met": "That is the highest share that still holds the plan.",
+            "not_yet": "Not yet. Run it again and watch the worst futures."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige la mayor proporción en acciones que llega a 600 sin que ningún capítulo baje de 440, en 90 de 100 futuros.",
+          "feedback": {
+            "met": "Esa es la mayor proporción que aún sostiene el plan.",
+            "not_yet": "Todavía no. Córrela otra vez y observa los peores futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha a maior fatia em ações que chega a 600 sem nenhum capítulo abaixo de 440, em 90 de 100 futuros.",
+          "feedback": {
+            "met": "Essa é a maior fatia que ainda sustenta o plano.",
+            "not_yet": "Ainda não. Rode de novo e observe os piores futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.long-term-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-start"
+          },
+          {
+            "id": "choice-change"
+          },
+          {
+            "id": "choice-rerun"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-lucky"
+          },
+          {
+            "id": "reason-fails"
+          },
+          {
+            "id": "reason-forecast"
+          },
+          {
+            "id": "reason-levers"
+          },
+          {
+            "id": "reason-retest"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-change"
+        ],
+        "reasonQuality": {
+          "reason-lucky": "unsupported",
+          "reason-fails": "sound",
+          "reason-forecast": "unsupported",
+          "reason-levers": "sound",
+          "reason-retest": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A friend’s 12-year plan passes only 55 of 100 futures, and she wants to start anyway.",
+          "feedback": {
+            "met": "You chose to fix the plan and test it again.",
+            "not_yet": "Not yet. Ask what a failing test is telling you."
+          },
+          "help": [
+            "Recall the test: what has to hold in most futures?"
+          ],
+          "choices": [
+            {
+              "label": "Start anyway; it is only a simulation"
+            },
+            {
+              "label": "Change the plan, then test it again"
+            },
+            {
+              "label": "Rerun it until one run passes"
+            }
+          ],
+          "reasonPrompt": "Why is that your best choice?",
+          "reasons": [
+            {
+              "label": "One lucky run shows the plan works"
+            },
+            {
+              "label": "A plan that fails often needs changing first"
+            },
+            {
+              "label": "The simulator tells her what will happen"
+            },
+            {
+              "label": "A bigger deposit or steadier mix can help"
+            },
+            {
+              "label": "A new test shows if the change worked"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El plan a 12 años de una amiga pasa solo 55 de 100 futuros, y ella quiere empezar de todos modos.",
+          "feedback": {
+            "met": "Elegiste arreglar el plan y probarlo otra vez.",
+            "not_yet": "Todavía no. Pregunta qué te dice una prueba que falla."
+          },
+          "help": [
+            "Recuerda la prueba: ¿qué debe cumplirse en casi todos los futuros?"
+          ],
+          "choices": [
+            {
+              "label": "Empezar igual; solo es una simulación"
+            },
+            {
+              "label": "Cambiar el plan y probarlo otra vez"
+            },
+            {
+              "label": "Repetir la prueba hasta que pase una"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es tu mejor opción?",
+          "reasons": [
+            {
+              "label": "Una corrida con suerte muestra que el plan funciona"
+            },
+            {
+              "label": "Un plan que falla seguido hay que cambiarlo primero"
+            },
+            {
+              "label": "El simulador le dice lo que va a pasar"
+            },
+            {
+              "label": "Un depósito mayor o una mezcla más estable ayuda"
+            },
+            {
+              "label": "Una nueva prueba muestra si el cambio funcionó"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O plano de 12 anos de uma amiga passa em apenas 55 de 100 futuros, e ela quer começar mesmo assim.",
+          "feedback": {
+            "met": "Você escolheu ajustar o plano e testá-lo de novo.",
+            "not_yet": "Ainda não. Pergunte o que um teste que falha está dizendo."
+          },
+          "help": [
+            "Lembre do teste: o que precisa valer na maioria dos futuros?"
+          ],
+          "choices": [
+            {
+              "label": "Começar mesmo assim; é só uma simulação"
+            },
+            {
+              "label": "Mudar o plano e testar de novo"
+            },
+            {
+              "label": "Repetir o teste até um passar"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a sua melhor escolha?",
+          "reasons": [
+            {
+              "label": "Uma rodada de sorte mostra que o plano funciona"
+            },
+            {
+              "label": "Um plano que falha muito precisa mudar primeiro"
+            },
+            {
+              "label": "O simulador diz a ela o que vai acontecer"
+            },
+            {
+              "label": "Um aporte maior ou uma mistura mais estável ajuda"
+            },
+            {
+              "label": "Um novo teste mostra se a mudança funcionou"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

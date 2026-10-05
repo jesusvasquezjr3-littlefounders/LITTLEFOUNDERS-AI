@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { LessonDocumentView } from '../../LessonDocumentView';
 import { assertBoardContract } from '../harness/boardContract';
@@ -444,7 +444,7 @@ describe('F4.6 market stall', () => {
     show('exact-basket');
     await screen.findByRole('group', { name: 'Your basket' });
     expect(screen.getByText('Goal: $2.50')).toBeTruthy();
-    expect(readout()).toHaveTextContent('Items: 0. Cost: $0.00');
+    expect(readout()).toHaveTextContent('Items: 0. Cost: $0');
     fireEvent.click(shelfChip('Apple'));
     fireEvent.click(screen.getByRole('group', { name: 'Your basket' }));
     expect(readout()).toHaveTextContent('Items: 1. Cost: $0.50');
@@ -461,7 +461,7 @@ describe('F4.6 market stall', () => {
     await moveTo('Bread: Move to', 'Your basket');
     expect(readout()).toHaveTextContent('Items: 1. Cost: $1.20');
     fireEvent.click(button('Remove one: Bread'));
-    expect(readout()).toHaveTextContent('Items: 0. Cost: $0.00');
+    expect(readout()).toHaveTextContent('Items: 0. Cost: $0');
     expect(screen.queryByRole('button', { name: 'Remove one: Bread' })).toBeNull();
   });
 
@@ -508,7 +508,7 @@ describe('F4.6 market stall', () => {
       fireEvent.click(shelfChip('Toy'));
       fireEvent.click(screen.getByRole('group', { name: 'Your basket' }));
     }
-    expect(readout()).toHaveTextContent('Items: 2. Cost: $5.00. Over by $2.00');
+    expect(readout()).toHaveTextContent('Items: 2. Cost: $5. Over by $2');
     expect(document.querySelector('.lf-stl-fill')).toHaveAttribute('data-over', 'true');
   });
 
@@ -531,13 +531,42 @@ describe('F4.6 market stall', () => {
     fireEvent.click(shelfChip('Apple'));
     fireEvent.click(screen.getByRole('group', { name: 'Your basket' }));
     fireEvent.click(button('Reset'));
-    expect(readout()).toHaveTextContent('Items: 0. Cost: $0.00');
+    expect(readout()).toHaveTextContent('Items: 0. Cost: $0');
   });
 
   it('speaks in Spanish and Portuguese', async () => {
     show('exact-basket', undefined, 'pt-BR');
     expect(await screen.findByRole('group', { name: 'Sua cesta' })).toBeTruthy();
     expect(button('Mostrar como tabela')).toBeTruthy();
+  });
+
+  it('writes prices in the learner currency: pesos in es-MX, reais in pt-BR', async () => {
+    show('exact-basket', undefined, 'es-MX');
+    await screen.findByRole('group', { name: 'Tu canasta' });
+    expect(screen.getByText('Meta: $2.50')).toBeTruthy();
+    expect(button(/^Manzana \$0\.50$/)).toBeTruthy();
+    fireEvent.click(button(/^Pan \$/));
+    fireEvent.click(screen.getByRole('group', { name: 'Tu canasta' }));
+    expect(readout()).toHaveTextContent('Artículos: 1. Costo: $1.20');
+    expect(screen.getByRole('img', { name: /Barra del costo de la canasta.*Costo: 1 peso con 20 centavos/ })).toBeTruthy();
+  });
+
+  it('writes the Brazilian price with R$ and a decimal comma, and reads it as reais', async () => {
+    show('exact-basket', undefined, 'pt-BR');
+    await screen.findByRole('group', { name: 'Sua cesta' });
+    expect(screen.getByText('Meta: R$ 2,50')).toBeTruthy();
+    expect(button(/^Maçã R\$\u00a00,50$/)).toBeTruthy();
+    fireEvent.click(button(/^Pão R\$/));
+    fireEvent.click(screen.getByRole('group', { name: 'Sua cesta' }));
+    expect(readout()).toHaveTextContent('Itens: 1. Custo: R$ 1,20');
+    expect(screen.getByRole('img', { name: /Barra do custo da cesta.*Custo: 1 real e 20 centavos/ })).toBeTruthy();
+  });
+
+  it('keeps the dollar sign and a decimal point in en-US', async () => {
+    show('make-the-change');
+    await screen.findByRole('group', { name: 'Your basket' });
+    expect(screen.getByText('You pay: $10. Change wanted: $2')).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/R\$|peso/);
   });
 });
 
@@ -616,6 +645,29 @@ describe('F4.6 coin stack', () => {
   it('speaks in Spanish and Portuguese', async () => {
     show('coins-as-tall-as-a-phone', undefined, 'es-MX');
     expect(await screen.findByRole('slider', { name: 'Cantidad de monedas' })).toBeTruthy();
+  });
+
+  it('prints the worth of the stack in pesos while the goal is a height', async () => {
+    show('coins-as-tall-as-a-phone', undefined, 'es-MX');
+    const handle = await screen.findByRole('slider', { name: 'Cantidad de monedas' });
+    for (let press = 0; press < 4; press++) fireEvent.keyDown(handle, { key: 'ArrowRight' });
+    expect(readout()).toHaveTextContent('4 monedas: valen $4, 8 mm de alto.');
+    expect(screen.getByRole('img', { name: /Pila dibujada a escala.*4 monedas: valen 4 pesos, 8 milímetros de alto/ })).toBeTruthy();
+    expect(screen.getByText('Cada moneda: vale $1, 2 mm de grosor.')).toBeTruthy();
+  });
+
+  it('prints a million in Brazilian notes with R$ and thousands dots, and the goal in reais', async () => {
+    show('coins-worth-fifteen', undefined, 'pt-BR');
+    const handle = await screen.findByRole('slider', { name: 'Quantidade de moedas' });
+    expect(screen.getByText('Valor da meta: R$ 15')).toBeTruthy();
+    fireEvent.keyDown(handle, { key: 'End' });
+    expect(readout()).toHaveTextContent(/^\d+ moedas: valem R\$ [\d.,]+, /);
+    cleanup();
+    show('a-million-in-bills', undefined, 'pt-BR');
+    const bills = await screen.findByRole('slider', { name: 'Quantidade de notas' });
+    fireEvent.keyDown(bills, { key: 'End' });
+    expect(readout()).toHaveTextContent('12.000 notas: valem R$ 1.200.000, 1,2 m de altura.');
+    expect(screen.getByRole('img', { name: /1\.200\.000 reais/ })).toBeTruthy();
   });
 });
 

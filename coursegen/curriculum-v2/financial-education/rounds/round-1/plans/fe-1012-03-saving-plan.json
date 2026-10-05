@@ -1,0 +1,304 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-smart-spending",
+  "lesson_id": "fe-1012-03-saving-plan",
+  "age_band": "10-12",
+  "eligibility": { "minimum_age": 10, "maximum_age": 12 },
+  "knowledge_component_ids": ["money.savings-plan-math", "money.simple-budget"],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": { "character": "zara", "scene": "diorama-a" },
+  "brief": "Zara enseña a calcular en cuántas semanas se llega a una meta de ahorro. Primero se resta lo que ya se tiene; luego se suman los gastos, se restan de lo que te dan o de lo que se junta, y se divide lo que falta entre lo que sobra cada semana.",
+  "title": {
+    "en-US": "How many weeks to your goal?",
+    "es-MX": "¿Cuántas semanas para tu meta?",
+    "pt-BR": "Quantas semanas até a meta?"
+  },
+  "new_concepts": ["money.savings-plan-math"],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Ahorras monedas en tu alcancía, una parte de lo que te dan por semana y de lo que juntas ayudando en casa, y calculas cuántas semanas faltan para tu meta.",
+        "problem_refs": ["mx-cash-and-informal-commerce"],
+        "anchors": ["alcancía"]
+      },
+      "en-US": {
+        "scenario": "You save coins in your piggy bank from your allowance and from chores, and work out how many weeks your goal needs.",
+        "problem_refs": ["us-parent-silence"],
+        "anchors": ["piggy bank"]
+      },
+      "pt-BR": {
+        "scenario": "Você guarda moedas da mesada no cofrinho e do que ganha ajudando em casa, e calcula quantas semanas faltam para a meta.",
+        "problem_refs": ["br-baseline-literacy-gap"],
+        "anchors": ["cofrinho"]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "intro-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "differentiated" } },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Una meta necesita un plan. Hoy calculamos cuántas semanas necesitas.",
+          "narration": { "script": "Primero vemos lo que ya tienes y lo que falta. Luego contamos cuántas semanas tardas, según lo que ahorras." }
+        },
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "A goal needs a plan. Today we work out how many weeks you need.",
+          "narration": { "script": "First we see what you already have and what is missing. Then we count the weeks, using what you save each week." }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Uma meta precisa de um plano. Hoje calculamos quantas semanas você precisa.",
+          "narration": { "script": "Primeiro vemos o que você já tem e o que falta. Depois contamos as semanas, pelo que você guarda por semana." }
+        }
+      }
+    },
+    {
+      "id": "goal-bullet-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "visual": { "type": "bullet" },
+      "payload": { "minimum": 0, "maximum": 70, "target": 60, "step": 10, "initial": 20, "currency": "coins" },
+      "rubric": { "minimum_value": 60 },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "copy": {
+        "es-MX": {
+          "prompt": "Ya juntaste 20 monedas en tu alcancía y tu meta es 60. Mira cuánto falta y mueve la barra hasta la meta.",
+          "feedback": {
+            "met": "Llevaste la barra a la meta o más allá, y viste cuánto te faltaba.",
+            "not_yet": "Todavía no llega. Sigue moviendo la barra hasta la meta."
+          }
+        },
+        "en-US": {
+          "prompt": "You saved 20 coins and the goal is 60. See what is left, then move the bar to the goal.",
+          "feedback": {
+            "met": "You reached the goal or beyond and saw what was missing.",
+            "not_yet": "Not there yet. Keep moving the bar to the goal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Você já guardou 20 moedas no cofrinho e sua meta é 60. Veja quanto falta e leve a barra até a meta.",
+          "feedback": {
+            "met": "Você levou a barra até a meta ou além e viu o que faltava.",
+            "not_yet": "Ainda não chegou. Continue levando a barra até a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "savings-line-01",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "visual": { "type": "line" },
+      "payload": { "periods": 8, "minimum": 5, "maximum": 20, "step": 5, "initial": 5, "currency": "coins", "unit": "week" },
+      "copy": {
+        "es-MX": { "prompt": "Faltan 40 monedas. Elige 10 por semana y mira en qué semana la línea llega a 40." },
+        "en-US": { "prompt": "You still need 40 coins. Set 10 a week and find the week the line reaches 40." },
+        "pt-BR": { "prompt": "Faltam 40 moedas. Escolha 10 por semana e veja em que semana a linha chega a 40." }
+      }
+    },
+    {
+      "id": "worked-example-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "start" }, { "id": "weeks" }, { "id": "check" }],
+        "fade_count": 1,
+        "response_step_ids": ["weeks", "check"]
+      },
+      "rubric": { "expectedValues": { "weeks": "6", "check": "20" } },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "copy": {
+        "es-MX": {
+          "prompt": "Quieres 90 monedas, ya tienes 30 y guardas 10 por semana. Pasos: lo que falta, las semanas, lo que falta tras 4 semanas.",
+          "help": ["Lo que ya tienes no se vuelve a ahorrar. Réstalo de la meta."],
+          "feedback": {
+            "met": "Dividiste solo lo que falta y viste cuánto falta tras 4 semanas.",
+            "not_yet": "Todavía no. Resta primero lo que ya tienes y divide el resto."
+          },
+          "steps": [
+            { "expression": "90 − 30", "result": "60", "spokenText": "A 90 monedas le quito las 30 que ya tienes: faltan 60 monedas." },
+            { "expression": "60 ÷ 10", "result": "6", "spokenText": "Faltan 60 monedas y guardas 10 por semana: son 6 semanas." },
+            { "expression": "Falta tras 4 semanas", "result": "20", "spokenText": "En 4 semanas guardas 40 monedas; de las 60 que faltaban, todavía faltan 20." }
+          ]
+        },
+        "en-US": {
+          "prompt": "You want 90 coins, have 30, and save 10 a week. Steps: what is missing, weeks, missing after 4 weeks.",
+          "help": ["You do not need to save what you already have. Subtract it from the goal."],
+          "feedback": {
+            "met": "You divided only what was missing and checked after 4 weeks.",
+            "not_yet": "Not yet. Subtract what you have first, then divide the rest."
+          },
+          "steps": [
+            { "expression": "90 − 30", "result": "60", "spokenText": "From 90 coins I take away the 30 you already have: 60 coins are missing." },
+            { "expression": "60 ÷ 10", "result": "6", "spokenText": "60 coins are missing and you save 10 a week: that is 6 weeks." },
+            { "expression": "Still missing after 4 weeks", "result": "20", "spokenText": "In 4 weeks you save 40 coins; of the 60 that were missing, 20 are still missing." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você quer 90 moedas, já tem 30 e guarda 10 por semana. Etapas: o que falta, as semanas, o que falta após 4 semanas.",
+          "help": ["O que você já tem não precisa guardar de novo. Tire isso da meta."],
+          "feedback": {
+            "met": "Você dividiu só o que faltava e viu quanto falta após 4 semanas.",
+            "not_yet": "Ainda não. Tire primeiro o que você já tem e divida o resto."
+          },
+          "steps": [
+            { "expression": "90 − 30", "result": "60", "spokenText": "De 90 moedas tiro as 30 que você já tem: faltam 60 moedas." },
+            { "expression": "60 ÷ 10", "result": "6", "spokenText": "Faltam 60 moedas e você guarda 10 por semana: são 6 semanas." },
+            { "expression": "Falta após 4 semanas", "result": "20", "spokenText": "Em 4 semanas você guarda 40 moedas; das 60 que faltavam, ainda faltam 20." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "worked-example-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "spending" }, { "id": "left" }, { "id": "missing" }, { "id": "weeks" }],
+        "fade_count": 2,
+        "response_step_ids": ["left", "missing", "weeks"]
+      },
+      "rubric": { "expectedValues": { "left": "8", "missing": "40", "weeks": "5" } },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "copy": {
+        "es-MX": {
+          "prompt": "Te dan 20 monedas por semana; gastas 8 en antojos y 4 en útiles. Meta: 56, ya tienes 16.",
+          "help": ["Lo que ya tienes no se vuelve a ahorrar. Divide solo lo que falta entre lo que te sobra."],
+          "feedback": {
+            "met": "Calculaste lo que sobra cada semana y dividiste solo lo que falta.",
+            "not_yet": "Todavía no. Resta lo que ya tienes de la meta y divide lo que falta."
+          },
+          "steps": [
+            { "expression": "8 + 4", "result": "12", "spokenText": "8 más 4 son 12 monedas de gasto por semana." },
+            { "expression": "20 − 12", "result": "8", "spokenText": "De 20 monedas que te dan, quitando 12 de gastos, te sobran 8." },
+            { "expression": "Falta para la meta", "result": "40", "spokenText": "A la meta de 56 le quito las 16 que ya tienes: faltan 40." },
+            { "expression": "Semanas para llegar", "result": "5", "spokenText": "Faltan 40 y te sobran 8 por semana: son 5 semanas." }
+          ]
+        },
+        "en-US": {
+          "prompt": "Your allowance is 20 coins a week; you spend 8 on snacks and 4 on supplies. Goal: 56, saved: 16.",
+          "help": ["What you already have does not get saved again. Divide only what is missing by what you have left."],
+          "feedback": {
+            "met": "You found your weekly leftover and divided only what is missing.",
+            "not_yet": "Not yet. Subtract what you have from the goal, then divide."
+          },
+          "steps": [
+            { "expression": "8 + 4", "result": "12", "spokenText": "8 plus 4 is 12 coins of spending a week." },
+            { "expression": "20 − 12", "result": "8", "spokenText": "From a 20-coin allowance, taking away 12 of spending leaves 8." },
+            { "expression": "Still missing", "result": "40", "spokenText": "From the goal of 56 I take away the 16 you have: 40 are missing." },
+            { "expression": "Weeks to reach it", "result": "5", "spokenText": "40 are missing and you have 8 left each week: that is 5 weeks." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesada de 20 moedas por semana; você gasta 8 em lanches e 4 em material. Meta: 56, já tem 16.",
+          "help": ["O que você já tem não precisa guardar de novo. Divida só o que falta pelo que sobra."],
+          "feedback": {
+            "met": "Você achou o que sobra por semana e dividiu só o que falta.",
+            "not_yet": "Ainda não. Tire da meta o que você já tem e divida pelo que sobra."
+          },
+          "steps": [
+            { "expression": "8 + 4", "result": "12", "spokenText": "8 mais 4 são 12 moedas de gasto por semana." },
+            { "expression": "20 − 12", "result": "8", "spokenText": "De 20 moedas de mesada, tirando 12 de gastos, sobram 8." },
+            { "expression": "Falta para a meta", "result": "40", "spokenText": "Da meta de 56 tiro as 16 que você já tem: faltam 40." },
+            { "expression": "Semanas para chegar", "result": "5", "spokenText": "Faltam 40 e sobram 8 por semana: são 5 semanas." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "worked-example-03",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": { "type": "worked-example" },
+      "payload": {
+        "steps": [{ "id": "spending" }, { "id": "left" }, { "id": "missing" }, { "id": "weeks" }],
+        "fade_count": 3,
+        "response_step_ids": ["left", "missing", "weeks"]
+      },
+      "rubric": { "expectedValues": { "left": "20", "missing": "120", "weeks": "6" } },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.savings-plan-math",
+      "copy": {
+        "es-MX": {
+          "prompt": "Juntas 30 monedas por semana ayudando en casa; gastas 6 en comida y 4 en pasajes. Meta: 160, ya tienes 40.",
+          "help": ["Piensa en lo que juntas, lo que gastas y lo que ya tienes."],
+          "feedback": {
+            "met": "Sacaste lo que te queda y lo que falta, y luego dividiste.",
+            "not_yet": "Todavía no. Divide lo que falta entre lo que te queda cada semana."
+          },
+          "steps": [
+            { "expression": "6 + 4", "result": "10", "spokenText": "6 más 4 son 10 monedas de gasto por semana." },
+            { "expression": "Te queda por semana", "result": "20", "spokenText": "De 30 monedas que juntas, quitando 10 de gastos, te quedan 20." },
+            { "expression": "Falta para la meta", "result": "120", "spokenText": "A la meta de 160 le quito las 40 que ya tienes: faltan 120." },
+            { "expression": "Semanas para llegar", "result": "6", "spokenText": "Faltan 120 y te quedan 20 por semana: son 6 semanas." }
+          ]
+        },
+        "en-US": {
+          "prompt": "You earn 30 coins a week from chores; spend 6 on snacks, 4 on bus fare. Goal: 160, saved: 40.",
+          "help": ["Think about what you earn, what you spend, and what you already have."],
+          "feedback": {
+            "met": "You found what is left and what is missing, then divided.",
+            "not_yet": "Not yet. Divide what is missing by what you keep each week."
+          },
+          "steps": [
+            { "expression": "6 + 4", "result": "10", "spokenText": "6 plus 4 is 10 coins of spending a week." },
+            { "expression": "Left each week", "result": "20", "spokenText": "From 30 coins earned, taking away 10 of spending leaves 20." },
+            { "expression": "Still missing", "result": "120", "spokenText": "From the goal of 160 I take away the 40 you have: 120 are missing." },
+            { "expression": "Weeks to reach it", "result": "6", "spokenText": "120 are missing and you keep 20 a week: that is 6 weeks." }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você ganha 30 moedas por semana ajudando em casa e gasta 6 em lanche e 4 em ônibus. Meta: 160, já tem 40.",
+          "help": ["Pense no que você ganha, no que gasta e no que já tem."],
+          "feedback": {
+            "met": "Você achou o que sobra e o que falta e depois dividiu.",
+            "not_yet": "Ainda não. Divida o que falta pelo que sobra a cada semana."
+          },
+          "steps": [
+            { "expression": "6 + 4", "result": "10", "spokenText": "6 mais 4 são 10 moedas de gasto por semana." },
+            { "expression": "Sobra por semana", "result": "20", "spokenText": "De 30 moedas que você ganha, tirando 10 de gastos, sobram 20." },
+            { "expression": "Falta para a meta", "result": "120", "spokenText": "Da meta de 160 tiro as 40 que você já tem: faltam 120." },
+            { "expression": "Semanas para chegar", "result": "6", "spokenText": "Faltam 120 e sobram 20 por semana: são 6 semanas." }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wrap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "wrap", "narration": { "mode": "differentiated" } },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Zara.",
+          "line": "Primero cuánto falta. Luego cuánto te sobra cada semana.",
+          "narration": { "script": "Con esas dos cifras divides y sabes cuántas semanas necesitas. Si cambia lo que ganas o gastas, haces la cuenta otra vez." }
+        },
+        "en-US": {
+          "prompt": "Listen to Zara.",
+          "line": "First, what is missing. Then, what is left each week.",
+          "narration": { "script": "With those two numbers you divide and know how many weeks you need. If what you earn or spend changes, do the math again." }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Zara.",
+          "line": "Primeiro, o que falta. Depois, o que sobra por semana.",
+          "narration": { "script": "Com esses dois números você divide e sabe quantas semanas precisa. Se o que você ganha ou gasta mudar, refaça a conta." }
+        }
+      }
+    }
+  ]
+}

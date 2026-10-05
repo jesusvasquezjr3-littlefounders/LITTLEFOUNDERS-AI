@@ -1,0 +1,1158 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-prove-demand",
+  "lesson_id": "ent-1317-04-where-the-funnel-leaks",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.sales-funnel",
+    "biz.consultative-selling",
+    "money.percent-intro"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Una publicación que ofrece una limpieza de tenis de 25 monedas llega a 200 personas y solo 6 compran. Rho cuenta paso a paso: 200 vieron, 60 abrieron el enlace, 18 escribieron y 6 compraron, así que la mayor pérdida (140 personas) está entre ver y abrir. El aprendiz lee el embudo, calcula cada porcentaje con un ejemplo guiado, encuentra el paso que pierde más gente y decide qué responder cuando alguien escribe.",
+  "title": {
+    "en-US": "Where the funnel leaks",
+    "es-MX": "Dónde se fuga el embudo",
+    "pt-BR": "Onde o funil vaza"
+  },
+  "new_concepts": [
+    "biz.sales-funnel"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México algunos adolescentes anuncian en el estado de WhatsApp y entregan en un puesto del tianguis. El embudo cuenta cuántas personas vieron el estado, abrieron el enlace, escribieron y compraron; todos los montos van en monedas.",
+        "problem_refs": [
+          "mx-access-without-wellbeing",
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil alguns adolescentes vendem pelo story e recebem por Pix. O funil conta quantas pessoas viram o story, abriram o link, mandaram mensagem e pagaram, com números pequenos e visuais; os valores ficam em moedas.",
+        "problem_refs": [
+          "br-baseline-literacy-gap",
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US some teens sell through neighborhood group posts and a yard sale table. The funnel counts the people who saw the post, opened the link, sent a message and bought, and the choice is which step to fix; amounts stay in coins.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "yard sale"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your yard sale post reached 200 people, and 6 of them bought a sneaker cleaning.",
+          "line": "Posting more may only repeat the loss. First count where the other 194 left."
+        },
+        "es-MX": {
+          "prompt": "Tu estado de WhatsApp para el tianguis llegó a 200 personas y 6 compraron una limpieza de tenis.",
+          "line": "Publicar más puede repetir la pérdida. Primero cuenta dónde se fueron las otras 194."
+        },
+        "pt-BR": {
+          "prompt": "Seu story de limpeza de tênis chegou a 200 pessoas e 6 pagaram por Pix.",
+          "line": "Postar mais pode repetir a perda. Primeiro conte onde as outras 194 saíram."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.sales-funnel",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-more"
+          },
+          {
+            "id": "choice-price"
+          },
+          {
+            "id": "choice-find"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-lower"
+          },
+          {
+            "id": "reason-leave"
+          },
+          {
+            "id": "reason-views"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-find"
+        ],
+        "reasonQuality": {
+          "reason-leave": "sound",
+          "reason-lower": "partial",
+          "reason-views": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Only 6 of 200 people who saw your post bought. What do you do first?",
+          "feedback": {
+            "met": "Noted. We will test that first move on a real funnel.",
+            "not_yet": "Noted. We will test that first move on a real funnel."
+          },
+          "choices": [
+            {
+              "label": "Post again so more people see it"
+            },
+            {
+              "label": "Cut the price for everyone"
+            },
+            {
+              "label": "Find the step where most people leave"
+            }
+          ],
+          "reasonPrompt": "Why that first move?",
+          "reasons": [
+            {
+              "label": "A lower price may win some back"
+            },
+            {
+              "label": "I need to know where people leave"
+            },
+            {
+              "label": "More views always bring more sales"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Solo 6 de las 200 personas que vieron tu estado compraron. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Anotado. Probaremos ese primer paso con un embudo real.",
+            "not_yet": "Anotado. Probaremos ese primer paso con un embudo real."
+          },
+          "choices": [
+            {
+              "label": "Publicar otra vez para que más gente lo vea"
+            },
+            {
+              "label": "Bajar el precio para todos"
+            },
+            {
+              "label": "Buscar el paso donde se va más gente"
+            }
+          ],
+          "reasonPrompt": "¿Por qué ese primer paso?",
+          "reasons": [
+            {
+              "label": "Un precio menor puede recuperar a algunos"
+            },
+            {
+              "label": "Necesito saber dónde se va la gente"
+            },
+            {
+              "label": "Más vistas siempre traen más ventas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Só 6 das 200 pessoas que viram seu story compraram. O que você faz primeiro?",
+          "feedback": {
+            "met": "Anotado. Vamos testar esse primeiro passo com um funil real.",
+            "not_yet": "Anotado. Vamos testar esse primeiro passo com um funil real."
+          },
+          "choices": [
+            {
+              "label": "Postar de novo para mais gente ver"
+            },
+            {
+              "label": "Baixar o preço para todos"
+            },
+            {
+              "label": "Achar a etapa em que mais gente sai"
+            }
+          ],
+          "reasonPrompt": "Por que esse primeiro passo?",
+          "reasons": [
+            {
+              "label": "Um preço menor pode recuperar alguns"
+            },
+            {
+              "label": "Preciso saber onde as pessoas saem"
+            },
+            {
+              "label": "Mais visualizações sempre trazem mais vendas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a funnel counts how many people reach each step.",
+          "line": "Of 200 who saw the post, 60 opened the link, 18 sent a message and 6 bought."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un embudo cuenta cuántas personas llegan a cada paso.",
+          "line": "De 200 que vieron el estado, 60 abrieron el enlace, 18 escribieron y 6 compraron."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: um funil conta quantas pessoas chegam a cada etapa.",
+          "line": "De 200 que viram o story, 60 abriram o link, 18 mandaram mensagem e 6 pagaram por Pix."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the leak is the step where the most people leave.",
+          "line": "The first step loses 140 people, the next 42, the last 12. The first is your leak."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: la fuga es el paso donde se va más gente.",
+          "line": "El primer paso pierde 140 personas, el siguiente 42 y el último 12. El primero es tu fuga."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o vazamento é a etapa em que mais gente sai.",
+          "line": "A primeira etapa perde 140 pessoas, a seguinte 42 e a última 12. A primeira é o seu vazamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "funnel"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.sales-funnel",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "stage-saw"
+            },
+            {
+              "id": "stage-opened"
+            },
+            {
+              "id": "stage-messaged"
+            },
+            {
+              "id": "stage-bought"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-people",
+              "values": [
+                150,
+                120,
+                36,
+                27
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-first"
+            },
+            {
+              "id": "ans-second"
+            },
+            {
+              "id": "ans-third"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-second"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read Mia’s funnel, then find the leak.",
+          "feedback": {
+            "met": "You found the biggest drop, right after people open the link.",
+            "not_yet": "Not yet. Subtract each step from the one before it."
+          },
+          "help": [
+            "Step 2: the leak is the biggest drop between two steps."
+          ],
+          "title": "People at each step of Mia’s post",
+          "data": {
+            "categories": [
+              {
+                "label": "Saw the post"
+              },
+              {
+                "label": "Opened the link"
+              },
+              {
+                "label": "Sent a message"
+              },
+              {
+                "label": "Bought a cleaning"
+              }
+            ],
+            "series": [
+              {
+                "label": "People"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which step loses the most people?",
+            "options": [
+              {
+                "label": "Between seeing the post and opening the link"
+              },
+              {
+                "label": "Between opening the link and messaging"
+              },
+              {
+                "label": "Between messaging and buying"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee el embudo de Mia y busca la fuga.",
+          "feedback": {
+            "met": "Encontraste la mayor caída, justo después de abrir el enlace.",
+            "not_yet": "Todavía no. Resta cada paso del paso anterior."
+          },
+          "help": [
+            "Paso 2: la fuga es la caída más grande entre dos pasos."
+          ],
+          "title": "Personas en cada paso del estado de Mia",
+          "data": {
+            "categories": [
+              {
+                "label": "Vieron el estado"
+              },
+              {
+                "label": "Abrieron el enlace"
+              },
+              {
+                "label": "Escribieron"
+              },
+              {
+                "label": "Compraron"
+              }
+            ],
+            "series": [
+              {
+                "label": "Personas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué paso pierde a más personas?",
+            "options": [
+              {
+                "label": "Entre ver el estado y abrir el enlace"
+              },
+              {
+                "label": "Entre abrir el enlace y escribir"
+              },
+              {
+                "label": "Entre escribir y comprar"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia o funil da Mia e ache o vazamento.",
+          "feedback": {
+            "met": "Você achou a maior queda, logo depois de abrir o link.",
+            "not_yet": "Ainda não. Subtraia cada etapa da anterior."
+          },
+          "help": [
+            "Passo 2: o vazamento é a maior queda entre duas etapas."
+          ],
+          "title": "Pessoas em cada etapa do story da Mia",
+          "data": {
+            "categories": [
+              {
+                "label": "Viram o story"
+              },
+              {
+                "label": "Abriram o link"
+              },
+              {
+                "label": "Mandaram mensagem"
+              },
+              {
+                "label": "Pagaram por Pix"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pessoas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual etapa perde mais pessoas?",
+            "options": [
+              {
+                "label": "Entre ver o story e abrir o link"
+              },
+              {
+                "label": "Entre abrir o link e mandar mensagem"
+              },
+              {
+                "label": "Entre mandar mensagem e pagar"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: a percent says how many stay at each step.",
+          "line": "Divide a step by the one before it, then multiply by 100: 60 ÷ 200 × 100 is 30%."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: un porcentaje dice cuántos siguen en cada paso.",
+          "line": "Divide un paso entre el anterior y multiplica por 100: 60 ÷ 200 × 100 es 30%."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: uma porcentagem diz quantos seguem em cada etapa.",
+          "line": "Divida uma etapa pela anterior e multiplique por 100: 60 ÷ 200 × 100 é 30%."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "steps": [
+          {
+            "id": "open-rate"
+          },
+          {
+            "id": "message-rate"
+          },
+          {
+            "id": "buy-rate"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "message-rate",
+          "buy-rate"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "message-rate": "20",
+          "buy-rate": "50"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Kai’s post: 100 saw, 80 opened, 16 messaged, 8 bought. Finish the percent who stay at each step.",
+          "feedback": {
+            "met": "You worked out the percent who stay at both steps.",
+            "not_yet": "Not yet. Divide each step by the one before it."
+          },
+          "help": [
+            "Step 3: divide by the step before, then multiply by 100."
+          ],
+          "steps": [
+            {
+              "expression": "Opened ÷ saw × 100",
+              "result": "80",
+              "spokenText": "80 of 100 opened the link: 80 percent"
+            },
+            {
+              "expression": "Messaged ÷ opened × 100",
+              "result": "20",
+              "spokenText": "16 of 80 sent a message: 20 percent"
+            },
+            {
+              "expression": "Bought ÷ messaged × 100",
+              "result": "50",
+              "spokenText": "8 of 16 bought: 50 percent"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Estado de Kai: 100 vieron, 80 abrieron, 16 escribieron, 8 compraron. Completa el porcentaje de quienes siguen en cada paso.",
+          "feedback": {
+            "met": "Calculaste el porcentaje de quienes siguen en ambos pasos.",
+            "not_yet": "Todavía no. Divide cada paso entre el anterior."
+          },
+          "help": [
+            "Paso 3: divide un paso entre el anterior y multiplica por 100."
+          ],
+          "steps": [
+            {
+              "expression": "Abrieron ÷ vieron × 100",
+              "result": "80",
+              "spokenText": "80 de 100 abrieron el enlace: 80 por ciento"
+            },
+            {
+              "expression": "Escribieron ÷ abrieron × 100",
+              "result": "20",
+              "spokenText": "16 de 80 escribieron: 20 por ciento"
+            },
+            {
+              "expression": "Compraron ÷ escribieron × 100",
+              "result": "50",
+              "spokenText": "8 de 16 compraron: 50 por ciento"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Story do Kai: 100 viram, 80 abriram, 16 mandaram mensagem, 8 pagaram. Complete a porcentagem de quem segue em cada etapa.",
+          "feedback": {
+            "met": "Você calculou a porcentagem de quem segue nas duas etapas.",
+            "not_yet": "Ainda não. Divida cada etapa pela anterior."
+          },
+          "help": [
+            "Passo 3: divida uma etapa pela anterior e multiplique por 100."
+          ],
+          "steps": [
+            {
+              "expression": "Abriram ÷ viram × 100",
+              "result": "80",
+              "spokenText": "80 de 100 abriram o link: 80 por cento"
+            },
+            {
+              "expression": "Mandaram mensagem ÷ abriram × 100",
+              "result": "20",
+              "spokenText": "16 de 80 mandaram mensagem: 20 por cento"
+            },
+            {
+              "expression": "Pagaram ÷ mandaram mensagem × 100",
+              "result": "50",
+              "spokenText": "8 de 16 pagaram: 50 por cento"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "funnel"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.sales-funnel",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "stage-saw"
+            },
+            {
+              "id": "stage-opened"
+            },
+            {
+              "id": "stage-messaged"
+            },
+            {
+              "id": "stage-bought"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-people",
+              "values": [
+                100,
+                70,
+                56,
+                14
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-first"
+            },
+            {
+              "id": "ans-second"
+            },
+            {
+              "id": "ans-third"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-third"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Noa wants to post again. Read her funnel first.",
+          "feedback": {
+            "met": "You found the leak in the last step, not in the reach.",
+            "not_yet": "Not yet. Find the biggest drop between two steps."
+          },
+          "help": [
+            "Step 2: subtract each step from the one before it."
+          ],
+          "title": "People at each step of Noa’s post",
+          "data": {
+            "categories": [
+              {
+                "label": "Saw the post"
+              },
+              {
+                "label": "Opened the link"
+              },
+              {
+                "label": "Sent a message"
+              },
+              {
+                "label": "Bought a cleaning"
+              }
+            ],
+            "series": [
+              {
+                "label": "People"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Noa wants to post again to reach more people. Where is her real leak?",
+            "options": [
+              {
+                "label": "Between seeing the post and opening the link"
+              },
+              {
+                "label": "Between opening the link and messaging"
+              },
+              {
+                "label": "Between messaging and buying"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Noa quiere publicar otra vez. Lee primero su embudo.",
+          "feedback": {
+            "met": "Encontraste la fuga en el último paso, no en el alcance.",
+            "not_yet": "Todavía no. Busca la mayor caída entre dos pasos."
+          },
+          "help": [
+            "Paso 2: resta cada paso del paso anterior."
+          ],
+          "title": "Personas en cada paso del estado de Noa",
+          "data": {
+            "categories": [
+              {
+                "label": "Vieron el estado"
+              },
+              {
+                "label": "Abrieron el enlace"
+              },
+              {
+                "label": "Escribieron"
+              },
+              {
+                "label": "Compraron"
+              }
+            ],
+            "series": [
+              {
+                "label": "Personas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Noa quiere publicar otra vez para llegar a más gente. ¿Dónde está su fuga real?",
+            "options": [
+              {
+                "label": "Entre ver el estado y abrir el enlace"
+              },
+              {
+                "label": "Entre abrir el enlace y escribir"
+              },
+              {
+                "label": "Entre escribir y comprar"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Noa quer postar de novo. Leia primeiro o funil dela.",
+          "feedback": {
+            "met": "Você achou o vazamento na última etapa, não no alcance.",
+            "not_yet": "Ainda não. Ache a maior queda entre duas etapas."
+          },
+          "help": [
+            "Passo 2: subtraia cada etapa da anterior."
+          ],
+          "title": "Pessoas em cada etapa do story da Noa",
+          "data": {
+            "categories": [
+              {
+                "label": "Viram o story"
+              },
+              {
+                "label": "Abriram o link"
+              },
+              {
+                "label": "Mandaram mensagem"
+              },
+              {
+                "label": "Pagaram por Pix"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pessoas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Noa quer postar de novo para alcançar mais gente. Onde está o vazamento real dela?",
+            "options": [
+              {
+                "label": "Entre ver o story e abrir o link"
+              },
+              {
+                "label": "Entre abrir o link e mandar mensagem"
+              },
+              {
+                "label": "Entre mandar mensagem e pagar"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: at the message step, ask before you offer.",
+          "line": "Noa’s leak sits after the message. Ask what went wrong, connect one fix, then name the next step."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: en el paso del mensaje, pregunta antes de ofrecer.",
+          "line": "La fuga de Noa está después del mensaje. Pregunta qué falló, conecta una solución y nombra el siguiente paso."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: na etapa da mensagem, pergunte antes de oferecer.",
+          "line": "O vazamento da Noa está depois da mensagem. Pergunte o que deu errado, conecte uma solução e diga o próximo passo."
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ask"
+          },
+          {
+            "id": "choice-list"
+          },
+          {
+            "id": "choice-off"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-lower"
+          },
+          {
+            "id": "reason-asked"
+          },
+          {
+            "id": "reason-answer"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-ask"
+        ],
+        "reasonQuality": {
+          "reason-answer": "sound",
+          "reason-lower": "partial",
+          "reason-asked": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A buyer messages asking the price. Your funnel leaks after the message, so what do you send first?",
+          "feedback": {
+            "met": "You asked about their problem before offering anything.",
+            "not_yet": "Not yet. What did Step 4 say to do before offering?"
+          },
+          "help": [
+            "Step 4: ask what went wrong, then connect one fix."
+          ],
+          "choices": [
+            {
+              "label": "Ask what went wrong with their sneakers"
+            },
+            {
+              "label": "Send the full price list right away"
+            },
+            {
+              "label": "Offer 10 coins off to close faster"
+            }
+          ],
+          "reasonPrompt": "Why that reply?",
+          "reasons": [
+            {
+              "label": "A lower price can close faster"
+            },
+            {
+              "label": "They asked the price, so I send it"
+            },
+            {
+              "label": "Their answer shows which fix to offer"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un comprador escribe preguntando el precio. Tu embudo pierde gente después del mensaje, ¿qué envías primero?",
+          "feedback": {
+            "met": "Preguntaste por su problema antes de ofrecer algo.",
+            "not_yet": "Todavía no. ¿Qué dijo el Paso 4 que hicieras antes de ofrecer?"
+          },
+          "help": [
+            "Paso 4: pregunta qué falló y luego conecta una solución."
+          ],
+          "choices": [
+            {
+              "label": "Preguntar qué les pasó a sus tenis"
+            },
+            {
+              "label": "Enviar la lista de precios completa de inmediato"
+            },
+            {
+              "label": "Ofrecer 10 monedas de descuento para cerrar"
+            }
+          ],
+          "reasonPrompt": "¿Por qué esa respuesta?",
+          "reasons": [
+            {
+              "label": "Un precio menor puede cerrar más rápido"
+            },
+            {
+              "label": "Pidió el precio, así que lo envío"
+            },
+            {
+              "label": "Su respuesta muestra qué arreglo ofrecer"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um comprador manda mensagem perguntando o preço. Seu funil perde gente depois da mensagem, o que você envia primeiro?",
+          "feedback": {
+            "met": "Você perguntou sobre o problema antes de oferecer algo.",
+            "not_yet": "Ainda não. O que o Passo 4 diz para fazer antes de oferecer?"
+          },
+          "help": [
+            "Passo 4: pergunte o que deu errado e conecte uma solução."
+          ],
+          "choices": [
+            {
+              "label": "Perguntar o que houve com os tênis"
+            },
+            {
+              "label": "Enviar a lista de preços completa na hora"
+            },
+            {
+              "label": "Oferecer 10 moedas de desconto para fechar"
+            }
+          ],
+          "reasonPrompt": "Por que essa resposta?",
+          "reasons": [
+            {
+              "label": "Um preço menor pode fechar mais rápido"
+            },
+            {
+              "label": "Pediu o preço, então eu envio"
+            },
+            {
+              "label": "A resposta mostra qual solução oferecer"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.sales-funnel",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-sign"
+          },
+          {
+            "id": "choice-try"
+          },
+          {
+            "id": "choice-price"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-after"
+          },
+          {
+            "id": "reason-price"
+          },
+          {
+            "id": "reason-sign"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-try"
+        ],
+        "reasonQuality": {
+          "reason-after": "sound",
+          "reason-price": "partial",
+          "reason-sign": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your yard sale table: 100 passed, 70 stopped, 14 tried a bracelet, 7 bought. What do you change first?",
+          "feedback": {
+            "met": "You fixed the step where most people leave, not the reach.",
+            "not_yet": "Not yet. Which step loses the most people?"
+          },
+          "help": [
+            "Reread Step 2: the leak is the biggest drop."
+          ],
+          "choices": [
+            {
+              "label": "Make the sign louder to stop more people"
+            },
+            {
+              "label": "Get stopped people to try a bracelet"
+            },
+            {
+              "label": "Lower the price of every bracelet"
+            }
+          ],
+          "reasonPrompt": "Why that change?",
+          "reasons": [
+            {
+              "label": "Most people leave right after they stop"
+            },
+            {
+              "label": "A lower price may help at the end"
+            },
+            {
+              "label": "A louder sign always brings more sales"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu puesto del tianguis: 100 pasaron, 70 se pararon, 14 probaron una pulsera, 7 compraron. ¿Qué cambias primero?",
+          "feedback": {
+            "met": "Arreglaste el paso donde se va más gente, no el alcance.",
+            "not_yet": "Todavía no. ¿Qué paso pierde a más personas?"
+          },
+          "help": [
+            "Relee el Paso 2: la fuga es la caída más grande."
+          ],
+          "choices": [
+            {
+              "label": "Poner un letrero más grande para detener más gente"
+            },
+            {
+              "label": "Lograr que quienes se paran prueben una pulsera"
+            },
+            {
+              "label": "Bajar el precio de todas las pulseras"
+            }
+          ],
+          "reasonPrompt": "¿Por qué ese cambio?",
+          "reasons": [
+            {
+              "label": "La mayoría se va justo después de pararse"
+            },
+            {
+              "label": "Un precio menor puede ayudar al final"
+            },
+            {
+              "label": "Un letrero grande siempre trae más ventas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua banca na feira da escola: 100 passaram, 70 pararam, 14 provaram uma pulseira, 7 compraram. O que você muda primeiro?",
+          "feedback": {
+            "met": "Você corrigiu a etapa em que mais gente sai, não o alcance.",
+            "not_yet": "Ainda não. Qual etapa perde mais pessoas?"
+          },
+          "help": [
+            "Releia o Passo 2: o vazamento é a maior queda."
+          ],
+          "choices": [
+            {
+              "label": "Fazer um cartaz maior para parar mais gente"
+            },
+            {
+              "label": "Fazer quem parou provar uma pulseira"
+            },
+            {
+              "label": "Baixar o preço de todas as pulseiras"
+            }
+          ],
+          "reasonPrompt": "Por que essa mudança?",
+          "reasons": [
+            {
+              "label": "A maioria sai logo depois de parar"
+            },
+            {
+              "label": "Um preço menor pode ajudar no final"
+            },
+            {
+              "label": "Um cartaz maior sempre traz mais vendas"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

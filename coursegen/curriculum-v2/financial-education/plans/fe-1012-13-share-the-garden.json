@@ -1,0 +1,770 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-class-garden",
+  "lesson_id": "fe-1012-13-share-the-garden",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.shared-resources",
+    "money.equal-sharing"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara enseña con ejemplos a repartir algo que usa todo el salón: una regadera para 12 alumnos. Arma turnos de 3 alumnos por día durante 4 días, revisa que el trabajo quede parejo y cuenta cómo se saltó su turno y lo cubrió con el siguiente. Después practica turnos justos y decide qué reparto es justo en una situación nueva.",
+  "title": {
+    "es-MX": "Compartir el huerto",
+    "en-US": "Share the garden",
+    "pt-BR": "Dividir a horta"
+  },
+  "new_concepts": [
+    "life.shared-resources"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara skips her watering day because she thinks one missed turn will not matter to the garden.",
+    "recovery": "Zara refills the can, takes the next shift, and says that next time she will check the schedule the day before."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El salón de Zara tiene un huerto, 12 alumnos y una sola regadera.",
+          "line": "Mmm, ¿quién riega y cuándo? Déjame probar algo."
+        },
+        "en-US": {
+          "prompt": "Zara's class has a garden, 12 students and one watering can.",
+          "line": "Hmm, who waters, and when? Let me try something."
+        },
+        "pt-BR": {
+          "prompt": "A turma da Zara tem uma horta, 12 alunos e um só regador.",
+          "line": "Hum, quem rega e quando? Deixe-me tentar algo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-first"
+          },
+          {
+            "id": "reply-turns"
+          },
+          {
+            "id": "reply-tall"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-turns"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En el salón de Zara, 12 alumnos comparten una regadera. ¿Qué propones?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso, juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso, juntos."
+          },
+          "speaker": "Nina",
+          "line": "Una regadera y somos doce. ¿Quién riega?",
+          "replies": [
+            {
+              "label": "El que llegue primero."
+            },
+            {
+              "label": "Turnos: unos pocos cada día."
+            },
+            {
+              "label": "El más alto, todos los días."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In Zara's class, 12 students share one watering can. What do you suggest?",
+          "feedback": {
+            "met": "Thanks. Now we'll look at it step by step, together.",
+            "not_yet": "Thanks. Now we'll look at it step by step, together."
+          },
+          "speaker": "Nina",
+          "line": "One can, twelve of us. Who waters?",
+          "replies": [
+            {
+              "label": "Whoever gets there first."
+            },
+            {
+              "label": "Take turns, a few each day."
+            },
+            {
+              "label": "The tallest student, every day."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na turma da Zara, 12 alunos dividem um regador. O que você sugere?",
+          "feedback": {
+            "met": "Certo, já vejo como você pensa. Agora vamos ver passo a passo, juntos.",
+            "not_yet": "Certo, já vejo como você pensa. Agora vamos ver passo a passo, juntos."
+          },
+          "speaker": "Nina",
+          "line": "Um regador e somos doze. Quem rega?",
+          "replies": [
+            {
+              "label": "Quem chegar primeiro."
+            },
+            {
+              "label": "Revezar: alguns por dia."
+            },
+            {
+              "label": "O mais alto, todo dia."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: Zara cuenta 12 alumnos y 1 regadera. Todos deben tener su turno.",
+          "line": "Mmm, si los 12 se amontonan en la regadera, nadie riega bien. Voy a dividir al grupo."
+        },
+        "en-US": {
+          "prompt": "Step 1: Zara counts 12 students and 1 can. Everyone should get a turn.",
+          "line": "Hmm, if all 12 crowd the can, nobody waters well. Let me split the group."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a Zara conta 12 alunos e 1 regador. Todos devem ter sua vez.",
+          "line": "Hum, se os 12 se amontoarem no regador, ninguém rega bem. Vou dividir o grupo."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: Zara prueba con 3 alumnos por día, así cada grupo es pequeño.",
+          "line": "Voy a probar: 12 ÷ 3 = 4, así que 4 días alcanzan para todo el salón."
+        },
+        "en-US": {
+          "prompt": "Step 2: Zara tries 3 students a day, so each group is small.",
+          "line": "Let me try this: 12 ÷ 3 = 4, so 4 days cover the whole class."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Zara testa 3 alunos por dia, assim cada grupo é pequeno.",
+          "line": "Vou testar: 12 ÷ 3 = 4, então 4 dias dão conta da turma toda."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: Zara revisa los turnos. Cada día tiene 3 nombres y cada nombre sale una vez.",
+          "line": "Justo es repartir el trabajo parejo. Poner 9 alumnos el día 1 no lo sería."
+        },
+        "en-US": {
+          "prompt": "Step 3: Zara checks the schedule. Each day has 3 names, and every name appears once.",
+          "line": "Fair means the work is spread evenly. Putting 9 students on day 1 would not be."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a Zara confere a escala. Cada dia tem 3 nomes e cada nome aparece uma vez.",
+          "line": "Justo é repartir o trabalho por igual. Pôr 9 alunos no dia 1 não seria."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-crowd"
+          },
+          {
+            "id": "reply-eight"
+          },
+          {
+            "id": "reply-five"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-five"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Hoy hay 10 alumnos. ¿Qué turnos de Zara dan su vez a los 10 sin amontonarlos?",
+          "feedback": {
+            "met": "Los 10 tuvieron su vez y nadie quedó amontonado.",
+            "not_yet": "Todavía no. Mira la revisión de Zara: cada nombre sale una vez."
+          },
+          "help": [
+            "Haz como Zara: parte a los alumnos en grupos chicos.",
+            "Revisa que cada nombre salga exactamente una vez."
+          ],
+          "speaker": "Zara",
+          "line": "Mmm, ¿cuántos por día para que todos rieguen?",
+          "replies": [
+            {
+              "label": "Los 10 el mismo día."
+            },
+            {
+              "label": "2 por día durante 4 días."
+            },
+            {
+              "label": "2 por día durante 5 días."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Only 10 students came today. Which schedule gives all 10 a turn, with no crowd?",
+          "feedback": {
+            "met": "You checked that all 10 get a turn and nobody is crowded.",
+            "not_yet": "Not yet. Look at Zara's check: every name appears once."
+          },
+          "help": [
+            "Do as Zara did: split the students into small groups.",
+            "Check that every name appears exactly once."
+          ],
+          "speaker": "Zara",
+          "line": "Hmm, how many a day so everyone waters?",
+          "replies": [
+            {
+              "label": "All 10 on day 1."
+            },
+            {
+              "label": "2 a day for 4 days."
+            },
+            {
+              "label": "2 a day for 5 days."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Hoje há 10 alunos. Qual escala da Zara dá a vez aos 10, sem aglomerar?",
+          "feedback": {
+            "met": "Você conferiu que os 10 têm sua vez e ninguém fica aglomerado.",
+            "not_yet": "Ainda não. Veja a conferência da Zara: cada nome aparece uma vez."
+          },
+          "help": [
+            "Faça como a Zara: divida os alunos em grupos pequenos.",
+            "Confira que cada nome apareça exatamente uma vez."
+          ],
+          "speaker": "Zara",
+          "line": "Hum, quantos por dia para todos regarem?",
+          "replies": [
+            {
+              "label": "Os 10 no mesmo dia."
+            },
+            {
+              "label": "2 por dia durante 4 dias."
+            },
+            {
+              "label": "2 por dia durante 5 dias."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Zara.",
+          "setup": "Llegó mi día y no regué. La regadera se quedó vacía.",
+          "misjudgment": "Pensé que un turno sin regar no le importaba al huerto.",
+          "recovery": "Rellené la regadera y tomé el siguiente turno. La próxima vez reviso los turnos el día antes."
+        },
+        "en-US": {
+          "prompt": "See what happened to Zara.",
+          "setup": "My day came, and I skipped it. The can stayed empty.",
+          "misjudgment": "I thought one missed turn wouldn't matter to the garden.",
+          "recovery": "I refilled the can and took the next shift. Next time I check the schedule the day before."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Zara.",
+          "setup": "Chegou meu dia e eu não reguei. O regador ficou vazio.",
+          "misjudgment": "Achei que um turno sem regar não faria diferença na horta.",
+          "recovery": "Enchi o regador e assumi o próximo turno. Da próxima vez, confiro a escala na véspera."
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: un turno se perdió. Los turnos deben seguir parejos.",
+          "line": "Una regla justa cubre el turno perdido: quien faltó toma el siguiente turno libre."
+        },
+        "en-US": {
+          "prompt": "Step 4: one turn slipped. The schedule still has to stay even.",
+          "line": "A fair rule covers a missed turn: whoever missed takes the next free shift."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: um turno se perdeu. A escala precisa continuar igual para todos.",
+          "line": "Uma regra justa cobre o turno perdido: quem faltou assume o próximo turno livre."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-leo-next"
+          },
+          {
+            "id": "reply-skip"
+          },
+          {
+            "id": "reply-others"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-leo-next"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En el salón de Zara, Leo faltó a su día de riego. ¿Qué mantiene justos los turnos?",
+          "feedback": {
+            "met": "Mantuviste parejo el trabajo: quien faltó toma el siguiente turno.",
+            "not_yet": "Todavía no. Recuerda a Zara: ella tomó el siguiente turno."
+          },
+          "help": [
+            "Piensa en Zara: ¿quién cubrió su turno perdido?"
+          ],
+          "speaker": "Leo",
+          "line": "Olvidé mi día. ¿Qué hacemos ahora?",
+          "replies": [
+            {
+              "label": "Leo toma el siguiente turno libre."
+            },
+            {
+              "label": "Nadie riega, el huerto aguanta."
+            },
+            {
+              "label": "Otros cubren a Leo siempre."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In Zara's class, Leo missed his watering day. What keeps the schedule fair?",
+          "feedback": {
+            "met": "You kept the work even: whoever missed takes the next shift.",
+            "not_yet": "Not yet. Remember Zara: she took the next shift herself."
+          },
+          "help": [
+            "Think of Zara: who covered her missed turn?"
+          ],
+          "speaker": "Leo",
+          "line": "I forgot my day. What happens now?",
+          "replies": [
+            {
+              "label": "Leo takes the next free shift."
+            },
+            {
+              "label": "Skip it, the garden is fine."
+            },
+            {
+              "label": "Others always cover for Leo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na turma da Zara, o Leo faltou ao seu dia de rega. O que mantém a escala justa?",
+          "feedback": {
+            "met": "Você manteve o trabalho igual: quem faltou assume o próximo turno.",
+            "not_yet": "Ainda não. Lembre da Zara: ela assumiu o próximo turno."
+          },
+          "help": [
+            "Pense na Zara: quem cobriu o turno perdido dela?"
+          ],
+          "speaker": "Leo",
+          "line": "Esqueci meu dia. O que fazemos agora?",
+          "replies": [
+            {
+              "label": "O Leo assume o próximo turno livre."
+            },
+            {
+              "label": "Ninguém rega, a horta aguenta."
+            },
+            {
+              "label": "Os outros cobrem o Leo sempre."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-four"
+          },
+          {
+            "id": "reply-three"
+          },
+          {
+            "id": "reply-six"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-three"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La próxima semana el salón de Zara prueba con 4 alumnos por día. ¿Cuántos días cubren a los 12?",
+          "feedback": {
+            "met": "Partiste 12 en grupos de 4 y contaste los días.",
+            "not_yet": "Todavía no. Haz como Zara: divide los alumnos entre el tamaño del grupo."
+          },
+          "help": [
+            "Zara partió 12 entre 3. Ahora parte 12 entre 4."
+          ],
+          "speaker": "Zara",
+          "line": "Mmm, 12 alumnos en grupos de 4. ¿Cuántos días?",
+          "replies": [
+            {
+              "label": "4 días"
+            },
+            {
+              "label": "3 días"
+            },
+            {
+              "label": "6 días"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Next week Zara's class tries 4 students a day. How many days cover all 12?",
+          "feedback": {
+            "met": "You split 12 into groups of 4 and counted the days.",
+            "not_yet": "Not yet. Do as Zara did: divide students by group size."
+          },
+          "help": [
+            "Zara split 12 by 3. Now split 12 by 4."
+          ],
+          "speaker": "Zara",
+          "line": "Hmm, 12 students in groups of 4. How many days?",
+          "replies": [
+            {
+              "label": "4 days"
+            },
+            {
+              "label": "3 days"
+            },
+            {
+              "label": "6 days"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na próxima semana a turma da Zara testa 4 alunos por dia. Quantos dias cobrem os 12?",
+          "feedback": {
+            "met": "Você dividiu 12 em grupos de 4 e contou os dias.",
+            "not_yet": "Ainda não. Faça como a Zara: divida os alunos pelo tamanho do grupo."
+          },
+          "help": [
+            "A Zara dividiu 12 por 3. Agora divida 12 por 4."
+          ],
+          "speaker": "Zara",
+          "line": "Hum, 12 alunos em grupos de 4. Quantos dias?",
+          "replies": [
+            {
+              "label": "4 dias"
+            },
+            {
+              "label": "3 dias"
+            },
+            {
+              "label": "6 dias"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-leo"
+          },
+          {
+            "id": "choice-first"
+          },
+          {
+            "id": "choice-even"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-same"
+          },
+          {
+            "id": "reason-spread"
+          },
+          {
+            "id": "reason-quick"
+          },
+          {
+            "id": "reason-asked"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-even"
+        ],
+        "reasonQuality": {
+          "reason-same": "sound",
+          "reason-spread": "sound",
+          "reason-quick": "partial",
+          "reason-asked": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El salón de Zara comparte una tableta 24 minutos y Leo pide 12. ¿Qué es justo?",
+          "feedback": {
+            "met": "Elegiste el reparto parejo: todos tienen el mismo tiempo.",
+            "not_yet": "Todavía no. Recuerda la revisión de Zara: ¿todos reciben lo mismo?"
+          },
+          "choices": [
+            {
+              "label": "Leo usa 12 minutos"
+            },
+            {
+              "label": "El primero que pida va primero"
+            },
+            {
+              "label": "2 minutos para cada alumno"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es lo justo?",
+          "reasons": [
+            {
+              "label": "Todos reciben la misma parte"
+            },
+            {
+              "label": "El tiempo se reparte parejo"
+            },
+            {
+              "label": "Es la forma más rápida de decidir"
+            },
+            {
+              "label": "Leo pidió primero, así que es suyo"
+            }
+          ],
+          "help": [
+            "Piensa: ¿cuánto le toca a cada uno de los 12 alumnos?"
+          ]
+        },
+        "en-US": {
+          "prompt": "Zara's class shares one tablet for 24 minutes, and Leo asks for 12. What's fair?",
+          "feedback": {
+            "met": "You chose the equal share, so everyone gets the same time.",
+            "not_yet": "Not yet. Remember Zara's check: does everyone get the same?"
+          },
+          "choices": [
+            {
+              "label": "Leo takes 12 minutes"
+            },
+            {
+              "label": "Whoever asks first goes first"
+            },
+            {
+              "label": "2 minutes for each student"
+            }
+          ],
+          "reasonPrompt": "Why is it fair?",
+          "reasons": [
+            {
+              "label": "Everyone gets the same share"
+            },
+            {
+              "label": "The time is spread evenly"
+            },
+            {
+              "label": "It is the fastest way to decide"
+            },
+            {
+              "label": "Leo asked first, so it's his"
+            }
+          ],
+          "help": [
+            "Think: what does each of the 12 students get?"
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A turma da Zara divide um tablet por 24 minutos e o Leo pede 12. O que é justo?",
+          "feedback": {
+            "met": "Você escolheu a divisão igual: todos têm o mesmo tempo.",
+            "not_yet": "Ainda não. Lembre da conferência da Zara: todos recebem o mesmo?"
+          },
+          "choices": [
+            {
+              "label": "O Leo usa 12 minutos"
+            },
+            {
+              "label": "Quem pedir primeiro vai primeiro"
+            },
+            {
+              "label": "2 minutos para cada aluno"
+            }
+          ],
+          "reasonPrompt": "Por que é o justo?",
+          "reasons": [
+            {
+              "label": "Todos recebem a mesma parte"
+            },
+            {
+              "label": "O tempo é dividido por igual"
+            },
+            {
+              "label": "É o jeito mais rápido de decidir"
+            },
+            {
+              "label": "O Leo pediu primeiro, então é dele"
+            }
+          ],
+          "help": [
+            "Pense: quanto cabe a cada um dos 12 alunos?"
+          ]
+        }
+      }
+    }
+  ]
+}

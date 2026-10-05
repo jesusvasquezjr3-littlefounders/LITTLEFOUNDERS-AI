@@ -1,0 +1,1068 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-inventors",
+  "lesson_id": "ent-69-02-many-ideas",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.solution-ideas",
+    "biz.real-problems"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho anota en el pizarrón el problema de la clase de Mía: 6 almuerzos aplastados en total. Inventa tres ideas (caja dura, envoltura suave y bolsa grande), cuenta cuántos almuerzos salva cada una (5, 2 y 3) y elige la que más ayuda, no la que más le gusta. El niño lee gráficas de íconos y de barras, elige por cuánto ayuda y lo repite con la pelota de Sam en el recreo.",
+  "title": {
+    "en-US": "Many ideas, one pick",
+    "es-MX": "Muchas ideas, una elección",
+    "pt-BR": "Muitas ideias, uma escolha"
+  },
+  "new_concepts": [
+    "biz.solution-ideas"
+  ],
+  "regional": {
+    "universal": "No money amounts, places or customs; a classroom story that reads the same in every market."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mía's class counts every squashed lunch.",
+          "line": "Watch. Rho writes it on the board: 6 squashed lunches."
+        },
+        "es-MX": {
+          "prompt": "La clase de Mía cuenta cada almuerzo aplastado.",
+          "line": "Observa. Rho anota en el pizarrón: 6 almuerzos aplastados."
+        },
+        "pt-BR": {
+          "prompt": "A turma da Mía conta cada lanche amassado.",
+          "line": "Observe. O Rho anota na lousa: 6 lanches amassados."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-like"
+          },
+          {
+            "id": "opt-helps"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-helps"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three ideas wait on the board. How do you pick?",
+          "feedback": {
+            "met": "Noted. Now we measure it together.",
+            "not_yet": "Noted. Now we measure it together."
+          },
+          "options": [
+            {
+              "label": "The idea I like best"
+            },
+            {
+              "label": "The idea that helps most"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Hay tres ideas en el pizarrón. ¿Cómo eliges?",
+          "feedback": {
+            "met": "Anotado. Ahora lo medimos juntos.",
+            "not_yet": "Anotado. Ahora lo medimos juntos."
+          },
+          "options": [
+            {
+              "label": "La idea que más me gusta"
+            },
+            {
+              "label": "La idea que más ayuda"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Há três ideias na lousa. Como você escolhe?",
+          "feedback": {
+            "met": "Anotado. Agora vamos medir juntos.",
+            "not_yet": "Anotado. Agora vamos medir juntos."
+          },
+          "options": [
+            {
+              "label": "A ideia de que mais gosto"
+            },
+            {
+              "label": "A ideia que mais ajuda"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: check the problem is real.",
+          "line": "6 squashed lunches, again this week. It keeps happening."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: vemos que el problema es real.",
+          "line": "6 almuerzos aplastados, otra vez esta semana. Se repite."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: vemos que o problema é real.",
+          "line": "6 lanches amassados, de novo esta semana. Isso se repete."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: make three ideas.",
+          "line": "Hard box, soft wrap, bigger bag. One idea is not enough."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: hacemos tres ideas.",
+          "line": "Caja dura, envoltura suave, bolsa grande. Una idea no basta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: criamos três ideias.",
+          "line": "Caixa dura, embrulho macio, sacola maior. Uma ideia não basta."
+        }
+      }
+    },
+    {
+      "id": "chart-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "pictogram"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "idea-soft-wrap"
+            },
+            {
+              "id": "idea-hard-box"
+            },
+            {
+              "id": "idea-big-bag"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-saved",
+              "values": [
+                2,
+                5,
+                3
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: count what each idea saves.",
+          "title": "Lunches each idea saves",
+          "data": {
+            "categories": [
+              {
+                "label": "Soft wrap"
+              },
+              {
+                "label": "Hard box"
+              },
+              {
+                "label": "Bigger bag"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lunches saved"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: contamos qué salva cada idea.",
+          "title": "Almuerzos que salva cada idea",
+          "data": {
+            "categories": [
+              {
+                "label": "Envoltura suave"
+              },
+              {
+                "label": "Caja dura"
+              },
+              {
+                "label": "Bolsa grande"
+              }
+            ],
+            "series": [
+              {
+                "label": "Almuerzos salvados"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: contamos o que cada ideia salva.",
+          "title": "Lanches que cada ideia salva",
+          "data": {
+            "categories": [
+              {
+                "label": "Embrulho macio"
+              },
+              {
+                "label": "Caixa dura"
+              },
+              {
+                "label": "Sacola maior"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lanches salvos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: pick by help, not by liking.",
+          "line": "The box saves 5, the most. We pick the box."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: elegimos por ayuda, no por gusto.",
+          "line": "La caja salva 5, lo máximo. Elegimos la caja."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: escolhemos pela ajuda, não pelo gosto.",
+          "line": "A caixa salva 5, o máximo. Escolhemos a caixa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "pictogram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "idea-tall-bottle"
+            },
+            {
+              "id": "idea-screw-cap"
+            },
+            {
+              "id": "idea-napkin"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-stopped",
+              "values": [
+                2,
+                4,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-napkin"
+            },
+            {
+              "id": "opt-screw-cap"
+            },
+            {
+              "id": "opt-tall-bottle"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-screw-cap"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo's juice keeps leaking. Read what each idea stops.",
+          "help": [
+            "Look at the row of each idea. Count its icons.",
+            "More icons means more lunches helped."
+          ],
+          "feedback": {
+            "met": "You read each count and picked the biggest one.",
+            "not_yet": "Rho counted each idea. Which row has most icons?"
+          },
+          "title": "Leaks each idea stops",
+          "data": {
+            "categories": [
+              {
+                "label": "Tall bottle"
+              },
+              {
+                "label": "Screw cap"
+              },
+              {
+                "label": "Napkin"
+              }
+            ],
+            "series": [
+              {
+                "label": "Leaks stopped"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which idea helps the most lunches?",
+            "options": [
+              {
+                "label": "Napkin"
+              },
+              {
+                "label": "Screw cap"
+              },
+              {
+                "label": "Tall bottle"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "El jugo de Leo se sigue derramando. Lee qué evita cada idea.",
+          "help": [
+            "Mira la fila de cada idea. Cuenta sus íconos.",
+            "Más íconos son más almuerzos ayudados."
+          ],
+          "feedback": {
+            "met": "Leíste cada cuenta y elegiste la más grande.",
+            "not_yet": "Rho contó cada idea. ¿Qué fila tiene más íconos?"
+          },
+          "title": "Derrames que evita cada idea",
+          "data": {
+            "categories": [
+              {
+                "label": "Botella alta"
+              },
+              {
+                "label": "Tapa de rosca"
+              },
+              {
+                "label": "Servilleta"
+              }
+            ],
+            "series": [
+              {
+                "label": "Derrames evitados"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál idea ayuda a más almuerzos?",
+            "options": [
+              {
+                "label": "Servilleta"
+              },
+              {
+                "label": "Tapa de rosca"
+              },
+              {
+                "label": "Botella alta"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O suco do Leo continua vazando. Leia o que cada ideia evita.",
+          "help": [
+            "Olhe a fila de cada ideia. Conte os ícones.",
+            "Mais ícones são mais lanches ajudados."
+          ],
+          "feedback": {
+            "met": "Você leu cada contagem e escolheu a maior.",
+            "not_yet": "O Rho contou cada ideia. Qual fila tem mais ícones?"
+          },
+          "title": "Vazamentos que cada ideia evita",
+          "data": {
+            "categories": [
+              {
+                "label": "Garrafa alta"
+              },
+              {
+                "label": "Tampa de rosca"
+              },
+              {
+                "label": "Guardanapo"
+              }
+            ],
+            "series": [
+              {
+                "label": "Vazamentos evitados"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual ideia ajuda mais lanches?",
+            "options": [
+              {
+                "label": "Guardanapo"
+              },
+              {
+                "label": "Tampa de rosca"
+              },
+              {
+                "label": "Garrafa alta"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-plain-lid"
+          },
+          {
+            "id": "opt-gold-lid"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-plain-lid"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam likes the gold lid. Which one do you pick?",
+          "help": [
+            "Compare the two numbers. Which is bigger?",
+            "Liking a lid is fine. The number decides."
+          ],
+          "feedback": {
+            "met": "You picked the one that helps most lunches.",
+            "not_yet": "Remember Rho: pick by the number, not by liking."
+          },
+          "options": [
+            {
+              "label": "Plain lid, saves 4 lunches"
+            },
+            {
+              "label": "Gold lid, saves 1 lunch"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A Sam le gusta la tapa dorada. ¿Cuál eliges?",
+          "help": [
+            "Compara los dos números. ¿Cuál es mayor?",
+            "Que te guste una tapa está bien. Decide el número."
+          ],
+          "feedback": {
+            "met": "Elegiste la que ayuda a más almuerzos.",
+            "not_yet": "Recuerda a Rho: elige por el número, no por gusto."
+          },
+          "options": [
+            {
+              "label": "Tapa lisa, salva 4 almuerzos"
+            },
+            {
+              "label": "Tapa dorada, salva 1 almuerzo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Sam gosta da tampa dourada. Qual você escolhe?",
+          "help": [
+            "Compare os dois números. Qual é maior?",
+            "Gostar de uma tampa é normal. O número decide."
+          ],
+          "feedback": {
+            "met": "Você escolheu a que ajuda mais lanches.",
+            "not_yet": "Lembre do Rho: escolha pelo número, não pelo gosto."
+          },
+          "options": [
+            {
+              "label": "Tampa lisa, salva 4 lanches"
+            },
+            {
+              "label": "Tampa dourada, salva 1 lanche"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-window-once"
+          },
+          {
+            "id": "opt-pencils-daily"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-pencils-daily"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In the class, which problem gets ideas first?",
+          "help": [
+            "Ask: did it happen again and again?",
+            "A problem seen once can wait and watch."
+          ],
+          "feedback": {
+            "met": "You picked the problem that keeps happening.",
+            "not_yet": "Rho's first step: does it keep happening?"
+          },
+          "options": [
+            {
+              "label": "One window stuck once"
+            },
+            {
+              "label": "Pencils break every day"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la clase, ¿qué problema recibe ideas primero?",
+          "help": [
+            "Pregunta: ¿pasó una y otra vez?",
+            "Un problema visto una vez puede esperar."
+          ],
+          "feedback": {
+            "met": "Elegiste el problema que se repite.",
+            "not_yet": "El primer paso de Rho: ¿se repite?"
+          },
+          "options": [
+            {
+              "label": "Una ventana se atoró una vez"
+            },
+            {
+              "label": "Los lápices se rompen a diario"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na turma, qual problema recebe ideias primeiro?",
+          "help": [
+            "Pergunte: aconteceu de novo e de novo?",
+            "Um problema visto uma vez pode esperar."
+          ],
+          "feedback": {
+            "met": "Você escolheu o problema que se repete.",
+            "not_yet": "O primeiro passo do Rho: isso se repete?"
+          },
+          "options": [
+            {
+              "label": "Uma janela emperrou uma vez"
+            },
+            {
+              "label": "Os lápis quebram todo dia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "idea-soft-case"
+            },
+            {
+              "id": "idea-thick-pencil"
+            },
+            {
+              "id": "idea-pencil-box"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-pencils",
+              "values": [
+                3,
+                6,
+                4
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-pencil-box"
+            },
+            {
+              "id": "opt-soft-case"
+            },
+            {
+              "id": "opt-thick-pencil"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-thick-pencil"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam's pencils keep breaking. Read what each idea saves.",
+          "help": [
+            "Each bar shows how many pencils an idea saves.",
+            "Rho picked the biggest number, not his favorite."
+          ],
+          "feedback": {
+            "met": "You compared every bar and chose the longest.",
+            "not_yet": "Look at the bars. Which one reaches furthest?"
+          },
+          "title": "Pencils each idea saves",
+          "data": {
+            "categories": [
+              {
+                "label": "Soft case"
+              },
+              {
+                "label": "Thick pencils"
+              },
+              {
+                "label": "Pencil box"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pencils saved"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which idea should Sam try first?",
+            "options": [
+              {
+                "label": "Pencil box"
+              },
+              {
+                "label": "Soft case"
+              },
+              {
+                "label": "Thick pencils"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Los lápices de Sam se siguen rompiendo. Lee qué salva cada idea.",
+          "help": [
+            "Cada barra muestra cuántos lápices salva una idea.",
+            "Rho eligió el número más grande, no su favorito."
+          ],
+          "feedback": {
+            "met": "Comparaste cada barra y elegiste la más larga.",
+            "not_yet": "Mira las barras. ¿Cuál llega más lejos?"
+          },
+          "title": "Lápices que salva cada idea",
+          "data": {
+            "categories": [
+              {
+                "label": "Estuche suave"
+              },
+              {
+                "label": "Lápices gruesos"
+              },
+              {
+                "label": "Caja de lápices"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lápices salvados"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué idea debe probar Sam primero?",
+            "options": [
+              {
+                "label": "Caja de lápices"
+              },
+              {
+                "label": "Estuche suave"
+              },
+              {
+                "label": "Lápices gruesos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Os lápis do Sam continuam quebrando. Leia o que cada ideia salva.",
+          "help": [
+            "Cada barra mostra quantos lápis uma ideia salva.",
+            "O Rho escolheu o maior número, não o favorito."
+          ],
+          "feedback": {
+            "met": "Você comparou cada barra e escolheu a mais longa.",
+            "not_yet": "Veja as barras. Qual vai mais longe?"
+          },
+          "title": "Lápis que cada ideia salva",
+          "data": {
+            "categories": [
+              {
+                "label": "Estojo macio"
+              },
+              {
+                "label": "Lápis grossos"
+              },
+              {
+                "label": "Caixa de lápis"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lápis salvos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual ideia o Sam deve testar primeiro?",
+            "options": [
+              {
+                "label": "Caixa de lápis"
+              },
+              {
+                "label": "Estojo macio"
+              },
+              {
+                "label": "Lápis grossos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "column"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "idea-cone-line"
+            },
+            {
+              "id": "idea-big-net"
+            },
+            {
+              "id": "idea-low-fence"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-balls",
+              "values": [
+                1,
+                5,
+                3
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-big-net"
+            },
+            {
+              "id": "opt-low-fence"
+            },
+            {
+              "id": "opt-cone-line"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-big-net"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At recess, Sam's ball rolls into the bushes. Read the chart.",
+          "help": [
+            "Same rule as with the lunches: compare the columns.",
+            "Each column counts the balls an idea stops."
+          ],
+          "feedback": {
+            "met": "You carried Rho's rule to recess: pick what helps most.",
+            "not_yet": "Use Rho's rule: pick the idea with the biggest number."
+          },
+          "title": "Balls each idea stops",
+          "data": {
+            "categories": [
+              {
+                "label": "Cone line"
+              },
+              {
+                "label": "Big net"
+              },
+              {
+                "label": "Low fence"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balls stopped"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which idea helps the most balls?",
+            "options": [
+              {
+                "label": "Big net"
+              },
+              {
+                "label": "Low fence"
+              },
+              {
+                "label": "Cone line"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "En el recreo, la pelota de Sam rueda a los arbustos. Lee la gráfica.",
+          "help": [
+            "La misma regla que con los almuerzos: compara las columnas.",
+            "Cada columna cuenta las pelotas que frena una idea."
+          ],
+          "feedback": {
+            "met": "Llevaste la regla de Rho al recreo: elegir lo que más ayuda.",
+            "not_yet": "Usa la regla de Rho: la idea con el número más grande."
+          },
+          "title": "Pelotas que frena cada idea",
+          "data": {
+            "categories": [
+              {
+                "label": "Fila de conos"
+              },
+              {
+                "label": "Red grande"
+              },
+              {
+                "label": "Cerca baja"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pelotas frenadas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál idea ayuda a más pelotas?",
+            "options": [
+              {
+                "label": "Red grande"
+              },
+              {
+                "label": "Cerca baja"
+              },
+              {
+                "label": "Fila de conos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "No recreio, a bola do Sam rola para os arbustos. Leia o gráfico.",
+          "help": [
+            "A mesma regra dos lanches: compare as colunas.",
+            "Cada coluna conta as bolas que uma ideia segura."
+          ],
+          "feedback": {
+            "met": "Você levou a regra do Rho ao recreio: o que mais ajuda.",
+            "not_yet": "Use a regra do Rho: a ideia com o maior número."
+          },
+          "title": "Bolas que cada ideia segura",
+          "data": {
+            "categories": [
+              {
+                "label": "Fila de cones"
+              },
+              {
+                "label": "Rede grande"
+              },
+              {
+                "label": "Cerca baixa"
+              }
+            ],
+            "series": [
+              {
+                "label": "Bolas seguras"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual ideia ajuda mais bolas?",
+            "options": [
+              {
+                "label": "Rede grande"
+              },
+              {
+                "label": "Cerca baixa"
+              },
+              {
+                "label": "Fila de cones"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

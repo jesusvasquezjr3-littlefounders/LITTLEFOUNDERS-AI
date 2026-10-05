@@ -1,0 +1,795 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-first-account",
+  "lesson_id": "fe-1012-09-what-a-bank-is-for",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.banks-and-accounts",
+    "life.safe-keeping",
+    "money.subtract-money"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina enseña con ejemplos qué es un banco y una cuenta: sigue las monedas de Ana por un depósito, un retiro en el cajero automático y un pago con tarjeta, y el saldo cambia paso a paso. Después quien aprende registra los movimientos de otra cuenta, sigue un diagrama de compras y decide solo qué hacer en un caso nuevo.",
+  "title": {
+    "es-MX": "Para qué sirve un banco",
+    "en-US": "What a bank is for",
+    "pt-BR": "Para que serve um banco"
+  },
+  "new_concepts": [
+    "life.banks-and-accounts"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México muchas familias ya tienen una cuenta y una tarjeta de débito, pero tener acceso no es lo mismo que entender el saldo. La lección sigue una cuenta inventada con un depósito, un retiro en el cajero automático y un pago con tarjeta, solo con cifras de ejemplo.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "cajero automático",
+          "tarjeta de débito"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil é comum ter conta no banco e cartão de débito, mas usar o cartão não é o mesmo que entender o saldo. A aula segue uma conta inventada, com depósito, saque no caixa eletrônico e pagamento no cartão, só com números de exemplo.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "caixa eletrônico",
+          "cartão de débito"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US most families have a bank account and a debit card, yet swiping a card is not the same as knowing the balance. The lesson follows a made-up account with a deposit, an ATM withdrawal and a card payment, using example numbers only.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "ATM",
+          "debit card"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ana atiende la tiendita de la escuela con su amigo Teo.",
+          "line": "Tiene 80 monedas para guardar. Despacio, paso a paso, seguimos sus monedas."
+        },
+        "en-US": {
+          "prompt": "Ana runs the school snack stand with her friend Teo.",
+          "line": "She has 80 coins to keep. Slowly, one step at a time, we follow her coins."
+        },
+        "pt-BR": {
+          "prompt": "A Ana cuida da cantina da escola com o amigo Teo.",
+          "line": "Ela tem 80 moedas para guardar. Devagar, passo a passo, vamos seguir as moedas dela."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-loose"
+          },
+          {
+            "id": "opt-bank"
+          },
+          {
+            "id": "opt-friend"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-bank"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué debería hacer Ana con sus 80 monedas?",
+          "scene": "Ana ganó 80 monedas en la tiendita y quiere guardarlas para después.",
+          "feedback": {
+            "met": "Ahora seguimos las monedas de Ana, paso a paso, juntos.",
+            "not_yet": "Ahora seguimos las monedas de Ana, paso a paso, juntos."
+          },
+          "options": [
+            {
+              "label": "Llevarlas sueltas en la mochila"
+            },
+            {
+              "label": "Ponerlas en una cuenta de banco"
+            },
+            {
+              "label": "Dárselas a un compañero para que las cuide"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Before we start: what should Ana do with her 80 coins?",
+          "scene": "Ana earned 80 coins at the stand and wants to keep them for later.",
+          "feedback": {
+            "met": "Now we follow Ana's coins step by step, together.",
+            "not_yet": "Now we follow Ana's coins step by step, together."
+          },
+          "options": [
+            {
+              "label": "Carry them loose in her backpack"
+            },
+            {
+              "label": "Put them in a bank account"
+            },
+            {
+              "label": "Hand them to a classmate to hold"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: o que a Ana deve fazer com as 80 moedas?",
+          "scene": "A Ana ganhou 80 moedas na cantina e quer guardar as moedas para depois.",
+          "feedback": {
+            "met": "Agora vamos seguir as moedas da Ana, passo a passo, juntos.",
+            "not_yet": "Agora vamos seguir as moedas da Ana, passo a passo, juntos."
+          },
+          "options": [
+            {
+              "label": "Levar soltas na mochila"
+            },
+            {
+              "label": "Colocar numa conta de banco"
+            },
+            {
+              "label": "Entregar a um colega para guardar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-account",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: Ana abre una cuenta.",
+          "line": "Un banco guarda las monedas a salvo en una cuenta. El saldo es cuántas hay en ella: Ana tiene 80."
+        },
+        "en-US": {
+          "prompt": "Step 1: Ana opens an account.",
+          "line": "A bank keeps coins safe in an account. The balance is how many are in it: Ana has 80."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a Ana abre uma conta.",
+          "line": "Um banco guarda as moedas em segurança numa conta. O saldo é quantas há nela: a Ana tem 80."
+        }
+      }
+    },
+    {
+      "id": "ex-deposit",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: un depósito.",
+          "line": "Ana agrega 30 monedas. Eso es un depósito, así que el saldo sube: 80 + 30 = 110."
+        },
+        "en-US": {
+          "prompt": "Step 2: a deposit.",
+          "line": "Ana adds 30 coins. That is a deposit, so the balance goes up: 80 + 30 = 110."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: um depósito.",
+          "line": "A Ana coloca 30 moedas. Isso é um depósito, então o saldo sobe: 80 + 30 = 110."
+        }
+      }
+    },
+    {
+      "id": "ex-cashout",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: sacar efectivo.",
+          "line": "Ana saca 20 monedas en efectivo de un cajero automático. Un retiro baja el saldo: 110 − 20 = 90."
+        },
+        "en-US": {
+          "prompt": "Step 3: take cash out.",
+          "line": "Ana takes out 20 coins in cash at an ATM. A withdrawal lowers the balance: 110 − 20 = 90."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: sacar dinheiro.",
+          "line": "A Ana saca 20 moedas em dinheiro no caixa eletrônico. Um saque diminui o saldo: 110 − 20 = 90."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.subtract-money",
+      "payload": {
+        "initial": 60,
+        "sale": 20,
+        "cost": 10,
+        "maxEntries": 3
+      },
+      "rubric": {
+        "target_balance": 70
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La cuenta de Teo empieza en 60. Toca + para su depósito de 20 monedas, − para su retiro de 10, y escribe el saldo.",
+          "help": [
+            "Igual que Ana: un depósito sube el saldo, un retiro lo baja."
+          ],
+          "feedback": {
+            "met": "Registraste los dos movimientos y escribiste el saldo.",
+            "not_yet": "Todavía no. Haz como Ana: suma el depósito y resta el retiro."
+          }
+        },
+        "en-US": {
+          "prompt": "Teo's account starts at 60. Tap + for his 20-coin deposit, − for his 10-coin withdrawal, then type the balance.",
+          "help": [
+            "Same as Ana: a deposit raises the balance, a withdrawal lowers it."
+          ],
+          "feedback": {
+            "met": "You logged both moves, then typed the balance.",
+            "not_yet": "Not yet. Like Ana: add the deposit, subtract the withdrawal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A conta do Teo começa em 60. Toque em + no depósito de 20 moedas, em − no saque de 10, e digite o saldo.",
+          "help": [
+            "Igual à Ana: um depósito aumenta o saldo, um saque diminui."
+          ],
+          "feedback": {
+            "met": "Você registrou os dois movimentos e digitou o saldo.",
+            "not_yet": "Ainda não. Faça como a Ana: some o depósito e subtraia o saque."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-card",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: pagar con la tarjeta de débito.",
+          "line": "Ana paga 15 monedas con su tarjeta de débito. Gasta monedas que ya están en la cuenta: 90 − 15 = 75."
+        },
+        "en-US": {
+          "prompt": "Step 4: pay with the debit card.",
+          "line": "Ana pays 15 coins with her debit card. It spends coins saved in the account: 90 − 15 = 75."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: pagar com o cartão de débito.",
+          "line": "A Ana paga 15 moedas com o cartão de débito. Ele gasta moedas que já estão na conta: 90 − 15 = 75."
+        }
+      }
+    },
+    {
+      "id": "ex-enough",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: primero mira el saldo.",
+          "line": "Ana revisa primero. El saldo 30 es menor que el precio 50: faltan 20, y deposita 20."
+        },
+        "en-US": {
+          "prompt": "Step 5: check the balance first.",
+          "line": "Ana checks first. Balance 30 is under the price 50: short by 20, so she deposits 20."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: primeiro veja o saldo.",
+          "line": "A Ana confere primeiro. O saldo 30 é menor que o preço 50: faltam 20, e ela deposita 20."
+        }
+      }
+    },
+    {
+      "id": "ex-cardshop",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 6: luego mira cómo cobra la tienda.",
+          "line": "Si la tienda acepta tarjeta, ella paga con su tarjeta. Si solo recibe efectivo, primero va al cajero automático."
+        },
+        "en-US": {
+          "prompt": "Step 6: then see how the shop takes payment.",
+          "line": "If the shop takes cards, she taps her card. If only cash, she visits the ATM first."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: depois veja como a loja recebe.",
+          "line": "Se a loja aceita cartão, ela paga com o cartão. Se só recebe dinheiro, ela passa antes no caixa eletrônico."
+        }
+      }
+    },
+    {
+      "id": "practice-flow",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "start": "q-enough",
+        "nodes": [
+          {
+            "id": "q-enough",
+            "kind": "question",
+            "yes": "q-card",
+            "no": "out-wait"
+          },
+          {
+            "id": "q-card",
+            "kind": "question",
+            "yes": "out-card",
+            "no": "out-atm"
+          },
+          {
+            "id": "out-card",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-atm",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-wait",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-a"
+          },
+          {
+            "id": "case-b"
+          },
+          {
+            "id": "case-c"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-a": [
+            "q-enough",
+            "q-card",
+            "out-card"
+          ],
+          "case-b": [
+            "q-enough",
+            "q-card",
+            "out-atm"
+          ],
+          "case-c": [
+            "q-enough",
+            "out-wait"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Sigue el diagrama para cada una de las tres compras de Ana.",
+          "help": [
+            "Empieza por la primera pregunta: compara el saldo con el precio."
+          ],
+          "feedback": {
+            "met": "Respondiste cada pregunta de cada compra y seguiste su flecha.",
+            "not_yet": "Todavía no. Empieza por el saldo y luego la tienda."
+          },
+          "nodes": [
+            {
+              "label": "¿Hay suficiente en la cuenta?"
+            },
+            {
+              "label": "¿La tienda acepta tarjeta?"
+            },
+            {
+              "label": "Pagar con la tarjeta"
+            },
+            {
+              "label": "Primero sacar efectivo del cajero automático"
+            },
+            {
+              "label": "Primero depositar más monedas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Saldo 75: kit de arte (25 monedas), acepta tarjeta"
+            },
+            {
+              "label": "Saldo 75: botana de 20 monedas, solo efectivo"
+            },
+            {
+              "label": "Saldo 75: videojuego de 90 monedas, acepta tarjeta"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Follow the chart for each of Ana's three purchases.",
+          "help": [
+            "Start at the first question: compare the balance with the price."
+          ],
+          "feedback": {
+            "met": "You answered each question for each purchase and followed its arrow.",
+            "not_yet": "Not yet. Start with the balance, then the shop."
+          },
+          "nodes": [
+            {
+              "label": "Is there enough in the account?"
+            },
+            {
+              "label": "Does the shop take cards?"
+            },
+            {
+              "label": "Pay with the card"
+            },
+            {
+              "label": "Take cash from the ATM first"
+            },
+            {
+              "label": "Deposit more coins first"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Balance 75: 25-coin art kit, takes cards"
+            },
+            {
+              "label": "Balance 75: 20-coin snack, cash only"
+            },
+            {
+              "label": "Balance 75: 90-coin game, takes cards"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Siga o fluxograma em cada uma das três compras da Ana.",
+          "help": [
+            "Comece pela primeira pergunta: compare o saldo com o preço."
+          ],
+          "feedback": {
+            "met": "Você respondeu cada pergunta de cada compra e seguiu a seta.",
+            "not_yet": "Ainda não. Comece pelo saldo e depois pela loja."
+          },
+          "nodes": [
+            {
+              "label": "Há o suficiente na conta?"
+            },
+            {
+              "label": "A loja aceita cartão?"
+            },
+            {
+              "label": "Pagar com o cartão"
+            },
+            {
+              "label": "Antes, sacar dinheiro no caixa eletrônico"
+            },
+            {
+              "label": "Antes, depositar mais moedas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Saldo 75: kit de arte (25 moedas), aceita cartão"
+            },
+            {
+              "label": "Saldo 75: lanche de 20 moedas, só dinheiro"
+            },
+            {
+              "label": "Saldo 75: jogo de 90 moedas, aceita cartão"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.subtract-money",
+      "payload": {
+        "initial": 75,
+        "sale": 30,
+        "cost": 10,
+        "maxEntries": 4
+      },
+      "rubric": {
+        "target_balance": 85
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ana tiene 75 en su cuenta. Toca + para un depósito de 30 y − para dos pagos de 10 con tarjeta; escribe el saldo.",
+          "help": [
+            "Los depósitos suben con +. Los pagos con tarjeta bajan con −."
+          ],
+          "feedback": {
+            "met": "Registraste el depósito y los dos pagos, y escribiste el saldo.",
+            "not_yet": "Todavía no. El depósito sube el saldo; cada pago con tarjeta lo baja."
+          }
+        },
+        "en-US": {
+          "prompt": "Ana's account has 75. Tap + for a 30-coin deposit, − twice for 10-coin card payments, then type the balance.",
+          "help": [
+            "Deposits go up with +. Card payments go down with −."
+          ],
+          "feedback": {
+            "met": "You logged the deposit and both payments, then typed the balance.",
+            "not_yet": "Not yet. Deposits raise the balance; each card payment lowers it."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Ana tem 75 na conta. Toque em + no depósito de 30 e em − nos dois pagamentos de 10 no cartão; digite o saldo.",
+          "help": [
+            "Depósitos aumentam com +. Pagamentos no cartão diminuem com −."
+          ],
+          "feedback": {
+            "met": "Você registrou o depósito e os dois pagamentos, e digitou o saldo.",
+            "not_yet": "Ainda não. O depósito aumenta o saldo; cada pagamento no cartão o diminui."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-anyway"
+          },
+          {
+            "id": "choice-five"
+          },
+          {
+            "id": "choice-fifteen"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fast"
+          },
+          {
+            "id": "reason-price"
+          },
+          {
+            "id": "reason-extra"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-fifteen"
+        ],
+        "reasonQuality": {
+          "reason-fast": "partial",
+          "reason-price": "sound",
+          "reason-extra": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la feria del libro, la cuenta de Teo tiene 25 monedas y un póster cuesta 40: ¿qué debe hacer?",
+          "help": [
+            "El precio menos lo que hay en la cuenta es lo que falta."
+          ],
+          "feedback": {
+            "met": "Elegiste depositar lo suficiente antes de pagar con tarjeta.",
+            "not_yet": "Todavía no. Compara lo que hay en la cuenta con el precio."
+          },
+          "choices": [
+            {
+              "label": "Pasar la tarjeta de todos modos"
+            },
+            {
+              "label": "Depositar 5 más y pagar con tarjeta"
+            },
+            {
+              "label": "Depositar 15 más y pagar con tarjeta"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "Es la forma más rápida de pagar"
+            },
+            {
+              "label": "La cuenta debe cubrir el precio"
+            },
+            {
+              "label": "Las tarjetas siempre tienen monedas de sobra"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "At the book fair, Teo's account has 25 coins and a poster costs 40: what should he do?",
+          "help": [
+            "The price minus what is in the account is what is missing."
+          ],
+          "feedback": {
+            "met": "You chose to deposit enough before paying by card.",
+            "not_yet": "Not yet. Compare what is in the account with the price."
+          },
+          "choices": [
+            {
+              "label": "Tap his card anyway"
+            },
+            {
+              "label": "Deposit 5 more, then pay by card"
+            },
+            {
+              "label": "Deposit 15 more, then pay by card"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "It is the fastest way to pay"
+            },
+            {
+              "label": "The account must cover the price"
+            },
+            {
+              "label": "Cards always have extra coins"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira do livro, a conta do Teo tem 25 moedas e um pôster custa 40: o que ele deve fazer?",
+          "help": [
+            "O preço menos o que há na conta é o que falta."
+          ],
+          "feedback": {
+            "met": "Você escolheu depositar o suficiente antes de pagar no cartão.",
+            "not_yet": "Ainda não. Compare o que há na conta com o preço."
+          },
+          "choices": [
+            {
+              "label": "Passar o cartão mesmo assim"
+            },
+            {
+              "label": "Depositar mais 5 e pagar no cartão"
+            },
+            {
+              "label": "Depositar mais 15 e pagar no cartão"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a melhor escolha?",
+          "reasons": [
+            {
+              "label": "É o jeito mais rápido de pagar"
+            },
+            {
+              "label": "A conta precisa cobrir o preço"
+            },
+            {
+              "label": "Cartões sempre têm moedas sobrando"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

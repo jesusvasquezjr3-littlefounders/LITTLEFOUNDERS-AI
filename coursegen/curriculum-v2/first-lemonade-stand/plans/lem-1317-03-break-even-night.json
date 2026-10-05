@@ -1,0 +1,845 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-13-17",
+  "chapter_id": "lem-1317-first-micro-business",
+  "lesson_id": "lem-1317-03-break-even-night",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.break-even",
+    "biz.margin",
+    "biz.full-costing"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina enseña cómo sacar el punto de equilibrio de una noche de talentos: suma los costos fijos, saca el margen de cada caja y divide. Luego lees el cruce de ventas y costos en una gráfica, ponderas tres planes para decidir si reservas la mesa, la compartes o te saltas la noche, y aplicas lo mismo al puesto de un compañero.",
+  "title": {
+    "en-US": "Sales needed to break even",
+    "es-MX": "Ventas para llegar al equilibrio",
+    "pt-BR": "Vendas para atingir o equilíbrio"
+  },
+  "new_concepts": [
+    "biz.break-even"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En la noche de talentos de la escuela, una alumna de preparatoria vende muffins y paga mesa, calentador y lona antes de la primera venta. Con unos 150 invitados, calcula cuántos muffins necesita vender para no perder. Precios ilustrativos, en pesos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "noche de talentos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na noite de talentos da escola, uma aluna do ensino médio vende caixas de muffin e paga mesa, estufa e banner antes da primeira venda. Com uns 150 convidados, calcula quantas caixas precisa vender para não ter prejuízo. Valores ilustrativos, em reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "noite de talentos"
+        ]
+      },
+      "en-US": {
+        "scenario": "At the school talent night, a high-school student sells boxes of banana muffins and pays for a table, a warmer and a banner before the first sale. With about 150 guests, she works out how many boxes she must sell to avoid a loss. Prices are illustrative, in dollars.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "talent night"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Talent night: about 150 guests, and 300 to pay before the first sale.",
+          "line": "I have the muffins. How many boxes must I sell before I stop losing money?"
+        },
+        "es-MX": {
+          "prompt": "Noche de talentos: unos 150 invitados y 300 por pagar antes de la primera venta.",
+          "line": "Ya tengo los muffins. ¿Cuántos debo vender antes de dejar de perder dinero?"
+        },
+        "pt-BR": {
+          "prompt": "Noite de talentos: uns 150 convidados e R$ 300 para pagar antes da primeira venda.",
+          "line": "Já tenho os muffins. Quantas caixas preciso vender antes de parar de perder dinheiro?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-twenty"
+          },
+          {
+            "id": "choice-five"
+          },
+          {
+            "id": "choice-hundred"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-helps"
+          },
+          {
+            "id": "reason-payback"
+          },
+          {
+            "id": "reason-first-sale"
+          },
+          {
+            "id": "reason-as-many"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-twenty"
+        ],
+        "reasonQuality": {
+          "reason-payback": "sound",
+          "reason-helps": "partial",
+          "reason-first-sale": "unsupported",
+          "reason-as-many": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A stall pays 100 up front and earns 5 on each item. When does it stop losing money?",
+          "feedback": {
+            "met": "Let’s see how a stall earns its money back.",
+            "not_yet": "Let’s see how a stall earns its money back."
+          },
+          "choices": [
+            {
+              "label": "After about 20 items"
+            },
+            {
+              "label": "After about 5 items"
+            },
+            {
+              "label": "After about 100 items"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Each sale helps, but I cannot say when"
+            },
+            {
+              "label": "Each item pays back 5 of the 100"
+            },
+            {
+              "label": "It stops losing after the first sale"
+            },
+            {
+              "label": "It needs as many items as the 100"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un puesto paga 100 por adelantado y gana 5 por cada artículo. ¿Cuándo deja de perder dinero?",
+          "feedback": {
+            "met": "Veamos cómo un puesto recupera su dinero.",
+            "not_yet": "Veamos cómo un puesto recupera su dinero."
+          },
+          "choices": [
+            {
+              "label": "Después de unos 20 artículos"
+            },
+            {
+              "label": "Después de unos 5 artículos"
+            },
+            {
+              "label": "Después de unos 100 artículos"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Cada venta ayuda, pero no sé cuándo"
+            },
+            {
+              "label": "Cada artículo devuelve 5 de los 100"
+            },
+            {
+              "label": "Deja de perder tras la primera venta"
+            },
+            {
+              "label": "Necesita tantos artículos como los 100"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma barraca paga R$ 100 adiantado e ganha 5 por item vendido. Quando ela para de perder dinheiro?",
+          "feedback": {
+            "met": "Vamos ver como uma barraca recupera o dinheiro.",
+            "not_yet": "Vamos ver como uma barraca recupera o dinheiro."
+          },
+          "choices": [
+            {
+              "label": "Depois de uns 20 itens"
+            },
+            {
+              "label": "Depois de uns 5 itens"
+            },
+            {
+              "label": "Depois de uns 100 itens"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "Cada venda ajuda, mas não sei quando"
+            },
+            {
+              "label": "Cada item devolve 5 dos 100"
+            },
+            {
+              "label": "Para de perder depois da primeira venda"
+            },
+            {
+              "label": "Precisa de tantos itens quanto os 100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-fixed-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina lists what she pays before the first box sells.",
+          "line": "Step 1: fixed costs do not move with sales. Table 120 + warmer 130 + banner 50 = 300."
+        },
+        "es-MX": {
+          "prompt": "Dina anota lo que paga antes de vender el primer muffin.",
+          "line": "Paso 1: los costos fijos no cambian con las ventas. Mesa 120 + calentador 130 + lona 50 = 300."
+        },
+        "pt-BR": {
+          "prompt": "Dina anota o que paga antes de vender a primeira caixa.",
+          "line": "Passo 1: custos fixos não mudam com as vendas. Mesa 120 + estufa 130 + banner 50 = 300."
+        }
+      }
+    },
+    {
+      "id": "ex-margin-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each box sells for 15 and has a full cost of 9.",
+          "line": "Step 2: each box pays back its margin, 15 − 9 = 6, toward the 300."
+        },
+        "es-MX": {
+          "prompt": "Cada muffin se vende en 15 y tiene un costo completo de 9.",
+          "line": "Paso 2: cada muffin devuelve su margen, 15 − 9 = 6, a los 300."
+        },
+        "pt-BR": {
+          "prompt": "Cada caixa sai por 15 e tem custo completo de 9.",
+          "line": "Passo 2: cada caixa devolve sua margem, 15 − 9 = 6, aos 300."
+        }
+      }
+    },
+    {
+      "id": "ex-divide-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina asks how many boxes pay back the 300.",
+          "line": "Step 3: break-even is fixed costs ÷ margin, 300 ÷ 6 = 50. After 50, every box is profit."
+        },
+        "es-MX": {
+          "prompt": "Dina pregunta cuántos muffins devuelven los 300.",
+          "line": "Paso 3: el punto de equilibrio es costos fijos ÷ margen, 300 ÷ 6 = 50. Después de 50, cada muffin es ganancia."
+        },
+        "pt-BR": {
+          "prompt": "Dina pergunta quantas caixas devolvem os 300.",
+          "line": "Passo 3: o ponto de equilíbrio é custos fixos ÷ margem, 300 ÷ 6 = 50. Depois de 50, cada caixa é lucro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "steps": [
+          {
+            "id": "fixed"
+          },
+          {
+            "id": "margin"
+          },
+          {
+            "id": "break-even"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "margin",
+          "break-even"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "margin": "4",
+          "break-even": "60"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fixed costs: table 150, warmer 60, banner 30. A box sells at 14, full cost 10.",
+          "feedback": {
+            "met": "You found the margin, then the break-even from the fixed costs.",
+            "not_yet": "Not yet. Find the margin, then divide the fixed costs by it."
+          },
+          "help": [
+            "The margin is the price minus the full cost.",
+            "Divide the fixed costs by the margin."
+          ],
+          "steps": [
+            {
+              "expression": "150 + 60 + 30",
+              "result": "240",
+              "spokenText": "Step 1: the fixed costs add up to 240"
+            },
+            {
+              "expression": "14 − 10",
+              "result": "4",
+              "spokenText": "Step 2: the margin is 14 minus 10, so 4 a box"
+            },
+            {
+              "expression": "Fixed costs ÷ margin",
+              "result": "60",
+              "spokenText": "Step 3: 240 divided by 4 is 60 boxes"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Costos fijos: mesa 150, calentador 60, lona 30. Un muffin se vende en 14, costo completo 10.",
+          "feedback": {
+            "met": "Sacaste el margen y luego el equilibrio con los costos fijos.",
+            "not_yet": "Todavía no. Saca primero el margen y luego divide los costos fijos entre él."
+          },
+          "help": [
+            "El margen es el precio menos el costo completo.",
+            "Divide los costos fijos entre el margen."
+          ],
+          "steps": [
+            {
+              "expression": "150 + 60 + 30",
+              "result": "240",
+              "spokenText": "Paso 1: los costos fijos suman 240"
+            },
+            {
+              "expression": "14 − 10",
+              "result": "4",
+              "spokenText": "Paso 2: el margen es 14 menos 10, o sea 4 por muffin"
+            },
+            {
+              "expression": "Costos fijos ÷ margen",
+              "result": "60",
+              "spokenText": "Paso 3: 240 entre 4 es 60 muffins"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Custos fixos: mesa 150, estufa 60, banner 30. Uma caixa sai por 14, custo completo 10.",
+          "feedback": {
+            "met": "Você achou a margem e depois o equilíbrio a partir dos custos fixos.",
+            "not_yet": "Ainda não. Ache primeiro a margem e depois divida os custos fixos por ela."
+          },
+          "help": [
+            "A margem é o preço menos o custo completo.",
+            "Divida os custos fixos pela margem."
+          ],
+          "steps": [
+            {
+              "expression": "150 + 60 + 30",
+              "result": "240",
+              "spokenText": "Passo 1: os custos fixos somam 240"
+            },
+            {
+              "expression": "14 − 10",
+              "result": "4",
+              "spokenText": "Passo 2: a margem é 14 menos 10, ou seja, 4 por caixa"
+            },
+            {
+              "expression": "Custos fixos ÷ margem",
+              "result": "60",
+              "spokenText": "Passo 3: 240 dividido por 4 dá 60 caixas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-chart-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina draws sales from 0 and costs from 300, climbing 15 and 9 a box.",
+          "line": "Step 4: the lines cross at 50 boxes, where sales and costs are both 750."
+        },
+        "es-MX": {
+          "prompt": "Dina dibuja las ventas desde 0 y los costos desde 300, subiendo 15 y 9 por muffin.",
+          "line": "Paso 4: las líneas se cruzan en 50 muffins, donde ventas y costos son 750."
+        },
+        "pt-BR": {
+          "prompt": "Dina desenha as vendas desde 0 e os custos desde 300, subindo 15 e 9 por caixa.",
+          "line": "Passo 4: as linhas se cruzam em 50 caixas, onde vendas e custos valem 750."
+        }
+      }
+    },
+    {
+      "id": "practice-board-01",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "break-even"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "fixed": 210,
+        "price": 12,
+        "unit": 5,
+        "maxUnits": 60,
+        "start": 10
+      },
+      "rubric": {
+        "target": 30
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate’s smoothie stall: setup 210, each smoothie costs 5 and sells for 12. Find where sales equal costs.",
+          "feedback": {
+            "met": "You read the break-even from the two lines.",
+            "not_yet": "Not yet. Move along the lines until sales equal costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "El puesto de un compañero: montaje 210, cada licuado cuesta 5 y se vende en 12. Encuentra dónde ventas y costos se igualan.",
+          "feedback": {
+            "met": "Leíste el punto de equilibrio en las dos líneas.",
+            "not_yet": "Todavía no. Recorre las líneas hasta que ventas y costos se igualen."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A barraca de um colega: montagem 210, cada vitamina custa 5 e sai por 12. Ache onde vendas e custos se igualam.",
+          "feedback": {
+            "met": "Você leu o ponto de equilíbrio nas duas linhas.",
+            "not_yet": "Ainda não. Percorra as linhas até vendas e custos se igualarem."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-audience-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina checks 50 boxes against about 150 guests.",
+          "line": "Step 5: alone, 1 guest in 3 must buy. Sharing halves the 300: 25 boxes, 1 guest in 6."
+        },
+        "es-MX": {
+          "prompt": "Dina compara 50 muffins con unos 150 invitados.",
+          "line": "Paso 5: sola, 1 de cada 3 invitados debe comprar. Compartir divide los 300 entre dos: 25 muffins, 1 de cada 6."
+        },
+        "pt-BR": {
+          "prompt": "Dina compara 50 caixas com uns 150 convidados.",
+          "line": "Passo 5: sozinha, 1 de cada 3 convidados precisa comprar. Dividindo tudo, os 300 viram 150: 25 caixas, 1 de cada 6."
+        }
+      }
+    },
+    {
+      "id": "ex-weigh-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Plans score 1 to 5 on reaching break-even, safety and upside, weighted 3, 2 and 1.",
+          "line": "Step 6: score × weight, then add. Book alone scores 2, 2, 5: 2 × 3 + 2 × 2 + 5 × 1 = 15."
+        },
+        "es-MX": {
+          "prompt": "Los planes puntúan de 1 a 5 en equilibrio, seguridad y ganancia, ponderados 3, 2 y 1.",
+          "line": "Paso 6: puntaje × ponderación, y se suma. Mesa sola: 2, 2 y 5, o sea 2 × 3 + 2 × 2 + 5 × 1 = 15."
+        },
+        "pt-BR": {
+          "prompt": "Os planos recebem de 1 a 5 em equilíbrio, segurança e lucro, ponderados 3, 2 e 1.",
+          "line": "Passo 6: nota × ponderação, depois soma. Mesa sozinha: 2, 2 e 5, ou seja, 2 × 3 + 2 × 2 + 5 × 1 = 15."
+        }
+      }
+    },
+    {
+      "id": "practice-matrix-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "pieces": [
+          "book-alone",
+          "share-table",
+          "skip-night"
+        ],
+        "criteria": [
+          {
+            "id": "reach",
+            "weight": 3
+          },
+          {
+            "id": "risk",
+            "weight": 2
+          },
+          {
+            "id": "upside",
+            "weight": 1
+          }
+        ],
+        "scores": [
+          [
+            2,
+            2,
+            5
+          ],
+          [
+            4,
+            4,
+            3
+          ],
+          [
+            1,
+            5,
+            1
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "share-table"
+            ],
+            "rank-2": [
+              "book-alone"
+            ],
+            "rank-3": [
+              "skip-night"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Weigh the three plans for talent night. Rank them by weighted total, best first.",
+          "feedback": {
+            "met": "You weighed every score before ranking.",
+            "not_yet": "Not yet. Multiply each score by its weight, then add."
+          },
+          "labels": {
+            "book-alone": "Book the table alone",
+            "share-table": "Share the table",
+            "skip-night": "Skip talent night",
+            "reach": "Reaching break-even",
+            "risk": "Money kept safe",
+            "upside": "Profit upside"
+          }
+        },
+        "es-MX": {
+          "prompt": "Pondera los tres planes para la noche de talentos. Ordénalos por total ponderado, de mayor a menor.",
+          "feedback": {
+            "met": "Ponderaste cada puntaje antes de ordenar.",
+            "not_yet": "Todavía no. Multiplica cada puntaje por su ponderación y luego suma."
+          },
+          "labels": {
+            "book-alone": "Reservar la mesa sin compartir",
+            "share-table": "Compartir la mesa",
+            "skip-night": "Saltarme la noche",
+            "reach": "Llegar al equilibrio",
+            "risk": "Dinero a salvo",
+            "upside": "Ganancia posible"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pondere os três planos para a noite de talentos. Ordene pelo total ponderado, do maior para o menor.",
+          "feedback": {
+            "met": "Você ponderou cada nota antes de ordenar.",
+            "not_yet": "Ainda não. Multiplique cada nota pela ponderação e depois some."
+          },
+          "labels": {
+            "book-alone": "Reservar a mesa sem dividir",
+            "share-table": "Dividir a mesa",
+            "skip-night": "Pular a noite",
+            "reach": "Chegar ao equilíbrio",
+            "risk": "Dinheiro seguro",
+            "upside": "Lucro possível"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-go"
+          },
+          {
+            "id": "choice-no-go"
+          },
+          {
+            "id": "choice-go-hope"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-most-back"
+          },
+          {
+            "id": "reason-crowd"
+          },
+          {
+            "id": "reason-price-over"
+          },
+          {
+            "id": "reason-above-buyers"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-no-go"
+        ],
+        "reasonQuality": {
+          "reason-above-buyers": "sound",
+          "reason-most-back": "partial",
+          "reason-crowd": "unsupported",
+          "reason-price-over": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate sells phone cases: setup 280, price 14, full cost 7, 30 buyers expected. Go or no-go?",
+          "feedback": {
+            "met": "You compared break-even with the buyers she expects.",
+            "not_yet": "Not yet. Work out her break-even before you decide."
+          },
+          "choices": [
+            {
+              "label": "Go, she is close enough"
+            },
+            {
+              "label": "No-go unless the setup cost drops"
+            },
+            {
+              "label": "Go and hope for a bigger crowd"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Most of the setup cost comes back anyway"
+            },
+            {
+              "label": "A bigger crowd is likely on the night"
+            },
+            {
+              "label": "The price is higher than the cost"
+            },
+            {
+              "label": "Her break-even is above her expected buyers"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un compañero vende fundas: montaje 280, precio 14, costo completo 7, 30 compradores esperados. ¿Va o no va?",
+          "feedback": {
+            "met": "Comparaste el equilibrio con los compradores que espera.",
+            "not_yet": "Todavía no. Saca su equilibrio antes de decidir."
+          },
+          "choices": [
+            {
+              "label": "Sí, está bastante cerca"
+            },
+            {
+              "label": "No, salvo que baje el montaje"
+            },
+            {
+              "label": "Sí, y esperar más gente"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "La mayor parte del montaje se recupera igual"
+            },
+            {
+              "label": "Seguro llega más gente esa noche"
+            },
+            {
+              "label": "El precio es mayor que el costo"
+            },
+            {
+              "label": "Su equilibrio supera a los compradores esperados"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um colega vende capinhas: montagem 280, preço 14, custo completo 7, 30 compradores esperados. Vale a pena?",
+          "feedback": {
+            "met": "Você comparou o equilíbrio com os compradores esperados.",
+            "not_yet": "Ainda não. Calcule o equilíbrio dela antes de decidir."
+          },
+          "choices": [
+            {
+              "label": "Sim, está bem perto"
+            },
+            {
+              "label": "Não, a menos que a montagem baixe"
+            },
+            {
+              "label": "Sim, e torcer por mais gente"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "A maior parte da montagem volta de qualquer jeito"
+            },
+            {
+              "label": "Com certeza vem mais gente na noite"
+            },
+            {
+              "label": "O preço é maior que o custo"
+            },
+            {
+              "label": "O equilíbrio dela passa dos compradores esperados"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

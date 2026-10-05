@@ -1,0 +1,828 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-first-pay",
+  "lesson_id": "fe-1317-02-split-the-pay",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "money.simple-budget",
+    "money.percent-intro",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara acompaña a Maya a repartir las 100 monedas de un mes de turnos entre necesidades, deseos y ahorro con porcentajes, usando una décima parte como atajo para cualquier pago. Cuando llega un recibo de teléfono de 60 que rompe la parte de necesidades, Maya recorta los deseos, comprueba que el total siga igual y después ordena otros gastos según sean necesidad o deseo y si se repiten cada mes.",
+  "title": {
+    "en-US": "Split the pay: needs, wants, saving",
+    "es-MX": "Reparte el pago: necesidades, deseos, ahorro",
+    "pt-BR": "Divida o pagamento: necessidades, desejos, poupança"
+  },
+  "new_concepts": [
+    "money.simple-budget",
+    "money.percent-intro"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's month of shifts just paid 100 coins, and a phone bill is coming.",
+          "line": "Zara tries a split first, then adjusts it when the bill lands."
+        },
+        "es-MX": {
+          "prompt": "El mes de turnos de Maya acaba de pagar 100 monedas, y viene un recibo del teléfono.",
+          "line": "Zara prueba primero un reparto y lo ajusta cuando llega el recibo."
+        },
+        "pt-BR": {
+          "prompt": "O mês de turnos da Maya acabou de render 100 moedas, e a conta do celular vem aí.",
+          "line": "A Zara testa primeiro uma divisão e ajusta quando a conta chega."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "total": 100,
+        "step": 10,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 20
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya has 100 coins to split for the month. Save at least 20.",
+          "feedback": {
+            "met": "Noted, that shows where you start. Now we go step by step.",
+            "not_yet": "Noted, that shows where you start. Now we go step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Maya tiene 100 monedas para repartir en el mes. Guarda al menos 20.",
+          "feedback": {
+            "met": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso.",
+            "not_yet": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Maya tem 100 moedas para dividir no mês. Guarde pelo menos 20.",
+          "feedback": {
+            "met": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo.",
+            "not_yet": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-percent-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a percent is a part out of every 100.",
+          "line": "So 50 percent of Maya's 100 coins is 50 coins. Zara puts that on needs."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un porcentaje es una parte de cada 100.",
+          "line": "Así, el 50 por ciento de las 100 monedas de Maya son 50 monedas. Zara las pone en necesidades."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: uma porcentagem é uma parte de cada 100.",
+          "line": "Então 50 por cento das 100 moedas da Maya são 50 moedas. A Zara coloca isso em necessidades."
+        }
+      }
+    },
+    {
+      "id": "example-total-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Zara tries 50 percent needs, 30 percent wants, 20 percent saving.",
+          "line": "That is 50, 30 and 20 coins. Check: 50 + 30 + 20 = 100, so no coin is left over."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Zara prueba 50 por ciento en necesidades, 30 en deseos y 20 en ahorro.",
+          "line": "Son 50, 30 y 20 monedas. Revisa: 50 + 30 + 20 = 100, así que no sobra ninguna."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Zara testa 50 por cento em necessidades, 30 em desejos e 20 em poupança.",
+          "line": "São 50, 30 e 20 moedas. Confira: 50 + 30 + 20 = 100, então não sobra nenhuma."
+        }
+      }
+    },
+    {
+      "id": "example-tenth-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: 10 percent is one tenth, so 30 percent is 3 tenths.",
+          "line": "Pay of 80: divide by 10 and a tenth is 8. Needs at 5 tenths are 5 × 8 = 40."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: 10 por ciento es una décima, así que 30 por ciento son 3 décimas.",
+          "line": "Pago de 80: se divide entre 10 y una décima es 8. Necesidades en 5 décimas: 5 × 8 = 40."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: 10 por cento é um décimo, então 30 por cento são 3 décimos.",
+          "line": "Pagamento de 80: divida por 10 e um décimo é 8. Necessidades em 5 décimos: 5 × 8 = 40."
+        }
+      }
+    },
+    {
+      "id": "guided-tenths-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "steps": [
+          {
+            "id": "tenth"
+          },
+          {
+            "id": "needs"
+          },
+          {
+            "id": "wants"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "needs",
+          "wants"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "needs": "30",
+          "wants": "18"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's pay is 60. Find a tenth, then needs at 5 tenths and wants at 3 tenths.",
+          "feedback": {
+            "met": "You found a tenth, then counted tenths for needs and wants.",
+            "not_yet": "Look back at Zara's tenth step: divide, then count tenths."
+          },
+          "help": [
+            "Divide the pay by 10, then multiply by the number of tenths."
+          ],
+          "steps": [
+            {
+              "expression": "60 ÷ 10",
+              "result": "6",
+              "spokenText": "Sixty divided by 10 is 6, one tenth"
+            },
+            {
+              "expression": "5 × 6",
+              "result": "30",
+              "spokenText": "Five times 6 is 30 for needs"
+            },
+            {
+              "expression": "3 × 6",
+              "result": "18",
+              "spokenText": "Three times 6 is 18 for wants"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El pago de Maya es 60. Encuentra una décima, luego las necesidades en 5 décimas y los deseos en 3 décimas.",
+          "feedback": {
+            "met": "Hallaste una décima y contaste décimas para necesidades y deseos.",
+            "not_yet": "Mira el paso de la décima de Zara: divide y luego cuenta décimas."
+          },
+          "help": [
+            "Divide el pago entre 10 y multiplica por el número de décimas."
+          ],
+          "steps": [
+            {
+              "expression": "60 ÷ 10",
+              "result": "6",
+              "spokenText": "Sesenta entre 10 son 6, una décima"
+            },
+            {
+              "expression": "5 × 6",
+              "result": "30",
+              "spokenText": "Cinco por 6 son 30 de necesidades"
+            },
+            {
+              "expression": "3 × 6",
+              "result": "18",
+              "spokenText": "Tres por 6 son 18 de deseos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O pagamento da Maya é 60. Ache um décimo, depois as necessidades em 5 décimos e os desejos em 3 décimos.",
+          "feedback": {
+            "met": "Você achou um décimo e contou décimos para necessidades e desejos.",
+            "not_yet": "Veja o passo do décimo da Zara: divida e depois conte décimos."
+          },
+          "help": [
+            "Divida o pagamento por 10 e multiplique pelo número de décimos."
+          ],
+          "steps": [
+            {
+              "expression": "60 ÷ 10",
+              "result": "6",
+              "spokenText": "Sessenta divididos por 10 são 6, um décimo"
+            },
+            {
+              "expression": "5 × 6",
+              "result": "30",
+              "spokenText": "Cinco vezes 6 são 30 de necessidades"
+            },
+            {
+              "expression": "3 × 6",
+              "result": "18",
+              "spokenText": "Três vezes 6 são 18 de desejos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-bill-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: the 60 phone bill lands, and it is a need that repeats.",
+          "line": "Needs were 50, so the plan is over by 60 − 50 = 10 coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: llega el recibo del teléfono de 60, y es una necesidad que se repite.",
+          "line": "Las necesidades eran 50, así que el plan se pasa por 60 − 50 = 10 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: chega a conta do celular de 60, e é uma necessidade que se repete.",
+          "line": "As necessidades eram 50, então o plano passa em 60 − 50 = 10 moedas."
+        }
+      }
+    },
+    {
+      "id": "example-replan-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: cover the gap from wants, not from saving.",
+          "line": "Wants drop from 30 to 20. Check: 60 + 20 + 20 = 100, with saving still 20."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: cubre la diferencia con los deseos, no con el ahorro.",
+          "line": "Los deseos bajan de 30 a 20. Revisa: 60 + 20 + 20 = 100, con el ahorro todavía en 20."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: cubra a diferença com os desejos, não com a poupança.",
+          "line": "Os desejos caem de 30 para 20. Confira: 60 + 20 + 20 = 100, com a poupança ainda em 20."
+        }
+      }
+    },
+    {
+      "id": "example-sort-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: sort each cost with two questions: need or want, same or changing.",
+          "line": "The phone bill is a need that stays the same, so it is paid first. Changing wants flex."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: ordena cada gasto con dos preguntas: necesidad o deseo, igual o cambia.",
+          "line": "El recibo del teléfono es una necesidad que no cambia, así que se paga primero. Los deseos que cambian se ajustan."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: ordene cada gasto com duas perguntas: necessidade ou desejo, igual ou muda.",
+          "line": "A conta do celular é uma necessidade que não muda, então é paga primeiro. Os desejos que mudam se ajustam."
+        }
+      }
+    },
+    {
+      "id": "practice-split-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "total": 200,
+        "step": 20,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 60
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's next month pays 200 coins. Save at least 30 percent.",
+          "feedback": {
+            "met": "Your split saves at least 30 percent and uses every coin.",
+            "not_yet": "Not yet. Find one tenth first, then count tenths for saving."
+          }
+        },
+        "es-MX": {
+          "prompt": "El siguiente mes de Maya paga 200 monedas. Guarda al menos el 30 por ciento.",
+          "feedback": {
+            "met": "Tu reparto guarda al menos el 30 por ciento y usa todas las monedas.",
+            "not_yet": "Aún no. Busca primero una décima parte y luego cuenta décimas para ahorrar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O próximo mês da Maya rende 200 moedas. Guarde pelo menos 30 por cento.",
+          "feedback": {
+            "met": "Sua divisão guarda pelo menos 30 por cento e usa todas as moedas.",
+            "not_yet": "Ainda não. Ache primeiro um décimo e depois conte décimos para guardar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-replan-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "over"
+          },
+          {
+            "id": "wants"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "tenths"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "wants",
+          "total",
+          "tenths"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wants": "40",
+          "total": "200",
+          "tenths": "2"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's month: needs 100, wants 60, saving 40. A 120 bill arrives; re-plan.",
+          "feedback": {
+            "met": "You cut wants, rebuilt the total and counted the new tenths.",
+            "not_yet": "Check Zara's steps: cut wants, add up the total, then count tenths."
+          },
+          "help": [
+            "Cut wants by the gap, then add all three parts."
+          ],
+          "steps": [
+            {
+              "expression": "120 − 100",
+              "result": "20",
+              "spokenText": "A 120 bill minus the 100 needs share is 20 over"
+            },
+            {
+              "expression": "60 − 20",
+              "result": "40",
+              "spokenText": "Wants of 60 minus 20 is 40"
+            },
+            {
+              "expression": "Needs + wants + saving",
+              "result": "200",
+              "spokenText": "Needs 120, wants 40 and saving 40 add up to 200"
+            },
+            {
+              "expression": "New wants ÷ a tenth",
+              "result": "2",
+              "spokenText": "Forty divided by 20 is 2 tenths: wants are now 20 percent"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El mes de Maya: necesidades 100, deseos 60, ahorro 40. Llega un recibo de 120; replantea.",
+          "feedback": {
+            "met": "Recortaste los deseos, rehiciste el total y contaste las nuevas décimas.",
+            "not_yet": "Mira los pasos de Zara: recorta deseos, suma el total y cuenta décimas."
+          },
+          "help": [
+            "Recorta los deseos en lo que se pasa el recibo y suma las tres partes."
+          ],
+          "steps": [
+            {
+              "expression": "120 − 100",
+              "result": "20",
+              "spokenText": "Un recibo de 120 menos las 100 de necesidades se pasa por 20"
+            },
+            {
+              "expression": "60 − 20",
+              "result": "40",
+              "spokenText": "Deseos de 60 menos 20 quedan en 40"
+            },
+            {
+              "expression": "Necesidades + deseos + ahorro",
+              "result": "200",
+              "spokenText": "Necesidades 120, deseos 40 y ahorro 40 suman 200"
+            },
+            {
+              "expression": "Deseos nuevos ÷ una décima",
+              "result": "2",
+              "spokenText": "Cuarenta entre 20 son 2 décimas: los deseos pasan a 20 por ciento"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O mês da Maya: necessidades 100, desejos 60, poupança 40. Chega uma conta de 120; refaça o plano.",
+          "feedback": {
+            "met": "Você cortou os desejos, refez o total e contou os novos décimos.",
+            "not_yet": "Veja os passos da Zara: corte desejos, some o total e conte décimos."
+          },
+          "help": [
+            "Corte os desejos no valor que a conta passa e some as três partes."
+          ],
+          "steps": [
+            {
+              "expression": "120 − 100",
+              "result": "20",
+              "spokenText": "Uma conta de 120 menos as 100 de necessidades passa em 20"
+            },
+            {
+              "expression": "60 − 20",
+              "result": "40",
+              "spokenText": "Desejos de 60 menos 20 ficam em 40"
+            },
+            {
+              "expression": "Necessidades + desejos + poupança",
+              "result": "200",
+              "spokenText": "Necessidades 120, desejos 40 e poupança 40 somam 200"
+            },
+            {
+              "expression": "Desejos novos ÷ um décimo",
+              "result": "2",
+              "spokenText": "Quarenta divididos por 20 são 2 décimos: os desejos passam a 20 por cento"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-sort-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "pieces": [
+          "bus-pass",
+          "jacket",
+          "streaming",
+          "movie-night"
+        ],
+        "points": [
+          [
+            8,
+            8
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "jacket"
+            ],
+            "top-right": [
+              "bus-pass"
+            ],
+            "bottom-left": [
+              "movie-night"
+            ],
+            "bottom-right": [
+              "streaming"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort Maya's costs by need or want, and by same or changing each month.",
+          "feedback": {
+            "met": "You sorted each cost by both questions, not just one.",
+            "not_yet": "Not yet. Ask both questions about each dot."
+          },
+          "labels": {
+            "x-name": "Each month",
+            "x-low": "Changes",
+            "x-high": "Same",
+            "y-name": "Need or want",
+            "y-low": "Want",
+            "y-high": "Need",
+            "bus-pass": "Bus pass",
+            "jacket": "Winter jacket",
+            "streaming": "Streaming plan",
+            "movie-night": "Movie night"
+          }
+        },
+        "es-MX": {
+          "prompt": "Ordena los gastos de Maya: necesidad o deseo, e igual o cambia cada mes.",
+          "feedback": {
+            "met": "Ordenaste cada gasto con las dos preguntas, no solo con una.",
+            "not_yet": "Aún no. Hazle las dos preguntas a cada punto."
+          },
+          "labels": {
+            "x-name": "Cada mes",
+            "x-low": "Cambia",
+            "x-high": "Igual",
+            "y-name": "Necesidad o deseo",
+            "y-low": "Deseo",
+            "y-high": "Necesidad",
+            "bus-pass": "Pase de transporte",
+            "jacket": "Chamarra de invierno",
+            "streaming": "Plan de streaming",
+            "movie-night": "Noche de cine"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordene os gastos da Maya: necessidade ou desejo, e igual ou muda todo mês.",
+          "feedback": {
+            "met": "Você ordenou cada gasto com as duas perguntas, não só com uma.",
+            "not_yet": "Ainda não. Faça as duas perguntas para cada ponto."
+          },
+          "labels": {
+            "x-name": "Todo mês",
+            "x-low": "Muda",
+            "x-high": "Igual",
+            "y-name": "Necessidade ou desejo",
+            "y-low": "Desejo",
+            "y-high": "Necessidade",
+            "bus-pass": "Passe de ônibus",
+            "jacket": "Casaco de inverno",
+            "streaming": "Plano de streaming",
+            "movie-night": "Noite de cinema"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-term-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "pieces": [
+          "lunch-card",
+          "supplies",
+          "music-app",
+          "club-dues",
+          "concert",
+          "game-skins"
+        ],
+        "points": [
+          [
+            9,
+            8
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            4,
+            2
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "supplies"
+            ],
+            "top-right": [
+              "lunch-card"
+            ],
+            "bottom-left": [
+              "concert",
+              "game-skins"
+            ],
+            "bottom-right": [
+              "music-app",
+              "club-dues"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya starts a new school term. Sort each cost by need or want, same or changing.",
+          "feedback": {
+            "met": "You sorted every cost by both questions, not just one.",
+            "not_yet": "Not yet. Ask both questions about each dot."
+          },
+          "labels": {
+            "x-name": "Each month",
+            "x-low": "Changes",
+            "x-high": "Same",
+            "y-name": "Need or want",
+            "y-low": "Want",
+            "y-high": "Need",
+            "lunch-card": "School lunch card",
+            "supplies": "Class supplies",
+            "music-app": "Music app",
+            "club-dues": "Game club dues",
+            "concert": "Concert ticket",
+            "game-skins": "Game skins"
+          }
+        },
+        "es-MX": {
+          "prompt": "Maya empieza un nuevo ciclo escolar. Ordena cada gasto: necesidad o deseo, igual o cambia.",
+          "feedback": {
+            "met": "Ordenaste cada gasto con las dos preguntas, no solo con una.",
+            "not_yet": "Aún no. Hazle las dos preguntas a cada punto."
+          },
+          "labels": {
+            "x-name": "Cada mes",
+            "x-low": "Cambia",
+            "x-high": "Igual",
+            "y-name": "Necesidad o deseo",
+            "y-low": "Deseo",
+            "y-high": "Necesidad",
+            "lunch-card": "Tarjeta de comida escolar",
+            "supplies": "Útiles de clase",
+            "music-app": "App de música",
+            "club-dues": "Cuota del club de juegos",
+            "concert": "Boleto de concierto",
+            "game-skins": "Skins de videojuego"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Maya começa um novo período na escola. Ordene cada gasto: necessidade ou desejo, igual ou muda.",
+          "feedback": {
+            "met": "Você ordenou cada gasto com as duas perguntas, não só com uma.",
+            "not_yet": "Ainda não. Faça as duas perguntas para cada ponto."
+          },
+          "labels": {
+            "x-name": "Todo mês",
+            "x-low": "Muda",
+            "x-high": "Igual",
+            "y-name": "Necessidade ou desejo",
+            "y-low": "Desejo",
+            "y-high": "Necessidade",
+            "lunch-card": "Cartão do refeitório",
+            "supplies": "Material de aula",
+            "music-app": "App de música",
+            "club-dues": "Mensalidade do clube de jogos",
+            "concert": "Ingresso de show",
+            "game-skins": "Skins de jogo"
+          }
+        }
+      }
+    }
+  ]
+}

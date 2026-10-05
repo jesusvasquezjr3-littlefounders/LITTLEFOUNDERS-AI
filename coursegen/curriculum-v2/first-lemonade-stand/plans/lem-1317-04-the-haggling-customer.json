@@ -1,0 +1,929 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-13-17",
+  "chapter_id": "lem-1317-first-micro-business",
+  "lesson_id": "lem-1317-04-the-haggling-customer",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.negotiation",
+    "biz.ethical-persuasion",
+    "biz.margin"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara enseña a responder a un cliente que pide descuento: fijas tu precio mínimo desde el costo y el margen antes de hablar, contraofertas pidiendo algo a cambio y revisas cada frase del cartel contra los hechos. Después aplicas lo mismo a un pedido nuevo y decides qué responder.",
+  "title": {
+    "en-US": "Negotiate without losing your margin",
+    "es-MX": "Negocia sin perder tu margen",
+    "pt-BR": "Negocie sem perder sua margem"
+  },
+  "new_concepts": [
+    "biz.negotiation",
+    "biz.ethical-persuasion"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Una maestra organiza un viaje escolar y pide 40 muffins con descuento. La alumna fija su precio mínimo antes de negociar, propone un intercambio y no escribe en el cartel nada que no pueda comprobar. Precios ilustrativos, en pesos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "viaje escolar"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Uma professora organiza uma excursão escolar e pede 40 caixas de muffin com desconto. A aluna define seu preço mínimo antes de negociar, propõe uma troca e não escreve no cartaz nada que não possa provar. Valores ilustrativos, em reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "excursão escolar"
+        ]
+      },
+      "en-US": {
+        "scenario": "A teacher planning a school trip asks for 40 boxes of muffins at a discount. The student sets her lowest price before negotiating, offers a trade, and prints nothing on the poster she cannot prove. Prices are illustrative, in dollars.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "school trip"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A teacher wants 40 boxes for the school trip, at 20% off the 15 price.",
+          "line": "Yes loses me margin and no loses the order. Where is my line?"
+        },
+        "es-MX": {
+          "prompt": "Una maestra quiere 40 muffins para el viaje escolar, con 20% de descuento sobre el precio de 15.",
+          "line": "Si digo que sí pierdo margen; si digo que no pierdo el pedido. ¿Dónde está mi límite?"
+        },
+        "pt-BR": {
+          "prompt": "Uma professora quer 40 caixas para a excursão escolar, com 20% de desconto sobre o preço de R$ 15.",
+          "line": "Se eu disser sim, perco margem; se disser não, perco o pedido. Onde está meu limite?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-floor-first"
+          },
+          {
+            "id": "choice-accept"
+          },
+          {
+            "id": "choice-refuse"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-limit"
+          },
+          {
+            "id": "reason-keep-margin"
+          },
+          {
+            "id": "reason-any-sale"
+          },
+          {
+            "id": "reason-buyer"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-floor-first"
+        ],
+        "reasonQuality": {
+          "reason-limit": "sound",
+          "reason-keep-margin": "partial",
+          "reason-any-sale": "unsupported",
+          "reason-buyer": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A buyer asks you for a discount on a big order. What do you do first?",
+          "feedback": {
+            "met": "Let’s see how a seller prepares for a discount request.",
+            "not_yet": "Let’s see how a seller prepares for a discount request."
+          },
+          "choices": [
+            {
+              "label": "Set my lowest price, then answer"
+            },
+            {
+              "label": "Accept, so the order does not walk away"
+            },
+            {
+              "label": "Refuse every discount from the start"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "I know my limit before I talk"
+            },
+            {
+              "label": "Saying no keeps my margin safe"
+            },
+            {
+              "label": "A sale is better than no sale"
+            },
+            {
+              "label": "The buyer should set the price"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un comprador te pide descuento en un pedido grande. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Veamos cómo se prepara un vendedor ante un descuento.",
+            "not_yet": "Veamos cómo se prepara un vendedor ante un descuento."
+          },
+          "choices": [
+            {
+              "label": "Fijo mi precio mínimo y luego respondo"
+            },
+            {
+              "label": "Acepto, para que el pedido no se vaya"
+            },
+            {
+              "label": "Rechazo todo descuento desde el principio"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Conozco mi límite antes de hablar"
+            },
+            {
+              "label": "Decir que no protege mi margen"
+            },
+            {
+              "label": "Vender algo es mejor que no vender"
+            },
+            {
+              "label": "El comprador debe fijar el precio"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um comprador pede desconto em um pedido grande. O que você faz primeiro?",
+          "feedback": {
+            "met": "Vamos ver como um vendedor se prepara para um desconto.",
+            "not_yet": "Vamos ver como um vendedor se prepara para um desconto."
+          },
+          "choices": [
+            {
+              "label": "Defino meu preço mínimo e depois respondo"
+            },
+            {
+              "label": "Aceito, para o pedido não escapar"
+            },
+            {
+              "label": "Recuso todo desconto desde o início"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "Conheço meu limite antes de falar"
+            },
+            {
+              "label": "Dizer não protege minha margem"
+            },
+            {
+              "label": "Vender algo é melhor que não vender"
+            },
+            {
+              "label": "O comprador deve definir o preço"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-floor-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara works out her lowest price before the teacher says a number.",
+          "line": "Step 1: floor price = cost + the least margin I accept. 9 + 2 = 11, and nothing goes below it."
+        },
+        "es-MX": {
+          "prompt": "Zara calcula su precio mínimo antes de que la maestra diga una cifra.",
+          "line": "Paso 1: precio mínimo = costo + el margen más bajo que acepto. 9 + 2 = 11, y nada baja de ahí."
+        },
+        "pt-BR": {
+          "prompt": "Zara calcula o preço mínimo dela antes de a professora dizer um valor.",
+          "line": "Passo 1: preço mínimo = custo + a menor margem que aceito. 9 + 2 = 11, e nada fica abaixo disso."
+        }
+      }
+    },
+    {
+      "id": "ex-ask-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The teacher asks for 20% off the 15 price.",
+          "line": "Step 2: 20% of 15 is 3, so 12 a box. Margin falls from 6 to 3: 3 × 40 = 120."
+        },
+        "es-MX": {
+          "prompt": "La maestra pide 20% de descuento sobre el precio de 15.",
+          "line": "Paso 2: 20% de 15 es 3, así que 12 por muffin. El margen baja de 6 a 3: 3 × 40 = 120."
+        },
+        "pt-BR": {
+          "prompt": "A professora pede 20% de desconto sobre o preço de 15.",
+          "line": "Passo 2: 20% de 15 é 3, então 12 por caixa. A margem cai de 6 para 3: 3 × 40 = 120."
+        }
+      }
+    },
+    {
+      "id": "ex-counter-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara does not just agree or refuse; she trades.",
+          "line": "Step 3: 13 a box, only if the teacher pays in advance. Margin 4, so 4 × 40 = 160."
+        },
+        "es-MX": {
+          "prompt": "Zara no solo acepta o rechaza; intercambia.",
+          "line": "Paso 3: 13 por muffin, solo si la maestra paga por adelantado. Margen 4, o sea 4 × 40 = 160."
+        },
+        "pt-BR": {
+          "prompt": "Zara não só aceita ou recusa; ela troca.",
+          "line": "Passo 3: 13 por caixa, só se a professora pagar adiantado. Margem 4, ou seja, 4 × 40 = 160."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "steps": [
+          {
+            "id": "floor"
+          },
+          {
+            "id": "margin"
+          },
+          {
+            "id": "profit"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "margin",
+          "profit"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "margin": "6",
+          "profit": "60"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cost 20, least margin 4, floor 24. An offer of 26 for 10 items: find margin and profit.",
+          "feedback": {
+            "met": "You found the margin, then the profit.",
+            "not_yet": "Not yet. Price minus cost gives the margin; multiply by the items."
+          },
+          "help": [
+            "The margin is the offer minus the cost.",
+            "Multiply the margin by the number of items."
+          ],
+          "steps": [
+            {
+              "expression": "20 + 4",
+              "result": "24",
+              "spokenText": "Step 1: the floor is 20 plus 4, so 24"
+            },
+            {
+              "expression": "26 − 20",
+              "result": "6",
+              "spokenText": "Step 2: the margin is 26 minus 20, so 6"
+            },
+            {
+              "expression": "Margin × 10",
+              "result": "60",
+              "spokenText": "Step 3: 6 times 10 items is 60"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Costo 20, margen mínimo 4, precio mínimo 24. Oferta de 26 por 10 artículos: encuentra margen y ganancia.",
+          "feedback": {
+            "met": "Sacaste el margen y luego la ganancia.",
+            "not_yet": "Todavía no. Precio menos costo da el margen; multiplícalo por los artículos."
+          },
+          "help": [
+            "El margen es la oferta menos el costo.",
+            "Multiplica el margen por el número de artículos."
+          ],
+          "steps": [
+            {
+              "expression": "20 + 4",
+              "result": "24",
+              "spokenText": "Paso 1: el precio mínimo es 20 más 4, o sea 24"
+            },
+            {
+              "expression": "26 − 20",
+              "result": "6",
+              "spokenText": "Paso 2: el margen es 26 menos 20, o sea 6"
+            },
+            {
+              "expression": "Margen × 10",
+              "result": "60",
+              "spokenText": "Paso 3: 6 por 10 artículos son 60"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Custo 20, margem mínima 4, preço mínimo 24. Oferta de 26 por 10 itens: ache a margem e o lucro.",
+          "feedback": {
+            "met": "Você achou a margem e depois o lucro.",
+            "not_yet": "Ainda não. Preço menos custo dá a margem; multiplique pelos itens."
+          },
+          "help": [
+            "A margem é a oferta menos o custo.",
+            "Multiplique a margem pelo número de itens."
+          ],
+          "steps": [
+            {
+              "expression": "20 + 4",
+              "result": "24",
+              "spokenText": "Passo 1: o preço mínimo é 20 mais 4, ou seja, 24"
+            },
+            {
+              "expression": "26 − 20",
+              "result": "6",
+              "spokenText": "Passo 2: a margem é 26 menos 20, ou seja, 6"
+            },
+            {
+              "expression": "Margem × 10",
+              "result": "60",
+              "spokenText": "Passo 3: 6 vezes 10 itens dá 60"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-reply-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-give"
+          },
+          {
+            "id": "reply-trade"
+          },
+          {
+            "id": "reply-refuse"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-trade"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your floor price is 11. How do you answer?",
+          "feedback": {
+            "met": "You held your floor and asked for something in return.",
+            "not_yet": "Not yet. Stay above your floor and ask for something in return."
+          },
+          "speaker": "Club leader",
+          "line": "We order 30. Can you make it 10 each?",
+          "replies": [
+            {
+              "label": "Yes, 10 each; the order matters"
+            },
+            {
+              "label": "I can do 12 if you pay today"
+            },
+            {
+              "label": "No, 15 is my price"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu precio mínimo es 11. ¿Cómo respondes?",
+          "feedback": {
+            "met": "Mantuviste tu precio mínimo y pediste algo a cambio.",
+            "not_yet": "Todavía no. Quédate sobre tu precio mínimo y pide algo a cambio."
+          },
+          "speaker": "Líder del club",
+          "line": "Pedimos 30. ¿Nos lo dejas en 10 cada uno?",
+          "replies": [
+            {
+              "label": "Sí, 10 cada uno; el pedido importa"
+            },
+            {
+              "label": "Puedo en 12 si pagas hoy"
+            },
+            {
+              "label": "No, mi precio es 15"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu preço mínimo é 11. Como você responde?",
+          "feedback": {
+            "met": "Você manteve seu preço mínimo e pediu algo em troca.",
+            "not_yet": "Ainda não. Fique acima do seu preço mínimo e peça algo em troca."
+          },
+          "speaker": "Líder do clube",
+          "line": "Queremos 30. Dá para fazer a 10 cada?",
+          "replies": [
+            {
+              "label": "Sim, 10 cada; o pedido importa"
+            },
+            {
+              "label": "Faço a 12 se você pagar hoje"
+            },
+            {
+              "label": "Não, meu preço é 15"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-claim-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara adds a line to the poster: baked fresh, preservative-free.",
+          "line": "Step 4: first question, can I prove every word? The mix lists a preservative, so no."
+        },
+        "es-MX": {
+          "prompt": "Zara agrega una frase al cartel: recién horneados y sin conservadores.",
+          "line": "Paso 4: primera pregunta, ¿puedo probar cada palabra? La mezcla trae un conservador, así que no."
+        },
+        "pt-BR": {
+          "prompt": "Zara coloca uma frase no cartaz: assados na hora, sem conservantes.",
+          "line": "Passo 4: primeira pergunta, posso provar cada palavra? A mistura traz um conservante, então não."
+        }
+      }
+    },
+    {
+      "id": "ex-claim-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Part of it holds: the muffins really are baked every morning.",
+          "line": "Step 5: I print only the provable part: baked every morning. If none holds, I leave it off."
+        },
+        "es-MX": {
+          "prompt": "Una parte se sostiene: los muffins sí se hornean cada mañana.",
+          "line": "Paso 5: imprimo solo lo que puedo probar: horneados cada mañana. Si nada se sostiene, la dejo fuera."
+        },
+        "pt-BR": {
+          "prompt": "Uma parte se sustenta: os muffins são mesmo assados toda manhã.",
+          "line": "Passo 5: imprimo só o que posso provar: assados toda manhã. Se nada se sustenta, deixo de fora."
+        }
+      }
+    },
+    {
+      "id": "practice-chart-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.ethical-persuasion",
+      "payload": {
+        "start": "q-prove",
+        "nodes": [
+          {
+            "id": "q-prove",
+            "kind": "question",
+            "yes": "out-print",
+            "no": "q-part"
+          },
+          {
+            "id": "q-part",
+            "kind": "question",
+            "yes": "out-part",
+            "no": "out-cut"
+          },
+          {
+            "id": "out-print",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-part",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-cut",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "sc-baked"
+          },
+          {
+            "id": "sc-local"
+          },
+          {
+            "id": "sc-doctor"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "sc-baked": [
+            "q-prove",
+            "out-print"
+          ],
+          "sc-local": [
+            "q-prove",
+            "q-part",
+            "out-part"
+          ],
+          "sc-doctor": [
+            "q-prove",
+            "q-part",
+            "out-cut"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Test three poster claims. Follow the chart for each one.",
+          "feedback": {
+            "met": "Each claim followed the chart to the right outcome.",
+            "not_yet": "Not yet. Ask whether you can prove every word first."
+          },
+          "nodes": [
+            {
+              "label": "Can I prove every word?"
+            },
+            {
+              "label": "Is part of it true?"
+            },
+            {
+              "label": "Print it as written"
+            },
+            {
+              "label": "Print only the true part"
+            },
+            {
+              "label": "Leave it off the poster"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Baked this morning; I wrote down the time"
+            },
+            {
+              "label": "Local flour and eggs; only eggs are local"
+            },
+            {
+              "label": "Doctor-approved; no doctor has tried them"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Prueba tres frases del cartel. Sigue el diagrama con cada una.",
+          "feedback": {
+            "met": "Cada frase siguió el diagrama hasta el resultado correcto.",
+            "not_yet": "Todavía no. Primero pregunta si puedes probar cada palabra."
+          },
+          "nodes": [
+            {
+              "label": "¿Puedo probar cada palabra?"
+            },
+            {
+              "label": "¿Una parte es cierta?"
+            },
+            {
+              "label": "Imprimirla tal cual"
+            },
+            {
+              "label": "Imprimir solo la parte cierta"
+            },
+            {
+              "label": "Dejarla fuera del cartel"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Horneados esta mañana; tengo la hora anotada"
+            },
+            {
+              "label": "Harina y huevos locales; solo los huevos lo son"
+            },
+            {
+              "label": "Aprobados por médicos; ningún médico los probó"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Teste três frases do cartaz. Siga o diagrama com cada uma.",
+          "feedback": {
+            "met": "Cada frase seguiu o diagrama até o resultado certo.",
+            "not_yet": "Ainda não. Primeiro pergunte se você pode provar cada palavra."
+          },
+          "nodes": [
+            {
+              "label": "Posso provar cada palavra?"
+            },
+            {
+              "label": "Uma parte é verdadeira?"
+            },
+            {
+              "label": "Imprimir como está"
+            },
+            {
+              "label": "Imprimir só a parte verdadeira"
+            },
+            {
+              "label": "Deixar fora do cartaz"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Assados esta manhã; tenho a hora anotada"
+            },
+            {
+              "label": "Farinha e ovos locais; só os ovos são locais"
+            },
+            {
+              "label": "Aprovados por médicos; nenhum médico provou"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-take"
+          },
+          {
+            "id": "choice-walk"
+          },
+          {
+            "id": "choice-offer-nine"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-no-margin"
+          },
+          {
+            "id": "reason-volume"
+          },
+          {
+            "id": "reason-above-floor"
+          },
+          {
+            "id": "reason-neighbor"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-offer-nine"
+        ],
+        "reasonQuality": {
+          "reason-above-floor": "sound",
+          "reason-no-margin": "partial",
+          "reason-volume": "unsupported",
+          "reason-neighbor": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A neighbor wants 20 candles at half price; cost is 6, price 12, least margin 2. What do you do?",
+          "feedback": {
+            "met": "You held your floor and still offered a trade.",
+            "not_yet": "Not yet. Work out your floor before you answer."
+          },
+          "choices": [
+            {
+              "label": "Take the order; volume makes up for it"
+            },
+            {
+              "label": "Walk away; half price is too low"
+            },
+            {
+              "label": "Offer 9 each if they pay today"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Half price leaves me no margin"
+            },
+            {
+              "label": "More units always mean more profit"
+            },
+            {
+              "label": "It stays above my floor of 8"
+            },
+            {
+              "label": "Neighbors deserve the lowest price"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un vecino quiere 20 velas a mitad de precio; costo 6, precio 12, margen mínimo 2. ¿Qué haces?",
+          "feedback": {
+            "met": "Mantuviste tu precio mínimo y ofreciste un intercambio.",
+            "not_yet": "Todavía no. Saca tu precio mínimo antes de responder."
+          },
+          "choices": [
+            {
+              "label": "Acepto el pedido; el volumen compensa"
+            },
+            {
+              "label": "Me voy; la mitad del precio es muy poco"
+            },
+            {
+              "label": "Ofrezco 9 cada una si pagan hoy"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "A mitad de precio no me queda margen"
+            },
+            {
+              "label": "Más unidades siempre dan más ganancia"
+            },
+            {
+              "label": "Se queda sobre mi precio mínimo de 8"
+            },
+            {
+              "label": "Un vecino merece el precio más bajo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um vizinho quer 20 velas pela metade do preço; custo 6, preço 12, margem mínima 2. O que você faz?",
+          "feedback": {
+            "met": "Você manteve seu preço mínimo e ofereceu uma troca.",
+            "not_yet": "Ainda não. Calcule seu preço mínimo antes de responder."
+          },
+          "choices": [
+            {
+              "label": "Aceito o pedido; o volume compensa"
+            },
+            {
+              "label": "Saio; metade do preço é muito pouco"
+            },
+            {
+              "label": "Ofereço 9 cada se pagarem hoje"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "Pela metade do preço não sobra margem"
+            },
+            {
+              "label": "Mais unidades sempre dão mais lucro"
+            },
+            {
+              "label": "Fica acima do meu preço mínimo de 8"
+            },
+            {
+              "label": "Vizinho merece o preço mais baixo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

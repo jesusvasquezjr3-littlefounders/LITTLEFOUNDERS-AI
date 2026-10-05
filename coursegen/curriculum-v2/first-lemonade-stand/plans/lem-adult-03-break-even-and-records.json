@@ -1,0 +1,831 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-adult",
+  "chapter_id": "lem-adult-weekend-stall",
+  "lesson_id": "lem-adult-03-break-even-and-records",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.break-even",
+    "life.track-earnings",
+    "biz.margin"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina enseña con ejemplos a calcular cuántas velas cubren los gastos de un fin de semana: el margen por vela y el punto de equilibrio. Ves cómo llevar un registro sencillo de ventas y gastos y cómo leer ocho fines de semana contra esa línea. Luego lo haces con tus cifras, incluso con un producto nuevo que añades al puesto.",
+  "title": {
+    "en-US": "How many candles cover the weekend",
+    "es-MX": "Cuántas velas cubren el fin de semana",
+    "pt-BR": "Quantas velas cobrem o fim de semana"
+  },
+  "new_concepts": [
+    "biz.break-even"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En un tianguis de fin de semana los gastos de la mesa se pagan se venda o no, y muchos vendedores anotan sus ventas en un cuaderno. Con cifras de ejemplo se calcula el punto de equilibrio y se lee en ocho fines de semana.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na feira de artesanato a taxa da barraca e o transporte são pagos venda-se ou não, e muita gente recebe por Pix e anota tudo num caderno. Com valores de exemplo, calcula-se o ponto de equilíbrio e lê-se em oito fins de semana.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira de artesanato",
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "At a US farmers market, booth fees and travel are owed whatever sells, and many sellers keep a notebook of sales. Example figures set the break-even point, which is then read across eight weekends.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sunday night, notebook open after the farmers market. Amounts here are examples in your currency.",
+          "line": "Eight weekends are written down. They show how many candles cover one weekend's costs."
+        },
+        "es-MX": {
+          "prompt": "Domingo por la noche, cuaderno abierto después del tianguis. Las cifras son ejemplos en tu moneda.",
+          "line": "Tienes ocho fines de semana anotados. Dicen cuántas velas cubren los gastos de uno."
+        },
+        "pt-BR": {
+          "prompt": "Domingo à noite, caderno aberto depois da feira de artesanato. Os valores aqui são exemplos na sua moeda.",
+          "line": "Você tem oito fins de semana anotados. Eles mostram quantas velas cobrem os custos de um."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-best"
+          },
+          {
+            "id": "reply-cover"
+          },
+          {
+            "id": "reply-last"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-cover"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your notebook is open. What do you answer?",
+          "feedback": {
+            "met": "Now the arithmetic, one step at a time.",
+            "not_yet": "Now the arithmetic, one step at a time."
+          },
+          "speaker": "Ira",
+          "line": "How many candles do you need to sell for a weekend to pay off?",
+          "replies": [
+            {
+              "label": "As many as my best weekend."
+            },
+            {
+              "label": "Enough margin to cover the weekend's costs."
+            },
+            {
+              "label": "Whatever I sold last time."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu cuaderno está abierto. ¿Qué respondes?",
+          "feedback": {
+            "met": "Ahora la aritmética, un paso a la vez.",
+            "not_yet": "Ahora la aritmética, un paso a la vez."
+          },
+          "speaker": "Tomás",
+          "line": "¿Cuántas velas necesitas vender para que un fin de semana valga la pena?",
+          "replies": [
+            {
+              "label": "Las de mi mejor fin de semana."
+            },
+            {
+              "label": "Las que dejan margen para cubrir los gastos."
+            },
+            {
+              "label": "Las mismas que vendí la vez pasada."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu caderno está aberto. O que você responde?",
+          "feedback": {
+            "met": "Agora a aritmética, um passo de cada vez.",
+            "not_yet": "Agora a aritmética, um passo de cada vez."
+          },
+          "speaker": "Tiago",
+          "line": "Quantas velas você precisa vender para o fim de semana compensar?",
+          "replies": [
+            {
+              "label": "As do meu melhor fim de semana."
+            },
+            {
+              "label": "As que deixam margem para cobrir os custos."
+            },
+            {
+              "label": "As mesmas que vendi da última vez."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-margin-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your average sale is 100 a candle after deals. Wax and jar cost 50.",
+          "line": "Step 1. Each sale leaves 100 − 50 = 50 before the weekend costs. That is the margin over materials."
+        },
+        "es-MX": {
+          "prompt": "Tu venta promedio es 100 por vela, ya con descuentos. La cera y el frasco cuestan 50.",
+          "line": "Paso 1. Cada venta deja 100 − 50 = 50 antes de los gastos del fin de semana. Es el margen sobre los materiales."
+        },
+        "pt-BR": {
+          "prompt": "Sua venda média é 100 por vela, já com os descontos. A cera e o pote custam 50.",
+          "line": "Passo 1. Cada venda deixa 100 − 50 = 50 antes dos custos do fim de semana. É a margem sobre os materiais."
+        }
+      }
+    },
+    {
+      "id": "ex-be-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Recurring costs are 700 a weekend, however many you sell. Each candle's margin chips away at that.",
+          "line": "Step 2. Break-even is 700 ÷ 50 = 14 candles. Candle 15 is the first that earns."
+        },
+        "es-MX": {
+          "prompt": "Los gastos recurrentes son 700 por fin de semana, vendas lo que vendas. El margen de cada vela los va cubriendo.",
+          "line": "Paso 2. Punto de equilibrio: 700 ÷ 50 = 14 velas. La vela 15 es la primera con ganancia."
+        },
+        "pt-BR": {
+          "prompt": "Os custos recorrentes são 700 por fim de semana, venda o que vender. A margem de cada vela vai cobrindo esse valor.",
+          "line": "Passo 2. Ponto de equilíbrio: 700 ÷ 50 = 14 velas. A vela 15 é a primeira com lucro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "break-even"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "fixed": 600,
+        "price": 90,
+        "unit": 50,
+        "maxUnits": 40,
+        "start": 5
+      },
+      "rubric": {
+        "target": 15
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A smaller table: costs 600 a weekend, average sale 90, wax and jar 50. How many candles break even?",
+          "feedback": {
+            "met": "You matched the margin against the weekend costs.",
+            "not_yet": "Not yet. Revisit the last example: costs ÷ margin."
+          },
+          "help": [
+            "Margin is the sale price minus wax and jar."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una mesa más chica: gastos de 600 por fin de semana, venta promedio 90, cera y frasco 50. ¿Cuántas velas llegan al equilibrio?",
+          "feedback": {
+            "met": "Comparaste el margen con los gastos del fin de semana.",
+            "not_yet": "Todavía no. Repasa el último ejemplo: gastos ÷ margen."
+          },
+          "help": [
+            "El margen es el precio de venta menos la cera y el frasco."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma mesa menor: custos de 600 por fim de semana, venda média 90, cera e pote 50. Quantas velas atingem o equilíbrio?",
+          "feedback": {
+            "met": "Você comparou a margem com os custos do fim de semana.",
+            "not_yet": "Ainda não. Reveja o último exemplo: custos ÷ margem."
+          },
+          "help": [
+            "A margem é o preço de venda menos a cera e o pote."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-be-01",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "break-even"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "fixed": 800,
+        "price": 100,
+        "unit": 50,
+        "maxUnits": 40,
+        "start": 6
+      },
+      "rubric": {
+        "target": 16
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A busier market: costs 800 a weekend, average sale 100, wax and jar 50. How many candles break even?",
+          "feedback": {
+            "met": "You divided the weekend costs by the margin.",
+            "not_yet": "Not yet. Margin first, then costs ÷ margin."
+          },
+          "help": [
+            "Margin is the sale minus wax and jar."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un lugar más concurrido: gastos de 800 por fin de semana, venta promedio 100, cera y frasco 50. ¿Cuántas velas llegan al equilibrio?",
+          "feedback": {
+            "met": "Dividiste los gastos entre el margen.",
+            "not_yet": "Todavía no. Primero el margen; luego gastos ÷ margen."
+          },
+          "help": [
+            "El margen es la venta menos la cera y el frasco."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um lugar mais movimentado: custos de 800 por fim de semana, venda média 100, cera e pote 50. Quantas velas atingem o equilíbrio?",
+          "feedback": {
+            "met": "Você dividiu os custos pela margem.",
+            "not_yet": "Ainda não. Primeiro a margem; depois custos ÷ margem."
+          },
+          "help": [
+            "A margem é a venda menos a cera e o pote."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-ledger-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A ledger line has the day, what happened, the amount in or out, and the balance after.",
+          "line": "Step 3. From 100: sale +100 gives 200, then wax −50 gives 150. Each line keeps its balance."
+        },
+        "es-MX": {
+          "prompt": "Una línea del registro lleva el día, qué pasó, el monto que entra o sale y el saldo después.",
+          "line": "Paso 3. Desde 100: venta +100 da 200, luego cera −50 da 150. Cada línea guarda su saldo."
+        },
+        "pt-BR": {
+          "prompt": "Uma linha do registro tem o dia, o que aconteceu, o valor que entra ou sai e o saldo depois.",
+          "line": "Passo 3. De 100: venda +100 dá 200, depois cera −50 dá 150. Cada linha guarda o seu saldo."
+        }
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "initial": 100,
+        "sale": 100,
+        "cost": 50,
+        "maxEntries": 6
+      },
+      "rubric": {
+        "target_balance": 250
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cash box starts at 100. Log sales of 100 and supplies of 50 until it holds 250.",
+          "feedback": {
+            "met": "You logged each sale and cost with a running balance.",
+            "not_yet": "Not yet. Add each sale and subtract each supply cost."
+          },
+          "help": [
+            "Each sale adds to the balance; each supply cost subtracts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "La caja empieza con 100. Registra ventas de 100 e insumos de 50 hasta llegar a 250.",
+          "feedback": {
+            "met": "Registraste cada venta y cada gasto con su saldo.",
+            "not_yet": "Todavía no. Suma cada venta y resta cada insumo."
+          },
+          "help": [
+            "Cada venta suma al saldo; cada insumo resta."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O caixa começa com 100. Registre vendas de 100 e insumos de 50 até chegar a 250.",
+          "feedback": {
+            "met": "Você registrou cada venda e cada custo com o saldo.",
+            "not_yet": "Ainda não. Some cada venda e subtraia cada insumo."
+          },
+          "help": [
+            "Cada venda soma ao saldo; cada insumo subtrai."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-records-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Break-even is a line across your notebook: above it you earned, below it write down why.",
+          "line": "Step 4. Rainy Saturday, sold 11 against 14: three short, so 3 × 50 = 150 of the costs stay unpaid."
+        },
+        "es-MX": {
+          "prompt": "El punto de equilibrio es una línea en tus registros: arriba ganaste, abajo anota el motivo.",
+          "line": "Paso 4. Sábado de lluvia, vendiste 11 contra 14: faltan tres, así que 3 × 50 = 150 de los gastos quedan sin cubrir."
+        },
+        "pt-BR": {
+          "prompt": "O ponto de equilíbrio é uma linha nos seus registros: acima você ganhou, abaixo anote o motivo.",
+          "line": "Passo 4. Sábado de chuva, vendeu 11 contra 14: faltam três, então 3 × 50 = 150 dos custos ficam sem cobertura."
+        }
+      }
+    },
+    {
+      "id": "practice-chart-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "wk-1"
+            },
+            {
+              "id": "wk-2"
+            },
+            {
+              "id": "wk-3"
+            },
+            {
+              "id": "wk-4"
+            },
+            {
+              "id": "wk-5"
+            },
+            {
+              "id": "wk-6"
+            },
+            {
+              "id": "wk-7"
+            },
+            {
+              "id": "wk-8"
+            }
+          ],
+          "series": [
+            {
+              "id": "ser-sold",
+              "values": [
+                18,
+                20,
+                9,
+                22,
+                19,
+                8,
+                21,
+                19
+              ]
+            },
+            {
+              "id": "ser-break-even",
+              "values": [
+                14,
+                14,
+                14,
+                14,
+                14,
+                14,
+                14,
+                14
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-three-six"
+            },
+            {
+              "id": "ans-two-four"
+            },
+            {
+              "id": "ans-one-eight"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-three-six"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your notebook, eight weekends. The dashed line is break-even.",
+          "feedback": {
+            "met": "You compared each weekend with the break-even line.",
+            "not_yet": "Not yet. Look for points under the dashed line."
+          },
+          "help": [
+            "Compare each point with the dashed line."
+          ],
+          "title": "Candles sold per weekend",
+          "data": {
+            "categories": [
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "6"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Candles sold"
+              },
+              {
+                "label": "Break-even"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which weekends sold below break-even?",
+            "options": [
+              {
+                "label": "Weekends 3 and 6"
+              },
+              {
+                "label": "Weekends 2 and 4"
+              },
+              {
+                "label": "Weekends 1 and 8"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Tu cuaderno, ocho fines de semana. La línea punteada es el equilibrio.",
+          "feedback": {
+            "met": "Comparaste cada fin de semana con la línea de equilibrio.",
+            "not_yet": "Todavía no. Busca los puntos debajo de la línea punteada."
+          },
+          "help": [
+            "Compara cada punto con la línea punteada."
+          ],
+          "title": "Velas vendidas por fin de semana",
+          "data": {
+            "categories": [
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "6"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Velas vendidas"
+              },
+              {
+                "label": "Equilibrio"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué fines de semana quedaron debajo del equilibrio?",
+            "options": [
+              {
+                "label": "Fines de semana 3 y 6"
+              },
+              {
+                "label": "Fines de semana 2 y 4"
+              },
+              {
+                "label": "Fines de semana 1 y 8"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Seu caderno, oito fins de semana. A linha tracejada é o equilíbrio.",
+          "feedback": {
+            "met": "Você comparou cada fim de semana com a linha de equilíbrio.",
+            "not_yet": "Ainda não. Procure os pontos abaixo da linha tracejada."
+          },
+          "help": [
+            "Compare cada ponto com a linha tracejada."
+          ],
+          "title": "Velas vendidas por fim de semana",
+          "data": {
+            "categories": [
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "6"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Velas vendidas"
+              },
+              {
+                "label": "Equilíbrio"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quais fins de semana ficaram abaixo do equilíbrio?",
+            "options": [
+              {
+                "label": "Fins de semana 3 e 6"
+              },
+              {
+                "label": "Fins de semana 2 e 4"
+              },
+              {
+                "label": "Fins de semana 1 e 8"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-be-02",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "break-even"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "fixed": 700,
+        "price": 85,
+        "unit": 50,
+        "maxUnits": 40,
+        "start": 8
+      },
+      "rubric": {
+        "target": 20
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "After heavy discounts: average sale 85, costs 700, wax and jar 50. How many candles break even?",
+          "feedback": {
+            "met": "You used the smaller margin and found the new break-even.",
+            "not_yet": "Not yet. A lower sale price means a smaller margin."
+          },
+          "help": [
+            "Margin is the sale minus wax and jar."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Con descuentos fuertes: venta promedio 85, gastos 700, cera y frasco 50. ¿Cuántas velas llegan al equilibrio?",
+          "feedback": {
+            "met": "Usaste el margen menor y hallaste el nuevo equilibrio.",
+            "not_yet": "Todavía no. Un precio menor deja un margen menor."
+          },
+          "help": [
+            "El margen es la venta menos la cera y el frasco."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com descontos fortes: venda média 85, custos 700, cera e pote 50. Quantas velas atingem o equilíbrio?",
+          "feedback": {
+            "met": "Você usou a margem menor e achou o novo equilíbrio.",
+            "not_yet": "Ainda não. Um preço menor deixa uma margem menor."
+          },
+          "help": [
+            "A margem é a venda menos a cera e o pote."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "break-even"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "fixed": 160,
+        "price": 8,
+        "unit": 3,
+        "maxUnits": 60,
+        "start": 10
+      },
+      "rubric": {
+        "target": 32
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You add soap: 160 extra for molds, sold at 8, materials 3. How many soaps cover the molds?",
+          "feedback": {
+            "met": "You adapted the method to a new product.",
+            "not_yet": "Not yet. Extra costs ÷ margin per soap, as before."
+          }
+        },
+        "es-MX": {
+          "prompt": "Añades jabones: 160 extra por los moldes, a 8 cada uno, insumos 3. ¿Cuántos jabones cubren los moldes?",
+          "feedback": {
+            "met": "Adaptaste el método a un producto nuevo.",
+            "not_yet": "Todavía no. Gasto extra ÷ margen por jabón, como antes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Você adiciona sabonetes: 160 extras pelas fôrmas, a 8 cada, insumos 3. Quantos sabonetes cobrem as fôrmas?",
+          "feedback": {
+            "met": "Você adaptou o método a um produto novo.",
+            "not_yet": "Ainda não. Custo extra ÷ margem por sabonete, como antes."
+          }
+        }
+      }
+    }
+  ]
+}

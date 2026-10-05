@@ -1,0 +1,309 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-03-needs-and-wants",
+  "age_band": "6-9",
+  "eligibility": { "minimum_age": 6, "maximum_age": 9 },
+  "knowledge_component_ids": ["life.wants-and-choices"],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": { "character": "liruf", "scene": "diorama-b" },
+  "brief": "En el mercado, Liruf gasta sus monedas en un juguete antes que en el pan, se queda sin poder pagar lo que necesita, lo arregla y dice qué hará la próxima vez. Luego el niño ordena cosas entre necesidades y deseos, y decide qué comprar primero cuando las monedas no alcanzan para todo.",
+  "title": {
+    "en-US": "Needs and wants",
+    "es-MX": "Necesidades y deseos",
+    "pt-BR": "Necessidades e desejos"
+  },
+  "new_concepts": ["life.wants-and-choices"],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf spends his coins on a toy first, then has no coins left to pay for the bread he needs.",
+    "recovery": "Liruf swaps the toy for the bread and says that next time he will ask first: need or want?"
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "intro-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "differentiated" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to your Mentor.",
+          "line": "A need keeps us well. A want is nice to have.",
+          "narration": { "script": "Hi, I am Liruf. A need is something you cannot go without, like water or food. A want is something you like, but you could live without. Let us sort a few things together." }
+        },
+        "es-MX": {
+          "prompt": "Escucha a tu Mentor.",
+          "line": "Una necesidad nos mantiene bien. Un deseo es algo bonito de tener.",
+          "narration": { "script": "Hola, soy Liruf. Una necesidad es algo que no puedes dejar de tener, como el agua o la comida. Un deseo es algo que te gusta, pero podrías vivir sin él. Vamos a ordenar algunas cosas juntos." }
+        },
+        "pt-BR": {
+          "prompt": "Ouça seu Mentor.",
+          "line": "Uma necessidade nos mantém bem. Um desejo é algo bom de ter.",
+          "narration": { "script": "Oi, eu sou o Liruf. Uma necessidade é algo de que você não pode abrir mão, como água ou comida. Um desejo é algo de que você gosta, mas poderia viver sem. Vamos separar algumas coisas juntos." }
+        }
+      }
+    },
+    {
+      "id": "sort-01",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "practice",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-water" }, { "id": "item-sticker" }, { "id": "item-bread" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-water": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-sticker": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-bread": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort each thing. Then pick why.",
+          "feedback": {
+            "met": "Water and bread are needs. Stickers are wants.",
+            "not_yet": "Not yet. Ask: could we go without it?"
+          },
+          "help": ["Water keeps us well. Does a sticker?", "A need keeps us well. A want is just fun."],
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Water" }, { "label": "Sticker" }, { "label": "Bread" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }]
+        },
+        "es-MX": {
+          "prompt": "Ordena cada cosa. Luego elige por qué.",
+          "feedback": {
+            "met": "El agua y el pan son necesidades. Las calcomanías son deseos.",
+            "not_yet": "Todavía no. Pregunta: ¿podríamos pasar sin eso?"
+          },
+          "help": ["El agua nos mantiene bien. ¿Y una calcomanía?", "Una necesidad nos mantiene bien. Un deseo es solo diversión."],
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Agua" }, { "label": "Calcomanía" }, { "label": "Pan" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }]
+        },
+        "pt-BR": {
+          "prompt": "Separe cada coisa. Depois escolha por quê.",
+          "feedback": {
+            "met": "Água e pão são necessidades. Figurinhas são desejos.",
+            "not_yet": "Ainda não. Pergunte: dá para ficar sem isso?"
+          },
+          "help": ["A água nos mantém bem. E uma figurinha?", "Uma necessidade nos mantém bem. Um desejo é só diversão."],
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Água" }, { "label": "Figurinha" }, { "label": "Pão" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "I came to the market with a few coins.",
+          "misjudgment": "I bought a toy first. Then I had no coins for bread.",
+          "recovery": "I swapped the toy for bread. I'll ask first: need or want?"
+        },
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Liruf.",
+          "setup": "Fui al mercado con algunas monedas.",
+          "misjudgment": "Compré un juguete primero. Luego no tuve monedas para el pan.",
+          "recovery": "Cambié el juguete por pan. Primero voy a preguntar: ¿necesidad o deseo?"
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Fui ao mercadinho com algumas moedas.",
+          "misjudgment": "Comprei um brinquedo primeiro. Depois não tive moedas para o pão.",
+          "recovery": "Troquei o brinquedo pelo pão. Primeiro vou perguntar: necessidade ou desejo?"
+        }
+      }
+    },
+    {
+      "id": "sort-02",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "practice",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-lunch" }, { "id": "item-candy" }, { "id": "item-new-shoes" }, { "id": "item-toy-robot" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }, { "id": "why-old-shoes-no-longer-serve" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-lunch": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-candy": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-new-shoes": [{ "bin": "bin-need", "reason": "why-old-shoes-no-longer-serve" }],
+          "item-toy-robot": [{ "bin": "bin-want", "reason": "why-just-fun" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your old shoes do not fit. Sort each thing, pick why.",
+          "feedback": {
+            "met": "Old shoes do not fit, so new ones are a need.",
+            "not_yet": "Not yet. Ask if we can go without it, then pick why."
+          },
+          "help": ["Think of Liruf: toy first, no bread.", "Shoes: can you go out without a pair that fits?"],
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Lunch" }, { "label": "Candy" }, { "label": "New shoes" }, { "label": "Toy robot" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }, { "label": "Old shoes do not fit" }]
+        },
+        "es-MX": {
+          "prompt": "Tus zapatos viejos ya no te quedan. Ordena y elige por qué.",
+          "feedback": {
+            "met": "Si los viejos no te quedan, los nuevos son necesidad.",
+            "not_yet": "Todavía no. Pregunta si podemos pasar sin eso y elige por qué."
+          },
+          "help": ["Piensa en Liruf: juguete primero, sin pan.", "Zapatos: ¿puedes salir sin unos que te queden?"],
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Comida" }, { "label": "Dulce" }, { "label": "Zapatos nuevos" }, { "label": "Robot de juguete" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }, { "label": "Mis zapatos viejos ya no sirven" }]
+        },
+        "pt-BR": {
+          "prompt": "Seu tênis velho não serve mais. Separe e escolha por quê.",
+          "feedback": {
+            "met": "Se o velho não serve, o novo é necessidade.",
+            "not_yet": "Ainda não. Pergunte se dá para ficar sem e escolha por quê."
+          },
+          "help": ["Pense no Liruf: brinquedo primeiro, sem pão.", "Tênis: dá para sair sem um que sirva?"],
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Almoço" }, { "label": "Doce" }, { "label": "Tênis novo" }, { "label": "Robô de brinquedo" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }, { "label": "Tênis velho não serve" }]
+        }
+      }
+    },
+    {
+      "id": "sort-03",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": { "type": "sort-bins" },
+      "item_role": "transfer",
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": {
+        "bins": [{ "id": "bin-need" }, { "id": "bin-want" }],
+        "items": [{ "id": "item-water-bottle" }, { "id": "item-toy-camera" }, { "id": "item-rain-jacket" }, { "id": "item-sandwich" }],
+        "reasons": [{ "id": "why-cannot-go-without" }, { "id": "why-just-fun" }, { "id": "why-will-rain" }]
+      },
+      "rubric": {
+        "accepted": {
+          "item-water-bottle": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }],
+          "item-toy-camera": [{ "bin": "bin-want", "reason": "why-just-fun" }],
+          "item-rain-jacket": [{ "bin": "bin-need", "reason": "why-will-rain" }],
+          "item-sandwich": [{ "bin": "bin-need", "reason": "why-cannot-go-without" }]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "School trip: the forecast says rain. Sort each, pick why.",
+          "feedback": {
+            "met": "Water, food and jacket are needs. The camera is a want.",
+            "not_yet": "Not yet. Ask: do we need it for the trip?"
+          },
+          "help": ["Picture the trip. What could we not go without?", "Think: what happens without a rain jacket if it rains?"],
+          "bins": [{ "label": "Need" }, { "label": "Want" }],
+          "items": [{ "label": "Water bottle" }, { "label": "Toy camera" }, { "label": "Rain jacket" }, { "label": "Sandwich" }],
+          "reasons": [{ "label": "We cannot go without it" }, { "label": "It is just for fun" }, { "label": "Rain would get me wet" }]
+        },
+        "es-MX": {
+          "prompt": "Paseo escolar: el pronóstico dice lluvia. Ordena y elige por qué.",
+          "feedback": {
+            "met": "El agua, la comida y el impermeable son necesidades. La cámara, deseo.",
+            "not_yet": "Todavía no. Pregunta: ¿lo necesitamos para el paseo?"
+          },
+          "help": ["Imagina el paseo. ¿Sin qué no podríamos ir?", "Piensa: ¿qué te pasa sin impermeable si llueve?"],
+          "bins": [{ "label": "Necesidad" }, { "label": "Deseo" }],
+          "items": [{ "label": "Botella de agua" }, { "label": "Cámara de juguete" }, { "label": "Impermeable" }, { "label": "Torta" }],
+          "reasons": [{ "label": "No podemos pasar sin eso" }, { "label": "Es solo para divertirnos" }, { "label": "Si llueve, me mojo" }]
+        },
+        "pt-BR": {
+          "prompt": "Passeio da escola: a previsão diz chuva. Separe e escolha por quê.",
+          "feedback": {
+            "met": "Água, comida e capa de chuva são necessidades. A câmera é desejo.",
+            "not_yet": "Ainda não. Pergunte: precisamos disso no passeio?"
+          },
+          "help": ["Imagine o passeio. Sem o que não dá para ir?", "Pense: o que acontece sem capa de chuva se chover?"],
+          "bins": [{ "label": "Necessidade" }, { "label": "Desejo" }],
+          "items": [{ "label": "Garrafa de água" }, { "label": "Câmera de brinquedo" }, { "label": "Capa de chuva" }, { "label": "Sanduíche" }],
+          "reasons": [{ "label": "Não dá para ficar sem" }, { "label": "É só para brincar" }, { "label": "Se chover, eu me molho" }]
+        }
+      }
+    },
+    {
+      "id": "story-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": { "type": "story-scene" },
+      "knowledge_component_id": "life.wants-and-choices",
+      "payload": { "options": [{ "id": "opt-toy-first" }, { "id": "opt-bread-first" }] },
+      "rubric": { "acceptable_choice_ids": ["opt-bread-first"] },
+      "copy": {
+        "en-US": {
+          "prompt": "What do you buy first?",
+          "feedback": {
+            "met": "Bread first: dinner is ready and the toy waits for another day.",
+            "not_yet": "Toy first: no coins left for bread. Try again."
+          },
+          "scene": "Market day. You have coins for the toy or the bread, not both. The bread is for dinner tonight.",
+          "options": [{ "label": "Buy the toy first" }, { "label": "Buy the bread first" }]
+        },
+        "es-MX": {
+          "prompt": "¿Qué compras primero?",
+          "feedback": {
+            "met": "Pan primero: la cena está lista y el juguete espera para otro día.",
+            "not_yet": "Juguete primero: ya no alcanza para el pan. Prueba otra vez."
+          },
+          "scene": "Día de mercado. Tienes monedas para el juguete o para el pan, no para los dos. El pan es para la cena de hoy.",
+          "options": [{ "label": "Comprar primero el juguete" }, { "label": "Comprar primero el pan" }]
+        },
+        "pt-BR": {
+          "prompt": "O que você compra primeiro?",
+          "feedback": {
+            "met": "Pão primeiro: o jantar está pronto e o brinquedo espera outro dia.",
+            "not_yet": "Brinquedo primeiro: sem moedas para o pão. Tente de novo."
+          },
+          "scene": "Dia de compras. Você tem moedas para o brinquedo ou para o pão, não para os dois. O pão é para o jantar de hoje.",
+          "options": [{ "label": "Comprar primeiro o brinquedo" }, { "label": "Comprar primeiro o pão" }]
+        }
+      }
+    },
+    {
+      "id": "wrap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "wrap", "narration": { "mode": "differentiated" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Liruf.",
+          "line": "Ask: can I go without it? Needs first, then wants.",
+          "narration": { "script": "Wants are fine too. Before you spend your coins, think about your needs first. And new shoes can be both: it depends on whether the old ones still work." }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Liruf.",
+          "line": "Pregunta: ¿puedo pasar sin eso? Primero necesidades, luego deseos.",
+          "narration": { "script": "Los deseos también están bien. Antes de gastar tus monedas, piensa primero en tus necesidades. Y unos zapatos nuevos pueden ser las dos cosas: depende de si los viejos todavía sirven." }
+        },
+        "pt-BR": {
+          "prompt": "Ouça o Liruf.",
+          "line": "Pergunte: posso ficar sem isso? Primeiro necessidades, depois desejos.",
+          "narration": { "script": "Desejos também são legais. Antes de gastar suas moedas, pense primeiro nas suas necessidades. E um tênis novo pode ser as duas coisas: depende de o velho ainda servir." }
+        }
+      }
+    }
+  ]
+}

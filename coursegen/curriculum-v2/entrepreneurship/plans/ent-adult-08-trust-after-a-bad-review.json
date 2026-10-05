@@ -1,0 +1,1030 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-trusted-deals",
+  "lesson_id": "ent-adult-08-trust-after-a-bad-review",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.reputation",
+    "biz.customer-feedback"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Una reseña de 2 estrellas dice que una reparación de tu taller móvil de bicicletas no duró. Zara te muestra rápido cómo responder: revisar tus registros, agradecer, decir lo que es cierto y ofrecer una solución que puedas cumplir. Eliges la respuesta pública, lees qué causas repiten las quejas y decides cuándo responder y cuándo corregir el problema. Las cifras son ilustrativas.",
+  "title": {
+    "es-MX": "Confianza tras una mala reseña",
+    "en-US": "Trust after a bad review",
+    "pt-BR": "Confiança após uma avaliação ruim"
+  },
+  "new_concepts": [
+    "biz.reputation"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Tu taller móvil de bicicletas promedia 4.6 en las reseñas de Google Maps y los vecinos te recomiendan por WhatsApp. Una reseña nueva de 2 estrellas dice que una reparación de frenos “no duró”, y tu factura muestra la reparación y su fecha. Las cifras son ilustrativas.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "factura"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Sua bicicletaria móvel tem média 4,6 nas avaliações do Google e os vizinhos indicam você pelo WhatsApp. Uma nova avaliação de 2 estrelas diz que um reparo de freios “não durou”, e sua nota fiscal mostra o reparo e a data. Os valores são ilustrativos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "nota fiscal"
+        ]
+      },
+      "en-US": {
+        "scenario": "Your mobile bike repair business averages 4.6 on Google reviews, and neighbors recommend you in the community chat. A new 2-star review says a brake repair “never lasted,” and your invoice shows the repair and its date. Figures are illustrative.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "invoice"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu reputación es confianza ganada: 4.6 estrellas en Google. Una reseña nueva de 2 estrellas dice que una reparación “no duró”.",
+          "line": "Rápido. Primero una verificación breve con otra reseña, luego vamos paso a paso."
+        },
+        "en-US": {
+          "prompt": "Your reputation is trust earned: 4.6 stars on Google. A new 2-star review says a repair “never lasted.”",
+          "line": "Quick. One short check on a different review first, then we go step by step."
+        },
+        "pt-BR": {
+          "prompt": "Sua reputação é confiança conquistada: média 4,6 no Google. Uma nova avaliação de 2 estrelas diz que um reparo “não durou”.",
+          "line": "Rápido. Primeiro uma checagem breve com outra avaliação, depois vamos passo a passo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.reputation",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-argue"
+          },
+          {
+            "id": "opt-delete"
+          },
+          {
+            "id": "opt-thank"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-thank"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Su reseña es pública. ¿Qué respuesta publicas?",
+          "feedback": {
+            "met": "Anotado. Ahora vamos paso a paso.",
+            "not_yet": "Anotado. Ahora vamos paso a paso."
+          },
+          "scene": "Una clienta publica 2 estrellas: “Cotizaron $300 y cobraron $450. Poco honestos.” Tu factura muestra $300 de mano de obra más una cadena de $150 que ella aprobó por mensaje.",
+          "options": [
+            {
+              "label": "Decirle que lo aprobó y que se equivoca"
+            },
+            {
+              "label": "Pedir al sitio que borre la reseña"
+            },
+            {
+              "label": "Agradecerle, mostrar la factura y ofrecer una llamada"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Her review is public. Which reply do you post?",
+          "feedback": {
+            "met": "Noted. Now we go step by step.",
+            "not_yet": "Noted. Now we go step by step."
+          },
+          "scene": "A customer posts 2 stars: “Quoted $30, charged $45. Not honest.” Your invoice shows $30 labor plus a $15 chain she approved by message.",
+          "options": [
+            {
+              "label": "Tell her she approved it and is wrong"
+            },
+            {
+              "label": "Ask the site to delete the review"
+            },
+            {
+              "label": "Thank her, show the invoice, offer a call"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A avaliação dela é pública. Qual resposta você posta?",
+          "feedback": {
+            "met": "Anotado. Agora vamos passo a passo.",
+            "not_yet": "Anotado. Agora vamos passo a passo."
+          },
+          "scene": "Uma cliente publica 2 estrelas: “Orçaram R$ 90 e cobraram R$ 135. Nada honesto.” Sua nota fiscal mostra R$ 90 de mão de obra mais uma corrente de R$ 45 que ela aprovou por mensagem.",
+          "options": [
+            {
+              "label": "Dizer que ela aprovou e está errada"
+            },
+            {
+              "label": "Pedir ao site que apague a avaliação"
+            },
+            {
+              "label": "Agradecer, mostrar a nota fiscal e oferecer uma ligação"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-records",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, una reseña de 3 estrellas dice que llegaste 40 minutos tarde. Revisa primero tus propios registros.",
+          "line": "Tu bitácora marca 38 minutos de retraso. Lo cierto, lo asumes; lo que no aparece, lo preguntas."
+        },
+        "en-US": {
+          "prompt": "Step 1, a 3-star review says you came 40 minutes late. Check your own records first.",
+          "line": "The log says 38 minutes late. What is true, you own; what you cannot find, you ask about."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, uma avaliação de 3 estrelas diz que você chegou 40 minutos atrasado. Confira primeiro seus próprios registros.",
+          "line": "O registro de rota marca 38 minutos de atraso. O que é verdade, você assume; o que não aparece, você pergunta."
+        }
+      }
+    },
+    {
+      "id": "ex-thank",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, respondes: “Gracias por escribir, llegamos 38 minutos tarde y debimos avisar.”",
+          "line": "Primero el agradecimiento, luego los hechos. Sin excusas ni culpas."
+        },
+        "en-US": {
+          "prompt": "Step 2, you reply: “Thank you for writing, we arrived 38 minutes late and should have called.”",
+          "line": "Thanks first, then the facts. No excuses, no blame."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, você responde: “Agradecemos o contato, chegamos 38 minutos atrasados e devíamos ter avisado.”",
+          "line": "Primeiro o agradecimento, depois os fatos. Sem desculpas nem culpa."
+        }
+      }
+    },
+    {
+      "id": "ex-offer",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, agrega una oferta que puedas cumplir: “En la próxima visita aviso antes, y la revisión es gratis.”",
+          "line": "Promete solo lo que harás. Una promesa pequeña cumplida reconstruye confianza."
+        },
+        "en-US": {
+          "prompt": "Step 3, add an offer you can keep: “Next visit I call ahead, and the check is free.”",
+          "line": "Promise only what you will do. A small kept promise rebuilds trust."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, acrescente uma oferta que você possa cumprir: “Na próxima visita aviso antes, e a revisão é grátis.”",
+          "line": "Prometa só o que fará. Uma promessa pequena cumprida reconstrói a confiança."
+        }
+      }
+    },
+    {
+      "id": "guided-reply",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.reputation",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-thank-facts"
+          },
+          {
+            "id": "opt-remove"
+          },
+          {
+            "id": "opt-blame"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-thank-facts"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu turno con su reseña. ¿Qué respuesta publicas?",
+          "feedback": {
+            "met": "Agradeciste, citaste los hechos y ofreciste una revisión.",
+            "not_yet": "Todavía no. ¿Qué respuesta cuida su confianza y usa los hechos?"
+          },
+          "help": [
+            "Pasos 2 y 3: agradece, di lo que es cierto y ofrece algo que puedas cumplir."
+          ],
+          "scene": "Una clienta publica 2 estrellas: “La reparación de frenos no duró.” Tu factura muestra balatas delanteras cambiadas hace tres semanas.",
+          "options": [
+            {
+              "label": "Agradecer, citar la factura y ofrecer una revisión"
+            },
+            {
+              "label": "Pedir al sitio que quite la reseña"
+            },
+            {
+              "label": "Responder que los frenos se gastan, no es tu culpa"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Your turn on her review. Which reply do you post?",
+          "feedback": {
+            "met": "You thanked her, cited the facts and offered a check.",
+            "not_yet": "Not yet. Which reply protects her trust and uses the facts?"
+          },
+          "help": [
+            "Steps 2 and 3: thank, say what is true, offer something you can keep."
+          ],
+          "scene": "A customer posts 2 stars: “The brake repair never lasted.” Your invoice shows front pads replaced three weeks ago.",
+          "options": [
+            {
+              "label": "Thank her, cite the invoice, offer a check"
+            },
+            {
+              "label": "Ask the site to remove the review"
+            },
+            {
+              "label": "Reply that brakes wear out, not your fault"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua vez com a avaliação dela. Qual resposta você posta?",
+          "feedback": {
+            "met": "Você agradeceu, citou os fatos e ofereceu uma revisão.",
+            "not_yet": "Ainda não. Qual resposta cuida da confiança dela e usa os fatos?"
+          },
+          "help": [
+            "Passos 2 e 3: agradeça, diga o que é verdade e ofereça algo que possa cumprir."
+          ],
+          "scene": "Uma cliente publica 2 estrelas: “O reparo dos freios não durou.” Sua nota fiscal mostra pastilhas dianteiras trocadas há três semanas.",
+          "options": [
+            {
+              "label": "Agradecer, citar a nota fiscal e oferecer uma revisão"
+            },
+            {
+              "label": "Pedir ao site que remova a avaliação"
+            },
+            {
+              "label": "Responder que freios se desgastam, a culpa não é sua"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-chart",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "data": {
+          "unit": "points",
+          "categories": [
+            {
+              "id": "cat-start"
+            },
+            {
+              "id": "cat-m1"
+            },
+            {
+              "id": "cat-m2"
+            },
+            {
+              "id": "cat-m3"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-rating",
+              "values": [
+                4.6,
+                4.5,
+                4.6,
+                4.7
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La confianza se suma despacio. Tu calificación en tres meses: 4.6, 4.5, 4.6 y luego 4.7.",
+          "help": [
+            "Ninguna respuesta la movió sola; muchas promesas cumplidas se suman con el tiempo."
+          ],
+          "title": "Calificación media por mes, ilustrativa",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Mes 1"
+              },
+              {
+                "label": "Mes 2"
+              },
+              {
+                "label": "Mes 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Calificación media"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Trust adds up slowly. Your rating over three months: 4.6, 4.5, 4.6, then 4.7.",
+          "help": [
+            "No single reply moved it; many kept promises add up over time."
+          ],
+          "title": "Average rating by month, illustrative",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Month 1"
+              },
+              {
+                "label": "Month 2"
+              },
+              {
+                "label": "Month 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Average rating"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A confiança se soma devagar. Sua nota em três meses: 4,6, 4,5, 4,6 e depois 4,7.",
+          "help": [
+            "Nenhuma resposta a moveu sozinha; muitas promessas cumpridas se somam com o tempo."
+          ],
+          "title": "Nota média por mês, ilustrativa",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Mês 1"
+              },
+              {
+                "label": "Mês 2"
+              },
+              {
+                "label": "Mês 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Nota média"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-pareto",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "pareto"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-lasted"
+            },
+            {
+              "id": "cat-late"
+            },
+            {
+              "id": "cat-price"
+            },
+            {
+              "id": "cat-reach"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-reviews",
+              "values": [
+                8,
+                6,
+                4,
+                2
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-price"
+            },
+            {
+              "id": "ans-lasted"
+            },
+            {
+              "id": "ans-late"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-lasted"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Lee las barras de tus 20 reseñas más bajas.",
+          "feedback": {
+            "met": "Elegiste la causa que más se repite.",
+            "not_yet": "Todavía no. Compara las barras: ¿qué causa se repite más?"
+          },
+          "help": [
+            "Una respuesta atiende a un cliente. La barra más alta muestra qué corregir para todos."
+          ],
+          "title": "De qué se quejan 20 reseñas bajas",
+          "data": {
+            "categories": [
+              {
+                "label": "La reparación no duró"
+              },
+              {
+                "label": "Llegada tardía"
+              },
+              {
+                "label": "Cambio de precio"
+              },
+              {
+                "label": "Difícil de contactar"
+              }
+            ],
+            "series": [
+              {
+                "label": "Reseñas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué causa corriges primero?",
+            "options": [
+              {
+                "label": "Cambio de precio"
+              },
+              {
+                "label": "La reparación no duró"
+              },
+              {
+                "label": "Llegada tardía"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Read the bars of your 20 lowest reviews.",
+          "feedback": {
+            "met": "You chose the cause that repeats most.",
+            "not_yet": "Not yet. Compare the bars: which cause repeats most?"
+          },
+          "help": [
+            "A reply answers one customer. The tallest bar shows what to fix for all."
+          ],
+          "title": "What 20 low-star reviews complain about",
+          "data": {
+            "categories": [
+              {
+                "label": "Repair did not last"
+              },
+              {
+                "label": "Arrived late"
+              },
+              {
+                "label": "Price changed"
+              },
+              {
+                "label": "Hard to reach"
+              }
+            ],
+            "series": [
+              {
+                "label": "Reviews"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which cause do you fix first?",
+            "options": [
+              {
+                "label": "Price changed"
+              },
+              {
+                "label": "Repair did not last"
+              },
+              {
+                "label": "Arrived late"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia as barras das suas 20 avaliações mais baixas.",
+          "feedback": {
+            "met": "Você escolheu a causa que mais se repete.",
+            "not_yet": "Ainda não. Compare as barras: que causa mais se repete?"
+          },
+          "help": [
+            "Uma resposta atende um cliente. A barra mais alta mostra o que corrigir para todos."
+          ],
+          "title": "Do que reclamam 20 avaliações baixas",
+          "data": {
+            "categories": [
+              {
+                "label": "O reparo não durou"
+              },
+              {
+                "label": "Chegada atrasada"
+              },
+              {
+                "label": "Mudança de preço"
+              },
+              {
+                "label": "Difícil de contatar"
+              }
+            ],
+            "series": [
+              {
+                "label": "Avaliações"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Que causa você corrige primeiro?",
+            "options": [
+              {
+                "label": "Mudança de preço"
+              },
+              {
+                "label": "O reparo não durou"
+              },
+              {
+                "label": "Chegada atrasada"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-decide",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-reply-only"
+          },
+          {
+            "id": "choice-ignore"
+          },
+          {
+            "id": "choice-reply-fix"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-public"
+          },
+          {
+            "id": "reason-fix"
+          },
+          {
+            "id": "reason-noise"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-reply-fix"
+        ],
+        "reasonQuality": {
+          "reason-fix": "sound",
+          "reason-public": "partial",
+          "reason-noise": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Una novena reseña dice que una reparación falló; ocho de tus 20 reseñas bajas ya lo decían. ¿Qué haces?",
+          "feedback": {
+            "met": "Le respondiste y atacaste la causa que se repite.",
+            "not_yet": "Todavía no. ¿Una respuesta sola cambia lo que se repite?"
+          },
+          "help": [
+            "Recuerda las barras: una respuesta atiende a un cliente; una corrección llega a todos."
+          ],
+          "choices": [
+            {
+              "label": "Respondo con amabilidad y no cambio nada más"
+            },
+            {
+              "label": "La omito; una reseña es solo ruido"
+            },
+            {
+              "label": "Respondo a la persona y corrijo la causa"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda tu elección?",
+          "reasons": [
+            {
+              "label": "Otros leen mi respuesta y ven que contesté"
+            },
+            {
+              "label": "Una respuesta ayuda a uno; una corrección, a todos"
+            },
+            {
+              "label": "Una reseña más no cambia nada"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A ninth review says a repair failed; eight of your 20 low reviews already did. Your move?",
+          "feedback": {
+            "met": "You answered them and went after the cause that repeats.",
+            "not_yet": "Not yet. Does a reply alone change what repeats?"
+          },
+          "help": [
+            "Recall the bars: a reply answers one customer; a fix reaches all."
+          ],
+          "choices": [
+            {
+              "label": "Reply kindly and change nothing else"
+            },
+            {
+              "label": "Skip it; one review is only noise"
+            },
+            {
+              "label": "Reply to them, then fix the cause"
+            }
+          ],
+          "reasonPrompt": "Which reason backs your choice?",
+          "reasons": [
+            {
+              "label": "Others read my reply and see I answered"
+            },
+            {
+              "label": "A reply helps one; a fix helps everyone"
+            },
+            {
+              "label": "One more review changes nothing"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma nona avaliação diz que um reparo falhou; oito das suas 20 avaliações baixas já diziam isso. O que você faz?",
+          "feedback": {
+            "met": "Você respondeu e foi atrás da causa que se repete.",
+            "not_yet": "Ainda não. Uma resposta sozinha muda o que se repete?"
+          },
+          "help": [
+            "Lembre das barras: uma resposta atende um cliente; uma correção alcança todos."
+          ],
+          "choices": [
+            {
+              "label": "Respondo com educação e não mudo mais nada"
+            },
+            {
+              "label": "Ignoro; uma avaliação é só ruído"
+            },
+            {
+              "label": "Respondo à pessoa e corrijo a causa"
+            }
+          ],
+          "reasonPrompt": "Qual razão sustenta sua escolha?",
+          "reasons": [
+            {
+              "label": "Outros leem minha resposta e veem que respondi"
+            },
+            {
+              "label": "Uma resposta ajuda um; uma correção ajuda todos"
+            },
+            {
+              "label": "Mais uma avaliação não muda nada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-records",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.reputation",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-thank-records"
+          },
+          {
+            "id": "opt-accuse"
+          },
+          {
+            "id": "opt-silent"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-thank-records"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "¿Qué respuesta publicas?",
+          "feedback": {
+            "met": "Agradeciste, citaste tus registros y pediste detalles.",
+            "not_yet": "Todavía no. ¿Qué respuesta es cortés y aun así dice los hechos?"
+          },
+          "help": [
+            "Pasos 1 y 2: los hechos de tus registros, dichos con agradecimiento."
+          ],
+          "scene": "Alguien publica 2 estrellas: “Nunca arreglaron mi rueda y ignoraron mis llamadas.” Revisas tus registros: no hay visita ni llamada de ese nombre.",
+          "options": [
+            {
+              "label": "Agradecer, citar tus registros y pedir detalles"
+            },
+            {
+              "label": "Decirle que miente"
+            },
+            {
+              "label": "No responder; esa visita no fue tuya"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Which reply do you post?",
+          "feedback": {
+            "met": "You thanked them, cited your records and asked for details.",
+            "not_yet": "Not yet. Which reply stays polite and still states the facts?"
+          },
+          "help": [
+            "Steps 1 and 2: the facts from your records, said with thanks."
+          ],
+          "scene": "Someone posts 2 stars: “They never fixed my wheel and ignored my calls.” You check your records: no visit and no call from that name.",
+          "options": [
+            {
+              "label": "Thank them, state the records, ask for details"
+            },
+            {
+              "label": "Tell them they are lying"
+            },
+            {
+              "label": "Leave it unanswered; it is not your visit"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta você posta?",
+          "feedback": {
+            "met": "Você agradeceu, citou seus registros e pediu detalhes.",
+            "not_yet": "Ainda não. Qual resposta é educada e ainda diz os fatos?"
+          },
+          "help": [
+            "Passos 1 e 2: os fatos dos seus registros, ditos com agradecimento."
+          ],
+          "scene": "Alguém publica 2 estrelas: “Nunca consertaram minha roda e ignoraram minhas ligações.” Você confere seus registros: nenhuma visita nem ligação com esse nome.",
+          "options": [
+            {
+              "label": "Agradecer, citar seus registros e pedir detalhes"
+            },
+            {
+              "label": "Dizer que a pessoa está mentindo"
+            },
+            {
+              "label": "Não responder; não foi uma visita sua"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.reputation",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-remove-post"
+          },
+          {
+            "id": "opt-own-fix"
+          },
+          {
+            "id": "opt-excuse"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-own-fix"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Todo el grupo lo lee. ¿Qué respuesta publicas?",
+          "feedback": {
+            "met": "Agradeciste, reconociste el error y ofreciste arreglarlo.",
+            "not_yet": "Todavía no. ¿Qué respuesta reconoce lo que es cierto?"
+          },
+          "help": [
+            "Recuerda los Pasos 2 y 3: reconoce lo cierto y ofrece algo que puedas cumplir."
+          ],
+          "scene": "Un vecino escribe en el grupo de WhatsApp de la colonia que la cámara que pusiste se ponchó al día siguiente. Tus registros muestran que era la medida incorrecta para la rueda.",
+          "options": [
+            {
+              "label": "Pedir al administrador que borre el mensaje"
+            },
+            {
+              "label": "Agradecer, reconocer el error y ofrecer arreglarlo"
+            },
+            {
+              "label": "Responder que las cámaras se ponchan siempre"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Everyone in the chat reads this. Which reply do you post?",
+          "feedback": {
+            "met": "You thanked them, owned the error and offered a fix.",
+            "not_yet": "Not yet. Which reply owns what is true?"
+          },
+          "help": [
+            "Recall Steps 2 and 3: own what is true, then offer a fix you can keep."
+          ],
+          "scene": "A neighbor writes in the community chat that the tube you fitted went flat the next day. Your records show it was the wrong size for the wheel.",
+          "options": [
+            {
+              "label": "Ask the chat admin to remove the post"
+            },
+            {
+              "label": "Thank them, own the error, offer a fix"
+            },
+            {
+              "label": "Reply that tubes go flat all the time"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Todo o grupo lê isso. Qual resposta você posta?",
+          "feedback": {
+            "met": "Você agradeceu, assumiu o erro e ofereceu o conserto.",
+            "not_yet": "Ainda não. Qual resposta assume o que é verdade?"
+          },
+          "help": [
+            "Lembre dos Passos 2 e 3: assuma o que é verdade e ofereça algo que possa cumprir."
+          ],
+          "scene": "Um vizinho escreve no grupo de WhatsApp do bairro que a câmara de ar que você colocou furou no dia seguinte. Seus registros mostram que era o tamanho errado para a roda.",
+          "options": [
+            {
+              "label": "Pedir ao administrador que apague a mensagem"
+            },
+            {
+              "label": "Agradecer, assumir o erro e oferecer o conserto"
+            },
+            {
+              "label": "Responder que câmara de ar fura o tempo todo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

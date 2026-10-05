@@ -1,0 +1,249 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-know-your-numbers",
+  "lesson_id": "ent-1317-08-price-and-demand",
+  "age_band": "13-17",
+  "eligibility": { "minimum_age": 13, "maximum_age": 17 },
+  "knowledge_component_ids": ["biz.pricing-strategy", "biz.margin", "biz.profit"],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": { "character": "zara", "scene": "diorama-b" },
+  "brief": "Zara probó tus limpiezas de tenis a 20, 25 y 30 monedas durante tres meses, con 24, 20 y 11 pares vendidos y 9 de costo por par. Calculas lo que dejó cada mes, 264, 320 y 231 monedas, y ves por qué gana el 25. Luego lees la elasticidad: cuándo los clientes se van más rápido de lo que sube el precio.",
+  "title": { "en-US": "Price and demand", "es-MX": "Precio y demanda", "pt-BR": "Preço e demanda" },
+  "new_concepts": ["biz.pricing-strategy"],
+  "regional": { "universal": "Uses LittleFounders coins only; no market amounts, places or customs." },
+  "segments": [
+    {
+      "id": "hook-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "hook",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "You sell sneaker cleans, and Zara tested three prices in three months: 20, 25 and 30.", "line": "Buyers took 24, 20 and 11 pairs; each pair costs you 9." },
+        "es-MX": { "prompt": "Vendes limpiezas de tenis, y Zara probó tres precios en tres meses: 20, 25 y 30.", "line": "Los clientes se llevaron 24, 20 y 11 pares; cada par te cuesta 9." },
+        "pt-BR": { "prompt": "Você vende limpezas de tênis, e a Zara testou três preços em três meses: 20, 25 e 30.", "line": "Os clientes levaram 24, 20 e 11 pares; cada par custa 9 para você." }
+      }
+    },
+    {
+      "id": "pre-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "pre",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "practice", "item_phase": "pre", "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [{ "id": "keep-less" }, { "id": "keep-same" }, { "id": "keep-more" }, { "id": "cannot-tell" }],
+        "reasons": [{ "id": "reason-more-per-sale" }, { "id": "reason-one-more-coin" }, { "id": "reason-fewer-buyers" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["keep-more"],
+        "reasonQuality": { "reason-more-per-sale": "sound", "reason-one-more-coin": "partial", "reason-fewer-buyers": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A snack costs 2. Price up 4 to 5, sales down 30 to 22 a day: do you keep more?",
+          "feedback": { "met": "Noted. We will test that against the numbers next.", "not_yet": "Noted. We will test that against the numbers next." },
+          "choices": [{ "label": "You keep less" }, { "label": "You keep the same" }, { "label": "You keep more" }, { "label": "Cannot tell from this" }],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [{ "label": "Keeping more per sale can beat fewer sales" }, { "label": "Each sale keeps 1 more coin" }, { "label": "Fewer buyers always means less money" }]
+        },
+        "es-MX": {
+          "prompt": "Una botana cuesta 2. Precio de 4 a 5, ventas de 30 a 22 al día: ¿te queda más?",
+          "feedback": { "met": "Anotado. Lo probamos con los números enseguida.", "not_yet": "Anotado. Lo probamos con los números enseguida." },
+          "choices": [{ "label": "Te queda menos" }, { "label": "Te queda igual" }, { "label": "Te queda más" }, { "label": "No se puede saber" }],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [{ "label": "Quedarte más por venta puede compensar menos ventas" }, { "label": "Cada venta te deja 1 moneda más" }, { "label": "Menos clientes siempre significa menos dinero" }]
+        },
+        "pt-BR": {
+          "prompt": "Um lanche custa 2. Preço de 4 para 5, vendas de 30 para 22 por dia: sobra mais para você?",
+          "feedback": { "met": "Anotado. Vamos testar isso com os números a seguir.", "not_yet": "Anotado. Vamos testar isso com os números a seguir." },
+          "choices": [{ "label": "Sobra menos" }, { "label": "Sobra igual" }, { "label": "Sobra mais" }, { "label": "Não dá para saber" }],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [{ "label": "Sobrar mais por venda pode compensar menos vendas" }, { "label": "Cada venda deixa 1 moeda a mais" }, { "label": "Menos clientes sempre significa menos dinheiro" }]
+        }
+      }
+    },
+    {
+      "id": "example-first-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 1: month one at 20 coins, with 9 of cost per pair.", "line": "You keep 20 − 9 = 11 a pair, and 11 × 24 = 264 coins for the month." },
+        "es-MX": { "prompt": "Paso 1: mes uno a 20 monedas, con 9 de costo por par.", "line": "Te quedan 20 − 9 = 11 por par, y 11 × 24 = 264 monedas en el mes." },
+        "pt-BR": { "prompt": "Passo 1: mês um a 20 moedas, com 9 de custo por par.", "line": "Sobram 20 − 9 = 11 por par, e 11 × 24 = 264 moedas no mês." }
+      }
+    },
+    {
+      "id": "example-second-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 2: month two at 25 keeps more per pair and loses only 4 buyers.", "line": "You keep 25 − 9 = 16 a pair, and 16 × 20 = 320 coins, more than 264." },
+        "es-MX": { "prompt": "Paso 2: el mes dos a 25 deja más por par y pierde solo 4 clientes.", "line": "Te quedan 25 − 9 = 16 por par, y 16 × 20 = 320 monedas, más que 264." },
+        "pt-BR": { "prompt": "Passo 2: o mês dois a 25 deixa mais por par e perde só 4 clientes.", "line": "Sobram 25 − 9 = 16 por par, e 16 × 20 = 320 moedas, mais que 264." }
+      }
+    },
+    {
+      "id": "guided-total-01", "type": "math.worked-example.v2", "grading": "server", "teaching_role": "guided",
+      "visual": { "type": "worked-example" },
+      "item_role": "practice", "knowledge_component_id": "biz.profit",
+      "payload": {
+        "steps": [{ "id": "each-keeps" }, { "id": "month-total" }, { "id": "gap-to-best" }],
+        "fade_count": 1,
+        "response_step_ids": ["month-total", "gap-to-best"]
+      },
+      "rubric": { "expectedValues": { "month-total": "231", "gap-to-best": "89" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Month three: price 30, 11 pairs sold. What did you keep, and how far below 320?",
+          "feedback": { "met": "You multiplied what each pair keeps by the pairs sold.", "not_yet": "Not yet. Take what each pair keeps, then multiply by pairs sold." },
+          "help": ["Take what each pair keeps, then multiply by the pairs sold."],
+          "steps": [
+            { "expression": "30 − 9", "result": "21", "spokenText": "Thirty minus 9 is 21 coins kept per pair" },
+            { "expression": "Kept per pair × pairs sold", "result": "231", "spokenText": "Twenty-one times 11 is 231 coins for the month" },
+            { "expression": "320 − this month's total", "result": "89", "spokenText": "Three hundred twenty minus 231 is 89 coins less" }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mes tres: precio 30, 11 pares vendidos. ¿Cuánto te quedó y cuánto menos que 320?",
+          "feedback": { "met": "Multiplicaste lo que deja cada par por los pares vendidos.", "not_yet": "Todavía no. Toma lo que deja cada par y multiplícalo por los pares vendidos." },
+          "help": ["Toma lo que deja cada par y multiplícalo por los pares vendidos."],
+          "steps": [
+            { "expression": "30 − 9", "result": "21", "spokenText": "Treinta menos 9 son 21 monedas que deja cada par" },
+            { "expression": "Lo que deja cada par × pares vendidos", "result": "231", "spokenText": "Veintiuno por 11 son 231 monedas en el mes" },
+            { "expression": "320 − el total de este mes", "result": "89", "spokenText": "Trescientos veinte menos 231 son 89 monedas menos" }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mês três: preço 30, 11 pares vendidos. Quanto sobrou e quanto abaixo de 320?",
+          "feedback": { "met": "Você multiplicou o que cada par deixa pelos pares vendidos.", "not_yet": "Ainda não. Pegue o que cada par deixa e multiplique pelos pares vendidos." },
+          "help": ["Pegue o que cada par deixa e multiplique pelos pares vendidos."],
+          "steps": [
+            { "expression": "30 − 9", "result": "21", "spokenText": "Trinta menos 9 são 21 moedas que cada par deixa" },
+            { "expression": "O que cada par deixa × pares vendidos", "result": "231", "spokenText": "Vinte e um vezes 11 são 231 moedas no mês" },
+            { "expression": "320 − o total deste mês", "result": "89", "spokenText": "Trezentos e vinte menos 231 são 89 moedas a menos" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-compare-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 3: put the three totals side by side.", "line": "264, 320, 231: 25 wins. At 20 each pair keeps too little; at 30 too many buyers leave." },
+        "es-MX": { "prompt": "Paso 3: pon los tres totales lado a lado.", "line": "264, 320, 231: gana el 25. Con 20 cada par deja muy poco; con 30 se van muchos clientes." },
+        "pt-BR": { "prompt": "Passo 3: ponha os três totais lado a lado.", "line": "264, 320, 231: o 25 vence. Com 20 cada par deixa pouco; com 30 vão embora muitos clientes." }
+      }
+    },
+    {
+      "id": "example-elastic-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 4: elasticity above 1 means buyers leave faster than the price rises.", "line": "25 to 30: price up 20%, sales down 45%. Elasticity above 1; revenue peaks where it equals 1." },
+        "es-MX": { "prompt": "Paso 4: elasticidad mayor que 1 significa que los clientes se van más rápido de lo que sube el precio.", "line": "De 25 a 30: el precio sube 20% y las ventas bajan 45%. Elasticidad mayor que 1; el ingreso máximo está donde vale 1." },
+        "pt-BR": { "prompt": "Passo 4: elasticidade acima de 1 significa que os clientes saem mais rápido do que o preço sobe.", "line": "De 25 a 30: o preço sobe 20% e as vendas caem 45%. Elasticidade acima de 1; a receita é máxima onde vale 1." }
+      }
+    },
+    {
+      "id": "practice-elasticity-01", "type": "econ.elasticity.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "elasticity" },
+      "item_role": "practice", "knowledge_component_id": "biz.pricing-strategy",
+      "payload": { "pMax": 20, "demand": { "a": 60, "b": 2 }, "goal": { "num": 1, "den": 1 }, "start": 5 },
+      "rubric": { "target": 15 },
+      "copy": {
+        "en-US": {
+          "prompt": "A phone-case stand sells along this demand line. Find the price where elasticity is 1 and revenue peaks.",
+          "feedback": { "met": "You found where buyers leave exactly as fast as the price rises.", "not_yet": "Above 1 buyers leave too fast; below 1, too slowly." }
+        },
+        "es-MX": {
+          "prompt": "Un puesto de fundas vende sobre esta línea de demanda. Encuentra el precio donde la elasticidad es 1 y el ingreso es máximo.",
+          "feedback": { "met": "Hallaste donde los clientes se van justo al ritmo del precio.", "not_yet": "Arriba de 1 se van muy rápido; abajo de 1, muy despacio." }
+        },
+        "pt-BR": {
+          "prompt": "Uma barraca de capas vende sobre esta linha de demanda. Ache o preço em que a elasticidade é 1 e a receita é máxima.",
+          "feedback": { "met": "Você achou onde os clientes saem no mesmo ritmo do preço.", "not_yet": "Acima de 1 saem rápido demais; abaixo de 1, devagar demais." }
+        }
+      }
+    },
+    {
+      "id": "practice-grid-01", "type": "reasoning.decision-grid.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "two-by-two" },
+      "item_role": "practice", "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "pieces": ["socks-4", "laces-6", "clean-20", "clean-25", "clean-30", "insoles-34"],
+        "points": [[1, 6], [3, 3], [4, 8], [6, 7], [8, 2], [9, 8]]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": ["socks-4", "clean-20"],
+            "top-right": ["clean-25", "insoles-34"],
+            "bottom-left": ["laces-6"],
+            "bottom-right": ["clean-30"]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each test by its price and sales ratings, 1 to 9; above 5 is high.",
+          "feedback": { "met": "You read each test by its price and its sales.", "not_yet": "Check each rating; above 5 counts as high." },
+          "labels": {
+            "x-name": "Price", "y-name": "Pairs sold", "x-low": "Low price", "x-high": "High price", "y-low": "Few pairs", "y-high": "Many pairs",
+            "socks-4": "Socks at 4", "laces-6": "Laces at 6", "clean-20": "Clean at 20", "clean-25": "Clean at 25", "clean-30": "Clean at 30", "insoles-34": "Insoles at 34"
+          }
+        },
+        "es-MX": {
+          "prompt": "Coloca cada prueba por sus calificaciones de precio y ventas, de 1 a 9; más de 5 es alto.",
+          "feedback": { "met": "Leíste cada prueba por su precio y sus ventas.", "not_yet": "Revisa cada calificación; más de 5 cuenta como alto." },
+          "labels": {
+            "x-name": "Precio", "y-name": "Pares vendidos", "x-low": "Precio bajo", "x-high": "Precio alto", "y-low": "Pocos pares", "y-high": "Muchos pares",
+            "socks-4": "Calcetines a 4", "laces-6": "Agujetas a 6", "clean-20": "Limpieza a 20", "clean-25": "Limpieza a 25", "clean-30": "Limpieza a 30", "insoles-34": "Plantillas a 34"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada teste pelas notas de preço e vendas, de 1 a 9; acima de 5 é alto.",
+          "feedback": { "met": "Você leu cada teste pelo preço e pelas vendas.", "not_yet": "Confira cada nota; acima de 5 conta como alto." },
+          "labels": {
+            "x-name": "Preço", "y-name": "Pares vendidos", "x-low": "Preço baixo", "x-high": "Preço alto", "y-low": "Poucos pares", "y-high": "Muitos pares",
+            "socks-4": "Meias a 4", "laces-6": "Cadarços a 6", "clean-20": "Limpeza a 20", "clean-25": "Limpeza a 25", "clean-30": "Limpeza a 30", "insoles-34": "Palmilhas a 34"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-price-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "transfer",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "transfer", "item_phase": "post", "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [{ "id": "price-four" }, { "id": "price-six" }, { "id": "price-eight" }, { "id": "price-ten" }],
+        "reasons": [{ "id": "reason-total-kept" }, { "id": "reason-most-buyers" }, { "id": "reason-per-sale" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["price-six"],
+        "reasonQuality": { "reason-total-kept": "sound", "reason-most-buyers": "unsupported", "reason-per-sale": "partial" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cupcakes cost 2; at 4, 6, 8 and 10 coins you sold 60, 40, 24 and 12. Which price stays?",
+          "feedback": { "met": "You compared the total kept at each price, not one side.", "not_yet": "Recompute: what each sale keeps, times the sales, at every price." },
+          "choices": [{ "label": "4 coins: it sells the most" }, { "label": "6 coins: the most kept in total" }, { "label": "8 coins: a balance of both" }, { "label": "10 coins: each sale keeps the most" }],
+          "reasonPrompt": "Why that price?",
+          "reasons": [{ "label": "Compare what each test kept in total" }, { "label": "The price with the most buyers wins" }, { "label": "A higher price keeps more per sale" }]
+        },
+        "es-MX": {
+          "prompt": "Los cupcakes cuestan 2; a 4, 6, 8 y 10 monedas vendiste 60, 40, 24 y 12. ¿Qué precio te conviene?",
+          "feedback": { "met": "Comparaste el total que dejó cada precio, no solo un lado.", "not_yet": "Recalcula: lo que deja cada venta, por las ventas, en cada precio." },
+          "choices": [{ "label": "4 monedas: es el que más vende" }, { "label": "6 monedas: el que más deja en total" }, { "label": "8 monedas: un equilibrio entre ambos" }, { "label": "10 monedas: cada venta deja más" }],
+          "reasonPrompt": "¿Por qué ese precio?",
+          "reasons": [{ "label": "Comparé lo que dejó cada prueba en total" }, { "label": "Gana el precio con más clientes" }, { "label": "Un precio más alto deja más por venta" }]
+        },
+        "pt-BR": {
+          "prompt": "Os cupcakes custam 2; a 4, 6, 8 e 10 moedas você vendeu 60, 40, 24 e 12. Qual preço compensa?",
+          "feedback": { "met": "Você comparou o total que cada preço deixou, não só um lado.", "not_yet": "Refaça: o que cada venda deixa, vezes as vendas, em cada preço." },
+          "choices": [{ "label": "4 moedas: é o que mais vende" }, { "label": "6 moedas: o que mais deixa no total" }, { "label": "8 moedas: um equilíbrio entre os dois" }, { "label": "10 moedas: cada venda deixa mais" }],
+          "reasonPrompt": "Por que esse preço?",
+          "reasons": [{ "label": "Comparei o que cada teste deixou no total" }, { "label": "Vence o preço com mais clientes" }, { "label": "Um preço mais alto deixa mais por venda" }]
+        }
+      }
+    }
+  ]
+}

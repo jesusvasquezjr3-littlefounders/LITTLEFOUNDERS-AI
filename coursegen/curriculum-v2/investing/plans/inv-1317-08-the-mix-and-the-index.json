@@ -1,0 +1,1131 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-risk-and-baskets",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "lesson_id": "inv-1317-08-the-mix-and-the-index",
+  "knowledge_component_ids": [
+    "invest.index-funds",
+    "invest.portfolio-mix",
+    "invest.risk-tolerance"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara tiene 5,000 monedas de simulación y quiere saber si hace falta elegir al ganador de cada año. Con ella la persona descubre que un fondo indexado sigue a todo un grupo de empresas, coloca una canasta elegida a mano dentro del índice, reparte dinero entre un fondo más riesgoso y otro más estable, calcula cuánto mover para rebalancear cuando la mezcla se desvía, y usa un simulador para hallar la mayor proporción en acciones que aguanta una meta. Cierra en un contexto nuevo, diez empresas ficticias de bicicletas compartidas.",
+  "title": {
+    "en-US": "The mix and the index",
+    "es-MX": "La mezcla y el índice",
+    "pt-BR": "A mistura e o índice"
+  },
+  "new_concepts": [
+    "invest.index-funds",
+    "invest.portfolio-mix"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only, in a pretend sandbox; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara has 5,000 pretend coins, one riskier fund and one steadier fund.",
+          "line": "Can anyone pick the winner every year? I build it out loud."
+        },
+        "es-MX": {
+          "prompt": "Zara tiene 5,000 monedas de simulación, un fondo más riesgoso y otro más estable.",
+          "line": "¿Alguien puede elegir al ganador cada año? Lo armo en voz alta."
+        },
+        "pt-BR": {
+          "prompt": "A Zara tem 5.000 moedas da simulação, um fundo mais arriscado e outro mais estável.",
+          "line": "Alguém consegue escolher o vencedor todo ano? Eu monto isso em voz alta."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.index-funds",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-early"
+          },
+          {
+            "id": "reply-group"
+          },
+          {
+            "id": "reply-ads"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-group"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Kai plans to pick the single best company every year. What do you say?",
+          "speaker": "Kai",
+          "line": "I only need to spot next year's winner early.",
+          "replies": [
+            {
+              "label": "Good plan: spot the winner early"
+            },
+            {
+              "label": "Hold the whole group and skip the guessing"
+            },
+            {
+              "label": "Pick the company with the best ads"
+            }
+          ],
+          "feedback": {
+            "met": "Noted. Now Zara builds it.",
+            "not_yet": "Noted. Now Zara builds it."
+          }
+        },
+        "es-MX": {
+          "prompt": "Kai planea elegir cada año a la mejor empresa. ¿Qué le dices?",
+          "speaker": "Kai",
+          "line": "Solo necesito detectar temprano al ganador del próximo año.",
+          "replies": [
+            {
+              "label": "Buen plan: detectar temprano al ganador"
+            },
+            {
+              "label": "Tener todo el grupo y dejar de adivinar"
+            },
+            {
+              "label": "Elegir la empresa con mejores anuncios"
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Ahora Zara lo arma.",
+            "not_yet": "Anotado. Ahora Zara lo arma."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Kai planeja escolher a melhor empresa todo ano. O que você diz?",
+          "speaker": "Kai",
+          "line": "Só preciso descobrir cedo o vencedor do próximo ano.",
+          "replies": [
+            {
+              "label": "Bom plano: descobrir o vencedor cedo"
+            },
+            {
+              "label": "Ter o grupo todo e parar de adivinhar"
+            },
+            {
+              "label": "Escolher a empresa com os melhores anúncios"
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Agora a Zara monta isso.",
+            "not_yet": "Anotado. Agora a Zara monta isso."
+          }
+        }
+      }
+    },
+    {
+      "id": "idx-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara starts with a class average, which follows every student, not one.",
+          "line": "Step 1: an index follows a whole group of companies, and an index fund holds all of them."
+        },
+        "es-MX": {
+          "prompt": "Zara empieza con un promedio de clase, que sigue a todos los alumnos, no a uno.",
+          "line": "Paso 1: un índice sigue a todo un grupo de empresas, y un fondo indexado las tiene todas."
+        },
+        "pt-BR": {
+          "prompt": "A Zara começa com a média da turma, que acompanha todos os alunos, não um só.",
+          "line": "Passo 1: um índice acompanha um grupo inteiro de empresas, e um fundo de índice tem todas elas."
+        }
+      }
+    },
+    {
+      "id": "pick-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Now Zara tries to pick one piece that wins every year.",
+          "line": "Step 2: the winner keeps changing. The index holds every piece, so the winner is always inside."
+        },
+        "es-MX": {
+          "prompt": "Ahora Zara intenta elegir una pieza que gane cada año.",
+          "line": "Paso 2: el ganador va cambiando. El índice tiene todas las piezas, así que el ganador siempre está dentro."
+        },
+        "pt-BR": {
+          "prompt": "Agora a Zara tenta escolher uma peça que ganhe todo ano.",
+          "line": "Passo 2: o vencedor vai mudando. O índice tem todas as peças, então o vencedor está sempre dentro."
+        }
+      }
+    },
+    {
+      "id": "euler-01",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "euler"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.index-funds",
+      "payload": {
+        "relation": "subset",
+        "sets": [
+          {
+            "id": "set-picked"
+          },
+          {
+            "id": "set-index"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-mine"
+          },
+          {
+            "id": "item-skipped"
+          },
+          {
+            "id": "item-outside"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-mine": "both",
+          "item-skipped": "second",
+          "item-outside": "neither"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara picks one piece by hand. Place each thing where it belongs.",
+          "feedback": {
+            "met": "You placed the picked piece inside the index fund.",
+            "not_yet": "Not yet. Ask which group each thing is held in."
+          },
+          "help": [
+            "The index holds every piece of its group."
+          ],
+          "sets": [
+            {
+              "label": "My hand-picked basket"
+            },
+            {
+              "label": "Held by the index fund"
+            }
+          ],
+          "items": [
+            {
+              "label": "The piece I picked"
+            },
+            {
+              "label": "A piece I skipped"
+            },
+            {
+              "label": "A company outside the group"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara elige una pieza a mano. Coloca cada cosa donde corresponde.",
+          "feedback": {
+            "met": "Pusiste la pieza elegida dentro del fondo indexado.",
+            "not_yet": "Todavía no. Pregunta en qué grupo está cada cosa."
+          },
+          "help": [
+            "El índice tiene todas las piezas de su grupo."
+          ],
+          "sets": [
+            {
+              "label": "Mi canasta elegida a mano"
+            },
+            {
+              "label": "Lo que tiene el fondo indexado"
+            }
+          ],
+          "items": [
+            {
+              "label": "La pieza que elegí"
+            },
+            {
+              "label": "Una pieza que descarté"
+            },
+            {
+              "label": "Una empresa fuera del grupo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Zara escolhe uma peça à mão. Coloque cada coisa onde ela pertence.",
+          "feedback": {
+            "met": "Você pôs a peça escolhida dentro do fundo de índice.",
+            "not_yet": "Ainda não. Pergunte em qual grupo cada coisa está."
+          },
+          "help": [
+            "O índice tem todas as peças do seu grupo."
+          ],
+          "sets": [
+            {
+              "label": "Minha cesta escolhida à mão"
+            },
+            {
+              "label": "O que o fundo de índice tem"
+            }
+          ],
+          "items": [
+            {
+              "label": "A peça que escolhi"
+            },
+            {
+              "label": "Uma peça que descartei"
+            },
+            {
+              "label": "Uma empresa fora do grupo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mixset-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara splits 5,000 pretend coins: 60 percent riskier index fund, 40 percent steadier fund.",
+          "line": "Step 3: that is 3,000 coins riskier and 2,000 steadier. The split sets how much risk the mix carries."
+        },
+        "es-MX": {
+          "prompt": "Zara reparte 5,000 monedas de simulación: 60 por ciento en el fondo indexado riesgoso, 40 por ciento en el estable.",
+          "line": "Paso 3: son 3,000 monedas riesgosas y 2,000 estables. El reparto fija cuánto riesgo lleva la mezcla."
+        },
+        "pt-BR": {
+          "prompt": "A Zara divide 5.000 moedas da simulação: 60 por cento no fundo de índice arriscado, 40 por cento no estável.",
+          "line": "Passo 3: são 3.000 moedas arriscadas e 2.000 estáveis. A divisão define quanto risco a mistura carrega."
+        }
+      }
+    },
+    {
+      "id": "drift-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A strong year: the riskier fund gains 20 percent, the steadier one 2 percent.",
+          "line": "Step 4: that makes 3,600 and 2,040, so riskier is now about 64 percent of the mix."
+        },
+        "es-MX": {
+          "prompt": "Llega un año fuerte: el fondo riesgoso gana 20 por ciento y el estable 2 por ciento.",
+          "line": "Paso 4: eso da 3,600 y 2,040, así que el riesgoso ya pesa cerca de 64 por ciento de la mezcla."
+        },
+        "pt-BR": {
+          "prompt": "Chega um ano forte: o fundo arriscado ganha 20 por cento e o estável 2 por cento.",
+          "line": "Passo 4: isso dá 3.600 e 2.040, então o arriscado já pesa cerca de 64 por cento da mistura."
+        }
+      }
+    },
+    {
+      "id": "rebal-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "stacked-area-100"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "rebalanced"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-riskier",
+              "values": [
+                3000,
+                3600,
+                3384
+              ]
+            },
+            {
+              "id": "series-steadier",
+              "values": [
+                2000,
+                2040,
+                2256
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: 60 percent of the 5,640 total is 3,384, so 216 coins move to the steadier fund.",
+          "title": "Mix by value: drift, then rebalance",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Rebalanced"
+              }
+            ],
+            "series": [
+              {
+                "label": "Riskier fund"
+              },
+              {
+                "label": "Steadier fund"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 5: el 60 por ciento del total de 5,640 es 3,384, así que 216 monedas pasan al fondo estable.",
+          "title": "Mezcla por valor: deriva y rebalanceo",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Rebalanceo"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo riesgoso"
+              },
+              {
+                "label": "Fondo estable"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: 60 por cento do total de 5.640 é 3.384, então 216 moedas passam para o fundo estável.",
+          "title": "Mistura por valor: desvio e rebalanceamento",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Rebalanceado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo arriscado"
+              },
+              {
+                "label": "Fundo estável"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "steps": [
+          {
+            "id": "grown"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "target"
+          },
+          {
+            "id": "move"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "total",
+          "target",
+          "move"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "460",
+          "target": "345",
+          "move": "15"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ben splits 400 coins 75/25, riskier first. The riskier fund rises 20 percent; the steadier one stays flat.",
+          "feedback": {
+            "met": "You worked out how much to move to restore the split.",
+            "not_yet": "Not yet. Follow Zara: total first, then the target."
+          },
+          "help": [
+            "The target is 75 percent of the new total.",
+            "Move what the riskier fund holds above target."
+          ],
+          "steps": [
+            {
+              "expression": "300 × 120 ÷ 100",
+              "result": "360",
+              "spokenText": "The riskier fund grows from 300 to 360"
+            },
+            {
+              "expression": "360 + 100",
+              "result": "460",
+              "spokenText": "The new total is 460 coins"
+            },
+            {
+              "expression": "Total × 75 ÷ 100",
+              "result": "345",
+              "spokenText": "At 75 percent, the riskier target is 345"
+            },
+            {
+              "expression": "Riskier now − target",
+              "result": "15",
+              "spokenText": "Move 15 coins to the steadier fund"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ben reparte 400 monedas en 75/25, riesgoso primero. El fondo riesgoso sube 20 por ciento; el estable no se mueve.",
+          "feedback": {
+            "met": "Calculaste cuánto mover para recuperar el reparto.",
+            "not_yet": "Todavía no. Sigue a Zara: primero el total, luego la meta."
+          },
+          "help": [
+            "La meta es 75 por ciento del total nuevo.",
+            "Mueve lo que el riesgoso tiene por encima de la meta."
+          ],
+          "steps": [
+            {
+              "expression": "300 × 120 ÷ 100",
+              "result": "360",
+              "spokenText": "El fondo riesgoso pasa de 300 a 360"
+            },
+            {
+              "expression": "360 + 100",
+              "result": "460",
+              "spokenText": "El total nuevo es 460 monedas"
+            },
+            {
+              "expression": "Total × 75 ÷ 100",
+              "result": "345",
+              "spokenText": "Con 75 por ciento, la meta del riesgoso es 345"
+            },
+            {
+              "expression": "Riesgoso ahora − meta",
+              "result": "15",
+              "spokenText": "Hay que mover 15 monedas al fondo estable"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Ben divide 400 moedas em 75/25, arriscado primeiro. O fundo arriscado sobe 20 por cento; o estável fica parado.",
+          "feedback": {
+            "met": "Você calculou quanto mover para recuperar a divisão.",
+            "not_yet": "Ainda não. Siga a Zara: primeiro o total, depois a meta."
+          },
+          "help": [
+            "A meta é 75 por cento do novo total.",
+            "Mova o que o arriscado tem acima da meta."
+          ],
+          "steps": [
+            {
+              "expression": "300 × 120 ÷ 100",
+              "result": "360",
+              "spokenText": "O fundo arriscado vai de 300 para 360"
+            },
+            {
+              "expression": "360 + 100",
+              "result": "460",
+              "spokenText": "O novo total é 460 moedas"
+            },
+            {
+              "expression": "Total × 75 ÷ 100",
+              "result": "345",
+              "spokenText": "Com 75 por cento, a meta do arriscado é 345"
+            },
+            {
+              "expression": "Arriscado agora − meta",
+              "result": "15",
+              "spokenText": "Mova 15 moedas para o fundo estável"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "simu-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara hands a mix to the simulator: 10,000 to start, 1,000 added each chapter, five chapters.",
+          "line": "Step 6: stocks are the riskier fund. More stocks lift the best future and lower the worst one."
+        },
+        "es-MX": {
+          "prompt": "Zara le da una mezcla al simulador: 10,000 para empezar, 1,000 más cada capítulo, cinco capítulos.",
+          "line": "Paso 6: las acciones son el fondo riesgoso. Más acciones suben el mejor futuro y bajan el peor."
+        },
+        "pt-BR": {
+          "prompt": "A Zara entrega uma mistura ao simulador: 10.000 para começar, mais 1.000 a cada capítulo, cinco capítulos.",
+          "line": "Passo 6: as ações são o fundo arriscado. Mais ações elevam o melhor futuro e baixam o pior."
+        }
+      }
+    },
+    {
+      "id": "sim-01",
+      "type": "money.life-sim.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "life-sim"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "scenario": "portfolio",
+        "periods": 5,
+        "cash": 10000,
+        "debt": 0,
+        "flow": 1000,
+        "finish": 14000,
+        "floor": 10500,
+        "goal": 90,
+        "choices": [
+          0,
+          10,
+          20,
+          35,
+          85,
+          95,
+          100
+        ],
+        "start": 95
+      },
+      "rubric": {
+        "target": {
+          "answers": [
+            35
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick the highest share in stocks that still gets 90 of 100 futures past the target and above the floor.",
+          "feedback": {
+            "met": "You found the highest share that held up in enough futures.",
+            "not_yet": "Not yet. Try another share and watch the futures."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige la mayor proporción en acciones con la que 90 de 100 futuros alcanzan la meta sin bajar del mínimo.",
+          "feedback": {
+            "met": "Encontraste la mayor proporción que resistió en suficientes futuros.",
+            "not_yet": "Todavía no. Prueba otra proporción y mira los futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha a maior fatia em ações com a qual 90 de 100 futuros alcançam a meta sem cair abaixo do mínimo.",
+          "feedback": {
+            "met": "Você achou a maior fatia que aguentou em futuros suficientes.",
+            "not_yet": "Ainda não. Teste outra fatia e observe os futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "drift-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "stacked-area-100"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-riskier",
+              "values": [
+                2400,
+                2760,
+                3726,
+                2795
+              ]
+            },
+            {
+              "id": "series-steadier",
+              "values": [
+                1600,
+                1632,
+                1665,
+                1698
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-a"
+            },
+            {
+              "id": "opt-b"
+            },
+            {
+              "id": "opt-c"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-b"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia never rebalances her 60/40 mix of riskier and steadier funds.",
+          "title": "Mia's mix by value, no rebalancing",
+          "feedback": {
+            "met": "You found the year that drifted furthest from 60/40.",
+            "not_yet": "Not yet. Compare each year's riskier band with 60."
+          },
+          "help": [
+            "The further the riskier band is from 60, the bigger the drift."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Riskier fund"
+              },
+              {
+                "label": "Steadier fund"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which year is the mix furthest from 60/40?",
+            "options": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Mia nunca rebalancea su mezcla 60/40 de fondos riesgoso y estable.",
+          "title": "Mezcla de Mia por valor, sin rebalancear",
+          "feedback": {
+            "met": "Encontraste el año con la mayor desviación del reparto 60/40.",
+            "not_yet": "Todavía no. Compara la banda del riesgoso de cada año con 60."
+          },
+          "help": [
+            "Cuanto más lejos de 60 esté la banda del riesgoso, mayor la desviación."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo riesgoso"
+              },
+              {
+                "label": "Fondo estable"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿En qué año está la mezcla más lejos de 60/40?",
+            "options": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Mia nunca rebalanceia sua mistura 60/40 de fundos arriscado e estável.",
+          "title": "Mistura da Mia por valor, sem rebalancear",
+          "feedback": {
+            "met": "Você achou o ano com o maior desvio da divisão 60/40.",
+            "not_yet": "Ainda não. Compare a faixa do arriscado de cada ano com 60."
+          },
+          "help": [
+            "Quanto mais longe de 60 estiver a faixa do arriscado, maior o desvio."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo arriscado"
+              },
+              {
+                "label": "Fundo estável"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Em qual ano a mistura está mais longe de 60/40?",
+            "options": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.index-funds",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-top"
+          },
+          {
+            "id": "choice-switch"
+          },
+          {
+            "id": "choice-index"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-repeat"
+          },
+          {
+            "id": "reason-watch"
+          },
+          {
+            "id": "reason-never"
+          },
+          {
+            "id": "reason-guess"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-index"
+        ],
+        "reasonQuality": {
+          "reason-repeat": "unsupported",
+          "reason-watch": "partial",
+          "reason-never": "unsupported",
+          "reason-guess": "sound"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo follows ten pretend bike-share companies; one rose 40 percent last year. Which way should he hold them?",
+          "choices": [
+            {
+              "label": "Only last year's top company"
+            },
+            {
+              "label": "Switch to each year's winner"
+            },
+            {
+              "label": "An index fund holding all ten"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "A winner this year wins again"
+            },
+            {
+              "label": "It needs far less watching"
+            },
+            {
+              "label": "An index can never lose value"
+            },
+            {
+              "label": "It holds next year's winner without guessing"
+            }
+          ],
+          "feedback": {
+            "met": "You chose the whole group over guessing a winner.",
+            "not_yet": "Not yet. Ask which choice needs a guess about the future."
+          },
+          "help": [
+            "Ask what each choice needs you to guess."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo sigue diez empresas ficticias de bicicletas compartidas; una subió 40 por ciento el año pasado. ¿Cómo debería tenerlas?",
+          "choices": [
+            {
+              "label": "Solo la mejor empresa del año pasado"
+            },
+            {
+              "label": "Cambiar al ganador de cada año"
+            },
+            {
+              "label": "Un fondo indexado con las diez"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es mejor esa opción?",
+          "reasons": [
+            {
+              "label": "Quien gana este año gana otra vez"
+            },
+            {
+              "label": "Requiere vigilar mucho menos"
+            },
+            {
+              "label": "Un índice nunca pierde valor"
+            },
+            {
+              "label": "Tiene al ganador del próximo año sin adivinar"
+            }
+          ],
+          "feedback": {
+            "met": "Elegiste todo el grupo en lugar de adivinar un ganador.",
+            "not_yet": "Todavía no. Pregunta qué opción exige adivinar el futuro."
+          },
+          "help": [
+            "Pregunta qué te exige adivinar cada opción."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Leo acompanha dez empresas fictícias de bicicletas compartilhadas; uma subiu 40 por cento no ano passado. Como ele deveria tê-las?",
+          "choices": [
+            {
+              "label": "Só a melhor empresa do ano passado"
+            },
+            {
+              "label": "Trocar para o vencedor de cada ano"
+            },
+            {
+              "label": "Um fundo de índice com as dez"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a melhor opção?",
+          "reasons": [
+            {
+              "label": "Quem ganha este ano ganha de novo"
+            },
+            {
+              "label": "Exige vigiar bem menos"
+            },
+            {
+              "label": "Um índice nunca perde valor"
+            },
+            {
+              "label": "Tem o vencedor do próximo ano sem adivinhar"
+            }
+          ],
+          "feedback": {
+            "met": "Você escolheu o grupo todo em vez de adivinhar um vencedor.",
+            "not_yet": "Ainda não. Pergunte qual opção exige adivinhar o futuro."
+          },
+          "help": [
+            "Pergunte o que cada opção exige que você adivinhe."
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1182 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-the-clock-and-your-money",
+  "lesson_id": "inv-1317-02-money-now-or-later",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.time-value",
+    "invest.cost-of-delay",
+    "life.think-before-buying"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina muestra la oferta de práctica de un patrocinador: 1,000 monedas ahora o 1,300 en tres años. El aprendiz hace crecer el dinero de hoy en un fondo al 6% para comparar las dos ofertas en la misma fecha, ve cuánto cuesta aplazar una decisión con depósitos de 500 al mes, ordena razones para esperar y fija una fecha límite; al final decide en otro caso, la venta de una tableta.",
+  "title": {
+    "en-US": "Money now or later",
+    "es-MX": "Dinero ahora o después",
+    "pt-BR": "Dinheiro agora ou depois"
+  },
+  "new_concepts": [
+    "invest.time-value",
+    "invest.cost-of-delay"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina keeps postponing the fund choice until she knows more, so three monthly deposits of 500 coins sit idle for months.",
+    "recovery": "Dina prices the wait, then says that next time she sets a decision date before she starts waiting."
+  },
+  "regional": {
+    "universal": "Only LittleFounders coins and a pretend fund at a labelled rate; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina and you look at your sandbox sponsor's offer: 1,000 coins now, or 1,300 in three years.",
+          "line": "Take your time. First we measure both offers on the same day."
+        },
+        "es-MX": {
+          "prompt": "Dina y tú ven la oferta de práctica de tu patrocinador: 1,000 monedas ahora, o 1,300 en tres años.",
+          "line": "Con calma. Primero medimos las dos ofertas en el mismo día."
+        },
+        "pt-BR": {
+          "prompt": "Dina e você olham a oferta de simulação do seu patrocinador: 1.000 moedas agora, ou 1.300 em três anos.",
+          "line": "Com calma. Primeiro medimos as duas ofertas no mesmo dia."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-now"
+          },
+          {
+            "id": "choice-later"
+          },
+          {
+            "id": "choice-unsure"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rule"
+          },
+          {
+            "id": "reason-guess"
+          },
+          {
+            "id": "reason-compared"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-later"
+        ],
+        "reasonQuality": {
+          "reason-compared": "sound",
+          "reason-rule": "partial",
+          "reason-guess": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your sponsor's offer, which do you take if a pretend fund pays 6% a year?",
+          "feedback": {
+            "met": "Thanks, I see your thinking. Now we go step by step.",
+            "not_yet": "Thanks, I see your thinking. Now we go step by step."
+          },
+          "choices": [
+            {
+              "label": "Take the 1,000 now"
+            },
+            {
+              "label": "Take the 1,300 later"
+            },
+            {
+              "label": "I cannot tell yet"
+            }
+          ],
+          "reasonPrompt": "What is your answer based on?",
+          "reasons": [
+            {
+              "label": "I used a rule of thumb"
+            },
+            {
+              "label": "It is only a hunch"
+            },
+            {
+              "label": "I compared both on one date"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la oferta de tu patrocinador, ¿cuál tomas si un fondo de práctica paga 6% al año?",
+          "feedback": {
+            "met": "Gracias, así veo cómo piensas. Ahora vamos paso a paso.",
+            "not_yet": "Gracias, así veo cómo piensas. Ahora vamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Tomar los 1,000 ahora"
+            },
+            {
+              "label": "Tomar los 1,300 después"
+            },
+            {
+              "label": "Aún no lo puedo saber"
+            }
+          ],
+          "reasonPrompt": "¿En qué basas tu respuesta?",
+          "reasons": [
+            {
+              "label": "Usé una regla general"
+            },
+            {
+              "label": "Solo es una corazonada"
+            },
+            {
+              "label": "Comparé las dos en una misma fecha"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na oferta do seu patrocinador, qual você escolhe se um fundo de simulação paga 6% ao ano?",
+          "feedback": {
+            "met": "Obrigada, assim vejo como você pensa. Agora vamos passo a passo.",
+            "not_yet": "Obrigada, assim vejo como você pensa. Agora vamos passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Pegar os 1.000 agora"
+            },
+            {
+              "label": "Pegar os 1.300 depois"
+            },
+            {
+              "label": "Ainda não sei dizer"
+            }
+          ],
+          "reasonPrompt": "No que você baseia sua resposta?",
+          "reasons": [
+            {
+              "label": "Usei uma regra geral"
+            },
+            {
+              "label": "É só um palpite"
+            },
+            {
+              "label": "Comparei as duas na mesma data"
+            }
+          ]
+        }
+      },
+      "item_phase": "pre"
+    },
+    {
+      "id": "example-y1-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. Grow the 1,000 in a 6% pretend fund. Year 1 adds 6% of 1,000: 60.",
+          "line": "Take your time: 1,000 plus 60 is 1,060 after year 1."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Haz crecer los 1,000 en un fondo de práctica al 6%. El año 1 suma 6% de 1,000: 60.",
+          "line": "Con calma: 1,000 más 60 son 1,060 al cierre del año 1."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Faça os 1.000 crescerem num fundo de simulação a 6%. O ano 1 soma 6% de 1.000: 60.",
+          "line": "Com calma: 1.000 mais 60 são 1.060 ao fim do ano 1."
+        }
+      }
+    },
+    {
+      "id": "example-y2-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Year 2: the 6% applies to 1,060, the new total. That adds 63.60.",
+          "line": "Same move as year 1. The fund now holds 1,123.60."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Año 2: el 6% se aplica a 1,060, el total nuevo. Eso suma 63.60.",
+          "line": "Mismo movimiento que el año 1. El fondo ya tiene 1,123.60."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Ano 2: os 6% incidem sobre 1.060, o total novo. Isso soma 63,60.",
+          "line": "Mesmo movimento do ano 1. O fundo agora tem 1.123,60."
+        }
+      }
+    },
+    {
+      "id": "example-y3-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. Year 3: 6% of 1,123.60 is 67.42, so the fund holds 1,191.02.",
+          "line": "Same date, 1,300 beats 1,191. Waiting wins this time."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Año 3: 6% de 1,123.60 son 67.42, y el fondo llega a 1,191.02.",
+          "line": "En la misma fecha, 1,300 supera a 1,191. Esperar gana esta vez."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Ano 3: 6% de 1.123,60 são 67,42, e o fundo chega a 1.191,02.",
+          "line": "Na mesma data, 1.300 supera 1.191. Esperar vence desta vez."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "steps": [
+          {
+            "id": "year-1"
+          },
+          {
+            "id": "year-2"
+          },
+          {
+            "id": "year-3"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "year-2",
+          "year-3",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year-2": "121",
+          "year-3": "133.1",
+          "gap": "3.1"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your sponsor's new offer: 100 now or 130 in three years, a 10% fund. Predict each step.",
+          "feedback": {
+            "met": "You grew the money year by year, then compared on one date.",
+            "not_yet": "Not yet. Each year's 10% applies to the previous total."
+          },
+          "help": [
+            "Like Dina's 1,000: last total times 1.10, which adds 10%.",
+            "Then compare the last total with the later offer."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 1.10",
+              "result": "110",
+              "spokenText": "100 times 1.10 is 110"
+            },
+            {
+              "expression": "Year 1 total × 1.10",
+              "result": "121",
+              "spokenText": "The year 1 total times 1.10 is 121"
+            },
+            {
+              "expression": "Year 2 total × 1.10",
+              "result": "133.1",
+              "spokenText": "The year 2 total times 1.10 is 133.1"
+            },
+            {
+              "expression": "Year 3 total − 130",
+              "result": "3.1",
+              "spokenText": "The year 3 total minus 130 is 3.1"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nueva oferta de tu patrocinador: 100 ahora o 130 en tres años, fondo al 10%. Predice cada paso.",
+          "feedback": {
+            "met": "Hiciste crecer el dinero año por año y comparaste en una misma fecha.",
+            "not_yet": "Aún no. Cada año el 10% se aplica al total anterior."
+          },
+          "help": [
+            "Como los 1,000 de Dina: total anterior por 1.10, que suma 10%.",
+            "Luego compara el último total con la oferta posterior."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 1.10",
+              "result": "110",
+              "spokenText": "100 por 1.10 es 110"
+            },
+            {
+              "expression": "Total del año 1 × 1.10",
+              "result": "121",
+              "spokenText": "El total del año 1 por 1.10 es 121"
+            },
+            {
+              "expression": "Total del año 2 × 1.10",
+              "result": "133.1",
+              "spokenText": "El total del año 2 por 1.10 es 133.1"
+            },
+            {
+              "expression": "Total del año 3 − 130",
+              "result": "3.1",
+              "spokenText": "El total del año 3 menos 130 es 3.1"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nova oferta do seu patrocinador: 100 agora ou 130 em três anos, fundo a 10%. Preveja cada passo.",
+          "feedback": {
+            "met": "Você fez o dinheiro crescer ano a ano e comparou na mesma data.",
+            "not_yet": "Ainda não. A cada ano, os 10% incidem sobre o total anterior."
+          },
+          "help": [
+            "Como os 1.000 da Dina: total anterior vezes 1,10, que soma 10%.",
+            "Depois compare o último total com a oferta posterior."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 1,10",
+              "result": "110",
+              "spokenText": "100 vezes 1,10 é 110"
+            },
+            {
+              "expression": "Total do ano 1 × 1,10",
+              "result": "121",
+              "spokenText": "O total do ano 1 vezes 1,10 é 121"
+            },
+            {
+              "expression": "Total do ano 2 × 1,10",
+              "result": "133,1",
+              "spokenText": "O total do ano 2 vezes 1,10 é 133,1"
+            },
+            {
+              "expression": "Total do ano 3 − 130",
+              "result": "3,1",
+              "spokenText": "O total do ano 3 menos 130 é 3,1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-offers-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-later"
+          },
+          {
+            "id": "choice-equal"
+          },
+          {
+            "id": "choice-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-gap"
+          },
+          {
+            "id": "reason-same-date"
+          },
+          {
+            "id": "reason-bigger"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-now"
+        ],
+        "reasonQuality": {
+          "reason-same-date": "sound",
+          "reason-gap": "partial",
+          "reason-bigger": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your sponsor's next offer, 2,000 now or 2,200 in two years, which wins at 6%?",
+          "feedback": {
+            "met": "You chose the offer that wins on the same date.",
+            "not_yet": "Not yet. Grow the 2,000 for two years at 6%, then compare."
+          },
+          "choices": [
+            {
+              "label": "Take the 2,200 later"
+            },
+            {
+              "label": "They are equal"
+            },
+            {
+              "label": "Take the 2,000 now"
+            }
+          ],
+          "reasonPrompt": "Which reason fits your pick?",
+          "reasons": [
+            {
+              "label": "I looked only at the extra 200"
+            },
+            {
+              "label": "I grew the 2,000 to the later date"
+            },
+            {
+              "label": "The bigger number always wins"
+            }
+          ],
+          "help": [
+            "Year 1 is 2,000 times 1.06."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la siguiente oferta de tu patrocinador, 2,000 ahora o 2,200 en dos años, ¿cuál gana al 6%?",
+          "feedback": {
+            "met": "Elegiste la oferta que gana al compararlas en la misma fecha.",
+            "not_yet": "Aún no. Haz crecer los 2,000 por dos años al 6% y compara."
+          },
+          "choices": [
+            {
+              "label": "Tomar los 2,200 después"
+            },
+            {
+              "label": "Son equivalentes"
+            },
+            {
+              "label": "Tomar los 2,000 ahora"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja con tu elección?",
+          "reasons": [
+            {
+              "label": "Solo miré los 200 de más"
+            },
+            {
+              "label": "Hice crecer los 2,000 hasta la fecha posterior"
+            },
+            {
+              "label": "El número más grande siempre gana"
+            }
+          ],
+          "help": [
+            "El año 1 es 2,000 por 1.06."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na próxima oferta do seu patrocinador, 2.000 agora ou 2.200 em dois anos, qual vence a 6%?",
+          "feedback": {
+            "met": "Você escolheu a oferta que vence ao comparar na mesma data.",
+            "not_yet": "Ainda não. Faça os 2.000 crescerem por dois anos a 6% e compare."
+          },
+          "choices": [
+            {
+              "label": "Pegar os 2.200 depois"
+            },
+            {
+              "label": "São equivalentes"
+            },
+            {
+              "label": "Pegar os 2.000 agora"
+            }
+          ],
+          "reasonPrompt": "Qual motivo combina com sua escolha?",
+          "reasons": [
+            {
+              "label": "Olhei só os 200 a mais"
+            },
+            {
+              "label": "Fiz os 2.000 crescerem até a data posterior"
+            },
+            {
+              "label": "O número maior sempre vence"
+            }
+          ],
+          "help": [
+            "O ano 1 é 2.000 vezes 1,06."
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Dina shares what her own wait cost.",
+          "setup": "Each month I had 500 coins for a fund I hadn't picked. I'd decide once I knew more.",
+          "misjudgment": "Three months passed and I never felt sure. Each month's 500 sat idle.",
+          "recovery": "Pricing the wait surprised me. Next time I set a decision date before I start waiting."
+        },
+        "es-MX": {
+          "prompt": "Dina cuenta lo que le costó su propia espera.",
+          "setup": "Cada mes tenía 500 monedas para un fondo que no había elegido. Decidiría cuando supiera más.",
+          "misjudgment": "Pasaron tres meses y nunca tuve certeza. Las 500 de cada mes quedaron paradas.",
+          "recovery": "Calcular lo que costó esperar me sorprendió. La próxima vez fijo una fecha de decisión antes de empezar a esperar."
+        },
+        "pt-BR": {
+          "prompt": "Dina conta o que a própria espera custou.",
+          "setup": "Todo mês eu tinha 500 moedas para um fundo que não tinha escolhido. Decidiria quando soubesse mais.",
+          "misjudgment": "Passaram três meses e eu nunca tive certeza. As 500 de cada mês ficaram paradas.",
+          "recovery": "Calcular o custo da espera me surpreendeu. Da próxima vez, marco uma data de decisão antes de começar a esperar."
+        }
+      }
+    },
+    {
+      "id": "example-timeline-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "timeline"
+      },
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "data": {
+          "unit": "days",
+          "events": [
+            {
+              "id": "ev-first",
+              "date": "2026-01-05",
+              "end": "2026-04-05"
+            },
+            {
+              "id": "ev-second",
+              "date": "2026-02-05",
+              "end": "2026-04-05"
+            },
+            {
+              "id": "ev-third",
+              "date": "2026-03-05",
+              "end": "2026-04-05"
+            },
+            {
+              "id": "ev-decision",
+              "date": "2026-04-05"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. Each 500 waits idle until the decision. Suppose a fund paid 0.5% a month.",
+          "title": "Three months of waiting",
+          "data": {
+            "events": [
+              {
+                "label": "First 500, idle 3 months"
+              },
+              {
+                "label": "Second 500, idle 2 months"
+              },
+              {
+                "label": "Third 500, idle 1 month"
+              },
+              {
+                "label": "Decision day"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Cada 500 espera parada hasta la decisión. Supón que un fondo pagara 0.5% al mes.",
+          "title": "Tres meses de espera",
+          "data": {
+            "events": [
+              {
+                "label": "Primeras 500, paradas 3 meses"
+              },
+              {
+                "label": "Segundas 500, paradas 2 meses"
+              },
+              {
+                "label": "Terceras 500, paradas 1 mes"
+              },
+              {
+                "label": "Día de decisión"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Cada 500 espera parado até a decisão. Suponha que um fundo pagasse 0,5% ao mês.",
+          "title": "Três meses de espera",
+          "data": {
+            "events": [
+              {
+                "label": "Primeiras 500, paradas 3 meses"
+              },
+              {
+                "label": "Segundas 500, paradas 2 meses"
+              },
+              {
+                "label": "Terceiras 500, paradas 1 mês"
+              },
+              {
+                "label": "Dia da decisão"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-price-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Idle months: 3 + 2 + 1 = 6. Each idle month forgoes 2.50, 0.5% of 500.",
+          "line": "Six months at 2.50 cost 15 coins. That is the price of waiting."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Meses parados: 3 + 2 + 1 = 6. Cada uno deja de ganar 2.50, el 0.5% de 500.",
+          "line": "Seis meses a 2.50 cuestan 15 monedas. Ese es el precio de esperar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Meses parados: 3 + 2 + 1 = 6. Cada um deixa de render 2,50, os 0,5% de 500.",
+          "line": "Seis meses a 2,50 custam 15 moedas. Esse é o preço de esperar."
+        }
+      }
+    },
+    {
+      "id": "practice-price-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "steps": [
+          {
+            "id": "monthly"
+          },
+          {
+            "id": "months"
+          },
+          {
+            "id": "cost"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "months",
+          "cost"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "months": "10",
+          "cost": "40"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You save 800 a month and delay choosing a fund four months. Price it at 0.5% a month.",
+          "feedback": {
+            "met": "You counted every deposit's idle months, then priced them.",
+            "not_yet": "Not yet. Each deposit waits until the decision day."
+          },
+          "help": [
+            "Like Dina's timeline: the first deposit waits longest.",
+            "Then multiply by the cost of one idle month."
+          ],
+          "steps": [
+            {
+              "expression": "0.5% × 800",
+              "result": "4",
+              "spokenText": "0.5 percent of 800 is 4"
+            },
+            {
+              "expression": "Idle months, all four deposits added",
+              "result": "10",
+              "spokenText": "The idle months of all four deposits add to 10"
+            },
+            {
+              "expression": "Idle months × cost per month",
+              "result": "40",
+              "spokenText": "Idle months times cost per month is 40"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ahorras 800 al mes y aplazas cuatro meses elegir un fondo. Ponle precio al 0.5% mensual.",
+          "feedback": {
+            "met": "Contaste los meses parados de cada depósito y calculaste su costo.",
+            "not_yet": "Aún no. Cada depósito espera hasta el día de la decisión."
+          },
+          "help": [
+            "Como la línea de tiempo de Dina: el primer depósito espera más.",
+            "Luego multiplica por el costo de un mes parado."
+          ],
+          "steps": [
+            {
+              "expression": "0.5% × 800",
+              "result": "4",
+              "spokenText": "0.5 por ciento de 800 es 4"
+            },
+            {
+              "expression": "Meses parados, sumados los cuatro depósitos",
+              "result": "10",
+              "spokenText": "Los meses parados de los cuatro depósitos suman 10"
+            },
+            {
+              "expression": "Meses parados × costo por mes",
+              "result": "40",
+              "spokenText": "Meses parados por costo por mes es 40"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você poupa 800 por mês e adia a escolha do fundo por quatro meses. Dê o preço a 0,5% ao mês.",
+          "feedback": {
+            "met": "Você contou os meses parados de cada depósito e calculou o custo.",
+            "not_yet": "Ainda não. Cada depósito espera até o dia da decisão."
+          },
+          "help": [
+            "Como na linha do tempo da Dina: o primeiro depósito espera mais.",
+            "Depois multiplique pelo custo de um mês parado."
+          ],
+          "steps": [
+            {
+              "expression": "0,5% × 800",
+              "result": "4",
+              "spokenText": "0,5 por cento de 800 é 4"
+            },
+            {
+              "expression": "Meses parados, somados os quatro depósitos",
+              "result": "10",
+              "spokenText": "Os meses parados dos quatro depósitos somam 10"
+            },
+            {
+              "expression": "Meses parados × custo por mês",
+              "result": "40",
+              "spokenText": "Meses parados vezes custo por mês é 40"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-pause-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina's fix: a reason to wait, confirming the offer in writing, could change the choice.",
+          "line": "Waiting costs two days. High change, low cost: pause and set a date; low change, high cost: decide now."
+        },
+        "es-MX": {
+          "prompt": "La solución de Dina: una razón para esperar, confirmar la oferta por escrito, podría cambiar la decisión.",
+          "line": "Esperar cuesta dos días. Mucho cambio, poco costo: pausa y fija la fecha; poco cambio, mucho costo: decide ya."
+        },
+        "pt-BR": {
+          "prompt": "A solução da Dina: um motivo para esperar, confirmar a oferta por escrito, poderia mudar a decisão.",
+          "line": "Esperar custa dois dias. Muita mudança, pouco custo: faça a pausa e marque a data; pouca mudança, muito custo: decida logo."
+        }
+      }
+    },
+    {
+      "id": "practice-pause-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "pieces": [
+          "rate",
+          "sure",
+          "quarter",
+          "friend",
+          "second-offer",
+          "rumor"
+        ],
+        "points": [
+          [
+            8,
+            3
+          ],
+          [
+            2,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            8,
+            7
+          ],
+          [
+            4,
+            7
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "sure",
+              "rumor"
+            ],
+            "top-right": [
+              "quarter",
+              "second-offer"
+            ],
+            "bottom-left": [
+              "friend"
+            ],
+            "bottom-right": [
+              "rate"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your offer, sort each reason to wait by what it could change and what waiting costs.",
+          "feedback": {
+            "met": "You sorted each reason by both ratings, not just one.",
+            "not_yet": "Not yet. Check each dot against both middle lines."
+          },
+          "labels": {
+            "x-name": "Could change my choice",
+            "y-name": "Cost of waiting",
+            "x-low": "Would not change it",
+            "x-high": "Could change it",
+            "y-low": "Cheap to wait",
+            "y-high": "Costly to wait",
+            "rate": "Confirm the fund's labelled rate",
+            "sure": "Wait until I feel sure",
+            "quarter": "Wait for next quarter's results",
+            "friend": "Ask a friend what they picked",
+            "second-offer": "Wait for a second sponsor's offer",
+            "rumor": "Follow a rumor about rates"
+          }
+        },
+        "es-MX": {
+          "prompt": "En tu oferta, ordena cada razón para esperar por lo que podría cambiar y lo que cuesta esperar.",
+          "feedback": {
+            "met": "Ordenaste cada razón con las dos calificaciones, no solo con una.",
+            "not_yet": "Aún no. Revisa cada punto frente a las dos líneas del centro."
+          },
+          "labels": {
+            "x-name": "Podría cambiar mi decisión",
+            "y-name": "Costo de esperar",
+            "x-low": "No la cambiaría",
+            "x-high": "Podría cambiarla",
+            "y-low": "Esperar sale barato",
+            "y-high": "Esperar sale caro",
+            "rate": "Confirmar la tasa indicada del fondo",
+            "sure": "Esperar hasta tener certeza",
+            "quarter": "Esperar los resultados del próximo trimestre",
+            "friend": "Preguntar a alguien qué eligió",
+            "second-offer": "Esperar la oferta de otro patrocinador",
+            "rumor": "Seguir un rumor sobre las tasas"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na sua oferta, ordene cada motivo para esperar pelo que poderia mudar e pelo custo de esperar.",
+          "feedback": {
+            "met": "Você ordenou cada motivo pelas duas avaliações, não só por uma.",
+            "not_yet": "Ainda não. Confira cada ponto contra as duas linhas do meio."
+          },
+          "labels": {
+            "x-name": "Poderia mudar minha escolha",
+            "y-name": "Custo de esperar",
+            "x-low": "Não mudaria",
+            "x-high": "Poderia mudar",
+            "y-low": "Esperar sai barato",
+            "y-high": "Esperar sai caro",
+            "rate": "Confirmar a taxa indicada do fundo",
+            "sure": "Esperar até ter certeza",
+            "quarter": "Esperar os resultados do próximo trimestre",
+            "friend": "Perguntar a alguém o que escolheu",
+            "second-offer": "Esperar a oferta de outro patrocinador",
+            "rumor": "Seguir um boato sobre as taxas"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-sam"
+          },
+          {
+            "id": "choice-kai"
+          },
+          {
+            "id": "choice-equal"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-gap"
+          },
+          {
+            "id": "reason-hand"
+          },
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-grown"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-sam"
+        ],
+        "reasonQuality": {
+          "reason-grown": "sound",
+          "reason-gap": "partial",
+          "reason-hand": "unsupported",
+          "reason-bigger": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Selling your tablet: Kai pays 400 coins now, Sam 480 in two years. At 6%, which buyer do you pick?",
+          "feedback": {
+            "met": "You chose the buyer whose offer wins on the same date.",
+            "not_yet": "Not yet. Grow Kai's 400 for two years at 6%, then compare."
+          },
+          "choices": [
+            {
+              "label": "Sam, 480 in two years"
+            },
+            {
+              "label": "Kai, 400 now"
+            },
+            {
+              "label": "Both are worth the same"
+            }
+          ],
+          "reasonPrompt": "Which reason fits your pick?",
+          "reasons": [
+            {
+              "label": "I looked only at the extra 80"
+            },
+            {
+              "label": "Money in hand always wins"
+            },
+            {
+              "label": "The bigger number always wins"
+            },
+            {
+              "label": "I grew the 400 to the later date"
+            }
+          ],
+          "help": [
+            "Compare both on the same date, as with the sponsor."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Vendes tu tableta: Kai paga 400 monedas ahora, Sam 480 en dos años. Al 6%, ¿a quién eliges?",
+          "feedback": {
+            "met": "Elegiste al comprador cuya oferta gana en la misma fecha.",
+            "not_yet": "Aún no. Haz crecer los 400 de Kai por dos años al 6% y compara."
+          },
+          "choices": [
+            {
+              "label": "Sam, 480 en dos años"
+            },
+            {
+              "label": "Kai, 400 ahora"
+            },
+            {
+              "label": "Valen lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja con tu elección?",
+          "reasons": [
+            {
+              "label": "Solo miré los 80 de más"
+            },
+            {
+              "label": "El dinero en mano siempre gana"
+            },
+            {
+              "label": "El número más grande siempre gana"
+            },
+            {
+              "label": "Hice crecer los 400 hasta la fecha posterior"
+            }
+          ],
+          "help": [
+            "Compara las dos en la misma fecha, como con el patrocinador."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você vende seu tablet: Kai paga 400 moedas agora, Sam 480 em dois anos. A 6%, quem você escolhe?",
+          "feedback": {
+            "met": "Você escolheu o comprador cuja oferta vence na mesma data.",
+            "not_yet": "Ainda não. Faça os 400 do Kai crescerem por dois anos a 6% e compare."
+          },
+          "choices": [
+            {
+              "label": "Sam, 480 em dois anos"
+            },
+            {
+              "label": "Kai, 400 agora"
+            },
+            {
+              "label": "Valem o mesmo"
+            }
+          ],
+          "reasonPrompt": "Qual motivo combina com sua escolha?",
+          "reasons": [
+            {
+              "label": "Olhei só os 80 a mais"
+            },
+            {
+              "label": "O dinheiro na mão sempre vence"
+            },
+            {
+              "label": "O número maior sempre vence"
+            },
+            {
+              "label": "Fiz os 400 crescerem até a data posterior"
+            }
+          ],
+          "help": [
+            "Compare as duas na mesma data, como com o patrocinador."
+          ]
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

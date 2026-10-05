@@ -1,0 +1,1001 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-a-plan-that-holds",
+  "lesson_id": "inv-1317-09-offers-that-smell",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.fraud-signals",
+    "invest.no-free-lunch",
+    "life.scam-awareness"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina lee con el alumno un mensaje directo de un “coach” que promete convertir $100 en $300 en una semana, una señal por turno: la garantía, la fuente del dinero, la prisa y el secreto. El alumno marca cada señal, ve un mensaje limpio y decide parar, no enviar nada y avisar a un adulto de confianza, con remitentes y montos inventados.",
+  "title": {
+    "es-MX": "Ofertas que huelen a trampa",
+    "en-US": "Offers that smell like a trap",
+    "pt-BR": "Ofertas com cheiro de golpe"
+  },
+  "new_concepts": [
+    "invest.fraud-signals"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México el “coach” que viste en un video te escribe por mensaje directo y te mete a un grupo de chat con capturas de ganancias. Se practica con remitentes y montos inventados, y se termina sin enviar nada y avisando a un adulto, que puede preguntar en CONDUSEF.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "grupo de chat",
+          "CONDUSEF"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil o golpe chega por mensagem direta ou grupo, com “renda extra garantida” e um pedido de Pix na hora. Só perfis e valores inventados; o fecho é não pagar, não responder e avisar um adulto, que pode consultar a CVM.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "Pix",
+          "CVM"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US the offer arrives as a DM from a “coach” or a creator who posts screenshots of profits. Only made-up handles and amounts; it ends with sending nothing and showing an adult, who can look the seller up on Investor.gov.",
+        "problem_refs": [
+          "us-finfluencer-confidence-gap"
+        ],
+        "anchors": [
+          "DM",
+          "Investor.gov"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Between classes, a DM from a “money coach” you never met lights up your phone.",
+          "line": "Take your time. We will read it slowly, one sign at a time."
+        },
+        "es-MX": {
+          "prompt": "Entre clases, te llega un mensaje directo de un “coach de dinero” que no conoces.",
+          "line": "Con calma. Lo leemos despacio, una señal a la vez."
+        },
+        "pt-BR": {
+          "prompt": "No intervalo, chega uma mensagem direta de um “coach de dinheiro” que você não conhece.",
+          "line": "Com calma. Vamos ler devagar, um sinal de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.fraud-signals",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-team"
+          },
+          {
+            "id": "msg-club"
+          },
+          {
+            "id": "msg-aunt"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-club"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we start, flag the messages that look like a trap to you.",
+          "feedback": {
+            "met": "Thanks, that shows how you read them. Now, step by step.",
+            "not_yet": "Thanks, that shows how you read them. Now, step by step."
+          },
+          "messages": [
+            {
+              "sender": "Dani (team)",
+              "text": "Rehearsal moved to 6. Bring water and your jersey."
+            },
+            {
+              "sender": "Fast Gains Club",
+              "text": "Put in $50 today, get $150 back Friday. Guaranteed."
+            },
+            {
+              "sender": "Aunt Rosa",
+              "text": "Your cousin pays you back the $20 for the tickets tomorrow."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de empezar, marca los mensajes que te parezcan una trampa.",
+          "feedback": {
+            "met": "Gracias, así veo cómo lees los mensajes. Ahora, paso a paso.",
+            "not_yet": "Gracias, así veo cómo lees los mensajes. Ahora, paso a paso."
+          },
+          "messages": [
+            {
+              "sender": "Dani (equipo)",
+              "text": "El ensayo se movió a las 6. Lleva agua y tu playera."
+            },
+            {
+              "sender": "Club Inversión Fácil",
+              "text": "Deposita $50 hoy y recibe $150 el viernes. Garantizado."
+            },
+            {
+              "sender": "Tía Rosa",
+              "text": "Tu primo te devuelve mañana los $20 de los boletos."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar, marque as mensagens que parecem uma armadilha.",
+          "feedback": {
+            "met": "Certo, isso mostra como você lê as mensagens. Agora, passo a passo.",
+            "not_yet": "Certo, isso mostra como você lê as mensagens. Agora, passo a passo."
+          },
+          "messages": [
+            {
+              "sender": "Dani (time)",
+              "text": "O ensaio mudou para as 18h. Leve água e a camisa."
+            },
+            {
+              "sender": "Clube Renda Fácil",
+              "text": "Mande R$ 50 por Pix hoje e receba R$ 150 na sexta. Garantido."
+            },
+            {
+              "sender": "Tia Rosa",
+              "text": "Seu primo devolve amanhã os R$ 20 dos ingressos."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-promise",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The coach’s DM: “Put in $100 and get $300 back in a week, guaranteed.”",
+          "line": "Step 1: the guarantee. Real investments can lose money, so an honest offer never promises a sure profit."
+        },
+        "es-MX": {
+          "prompt": "El mensaje del coach: “Deposita $100 y recibe $300 en una semana, garantizado.”",
+          "line": "Paso 1: la garantía. Toda inversión real puede perder dinero, así que una oferta honesta no promete ganancia segura."
+        },
+        "pt-BR": {
+          "prompt": "A mensagem do coach: “Mande R$ 100 por Pix e receba R$ 300 em uma semana, garantido.”",
+          "line": "Passo 1: a garantia. Todo investimento real pode perder dinheiro, então uma oferta honesta não promete lucro certo."
+        }
+      }
+    },
+    {
+      "id": "ex-source",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "It goes on: “My system does the work. Do not ask how it works.”",
+          "line": "Step 2: the source. A real offer can explain where the profit comes from; this one will not."
+        },
+        "es-MX": {
+          "prompt": "Sigue: “Mi sistema hace todo. No preguntes cómo funciona.”",
+          "line": "Paso 2: la fuente. Una oferta real explica de dónde sale la ganancia; esta no lo hace."
+        },
+        "pt-BR": {
+          "prompt": "Continua: “Meu sistema faz tudo. Não pergunte como funciona.”",
+          "line": "Passo 2: a origem. Uma oferta real explica de onde vem o lucro; esta não explica."
+        }
+      }
+    },
+    {
+      "id": "ex-clock",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The DM adds: “Only the first ten people. Decide today.”",
+          "line": "Step 3: the clock. A deadline leaves no time to check, and checking is what protects you."
+        },
+        "es-MX": {
+          "prompt": "Agrega: “Solo las primeras diez personas. Decide hoy.”",
+          "line": "Paso 3: el reloj. Una fecha límite quita tiempo para comprobar, y comprobar es lo que te protege."
+        },
+        "pt-BR": {
+          "prompt": "Acrescenta: “Só as dez primeiras pessoas. Decida hoje.”",
+          "line": "Passo 3: o relógio. Um prazo tira o tempo de conferir, e conferir é o que protege você."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-notes"
+          },
+          {
+            "id": "msg-triple"
+          },
+          {
+            "id": "msg-news"
+          },
+          {
+            "id": "msg-wave"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-sure"
+          },
+          {
+            "id": "cue-clock"
+          },
+          {
+            "id": "cue-source"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-triple",
+          "msg-wave"
+        ],
+        "cue_ids": {
+          "msg-triple": [
+            "cue-sure",
+            "cue-clock"
+          ],
+          "msg-wave": [
+            "cue-source",
+            "cue-clock"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Flag the traps, and tap the signs you see in each one.",
+          "feedback": {
+            "met": "You flagged the traps and left the real messages alone.",
+            "not_yet": "Not yet. Check each message for a promise, a deadline, a source."
+          },
+          "help": [
+            "Look for a sure-profit promise, a deadline, an unexplained source.",
+            "A known sender with an ordinary request has none of these."
+          ],
+          "messages": [
+            {
+              "sender": "Maya (classmate)",
+              "text": "Can you send me the notes? I’ll buy your snack tomorrow."
+            },
+            {
+              "sender": "@sure.profit.mike",
+              "text": "Triple your savings in 7 days, guaranteed. Only 5 spots, reply today."
+            },
+            {
+              "sender": "School newsletter",
+              "text": "Investing club: Thursday at 4, library. Free to join."
+            },
+            {
+              "sender": "@coin.wave.official",
+              "text": "Our system doubles deposits weekly, no details. Send $50 before midnight."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Promises a sure profit"
+            },
+            {
+              "label": "Pushes you to decide fast"
+            },
+            {
+              "label": "Never explains the source"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Marca las trampas y toca las señales que veas en cada una.",
+          "feedback": {
+            "met": "Marcaste las trampas y dejaste en paz los mensajes reales.",
+            "not_yet": "Todavía no. Revisa si cada mensaje trae promesa, fecha límite y fuente."
+          },
+          "help": [
+            "Busca una ganancia segura, una fecha límite, una fuente sin explicar.",
+            "Alguien conocido con un pedido normal no trae ninguna."
+          ],
+          "messages": [
+            {
+              "sender": "Maya (compañera)",
+              "text": "¿Me pasas los apuntes? Mañana yo pago tu lonche."
+            },
+            {
+              "sender": "@ganancia.segura.mike",
+              "text": "Triplica tus ahorros en 7 días, garantizado. Solo 5 lugares, responde hoy."
+            },
+            {
+              "sender": "Boletín de la escuela",
+              "text": "Club de inversión: jueves a las 4, biblioteca. Entrada libre."
+            },
+            {
+              "sender": "@ola.de.monedas.oficial",
+              "text": "Nuestro sistema duplica depósitos cada semana, sin detalles. Manda $50 antes de medianoche."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Promete ganancia segura"
+            },
+            {
+              "label": "Te apura a decidir"
+            },
+            {
+              "label": "Nunca explica la fuente"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque as armadilhas e toque nos sinais que você vê em cada uma.",
+          "feedback": {
+            "met": "Você marcou as armadilhas e deixou as mensagens reais em paz.",
+            "not_yet": "Ainda não. Veja se cada mensagem traz promessa, prazo e origem."
+          },
+          "help": [
+            "Procure lucro certo, um prazo, uma origem sem explicação.",
+            "Alguém conhecido com um pedido normal não traz nenhum."
+          ],
+          "messages": [
+            {
+              "sender": "Maya (colega)",
+              "text": "Pode me mandar as anotações? Amanhã eu pago o seu lanche."
+            },
+            {
+              "sender": "@lucro.certo.mike",
+              "text": "Triplique suas economias em 7 dias, garantido. Só 5 vagas, responda hoje."
+            },
+            {
+              "sender": "Informativo da escola",
+              "text": "Clube de investimentos: quinta, às 16h, na biblioteca. Entrada livre."
+            },
+            {
+              "sender": "@onda.de.moedas.oficial",
+              "text": "Nosso sistema dobra depósitos toda semana, sem detalhes. Mande R$ 50 antes da meia-noite."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Promete lucro certo"
+            },
+            {
+              "label": "Apressa sua decisão"
+            },
+            {
+              "label": "Nunca explica a origem"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-secret",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Last line of the DM: “Do not tell your parents. They will not understand.”",
+          "line": "Step 4: the secret. An offer that needs hiding from your family will not survive being checked."
+        },
+        "es-MX": {
+          "prompt": "Última línea: “No le digas a tus papás. No lo van a entender.”",
+          "line": "Paso 4: el secreto. Una oferta que debes ocultar a tu familia no resiste que alguien la revise."
+        },
+        "pt-BR": {
+          "prompt": "Última linha: “Não conte para seus pais. Eles não vão entender.”",
+          "line": "Passo 4: o segredo. Uma oferta que precisa ser escondida da família não aguenta ser conferida."
+        }
+      }
+    },
+    {
+      "id": "ex-fine",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Another message, from Mom: “I added $20 to your savings account. You can see it in the app.”",
+          "line": "Step 5: a clean one. Known sender, no promise, no deadline, nothing hidden: nothing to flag."
+        },
+        "es-MX": {
+          "prompt": "Otro mensaje, de tu mamá: “Te deposité $20 en tu cuenta de ahorro. Lo ves en la app.”",
+          "line": "Paso 5: uno limpio. Remitente conocido, sin promesas, sin prisa y sin secretos: nada que marcar."
+        },
+        "pt-BR": {
+          "prompt": "Outra mensagem, da sua mãe: “Depositei R$ 20 na sua conta poupança. Você vê no app.”",
+          "line": "Passo 5: uma limpa. Remetente conhecido, sem promessa, sem prazo e sem segredo: nada a marcar."
+        }
+      }
+    },
+    {
+      "id": "ex-stop",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have the DM open. An adult can look the seller up on Investor.gov, the SEC’s site.",
+          "line": "Step 6: stop. Send nothing, not even a question, and show the DM to an adult you trust."
+        },
+        "es-MX": {
+          "prompt": "Tienes el mensaje abierto. Un adulto puede consultar el Buró de Entidades Financieras de CONDUSEF y ver si la empresa está autorizada.",
+          "line": "Paso 6: parar. No envíes nada, ni una pregunta, y enseña el mensaje a un adulto de confianza."
+        },
+        "pt-BR": {
+          "prompt": "Você está com a mensagem aberta. Um adulto pode consultar a CVM, que regula ofertas de investimento.",
+          "line": "Passo 6: pare. Não envie nada, nem uma pergunta, e mostre a mensagem a um adulto de confiança."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.scam-spotter.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.fraud-signals",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-gains"
+          },
+          {
+            "id": "msg-practice"
+          },
+          {
+            "id": "msg-private"
+          },
+          {
+            "id": "msg-statement"
+          },
+          {
+            "id": "msg-wave"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-sure"
+          },
+          {
+            "id": "cue-source"
+          },
+          {
+            "id": "cue-clock"
+          },
+          {
+            "id": "cue-secret"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-gains",
+          "msg-private",
+          "msg-wave"
+        ],
+        "cue_ids": {
+          "msg-gains": [
+            "cue-sure",
+            "cue-clock"
+          ],
+          "msg-private": [
+            "cue-source",
+            "cue-secret"
+          ],
+          "msg-wave": [
+            "cue-sure",
+            "cue-clock",
+            "cue-secret"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Flag the traps and tap each sign you see. Leave the real messages alone.",
+          "feedback": {
+            "met": "You flagged the traps and left the real messages alone.",
+            "not_yet": "Not yet. Run each message through the four signs."
+          },
+          "help": [
+            "Four signs: sure profit, a deadline, no source, a secret.",
+            "A known sender with an ordinary request is not a trap."
+          ],
+          "messages": [
+            {
+              "sender": "@legendary.gains",
+              "text": "Every deposit doubles in 3 days, guaranteed. Spots close tonight."
+            },
+            {
+              "sender": "Coach Ray",
+              "text": "Practice is Thursday at 5. Bring your own ball."
+            },
+            {
+              "sender": "Trade With Us",
+              "text": "Our private team picks winners. Send $80, keep this between us."
+            },
+            {
+              "sender": "Ms. Lee (teacher)",
+              "text": "Reminder: investing quiz Friday. Bring a calculator."
+            },
+            {
+              "sender": "@wealth.wave",
+              "text": "Earn 40% weekly, every time. Reply within the hour, keep it secret."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Promises a sure profit"
+            },
+            {
+              "label": "Never explains the source"
+            },
+            {
+              "label": "Pushes you to decide fast"
+            },
+            {
+              "label": "Asks you to keep it secret"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Marca las trampas y toca cada señal que veas. Deja en paz los mensajes reales.",
+          "feedback": {
+            "met": "Marcaste las trampas y dejaste en paz los mensajes reales.",
+            "not_yet": "Todavía no. Pasa cada mensaje por las cuatro señales."
+          },
+          "help": [
+            "Cuatro señales: ganancia segura, fecha límite, sin fuente, un secreto.",
+            "Alguien conocido con un pedido normal no es trampa."
+          ],
+          "messages": [
+            {
+              "sender": "@ganancias.legendarias",
+              "text": "Cada depósito se duplica en 3 días, garantizado. Los lugares cierran hoy."
+            },
+            {
+              "sender": "Profe Ray",
+              "text": "El entrenamiento es el jueves a las 5. Trae tu balón."
+            },
+            {
+              "sender": "Opera Con Nosotros",
+              "text": "Nuestro equipo privado elige ganadores. Manda $80, esto queda entre nosotros."
+            },
+            {
+              "sender": "Mtra. Lee",
+              "text": "Recordatorio: examen de inversión el viernes. Trae calculadora."
+            },
+            {
+              "sender": "@ola.de.riqueza",
+              "text": "Gana 40% cada semana, siempre. Responde en una hora y no lo cuentes."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Promete ganancia segura"
+            },
+            {
+              "label": "Nunca explica la fuente"
+            },
+            {
+              "label": "Te apura a decidir"
+            },
+            {
+              "label": "Te pide guardar el secreto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque as armadilhas e toque em cada sinal que você vê. Deixe as mensagens reais em paz.",
+          "feedback": {
+            "met": "Você marcou as armadilhas e deixou as mensagens reais em paz.",
+            "not_yet": "Ainda não. Passe cada mensagem pelos quatro sinais."
+          },
+          "help": [
+            "Quatro sinais: lucro certo, prazo, sem origem, um segredo.",
+            "Alguém conhecido com um pedido normal não é armadilha."
+          ],
+          "messages": [
+            {
+              "sender": "@ganhos.lendarios",
+              "text": "Cada depósito dobra em 3 dias, garantido. As vagas fecham hoje."
+            },
+            {
+              "sender": "Treinador Ray",
+              "text": "O treino é quinta, às 17h. Leve a sua bola."
+            },
+            {
+              "sender": "Opere Com A Gente",
+              "text": "Nossa equipe privada escolhe vencedores. Mande R$ 80, isso fica entre nós."
+            },
+            {
+              "sender": "Profa. Lee",
+              "text": "Lembrete: prova de investimentos na sexta. Leve calculadora."
+            },
+            {
+              "sender": "@onda.da.riqueza",
+              "text": "Ganhe 40% por semana, sempre. Responda em uma hora e não conte a ninguém."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Promete lucro certo"
+            },
+            {
+              "label": "Nunca explica a origem"
+            },
+            {
+              "label": "Apressa sua decisão"
+            },
+            {
+              "label": "Pede para guardar segredo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-proof"
+          },
+          {
+            "id": "reply-send"
+          },
+          {
+            "id": "reply-adult"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-adult"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam got a DM like the coach’s you just read. What do you tell Sam?",
+          "feedback": {
+            "met": "You told Sam to hold the money and bring in an adult.",
+            "not_yet": "Not yet. The coach sells here, so who else can check it?"
+          },
+          "speaker": "Sam",
+          "line": "It says I must decide tonight. Should I send it and tell my parents later?",
+          "replies": [
+            {
+              "label": "Ask the coach for proof first."
+            },
+            {
+              "label": "Send it, then tell your parents."
+            },
+            {
+              "label": "Send nothing and show an adult the DM."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sam recibió un mensaje como el del coach. ¿Qué le dices a Sam?",
+          "feedback": {
+            "met": "Le dijiste a Sam que no mande dinero y busque a un adulto.",
+            "not_yet": "Todavía no. El coach es quien vende, ¿quién más puede revisarlo?"
+          },
+          "speaker": "Sam",
+          "line": "Dice que debo decidir hoy. ¿Lo mando y les cuento a mis papás después?",
+          "replies": [
+            {
+              "label": "Pídele pruebas al coach primero."
+            },
+            {
+              "label": "Mándalo y luego les cuentas."
+            },
+            {
+              "label": "No mandes nada y enseña el mensaje a un adulto."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Sam recebeu uma mensagem como a do coach. O que você diz a ele?",
+          "feedback": {
+            "met": "Você disse ao Sam para segurar o dinheiro e chamar um adulto.",
+            "not_yet": "Ainda não. O coach é quem vende, então quem mais pode conferir?"
+          },
+          "speaker": "Sam",
+          "line": "Diz que preciso decidir hoje. Eu mando e conto para meus pais depois?",
+          "replies": [
+            {
+              "label": "Peça provas ao coach primeiro."
+            },
+            {
+              "label": "Mande e conte depois aos seus pais."
+            },
+            {
+              "label": "Não mande nada e mostre a mensagem a um adulto."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.fraud-signals",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-stop"
+          },
+          {
+            "id": "choice-test"
+          },
+          {
+            "id": "choice-ask"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-source"
+          },
+          {
+            "id": "reason-friend"
+          },
+          {
+            "id": "reason-return"
+          },
+          {
+            "id": "reason-adult"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-stop"
+        ],
+        "reasonQuality": {
+          "reason-source": "sound",
+          "reason-return": "sound",
+          "reason-adult": "partial",
+          "reason-friend": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate shares screenshots of “profits” from an app paying 20% a week. What do you do?",
+          "feedback": {
+            "met": "You held the money back and chose an adult’s check.",
+            "not_yet": "Not yet. Which sign from the steps does this offer show?"
+          },
+          "help": [
+            "Ask: who explains where the money comes from?"
+          ],
+          "choices": [
+            {
+              "label": "Send nothing and show it to an adult"
+            },
+            {
+              "label": "Join with a small amount to test"
+            },
+            {
+              "label": "Reply and ask how it works"
+            }
+          ],
+          "reasonPrompt": "Why is that the safest choice?",
+          "reasons": [
+            {
+              "label": "Screenshots prove nothing, and the source is hidden"
+            },
+            {
+              "label": "A classmate shared it, so it is safe"
+            },
+            {
+              "label": "20% a week is beyond any honest offer"
+            },
+            {
+              "label": "An adult can check it before money moves"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un compañero comparte capturas de “ganancias” de una app que paga 20% a la semana. ¿Qué haces?",
+          "feedback": {
+            "met": "Frenaste el dinero y elegiste que un adulto lo revise.",
+            "not_yet": "Todavía no. ¿Qué señal de los pasos muestra esta oferta?"
+          },
+          "help": [
+            "Pregúntate: ¿quién explica de dónde sale el dinero?"
+          ],
+          "choices": [
+            {
+              "label": "No envío nada y se lo enseño a un adulto"
+            },
+            {
+              "label": "Entro con poco dinero para probar"
+            },
+            {
+              "label": "Respondo y pregunto cómo funciona"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la opción más segura?",
+          "reasons": [
+            {
+              "label": "Las capturas no prueban nada y la fuente está oculta"
+            },
+            {
+              "label": "Lo compartió un compañero, así que es seguro"
+            },
+            {
+              "label": "20% a la semana supera cualquier oferta honesta"
+            },
+            {
+              "label": "Un adulto puede revisarlo antes de mover dinero"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um colega compartilha prints de “lucros” de um app que paga 20% por semana. O que você faz?",
+          "feedback": {
+            "met": "Você segurou o dinheiro e escolheu a checagem de um adulto.",
+            "not_yet": "Ainda não. Qual sinal dos passos esta oferta mostra?"
+          },
+          "help": [
+            "Pergunte: quem explica de onde vem o dinheiro?"
+          ],
+          "choices": [
+            {
+              "label": "Não envio nada e mostro a um adulto"
+            },
+            {
+              "label": "Entro com pouco dinheiro para testar"
+            },
+            {
+              "label": "Respondo e pergunto como funciona"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a escolha mais segura?",
+          "reasons": [
+            {
+              "label": "Prints não provam nada e a origem está escondida"
+            },
+            {
+              "label": "Um colega compartilhou, então é seguro"
+            },
+            {
+              "label": "20% por semana passa de qualquer oferta honesta"
+            },
+            {
+              "label": "Um adulto pode conferir antes de o dinheiro sair"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
