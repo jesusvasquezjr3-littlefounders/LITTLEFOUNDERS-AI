@@ -1,6 +1,6 @@
 # S05 — the v2 catalog (OD-24), authored agentically
 
-Checkpoint of 4 October 2026. Branch `feat/fe-pilot-v2`. Status: **implemented and locally verified; not accepted.** Staff release, native-language review and the owner's acceptance remain open.
+Checkpoint of 4 October 2026. Branch `feat/fe-pilot-v2`. Status: **code released to production; catalog data not yet published; not accepted.** Staff release, native-language review and the owner's acceptance remain open.
 
 ## What this block did
 
@@ -29,6 +29,12 @@ Run once on the final tree, in the background, with no agent fleet live.
 - Rebuilt-UI audits (text fit, proportion, copy budget, board rules) on the 16 states that render the changed boards (fin1 and the Horizonte space1 coin-stack and market-stall fixtures) in 3 locales, 2 themes and every width: no issue, no JS or media error. This is a trimmed run; the full 12-shard audit is the frontend CI deploy gate and runs on the push.
 - `spec:check` failed once on drift: the backend comment edit in `coins.ts` and `stall.ts` changes the generated frontend copies. `node agent/tools/sync-v2-horizonte.mjs` regenerated them (comment-only change) and the check passes.
 - Pre-existing and unrelated: `npm run content:gates -- --course <slug>` fails for all four courses on the legacy v1 curriculum YAML (it lacks `regional_scenarios`). CI runs the form without `--course`, which passes.
+
+## Release evidence
+
+- PR #127 merged to `main` as `083df604` (230 files). Main CI: frontend (12 audit shards), backend, coursegen and repo gates green.
+- CD: backend CD and coursegen CD succeeded; frontend CD succeeded and the Vercel production deployment of `083df604` is READY. No migrations in this release.
+- Not done: knowledge-component seed (`seed:kc`), hierarchy seed per course, `v2:publish` for four courses and three markets, draft knowledge-component activation, `COURSE_PATHWAY_ENGINE=pathway`. Each needs the production Vault URL and service-role key, or superuser database access; this session could not use them. Until they run, the Vault holds none of the new lessons and learners see nothing new. Runbook order is in [FORGE-V2-RELEASE](../../content/FORGE-V2-RELEASE.md#3-the-whole-catalog-od-24).
 
 ## Judgement calls (defaults taken, owner can redirect)
 
