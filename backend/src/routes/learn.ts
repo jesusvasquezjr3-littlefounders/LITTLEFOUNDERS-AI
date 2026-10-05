@@ -14,7 +14,7 @@ import { authedUser, requireAuth, type AuthedUser } from '../middleware/auth.js'
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { pickLessonLocale, stripAnswers } from '../services/lessonDocument.js';
 import { isCalendarDate } from '../services/streak.js';
-import { lessonEligibilityForBirthDate } from '../services/lessonEligibility.js';
+import { lessonEligibilityFor } from '../services/lessonEligibility.js';
 import { getTutorPreferences } from '../services/tutorData.js';
 import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
 import { allowsSelfManagedAnalytics } from '../services/analyticsPreference.js';
@@ -104,7 +104,7 @@ const NOT_FOUND = 'NOT_FOUND';
 /** Applies an exact v2 age policy before delivery or any progress mutation. */
 function hasV2LessonEligibility(res: Response, schemaVersion: number, document: unknown, birthDate: string | null | undefined): boolean {
   if (schemaVersion !== 2) return true;
-  const eligibility = lessonEligibilityForBirthDate(document, birthDate);
+  const eligibility = lessonEligibilityFor(document, birthDate, (res.locals.ageScreen as AgeScreenState | undefined)?.ageBand);
   if (eligibility === 'eligible') return true;
   if (eligibility === 'invalid-policy') fail(res, 409, 'LESSON_ELIGIBILITY_MISSING', 'This lesson cannot open yet');
   else if (eligibility === 'unknown-age') fail(res, 403, 'LESSON_AGE_ELIGIBILITY_REQUIRED', 'Age eligibility is required for this lesson');
