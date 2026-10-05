@@ -5,7 +5,8 @@
  * the B.6 topic → KC map (database/seeds/kc_topic_map.v1.json) into
  * topic_knowledge_components. Order of operations for the S05.3a graph:
  * apply the B.6 data-layer and kc_strand_widening migrations first; the new
- * KCs load as `draft` and change nothing the Mentor serves until activated.
+ * Owner-approved KCs are still staged as `draft` until the post-release
+ * activation transaction proves their published lesson bridge is usable.
  *
  * Idempotent by construction: KCs upsert by `key`, misconceptions by
  * (kc_id, code), edges by their primary key with duplicates ignored. Running
@@ -68,9 +69,9 @@ export const SeedSchema = z.object({
       /**
        * `draft` KCs are catalogued but invisible to the Mentor and to clients
        * (getActiveKcs and the kc RLS policy read only `active`). The S05.3a
-       * additions stay draft until the owner accepts the B.6 pathway policy
-       * (OD-22); activation is an edit here, never a manual SQL update, because
-       * the next seed run would otherwise put a hand-activated row back.
+       * additions stay draft unless the owner approves them. Approved OD-22
+       * rows are still staged as draft by this loader until the post-release
+       * transaction proves their live teaching bridge.
        */
       status: z.enum(['draft', 'active']).default('active'),
       tier_min: z.number().int().min(1).max(3),
@@ -93,6 +94,18 @@ export const SeedSchema = z.object({
       distractor_patterns: z.record(z.string(), z.unknown()).default({}),
     }),
   ),
+});
+
+export const ActivationSchema = z.object({
+  version: z.literal(1),
+  decision: z.literal('OD-22'),
+  required_courses: z.array(z.string().regex(/^[a-z0-9][a-z0-9-]{2,95}$/)).min(1),
+  activations: z.array(
+    z.object({
+      key: z.string().regex(/^[a-z0-9][a-z0-9_.-]{2,95}$/),
+      skill_key: z.string().regex(/^[a-z0-9][a-z0-9-]{2,95}\/[a-z0-9][a-z0-9-]{2,127}$/),
+    }),
+  ).min(1),
 });
 
 export function assertAcyclic(keys: Set<string>, edges: Array<[string, string]>): void {
@@ -167,21 +180,35 @@ export function assertDraftsDoNotGateActive(
   }
 }
 
-export function readSeedFiles(): { seed: z.infer<typeof SeedSchema>; map: ReturnType<typeof KcTopicMapSchema.parse> } {
+export function readSeedFiles(): {
+  seed: z.infer<typeof SeedSchema>;
+  map: ReturnType<typeof KcTopicMapSchema.parse>;
+  activation: z.infer<typeof ActivationSchema>;
+} {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const seed = SeedSchema.parse(JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_graph.v1.json'), 'utf8')));
   const map = KcTopicMapSchema.parse(JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_topic_map.v1.json'), 'utf8')));
-  return { seed, map };
+  const activation = ActivationSchema.parse(
+    JSON.parse(readFileSync(path.resolve(here, '../../../database/seeds/kc_activation.od22.json'), 'utf8')),
+  );
+  return { seed, map, activation };
 }
 
 async function main(): Promise<void> {
-  const { seed, map } = readSeedFiles();
+  const { seed, map, activation } = readSeedFiles();
 
   const keys = new Set(seed.kcs.map((k) => k.key));
   if (keys.size !== seed.kcs.length) throw new Error('duplicate KC keys in seed');
   assertAcyclic(keys, seed.edges);
   assertTierOrder(seed.kcs, seed.edges);
   assertDraftsDoNotGateActive(seed.kcs, seed.edges);
+  const activationKeys = new Set(activation.activations.map((item) => item.key));
+  if (activationKeys.size !== activation.activations.length) throw new Error('duplicate KC keys in OD-22 activation manifest');
+  for (const item of activation.activations) {
+    const kc = seed.kcs.find((candidate) => candidate.key === item.key);
+    if (!kc) throw new Error(`OD-22 activation references unknown KC "${item.key}"`);
+    if (kc.status !== 'active') throw new Error(`OD-22 activation KC "${item.key}" is not owner-approved in the graph`);
+  }
   for (const m of seed.misconceptions) {
     if (!keys.has(m.kc)) throw new Error(`misconception "${m.code}" references unknown KC "${m.kc}"`);
   }
@@ -192,7 +219,7 @@ async function main(): Promise<void> {
   }
 
   // 1) Upsert the KC catalog by key.
-  const kcRows = seed.kcs.map((k) => ({
+  const toRow = (k: (typeof seed.kcs)[number]) => ({
     key: k.key,
     strand: k.strand,
     tier_min: k.tier_min,
@@ -204,16 +231,41 @@ async function main(): Promise<void> {
     objective: k.objective,
     skill_key: k.skill_key ?? null,
     status: k.status,
-  }));
-  const kcRes = await serviceRest<unknown>('/kc?on_conflict=key', {
+  });
+  const ordinaryRows = seed.kcs.filter((k) => !activationKeys.has(k.key)).map(toRow);
+  const deferredRows = seed.kcs.filter((k) => activationKeys.has(k.key)).map((k) => ({ ...toRow(k), status: 'draft', skill_key: null }));
+
+  const ordinaryRes = await serviceRest<unknown>('/kc?on_conflict=key', {
     method: 'POST',
     headers: { Prefer: 'return=minimal,resolution=merge-duplicates' },
-    body: JSON.stringify(kcRows),
+    body: JSON.stringify(ordinaryRows),
   });
-  if (kcRes === null) throw new Error('kc upsert failed — are the 0052 migration and the B.6 kc_strand_widening migration applied?');
+  if (ordinaryRes === null) throw new Error('kc upsert failed — are the 0052 migration and the B.6 kc_strand_widening migration applied?');
+
+  // OD-22 rows are inserted safely as drafts. On later seed runs, merge only
+  // their authored metadata: status and skill_key belong to the atomic
+  // post-release activation and must never be promoted early or demoted later.
+  const deferredInsertRes = await serviceRest<unknown>('/kc?on_conflict=key', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify(deferredRows),
+  });
+  if (deferredInsertRes === null) throw new Error('deferred OD-22 KC insert failed');
+  const deferredMetadataResults = await Promise.all(deferredRows.map(({ status, skill_key: skillKey, ...row }) => {
+    void status;
+    void skillKey;
+    return serviceRest<unknown>(`/kc?key=eq.${encodeURIComponent(row.key)}`, {
+      method: 'PATCH',
+      headers: { Prefer: 'return=minimal' },
+      body: JSON.stringify(row),
+    });
+  }));
+  if (deferredMetadataResults.some((result) => result === null)) throw new Error('deferred OD-22 KC metadata update failed');
 
   // 2) Resolve key -> id.
-  const idRows = await serviceRest<Array<{ id: string; key: string }>>('/kc?select=id,key&limit=1000');
+  const idRows = await serviceRest<Array<{ id: string; key: string; status: 'draft' | 'active'; skill_key: string | null }>>(
+    '/kc?select=id,key,status,skill_key&limit=1000',
+  );
   if (!idRows) throw new Error('could not read back kc ids');
   const idByKey = new Map(idRows.map((r) => [r.key, r.id]));
   for (const key of keys) {
@@ -249,7 +301,8 @@ async function main(): Promise<void> {
   if (misRes === null) throw new Error('misconception upsert failed');
 
   console.log(
-    `seed:kc OK — ${seed.kcs.length} KCs (${seed.kcs.filter((k) => k.status === 'active').length} active), ` +
+    `seed:kc OK — ${seed.kcs.length} KCs (${idRows.filter((k) => k.status === 'active').length} operationally active; ` +
+      `${activation.activations.length} owner-approved KCs deferred to post-release activation), ` +
       `${seed.edges.length} edges, ${seed.misconceptions.length} misconceptions (idempotent upsert)`,
   );
 
@@ -277,7 +330,7 @@ async function main(): Promise<void> {
   // already in place, and the fix is to correct the mapping and run this
   // again.
   // Only ACTIVE KCs have a Mentor bridge to audit; drafts are catalogued, not served.
-  await auditContentBridge(seed.kcs.filter((k) => k.status === 'active').map((k) => ({ key: k.key, skill_key: k.skill_key ?? null })));
+  await auditContentBridge(idRows.filter((k) => k.status === 'active').map((k) => ({ key: k.key, skill_key: k.skill_key })));
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {

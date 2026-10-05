@@ -1,0 +1,643 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-money-together",
+  "lesson_id": "fe-69-25-share-the-supplies",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.shared-resources",
+    "money.equal-sharing"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Comparte los materiales. Recognize money and materials owned by a group. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Share the supplies",
+    "es-MX": "Comparte los materiales",
+    "pt-BR": "Divida os materiais"
+  },
+  "new_concepts": [
+    "life.shared-resources"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A class fund holds 30 coins.",
+          "line": "Which use belongs to the group?"
+        },
+        "es-MX": {
+          "prompt": "Un fondo del salón tiene 30 monedas.",
+          "line": "¿Qué uso pertenece al grupo?"
+        },
+        "pt-BR": {
+          "prompt": "Um fundo da turma tem 30 moedas.",
+          "line": "Qual uso pertence ao grupo?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Four painters share 8 brushes. What is fair?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "2 brushes each"
+            },
+            {
+              "label": "All 8 for one painter"
+            },
+            {
+              "label": "Hide 4 brushes"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "8 ÷ 4 = 2"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Cuatro pintores usan 8 pinceles. ¿Qué es justo?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "2 pinceles por persona"
+            },
+            {
+              "label": "Los 8 para una persona"
+            },
+            {
+              "label": "Esconder 4 pinceles"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "8 ÷ 4 = 2 por persona"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Quatro pintores usam 8 pincéis. O que é justo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "2 pincéis para cada um"
+            },
+            {
+              "label": "Os 8 para uma pessoa"
+            },
+            {
+              "label": "Esconder 4 pincéis"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "8 ÷ 4 = 2 para cada um"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Eight brushes, four painters: two each."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Ocho pinceles, cuatro pintores: dos para cada uno."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Oito pincéis, quatro pintores: dois para cada um."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Three gardeners share 6 cans. What is fair?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "2 cans each"
+            },
+            {
+              "label": "All 6 for one gardener"
+            },
+            {
+              "label": "Leave 3 unused"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "6 ÷ 3 = 2"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Tres jardineros usan 6 regaderas. ¿Qué es justo?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "2 regaderas por persona"
+            },
+            {
+              "label": "Las 6 para una persona"
+            },
+            {
+              "label": "Dejar 3 sin usar"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "6 ÷ 3 = 2 por persona"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Três jardineiros usam 6 regadores. O que é justo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "2 regadores para cada um"
+            },
+            {
+              "label": "Os 6 para uma pessoa"
+            },
+            {
+              "label": "Deixar 3 sem uso"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "6 ÷ 3 = 2 para cada um"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Five club friends share 10 pens. What is fair?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "2 markers each"
+            },
+            {
+              "label": "All 10 for one member"
+            },
+            {
+              "label": "Throw 5 away"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "10 ÷ 5 = 2"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Cinco amigos usan 10 plumones. ¿Qué es justo?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "2 marcadores por persona"
+            },
+            {
+              "label": "Los 10 para una persona"
+            },
+            {
+              "label": "Tirar 5"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "10 ÷ 5 = 2 por persona"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Cinco amigos usam 10 canetas. O que é justo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "2 marcadores para cada um"
+            },
+            {
+              "label": "Os 10 para uma pessoa"
+            },
+            {
+              "label": "Jogar 5 fora"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "10 ÷ 5 = 2 para cada um"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: Two readers share 4 books. What is fair?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "2 books each"
+            },
+            {
+              "label": "All 4 for one reader"
+            },
+            {
+              "label": "Lock all 4 away"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "4 ÷ 2 = 2"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: Dos lectores usan 4 libros. ¿Qué es justo?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "2 libros por persona"
+            },
+            {
+              "label": "Los 4 para una persona"
+            },
+            {
+              "label": "Guardar los 4 bajo llave"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "4 ÷ 2 = 2 por persona"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: Dois leitores usam 4 livros. O que é justo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "2 livros para cada um"
+            },
+            {
+              "label": "Os 4 para uma pessoa"
+            },
+            {
+              "label": "Trancar os 4"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "4 ÷ 2 = 2 para cada um"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

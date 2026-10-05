@@ -350,8 +350,9 @@ npm --prefix backend run seed:kc               # REQUIRED after migration 0052 �
                                                # tutor-deploy.yml's `seed-kc` step, where the credentials live.
                                                # Since S05.3a it also writes the B.6 topic → KC map into topic_knowledge_components
                                                # and fails on a published topic with no mapping. Apply the B.6 data-layer and
-                                               # kc_strand_widening migrations first; the 72 new KCs load as draft (invisible to the
-                                               # Mentor) until the owner accepts the pathway policy and they are activated in the seed.
+                                               # kc_strand_widening migrations first. OD-22 approves the 25 Financial Education KCs,
+                                               # but seed:kc keeps them operationally draft until the locked post-release activation
+                                               # proves their course/topic/lesson teaching bridges. The other 47 additions stay draft.
 npm --prefix backend run audit:content-bridge  # does every mapped kc.skill_key still reach a PUBLISHED lesson? (daily in CI too)
 npm --prefix backend run placement:verify      # the real placement search over the real catalog — NOT frontend's verify:placement,
                                                # which is 3D island placement and unrelated despite the name

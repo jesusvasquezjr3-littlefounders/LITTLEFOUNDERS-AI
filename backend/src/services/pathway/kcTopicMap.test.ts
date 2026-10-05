@@ -18,7 +18,7 @@ const graph = SeedSchema.parse(JSON.parse(readFileSync(path.join(seeds, 'kc_grap
 const map = KcTopicMapSchema.parse(JSON.parse(readFileSync(path.join(seeds, 'kc_topic_map.v1.json'), 'utf8')));
 
 /** The 28 KCs the Mentor shipped with (0052 seed), 24 of which had a content bridge before S05.3a. */
-const ORIGINAL_28 = graph.kcs.filter((k) => k.status === 'active').map((k) => k.key);
+const ORIGINAL_28 = graph.kcs.slice(0, 28).map((k) => k.key);
 
 describe('the real B.6 topic map (S05.3a)', () => {
   it('agrees with the real KC graph: no unknown KC, no silent gap, Mentor bridge inside the course map', () => {
@@ -53,10 +53,11 @@ describe('the real B.6 topic map (S05.3a)', () => {
     }
   });
 
-  it('keeps the original 28 KCs active and every S05.3a addition draft, 100 KCs in all', () => {
+  it('keeps the original 28 active, approves 25 covered Financial Education KCs, and leaves 47 gaps draft', () => {
     expect(ORIGINAL_28).toHaveLength(28);
     expect(graph.kcs).toHaveLength(100);
-    expect(graph.kcs.filter((k) => k.status === 'draft')).toHaveLength(72);
+    expect(graph.kcs.filter((k) => k.status === 'active')).toHaveLength(53);
+    expect(graph.kcs.filter((k) => k.status === 'draft')).toHaveLength(47);
     for (const kc of graph.kcs.filter((k) => k.status === 'draft')) expect(kc.skill_key ?? null, kc.key).toBeNull();
   });
 
@@ -69,7 +70,7 @@ describe('the real B.6 topic map (S05.3a)', () => {
     expect(taught.has('money.percent-intro')).toBe(true);
     expect(taught.has('biz.risk-and-reward')).toBe(true);
     // Every KC added in S05.3a is taught somewhere: none was invented without content.
-    for (const kc of graph.kcs.filter((k) => k.status === 'draft')) expect(taught.has(kc.key), kc.key).toBe(true);
+    for (const kc of graph.kcs.slice(28)) expect(taught.has(kc.key), kc.key).toBe(true);
   });
 });
 

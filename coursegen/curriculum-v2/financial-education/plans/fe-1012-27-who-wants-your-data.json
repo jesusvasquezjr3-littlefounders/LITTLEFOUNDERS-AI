@@ -1,0 +1,642 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-account-detectives",
+  "lesson_id": "fe-1012-27-who-wants-your-data",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.data-privacy",
+    "life.scam-awareness",
+    "life.banks-and-accounts"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Quién pide tus datos. Identify suspicious requests for private account information. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Who wants your data",
+    "es-MX": "Quién pide tus datos",
+    "pt-BR": "Quem quer seus dados"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A message asks Zara for a secret code.",
+          "line": "What should Zara do with the code?"
+        },
+        "es-MX": {
+          "prompt": "Un mensaje pide a Zara un código secreto.",
+          "line": "¿Qué debe hacer Zara con el código?"
+        },
+        "pt-BR": {
+          "prompt": "Uma mensagem pede a Zara um código secreto.",
+          "line": "O que Zara deve fazer com o código?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: An unknown survey asks for a login. What now?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Close it and verify separately"
+            },
+            {
+              "label": "Enter the login"
+            },
+            {
+              "label": "Send a password too"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Private login; unknown requester"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Una encuesta extraña pide acceso. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Cerrar y verificar por separado"
+            },
+            {
+              "label": "Ingresar el acceso"
+            },
+            {
+              "label": "Enviar también contraseña"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El acceso es privado y el solicitante no está verificado"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Uma pesquisa estranha pede acesso. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Fechar e verificar separadamente"
+            },
+            {
+              "label": "Inserir o acesso"
+            },
+            {
+              "label": "Enviar também a senha"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "O acesso é privado e o solicitante não foi verificado"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Worked case: an unknown form asks for an account login; close it and verify through a trusted channel."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caso resuelto: un formulario desconocido pide acceso a cuenta; ciérralo y verifica por un canal confiable."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caso resolvido: formulário desconhecido pede acesso à conta; feche e verifique por canal confiável."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: A quiz asks for name, address, and birth date. What now?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Pause and ask why the data is needed"
+            },
+            {
+              "label": "Submit everything"
+            },
+            {
+              "label": "Add account codes"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "The form requests several identifying details"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Un quiz pide nombre, casa y fecha de nacimiento. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Pausar y preguntar para qué se necesitan"
+            },
+            {
+              "label": "Enviar todo"
+            },
+            {
+              "label": "Agregar códigos de cuenta"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El formulario pide varios datos identificadores"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Um quiz pede nome, casa e data de nascimento. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Pausar e perguntar por que precisa dos dados"
+            },
+            {
+              "label": "Enviar tudo"
+            },
+            {
+              "label": "Adicionar códigos da conta"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "O formulário pede vários dados de identificação"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: A known club asks for a nickname for one project. What now?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Share the nickname if the purpose is clear"
+            },
+            {
+              "label": "Send a password instead"
+            },
+            {
+              "label": "Post a home address"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "The limited data matches the stated project purpose"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Un club conocido pide un apodo para un proyecto. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Compartir el apodo si el propósito es claro"
+            },
+            {
+              "label": "Enviar una contraseña"
+            },
+            {
+              "label": "Publicar el domicilio"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El dato limitado coincide con el propósito"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Um clube conhecido pede apelido para um projeto. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Compartilhar o apelido se a finalidade é clara"
+            },
+            {
+              "label": "Enviar uma senha"
+            },
+            {
+              "label": "Publicar o endereço"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "O dado limitado corresponde à finalidade"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: A copied logo comes with a strange link. What now?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Ignore the link and use the official channel"
+            },
+            {
+              "label": "Open and sign in"
+            },
+            {
+              "label": "Forward account details"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "A logo does not verify a strange link"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: Un logotipo copiado viene con un enlace raro. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Ignorar el enlace y usar el canal oficial"
+            },
+            {
+              "label": "Abrir e iniciar sesión"
+            },
+            {
+              "label": "Reenviar datos de cuenta"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Un logotipo no verifica un enlace extraño"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: Um logotipo copiado vem com link estranho. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Ignorar o link e usar o canal oficial"
+            },
+            {
+              "label": "Abrir e entrar"
+            },
+            {
+              "label": "Encaminhar dados da conta"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Um logotipo não verifica um link estranho"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

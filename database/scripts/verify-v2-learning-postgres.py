@@ -223,8 +223,17 @@ try:
     assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_version_submitted' AND subject = '{lesson}'") == '1'
     assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_published' AND subject = '{lesson}'") == '0'
     check('the reviewed transaction stores an attested document of a live lesson as pending (no pointer move); a stale course, a missing gate or an unattested behaviour gate is refused')
-    rejected(call(manifest), 'versions are immutable')
-    check('a published version id is never reused')
+    retry = service(call(manifest) + '::text')
+    assert '"activation": "pending_staff_approval"' in retry and '"idempotent": true' in retry, retry
+    assert run(f"SELECT count(*) FROM lesson_document_versions WHERE lesson_id = '{lesson}' AND locale = 'es-MX' AND version_id = '{pub_version}'") == '1'
+    assert run(f"SELECT count(*) FROM lesson_version_activation_requests WHERE lesson_id = '{lesson}' AND version_id = '{pub_version}'") == '1'
+    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_version_submitted' AND subject = '{lesson}'") == '1'
+    conflicting_doc = doc.replace('"segments": []', '"segments": [{"id": "changed"}]')
+    rejected(f"SET ROLE service_role; SELECT publish_v2_lesson_version('{lesson}', 'es-MX', '{pub_version}', '{conflicting_doc}'::jsonb, '{{}}'::jsonb, '{manifest}'::jsonb)",
+             'different content digests')
+    rejected(f"SET ROLE service_role; SELECT publish_v2_lesson_version('{lesson}', 'es-MX', '{pub_version}', '{doc}'::jsonb, '{{\"changed\": true}}'::jsonb, '{manifest}'::jsonb)",
+             'different content digests')
+    check('a byte-identical publication retry is inert, while a reused identity with different document or answer-key content is refused')
 
     for role in ('anon', 'authenticated'):
         rejected(f"SET ROLE {role}; SELECT publish_v2_lesson_version('{lesson}', 'es-MX', 'x-rev-9', '{{}}'::jsonb, '{{}}'::jsonb, '{{}}'::jsonb)", 'permission denied')

@@ -1,0 +1,642 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-costs-over-time",
+  "lesson_id": "fe-1012-24-test-the-plan",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.review-and-adjust-plan",
+    "money.simple-budget",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Pon a prueba el plan. Test a plan against a changed cost and repair the shortfall. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Test the plan",
+    "es-MX": "Pon a prueba el plan",
+    "pt-BR": "Teste o plano"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A plan expected 5 coins, but only 3 arrived.",
+          "line": "What keeps the goal alive?"
+        },
+        "es-MX": {
+          "prompt": "El plan esperaba 5 monedas, pero llegaron 3.",
+          "line": "¿Qué mantiene viva la meta?"
+        },
+        "pt-BR": {
+          "prompt": "O plano esperava 5 moedas, mas chegaram 3.",
+          "line": "O que mantém a meta viva?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Available 40; plan 18 + 12 + 8. Does it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Yes: total 38"
+            },
+            {
+              "label": "No: total 40"
+            },
+            {
+              "label": "Spend first"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "18 + 12 + 8 = 38; 38 ≤ 40"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Hay 40; plan 18 + 12 + 8. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Sí: total 38"
+            },
+            {
+              "label": "No: total 40"
+            },
+            {
+              "label": "Gastar primero"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "18 + 12 + 8 = 38; 38 ≤ 40"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Há 40; plano 18 + 12 + 8. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Sim: total 38"
+            },
+            {
+              "label": "Não: total 40"
+            },
+            {
+              "label": "Gastar primeiro"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "18 + 12 + 8 = 38; 38 ≤ 40"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Worked case: available 40; planned 18 + 12 + 8 = 38, leaving a 2-coin margin."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caso resuelto: disponibles 40; plan 18 + 12 + 8 = 38, deja margen de 2."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caso resolvido: disponíveis 40; plano 18 + 12 + 8 = 38, deixa margem 2."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Available 35; plan 15 + 11 + 7. Does it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Yes: total 33"
+            },
+            {
+              "label": "No: total 35"
+            },
+            {
+              "label": "Spend first"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "15 + 11 + 7 = 33; 33 ≤ 35"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Hay 35; plan 15 + 11 + 7. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Sí: total 33"
+            },
+            {
+              "label": "No: total 35"
+            },
+            {
+              "label": "Gastar primero"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "15 + 11 + 7 = 33; 33 ≤ 35"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Há 35; plano 15 + 11 + 7. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Sim: total 33"
+            },
+            {
+              "label": "Não: total 35"
+            },
+            {
+              "label": "Gastar primeiro"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "15 + 11 + 7 = 33; 33 ≤ 35"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Available 50; plan 22 + 17 + 14. Does it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "No: total 53"
+            },
+            {
+              "label": "Yes: total 50"
+            },
+            {
+              "label": "Spend first"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "22 + 17 + 14 = 53; 53 > 50"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Hay 50; plan 22 + 17 + 14. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "No: total 53"
+            },
+            {
+              "label": "Sí: total 50"
+            },
+            {
+              "label": "Gastar primero"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "22 + 17 + 14 = 53; 53 > 50"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Há 50; plano 22 + 17 + 14. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Não: total 53"
+            },
+            {
+              "label": "Sim: total 50"
+            },
+            {
+              "label": "Gastar primeiro"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "22 + 17 + 14 = 53; 53 > 50"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: Available 28; plan 12 + 9 + 5. Does it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Yes: total 26"
+            },
+            {
+              "label": "No: total 28"
+            },
+            {
+              "label": "Spend first"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "12 + 9 + 5 = 26; 26 ≤ 28"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: Hay 28; plan 12 + 9 + 5. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Sí: total 26"
+            },
+            {
+              "label": "No: total 28"
+            },
+            {
+              "label": "Gastar primero"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "12 + 9 + 5 = 26; 26 ≤ 28"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: Há 28; plano 12 + 9 + 5. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Sim: total 26"
+            },
+            {
+              "label": "Não: total 28"
+            },
+            {
+              "label": "Gastar primeiro"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "12 + 9 + 5 = 26; 26 ≤ 28"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

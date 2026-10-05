@@ -199,8 +199,8 @@
       "date": "2026-09-28",
       "change": "Gap-fix F1-staff-ops (G.3, Appendix N 1.2): a curated-pack status decision and its admin.tutor_pack.status audit row now commit in one database transaction (set_tutor_pack_status); the contract validation, the content-hash check and the human release gate are unchanged",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "governance.model",
@@ -269,8 +269,8 @@
       "date": "2026-09-28",
       "change": "Gap-fix round 1 (Mentor lane): OD-6 persona and self-naming check (the AI is the Mentor, Tutor is the parent); OD-13 Mentor-turn Copy Budget (2 sentences, 20 words, 12 for ages 6-9, one question) as a one-retry shape check, survivals delivered and counted; C.8/C.12 session-end signal takes the per-channel reply latency (typed, spoken, activity baselines never mixed) with voice-only, typed-only and mixed-channel gym personas; C.24 rubric v2 rule-scores tell_honored from Oracle's tell count; mentorQuality instruments B.28 efficiency and resolution, B.9 journal, B.13 bridge conversion, B.21 rest-day use and B.24 autonomy adoption from their existing RPCs",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "measurement.stage7_and_thresholds",
@@ -449,8 +449,8 @@
       "date": "2026-09-29",
       "change": "Gap-fix round 6 (fix6mentor8), C.17 Tier 1: orchestrator.ts comment only; the controlling-language gate it reads (dialoguePolicy.controllingGate) now follows the band in both A/B arms (dialogueCalibration.ts, Tier 2). No behaviour of this component's own code changed",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "evaluation.stage2_and_bias_audit",
@@ -459,8 +459,8 @@
       "date": "2026-09-29",
       "change": "Gap-fix round 6 (fix6mentor8): Appendix D 3.7 equity-drift audit added (oracle/src/safety/equityAudit/: identity cues, scripted sessions, harness through the real orchestrator, drift report, record/cadence/material-change log); C.17 Stage 2 personas: adult_control now requires the controlling-language gate in the control arm, new teen_control persona",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "evaluation.rubric_and_judges",
@@ -469,8 +469,8 @@
       "date": "2026-09-29",
       "change": "Gap-fix round 6 (fix6mentor8), C.17: transcriptScoring scores controlling_language for a teen or adult in either A/B arm (the gate follows the band since OD-26); fixture en-goal-unconfirmed (teen, control arm) now expects pass instead of not_applicable. Rubric text and hash unchanged",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "measurement.stage7_and_thresholds",
@@ -489,8 +489,8 @@
       "date": "2026-09-29",
       "change": "Gap-fix round 6 (fix6mentor8): registry classifies oracle/src/safety/equityAudit/** under the Tier 1 component evaluation.stage2_and_bias_audit",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "safety.judge",
@@ -499,8 +499,8 @@
       "date": "2026-09-29",
       "change": "Found unrecorded at integration base 41c4bfb0 (gap-fix round 6, fix6mentor8 lane): commit 95944ae6 (C.4 / OD-18 / S01.4, delete a stored Mentor memory note) changed agent/tools/check-mentor-minor-safeguards.mjs without a change-record row. Recorded here with its origin; this lane did not change the component",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     },
     {
       "component": "measurement.stage7_and_thresholds",
@@ -509,8 +509,38 @@
       "date": "2026-09-30",
       "change": "Gap-fix round 7 (fix7learni1), Appendix C 1.1 / B.9: mentorQuality.ts decisionJournalReading adds decision-journal coverage (journaled / made, baseline release-1) next to the resurfacing rate in the learning.decision_journal breakdown; diagnostic only, no anomaly, no threshold value changed",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
+    },
+    {
+      "component": "mentor.non_negotiables",
+      "hash": "a21b76d440f6b0de8f7edb749f8b081f9c099d83371c32acc08935569dadc49b",
+      "files": 9,
+      "date": "2026-10-05",
+      "change": "Signed decision D-2026-09-27-finer-tier1-boundaries took effect, activating the reviewed Tier 2 and Tier 3 declaration carve-outs while retaining the strict Tier 1 default",
+      "origin": "human",
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
+    },
+    {
+      "component": "measurement.stage7_and_thresholds",
+      "hash": "e02a3491f4740c60de8da02f9b2761812fe32f520c6cb1d02f9aedd5cd2ee649",
+      "files": 9,
+      "date": "2026-10-05",
+      "change": "Signed decision D-2026-09-27-finer-tier1-boundaries took effect, activating the reviewed report-only declaration carve-outs while retaining the strict Tier 1 default",
+      "origin": "human",
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
+    },
+    {
+      "component": "governance.model",
+      "hash": "68fca13e35c3e87a3d3b2acc73d7310a08c657540affda2f15373ef4207adbad",
+      "files": 9,
+      "date": "2026-10-05",
+      "change": "Recorded the two named human sign-offs on the governance adoption and finer Tier 1 boundary decisions and on every current controlled component version",
+      "origin": "human",
+      "pedagogicalReviewer": "Claudio Sonne",
+      "safetyTrustLead": "Soleniano Gepete"
     }
   ]
 }

@@ -1,0 +1,643 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-money-safe",
+  "lesson_id": "fe-69-17-where-money-waits",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.safe-keeping",
+    "life.saving-for-later"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dónde espera el dinero. Choose a safe place for money and explain why. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Where money waits",
+    "es-MX": "Dónde espera el dinero",
+    "pt-BR": "Onde o dinheiro espera"
+  },
+  "new_concepts": [
+    "life.safe-keeping"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina sees 12 coins on an open table.",
+          "line": "Where should the 12 coins wait?"
+        },
+        "es-MX": {
+          "prompt": "Dina ve 12 monedas en una mesa.",
+          "line": "¿Dónde deben esperar las 12 monedas?"
+        },
+        "pt-BR": {
+          "prompt": "Dina vê 12 moedas sobre a mesa.",
+          "line": "Onde as 12 moedas devem ficar?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Coins sit by an open window. Where is safer?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Closed box, high shelf"
+            },
+            {
+              "label": "Under the open window"
+            },
+            {
+              "label": "On the floor"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Closed and out of reach"
+            },
+            {
+              "label": "The window is nearby"
+            },
+            {
+              "label": "The floor stays open"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Hay monedas junto a una ventana. ¿Dónde están seguras?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Caja cerrada en un estante alto"
+            },
+            {
+              "label": "Bajo la ventana abierta"
+            },
+            {
+              "label": "En el piso"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Caja cerrada y alta"
+            },
+            {
+              "label": "La ventana está cerca"
+            },
+            {
+              "label": "El piso se ve fácil"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Há moedas junto à janela. Onde ficam seguras?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Caixa fechada em uma prateleira alta"
+            },
+            {
+              "label": "Sob a janela aberta"
+            },
+            {
+              "label": "No chão"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Caixa fechada e alta"
+            },
+            {
+              "label": "A janela está perto"
+            },
+            {
+              "label": "O chão é fácil de ver"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Closed box, high shelf: 8 coins stay safe."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caja cerrada y alta: 8 monedas quedan seguras."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caixa fechada e alta: 8 moedas ficam seguras."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Six coins must stay safe tonight. Best place?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Jar in locked drawer"
+            },
+            {
+              "label": "Open cup by the door"
+            },
+            {
+              "label": "Loose in a pocket"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Locked drawer limits access"
+            },
+            {
+              "label": "Open cup is in reach"
+            },
+            {
+              "label": "A pocket moves around"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Seis monedas deben quedar seguras. ¿Mejor lugar?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Frasco con etiqueta en un cajón cerrado"
+            },
+            {
+              "label": "Vaso abierto junto a la puerta"
+            },
+            {
+              "label": "Sueltas en un bolsillo"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El cajón cierra y limita el acceso"
+            },
+            {
+              "label": "El vaso se alcanza rápido"
+            },
+            {
+              "label": "Un bolsillo se mueve"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Seis moedas devem ficar seguras. Melhor lugar?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Pote etiquetado em gaveta fechada"
+            },
+            {
+              "label": "Copo aberto perto da porta"
+            },
+            {
+              "label": "Soltas no bolso"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A gaveta fecha e limita o acesso"
+            },
+            {
+              "label": "O copo é rápido de alcançar"
+            },
+            {
+              "label": "Um bolso se movimenta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: A small child visits. Where should 10 coins wait?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Closed container above reach"
+            },
+            {
+              "label": "Open bowl, low table"
+            },
+            {
+              "label": "Spread across a desk"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Closed, high, less loss"
+            },
+            {
+              "label": "The bowl shows the coins"
+            },
+            {
+              "label": "The desk has more space"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Visita un niño pequeño. ¿Dónde van 10 monedas?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Recipiente cerrado fuera de alcance"
+            },
+            {
+              "label": "Tazón abierto en una mesa baja"
+            },
+            {
+              "label": "Repartidas en el escritorio"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Cerrar y poner arriba reduce pérdidas"
+            },
+            {
+              "label": "El tazón muestra las monedas"
+            },
+            {
+              "label": "El escritorio tiene espacio"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Uma criança pequena visita. Onde ficam 10 moedas?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Recipiente fechado fora de alcance"
+            },
+            {
+              "label": "Tigela aberta em mesa baixa"
+            },
+            {
+              "label": "Espalhadas na escrivaninha"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Fechado e no alto reduz perdas"
+            },
+            {
+              "label": "A tigela mostra as moedas"
+            },
+            {
+              "label": "A mesa tem mais espaço"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Four coins wait one week. Safest place?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Sealed envelope in drawer"
+            },
+            {
+              "label": "Under a pillow"
+            },
+            {
+              "label": "Beside a sink"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Closed, dry, easy to find"
+            },
+            {
+              "label": "The pillow feels soft"
+            },
+            {
+              "label": "A sink may get wet"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Cuatro monedas esperan una semana. ¿Lugar seguro?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Sobre sellado en un cajón conocido"
+            },
+            {
+              "label": "Bajo una almohada"
+            },
+            {
+              "label": "Junto a un lavabo"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El sobre está cerrado, seco y localizable"
+            },
+            {
+              "label": "La almohada es suave"
+            },
+            {
+              "label": "El lavabo se recuerda fácil"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Quatro moedas esperam uma semana. Lugar seguro?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Envelope lacrado em gaveta conhecida"
+            },
+            {
+              "label": "Sob o travesseiro"
+            },
+            {
+              "label": "Ao lado da pia"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "O envelope está fechado, seco e localizável"
+            },
+            {
+              "label": "O travesseiro é macio"
+            },
+            {
+              "label": "A pia é fácil de lembrar"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

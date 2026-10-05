@@ -1,6 +1,6 @@
 # Dark-pattern and shame-signal audit
 
-Status: procedure, checklist and automated gate implemented in S05.3f (24–25 September 2026). The first engineering pre-audit is recorded; **no human release audit has been signed yet**, so `release:readiness` refuses a release until one is. Record: [S05.3f](sprints/S05-LEARNING-EXPERIENCE.md#s053f-registers-no-shame-and-resolution-efficiency-b23-b25-b26-b27-b28). Policy for the shame, family-finance and register rules this audit also checks: [LEARNER-REGISTER-AND-WELLBEING-POLICY.md](LEARNER-REGISTER-AND-WELLBEING-POLICY.md).
+Status: procedure, checklist and automated gate implemented in S05.3f (24–25 September 2026). The Financial Education V2 release audit was completed and signed on 5 October 2026. Record: [S05.3f](sprints/S05-LEARNING-EXPERIENCE.md#s053f-registers-no-shame-and-resolution-efficiency-b23-b25-b26-b27-b28). Policy for the shame, family-finance and register rules this audit also checks: [LEARNER-REGISTER-AND-WELLBEING-POLICY.md](LEARNER-REGISTER-AND-WELLBEING-POLICY.md).
 
 ## Why
 
@@ -59,5 +59,8 @@ The gate's tests (`node --test agent/tools/check-dark-patterns.test.mjs`) includ
 | Date | Kind | Scope | Pass | Fail | Open | Signed |
 |---|---|---|---|---|---|---|
 | 2026-09-24 | Engineering pre-audit | S05.3f lane: rebuilt UI, live lesson player, i18n copy, Core family catalogs, Mentor scripted lines, Forge gates | 12 | 0 | 5 | no |
+| 2026-10-05 | Release audit | Financial Education V2 at `bf63dbd0`: 112 lessons, 336 localized documents, rebuilt product surfaces and Mentor stage | 17 | 0 | 0 | Jesús Vásquez Jr. |
 
 Findings of the pre-audit, all fixed in S05.3f: the live player's lives counter and early lesson end (DP-07), the wrong-answer error buzzer (SH-02), and trait praise on the live result screen (SH-01). Open for the reviewer: DP-09 and DP-10 (engineering found no learner notification path and no advertising code; a person confirms), MN-01 (the walkthrough), MN-02 (the 20 percent timed-drill reduction was removed by OD-28 in W2L.4; the manual review of timed drills remains) and MN-03 (the first quarterly register audit).
+
+The 5 October release audit closed all five manual items. Its supporting browser run covered 770 states in three locales, two themes and up to four widths (110,808 audited configurations) with no visual, JavaScript or media finding; the dedicated Mentor-stage verifier passed all 257 configurations.

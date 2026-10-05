@@ -1,0 +1,796 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-cash-flow",
+  "lesson_id": "fe-adult-19-build-a-cash-buffer",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.saving-for-later",
+    "life.safe-keeping",
+    "life.goal-planning"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Crea una reserva. Fija una meta de reserva y apártala antes del gasto opcional. La práctica usa cifras distintas y termina con un caso nuevo.",
+  "title": {
+    "en-US": "Build a cash buffer",
+    "es-MX": "Crea una reserva",
+    "pt-BR": "Crie uma reserva"
+  },
+  "new_concepts": [
+    "life.saving-for-later"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "At a garage sale, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "garage sale"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Después de una quincena, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Depois de usar Pix, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara turns the largest timing gap into a protected buffer target. (garage sale)",
+          "line": "Match buffer target to the gap"
+        },
+        "es-MX": {
+          "prompt": "Zara convierte el mayor faltante temporal en una meta de reserva protegida. (quincena)",
+          "line": "Iguala la reserva con el faltante"
+        },
+        "pt-BR": {
+          "prompt": "Zara transforma a maior falta temporária em uma meta de reserva protegida. (Pix)",
+          "line": "Iguale a reserva à falta"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The largest timing gap is $180. Which first buffer target is useful?",
+          "help": [
+            "Set a buffer target and fund it before optional spending."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$180"
+            },
+            {
+              "label": "$18"
+            },
+            {
+              "label": "$1,800"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Match buffer target to the gap"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El mayor faltante temporal es $180. ¿Qué meta inicial de reserva sirve?",
+          "help": [
+            "Fija una meta de reserva y apártala antes del gasto opcional."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$180"
+            },
+            {
+              "label": "$18"
+            },
+            {
+              "label": "$1,800"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Iguala la reserva con el faltante"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O maior aperto temporário é R$ 180. Qual primeira meta de reserva ajuda?",
+          "help": [
+            "Defina uma meta de reserva e guarde antes dos gastos opcionais."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 180"
+            },
+            {
+              "label": "R$ 18"
+            },
+            {
+              "label": "R$ 1.800"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Iguale a reserva à falta"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Work one complete case.",
+          "line": "A $160 gap sets a $160 target; saving $40 weekly funds it in 4 weeks."
+        },
+        "es-MX": {
+          "prompt": "Resuelve un caso completo.",
+          "line": "Un faltante de $160 fija una meta de $160; ahorrar $40 por semana la completa en 4 semanas."
+        },
+        "pt-BR": {
+          "prompt": "Resolva um caso completo.",
+          "line": "Uma falta de R$160 fixa uma meta de R$160; guardar R$40 por semana completa em 4 semanas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A $240 target gets $60 each week. When is it ready?",
+          "help": [
+            "Set a buffer target and fund it before optional spending."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "4 weeks"
+            },
+            {
+              "label": "3 weeks"
+            },
+            {
+              "label": "6 weeks"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Match buffer target to the gap"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una meta de $240 recibe $60 por semana. ¿Cuándo queda lista?",
+          "help": [
+            "Fija una meta de reserva y apártala antes del gasto opcional."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "4 semanas"
+            },
+            {
+              "label": "3 semanas"
+            },
+            {
+              "label": "6 semanas"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Iguala la reserva con el faltante"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma meta de R$ 240 recebe R$ 60 por semana. Quando fica pronta?",
+          "help": [
+            "Defina uma meta de reserva e guarde antes dos gastos opcionais."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "4 semanas"
+            },
+            {
+              "label": "3 semanas"
+            },
+            {
+              "label": "6 semanas"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Iguale a reserva à falta"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have $90 of a $300 buffer and add $70. What remains?",
+          "help": [
+            "Set a buffer target and fund it before optional spending."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$140"
+            },
+            {
+              "label": "$160"
+            },
+            {
+              "label": "$230"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Match buffer target to the gap"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tienes $90 de una reserva de $300 y agregas $70. ¿Cuánto falta?",
+          "help": [
+            "Fija una meta de reserva y apártala antes del gasto opcional."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$140"
+            },
+            {
+              "label": "$160"
+            },
+            {
+              "label": "$230"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Iguala la reserva con el faltante"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você tem R$ 90 de uma reserva de R$ 300 e guarda R$ 70. Quanto falta?",
+          "help": [
+            "Defina uma meta de reserva e guarde antes dos gastos opcionais."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 140"
+            },
+            {
+              "label": "R$ 160"
+            },
+            {
+              "label": "R$ 230"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Iguale a reserva à falta"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new gap is $260; the buffer is $210. What next protects the goal?",
+          "help": [
+            "Set a buffer target and fund it before optional spending."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Add $50 before optional spending"
+            },
+            {
+              "label": "Spend the $210"
+            },
+            {
+              "label": "Lower the recorded gap"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Match buffer target to the gap"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un nuevo faltante es $260; la reserva tiene $210. ¿Qué protege la meta?",
+          "help": [
+            "Fija una meta de reserva y apártala antes del gasto opcional."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Agregar $50 antes del gasto opcional"
+            },
+            {
+              "label": "Gastar los $210"
+            },
+            {
+              "label": "Cambiar el faltante registrado"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Iguala la reserva con el faltante"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um novo aperto é R$ 260; a reserva tem R$ 210. O que protege a meta?",
+          "help": [
+            "Defina uma meta de reserva e guarde antes dos gastos opcionais."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Guardar R$ 50 antes do gasto opcional"
+            },
+            {
+              "label": "Gastar os R$ 210"
+            },
+            {
+              "label": "Diminuir o aperto anotado"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Iguale a reserva à falta"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,794 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-account-cleanup",
+  "lesson_id": "fe-adult-22-count-every-account-fee",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.recurring-costs",
+    "life.banks-and-accounts",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Suma cada comisión. Convierte cada comisión al mismo periodo y suma el costo total. La práctica usa cifras distintas y termina con un caso nuevo.",
+  "title": {
+    "en-US": "Count every account fee",
+    "es-MX": "Suma cada comisión",
+    "pt-BR": "Some cada tarifa"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "At a garage sale, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "garage sale"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Después de una quincena, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Depois de usar Pix, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara converts every account fee to one comparison period. (garage sale)",
+          "line": "Use one period; add every fee"
+        },
+        "es-MX": {
+          "prompt": "Zara convierte cada comisión de cuenta al mismo periodo. (quincena)",
+          "line": "Usa un periodo; suma cada comisión"
+        },
+        "pt-BR": {
+          "prompt": "Zara converte cada tarifa da conta para o mesmo período. (Pix)",
+          "line": "Use um período; some cada tarifa"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An account charges $6 monthly and $24 yearly. What is the yearly cost?",
+          "help": [
+            "Convert each stated account fee to the same period and total the full cost."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$96"
+            },
+            {
+              "label": "$72"
+            },
+            {
+              "label": "$30"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use one period; add every fee"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una cuenta cobra $6 al mes y $24 al año. ¿Cuál es el costo anual?",
+          "help": [
+            "Convierte cada comisión al mismo periodo y suma el costo total."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$96"
+            },
+            {
+              "label": "$72"
+            },
+            {
+              "label": "$30"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa un periodo; suma cada comisión"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma conta cobra R$ 6 por mês e R$ 24 por ano. Qual é o custo anual?",
+          "help": [
+            "Converta cada tarifa para o mesmo período e some o custo total."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 96"
+            },
+            {
+              "label": "R$ 72"
+            },
+            {
+              "label": "R$ 30"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use um período; some cada tarifa"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Work one complete case.",
+          "line": "$4 monthly plus $18 yearly costs $4 × 12 + $18 = $66 per year."
+        },
+        "es-MX": {
+          "prompt": "Resuelve un caso completo.",
+          "line": "$4 al mes más $18 al año cuesta $4 × 12 + $18 = $66 anuales."
+        },
+        "pt-BR": {
+          "prompt": "Resolva um caso completo.",
+          "line": "R$4 por mês mais R$18 ao ano custa R$4 × 12 + R$18 = R$66 anuais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An account charges $5 monthly plus two $12 service fees yearly. What is the yearly total?",
+          "help": [
+            "Convert each stated account fee to the same period and total the full cost."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$84"
+            },
+            {
+              "label": "$60"
+            },
+            {
+              "label": "$29"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use one period; add every fee"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una cuenta cobra $5 al mes más dos comisiones anuales de $12. ¿Cuál es el total anual?",
+          "help": [
+            "Convierte cada comisión al mismo periodo y suma el costo total."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$84"
+            },
+            {
+              "label": "$60"
+            },
+            {
+              "label": "$29"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa un periodo; suma cada comisión"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma conta cobra R$5 por mês mais duas tarifas anuais de R$12. Qual é o total anual?",
+          "help": [
+            "Converta cada tarifa para o mesmo período e some o custo total."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 84"
+            },
+            {
+              "label": "R$ 60"
+            },
+            {
+              "label": "R$ 29"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use um período; some cada tarifa"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Plan A costs $8 monthly; B costs $50 yearly plus $3 monthly. Which costs less yearly?",
+          "help": [
+            "Convert each stated account fee to the same period and total the full cost."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "B: $86"
+            },
+            {
+              "label": "A: $96"
+            },
+            {
+              "label": "They are equal"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use one period; add every fee"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A cuesta $8 al mes; B $50 al año más $3 al mes. ¿Cuál cuesta menos al año?",
+          "help": [
+            "Convierte cada comisión al mismo periodo y suma el costo total."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "B: $86"
+            },
+            {
+              "label": "A: $96"
+            },
+            {
+              "label": "Cuestan igual"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa un periodo; suma cada comisión"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A custa R$ 8 por mês; B R$ 50 por ano mais R$ 3 por mês. Qual custa menos?",
+          "help": [
+            "Converta cada tarifa para o mesmo período e some o custo total."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "B: R$ 86"
+            },
+            {
+              "label": "A: R$ 96"
+            },
+            {
+              "label": "Custam igual"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use um período; some cada tarifa"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new account lists $4 monthly, $18 yearly and one $10 fee. What full-year cost should be compared?",
+          "help": [
+            "Convert each stated account fee to the same period and total the full cost."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$76"
+            },
+            {
+              "label": "$58"
+            },
+            {
+              "label": "$32"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use one period; add every fee"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una cuenta cobra $4 al mes, $18 al año y una comisión de $10. ¿Qué costo anual comparas?",
+          "help": [
+            "Convierte cada comisión al mismo periodo y suma el costo total."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$76"
+            },
+            {
+              "label": "$58"
+            },
+            {
+              "label": "$32"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa un periodo; suma cada comisión"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma conta cobra R$ 4 por mês, R$ 18 por ano e uma tarifa de R$ 10. Qual custo anual comparar?",
+          "help": [
+            "Converta cada tarifa para o mesmo período e some o custo total."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 76"
+            },
+            {
+              "label": "R$ 58"
+            },
+            {
+              "label": "R$ 32"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use um período; some cada tarifa"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

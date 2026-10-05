@@ -20,6 +20,18 @@
 //                             result), their private expected values equal to
 //                             the shown results, change owed = paid - price,
 //                             unit prices = price / quantity;
+//   gate 5  (rationale/canon) every rejected choice has authored corrective
+//                             feedback (per-choice rationale or not_yet), and
+//                             every character reference is in the closed canon;
+//   gate 6  (anti-genericity) prompts do not echo the title, contain canned
+//                             filler, or reduce the activity to "learn/practice";
+//   gate 7  (quality)         every graded step has private answer evidence,
+//                             quality maps use the playable scale, and emoji
+//                             stays out of instructions and answer surfaces;
+//   gate 8  (clarity)         concise prompts, no fake questions, answer leaks
+//                             or load-bearing facts hidden in help, and a real
+//                             visual surface for every graded step;
+//   gate 9  (readability)     locale-specific readability at the age ceiling;
 //   gate 17 (reward mechanic) runRewardMechanicGate over the raw document;
 //   gate 18 (wellbeing)       runWellbeingLanguageGate (self-global,
 //                             family-finance moralizing, loss and purchase
@@ -41,6 +53,7 @@ import { fileURLToPath } from 'node:url';
 import { parse as parseYaml } from 'yaml';
 import type { GateProblem } from '../pipeline/gates.js';
 import { buildForbiddenRegex, normalizeText } from '../pipeline/gates.js';
+import { readabilityScore, type ReadabilityLocale } from '../pipeline/readability.js';
 import { runRewardMechanicGate } from '../pipeline/rewardMechanicGate.js';
 import { runAgeRegisterGate, runWellbeingLanguageGate } from '../pipeline/wellbeingGates.js';
 import { v2FeedbackProblems } from './v2SegmentFamilies.generated.js';
@@ -48,7 +61,7 @@ import { factsFileSchema, taxonomyFileSchema, type FactsFile, type TaxonomyFile 
 import { hasNeutralPayload, isNonCopyKey } from './contract.js';
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-export interface V2Finding { gate: 2 | 3 | 4 | 17 | 18 | 19; severity: 'block' | 'review'; segmentId?: string; message: string }
+export interface V2Finding { gate: 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 17 | 18 | 19; severity: 'block' | 'review'; segmentId?: string; message: string }
 export interface CarriedCourseData { taxonomy?: TaxonomyFile; facts?: FactsFile }
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -208,6 +221,269 @@ function numeric(text: unknown): number | null {
   return /^-?\d+(\.\d+)?$/.test(clean) ? Number(clean) : null;
 }
 
+const CANON_CHARACTERS = new Set(['dina', 'liruf', 'rho', 'zara']);
+const EMOJI = /\p{Extended_Pictographic}|\p{Regional_Indicator}|[\u{FE0F}\u{20E3}]/u;
+const GRAPHEMES = new Intl.Segmenter('es', { granularity: 'grapheme' });
+
+function isRecord(value: unknown): value is Json {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function collectCharacterRefs(node: unknown, out: Array<{ character: string; path: string }>, at = ''): void {
+  if (Array.isArray(node)) { node.forEach((item, index) => collectCharacterRefs(item, out, `${at}[${index}]`)); return; }
+  if (!isRecord(node)) return;
+  for (const [key, value] of Object.entries(node)) {
+    const next = at ? `${at}.${key}` : key;
+    if (key === 'character' && typeof value === 'string') out.push({ character: value, path: next });
+    else collectCharacterRefs(value, out, next);
+  }
+}
+
+function acceptedChoiceIds(key: unknown): Set<string> {
+  const ids = new Set<string>();
+  if (!isRecord(key)) return ids;
+  for (const [name, value] of Object.entries(key)) {
+    if (!/(?:acceptable.*ids?|correct_option_id|better_id|choice_id)$/i.test(name)) continue;
+    if (typeof value === 'string') ids.add(value);
+    else if (Array.isArray(value)) for (const item of value) if (typeof item === 'string') ids.add(item);
+  }
+  return ids;
+}
+
+function optionRecords(node: unknown, out: Json[] = []): Json[] {
+  if (Array.isArray(node)) {
+    if (node.length >= 2 && node.every((item) => isRecord(item) && typeof item.id === 'string')) out.push(...node as Json[]);
+    else node.forEach((item) => optionRecords(item, out));
+  } else if (isRecord(node)) {
+    Object.values(node).forEach((value) => optionRecords(value, out));
+  }
+  return out;
+}
+
+/** Gate 5: closed character canon plus wrong-choice teaching coverage. */
+export function v2RationaleAndCanonGate(document: Json, answerKeys: Json | undefined): V2Finding[] {
+  const found: V2Finding[] = [];
+  const refs: Array<{ character: string; path: string }> = [];
+  collectCharacterRefs({ mentor_stage: document.mentor_stage, segments: document.segments }, refs);
+  for (const ref of refs) if (!CANON_CHARACTERS.has(ref.character)) {
+    found.push({ gate: 5, severity: 'block', message: `character "${ref.character}" at ${ref.path} is outside the closed canon {dina,liruf,rho,zara}` });
+  }
+  for (const segment of (document.segments ?? []) as Json[]) {
+    if (segment.grading !== 'server') continue;
+    const accepted = acceptedChoiceIds(answerKeys?.[segment.id]);
+    if (accepted.size === 0) continue;
+    for (const option of optionRecords(segment.payload)) {
+      if (accepted.has(option.id)) continue;
+      const rationale = option.rationale_md ?? option.rationale ?? option.feedback;
+      if (typeof rationale !== 'string' && typeof segment.feedback?.not_yet !== 'string') {
+        found.push({ gate: 5, severity: 'block', segmentId: segment.id,
+          message: `rejected choice "${option.id}" has no rationale and the step has no feedback.not_yet; a wrong answer must teach, not merely reject` });
+      }
+    }
+  }
+  return found;
+}
+
+function levenshtein(a: string, b: string): number {
+  let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i++) {
+    const current = [i];
+    for (let j = 1; j <= b.length; j++) current[j] = Math.min(current[j - 1]! + 1, previous[j]! + 1, previous[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1));
+    previous = current;
+  }
+  return previous[b.length]!;
+}
+
+const FILLER: Record<string, string[]> = {
+  'en-US': ['this is very important', 'as we already know', 'in this exercise you will learn'],
+  'es-MX': ['es muy importante', 'como ya sabemos', 'en este ejercicio aprenderas'],
+  'pt-BR': ['isso e muito importante', 'como ja sabemos', 'neste exercicio voce vai aprender'],
+};
+const GENERIC_TASK: Record<string, RegExp> = {
+  'en-US': /^(?:learn|practice|review|think)\s+(?:about\s+)?[\p{L}\s]+[.!?]?$/iu,
+  'es-MX': /^(?:aprende|practica|repasa|piensa)\s+(?:sobre\s+)?[\p{L}\s]+[.!?]?$/iu,
+  'pt-BR': /^(?:aprenda|pratique|revise|pense)\s+(?:sobre\s+)?[\p{L}\s]+[.!?]?$/iu,
+};
+
+/** Gate 6: deterministic anti-genericity over v2 prompt copy. */
+export function v2AntiGenericityGate(document: Json): V2Finding[] {
+  const found: V2Finding[] = [];
+  const title = normalizeText(String(document.title ?? '')).trim();
+  const fillers = FILLER[String(document.locale)] ?? [];
+  for (const segment of (document.segments ?? []) as Json[]) {
+    const prompt = String(segment.prompt ?? '');
+    const normalized = normalizeText(prompt).trim();
+    const longest = Math.max(title.length, normalized.length);
+    if (longest > 0 && levenshtein(title, normalized) / longest <= 0.2) {
+      found.push({ gate: 6, severity: 'block', segmentId: segment.id, message: `prompt is a near-duplicate of the title "${document.title}" — it restates instead of teaching` });
+    }
+    const filler = fillers.find((phrase) => normalized.includes(normalizeText(phrase)));
+    if (filler) found.push({ gate: 6, severity: 'block', segmentId: segment.id, message: `prompt contains banned filler phrase "${filler}"` });
+    if (GENERIC_TASK[String(document.locale)]?.test(prompt.trim())) {
+      found.push({ gate: 6, severity: 'block', segmentId: segment.id, message: 'prompt is a generic learning instruction with no concrete situation, decision, quantity or visible task' });
+    }
+  }
+  return found;
+}
+
+function countEmoji(text: string): number {
+  let count = 0;
+  for (const { segment } of GRAPHEMES.segment(text)) if (EMOJI.test(segment)) count += 1;
+  return count;
+}
+
+function qualityMaps(node: unknown, out: number[][] = []): number[][] {
+  if (Array.isArray(node)) { node.forEach((value) => qualityMaps(value, out)); return out; }
+  if (!isRecord(node)) return out;
+  for (const [key, value] of Object.entries(node)) {
+    if (/^(?:quality|qualities|scores)$/i.test(key) && isRecord(value)) {
+      const values = Object.values(value).filter((item): item is number => typeof item === 'number');
+      if (values.length) out.push(values);
+    }
+    qualityMaps(value, out);
+  }
+  return out;
+}
+
+/** Gate 7: answer evidence, playable quality scales and emoji discipline. */
+export function v2GenerationQualityGate(document: Json, answerKeys: Json | undefined): V2Finding[] {
+  const found: V2Finding[] = [];
+  if (typeof document.title === 'string' && EMOJI.test(document.title)) found.push({ gate: 7, severity: 'block', message: 'title carries an emoji — title chrome is never decorated' });
+  for (const segment of (document.segments ?? []) as Json[]) {
+    const key = answerKeys?.[segment.id];
+    if (segment.grading === 'server' && (!isRecord(key) || Object.keys(key).length === 0)) {
+      found.push({ gate: 7, severity: 'block', segmentId: segment.id, message: `graded segment type "${segment.type}" has no private answer evidence — it can never be graded` });
+    }
+    for (const values of qualityMaps(key)) {
+      const max = Math.max(...values);
+      if (max <= 1 && !(segment.type === 'story.would-you-rather.v2' && max === 0)) {
+        found.push({ gate: 7, severity: 'block', segmentId: segment.id, message: `quality map uses an unplayable 0–1 scale (max ${max}); author quality on 0–100` });
+      }
+    }
+    for (const item of visible({ segments: [segment] })) {
+      if (!EMOJI.test(item.text)) continue;
+      const isNarrative = /^story\.|^voice\./.test(String(segment.type)) && item.path.includes('.payload.');
+      if (!isNarrative) found.push({ gate: 7, severity: 'block', segmentId: segment.id, message: `${item.path} carries an emoji — instructions, help, feedback and answer-critical copy are never decorated` });
+    }
+    const narrativeText = visible({ segments: [segment] }).filter((item) => item.path.includes('.payload.')).map((item) => item.text).join(' ');
+    if (/^story\.|^voice\./.test(String(segment.type)) && countEmoji(narrativeText) > 2) {
+      found.push({ gate: 7, severity: 'block', segmentId: segment.id, message: 'more than two emojis in one narrative segment reads as clutter' });
+    }
+  }
+  return found;
+}
+
+const MAX_PROMPT_CHARS = 160;
+const MIN_LEAK_CHARS = 14;
+const PRAISE: Record<string, string[]> = {
+  'en-US': ['exactly', 'correct', 'well done', 'great job', 'that is right'],
+  'es-MX': ['exacto', 'correcto', 'muy bien', 'bien hecho', 'asi es'],
+  'pt-BR': ['exato', 'correto', 'muito bem', 'bom trabalho', 'isso mesmo'],
+};
+// A hidden INPUT fact, not a procedure or a derived result. Requiring a unit
+// after the number keeps "divide the price by 12" / "total 50" / "× 100"
+// out: those are methods/results, while "each badge costs 17 coins" supplies
+// scenario data the board does not otherwise show.
+const FACT_WITH_NUMBER = /(?:costs?|paid|pays?|has|gets?|cuesta|paga|tiene|recibe|custa|paga|tem|recebe)\D{0,18}?(\d+(?:[.,]\d+)?)\s*(?:coins?|dollars?|pesos?|reais|moedas?|euros?|usd|mxn|brl)\b/iu;
+const LEAK_CUE: Record<string, RegExp> = {
+  'en-US': /(?:answer|correct|choose|pick|select|best|better)(?:\s+answer|\s+choice)?\s+(?:is)?\s*$/i,
+  'es-MX': /(?:respuesta|correcta|elige|escoge|selecciona|mejor)(?:\s+respuesta|\s+opcion)?\s+(?:es)?\s*$/i,
+  'pt-BR': /(?:resposta|correta|escolha|selecione|melhor)(?:\s+resposta|\s+opcao)?\s+(?:e)?\s*$/i,
+};
+
+function optionTextById(payload: unknown, ids: Set<string>): string[] {
+  const texts: string[] = [];
+  for (const option of optionRecords(payload)) if (ids.has(option.id)) {
+    for (const key of ['text', 'text_md', 'label', 'name', 'message', 'choice']) if (typeof option[key] === 'string') texts.push(option[key]);
+  }
+  return texts;
+}
+
+function numericEvidence(node: unknown, out = new Set<string>()): Set<string> {
+  if (typeof node === 'number') out.add(String(node));
+  else if (Array.isArray(node)) node.forEach((item) => numericEvidence(item, out));
+  else if (isRecord(node)) Object.values(node).forEach((value) => numericEvidence(value, out));
+  return out;
+}
+
+/** Gate 8: clear, answerless, answerable-from-screen and visual-first. */
+export function v2ClarityGate(document: Json, answerKeys: Json | undefined): V2Finding[] {
+  const found: V2Finding[] = [];
+  const praise = PRAISE[String(document.locale)] ?? [];
+  for (const segment of (document.segments ?? []) as Json[]) {
+    const prompt = String(segment.prompt ?? '');
+    // Intl's sentence iterator does not split currency decimals/thousands
+    // (4.00, 2.000), unlike counting every period as punctuation.
+    const sentences = prompt.trim()
+      ? [...new Intl.Segmenter(String(document.locale).split('-')[0], { granularity: 'sentence' }).segment(prompt)]
+        .filter((part) => /[\p{L}\p{N}]/u.test(part.segment)).length
+      : 0;
+    if (prompt.length > MAX_PROMPT_CHARS) found.push({ gate: 8, severity: 'block', segmentId: segment.id, message: `prompt is ${prompt.length} chars (max ${MAX_PROMPT_CHARS}) — move story into narration and keep the on-screen instruction concise` });
+    if (sentences > 3) found.push({ gate: 8, severity: 'block', segmentId: segment.id, message: `prompt has ${sentences} sentences (max 3) — one situation line plus one instruction is enough` });
+    if (segment.grading === 'none' && !String(segment.type).startsWith('voice.') && prompt.trim().endsWith('?')) found.push({ gate: 8, severity: 'block', segmentId: segment.id, message: `non-graded ${segment.type} ends with a question but takes no answer` });
+    if (segment.grading === 'none' && praise.some((phrase) => normalizeText(String(segment.feedback?.met ?? '')).includes(normalizeText(phrase)))) {
+      found.push({ gate: 8, severity: 'block', segmentId: segment.id, message: `non-graded ${segment.type} congratulates an answer the learner never gave` });
+    }
+    const accepted = acceptedChoiceIds(answerKeys?.[segment.id]);
+    const screens = [prompt, ...(Array.isArray(segment.help) ? segment.help : [])].map((text) => normalizeText(String(text)));
+    for (const answer of optionTextById(segment.payload, accepted)) {
+      const normalizedAnswer = normalizeText(answer).trim();
+      if (normalizedAnswer.length < MIN_LEAK_CHARS) continue;
+      const leaked = screens.some((screenText) => {
+        const index = screenText.indexOf(normalizedAnswer);
+        if (index < 0) return false;
+        if (screenText.trim() === normalizedAnswer) return true;
+        return (LEAK_CUE[String(document.locale)] ?? LEAK_CUE['en-US']!).test(screenText.slice(Math.max(0, index - 55), index).trim());
+      });
+      if (leaked) found.push({ gate: 8, severity: 'block', segmentId: segment.id, message: `prompt/help explicitly reveals the correct answer ("${answer}") — the exercise is given away` });
+    }
+    const shown = numericEvidence(segment.payload);
+    for (const match of prompt.matchAll(/\d+(?:[.,]\d+)?/g)) shown.add(match[0].replace(',', '.'));
+    for (const help of (Array.isArray(segment.help) ? segment.help : [])) {
+      const match = FACT_WITH_NUMBER.exec(help);
+      const number = match?.[1]?.replace(',', '.');
+      if (number && !shown.has(number)) found.push({ gate: 8, severity: 'block', segmentId: segment.id,
+        message: `help hides a load-bearing fact ("${match![0]}") whose number is absent from the prompt and visible payload; the task must be solvable before opening help` });
+    }
+    const visual = isRecord(segment.visual) ? String(segment.visual.type ?? '') : '';
+    if (segment.grading === 'server' && (!visual || /^(?:none|text|generic)$/i.test(visual))) {
+      found.push({ gate: 8, severity: 'block', segmentId: segment.id, message: `graded ${segment.type} has no concrete visual surface (visual.type=${JSON.stringify(visual || null)}); v2 is visual-first` });
+    }
+  }
+  return found;
+}
+
+const READABILITY_BANDS: Record<string, { en: number; es: number; pt: number }> = {
+  '6-9': { en: 9, es: 66, pt: 58 }, '10-12': { en: 11, es: 60, pt: 52 },
+  '13-17': { en: 13, es: 54, pt: 46 }, adult: { en: 15, es: 48, pt: 40 },
+};
+
+/** Gate 9: the locale's own readability formula against the document's age band. */
+export function v2ReadabilityGate(document: Json): V2Finding[] {
+  const locale = document.locale as ReadabilityLocale;
+  const band = READABILITY_BANDS[String(document.age_band)];
+  if (!band || !['en-US', 'es-MX', 'pt-BR'].includes(locale)) return [];
+  // Match v1's learnerText contract: prose, not terse option/diagram labels.
+  // Readability formulas badly misclassify a board made of short fragments;
+  // the Copy Budget owns those labels independently.
+  const prose: string[] = [];
+  for (const segment of (document.segments ?? []) as Json[]) {
+    if (typeof segment.prompt === 'string') prose.push(segment.prompt);
+    if (Array.isArray(segment.help)) prose.push(...segment.help.filter((item: unknown): item is string => typeof item === 'string'));
+    if (isRecord(segment.feedback)) for (const value of Object.values(segment.feedback)) if (typeof value === 'string') prose.push(value);
+    if (/^(?:story|voice)\./.test(String(segment.type))) {
+      const narrative = visible({ segments: [{ ...segment, prompt: '', help: [], feedback: undefined }] });
+      prose.push(...narrative.filter((item) => item.path.includes('.payload.')).map((item) => item.text));
+    }
+  }
+  const score = readabilityScore(prose.join(' '), locale);
+  if (score === null) return [];
+  if (locale === 'en-US' && score > band.en) return [{ gate: 9, severity: 'block', message: `en-US text measures Flesch-Kincaid grade ${score.toFixed(1)} — above the ${document.age_band} ceiling of ${band.en}` }];
+  const floor = locale === 'es-MX' ? band.es : band.pt;
+  if (locale !== 'en-US' && score < floor) return [{ gate: 9, severity: 'block', message: `${locale} text measures ease ${score.toFixed(0)} — below the ${document.age_band} floor of ${floor}` }];
+  return [];
+}
+
 /** Gate 4: re-execute the arithmetic a v2 document states or keys. */
 export function v2ArithmeticGate(document: Json, answerKeys: Json | undefined): V2Finding[] {
   const found: V2Finding[] = [];
@@ -276,7 +552,11 @@ export function v2AgeRegisterGate(document: Json): V2Finding[] {
 /** All carried gates for one emitted document. */
 export function runV2CarriedGates(document: Json, answerKeys?: Json): { problems: GateProblem[]; review: V2Finding[] } {
   const data = loadCarriedCourseData(String(document.course_id ?? ''));
-  const findings = [...v2VocabularyGate(document, data), ...v2FactGate(document, data), ...v2ArithmeticGate(document, answerKeys), ...v2RewardAndWellbeingGates(document), ...v2AgeRegisterGate(document)];
+  const findings = [
+    ...v2VocabularyGate(document, data), ...v2FactGate(document, data), ...v2ArithmeticGate(document, answerKeys),
+    ...v2RationaleAndCanonGate(document, answerKeys), ...v2AntiGenericityGate(document), ...v2GenerationQualityGate(document, answerKeys),
+    ...v2ClarityGate(document, answerKeys), ...v2ReadabilityGate(document), ...v2RewardAndWellbeingGates(document), ...v2AgeRegisterGate(document),
+  ];
   return {
     problems: findings.filter((item) => item.severity === 'block').map((item) => ({ gate: item.gate, ...(item.segmentId ? { segmentId: item.segmentId } : {}), message: item.message })),
     review: findings.filter((item) => item.severity === 'review'),

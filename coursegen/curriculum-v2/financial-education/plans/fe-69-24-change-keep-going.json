@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-plan-and-adjust",
+  "lesson_id": "fe-69-24-change-keep-going",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.review-and-adjust-plan",
+    "life.goal-planning",
+    "money.simple-budget"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Cambia y sigue. Adjust one step when a plan changes without abandoning the goal. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Change and keep going",
+    "es-MX": "Cambia y sigue",
+    "pt-BR": "Mude e continue"
+  },
+  "new_concepts": [
+    "life.review-and-adjust-plan"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A plan expected 5 coins, but only 3 arrived.",
+          "line": "What keeps the goal alive?"
+        },
+        "es-MX": {
+          "prompt": "El plan esperaba 5 monedas, pero llegaron 3.",
+          "line": "¿Qué mantiene viva la meta?"
+        },
+        "pt-BR": {
+          "prompt": "O plano esperava 5 moedas, mas chegaram 3.",
+          "line": "O que mantém a meta viva?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Has 12; costs 8 + 6. Which change fits?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 6 to 4"
+            },
+            {
+              "label": "Raise 8 to 10"
+            },
+            {
+              "label": "Add another 3"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "8 + 4 = 12"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Tiene 12; cuesta 8 + 6. ¿Qué cambio alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 6 a 4"
+            },
+            {
+              "label": "Subir 8 a 10"
+            },
+            {
+              "label": "Agregar otros 3"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "8 + 4 = 12"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Tem 12; custa 8 + 6. Qual mudança cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 6 para 4"
+            },
+            {
+              "label": "Aumentar 8 para 10"
+            },
+            {
+              "label": "Adicionar mais 3"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "8 + 4 = 12"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Only 12? Change 8 + 6 to 8 + 4."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "¿Sólo hay 12? Cambia 8 + 6 por 8 + 4."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Só há 12? Mude 8 + 6 para 8 + 4."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Has 15; costs 9 + 8. Which change fits?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 8 to 6"
+            },
+            {
+              "label": "Raise 9 to 11"
+            },
+            {
+              "label": "Add another 2"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "9 + 6 = 15"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Tiene 15; cuesta 9 + 8. ¿Qué cambio alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 8 a 6"
+            },
+            {
+              "label": "Subir 9 a 11"
+            },
+            {
+              "label": "Agregar otros 2"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "9 + 6 = 15"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Tem 15; custa 9 + 8. Qual mudança cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 8 para 6"
+            },
+            {
+              "label": "Aumentar 9 para 11"
+            },
+            {
+              "label": "Adicionar mais 2"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "9 + 6 = 15"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Has 20; costs 13 + 10. Which change fits?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 10 to 7"
+            },
+            {
+              "label": "Raise 13 to 15"
+            },
+            {
+              "label": "Add another 4"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "13 + 7 = 20"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Tiene 20; cuesta 13 + 10. ¿Qué cambio alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 10 a 7"
+            },
+            {
+              "label": "Subir 13 a 15"
+            },
+            {
+              "label": "Agregar otros 4"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "13 + 7 = 20"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Tem 20; custa 13 + 10. Qual mudança cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 10 para 7"
+            },
+            {
+              "label": "Aumentar 13 para 15"
+            },
+            {
+              "label": "Adicionar mais 4"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "13 + 7 = 20"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Has 10; costs 7 + 5. Which change fits?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 5 to 3"
+            },
+            {
+              "label": "Raise 7 to 9"
+            },
+            {
+              "label": "Add another 1"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "7 + 3 = 10"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Tiene 10; cuesta 7 + 5. ¿Qué cambio alcanza?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 5 a 3"
+            },
+            {
+              "label": "Subir 7 a 9"
+            },
+            {
+              "label": "Agregar otro 1"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "7 + 3 = 10"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Tem 10; custa 7 + 5. Qual mudança cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 5 para 3"
+            },
+            {
+              "label": "Aumentar 7 para 9"
+            },
+            {
+              "label": "Adicionar mais 1"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "7 + 3 = 10"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

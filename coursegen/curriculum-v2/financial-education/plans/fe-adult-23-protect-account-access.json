@@ -1,0 +1,794 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-account-cleanup",
+  "lesson_id": "fe-adult-23-protect-account-access",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.data-privacy",
+    "life.safe-keeping",
+    "life.scam-awareness"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Protege el acceso. Mantén privadas contraseñas y claves; recupera acceso por la vía oficial. La práctica usa cifras distintas y termina con un caso nuevo.",
+  "title": {
+    "en-US": "Protect account access",
+    "es-MX": "Protege el acceso",
+    "pt-BR": "Proteja o acesso"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "At a garage sale, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "garage sale"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Después de una quincena, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Depois de usar Pix, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina keeps credentials private and enters recovery through the official route. (garage sale)",
+          "line": "Keep codes private; use official recovery"
+        },
+        "es-MX": {
+          "prompt": "Dina guarda sus claves y entra a recuperación por la vía oficial. (quincena)",
+          "line": "Guarda códigos; usa recuperación oficial"
+        },
+        "pt-BR": {
+          "prompt": "Dina protege suas credenciais e entra na recuperação pelo caminho oficial. (Pix)",
+          "line": "Guarde códigos; use recuperação oficial"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A caller asks for the six-digit code on your screen. What protects access?",
+          "help": [
+            "Keep passwords and verification codes private; recover access through the official route."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Do not share it; end the call"
+            },
+            {
+              "label": "Read the code aloud"
+            },
+            {
+              "label": "Send a screenshot"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Keep codes private; use official recovery"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una llamada pide la clave de seis dígitos. ¿Qué protege el acceso?",
+          "help": [
+            "Mantén privadas contraseñas y claves; recupera acceso por la vía oficial."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "No compartirla y terminar la llamada"
+            },
+            {
+              "label": "Leer la clave"
+            },
+            {
+              "label": "Enviar una captura"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Guarda códigos; usa recuperación oficial"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma ligação pede o código de seis dígitos. O que protege o acesso?",
+          "help": [
+            "Mantenha senhas e códigos privados; recupere o acesso pelo canal oficial."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Não compartilhar e encerrar"
+            },
+            {
+              "label": "Ler o código"
+            },
+            {
+              "label": "Enviar uma captura"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Guarde códigos; use recuperação oficial"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Work one complete case.",
+          "line": "When a caller asks for a login code, end the call and open the official app yourself."
+        },
+        "es-MX": {
+          "prompt": "Resuelve un caso completo.",
+          "line": "Cuando una llamada pide el código, cuelga y abre tú la app oficial."
+        },
+        "pt-BR": {
+          "prompt": "Resolva um caso completo.",
+          "line": "Quando uma ligação pede o código, encerre e abra você mesmo o app oficial."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You forgot a password. Which recovery path is safe?",
+          "help": [
+            "Keep passwords and verification codes private; recover access through the official route."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Open the official app yourself"
+            },
+            {
+              "label": "Use a link from a stranger"
+            },
+            {
+              "label": "Tell a friend the old password"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Keep codes private; use official recovery"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Olvidaste una contraseña. ¿Qué recuperación es segura?",
+          "help": [
+            "Mantén privadas contraseñas y claves; recupera acceso por la vía oficial."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Abrir tú mismo la app oficial"
+            },
+            {
+              "label": "Usar un enlace de un desconocido"
+            },
+            {
+              "label": "Contar la contraseña anterior"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Guarda códigos; usa recuperación oficial"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você esqueceu uma senha. Qual recuperação é segura?",
+          "help": [
+            "Mantenha senhas e códigos privados; recupere o acesso pelo canal oficial."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Abrir o aplicativo oficial por conta própria"
+            },
+            {
+              "label": "Usar link de desconhecido"
+            },
+            {
+              "label": "Contar a senha antiga a um amigo"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Guarde códigos; use recuperação oficial"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A message says your account closes in ten minutes. What next?",
+          "help": [
+            "Keep passwords and verification codes private; recover access through the official route."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Pause and contact the institution independently"
+            },
+            {
+              "label": "Reply with personal data"
+            },
+            {
+              "label": "Reuse one password everywhere"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Keep codes private; use official recovery"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un mensaje dice que la cuenta cierra en diez minutos. ¿Qué sigue?",
+          "help": [
+            "Mantén privadas contraseñas y claves; recupera acceso por la vía oficial."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Pausar y contactar por otra vía"
+            },
+            {
+              "label": "Responder con datos personales"
+            },
+            {
+              "label": "Reutilizar una contraseña"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Guarda códigos; usa recuperación oficial"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma mensagem diz que a conta fecha em dez minutos. O que fazer?",
+          "help": [
+            "Mantenha senhas e códigos privados; recupere o acesso pelo canal oficial."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Parar e contatar por outro canal"
+            },
+            {
+              "label": "Responder com dados pessoais"
+            },
+            {
+              "label": "Reutilizar uma senha"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Guarde códigos; use recuperação oficial"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new phone needs account access. Which setup is safest?",
+          "help": [
+            "Keep passwords and verification codes private; recover access through the official route."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Use official recovery and a new unique password"
+            },
+            {
+              "label": "Copy a shared password"
+            },
+            {
+              "label": "Ask someone for their code"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Keep codes private; use official recovery"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un teléfono nuevo necesita acceso. ¿Qué configuración es más segura?",
+          "help": [
+            "Mantén privadas contraseñas y claves; recupera acceso por la vía oficial."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Recuperación oficial y contraseña única nueva"
+            },
+            {
+              "label": "Copiar una contraseña compartida"
+            },
+            {
+              "label": "Pedir la clave de otra persona"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Guarda códigos; usa recuperación oficial"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um celular novo precisa de acesso. Qual configuração é mais segura?",
+          "help": [
+            "Mantenha senhas e códigos privados; recupere o acesso pelo canal oficial."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Recuperação oficial e nova senha única"
+            },
+            {
+              "label": "Copiar uma senha compartilhada"
+            },
+            {
+              "label": "Pedir o código de outra pessoa"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Guarde códigos; use recuperação oficial"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

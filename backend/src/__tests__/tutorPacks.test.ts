@@ -110,8 +110,13 @@ describe('C.6 the seed packs (hand-authored, zero spend)', () => {
 
   it('targets exactly the knowledge components the ladder could only generate for', () => {
     const graph = JSON.parse(readFileSync(path.resolve(PACK_DIR, '../kc_graph.v1.json'), 'utf8')) as { kcs: { key: string; skill_key: string | null; status?: string }[] };
-    // A draft KC (the S05.3a B.6 widening) is never served (Core reads status=active only), so the ladder never reaches it.
-    const uncovered = graph.kcs.filter((k) => k.skill_key === null && (k.status ?? 'active') === 'active').map((k) => k.key).sort();
+    const activation = JSON.parse(readFileSync(path.resolve(PACK_DIR, '../kc_activation.od22.json'), 'utf8')) as { activations: { key: string; skill_key: string }[] };
+    const deferredBridge = new Map(activation.activations.map((item) => [item.key, item.skill_key]));
+    // Approved KCs receive their bridge only in the atomic post-release activation;
+    // treat that reviewed bridge as covered while checking curated-pack demand.
+    const uncovered = graph.kcs
+      .filter((k) => k.skill_key === null && !deferredBridge.has(k.key) && (k.status ?? 'active') === 'active')
+      .map((k) => k.key).sort();
     const covered = [...new Set(planPacks().plan.map((p) => p.kcKey))].sort();
     expect(covered).toEqual(uncovered);
   });

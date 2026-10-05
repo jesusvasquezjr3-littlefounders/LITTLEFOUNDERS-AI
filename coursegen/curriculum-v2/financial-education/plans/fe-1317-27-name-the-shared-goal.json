@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-resilient-plans",
+  "lesson_id": "fe-1317-27-name-the-shared-goal",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.shared-resources",
+    "life.goal-planning",
+    "money.equal-sharing"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Define la meta común. El dinero común sigue el propósito del grupo; el personal queda separado. El sondeo, la práctica guiada, la práctica independiente y la transferencia usan cuatro casos distintos y evidencian life.shared-resources.",
+  "title": {
+    "en-US": "Name the shared goal",
+    "es-MX": "Define la meta común",
+    "pt-BR": "Defina a meta compartilhada"
+  },
+  "new_concepts": [
+    "life.shared-resources"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina separates personal money from a shared project fund.",
+          "line": "Shared money follows the named group purpose; personal money stays separate."
+        },
+        "es-MX": {
+          "prompt": "Dina separa dinero personal de un fondo para proyecto común.",
+          "line": "El dinero común sigue el propósito del grupo; el personal queda separado."
+        },
+        "pt-BR": {
+          "prompt": "Dina separa dinheiro pessoal de um fundo de projeto compartilhado.",
+          "line": "O dinheiro compartilhado segue o objetivo do grupo; o pessoal fica separado."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Four friends save 60 for garden tools. Which use belongs to the shared fund?",
+          "feedback": {
+            "met": "You kept the shared fund tied to its named group goal.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Buy the shared garden tools"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Keep shared money with its purpose"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Cuatro amigos juntan 60 para herramientas del huerto. ¿Qué uso corresponde al fondo?",
+          "feedback": {
+            "met": "Mantuviste el fondo común ligado a su meta.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Comprar las herramientas comunes"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Liga el dinero común a su propósito"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quatro amigos juntam 60 para ferramentas da horta. Qual uso pertence ao fundo?",
+          "feedback": {
+            "met": "Você manteve o fundo compartilhado ligado à meta.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Comprar as ferramentas compartilhadas"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ligue o dinheiro compartilhado ao objetivo"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Watch the rule on a new case.",
+          "line": "If 50 is labeled for team tools, tool purchases use that fund; personal snacks do not."
+        },
+        "es-MX": {
+          "prompt": "Mira la regla en un caso nuevo.",
+          "line": "Si 50 están marcados para herramientas del equipo, ese fondo las compra; no compra snacks personales."
+        },
+        "pt-BR": {
+          "prompt": "Veja a regra em um caso novo.",
+          "line": "Se 50 estão marcados para ferramentas da equipe, esse fundo as compra; não compra lanches pessoais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina has 20 personal coins and holds 35 for the class mural. Which money buys paint?",
+          "feedback": {
+            "met": "You kept the shared fund tied to its named group goal.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "The 35-coin shared mural fund"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Keep shared money with its purpose"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina tiene 20 personales y guarda 35 para el mural. ¿Qué dinero compra pintura?",
+          "feedback": {
+            "met": "Mantuviste el fondo común ligado a su meta.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "El fondo común de 35 para el mural"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Liga el dinero común a su propósito"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina tem 20 pessoais e guarda 35 para o mural. Qual dinheiro compra tinta?",
+          "feedback": {
+            "met": "Você manteve o fundo compartilhado ligado à meta.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "O fundo compartilhado de 35 para o mural"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ligue o dinheiro compartilhado ao objetivo"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A team fund has 48 for six safety vests. Which record protects the goal?",
+          "feedback": {
+            "met": "You kept the shared fund tied to its named group goal.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Label all 48 for the six shared vests"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Keep shared money with its purpose"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un fondo tiene 48 para seis chalecos. ¿Qué registro protege la meta?",
+          "feedback": {
+            "met": "Mantuviste el fondo común ligado a su meta.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Etiquetar las 48 para los seis chalecos"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Liga el dinero común a su propósito"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um fundo tem 48 para seis coletes. Qual registro protege a meta?",
+          "feedback": {
+            "met": "Você manteve o fundo compartilhado ligado à meta.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Marcar as 48 para os seis coletes"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ligue o dinheiro compartilhado ao objetivo"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The project ends with 12 unused coins. What should the group do first?",
+          "feedback": {
+            "met": "You kept the shared fund tied to its named group goal.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Review the shared purpose and decide together"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Keep shared money with its purpose"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El proyecto termina con 12 monedas sin usar. ¿Qué hace primero el grupo?",
+          "feedback": {
+            "met": "Mantuviste el fondo común ligado a su meta.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Revisar la meta y decidir en grupo"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Liga el dinero común a su propósito"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O projeto termina com 12 moedas sem uso. O que o grupo faz primeiro?",
+          "feedback": {
+            "met": "Você manteve o fundo compartilhado ligado à meta.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Revisar o objetivo e decidir em grupo"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ligue o dinheiro compartilhado ao objetivo"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

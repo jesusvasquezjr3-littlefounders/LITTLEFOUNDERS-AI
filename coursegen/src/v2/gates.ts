@@ -211,7 +211,8 @@ export function runV2DocumentGates(
 
   for (const message of checkV2StageScene(document)) problems.push({ gate: 15, message });
 
-  // GAP-FIX-R2 (Appendix C Stage 2; B.22, B.26, B.27; G.2): the carried-over gates 2, 3, 4, 17 and 18.
+  // Appendix C Stage 2 / G.2: every legacy document gate with a v2 equivalent
+  // (2-9, 17-19) is blocking here; no v2 publication path is structurally exempt.
   const carried = runV2CarriedGates(document as Record<string, unknown>, answerKeys);
   problems.push(...carried.problems);
   review.push(...carried.review);

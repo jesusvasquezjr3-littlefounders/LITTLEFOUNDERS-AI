@@ -1,0 +1,670 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-account-control",
+  "lesson_id": "fe-1317-24-trace-the-request",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.scam-awareness",
+    "life.data-privacy",
+    "life.think-before-buying"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rastrea la solicitud sospechosa. Verifica remitente y destino por otra vía antes de actuar por urgencia. El sondeo, la práctica guiada, la práctica independiente y la transferencia usan cuatro casos distintos y evidencian life.scam-awareness.",
+  "title": {
+    "en-US": "Trace the suspicious request",
+    "es-MX": "Rastrea la solicitud sospechosa",
+    "pt-BR": "Rastreie o pedido suspeito"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México los adolescentes reciben avisos de paquetería que cobran un envío por link y compradores de apps de compra y venta que pagan de más, piden la devolución y mandan una captura de SPEI. Se practican esas trampas con remitentes y links inventados y se termina sin pagar y avisando a la plataforma.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "SPEI"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil circulam avisos de encomenda com cobrança por link e compradores de apps de compra e venda que pagam a mais, pedem a devolução por Pix e mostram um comprovante falso. Só remetentes e links inventados, e o fecho é não pagar e denunciar no app.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US teens get parcel texts that charge a redelivery fee through a link, and resale buyers who overpay, ask for a refund by payment app and send a screenshot. Only made-up senders and links; it ends with not paying and reporting it.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "payment app"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho traces who sent a request, where it leads and why it is urgent. (payment app)",
+          "line": "Verify sender and destination independently before acting on urgency."
+        },
+        "es-MX": {
+          "prompt": "Rho rastrea quién envía, a dónde lleva y por qué urge. (SPEI)",
+          "line": "Verifica remitente y destino por otra vía antes de actuar por urgencia."
+        },
+        "pt-BR": {
+          "prompt": "Rho rastreia quem envia, para onde leva e por que há urgência. (Pix)",
+          "line": "Verifique remetente e destino por outra via antes de agir com urgência."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A parcel text says pay now through a shortened link. What is the next step?",
+          "feedback": {
+            "met": "You checked sender, destination and urgency before acting.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Open the carrier site; check the parcel"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Verify sender and destination independently"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un mensaje de paquetería pide pagar ya en un enlace corto. ¿Qué sigue?",
+          "feedback": {
+            "met": "Revisaste remitente, destino y urgencia antes de actuar.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Abrir el sitio oficial y revisar el envío"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Verifica remitente y destino por otra vía"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma mensagem de encomenda pede pagamento agora em link curto. O que fazer?",
+          "feedback": {
+            "met": "Você conferiu remetente, destino e urgência antes de agir.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Abrir o site oficial e conferir a encomenda"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Verifique remetente e destino por outra via"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Watch the rule on a new case.",
+          "line": "For an urgent payment link, ignore the link and verify the request through a saved official channel."
+        },
+        "es-MX": {
+          "prompt": "Mira la regla en un caso nuevo.",
+          "line": "Ante un enlace de pago urgente, ignóralo y verifica por un canal oficial guardado."
+        },
+        "pt-BR": {
+          "prompt": "Veja a regra em um caso novo.",
+          "line": "Diante de um link urgente, ignore-o e confirme por um canal oficial salvo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A resale buyer sends a payment screenshot and asks for a refund off-app. What is safe?",
+          "feedback": {
+            "met": "You checked sender, destination and urgency before acting.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Check balance; keep the case in-app"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Verify sender and destination independently"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un comprador manda captura de pago y pide devolución fuera de la app. ¿Qué es seguro?",
+          "feedback": {
+            "met": "Revisaste remitente, destino y urgencia antes de actuar.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Revisar el saldo y mantener el caso en la app"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Verifica remitente y destino por otra vía"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um comprador manda comprovante e pede devolução fora do app. O que é seguro?",
+          "feedback": {
+            "met": "Você conferiu remetente, destino e urgência antes de agir.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Conferir o saldo e manter o caso no app"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Verifique remetente e destino por outra via"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A school-club message asks for money tonight. How do you verify it?",
+          "feedback": {
+            "met": "You checked sender, destination and urgency before acting.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Contact the club through a known channel"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Verify sender and destination independently"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un mensaje del club escolar pide dinero esta noche. ¿Cómo lo verificas?",
+          "feedback": {
+            "met": "Revisaste remitente, destino y urgencia antes de actuar.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Contactar al club por un canal conocido"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Verifica remitente y destino por otra vía"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma mensagem do clube escolar pede dinheiro hoje. Como verificar?",
+          "feedback": {
+            "met": "Você conferiu remetente, destino e urgência antes de agir.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Falar com o clube por um canal conhecido"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Verifique remetente e destino por outra via"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A friend account urgently asks for a transfer to a new name. What comes first?",
+          "feedback": {
+            "met": "You checked sender, destination and urgency before acting.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "Call the friend using a saved number"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Verify sender and destination independently"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La cuenta de un amigo pide una transferencia urgente a otro nombre. ¿Qué va primero?",
+          "feedback": {
+            "met": "Revisaste remitente, destino y urgencia antes de actuar.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Llamar al amigo con un número guardado"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Verifica remitente y destino por otra vía"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A conta de um amigo pede transferência urgente para outro nome. O que vem primeiro?",
+          "feedback": {
+            "met": "Você conferiu remetente, destino e urgência antes de agir.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "Ligar para o amigo pelo número salvo"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Verifique remetente e destino por outra via"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

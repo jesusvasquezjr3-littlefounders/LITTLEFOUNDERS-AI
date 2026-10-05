@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-costs-over-time",
+  "lesson_id": "fe-1012-22-which-choice-costs-more",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.smart-shopping",
+    "money.unit-price",
+    "life.opportunity-cost"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Qué opción cuesta más. Compare unit cost and total cost before choosing. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Which choice costs more",
+    "es-MX": "Qué opción cuesta más",
+    "pt-BR": "Qual opção custa mais"
+  },
+  "new_concepts": [
+    "life.smart-shopping"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two packs contain the same item.",
+          "line": "12 for 3 or 15 for 5: which unit costs less?"
+        },
+        "es-MX": {
+          "prompt": "Dos paquetes tienen el mismo producto.",
+          "line": "12 por 3 o 15 por 5: ¿cuál cuesta menos?"
+        },
+        "pt-BR": {
+          "prompt": "Dois pacotes têm o mesmo produto.",
+          "line": "12 por 3 ou 15 por 5: qual custa menos?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: A has 4 for 12; B has 5 for 20. Which costs less each?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "A: 3 each"
+            },
+            {
+              "label": "B: 20 total"
+            },
+            {
+              "label": "Choose the larger pack"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "A: 12 ÷ 4 = 3; B: 20 ÷ 5 = 4"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: A da 4 por 12; B da 5 por 20. ¿Cuál cuesta menos por pieza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "A: 3 cada uno"
+            },
+            {
+              "label": "B: 20 total"
+            },
+            {
+              "label": "Elegir el paquete mayor"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "A: 12 ÷ 4 = 3; B: 20 ÷ 5 = 4"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: A dá 4 por 12; B dá 5 por 20. Qual custa menos por item?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "A: 3 cada"
+            },
+            {
+              "label": "B: 20 total"
+            },
+            {
+              "label": "Escolher o pacote maior"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A: 12 ÷ 4 = 3; B: 20 ÷ 5 = 4"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "A: 12 ÷ 4 = 3 each. B: 20 ÷ 5 = 4. A costs less."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "A: 12 ÷ 4 = 3. B: 20 ÷ 5 = 4. A cuesta menos."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "A: 12 ÷ 4 = 3. B: 20 ÷ 5 = 4. A custa menos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: A has 3 for 15; B has 4 for 16. Which costs less each?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "B: 4 each"
+            },
+            {
+              "label": "A: 15 total"
+            },
+            {
+              "label": "Choose the larger pack"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "A: 15 ÷ 3 = 5; B: 16 ÷ 4 = 4"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: A da 3 por 15; B da 4 por 16. ¿Cuál cuesta menos por pieza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "B: 4 cada uno"
+            },
+            {
+              "label": "A: 15 total"
+            },
+            {
+              "label": "Elegir el paquete mayor"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "A: 15 ÷ 3 = 5; B: 16 ÷ 4 = 4"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: A dá 3 por 15; B dá 4 por 16. Qual custa menos por item?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "B: 4 cada"
+            },
+            {
+              "label": "A: 15 total"
+            },
+            {
+              "label": "Escolher o pacote maior"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A: 15 ÷ 3 = 5; B: 16 ÷ 4 = 4"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: A has 6 for 24; B has 5 for 25. Which costs less each?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "A: 4 each"
+            },
+            {
+              "label": "B: 25 total"
+            },
+            {
+              "label": "Choose the larger pack"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "A: 24 ÷ 6 = 4; B: 25 ÷ 5 = 5"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: A da 6 por 24; B da 5 por 25. ¿Cuál cuesta menos por pieza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "A: 4 cada uno"
+            },
+            {
+              "label": "B: 25 total"
+            },
+            {
+              "label": "Elegir el paquete mayor"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "A: 24 ÷ 6 = 4; B: 25 ÷ 5 = 5"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: A dá 6 por 24; B dá 5 por 25. Qual custa menos por item?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "A: 4 cada"
+            },
+            {
+              "label": "B: 25 total"
+            },
+            {
+              "label": "Escolher o pacote maior"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A: 24 ÷ 6 = 4; B: 25 ÷ 5 = 5"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: A has 2 for 14; B has 3 for 18. Which costs less each?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "B: 6 each"
+            },
+            {
+              "label": "A: 14 total"
+            },
+            {
+              "label": "Choose the larger pack"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "A: 14 ÷ 2 = 7; B: 18 ÷ 3 = 6"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: A da 2 por 14; B da 3 por 18. ¿Cuál cuesta menos por pieza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "B: 6 cada uno"
+            },
+            {
+              "label": "A: 14 total"
+            },
+            {
+              "label": "Elegir el paquete mayor"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "A: 14 ÷ 2 = 7; B: 18 ÷ 3 = 6"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: A dá 2 por 14; B dá 3 por 18. Qual custa menos por item?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "B: 6 cada"
+            },
+            {
+              "label": "A: 14 total"
+            },
+            {
+              "label": "Escolher o pacote maior"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A: 14 ÷ 2 = 7; B: 18 ÷ 3 = 6"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-money-together",
+  "lesson_id": "fe-69-26-choose-for-everyone",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.common-good",
+    "life.shared-resources",
+    "money.equal-sharing"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Elige para todos. Choose a use that helps the group, not only one person. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Choose for everyone",
+    "es-MX": "Elige para todos",
+    "pt-BR": "Escolha para todos"
+  },
+  "new_concepts": [
+    "life.common-good"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Four learners share one 24-coin fund.",
+          "line": "Which choice helps all 4 learners?"
+        },
+        "es-MX": {
+          "prompt": "Cuatro alumnos comparten un fondo de 24.",
+          "line": "¿Qué opción ayuda a los 4?"
+        },
+        "pt-BR": {
+          "prompt": "Quatro alunos dividem um fundo de 24.",
+          "line": "Qual opção ajuda os 4?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.common-good",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: The play area has no shade. What helps all?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "A shared canopy"
+            },
+            {
+              "label": "One private toy"
+            },
+            {
+              "label": "A locked box"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Everyone can use the shade"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: El patio no tiene sombra. ¿Qué ayuda a todos?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Un toldo compartido"
+            },
+            {
+              "label": "Un juguete privado"
+            },
+            {
+              "label": "Una caja cerrada"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Todos pueden usar la sombra"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: O pátio não tem sombra. O que ajuda todos?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Uma cobertura compartilhada"
+            },
+            {
+              "label": "Um brinquedo privado"
+            },
+            {
+              "label": "Uma caixa trancada"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Todos podem usar a sombra"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "All need shade. A shared canopy helps all."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Todos necesitan sombra. Un toldo ayuda a todos."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Todos precisam de sombra. Uma cobertura ajuda todos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.common-good",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: The reading spot is dark. What helps all?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "A shared lamp"
+            },
+            {
+              "label": "One person’s sticker"
+            },
+            {
+              "label": "An empty frame"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Lamp helps all readers"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: El sitio de lectura está oscuro. ¿Qué ayuda a todos?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Una lámpara compartida"
+            },
+            {
+              "label": "Una calcomanía para una persona"
+            },
+            {
+              "label": "Un marco vacío"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "La lámpara mejora la lectura del grupo"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: O local de leitura está escuro. O que ajuda todos?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Uma luminária compartilhada"
+            },
+            {
+              "label": "Um adesivo para uma pessoa"
+            },
+            {
+              "label": "Uma moldura vazia"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A luminária melhora a leitura do grupo"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.common-good",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: Garden tools get lost. What helps all?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "A labeled tool rack"
+            },
+            {
+              "label": "One private hat"
+            },
+            {
+              "label": "A sealed decoration"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Rack holds shared tools"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: Las cosas del jardín se pierden. ¿Qué ayuda a todos?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Un estante con etiquetas"
+            },
+            {
+              "label": "Un sombrero privado"
+            },
+            {
+              "label": "Una decoración sellada"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El estante mantiene disponibles las herramientas"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: As coisas do jardim somem. O que ajuda todos?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Um suporte etiquetado"
+            },
+            {
+              "label": "Um chapéu privado"
+            },
+            {
+              "label": "Uma decoração lacrada"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "O suporte mantém ferramentas disponíveis"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.common-good",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: The group needs clean water. What helps all?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "A shared water container"
+            },
+            {
+              "label": "One private badge"
+            },
+            {
+              "label": "An unreadable poster"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "All can use the water"
+            },
+            {
+              "label": "It helps only one person"
+            },
+            {
+              "label": "It uses the most items"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: El grupo necesita agua limpia. ¿Qué ayuda a todos?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Un recipiente compartido"
+            },
+            {
+              "label": "Una insignia privada"
+            },
+            {
+              "label": "Un cartel ilegible"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Todos pueden usar el recipiente"
+            },
+            {
+              "label": "Ayuda sólo a una persona"
+            },
+            {
+              "label": "Usa más objetos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: O grupo precisa de água limpa. O que ajuda todos?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Um recipiente compartilhado"
+            },
+            {
+              "label": "Um distintivo privado"
+            },
+            {
+              "label": "Um cartaz ilegível"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Todos podem usar o recipiente"
+            },
+            {
+              "label": "Ajuda só uma pessoa"
+            },
+            {
+              "label": "Usa mais itens"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

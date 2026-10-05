@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-money-together",
+  "lesson_id": "fe-69-27-plan-a-helping-project",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.community-projects",
+    "life.shared-resources",
+    "life.goal-planning"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Planea un proyecto útil. Build a small shared project within a fixed amount. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Plan a helping project",
+    "es-MX": "Planea un proyecto útil",
+    "pt-BR": "Planeje um projeto útil"
+  },
+  "new_concepts": [
+    "life.community-projects"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A garden project has 30 coins.",
+          "line": "Seeds cost 12 and tools 15. Does it fit?"
+        },
+        "es-MX": {
+          "prompt": "Un huerto tiene 30 monedas.",
+          "line": "Semillas 12 y herramientas 15. ¿Alcanza?"
+        },
+        "pt-BR": {
+          "prompt": "Uma horta tem 30 moedas.",
+          "line": "Sementes 12 e ferramentas 15. Cabe?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.community-projects",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Has 20. Bags 6, gloves 8, signs 4. Does it fit?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Yes: total 18"
+            },
+            {
+              "label": "Yes: total 20"
+            },
+            {
+              "label": "Skip the total"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "6 + 8 + 4 = 18"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Tiene 20. Bolsas 6, guantes 8, carteles 4. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "Sí: total 18"
+            },
+            {
+              "label": "Sí: total 20"
+            },
+            {
+              "label": "Omitir el total"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "6 + 8 + 4 = 18; monedas 20"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Tem 20. Sacos 6, luvas 8, placas 4. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Sim: total 18"
+            },
+            {
+              "label": "Sim: total 20"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "6 + 8 + 4 = 18; moedas 20"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "20 coins. 6 + 8 + 4 = 18. It fits."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "20 monedas. 6 + 8 + 4 = 18. Alcanza."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "20 moedas. 6 + 8 + 4 = 18. Cabe."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.community-projects",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Has 24. Seeds 9, soil 7, tags 5. Does it fit?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Yes: total 21"
+            },
+            {
+              "label": "Yes: total 24"
+            },
+            {
+              "label": "Skip the total"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "9 + 7 + 5 = 21"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Tiene 24. Semillas 9, tierra 7, notas 5. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "Sí: total 21"
+            },
+            {
+              "label": "Sí: total 24"
+            },
+            {
+              "label": "Omitir el total"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "9 + 7 + 5 = 21; monedas 24"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Tem 24. Sementes 9, terra 7, notas 5. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Sim: total 21"
+            },
+            {
+              "label": "Sim: total 24"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "9 + 7 + 5 = 21; moedas 24"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.community-projects",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: Has 18. Paper 8, pens 7, tape 6. Does it fit?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "No: total 21"
+            },
+            {
+              "label": "Yes: total 18"
+            },
+            {
+              "label": "Skip the total"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "8 + 7 + 6 = 21"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Tiene 18. Papel 8, plumones 7, cinta 6. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "No: total 21"
+            },
+            {
+              "label": "Sí: total 18"
+            },
+            {
+              "label": "Omitir el total"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "8 + 7 + 6 = 21; monedas 18"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Tem 18. Papel 8, canetas 7, fita 6. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Não: total 21"
+            },
+            {
+              "label": "Sim: total 18"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "8 + 7 + 6 = 21; moedas 18"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.community-projects",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: Has 30. Bottles 12, soap 10, towels 6. Fit?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Yes: total 28"
+            },
+            {
+              "label": "Yes: total 30"
+            },
+            {
+              "label": "Skip the total"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "12 + 10 + 6 = 28"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: Tiene 30. Botellas 12, jabón 10, toallas 6. ¿Alcanza?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "Sí: total 28"
+            },
+            {
+              "label": "Sí: total 30"
+            },
+            {
+              "label": "Omitir el total"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "12 + 10 + 6 = 28; monedas 30"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: Tem 30. Garrafas 12, sabão 10, toalhas 6. Cabe?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Sim: total 28"
+            },
+            {
+              "label": "Sim: total 30"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "12 + 10 + 6 = 28; moedas 30"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

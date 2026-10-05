@@ -1,0 +1,794 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-variable-income",
+  "lesson_id": "fe-adult-15-plan-an-uneven-month",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.review-and-adjust-plan",
+    "money.simple-budget",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Planea un mes variable. Parte del ingreso menor y confiable, compara lo real y ajusta una parte. La práctica usa cifras distintas y termina con un caso nuevo.",
+  "title": {
+    "en-US": "Plan an uneven month",
+    "es-MX": "Planea un mes variable",
+    "pt-BR": "Planeje um mês variável"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "At a garage sale, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "garage sale"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Después de una quincena, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Depois de usar Pix, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara bases commitments on the lower reliable month, then adjusts. (garage sale)",
+          "line": "Use the lower reliable income"
+        },
+        "es-MX": {
+          "prompt": "Zara basa compromisos en el mes confiable menor y después ajusta. (quincena)",
+          "line": "Usa el ingreso confiable menor"
+        },
+        "pt-BR": {
+          "prompt": "Zara baseia compromissos no menor mês confiável e depois ajusta. (Pix)",
+          "line": "Use a menor renda confiável"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Income was $1,600, $2,100 and $1,750. Which base is safest for commitments?",
+          "help": [
+            "Build from the lower reliable income, compare reality and adjust one part."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$1,600"
+            },
+            {
+              "label": "$2,100"
+            },
+            {
+              "label": "$1,817"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use the lower reliable income"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El ingreso fue $1,600, $2,100 y $1,750. ¿Qué base es más segura para compromisos?",
+          "help": [
+            "Parte del ingreso menor y confiable, compara lo real y ajusta una parte."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$1,600"
+            },
+            {
+              "label": "$2,100"
+            },
+            {
+              "label": "$1,817"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa el ingreso confiable menor"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A renda foi R$ 1.600, R$ 2.100 e R$ 1.750. Qual base é mais segura para compromissos?",
+          "help": [
+            "Parta da renda menor e confiável, compare o real e ajuste uma parte."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 1.600"
+            },
+            {
+              "label": "R$ 2.100"
+            },
+            {
+              "label": "R$ 1.817"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use a menor renda confiável"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Work one complete case.",
+          "line": "For income of $1,900, $1,500 and $1,750, build fixed commitments from $1,500."
+        },
+        "es-MX": {
+          "prompt": "Resuelve un caso completo.",
+          "line": "Con ingresos de $1,900, $1,500 y $1,750, basa compromisos fijos en $1,500."
+        },
+        "pt-BR": {
+          "prompt": "Resolva um caso completo.",
+          "line": "Com renda de R$1.900, R$1.500 e R$1.750, baseie compromissos fixos em R$1.500."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The plan used $1,700, but only $1,500 arrived. What should change first?",
+          "help": [
+            "Build from the lower reliable income, compare reality and adjust one part."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Reduce flexible spending by $200"
+            },
+            {
+              "label": "Ignore the gap"
+            },
+            {
+              "label": "Raise every goal"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use the lower reliable income"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El plan usó $1,700, pero llegaron $1,500. ¿Qué debe cambiar primero?",
+          "help": [
+            "Parte del ingreso menor y confiable, compara lo real y ajusta una parte."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Reducir $200 del gasto flexible"
+            },
+            {
+              "label": "Ignorar el faltante"
+            },
+            {
+              "label": "Aumentar todas las metas"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa el ingreso confiable menor"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O plano usou R$ 1.700, mas entraram R$ 1.500. O que muda primeiro?",
+          "help": [
+            "Parta da renda menor e confiável, compare o real e ajuste uma parte."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Reduzir R$ 200 dos gastos flexíveis"
+            },
+            {
+              "label": "Ignorar a diferença"
+            },
+            {
+              "label": "Aumentar todas as metas"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use a menor renda confiável"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Income is $300 above the safe base. Which response keeps the plan reliable?",
+          "help": [
+            "Build from the lower reliable income, compare reality and adjust one part."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Keep the base; assign the extra"
+            },
+            {
+              "label": "$300 more fixed spending"
+            },
+            {
+              "label": "Assume every month will match"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use the lower reliable income"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El ingreso supera $300 la base segura. ¿Qué respuesta mantiene el plan confiable?",
+          "help": [
+            "Parte del ingreso menor y confiable, compara lo real y ajusta una parte."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Mantener compromisos en la base y asignar el extra"
+            },
+            {
+              "label": "$300 más de gasto fijo"
+            },
+            {
+              "label": "Suponer que cada mes será igual"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa el ingreso confiable menor"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A renda ficou R$ 300 acima da base segura. O que mantém o plano confiável?",
+          "help": [
+            "Parta da renda menor e confiável, compare o real e ajuste uma parte."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Manter compromissos na base e destinar o extra"
+            },
+            {
+              "label": "R$ 300 a mais de gasto fixo"
+            },
+            {
+              "label": "Supor que todo mês será igual"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use a menor renda confiável"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new month is $250 below the base. Which adjustment preserves the essentials?",
+          "help": [
+            "Build from the lower reliable income, compare reality and adjust one part."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "Delay $250 of flexible spending"
+            },
+            {
+              "label": "Skip an essential bill"
+            },
+            {
+              "label": "Hide the lower income"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Use the lower reliable income"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un mes nuevo queda $250 bajo la base. ¿Qué ajuste protege lo esencial?",
+          "help": [
+            "Parte del ingreso menor y confiable, compara lo real y ajusta una parte."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "Posponer $250 de gasto flexible"
+            },
+            {
+              "label": "Omitir un pago esencial"
+            },
+            {
+              "label": "Ocultar el ingreso menor"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Usa el ingreso confiable menor"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um novo mês fica R$ 250 abaixo da base. Qual ajuste protege o essencial?",
+          "help": [
+            "Parta da renda menor e confiável, compare o real e ajuste uma parte."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "Adiar R$ 250 de gasto flexível"
+            },
+            {
+              "label": "Pular uma conta essencial"
+            },
+            {
+              "label": "Esconder a renda menor"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Use a menor renda confiável"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

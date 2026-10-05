@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-money-safe",
+  "lesson_id": "fe-69-18-grown-up-account",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.banks-and-accounts",
+    "life.safe-keeping",
+    "money.subtract-money"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Una cuenta con un adulto. Follow money into and out of an adult-managed account. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "A grown-up account",
+    "es-MX": "Una cuenta con un adulto",
+    "pt-BR": "Uma conta com um adulto"
+  },
+  "new_concepts": [
+    "life.banks-and-accounts"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho checks an adult-managed account.",
+          "line": "The balance is 12; 4 leave. What remains?"
+        },
+        "es-MX": {
+          "prompt": "Rho revisa una cuenta con un adulto.",
+          "line": "El saldo es 12; salen 4. ¿Cuánto queda?"
+        },
+        "pt-BR": {
+          "prompt": "Rho confere uma conta com um adulto.",
+          "line": "O saldo é 12; saem 4. Quanto resta?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Start 10; add 4; pay 3. New balance?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "11"
+            },
+            {
+              "label": "14"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "10 + 4 − 3 = 11"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Inicia 10; suma 4; paga 3. ¿Nuevo saldo?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "11"
+            },
+            {
+              "label": "14"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "10 + 4 − 3 = 11"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Inicia 10; soma 4; paga 3. Novo saldo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "11"
+            },
+            {
+              "label": "14"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "10 + 4 − 3 = 11"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Account math: 10 + 4 = 14."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Cuenta: 10 + 4 = 14."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Conta: 10 + 4 = 14."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Start 12; add 5; pay 2. New balance?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "17"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "12 + 5 − 2 = 15"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Inicia 12; suma 5; paga 2. ¿Nuevo saldo?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "17"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "12 + 5 − 2 = 15"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Inicia 12; soma 5; paga 2. Novo saldo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "17"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "12 + 5 − 2 = 15"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Start 15; add 3; pay 6. New balance?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "15 + 3 − 6 = 12"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Inicia 15; suma 3; paga 6. ¿Nuevo saldo?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "15 + 3 − 6 = 12"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Inicia 15; soma 3; paga 6. Novo saldo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "15 + 3 − 6 = 12"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Start 8; add 7; pay 4. New balance?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "11"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "8 + 7 − 4 = 11"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Inicia 8; suma 7; paga 4. ¿Nuevo saldo?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "11"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "8 + 7 − 4 = 11"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Inicia 8; soma 7; paga 4. Novo saldo?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "11"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "8 + 7 − 4 = 11"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

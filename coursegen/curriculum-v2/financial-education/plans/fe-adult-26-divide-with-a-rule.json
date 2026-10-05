@@ -1,0 +1,796 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-shared-decisions",
+  "lesson_id": "fe-adult-26-divide-with-a-rule",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "money.equal-sharing",
+    "life.shared-resources",
+    "life.common-good"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Reparte con una regla. Expresa una regla, reparte por igual y comprueba que no sobra nada. La práctica usa cifras distintas y termina con un caso nuevo.",
+  "title": {
+    "en-US": "Divide with a rule",
+    "es-MX": "Reparte con una regla",
+    "pt-BR": "Divida com uma regra"
+  },
+  "new_concepts": [
+    "money.equal-sharing"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "At a garage sale, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "garage sale"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Después de una quincena, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "quincena"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Depois de usar Pix, an adult applies the lesson rule to a concrete household or group decision and records the result before money moves.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara states an equal-sharing rule before dividing the fund. (garage sale)",
+          "line": "Divide equally; multiply to verify"
+        },
+        "es-MX": {
+          "prompt": "Zara expresa una regla de reparto igual antes de dividir el fondo. (quincena)",
+          "line": "Divide igual; multiplica para comprobar"
+        },
+        "pt-BR": {
+          "prompt": "Zara declara uma regra de divisão igual antes de repartir o fundo. (Pix)",
+          "line": "Divida igualmente; multiplique para conferir"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "$360 is shared equally by 6 people. How much each?",
+          "help": [
+            "State a sharing rule, divide equally and verify that nothing is left."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$60"
+            },
+            {
+              "label": "$54"
+            },
+            {
+              "label": "$66"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Divide equally; multiply to verify"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "$360 se reparten entre 6 personas. ¿Cuánto recibe cada una?",
+          "help": [
+            "Expresa una regla, reparte por igual y comprueba que no sobra nada."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$60"
+            },
+            {
+              "label": "$54"
+            },
+            {
+              "label": "$66"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Divide igual; multiplica para comprobar"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "R$ 360 são divididos entre 6 pessoas. Quanto para cada uma?",
+          "help": [
+            "Declare uma regra, divida igualmente e confira que nada sobra."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 60"
+            },
+            {
+              "label": "R$ 54"
+            },
+            {
+              "label": "R$ 66"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Divida igualmente; multiplique para conferir"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Work one complete case.",
+          "line": "$420 shared by 7 gives $60 each because 7 × $60 = $420."
+        },
+        "es-MX": {
+          "prompt": "Resuelve un caso completo.",
+          "line": "$420 entre 7 da $60 a cada uno porque 7 × $60 = $420."
+        },
+        "pt-BR": {
+          "prompt": "Resolva um caso completo.",
+          "line": "R$420 entre 7 dá R$60 para cada porque 7 × R$60 = R$420."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Five teams share $425 equally. Which share uses all the money?",
+          "help": [
+            "State a sharing rule, divide equally and verify that nothing is left."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$85"
+            },
+            {
+              "label": "$80"
+            },
+            {
+              "label": "$90"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Divide equally; multiply to verify"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Cinco equipos reparten $425 por igual. ¿Qué parte usa todo?",
+          "help": [
+            "Expresa una regla, reparte por igual y comprueba que no sobra nada."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$85"
+            },
+            {
+              "label": "$80"
+            },
+            {
+              "label": "$90"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Divide igual; multiplica para comprobar"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cinco equipes dividem R$ 425 igualmente. Qual parte usa tudo?",
+          "help": [
+            "Declare uma regra, divida igualmente e confira que nada sobra."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 85"
+            },
+            {
+              "label": "R$ 80"
+            },
+            {
+              "label": "R$ 90"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Divida igualmente; multiplique para conferir"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Eight households share a $640 cost equally. What is each part?",
+          "help": [
+            "State a sharing rule, divide equally and verify that nothing is left."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$80"
+            },
+            {
+              "label": "$72"
+            },
+            {
+              "label": "$88"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Divide equally; multiply to verify"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ocho hogares comparten un costo de $640 por igual. ¿Qué parte toca?",
+          "help": [
+            "Expresa una regla, reparte por igual y comprueba que no sobra nada."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$80"
+            },
+            {
+              "label": "$72"
+            },
+            {
+              "label": "$88"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Divide igual; multiplica para comprobar"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Oito famílias dividem um custo de R$ 640. Qual é cada parte?",
+          "help": [
+            "Declare uma regra, divida igualmente e confira que nada sobra."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 80"
+            },
+            {
+              "label": "R$ 72"
+            },
+            {
+              "label": "R$ 88"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Divida igualmente; multiplique para conferir"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "evidence"
+          },
+          {
+            "id": "partial"
+          },
+          {
+            "id": "guess"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "correct"
+          ],
+          "reasonQuality": {
+            "evidence": "sound",
+            "partial": "partial",
+            "guess": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new group divides $540 among 9 people. Which result verifies the rule?",
+          "help": [
+            "State a sharing rule, divide equally and verify that nothing is left."
+          ],
+          "feedback": {
+            "met": "Correct. Your evidence applies the lesson rule.",
+            "not_yet": "Not yet. Apply the lesson rule to every shown fact."
+          },
+          "choices": [
+            {
+              "label": "$60 each; 9 × 60 = 540"
+            },
+            {
+              "label": "$50 each; 50 left"
+            },
+            {
+              "label": "$70 each; 90 extra"
+            }
+          ],
+          "reasonPrompt": "Which reason supports that answer?",
+          "reasons": [
+            {
+              "label": "Divide equally; multiply to verify"
+            },
+            {
+              "label": "It uses only one visible number"
+            },
+            {
+              "label": "It simply looks larger"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un grupo divide $540 entre 9 personas. ¿Qué resultado verifica la regla?",
+          "help": [
+            "Expresa una regla, reparte por igual y comprueba que no sobra nada."
+          ],
+          "feedback": {
+            "met": "Correcto. Tu evidencia aplica la regla de la lección.",
+            "not_yet": "Todavía no. Aplica la regla a todos los datos mostrados."
+          },
+          "choices": [
+            {
+              "label": "$60 cada una; 9 × 60 = 540"
+            },
+            {
+              "label": "$50 cada una; sobran 50"
+            },
+            {
+              "label": "$70 cada una; faltan 90"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón apoya esa respuesta?",
+          "reasons": [
+            {
+              "label": "Divide igual; multiplica para comprobar"
+            },
+            {
+              "label": "Usa solo un número visible"
+            },
+            {
+              "label": "Solo parece mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um grupo divide R$ 540 entre 9 pessoas. Qual resultado verifica a regra?",
+          "help": [
+            "Declare uma regra, divida igualmente e confira que nada sobra."
+          ],
+          "feedback": {
+            "met": "Correto. Sua evidência aplica a regra da lição.",
+            "not_yet": "Ainda não. Aplique a regra a todos os dados mostrados."
+          },
+          "choices": [
+            {
+              "label": "R$ 60 cada; 9 × 60 = 540"
+            },
+            {
+              "label": "R$ 50 cada; sobram 50"
+            },
+            {
+              "label": "R$ 70 cada; faltam 90"
+            }
+          ],
+          "reasonPrompt": "Qual motivo apoia essa resposta?",
+          "reasons": [
+            {
+              "label": "Divida igualmente; multiplique para conferir"
+            },
+            {
+              "label": "Usa só um número visível"
+            },
+            {
+              "label": "Só parece maior"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

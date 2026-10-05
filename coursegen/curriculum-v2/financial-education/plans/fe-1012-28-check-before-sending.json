@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-account-detectives",
+  "lesson_id": "fe-1012-28-check-before-sending",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.think-before-buying",
+    "life.scam-awareness",
+    "life.data-privacy"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Revisa antes de enviar. Pause, verify the recipient and ask before sending money. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Check before sending",
+    "es-MX": "Revisa antes de enviar",
+    "pt-BR": "Confira antes de enviar"
+  },
+  "new_concepts": [
+    "life.think-before-buying"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An ad says the offer ends now.",
+          "line": "What should happen before payment?"
+        },
+        "es-MX": {
+          "prompt": "Un anuncio dice que la oferta termina ya.",
+          "line": "¿Qué debe pasar antes de pagar?"
+        },
+        "pt-BR": {
+          "prompt": "Um anúncio diz que a oferta termina agora.",
+          "line": "O que deve acontecer antes de pagar?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: A transfer sends 18 to an unknown name. What first?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Stop and verify the recipient"
+            },
+            {
+              "label": "Send immediately"
+            },
+            {
+              "label": "Increase it to 28"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "The recipient is not verified"
+            },
+            {
+              "label": "The amount looks familiar"
+            },
+            {
+              "label": "Speed makes it safe"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: Un envío da 18 a un nombre extraño. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Detenerse y verificar al destinatario"
+            },
+            {
+              "label": "Enviar de inmediato"
+            },
+            {
+              "label": "Subirlo a 28"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "El destinatario no está verificado"
+            },
+            {
+              "label": "La cantidad parece conocida"
+            },
+            {
+              "label": "La rapidez lo hace seguro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: Um envio dá 18 a um nome estranho. O que fazer primeiro?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Parar e verificar o destinatário"
+            },
+            {
+              "label": "Enviar imediatamente"
+            },
+            {
+              "label": "Aumentar para 28"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "O destinatário não foi verificado"
+            },
+            {
+              "label": "O valor parece conhecido"
+            },
+            {
+              "label": "A rapidez torna seguro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Worked case: before sending 18 coins, verify the recipient and total; an unknown recipient means stop."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caso resuelto: antes de enviar 18 monedas, verifica destinatario y total; si es desconocido, detente."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caso resolvido: antes de enviar 18 moedas, verifique destinatário e total; se for desconhecido, pare."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: The request says 12, but the screen says 21. What now?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Cancel and correct the amount"
+            },
+            {
+              "label": "Approve 21"
+            },
+            {
+              "label": "Ignore both numbers"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "12 and 21 do not match"
+            },
+            {
+              "label": "21 is larger"
+            },
+            {
+              "label": "The button is bright"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: El pedido dice 12, pero la pantalla dice 21. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Cancelar y corregir la cantidad"
+            },
+            {
+              "label": "Aprobar 21"
+            },
+            {
+              "label": "Ignorar ambas cifras"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "12 y 21 no coinciden"
+            },
+            {
+              "label": "21 es mayor"
+            },
+            {
+              "label": "El botón es brillante"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: O pedido diz 12, mas a tela diz 21. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Cancelar e corrigir o valor"
+            },
+            {
+              "label": "Aprovar 21"
+            },
+            {
+              "label": "Ignorar os dois valores"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "12 e 21 não coincidem"
+            },
+            {
+              "label": "21 é maior"
+            },
+            {
+              "label": "O botão é chamativo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: The name is known, but no reason is shown for 9. What now?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Ask for the purpose before sending"
+            },
+            {
+              "label": "Send because the name matches"
+            },
+            {
+              "label": "Double the amount"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "A transfer needs a clear purpose"
+            },
+            {
+              "label": "A known name proves every request"
+            },
+            {
+              "label": "More coins add detail"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: El nombre es conocido, pero no hay razón para 9. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Preguntar el propósito antes de enviar"
+            },
+            {
+              "label": "Enviar porque coincide el nombre"
+            },
+            {
+              "label": "Duplicar la cantidad"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Una transferencia necesita propósito claro"
+            },
+            {
+              "label": "Un nombre conocido prueba todo"
+            },
+            {
+              "label": "Más monedas agregan detalle"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: O nome é conhecido, mas não há motivo para 9. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Perguntar a finalidade antes de enviar"
+            },
+            {
+              "label": "Enviar porque o nome corresponde"
+            },
+            {
+              "label": "Dobrar o valor"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Uma transferência precisa de finalidade clara"
+            },
+            {
+              "label": "Um nome conhecido prova tudo"
+            },
+            {
+              "label": "Mais moedas acrescentam detalhe"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf: A known book bill and screen both show 14. What matches?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Recipient, purpose, and amount match"
+            },
+            {
+              "label": "Only the color matches"
+            },
+            {
+              "label": "No check was needed"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "The verified invoice and screen both show 14"
+            },
+            {
+              "label": "Libraries never make mistakes"
+            },
+            {
+              "label": "Fourteen is a lucky number"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf: La factura y la pantalla dicen 14. ¿Qué coincide?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Destinatario, propósito y cantidad coinciden"
+            },
+            {
+              "label": "Sólo coincide el color"
+            },
+            {
+              "label": "No hacía falta revisar"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "La factura y la pantalla muestran 14"
+            },
+            {
+              "label": "Las bibliotecas nunca se equivocan"
+            },
+            {
+              "label": "Catorce es un número de suerte"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf: A fatura e a tela dizem 14. O que combina?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Destinatário, finalidade e valor correspondem"
+            },
+            {
+              "label": "Só a cor corresponde"
+            },
+            {
+              "label": "Não precisava verificar"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "A fatura e a tela mostram 14"
+            },
+            {
+              "label": "Bibliotecas nunca erram"
+            },
+            {
+              "label": "Quatorze é número da sorte"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

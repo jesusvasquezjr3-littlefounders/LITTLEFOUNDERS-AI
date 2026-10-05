@@ -1,0 +1,673 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-real-cost",
+  "lesson_id": "fe-1317-20-full-year-choice",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.recurring-costs",
+    "money.simple-budget",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "La opción del año. El costo anual es el mensual por 12 más cada comisión indicada. El sondeo, la práctica guiada, la práctica independiente y la transferencia usan cuatro casos distintos y evidencian life.recurring-costs.",
+  "title": {
+    "en-US": "The full-year choice",
+    "es-MX": "La opción del año",
+    "pt-BR": "A escolha do ano"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Dina compares two phone plans. In the US a monthly plan often has a data cap, and a prepaid plan is the alternative. Amounts are illustrative coin values, not real prices or wages.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "data cap",
+          "prepaid"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Dina compara dos planes de celular. En México se puede pagar un plan de renta cada mes o comprar una recarga de saldo, y el plan trae un límite de datos. Las cantidades son monedas ilustrativas, no precios ni sueldos reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "plan de renta",
+          "recarga"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Dina compara dois planos de celular. No Brasil existem o plano pré-pago e o plano controle, com valor mensal fixo e pacote de dados. Os valores são moedas ilustrativas, não preços nem salários reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "plano controle",
+          "pré-pago"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara turns monthly service prices into full-year totals. (data cap)",
+          "line": "Full-year cost is monthly cost times 12 plus every stated fee."
+        },
+        "es-MX": {
+          "prompt": "Zara convierte precios mensuales en totales del año. (plan de renta)",
+          "line": "El costo anual es el mensual por 12 más cada comisión indicada."
+        },
+        "pt-BR": {
+          "prompt": "Zara transforma preços mensais em totais do ano. (plano controle)",
+          "line": "O custo anual é o mensal vezes 12 mais cada tarifa informada."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A service costs 7 monthly plus a 18 annual fee. What is the full-year cost?",
+          "feedback": {
+            "met": "You compared the complete year, including stated fees.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "102 coins for the year"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Multiply monthly cost; add fees"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un servicio cuesta 7 al mes más una comisión anual de 18. ¿Cuál es el costo del año?",
+          "feedback": {
+            "met": "Comparaste el año completo, incluidas las comisiones.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "102 monedas por el año"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Multiplica costo mensual; suma comisiones"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um serviço custa 7 por mês mais uma tarifa anual de 18. Qual é o custo do ano?",
+          "feedback": {
+            "met": "Você comparou o ano completo, incluindo as tarifas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "102 moedas no ano"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Multiplique custo mensal; some tarifas"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Watch the rule on a new case.",
+          "line": "At 6 monthly plus a 12 fee, the year costs 6 × 12 + 12 = 84."
+        },
+        "es-MX": {
+          "prompt": "Mira la regla en un caso nuevo.",
+          "line": "Con 6 al mes más comisión de 12, el año cuesta 6 × 12 + 12 = 84."
+        },
+        "pt-BR": {
+          "prompt": "Veja a regra em um caso novo.",
+          "line": "Com 6 por mês mais tarifa de 12, o ano custa 6 × 12 + 12 = 84."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A service costs 12 monthly plus a 0 annual fee. What is the full-year cost?",
+          "feedback": {
+            "met": "You compared the complete year, including stated fees.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "144 coins for the year"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Multiply monthly cost; add fees"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un servicio cuesta 12 al mes más una comisión anual de 0. ¿Cuál es el costo del año?",
+          "feedback": {
+            "met": "Comparaste el año completo, incluidas las comisiones.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "144 monedas por el año"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Multiplica costo mensual; suma comisiones"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um serviço custa 12 por mês mais uma tarifa anual de 0. Qual é o custo do ano?",
+          "feedback": {
+            "met": "Você comparou o ano completo, incluindo as tarifas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "144 moedas no ano"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Multiplique custo mensal; some tarifas"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A service costs 9 monthly plus a 24 annual fee. What is the full-year cost?",
+          "feedback": {
+            "met": "You compared the complete year, including stated fees.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "132 coins for the year"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Multiply monthly cost; add fees"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un servicio cuesta 9 al mes más una comisión anual de 24. ¿Cuál es el costo del año?",
+          "feedback": {
+            "met": "Comparaste el año completo, incluidas las comisiones.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "132 monedas por el año"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Multiplica costo mensual; suma comisiones"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um serviço custa 9 por mês mais uma tarifa anual de 24. Qual é o custo do ano?",
+          "feedback": {
+            "met": "Você comparou o ano completo, incluindo as tarifas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "132 moedas no ano"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Multiplique custo mensal; some tarifas"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A service costs 15 monthly plus a 10 annual fee. What is the full-year cost?",
+          "feedback": {
+            "met": "You compared the complete year, including stated fees.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "190 coins for the year"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Multiply monthly cost; add fees"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un servicio cuesta 15 al mes más una comisión anual de 10. ¿Cuál es el costo del año?",
+          "feedback": {
+            "met": "Comparaste el año completo, incluidas las comisiones.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "190 monedas por el año"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Multiplica costo mensual; suma comisiones"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um serviço custa 15 por mês mais uma tarifa anual de 10. Qual é o custo do ano?",
+          "feedback": {
+            "met": "Você comparou o ano completo, incluindo as tarifas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "190 moedas no ano"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Multiplique custo mensal; some tarifas"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

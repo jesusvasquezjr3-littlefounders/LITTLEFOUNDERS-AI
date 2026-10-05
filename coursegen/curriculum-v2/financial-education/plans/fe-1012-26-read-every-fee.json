@@ -1,0 +1,642 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-account-detectives",
+  "lesson_id": "fe-1012-26-read-every-fee",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.recurring-costs",
+    "life.banks-and-accounts",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Revisa cada comisión. Include a stated recurring fee in the full cost. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Read every fee",
+    "es-MX": "Revisa cada comisión",
+    "pt-BR": "Leia cada tarifa"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A service costs 4 coins each month.",
+          "line": "What does 6 months cost?"
+        },
+        "es-MX": {
+          "prompt": "Un servicio cuesta 4 monedas al mes.",
+          "line": "¿Cuánto cuestan 6 meses?"
+        },
+        "pt-BR": {
+          "prompt": "Um serviço custa 4 moedas por mês.",
+          "line": "Quanto custam 6 meses?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: 2 monthly for 3 months, plus fee 4. Full cost?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "9"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "2 × 3 + 4 = 10"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: 2 al mes por 3 meses, más cuota 4. ¿Total?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "9"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "2 × 3 + 4 = 10"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: 2 por mês por 3 meses, mais taxa 4. Total?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "9"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "2 × 3 + 4 = 10"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Worked case: 2 per month for 3 months plus a 4 setup fee totals 10."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caso resuelto: 2 al mes por 3 meses más 4 de apertura suma 10."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caso resolvido: 2 por mês por 3 meses mais 4 de abertura soma 10."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: 3 monthly for 4 months, plus fee 2. Full cost?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "14"
+            },
+            {
+              "label": "9"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "3 × 4 + 2 = 14"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: 3 al mes por 4 meses, más cuota 2. ¿Total?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "14"
+            },
+            {
+              "label": "9"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "3 × 4 + 2 = 14"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: 3 por mês por 4 meses, mais taxa 2. Total?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "14"
+            },
+            {
+              "label": "9"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "3 × 4 + 2 = 14"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: 5 monthly for 2 months, plus fee 6. Full cost?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "13"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "5 × 2 + 6 = 16"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: 5 al mes por 2 meses, más cuota 6. ¿Total?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "13"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "5 × 2 + 6 = 16"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: 5 por mês por 2 meses, mais taxa 6. Total?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "13"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "5 × 2 + 6 = 16"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina: 4 monthly for 5 months, plus fee 3. Full cost?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "23"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "4 × 5 + 3 = 23"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina: 4 al mes por 5 meses, más cuota 3. ¿Total?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "23"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "4 × 5 + 3 = 23"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dina: 4 por mês por 5 meses, mais taxa 3. Total?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "23"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "4 × 5 + 3 = 23"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

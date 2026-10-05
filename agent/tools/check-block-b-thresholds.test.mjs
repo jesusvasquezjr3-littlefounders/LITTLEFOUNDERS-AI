@@ -162,12 +162,13 @@ test('a malformed record fails whatever the date', () => {
   assert.match(checkBlockBCadence({ markdown: doc().replace('## Register audit log', '## Audits'), record: record(), today: '2026-10-01' }).failures.join('\n'), /no "## Register audit log" table/);
 });
 
-test('the live records parse and are due no earlier than the stated first date', () => {
+test('the live records parse and the signed release audit moves the register review', () => {
   const live = liveInputs();
   const result = checkBlockBCadence({ markdown: live.log, record: live.record, today: '2026-10-01' });
   assert.deepEqual(result.failures, []);
   assert.ok(result.schedules.thresholds.due >= '2027-01-15');
-  assert.ok(result.schedules['register-audit'].due >= '2027-01-15');
+  assert.equal(result.schedules['register-audit'].lastHuman, '2026-10-05');
+  assert.equal(result.schedules['register-audit'].due, '2027-01-03');
 });
 
 test('release readiness passes --strict, the repo gates run it, and it runs clean today', () => {

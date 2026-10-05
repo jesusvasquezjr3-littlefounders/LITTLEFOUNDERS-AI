@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "decision": "OD-22",
+  "required_courses": [
+    "financial-education"
+  ],
+  "activations": [
+    {
+      "key": "life.advertising-literacy",
+      "skill_key": "financial-education/fe-adult-06-read-the-pitch"
+    },
+    {
+      "key": "life.banks-and-accounts",
+      "skill_key": "financial-education/fe-adult-21-match-the-record"
+    },
+    {
+      "key": "life.barter",
+      "skill_key": "financial-education/fe-69-09-swap-day"
+    },
+    {
+      "key": "life.common-good",
+      "skill_key": "financial-education/fe-adult-12-share-and-teach"
+    },
+    {
+      "key": "life.community-projects",
+      "skill_key": "financial-education/fe-adult-27-fund-the-project"
+    },
+    {
+      "key": "life.data-privacy",
+      "skill_key": "financial-education/fe-adult-23-protect-account-access"
+    },
+    {
+      "key": "life.effort-and-work",
+      "skill_key": "financial-education/fe-1012-17-work-has-value"
+    },
+    {
+      "key": "life.giving",
+      "skill_key": "financial-education/fe-1012-16-give-and-explain"
+    },
+    {
+      "key": "life.goal-planning",
+      "skill_key": "financial-education/fe-1012-12-dream-to-plan"
+    },
+    {
+      "key": "life.jobs-help-others",
+      "skill_key": "financial-education/fe-69-07-people-who-work"
+    },
+    {
+      "key": "life.opportunity-cost",
+      "skill_key": "financial-education/fe-1317-19-keep-your-options"
+    },
+    {
+      "key": "life.patience-and-waiting",
+      "skill_key": "financial-education/fe-1317-08-wait-and-cushion"
+    },
+    {
+      "key": "life.recurring-costs",
+      "skill_key": "financial-education/fe-adult-22-count-every-account-fee"
+    },
+    {
+      "key": "life.reflect-on-learning",
+      "skill_key": "financial-education/fe-69-28-give-check-explain"
+    },
+    {
+      "key": "life.review-and-adjust-plan",
+      "skill_key": "financial-education/fe-adult-20-rebuild-after-change"
+    },
+    {
+      "key": "life.safe-keeping",
+      "skill_key": "financial-education/fe-1317-04-first-account"
+    },
+    {
+      "key": "life.save-spend-share",
+      "skill_key": "financial-education/fe-adult-28-give-explain-review"
+    },
+    {
+      "key": "life.saving-for-later",
+      "skill_key": "financial-education/fe-adult-19-build-a-cash-buffer"
+    },
+    {
+      "key": "life.scam-awareness",
+      "skill_key": "financial-education/fe-adult-24-verify-before-sending"
+    },
+    {
+      "key": "life.shared-resources",
+      "skill_key": "financial-education/fe-adult-25-name-the-shared-goal"
+    },
+    {
+      "key": "life.smart-shopping",
+      "skill_key": "financial-education/fe-1012-22-which-choice-costs-more"
+    },
+    {
+      "key": "life.think-before-buying",
+      "skill_key": "financial-education/fe-1012-28-check-before-sending"
+    },
+    {
+      "key": "life.track-earnings",
+      "skill_key": "financial-education/fe-adult-13-track-every-payment"
+    },
+    {
+      "key": "life.wants-and-choices",
+      "skill_key": "financial-education/fe-69-03-needs-and-wants"
+    },
+    {
+      "key": "life.what-money-is",
+      "skill_key": "financial-education/fe-69-10-why-coins"
+    }
+  ]
+}

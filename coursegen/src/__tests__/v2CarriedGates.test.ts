@@ -1,7 +1,11 @@
 // GAP-FIX-R2 learning: the Stage 2 gates carried over to v2 documents
 // (Appendix C Part 3 Stage 2; B.22, B.26, B.27; G.2 no exempt path).
 import { describe, expect, it } from 'vitest';
-import { evaluateExpression, loadCarriedCourseData, runV2CarriedGates, v2AgeRegisterGate, v2ArithmeticGate, v2RewardAndWellbeingGates, v2VocabularyGate } from '../v2/carriedGates.js';
+import {
+  evaluateExpression, loadCarriedCourseData, runV2CarriedGates, v2AgeRegisterGate, v2AntiGenericityGate,
+  v2ArithmeticGate, v2ClarityGate, v2GenerationQualityGate, v2RationaleAndCanonGate, v2ReadabilityGate,
+  v2RewardAndWellbeingGates, v2VocabularyGate,
+} from '../v2/carriedGates.js';
 import { v2TextBlocks } from '../v2/gates.js';
 import { V2_MANIFEST_GATES } from '../v2/release.js';
 
@@ -53,10 +57,105 @@ describe('v2 carried gates', () => {
   });
 
   it('runs every carried gate in one pass and lists them in the v2 publication manifest', () => {
-    expect(runV2CarriedGates(document([allocation('Split 12 coins.')])).problems).toEqual([]);
-    for (const id of ['forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.gate.19.age-register']) {
+    expect(runV2CarriedGates(document([allocation('Split 12 coins.')]), { 'allocate-01': { minimumSave: 3 } }).problems).toEqual([]);
+    for (const id of [
+      'forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic', 'forge.gate.05.rationale-canon',
+      'forge.gate.06.anti-genericity', 'forge.gate.07.generation-quality', 'forge.gate.08.clarity', 'forge.gate.09.readability',
+      'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.gate.19.age-register',
+    ]) {
       expect(V2_MANIFEST_GATES).toContain(id);
     }
+  });
+
+  describe('gates 5-9', () => {
+    const choice = (extra: Record<string, unknown> = {}) => ({
+      id: 'choice-01', type: 'story.branch.v2', grading: 'server', prompt: 'Which plan protects the goal?', visual: { type: 'branch-map' },
+      payload: { options: [{ id: 'save-first', label: 'Save for the bicycle goal' }, { id: 'spend-all', label: 'Spend every coin today' }] },
+      feedback: { met: 'You protected the bicycle goal.', not_yet: 'Compare each choice with the bicycle goal.' }, ...extra,
+    });
+    const key = { 'choice-01': { acceptable_choice_ids: ['save-first'] } };
+
+    it('gate 5 blocks out-of-canon characters and rejected choices with no rationale or corrective feedback', () => {
+      const noFeedback = choice({ feedback: undefined, payload: { character: 'milo', options: [
+        { id: 'save-first', label: 'Save for the bicycle goal' }, { id: 'spend-all', label: 'Spend every coin today' },
+      ] } });
+      const findings = v2RationaleAndCanonGate(document([noFeedback]), key);
+      expect(findings).toEqual(expect.arrayContaining([
+        expect.objectContaining({ gate: 5, message: expect.stringContaining('outside the closed canon') }),
+        expect.objectContaining({ gate: 5, segmentId: 'choice-01', message: expect.stringContaining('has no rationale') }),
+      ]));
+      expect(v2RationaleAndCanonGate(document([choice({ payload: { character: 'zara', options: [
+        { id: 'save-first', label: 'Save for the bicycle goal' }, { id: 'spend-all', label: 'Spend every coin today' },
+      ] } })]), key)).toEqual([]);
+    });
+
+    it('gate 6 blocks title echoes, canned filler and generic learning instructions while concrete tasks pass', () => {
+      expect(v2AntiGenericityGate(document([allocation('Split your coins')], { title: 'Split your coins' }))).toEqual([
+        expect.objectContaining({ gate: 6, message: expect.stringContaining('near-duplicate') }),
+      ]);
+      expect(v2AntiGenericityGate(document([allocation('In this exercise you will learn about saving.')])))
+        .toEqual(expect.arrayContaining([expect.objectContaining({ gate: 6, message: expect.stringContaining('banned filler') })]));
+      expect(v2AntiGenericityGate(document([allocation('Practice saving.')])))
+        .toEqual(expect.arrayContaining([expect.objectContaining({ gate: 6, message: expect.stringContaining('generic learning') })]));
+      expect(v2AntiGenericityGate(document([allocation('Zara has 12 coins. Move at least 3 to Save.')]))).toEqual([]);
+    });
+
+    it('gate 7 requires answer evidence and blocks broken quality scales and emoji on answer-critical surfaces', () => {
+      expect(v2GenerationQualityGate(document([choice()]), {})).toEqual([
+        expect.objectContaining({ gate: 7, message: expect.stringContaining('no private answer evidence') }),
+      ]);
+      expect(v2GenerationQualityGate(document([choice({ prompt: 'Pick a plan 🚀' })]), { 'choice-01': { qualities: { save: 1, spend: 0 } } }))
+        .toEqual(expect.arrayContaining([
+          expect.objectContaining({ gate: 7, message: expect.stringContaining('0–1 scale') }),
+          expect.objectContaining({ gate: 7, message: expect.stringContaining('emoji') }),
+        ]));
+      expect(v2GenerationQualityGate(document([choice()]), key)).toEqual([]);
+    });
+
+    it('gate 8 blocks text walls, fake questions, answer leaks, hidden facts and non-visual graded steps', () => {
+      const bad = choice({
+        prompt: `${'Long background sentence. '.repeat(8)}The correct answer is Save for the bicycle goal`,
+        help: ['Each badge costs 17 coins.'], visual: { type: 'text' },
+      });
+      const findings = v2ClarityGate(document([bad]), key);
+      expect(findings).toEqual(expect.arrayContaining([
+        expect.objectContaining({ gate: 8, message: expect.stringContaining('max 160') }),
+        expect.objectContaining({ gate: 8, message: expect.stringContaining('explicitly reveals the correct answer') }),
+        expect.objectContaining({ gate: 8, message: expect.stringContaining('load-bearing fact') }),
+        expect.objectContaining({ gate: 8, message: expect.stringContaining('visual-first') }),
+      ]));
+      expect(v2ClarityGate(document([{ id: 'show-01', type: 'visual.chart.v2', grading: 'none', prompt: 'Did you get it?', visual: { type: 'bar-chart' }, payload: {} }]), {}))
+        .toEqual([expect.objectContaining({ gate: 8, message: expect.stringContaining('takes no answer') })]);
+      expect(v2ClarityGate(document([choice()]), key)).toEqual([]);
+    });
+
+    it('gate 8 does not confuse procedures, currency decimals or Mentor reflection questions with hidden inputs', () => {
+      const procedural = choice({
+        prompt: 'Offer A is $2,040 for 170 hours. Offer B is $1,800 for 144. Which rate is higher?',
+        help: ['Divide each total by its hours, then compare the two results.'],
+      });
+      const mentor = { id: 'mentor-01', type: 'voice.mentor-turn.v2', grading: 'none', prompt: 'What would you check first?', visual: { type: 'speech-plate' }, payload: { line: 'Pause and look for the price.' } };
+      expect(v2ClarityGate(document([procedural, mentor]), key)).toEqual([]);
+    });
+
+    it.each([
+      ['en-US', 'Institutional diversification necessitates comprehensive methodological consideration of intertemporal capitalization, probabilistic volatility, administrative obligations, and systematically differentiated socioeconomic contingencies.'],
+      ['es-MX', 'La determinación sistemática de la rentabilidad operativa requiere consideraciones metodológicas extraordinariamente sofisticadas, incorporando simultáneamente obligaciones tributarias, depreciación institucional y periodificación financiera internacional.'],
+      ['pt-BR', 'A determinação sistemática da rentabilidade operacional requer considerações metodológicas extraordinariamente sofisticadas, incorporando simultaneamente obrigações tributárias, depreciação institucional e periodização financeira internacional.'],
+    ])('gate 9 blocks adult prose for ages 6-9 in %s and lets short copy remain unjudged', (locale, prose) => {
+      const hard = Array(4).fill(prose).join(' ');
+      expect(v2ReadabilityGate(document([allocation(hard)], { locale, age_band: '6-9' })))
+        .toEqual([expect.objectContaining({ gate: 9, severity: 'block' })]);
+      expect(v2ReadabilityGate(document([allocation('Move 3 coins.')], { locale, age_band: '6-9' }))).toEqual([]);
+    });
+
+    it('routes gates 5-9 into the blocking carried-gate report used by the emitter', () => {
+      const adult = Array(4).fill('Institutional diversification necessitates comprehensive methodological consideration of intertemporal capitalization, probabilistic volatility, administrative obligations, and systematically differentiated socioeconomic contingencies.').join(' ');
+      const broken = choice({ prompt: `In this exercise you will learn. 🚀 ${adult}`, visual: { type: 'text' }, payload: { character: 'milo' } });
+      const report = runV2CarriedGates(document([broken]), { 'choice-01': { qualities: { a: 1, b: 0 } } });
+      const gates = new Set(report.problems.map((problem) => problem.gate));
+      for (const gate of [5, 6, 7, 8, 9]) expect(gates.has(gate), `gate ${gate} must block`).toBe(true);
+    });
   });
 
   /*
