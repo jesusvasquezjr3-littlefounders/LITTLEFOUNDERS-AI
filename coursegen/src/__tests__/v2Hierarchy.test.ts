@@ -360,8 +360,18 @@ describe.skipIf(!existsSync(MIGRATIONS))('rows against the Vault constraints (co
   });
 
   describe.skipIf(!existsSync(path.join(PILOT_DIR, 'pilot.structure.yaml')) || !existsSync(KC_GRAPH))('the Educación Financiera pilot', () => {
+    // plans/ now holds the whole catalog; the pilot structure covers only the eight frozen pilot lessons.
+    const PILOT_PLAN_ID = /^fe-(69|1012)-0[1-4]-/;
+    const pilotPlansDir = () => {
+      const dir = path.join(tmp(), 'plans');
+      mkdirSync(dir, { recursive: true });
+      for (const name of readdirSync(path.join(PILOT_DIR, 'plans'))) {
+        if (PILOT_PLAN_ID.test(name)) writeFileSync(path.join(dir, name), readFileSync(path.join(PILOT_DIR, 'plans', name)));
+      }
+      return dir;
+    };
     const pilot = () => {
-      const loaded = loadV2Plans(path.join(PILOT_DIR, 'plans'));
+      const loaded = loadV2Plans(pilotPlansDir());
       expect(loaded.filter((entry) => entry.errors.length)).toEqual([]);
       const plans = loaded.map((entry) => entry.plan!);
       return { structure: parseStructure(readFileSync(path.join(PILOT_DIR, 'pilot.structure.yaml'), 'utf8')), plans, kcs: loadKcInfo(KC_GRAPH) };
@@ -384,7 +394,7 @@ describe.skipIf(!existsSync(MIGRATIONS))('rows against the Vault constraints (co
     });
 
     it('generate() renders the three files the CLI writes', () => {
-      const files = generate({ structure: path.join(PILOT_DIR, 'pilot.structure.yaml'), plans: path.join(PILOT_DIR, 'plans'), kcGraph: KC_GRAPH });
+      const files = generate({ structure: path.join(PILOT_DIR, 'pilot.structure.yaml'), plans: pilotPlansDir(), kcGraph: KC_GRAPH });
       expect(Object.keys(files)).toEqual([...HIERARCHY_FILES]);
       expect(files['ids.json']).toBe(renderIdsJson(buildHierarchy(pilot())));
     });
