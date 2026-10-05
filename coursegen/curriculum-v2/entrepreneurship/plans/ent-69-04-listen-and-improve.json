@@ -1,0 +1,1220 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-inventors",
+  "lesson_id": "ent-69-04-listen-and-improve",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.customer-feedback",
+    "biz.make-and-test"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara, la joven inventora, deja que cinco compañeros prueben la caja del almuerzo de Mía. Escucha sin defenderse y cuenta los comentarios: 3 dicen que la tapa es difícil de abrir, 1 que es azul y 1 que es perfecta. Cambia lo que dicen muchos, arregla la tapa y vuelve a preguntar. El niño lo repite con el estuche de Sam y el barco de papel de Nia.",
+  "title": {
+    "en-US": "Listen, then improve",
+    "es-MX": "Escucha y mejora",
+    "pt-BR": "Escute e melhore"
+  },
+  "new_concepts": [
+    "biz.customer-feedback"
+  ],
+  "regional": {
+    "universal": "No money amounts, places or customs; a classroom story that reads the same in every market."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Five classmates try Mía's lunch box.",
+          "line": "Hmm, five comments. Let me write them all down."
+        },
+        "es-MX": {
+          "prompt": "Cinco compañeros prueban la caja de Mía.",
+          "line": "Mmm, cinco comentarios. Voy a anotarlos todos."
+        },
+        "pt-BR": {
+          "prompt": "Cinco colegas testam a caixa da Mía.",
+          "line": "Hum, cinco comentários. Vou anotar todos."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-fine"
+          },
+          {
+            "id": "reply-other"
+          },
+          {
+            "id": "reply-show"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-show"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo tried the box. What do you say?",
+          "feedback": {
+            "met": "Noted. Now watch what Zara does.",
+            "not_yet": "Noted. Now watch what Zara does."
+          },
+          "speaker": "Leo",
+          "line": "The lid is hard to open.",
+          "replies": [
+            {
+              "label": "The lid is fine."
+            },
+            {
+              "label": "Then use another box."
+            },
+            {
+              "label": "Show me how it sticks."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo probó la caja. ¿Qué le dices?",
+          "feedback": {
+            "met": "Anotado. Ahora mira qué hace Zara.",
+            "not_yet": "Anotado. Ahora mira qué hace Zara."
+          },
+          "speaker": "Leo",
+          "line": "La tapa es difícil de abrir.",
+          "replies": [
+            {
+              "label": "La tapa está bien."
+            },
+            {
+              "label": "Entonces usa otra caja."
+            },
+            {
+              "label": "Muéstrame cómo se atora."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Leo testou a caixa. O que você diz?",
+          "feedback": {
+            "met": "Anotado. Agora veja o que a Zara faz.",
+            "not_yet": "Anotado. Agora veja o que a Zara faz."
+          },
+          "speaker": "Leo",
+          "line": "A tampa é difícil de abrir.",
+          "replies": [
+            {
+              "label": "A tampa está boa."
+            },
+            {
+              "label": "Então use outra caixa."
+            },
+            {
+              "label": "Me mostre como emperra."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: listen, do not defend.",
+          "line": "Leo: the lid is hard to open. I say: thanks, show me."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: escucha, no defiendas.",
+          "line": "Leo dice: la tapa es difícil de abrir. Digo: gracias, muéstrame."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: escute, não defenda.",
+          "line": "O Leo diz: a tampa é difícil de abrir. Eu digo: obrigada, me mostre."
+        }
+      }
+    },
+    {
+      "id": "chart-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "pictogram"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "comment-lid"
+            },
+            {
+              "id": "comment-blue"
+            },
+            {
+              "id": "comment-perfect"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-friends",
+              "values": [
+                3,
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: count the five comments.",
+          "title": "What five friends said",
+          "data": {
+            "categories": [
+              {
+                "label": "Lid is hard to open"
+              },
+              {
+                "label": "It is blue"
+              },
+              {
+                "label": "It is perfect"
+              }
+            ],
+            "series": [
+              {
+                "label": "Friends"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 2: cuenta los cinco comentarios.",
+          "title": "Lo que dijeron cinco amigos",
+          "data": {
+            "categories": [
+              {
+                "label": "Tapa difícil de abrir"
+              },
+              {
+                "label": "Es azul"
+              },
+              {
+                "label": "Es perfecta"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amigos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: conte os cinco comentários.",
+          "title": "O que cinco amigos disseram",
+          "data": {
+            "categories": [
+              {
+                "label": "Tampa difícil de abrir"
+              },
+              {
+                "label": "É azul"
+              },
+              {
+                "label": "É perfeita"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amigos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: 3 of 5 is a pattern.",
+          "line": "1 of 5 is just an opinion. We fix the lid first."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: 3 de 5 es un patrón.",
+          "line": "1 de 5 es cuestión de gusto. Primero arreglamos la tapa."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: 3 de 5 é um padrão.",
+          "line": "1 de 5 é questão de gosto. Primeiro consertamos a tampa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-change"
+          },
+          {
+            "id": "bin-keep"
+          }
+        ],
+        "items": [
+          {
+            "id": "it-zipper"
+          },
+          {
+            "id": "it-green"
+          },
+          {
+            "id": "it-smell"
+          },
+          {
+            "id": "it-pencils"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-many"
+          },
+          {
+            "id": "why-one"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "it-zipper": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ],
+          "it-green": [
+            {
+              "bin": "bin-keep",
+              "reason": "why-one"
+            }
+          ],
+          "it-smell": [
+            {
+              "bin": "bin-keep",
+              "reason": "why-one"
+            }
+          ],
+          "it-pencils": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam's pencil case: sort what five friends said.",
+          "help": [
+            "Look at the number on each comment.",
+            "Zara changed what most friends said."
+          ],
+          "feedback": {
+            "met": "You sorted by how many friends said it.",
+            "not_yet": "Count the friends on each comment first."
+          },
+          "rule": "Did many friends say it, or only one?",
+          "bins": [
+            {
+              "label": "Change it"
+            },
+            {
+              "label": "Keep for now"
+            }
+          ],
+          "items": [
+            {
+              "label": "Zipper sticks, 4 friends"
+            },
+            {
+              "label": "Too green, 1 friend"
+            },
+            {
+              "label": "Smells like glue, 1 friend"
+            },
+            {
+              "label": "Pencils fall out, 3 friends"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Many friends said it"
+            },
+            {
+              "label": "Only one friend said it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Estuche de Sam: ordena lo que dijeron cinco amigos.",
+          "help": [
+            "Mira el número de cada comentario.",
+            "Zara cambió lo que dijeron casi todos."
+          ],
+          "feedback": {
+            "met": "Ordenaste por cuántos amigos lo dijeron.",
+            "not_yet": "Primero cuenta los amigos de cada comentario."
+          },
+          "rule": "¿Lo dijeron muchos amigos o solo uno?",
+          "bins": [
+            {
+              "label": "Cambiarlo"
+            },
+            {
+              "label": "Dejarlo por ahora"
+            }
+          ],
+          "items": [
+            {
+              "label": "Cierre atorado, 4 amigos"
+            },
+            {
+              "label": "Muy verde, 1 amigo"
+            },
+            {
+              "label": "Huele a pegamento, 1 amigo"
+            },
+            {
+              "label": "Los lápices se caen, 3 amigos"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muchos amigos lo dijeron"
+            },
+            {
+              "label": "Solo un amigo lo dijo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Estojo do Sam: ordene o que cinco amigos disseram.",
+          "help": [
+            "Veja o número de cada comentário.",
+            "A Zara mudou o que quase todos disseram."
+          ],
+          "feedback": {
+            "met": "Você ordenou por quantos amigos disseram.",
+            "not_yet": "Primeiro conte os amigos de cada comentário."
+          },
+          "rule": "Muitos amigos disseram, ou só um?",
+          "bins": [
+            {
+              "label": "Mudar"
+            },
+            {
+              "label": "Manter por agora"
+            }
+          ],
+          "items": [
+            {
+              "label": "Zíper emperrado, 4 amigos"
+            },
+            {
+              "label": "Muito verde, 1 amigo"
+            },
+            {
+              "label": "Tem cheiro de cola, 1 amigo"
+            },
+            {
+              "label": "Os lápis caem, 3 amigos"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muitos amigos disseram"
+            },
+            {
+              "label": "Só um amigo disse"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: fix the lid, then ask again.",
+          "line": "I ask the same 3 friends if the lid is easier."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: arregla la tapa y pregunta otra vez.",
+          "line": "Pregunto a los mismos 3 amigos si la tapa es más fácil."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: conserte a tampa e pergunte de novo.",
+          "line": "Pergunto aos mesmos 3 amigos se a tampa está mais fácil."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-easier"
+          },
+          {
+            "id": "reply-green"
+          },
+          {
+            "id": "reply-right"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-easier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam fixed the zipper. What does he ask Mía?",
+          "help": [
+            "Ask about what you changed.",
+            "Zara asked if the lid was easier."
+          ],
+          "feedback": {
+            "met": "You asked about the thing you fixed.",
+            "not_yet": "Ask about the change, as Zara did with the lid."
+          },
+          "speaker": "Mía",
+          "line": "Let me try the new zipper.",
+          "replies": [
+            {
+              "label": "Is the zipper easier now?"
+            },
+            {
+              "label": "Do you like green now?"
+            },
+            {
+              "label": "Was I right all along?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sam arregló el cierre. ¿Qué le pregunta a Mía?",
+          "help": [
+            "Pregunta por lo que cambiaste.",
+            "Zara preguntó si la tapa era más fácil."
+          ],
+          "feedback": {
+            "met": "Preguntaste por lo que arreglaste.",
+            "not_yet": "Pregunta por el cambio, como Zara con la tapa."
+          },
+          "speaker": "Mía",
+          "line": "Déjame probar el cierre nuevo.",
+          "replies": [
+            {
+              "label": "¿El cierre abre más fácil?"
+            },
+            {
+              "label": "¿Ahora te gusta el verde?"
+            },
+            {
+              "label": "¿Tenía yo la razón?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Sam consertou o zíper. O que ele pergunta à Mía?",
+          "help": [
+            "Pergunte sobre o que mudou.",
+            "A Zara perguntou se a tampa estava mais fácil."
+          ],
+          "feedback": {
+            "met": "Você perguntou sobre o que consertou.",
+            "not_yet": "Pergunte sobre a mudança, como a Zara fez com a tampa."
+          },
+          "speaker": "Mía",
+          "line": "Deixa eu testar o zíper novo.",
+          "replies": [
+            {
+              "label": "O zíper abre mais fácil?"
+            },
+            {
+              "label": "Agora você gosta do verde?"
+            },
+            {
+              "label": "Eu estava certo?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "chart-02",
+      "type": "visual.chart.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "pictogram"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "when-before"
+            },
+            {
+              "id": "when-after"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-friends",
+              "values": [
+                3,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: count again. The fix worked.",
+          "title": "Who says the lid is hard",
+          "data": {
+            "categories": [
+              {
+                "label": "Before the new lid"
+              },
+              {
+                "label": "After the new lid"
+              }
+            ],
+            "series": [
+              {
+                "label": "Friends"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 5: cuenta otra vez. El arreglo funcionó.",
+          "title": "Quién dice que la tapa es difícil",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes de la tapa nueva"
+              },
+              {
+                "label": "Después de la tapa nueva"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amigos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: conte de novo. O conserto funcionou.",
+          "title": "Quem diz que a tampa é difícil",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes da tampa nova"
+              },
+              {
+                "label": "Depois da tampa nova"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amigos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "pictogram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "icon_value": 1,
+          "categories": [
+            {
+              "id": "when-before"
+            },
+            {
+              "id": "when-after"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-friends",
+              "values": [
+                4,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-same"
+            },
+            {
+              "id": "opt-fewer"
+            },
+            {
+              "id": "opt-more"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-fewer"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam asked his five friends again. Read the chart.",
+          "help": [
+            "Zara counted before and after the new lid.",
+            "Count the icons in each row, then compare."
+          ],
+          "feedback": {
+            "met": "You compared before and after to check the change.",
+            "not_yet": "Compare the two rows: look at how the number moved."
+          },
+          "title": "Friends who say it sticks",
+          "data": {
+            "categories": [
+              {
+                "label": "Before the new zipper"
+              },
+              {
+                "label": "After the new zipper"
+              }
+            ],
+            "series": [
+              {
+                "label": "Friends"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Did the new zipper help?",
+            "options": [
+              {
+                "label": "No, nothing changed"
+              },
+              {
+                "label": "Yes, fewer friends say it"
+              },
+              {
+                "label": "No, more friends say it"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Sam volvió a preguntar a sus cinco amigos. Lee la gráfica.",
+          "help": [
+            "Zara contó antes y después de la tapa nueva.",
+            "Cuenta los íconos de cada fila y compara."
+          ],
+          "feedback": {
+            "met": "Comparaste antes y después para revisar el cambio.",
+            "not_yet": "Compara las dos filas: mira cómo cambió el número."
+          },
+          "title": "Amigos que dicen que se atora",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes del cierre nuevo"
+              },
+              {
+                "label": "Después del cierre nuevo"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amigos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Ayudó el cierre nuevo?",
+            "options": [
+              {
+                "label": "No, nada cambió"
+              },
+              {
+                "label": "Sí, menos amigos lo dicen"
+              },
+              {
+                "label": "No, más amigos lo dicen"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Sam perguntou de novo aos cinco amigos. Leia o gráfico.",
+          "help": [
+            "A Zara contou antes e depois da tampa nova.",
+            "Conte os ícones de cada fila e compare."
+          ],
+          "feedback": {
+            "met": "Você comparou antes e depois para checar a mudança.",
+            "not_yet": "Compare as duas filas: veja como o número mudou."
+          },
+          "title": "Amigos que dizem que emperra",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes do zíper novo"
+              },
+              {
+                "label": "Depois do zíper novo"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amigos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "O zíper novo ajudou?",
+            "options": [
+              {
+                "label": "Não, nada mudou"
+              },
+              {
+                "label": "Sim, menos amigos dizem"
+              },
+              {
+                "label": "Não, mais amigos dizem"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-best"
+          },
+          {
+            "id": "reply-red"
+          },
+          {
+            "id": "reply-note"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-note"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo has a new comment. What does Sam say?",
+          "help": [
+            "Listen without defending the case.",
+            "One friend is an opinion, not a pattern yet."
+          ],
+          "feedback": {
+            "met": "You listened and kept it as one comment.",
+            "not_yet": "Remember: one friend alone is an opinion. Listen first."
+          },
+          "speaker": "Leo",
+          "line": "Your case is too green. I like red.",
+          "replies": [
+            {
+              "label": "Green is the best color."
+            },
+            {
+              "label": "Okay, I paint it red."
+            },
+            {
+              "label": "Thanks, I'll note it."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo tiene otro comentario. ¿Qué dice Sam?",
+          "help": [
+            "Escucha sin defender el estuche.",
+            "Un amigo es cuestión de gusto, aún no un patrón."
+          ],
+          "feedback": {
+            "met": "Escuchaste y lo guardaste como un solo comentario.",
+            "not_yet": "Recuerda: un solo amigo es cuestión de gusto. Escucha primero."
+          },
+          "speaker": "Leo",
+          "line": "Tu estuche es muy verde. Me gusta el rojo.",
+          "replies": [
+            {
+              "label": "El verde es el mejor color."
+            },
+            {
+              "label": "Bueno, lo pinto de rojo."
+            },
+            {
+              "label": "Gracias, lo anoto."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Leo tem outro comentário. O que o Sam diz?",
+          "help": [
+            "Escute sem defender o estojo.",
+            "Um amigo é questão de gosto, ainda não um padrão."
+          ],
+          "feedback": {
+            "met": "Você escutou e guardou como um só comentário.",
+            "not_yet": "Lembre: um só amigo é questão de gosto. Escute primeiro."
+          },
+          "speaker": "Leo",
+          "line": "Seu estojo é muito verde. Eu gosto de vermelho.",
+          "replies": [
+            {
+              "label": "Verde é a melhor cor."
+            },
+            {
+              "label": "Certo, eu pinto de vermelho."
+            },
+            {
+              "label": "Entendi, vou anotar."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-change"
+          },
+          {
+            "id": "bin-keep"
+          }
+        ],
+        "items": [
+          {
+            "id": "it-tips"
+          },
+          {
+            "id": "it-sail"
+          },
+          {
+            "id": "it-small"
+          },
+          {
+            "id": "it-leaks"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-many"
+          },
+          {
+            "id": "why-one"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "it-tips": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ],
+          "it-sail": [
+            {
+              "bin": "bin-keep",
+              "reason": "why-one"
+            }
+          ],
+          "it-small": [
+            {
+              "bin": "bin-keep",
+              "reason": "why-one"
+            }
+          ],
+          "it-leaks": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia's paper boat: sort what five friends said.",
+          "help": [
+            "Look at the number on each comment.",
+            "Zara changed what most friends said."
+          ],
+          "feedback": {
+            "met": "You counted the friends first, in a new place.",
+            "not_yet": "Count the friends on each comment, like Sam's case."
+          },
+          "rule": "Did many friends say it, or only one?",
+          "bins": [
+            {
+              "label": "Change it"
+            },
+            {
+              "label": "Keep for now"
+            }
+          ],
+          "items": [
+            {
+              "label": "Tips over, 4 friends"
+            },
+            {
+              "label": "Sail is red, 1 friend"
+            },
+            {
+              "label": "Too small, 1 friend"
+            },
+            {
+              "label": "Fold leaks, 3 friends"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Many friends said it"
+            },
+            {
+              "label": "Only one friend said it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El barco de papel de Nia: ordena lo que dijeron cinco amigos.",
+          "help": [
+            "Mira el número de cada comentario.",
+            "Zara cambió lo que dijeron casi todos."
+          ],
+          "feedback": {
+            "met": "Contaste primero a los amigos, en un lugar nuevo.",
+            "not_yet": "Cuenta los amigos de cada comentario, como en el estuche de Sam."
+          },
+          "rule": "¿Lo dijeron muchos amigos o solo uno?",
+          "bins": [
+            {
+              "label": "Cambiarlo"
+            },
+            {
+              "label": "Dejarlo por ahora"
+            }
+          ],
+          "items": [
+            {
+              "label": "Se voltea, 4 amigos"
+            },
+            {
+              "label": "Vela roja, 1 amigo"
+            },
+            {
+              "label": "Muy pequeño, 1 amigo"
+            },
+            {
+              "label": "Doblez gotea, 3 amigos"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muchos amigos lo dijeron"
+            },
+            {
+              "label": "Solo un amigo lo dijo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O barco de papel da Nia: ordene o que cinco amigos disseram.",
+          "help": [
+            "Veja o número de cada comentário.",
+            "A Zara mudou o que quase todos disseram."
+          ],
+          "feedback": {
+            "met": "Você contou os amigos primeiro, em um lugar novo.",
+            "not_yet": "Conte os amigos de cada comentário, como no estojo do Sam."
+          },
+          "rule": "Muitos amigos disseram, ou só um?",
+          "bins": [
+            {
+              "label": "Mudar"
+            },
+            {
+              "label": "Manter por agora"
+            }
+          ],
+          "items": [
+            {
+              "label": "Vira, 4 amigos"
+            },
+            {
+              "label": "Vela vermelha, 1 amigo"
+            },
+            {
+              "label": "Muito pequeno, 1 amigo"
+            },
+            {
+              "label": "Dobra vaza, 3 amigos"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muitos amigos disseram"
+            },
+            {
+              "label": "Só um amigo disse"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

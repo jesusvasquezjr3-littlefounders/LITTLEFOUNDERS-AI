@@ -1,0 +1,968 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-find-opportunity",
+  "lesson_id": "ent-1012-04-is-it-a-real-opportunity",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.opportunity-evaluation",
+    "biz.market-signals",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina evalúa la idea de una bolsa de lonche para llevar con tres revisiones: si el mercado es grande, si el equipo tiene una ventaja sobre sus rivales y si la comida se mantiene fresca. Junta mercado y ventaja en una regla, luego recorre una gráfica que termina en seguir, cambiar o parar. El alumno decide con otros casos y justifica su elección.",
+  "title": {
+    "en-US": "Is it a real opportunity?",
+    "es-MX": "¿Es una oportunidad real?",
+    "pt-BR": "É uma oportunidade real?"
+  },
+  "new_concepts": [
+    "biz.opportunity-evaluation"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina sostiene una bolsa de lonche para llevar frente a la fila larga de la comida.",
+          "line": "Unas revisiones rápidas nos dicen si vale la pena intentarlo."
+        },
+        "en-US": {
+          "prompt": "Dina holds a grab-and-go lunch bag in front of the long lunch line.",
+          "line": "A few quick checks tell us if it is worth trying."
+        },
+        "pt-BR": {
+          "prompt": "A Dina segura uma sacola de almoço para levar diante da fila grande do almoço.",
+          "line": "Algumas checagens rápidas dizem se vale a pena tentar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-checks"
+          },
+          {
+            "id": "opt-fun"
+          },
+          {
+            "id": "opt-fast"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-checks"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿cómo debe decidir el equipo si vale la pena intentar la idea?",
+          "scene": "El equipo de Dina tiene una idea: una bolsa de lonche para llevar para la fila larga de la comida.",
+          "options": [
+            {
+              "label": "Hacer unas revisiones, como compradores y rivales"
+            },
+            {
+              "label": "Preguntar si la idea suena divertida"
+            },
+            {
+              "label": "Construirla rápido y ver qué pasa"
+            }
+          ],
+          "feedback": {
+            "met": "Gracias. Ahora veamos cómo revisa Dina una idea.",
+            "not_yet": "Gracias. Ahora veamos cómo revisa Dina una idea."
+          }
+        },
+        "en-US": {
+          "prompt": "Before we start: how should the team decide if the idea is worth trying?",
+          "scene": "Dina's team has an idea: a grab-and-go lunch bag for the long lunch line.",
+          "options": [
+            {
+              "label": "Run a few checks, like buyers and rivals"
+            },
+            {
+              "label": "Ask if the idea sounds fun"
+            },
+            {
+              "label": "Build it fast and see"
+            }
+          ],
+          "feedback": {
+            "met": "Thanks. Now let's see how Dina checks an idea.",
+            "not_yet": "Thanks. Now let's see how Dina checks an idea."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: como a equipe deve decidir se a ideia vale a pena?",
+          "scene": "A equipe da Dina tem uma ideia: uma sacola de almoço para levar para a fila grande do almoço.",
+          "options": [
+            {
+              "label": "Fazer algumas checagens, como compradores e rivais"
+            },
+            {
+              "label": "Perguntar se a ideia parece divertida"
+            },
+            {
+              "label": "Construir rápido e ver o que acontece"
+            }
+          ],
+          "feedback": {
+            "met": "Certo. Agora vamos ver como a Dina confere uma ideia.",
+            "not_yet": "Certo. Agora vamos ver como a Dina confere uma ideia."
+          }
+        }
+      }
+    },
+    {
+      "id": "market-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina cuenta cuántos alumnos podrían comprar una bolsa de lonche: 200.",
+          "line": "Paso 1, mercado: 200 alumnos podrían comprar. Grande es 100 o más, así que este mercado es grande."
+        },
+        "en-US": {
+          "prompt": "Dina counts how many students could buy a lunch bag: 200.",
+          "line": "Step 1, market: 200 students could buy. Big means 100 or more, so this market is big."
+        },
+        "pt-BR": {
+          "prompt": "A Dina conta quantos alunos poderiam comprar uma sacola de almoço: 200.",
+          "line": "Passo 1, mercado: 200 alunos poderiam comprar. Grande é 100 ou mais, então este mercado é grande."
+        }
+      }
+    },
+    {
+      "id": "edge-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un puesto de botanas compite, pero el equipo de Dina come en esa fila todos los días.",
+          "line": "Paso 2, ventaja: el equipo conoce la espera mejor que el puesto. Eso es una ventaja."
+        },
+        "en-US": {
+          "prompt": "One snack bar competes, but Dina's team eats in that line every day.",
+          "line": "Step 2, edge: the team knows the wait better than the snack bar. That is an edge."
+        },
+        "pt-BR": {
+          "prompt": "Uma barraca de lanches compete, mas a equipe da Dina come nessa fila todos os dias.",
+          "line": "Passo 2, vantagem: a equipe conhece a espera melhor que a barraca. Isso é uma vantagem."
+        }
+      }
+    },
+    {
+      "id": "rule-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina junta las dos revisiones en una sola regla.",
+          "line": "Paso 3, regla: seguimos si el mercado es grande Y el equipo tiene ventaja."
+        },
+        "en-US": {
+          "prompt": "Dina puts the two checks into one rule.",
+          "line": "Step 3, rule: go if the market is big AND the team has an edge."
+        },
+        "pt-BR": {
+          "prompt": "A Dina junta as duas checagens numa só regra.",
+          "line": "Passo 3, regra: avançamos se o mercado é grande E a equipe tem vantagem."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.rule-builder.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "rule-builder"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "level": "connective",
+        "conditions": [
+          {
+            "id": "cond-need"
+          },
+          {
+            "id": "cond-skill"
+          }
+        ],
+        "actions": [
+          {
+            "id": "act-go"
+          },
+          {
+            "id": "act-change"
+          }
+        ],
+        "practice": [
+          {
+            "id": "card-unsure",
+            "facts": {
+              "cond-need": true,
+              "cond-skill": false
+            }
+          },
+          {
+            "id": "card-knows",
+            "facts": {
+              "cond-need": true,
+              "cond-skill": true
+            }
+          }
+        ]
+      },
+      "rubric": {
+        "target": {
+          "if": {
+            "and": [
+              {
+                "c": "cond-need"
+              },
+              {
+                "c": "cond-skill"
+              }
+            ]
+          },
+          "then": "act-go",
+          "else": "act-change"
+        },
+        "scenarios": [
+          {
+            "cond-need": true,
+            "cond-skill": true
+          },
+          {
+            "cond-need": true,
+            "cond-skill": false
+          },
+          {
+            "cond-need": false,
+            "cond-skill": true
+          },
+          {
+            "cond-need": false,
+            "cond-skill": false
+          },
+          {
+            "cond-need": true,
+            "cond-skill": true
+          },
+          {
+            "cond-need": false,
+            "cond-skill": true
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Arma la regla para la idea del escritorio de tareas: seguir solo si las dos revisiones se cumplen.",
+          "feedback": {
+            "met": "Tu regla sigue solo cuando se cumplen las dos revisiones.",
+            "not_yet": "Todavía no. Prueba tu regla con cada caso de práctica."
+          },
+          "conditions": [
+            {
+              "label": "Muchos alumnos necesitan ayuda"
+            },
+            {
+              "label": "El equipo sabe bien la materia"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Seguir: empezar una prueba chica"
+            },
+            {
+              "label": "Cambiar la idea primero"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Muchos necesitan ayuda, equipo con dudas"
+            },
+            {
+              "label": "Muchos necesitan ayuda, equipo sabe"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Build the rule for the homework-help desk idea: go only when both checks are true.",
+          "feedback": {
+            "met": "Your rule goes only when both checks are true.",
+            "not_yet": "Not yet. Test your rule on each practice case."
+          },
+          "conditions": [
+            {
+              "label": "Many students need help"
+            },
+            {
+              "label": "The team knows the subject"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Go: start a small test"
+            },
+            {
+              "label": "Change the idea first"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Many need help, team unsure"
+            },
+            {
+              "label": "Many need help, team knows it"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Monte a regra para a ideia da mesa de ajuda com a lição: avançar só se as duas checagens forem verdadeiras.",
+          "feedback": {
+            "met": "Sua regra avança só quando as duas checagens são verdadeiras.",
+            "not_yet": "Ainda não. Teste sua regra em cada caso de prática."
+          },
+          "conditions": [
+            {
+              "label": "Muitos alunos precisam de ajuda"
+            },
+            {
+              "label": "A equipe sabe bem a matéria"
+            }
+          ],
+          "actions": [
+            {
+              "label": "Avançar: começar um teste pequeno"
+            },
+            {
+              "label": "Mudar a ideia primeiro"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Muitos precisam de ajuda, equipe em dúvida"
+            },
+            {
+              "label": "Muitos precisam de ajuda, equipe sabe"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fresh-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las bolsas llevan comida, y la comida podría echarse a perder antes del lonche.",
+          "line": "Paso 4, fresca: si la comida no aguanta fresca hasta el lonche, paramos. Parar ahorra monedas."
+        },
+        "en-US": {
+          "prompt": "The lunch bags hold food, and food could spoil before lunch.",
+          "line": "Step 4, fresh: if food cannot stay fresh until lunch, we stop. Stopping saves coins."
+        },
+        "pt-BR": {
+          "prompt": "As sacolas levam comida, e a comida poderia estragar antes do almoço.",
+          "line": "Passo 4, fresca: se a comida não fica fresca até o almoço, paramos. Parar economiza moedas."
+        }
+      }
+    },
+    {
+      "id": "order-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina acomoda las revisiones en un diagrama: fresca, mercado, ventaja.",
+          "line": "Paso 5, orden: primero revisa si está fresca. Luego, un no en mercado o ventaja significa cambiar."
+        },
+        "en-US": {
+          "prompt": "Dina lines the checks up as a flowchart: fresh, market, edge.",
+          "line": "Step 5, order: check fresh first. Then, a no on market or edge means change."
+        },
+        "pt-BR": {
+          "prompt": "A Dina organiza as checagens num fluxograma: fresca, mercado, vantagem.",
+          "line": "Passo 5, ordem: primeiro confira se está fresca. Depois, um não em mercado ou vantagem significa mudar."
+        }
+      }
+    },
+    {
+      "id": "flow-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "start": "q-fresh",
+        "nodes": [
+          {
+            "id": "q-fresh",
+            "kind": "question",
+            "yes": "q-market",
+            "no": "out-stop"
+          },
+          {
+            "id": "q-market",
+            "kind": "question",
+            "yes": "q-edge",
+            "no": "out-change"
+          },
+          {
+            "id": "q-edge",
+            "kind": "question",
+            "yes": "out-go",
+            "no": "out-change"
+          },
+          {
+            "id": "out-go",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-change",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-stop",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-nocold"
+          },
+          {
+            "id": "case-same"
+          },
+          {
+            "id": "case-faster"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-nocold": [
+            "q-fresh",
+            "out-stop"
+          ],
+          "case-same": [
+            "q-fresh",
+            "q-market",
+            "q-edge",
+            "out-change"
+          ],
+          "case-faster": [
+            "q-fresh",
+            "q-market",
+            "q-edge",
+            "out-go"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Recorre cada caso por el diagrama de Dina. ¿Dónde termina cada uno?",
+          "feedback": {
+            "met": "Respondiste cada pregunta y seguiste su flecha.",
+            "not_yet": "Todavía no. Responde la primera pregunta y sigue su flecha."
+          },
+          "nodes": [
+            {
+              "label": "¿La comida aguanta fresca hasta el lonche?"
+            },
+            {
+              "label": "¿Podrían comprar 100 o más alumnos?"
+            },
+            {
+              "label": "¿El equipo tiene una ventaja?"
+            },
+            {
+              "label": "Seguir: empezar una prueba chica"
+            },
+            {
+              "label": "Cambiar la idea primero"
+            },
+            {
+              "label": "Parar: elegir otra idea"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Vasos de fruta, sin hielera, 300 compradores"
+            },
+            {
+              "label": "Con hielera, 250 compradores, rivales venden lo mismo"
+            },
+            {
+              "label": "Con hielera, 220 compradores, el equipo sirve más rápido"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Walk each case through Dina's flowchart. Where does each one end?",
+          "feedback": {
+            "met": "You answered each question and followed its arrow.",
+            "not_yet": "Not yet. Answer the first question, then follow its arrow."
+          },
+          "nodes": [
+            {
+              "label": "Can the food stay fresh until lunch?"
+            },
+            {
+              "label": "Could 100 or more students buy?"
+            },
+            {
+              "label": "Does the team have an edge?"
+            },
+            {
+              "label": "Go: start a small test"
+            },
+            {
+              "label": "Change the idea first"
+            },
+            {
+              "label": "Stop: pick another idea"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Fruit cups, no cold box, 300 buyers"
+            },
+            {
+              "label": "Cold box, 250 buyers, rivals sell the same"
+            },
+            {
+              "label": "Cold box, 220 buyers, team serves faster"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Percorra cada caso pelo fluxograma da Dina. Onde cada um termina?",
+          "feedback": {
+            "met": "Você respondeu cada pergunta e seguiu a seta.",
+            "not_yet": "Ainda não. Responda a primeira pergunta e siga a seta."
+          },
+          "nodes": [
+            {
+              "label": "A comida fica fresca até o almoço?"
+            },
+            {
+              "label": "Poderiam comprar 100 ou mais alunos?"
+            },
+            {
+              "label": "A equipe tem uma vantagem?"
+            },
+            {
+              "label": "Avançar: começar um teste pequeno"
+            },
+            {
+              "label": "Mudar a ideia primeiro"
+            },
+            {
+              "label": "Parar: escolher outra ideia"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Copinhos de fruta, sem caixa térmica, 300 compradores"
+            },
+            {
+              "label": "Com caixa térmica, 250 compradores, rivais vendem igual"
+            },
+            {
+              "label": "Com caixa térmica, 220 compradores, equipe serve mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.market-signals",
+      "payload": {
+        "choices": [
+          {
+            "id": "pick-go"
+          },
+          {
+            "id": "pick-change"
+          },
+          {
+            "id": "pick-stop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-market"
+          },
+          {
+            "id": "why-few"
+          },
+          {
+            "id": "why-dislike"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "pick-change"
+        ],
+        "reasonQuality": {
+          "why-market": "sound",
+          "why-few": "partial",
+          "why-dislike": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Dina planea pretzels: se mantienen frescos, pero solo 40 alumnos comprarían. ¿Y ahora?",
+          "feedback": {
+            "met": "Relacionaste las revisiones con el siguiente paso correcto.",
+            "not_yet": "Todavía no. Haz las revisiones en orden, primero la fresca."
+          },
+          "help": [
+            "Revisa primero si está fresca y luego el mercado. ¿Qué significa un no en el mercado?"
+          ],
+          "choices": [
+            {
+              "label": "Seguir: empezar una prueba chica"
+            },
+            {
+              "label": "Cambiar la idea primero"
+            },
+            {
+              "label": "Parar: elegir otra idea"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Pasa lo fresco pero falla el mercado"
+            },
+            {
+              "label": "Pocos alumnos lo comprarían"
+            },
+            {
+              "label": "No me gustan los pretzels"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's team plans pretzels: they stay fresh, but only 40 students would buy. What now?",
+          "feedback": {
+            "met": "You matched the checks to the right next step.",
+            "not_yet": "Not yet. Run the checks in order, fresh first."
+          },
+          "help": [
+            "Check fresh first, then the market. What does a no on the market mean?"
+          ],
+          "choices": [
+            {
+              "label": "Go: start a small test"
+            },
+            {
+              "label": "Change the idea first"
+            },
+            {
+              "label": "Stop: pick another idea"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "It passes fresh but fails the market check"
+            },
+            {
+              "label": "Few students would buy it"
+            },
+            {
+              "label": "I do not like pretzels"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe da Dina planeja pretzels: ficam frescos, mas só 40 alunos comprariam. E agora?",
+          "feedback": {
+            "met": "Você ligou as checagens ao próximo passo certo.",
+            "not_yet": "Ainda não. Faça as checagens em ordem, primeiro a da frescura."
+          },
+          "help": [
+            "Confira primeiro a frescura e depois o mercado. O que significa um não no mercado?"
+          ],
+          "choices": [
+            {
+              "label": "Avançar: começar um teste pequeno"
+            },
+            {
+              "label": "Mudar a ideia primeiro"
+            },
+            {
+              "label": "Parar: escolher outra ideia"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Passa na frescura, mas falha no mercado"
+            },
+            {
+              "label": "Poucos alunos comprariam"
+            },
+            {
+              "label": "Não gosto de pretzel"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "choices": [
+          {
+            "id": "pick-go"
+          },
+          {
+            "id": "pick-change"
+          },
+          {
+            "id": "pick-stop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-sun"
+          },
+          {
+            "id": "why-first"
+          },
+          {
+            "id": "why-plain"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "pick-stop"
+        ],
+        "reasonQuality": {
+          "why-first": "sound",
+          "why-sun": "partial",
+          "why-plain": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Sándwiches del día deportivo: 300 aficionados, sin rivales, sin hielera al sol. ¿Qué debe hacer el equipo de Dina?",
+          "feedback": {
+            "met": "Dejaste que la primera revisión fallida decidiera, como el diagrama de Dina.",
+            "not_yet": "Todavía no. Haz cada revisión en orden y mira cuál falla."
+          },
+          "help": [
+            "Empieza por la primera revisión, como el diagrama de Dina."
+          ],
+          "choices": [
+            {
+              "label": "Seguir: empezar una prueba chica"
+            },
+            {
+              "label": "Cambiar la idea primero"
+            },
+            {
+              "label": "Parar: elegir otra idea"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "El sol hace más difícil vender"
+            },
+            {
+              "label": "Comida que no aguanta fresca es un parar"
+            },
+            {
+              "label": "Los sándwiches son simples"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Sports day sandwiches: 300 fans, no rivals, no cooler in the sun. What should Dina's team do?",
+          "feedback": {
+            "met": "You let the first failed check decide, as Dina's flowchart does.",
+            "not_yet": "Not yet. Run the checks in order, one by one."
+          },
+          "help": [
+            "Start at the first check, as Dina's flowchart does."
+          ],
+          "choices": [
+            {
+              "label": "Go: start a small test"
+            },
+            {
+              "label": "Change the idea first"
+            },
+            {
+              "label": "Stop: pick another idea"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "The sun makes selling harder"
+            },
+            {
+              "label": "Food that cannot stay fresh is a stop"
+            },
+            {
+              "label": "Sandwiches are plain"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sanduíches do dia de esporte: 300 torcedores, sem rivais, sem caixa térmica no sol. O que a equipe da Dina deve fazer?",
+          "feedback": {
+            "met": "Você deixou a primeira checagem que falhou decidir, como o fluxograma da Dina.",
+            "not_yet": "Ainda não. Faça cada checagem em ordem e veja qual falha."
+          },
+          "help": [
+            "Comece pela primeira checagem, como o fluxograma da Dina."
+          ],
+          "choices": [
+            {
+              "label": "Avançar: começar um teste pequeno"
+            },
+            {
+              "label": "Mudar a ideia primeiro"
+            },
+            {
+              "label": "Parar: escolher outra ideia"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O sol dificulta a venda"
+            },
+            {
+              "label": "Comida que não fica fresca é parar"
+            },
+            {
+              "label": "Sanduíches são simples"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

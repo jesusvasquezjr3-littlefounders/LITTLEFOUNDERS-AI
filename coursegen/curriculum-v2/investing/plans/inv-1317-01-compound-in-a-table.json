@@ -1,0 +1,1304 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-the-clock-and-your-money",
+  "lesson_id": "inv-1317-01-compound-in-a-table",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.compound-growth",
+    "invest.simple-vs-compound",
+    "money.linear-vs-accelerating-growth"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho muestra dos fondos de práctica con 2,000 monedas y 8% anual: S aparta cada año el 8% del monto inicial y C lo deja dentro. El aprendiz sigue paso a paso por qué C pasa los 3,000 un año antes, calcula con el multiplicador, lee las tablas y la gráfica, y al final decide en otro contexto, los seguidores de dos canales, cuál crecimiento va adelante.",
+  "title": {
+    "en-US": "Compound growth in a table",
+    "es-MX": "El interés compuesto en una tabla",
+    "pt-BR": "Juros compostos em uma tabela"
+  },
+  "new_concepts": [
+    "invest.compound-growth",
+    "invest.simple-vs-compound"
+  ],
+  "regional": {
+    "universal": "Only LittleFounders coins and unit-less boards; two sandbox funds and a follower count carry no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho shows two sandbox funds on screen. Each starts with 2,000 coins and pays 8% a year.",
+          "line": "S sets its 8% aside each year; C keeps it inside. Ten years later they won't match."
+        },
+        "es-MX": {
+          "prompt": "Rho muestra en pantalla dos fondos de práctica. Cada uno empieza con 2,000 monedas y paga 8% al año.",
+          "line": "S aparta su 8% cada año; C lo deja dentro. Diez años después no van a coincidir."
+        },
+        "pt-BR": {
+          "prompt": "O Rho mostra na tela dois fundos de simulação. Cada um começa com 2.000 moedas e paga 8% ao ano.",
+          "line": "O S separa os 8% todo ano; o C deixa dentro. Dez anos depois, os valores não serão iguais."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-c"
+          },
+          {
+            "id": "choice-same"
+          },
+          {
+            "id": "choice-s"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rule"
+          },
+          {
+            "id": "reason-compared"
+          },
+          {
+            "id": "reason-guess"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-c"
+        ],
+        "reasonQuality": {
+          "reason-compared": "sound",
+          "reason-rule": "partial",
+          "reason-guess": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we compare, take a guess. After ten years, which of Rho's two funds holds more?",
+          "feedback": {
+            "met": "Thanks, I see your thinking. Now we check it with numbers.",
+            "not_yet": "Thanks, I see your thinking. Now we check it with numbers."
+          },
+          "choices": [
+            {
+              "label": "Fund C holds more"
+            },
+            {
+              "label": "Both hold the same"
+            },
+            {
+              "label": "Fund S holds more"
+            }
+          ],
+          "reasonPrompt": "What is your guess based on?",
+          "reasons": [
+            {
+              "label": "I used a rule of thumb"
+            },
+            {
+              "label": "I compared how each fund works"
+            },
+            {
+              "label": "It is only a hunch"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de comparar, da tu primera idea. Tras diez años, ¿cuál de los dos fondos de Rho tiene más?",
+          "feedback": {
+            "met": "Gracias, así veo cómo piensas. Ahora lo comprobamos con números.",
+            "not_yet": "Gracias, así veo cómo piensas. Ahora lo comprobamos con números."
+          },
+          "choices": [
+            {
+              "label": "El fondo C tiene más"
+            },
+            {
+              "label": "Los dos tienen lo mismo"
+            },
+            {
+              "label": "El fondo S tiene más"
+            }
+          ],
+          "reasonPrompt": "¿En qué basas tu respuesta?",
+          "reasons": [
+            {
+              "label": "Usé una regla general"
+            },
+            {
+              "label": "Comparé cómo funciona cada fondo"
+            },
+            {
+              "label": "Solo es una corazonada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de comparar, dê seu palpite. Depois de dez anos, qual dos dois fundos do Rho tem mais?",
+          "feedback": {
+            "met": "Obrigado, assim vejo como você pensa. Agora conferimos com números.",
+            "not_yet": "Obrigado, assim vejo como você pensa. Agora conferimos com números."
+          },
+          "choices": [
+            {
+              "label": "O fundo C tem mais"
+            },
+            {
+              "label": "Os dois têm o mesmo valor"
+            },
+            {
+              "label": "O fundo S tem mais"
+            }
+          ],
+          "reasonPrompt": "No que você baseia sua resposta?",
+          "reasons": [
+            {
+              "label": "Usei uma regra geral"
+            },
+            {
+              "label": "Comparei como cada fundo funciona"
+            },
+            {
+              "label": "É só um palpite"
+            }
+          ]
+        }
+      },
+      "item_phase": "pre"
+    },
+    {
+      "id": "example-s-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. Fund S pays 8% of the 2,000 start, set aside each year: 160.",
+          "line": "That is simple interest: the same 160 every year. After 2 years, S holds 2,320."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Fondo S: paga 8% de los 2,000 iniciales y lo aparta cada año: 160.",
+          "line": "Es interés simple: siempre los mismos 160. Tras 2 años, S tiene 2,320."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Fundo S: paga 8% dos 2.000 iniciais e separa todo ano: 160.",
+          "line": "Isso são juros simples: sempre os mesmos 160. Após 2 anos, o S tem 2.320."
+        }
+      }
+    },
+    {
+      "id": "example-c1-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Fund C, year 1: 8% of 2,000 is 160, and it stays inside the fund.",
+          "line": "C holds 2,160 after year 1, the same as S. The difference starts in year 2."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Fondo C, año 1: 8% de 2,000 son 160, y se quedan dentro del fondo.",
+          "line": "C tiene 2,160 tras el año 1, igual que S. La diferencia empieza en el año 2."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Fundo C, ano 1: 8% de 2.000 são 160, que ficam dentro do fundo.",
+          "line": "O C tem 2.160 após o ano 1, igual ao S. A diferença começa no ano 2."
+        }
+      }
+    },
+    {
+      "id": "example-c2-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. Fund C, year 2: the 8% now applies to 2,160, not to 2,000.",
+          "line": "Multiplier 1.08: 2,160 × 1.08 = 2,332.80, which is 2,160 plus 8% (172.80). Interest earns interest: compounding."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Fondo C, año 2: el 8% ahora se aplica a 2,160, no a 2,000.",
+          "line": "Multiplicador 1.08: 2,160 × 1.08 = 2,332.80, es decir, 2,160 más 8% (172.80). El interés gana interés: es el interés compuesto."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Fundo C, ano 2: os 8% agora incidem sobre 2.160, não sobre 2.000.",
+          "line": "Multiplicador 1,08: 2.160 × 1,08 = 2.332,80, ou seja, 2.160 mais 8% (172,80). Os juros rendem juros: são os juros compostos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "steps": [
+          {
+            "id": "year-1"
+          },
+          {
+            "id": "year-2"
+          },
+          {
+            "id": "year-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "year-2",
+          "year-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year-2": "360",
+          "year-3": "432"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho tries a high-rate sandbox fund: 250 at 20% a year, compounding. Predict each year's total.",
+          "feedback": {
+            "met": "You multiplied each year's total by 1.20, not the start amount.",
+            "not_yet": "Not yet. Each year's 20% applies to the previous year's total."
+          },
+          "help": [
+            "As in Rho's Fund C: last total times the multiplier.",
+            "Here the multiplier is 1.20."
+          ],
+          "steps": [
+            {
+              "expression": "250 × 1.20",
+              "result": "300",
+              "spokenText": "250 times 1.20 is 300"
+            },
+            {
+              "expression": "Year 1 total × 1.20",
+              "result": "360",
+              "spokenText": "The year 1 total times 1.20 is 360"
+            },
+            {
+              "expression": "Year 2 total × 1.20",
+              "result": "432",
+              "spokenText": "The year 2 total times 1.20 is 432"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho prueba un fondo de práctica de tasa alta: 250 al 20% anual, compuesto. Predice el total de cada año.",
+          "feedback": {
+            "met": "Multiplicaste el total de cada año por 1.20, no el monto inicial.",
+            "not_yet": "Aún no. El 20% de cada año se aplica al total del año anterior."
+          },
+          "help": [
+            "Como en el fondo C de Rho: total anterior por el multiplicador.",
+            "Aquí el multiplicador es 1.20."
+          ],
+          "steps": [
+            {
+              "expression": "250 × 1.20",
+              "result": "300",
+              "spokenText": "250 por 1.20 es 300"
+            },
+            {
+              "expression": "Total del año 1 × 1.20",
+              "result": "360",
+              "spokenText": "El total del año 1 por 1.20 es 360"
+            },
+            {
+              "expression": "Total del año 2 × 1.20",
+              "result": "432",
+              "spokenText": "El total del año 2 por 1.20 es 432"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Rho testa um fundo de simulação de taxa alta: 250 a 20% ao ano, composto. Preveja o total de cada ano.",
+          "feedback": {
+            "met": "Você multiplicou o total de cada ano por 1,20, não o valor inicial.",
+            "not_yet": "Ainda não. Os 20% de cada ano incidem sobre o total do ano anterior."
+          },
+          "help": [
+            "Como no fundo C do Rho: total anterior vezes o multiplicador.",
+            "Aqui o multiplicador é 1,20."
+          ],
+          "steps": [
+            {
+              "expression": "250 × 1,20",
+              "result": "300",
+              "spokenText": "250 vezes 1,20 é 300"
+            },
+            {
+              "expression": "Total do ano 1 × 1,20",
+              "result": "360",
+              "spokenText": "O total do ano 1 vezes 1,20 é 360"
+            },
+            {
+              "expression": "Total do ano 2 × 1,20",
+              "result": "432",
+              "spokenText": "O total do ano 2 vezes 1,20 é 432"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-table-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "year-0"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            },
+            {
+              "id": "year-4"
+            },
+            {
+              "id": "year-5"
+            },
+            {
+              "id": "year-6"
+            },
+            {
+              "id": "year-7"
+            },
+            {
+              "id": "year-8"
+            },
+            {
+              "id": "year-9"
+            },
+            {
+              "id": "year-10"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-fund-s",
+              "values": [
+                2000,
+                2160,
+                2320,
+                2480,
+                2640,
+                2800,
+                2960,
+                3120,
+                3280,
+                3440,
+                3600
+              ]
+            },
+            {
+              "id": "series-fund-c",
+              "values": [
+                2000,
+                2160,
+                2333,
+                2519,
+                2721,
+                2939,
+                3174,
+                3428,
+                3702,
+                3998,
+                4318
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4. Rho plots both funds over ten years. C's lead over S grows every year.",
+          "title": "Fund S and Fund C, 2,000 at 8%",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 0"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 4"
+              },
+              {
+                "label": "Year 5"
+              },
+              {
+                "label": "Year 6"
+              },
+              {
+                "label": "Year 7"
+              },
+              {
+                "label": "Year 8"
+              },
+              {
+                "label": "Year 9"
+              },
+              {
+                "label": "Year 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fund S (simple)"
+              },
+              {
+                "label": "Fund C (compound)"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 4. Rho grafica ambos fondos por diez años. La ventaja de C sobre S crece cada año.",
+          "title": "Fondos S y C: 2,000 al 8%",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 0"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 4"
+              },
+              {
+                "label": "Año 5"
+              },
+              {
+                "label": "Año 6"
+              },
+              {
+                "label": "Año 7"
+              },
+              {
+                "label": "Año 8"
+              },
+              {
+                "label": "Año 9"
+              },
+              {
+                "label": "Año 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo S (simple)"
+              },
+              {
+                "label": "Fondo C (compuesto)"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 4. O Rho faz o gráfico dos dois fundos por dez anos. A vantagem do C sobre o S cresce a cada ano.",
+          "title": "Fundos S e C: 2.000 a 8%",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 0"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 4"
+              },
+              {
+                "label": "Ano 5"
+              },
+              {
+                "label": "Ano 6"
+              },
+              {
+                "label": "Ano 7"
+              },
+              {
+                "label": "Ano 8"
+              },
+              {
+                "label": "Ano 9"
+              },
+              {
+                "label": "Ano 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo S (simples)"
+              },
+              {
+                "label": "Fundo C (composto)"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-goal-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5. Goal: 3,000. Rho scans each column for the first year at or above it.",
+          "line": "S reaches 3,120 in year 7. C holds 3,174 in year 6, a year sooner."
+        },
+        "es-MX": {
+          "prompt": "Paso 5. Meta: 3,000. Rho busca en cada columna el primer año en que se alcanza.",
+          "line": "S llega a 3,120 en el año 7. C tiene 3,174 en el año 6, un año antes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5. Meta: 3.000. O Rho procura em cada coluna o primeiro ano em que ela é atingida.",
+          "line": "O S chega a 3.120 no ano 7. O C tem 3.174 no ano 6, um ano antes."
+        }
+      }
+    },
+    {
+      "id": "practice-board-01",
+      "type": "money.compound-interest.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "compound-interest"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "principalCents": 150000,
+        "scenario": {
+          "rate": 6,
+          "years": 20
+        },
+        "options": [
+          {
+            "id": "opt-a",
+            "cents": 600000
+          },
+          {
+            "id": "opt-b",
+            "cents": 480000
+          },
+          {
+            "id": "opt-c",
+            "cents": 330000
+          },
+          {
+            "id": "opt-d",
+            "cents": 750000
+          }
+        ],
+        "challenge": {
+          "minimumCents": 600000,
+          "maximumYears": 25
+        },
+        "explain": [
+          "same-each-year",
+          "interest-on-interest",
+          "rate-grows"
+        ]
+      },
+      "rubric": {
+        "predictOption": "opt-b",
+        "explainId": "interest-on-interest"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In Rho's fund, predict what 1,500 becomes in 20 years at 6%. Then meet the challenge with the sliders.",
+          "feedback": {
+            "met": "You predicted, met the challenge and named why growth speeds up.",
+            "not_yet": "Not yet. Check the prediction, the challenge and the reason."
+          },
+          "help": [
+            "Each year the rate applies to the latest total.",
+            "Simple interest would add the same amount every year."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el fondo de Rho, predice a cuánto crecen 1,500 en 20 años al 6%. Luego cumple el reto con los controles.",
+          "feedback": {
+            "met": "Predijiste, cumpliste el reto y nombraste por qué el crecimiento se acelera.",
+            "not_yet": "Aún no. Revisa la predicción, el reto y la razón."
+          },
+          "help": [
+            "Cada año se aplica la tasa al total más reciente.",
+            "El interés simple sumaría lo mismo cada año."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No fundo do Rho, preveja quanto 1.500 viram em 20 anos a 6%. Depois cumpra o desafio com os controles.",
+          "feedback": {
+            "met": "Você previu, cumpriu o desafio e nomeou por que o crescimento acelera.",
+            "not_yet": "Ainda não. Revise a previsão, o desafio e o motivo."
+          },
+          "help": [
+            "Cada ano a taxa incide sobre o total mais recente.",
+            "Os juros simples somariam o mesmo valor todo ano."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-growth-01",
+      "type": "visual.growth-comparison.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "multi-line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "principalMinor": 200000,
+        "minimumRateBps": 600,
+        "maximumRateBps": 1000,
+        "rateStepBps": 200,
+        "initialRateBps": 1000,
+        "minimumYears": 10,
+        "maximumYears": 15,
+        "yearStep": 5,
+        "initialYears": 15,
+        "predictionStepMinor": 2500,
+        "predictionMaximumMinor": 850000
+      },
+      "rubric": {
+        "tolerance_minor": 15000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On Rho's table with 2,000, set 6% and 10 years. Then predict the compound total.",
+          "feedback": {
+            "met": "You predicted compound growth, not the straight simple-interest line.",
+            "not_yet": "Not yet. Compound interest adds to each year's new total."
+          },
+          "help": [
+            "Each year adds 6% of the latest total, not of 2,000."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la tabla de Rho con 2,000, elige 6% y 10 años. Luego predice el total compuesto.",
+          "feedback": {
+            "met": "Predijiste crecimiento compuesto, no la línea recta del interés simple.",
+            "not_yet": "Aún no. El interés compuesto suma sobre el total nuevo de cada año."
+          },
+          "help": [
+            "Cada año suma el 6% del último total, no de 2,000."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na tabela do Rho com 2.000, escolha 6% e 10 anos. Depois preveja o total composto.",
+          "feedback": {
+            "met": "Você previu crescimento composto, não a reta dos juros simples.",
+            "not_yet": "Ainda não. Os juros compostos somam sobre o total novo de cada ano."
+          },
+          "help": [
+            "Cada ano soma 6% do último total, não de 2.000."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-table-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.linear-vs-accelerating-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "year-0"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            },
+            {
+              "id": "year-4"
+            },
+            {
+              "id": "year-5"
+            },
+            {
+              "id": "year-6"
+            },
+            {
+              "id": "year-7"
+            },
+            {
+              "id": "year-8"
+            },
+            {
+              "id": "year-9"
+            },
+            {
+              "id": "year-10"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-fund-s",
+              "values": [
+                1000,
+                1100,
+                1200,
+                1300,
+                1400,
+                1500,
+                1600,
+                1700,
+                1800,
+                1900,
+                2000
+              ]
+            },
+            {
+              "id": "series-fund-c",
+              "values": [
+                1000,
+                1080,
+                1166,
+                1260,
+                1360,
+                1469,
+                1587,
+                1714,
+                1851,
+                1999,
+                2159
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-c5"
+            },
+            {
+              "id": "opt-c6"
+            },
+            {
+              "id": "opt-s5"
+            },
+            {
+              "id": "opt-none"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-s5"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho's new pair: S pays 10% simple, C pays 8% compound, both from 1,000. Read the table.",
+          "feedback": {
+            "met": "You read the first year each fund reached the goal.",
+            "not_yet": "Not yet. Find each column's first value at or above 1,500."
+          },
+          "help": [
+            "Compare the two lines at the 1,500 level, year by year."
+          ],
+          "title": "S at 10% simple, C at 8% compound",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 0"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 4"
+              },
+              {
+                "label": "Year 5"
+              },
+              {
+                "label": "Year 6"
+              },
+              {
+                "label": "Year 7"
+              },
+              {
+                "label": "Year 8"
+              },
+              {
+                "label": "Year 9"
+              },
+              {
+                "label": "Year 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fund S (simple)"
+              },
+              {
+                "label": "Fund C (compound)"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which fund first reaches 1,500, and in which year?",
+            "options": [
+              {
+                "label": "Fund C, in year 5"
+              },
+              {
+                "label": "Fund C, in year 6"
+              },
+              {
+                "label": "Fund S, in year 5"
+              },
+              {
+                "label": "Neither within ten years"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Nuevo par de Rho: S paga 10% simple y C 8% compuesto, ambos desde 1,000. Lee la tabla.",
+          "feedback": {
+            "met": "Leíste el primer año en que cada fondo alcanzó la meta.",
+            "not_yet": "Aún no. Busca en cada columna el primer valor de 1,500 o más."
+          },
+          "help": [
+            "Compara las dos líneas en el nivel de 1,500, año por año."
+          ],
+          "title": "S al 10% simple, C al 8% compuesto",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 0"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 4"
+              },
+              {
+                "label": "Año 5"
+              },
+              {
+                "label": "Año 6"
+              },
+              {
+                "label": "Año 7"
+              },
+              {
+                "label": "Año 8"
+              },
+              {
+                "label": "Año 9"
+              },
+              {
+                "label": "Año 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo S (simple)"
+              },
+              {
+                "label": "Fondo C (compuesto)"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué fondo llega primero a 1,500, y en qué año?",
+            "options": [
+              {
+                "label": "El fondo C, en el año 5"
+              },
+              {
+                "label": "El fondo C, en el año 6"
+              },
+              {
+                "label": "El fondo S, en el año 5"
+              },
+              {
+                "label": "Ninguno en diez años"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Novo par do Rho: S paga 10% simples e C 8% composto, ambos a partir de 1.000. Leia a tabela.",
+          "feedback": {
+            "met": "Você leu o primeiro ano em que cada fundo atingiu a meta.",
+            "not_yet": "Ainda não. Procure em cada coluna o primeiro valor de 1.500 ou mais."
+          },
+          "help": [
+            "Compare as duas linhas no nível de 1.500, ano a ano."
+          ],
+          "title": "S a 10% simples, C a 8% composto",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 0"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 4"
+              },
+              {
+                "label": "Ano 5"
+              },
+              {
+                "label": "Ano 6"
+              },
+              {
+                "label": "Ano 7"
+              },
+              {
+                "label": "Ano 8"
+              },
+              {
+                "label": "Ano 9"
+              },
+              {
+                "label": "Ano 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo S (simples)"
+              },
+              {
+                "label": "Fundo C (composto)"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual fundo chega primeiro a 1.500, e em que ano?",
+            "options": [
+              {
+                "label": "O fundo C, no ano 5"
+              },
+              {
+                "label": "O fundo C, no ano 6"
+              },
+              {
+                "label": "O fundo S, no ano 5"
+              },
+              {
+                "label": "Nenhum em dez anos"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ana"
+          },
+          {
+            "id": "choice-bruno"
+          },
+          {
+            "id": "choice-level"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-start"
+          },
+          {
+            "id": "reason-fixed"
+          },
+          {
+            "id": "reason-base"
+          },
+          {
+            "id": "reason-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-bruno"
+        ],
+        "reasonQuality": {
+          "reason-base": "sound",
+          "reason-start": "partial",
+          "reason-same": "unsupported",
+          "reason-fixed": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "From 1,000 followers each, Ana's channel gains 300 a month, Bruno's 20% a month. Who leads at month 8?",
+          "feedback": {
+            "met": "You chose the channel whose gain builds on its growing total.",
+            "not_yet": "Not yet. Track each channel month by month, as Rho did."
+          },
+          "choices": [
+            {
+              "label": "Ana's channel"
+            },
+            {
+              "label": "Bruno's channel"
+            },
+            {
+              "label": "They end level"
+            }
+          ],
+          "reasonPrompt": "Which reason best explains your pick?",
+          "reasons": [
+            {
+              "label": "300 a month beats 20% of 1,000"
+            },
+            {
+              "label": "A fixed gain always stays ahead"
+            },
+            {
+              "label": "20% adds more as the total grows"
+            },
+            {
+              "label": "Both channels gain about the same"
+            }
+          ],
+          "help": [
+            "Try months 1 to 3 for Bruno first."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dos canales parten de 1,000 seguidores: Ana suma 300 al mes y Bruno crece 20% al mes. ¿Quién va adelante en el mes 8?",
+          "feedback": {
+            "met": "Elegiste el canal cuya ganancia se apoya en su total creciente.",
+            "not_yet": "Aún no. Sigue cada canal mes por mes, como Rho con los fondos."
+          },
+          "choices": [
+            {
+              "label": "El canal de Ana"
+            },
+            {
+              "label": "El canal de Bruno"
+            },
+            {
+              "label": "Quedan parejos"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón explica mejor tu elección?",
+          "reasons": [
+            {
+              "label": "300 al mes supera el 20% de 1,000"
+            },
+            {
+              "label": "Una ganancia fija siempre va adelante"
+            },
+            {
+              "label": "El 20% suma más cuando el total crece"
+            },
+            {
+              "label": "Los dos canales ganan casi igual"
+            }
+          ],
+          "help": [
+            "Prueba primero los meses 1 a 3 de Bruno."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com 1.000 seguidores cada um, o canal da Ana ganha 300 por mês e o do Bruno 20% por mês. Quem lidera no mês 8?",
+          "feedback": {
+            "met": "Você escolheu o canal cujo ganho se apoia no total crescente.",
+            "not_yet": "Ainda não. Acompanhe cada canal mês a mês, como o Rho fez com os fundos."
+          },
+          "choices": [
+            {
+              "label": "O canal da Ana"
+            },
+            {
+              "label": "O canal do Bruno"
+            },
+            {
+              "label": "Ficam iguais"
+            }
+          ],
+          "reasonPrompt": "Qual motivo explica melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "300 por mês supera 20% de 1.000"
+            },
+            {
+              "label": "Um ganho fixo sempre fica na frente"
+            },
+            {
+              "label": "20% rende mais quando o total cresce"
+            },
+            {
+              "label": "Os dois canais ganham quase igual"
+            }
+          ],
+          "help": [
+            "Teste primeiro os meses 1 a 3 do Bruno."
+          ]
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

@@ -1,0 +1,795 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-plans-that-grow",
+  "lesson_id": "fe-1317-12-share-and-teach",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.save-spend-share",
+    "life.giving",
+    "life.reflect-on-learning"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina acompaña a Sam, que cobra 200 y quiere repartirlo entre gastar, ahorrar y dar. Primero se ve el reparto en porcentajes (60%, 30% y 10%) con el total comprobado, luego cómo revisar a dónde va lo que se da y cómo explicar el plan con las propias palabras a alguien menor. El final aplica el reparto a una paga nueva.",
+  "title": {
+    "en-US": "Share and teach",
+    "es-MX": "Reparte y enseña",
+    "pt-BR": "Reparta e ensine"
+  },
+  "new_concepts": [
+    "life.save-spend-share",
+    "life.giving",
+    "life.reflect-on-learning"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, un banco de alimentos del barrio recibe donativos de familias y jóvenes. Antes de dar conviene saber quién lo dirige y si muestra en qué usa el dinero. Los montos en pesos son solo ejemplos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "banco de alimentos",
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, uma vaquinha de bairro reúne dinheiro de várias pessoas para uma causa, como uma cozinha comunitária. Antes de dar, vale saber quem recebe e se há prestação de contas. Os valores em reais são só exemplos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "vaquinha",
+          "reais"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, a local food pantry takes gifts from neighbors, often run by volunteers with posted reports. Before giving, it helps to know who runs it and where gifts go. Dollar amounts here are only examples.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "food pantry",
+          "dollars"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "Sam is paid 200 dollars and wants parts for spending, saving and giving.",
+          "line": "Dina goes one step at a time: the split, where the giving goes, then what Sam learned."
+        },
+        "es-MX": {
+          "prompt": "Sam cobra 200 pesos y quiere partes para gastar, ahorrar y dar.",
+          "line": "Dina va un paso a la vez: el reparto, a dónde va lo que se da y lo que Sam aprendió."
+        },
+        "pt-BR": {
+          "prompt": "O Sam recebe 200 reais e quer partes para gastar, poupar e doar.",
+          "line": "A Dina vai um passo de cada vez: a divisão, para onde vai o que se doa e o que o Sam aprendeu."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.save-spend-share",
+      "payload": {
+        "total": 200,
+        "step": 20,
+        "currency": "local"
+      },
+      "rubric": {
+        "minimumSave": 40
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam is paid $200 this month. Save at least $40 and decide what to spend and what to give.",
+          "feedback": {
+            "met": "Noted, that shows where you start. Now Dina goes step by step.",
+            "not_yet": "Noted, that shows where you start. Now Dina goes step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Sam cobra 200 pesos este mes. Guarda al menos 40 y decide cuánto gastar y cuánto dar.",
+          "feedback": {
+            "met": "Anotado, eso muestra de dónde partes. Ahora Dina va paso a paso.",
+            "not_yet": "Anotado, eso muestra de dónde partes. Ahora Dina va paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Sam recebe 200 reais este mês. Guarde pelo menos 40 e decida quanto gastar e quanto doar.",
+          "feedback": {
+            "met": "Anotado, isso mostra de onde você parte. Agora a Dina vai passo a passo.",
+            "not_yet": "Anotado, isso mostra de onde você parte. Agora a Dina vai passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Sam splits 60% to spend, 30% to save and 10% to give.",
+          "line": "A tenth is 10%, and 200 ÷ 10 = 20. So each tenth of the pay is worth 20."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Sam reparte 60% para gastar, 30% para ahorrar y 10% para dar.",
+          "line": "Una décima es el 10%, y 200 ÷ 10 = 20. Así, cada décima de la paga vale 20."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o Sam divide 60% para gastar, 30% para poupar e 10% para doar.",
+          "line": "Um décimo é 10%, e 200 ÷ 10 = 20. Assim, cada décimo do pagamento vale 20."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: count the tenths and check the total.",
+          "line": "6 × 20 = 120 spent, 3 × 20 = 60 saved, 1 × 20 = 20 given. And 120 + 60 + 20 = 200."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: cuenta las décimas y revisa el total.",
+          "line": "6 × 20 = 120 para gastar, 3 × 20 = 60 para ahorrar, 1 × 20 = 20 para dar. Y 120 + 60 + 20 = 200."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: conte os décimos e confira o total.",
+          "line": "6 × 20 = 120 para gastar, 3 × 20 = 60 para poupar, 1 × 20 = 20 para doar. E 120 + 60 + 20 = 200."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "tenth"
+          },
+          {
+            "id": "spend"
+          },
+          {
+            "id": "save"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "spend",
+          "save"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "spend": "75",
+          "save": "60"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.save-spend-share",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Noa is paid $150: 50% to spend, 40% to save and 10% to give. Finish the steps.",
+          "help": [
+            "One tenth first, then count how many tenths each part takes."
+          ],
+          "feedback": {
+            "met": "You counted the tenths each part takes.",
+            "not_yet": "Not yet. Look back at Sam's tenths and try again."
+          },
+          "steps": [
+            {
+              "expression": "One tenth of the pay",
+              "result": "15",
+              "spokenText": "150 ÷ 10 = 15."
+            },
+            {
+              "expression": "Spend: 50%",
+              "result": "75",
+              "spokenText": "5 tenths: 5 × 15 = 75."
+            },
+            {
+              "expression": "Save: 40%",
+              "result": "60",
+              "spokenText": "4 tenths: 4 × 15 = 60."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Noa cobra 150 pesos: 50% para gastar, 40% para ahorrar y 10% para dar. Completa los pasos.",
+          "help": [
+            "Primero una décima y luego cuenta cuántas décimas toma cada parte."
+          ],
+          "feedback": {
+            "met": "Contaste las décimas que toma cada parte.",
+            "not_yet": "Aún no. Repasa las décimas de Sam e inténtalo de nuevo."
+          },
+          "steps": [
+            {
+              "expression": "Una décima de la paga",
+              "result": "15",
+              "spokenText": "150 ÷ 10 = 15."
+            },
+            {
+              "expression": "Gastar: 50%",
+              "result": "75",
+              "spokenText": "5 décimas: 5 × 15 = 75."
+            },
+            {
+              "expression": "Ahorrar: 40%",
+              "result": "60",
+              "spokenText": "4 décimas: 4 × 15 = 60."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Noa recebe 150 reais: 50% para gastar, 40% para poupar e 10% para doar. Complete as etapas.",
+          "help": [
+            "Primeiro um décimo e depois conte quantos décimos cada parte leva."
+          ],
+          "feedback": {
+            "met": "Você contou os décimos que cada parte leva.",
+            "not_yet": "Ainda não. Reveja os décimos do Sam e tente de novo."
+          },
+          "steps": [
+            {
+              "expression": "Um décimo do pagamento",
+              "result": "15",
+              "spokenText": "150 ÷ 10 = 15."
+            },
+            {
+              "expression": "Gastar: 50%",
+              "result": "75",
+              "spokenText": "5 décimos: 5 × 15 = 75."
+            },
+            {
+              "expression": "Poupar: 40%",
+              "result": "60",
+              "spokenText": "4 décimos: 4 × 15 = 60."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: before giving $20, Sam checks where the money goes.",
+          "line": "He asks the neighborhood food pantry who runs it, where gifts go and whether it shows its accounts."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: antes de dar 20 pesos, Sam revisa a dónde va el dinero.",
+          "line": "Le pregunta al banco de alimentos del barrio quién lo dirige, a dónde van las donaciones y si muestra sus cuentas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: antes de doar 20 reais, o Sam confere para onde vai o dinheiro.",
+          "line": "Ele pergunta ao organizador da vaquinha do bairro quem recebe o dinheiro, no que será usado e se há prestação de contas."
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: Sam explains the plan to his younger sister in his own words.",
+          "line": "Each part has a purpose: spend for now, save for later, give to others. All three add up."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: Sam le explica el plan a su hermana menor con sus propias palabras.",
+          "line": "Cada parte tiene un propósito: gastar para hoy, ahorrar para después, dar a otros. Las tres suman la paga."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o Sam explica o plano à irmã mais nova com as próprias palavras.",
+          "line": "Cada parte tem um propósito: gastar para agora, poupar para depois, doar aos outros. As três somam o pagamento."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "tenth"
+          },
+          {
+            "id": "spend"
+          },
+          {
+            "id": "save"
+          },
+          {
+            "id": "give"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "spend",
+          "save",
+          "give"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "spend": "150",
+          "save": "90",
+          "give": "60"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.save-spend-share",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Ravi is paid $300: 50% to spend, 30% to save and 20% to give. Finish the steps.",
+          "help": [
+            "Find one tenth, then count the tenths each part takes."
+          ],
+          "feedback": {
+            "met": "You counted the tenths for all three parts.",
+            "not_yet": "Not yet. Find one tenth first, then count tenths."
+          },
+          "steps": [
+            {
+              "expression": "One tenth of the pay",
+              "result": "30",
+              "spokenText": "300 ÷ 10 = 30."
+            },
+            {
+              "expression": "Spend: 50%",
+              "result": "150",
+              "spokenText": "5 tenths: 5 × 30 = 150."
+            },
+            {
+              "expression": "Save: 30%",
+              "result": "90",
+              "spokenText": "3 tenths: 3 × 30 = 90."
+            },
+            {
+              "expression": "Give: 20%",
+              "result": "60",
+              "spokenText": "2 tenths: 2 × 30 = 60."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ravi cobra 300 pesos: 50% para gastar, 30% para ahorrar y 20% para dar. Completa los pasos.",
+          "help": [
+            "Busca una décima y cuenta las décimas que toma cada parte."
+          ],
+          "feedback": {
+            "met": "Contaste las décimas de las tres partes.",
+            "not_yet": "Aún no. Busca primero una décima y luego cuenta décimas."
+          },
+          "steps": [
+            {
+              "expression": "Una décima de la paga",
+              "result": "30",
+              "spokenText": "300 ÷ 10 = 30."
+            },
+            {
+              "expression": "Gastar: 50%",
+              "result": "150",
+              "spokenText": "5 décimas: 5 × 30 = 150."
+            },
+            {
+              "expression": "Ahorrar: 30%",
+              "result": "90",
+              "spokenText": "3 décimas: 3 × 30 = 90."
+            },
+            {
+              "expression": "Dar: 20%",
+              "result": "60",
+              "spokenText": "2 décimas: 2 × 30 = 60."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ravi recebe 300 reais: 50% para gastar, 30% para poupar e 20% para doar. Complete as etapas.",
+          "help": [
+            "Ache um décimo e conte os décimos que cada parte leva."
+          ],
+          "feedback": {
+            "met": "Você contou os décimos das três partes.",
+            "not_yet": "Ainda não. Ache primeiro um décimo e depois conte décimos."
+          },
+          "steps": [
+            {
+              "expression": "Um décimo do pagamento",
+              "result": "30",
+              "spokenText": "300 ÷ 10 = 30."
+            },
+            {
+              "expression": "Gastar: 50%",
+              "result": "150",
+              "spokenText": "5 décimos: 5 × 30 = 150."
+            },
+            {
+              "expression": "Poupar: 30%",
+              "result": "90",
+              "spokenText": "3 décimos: 3 × 30 = 90."
+            },
+            {
+              "expression": "Doar: 20%",
+              "result": "60",
+              "spokenText": "2 décimos: 2 × 30 = 60."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.giving",
+      "teaching_role": "practice",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-famous"
+          },
+          {
+            "id": "opt-open"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-open"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam wants to give $20 to a food pantry. Two are nearby: which should he pick?",
+          "feedback": {
+            "met": "You picked the group that shows where the money goes.",
+            "not_yet": "Not yet. Think about what Sam checked before giving."
+          },
+          "options": [
+            {
+              "label": "Famous, but it never shows its accounts"
+            },
+            {
+              "label": "Small, but it shows where gifts go"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sam quiere dar 20 pesos a un banco de alimentos. Hay dos cerca: ¿cuál debería elegir?",
+          "feedback": {
+            "met": "Elegiste el que muestra a dónde va el dinero.",
+            "not_yet": "Aún no. Piensa qué revisó Sam antes de dar."
+          },
+          "options": [
+            {
+              "label": "Famoso, pero nunca muestra sus cuentas"
+            },
+            {
+              "label": "Pequeño, pero muestra a dónde van las donaciones"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Sam quer contribuir com 20 reais para uma vaquinha do bairro. Há duas: qual ele deveria escolher?",
+          "feedback": {
+            "met": "Você escolheu a que mostra para onde vai o dinheiro.",
+            "not_yet": "Ainda não. Pense no que o Sam conferiu antes de doar."
+          },
+          "options": [
+            {
+              "label": "Famosa, mas nunca mostra suas contas"
+            },
+            {
+              "label": "Pequena, mas mostra para onde vai o dinheiro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.reflect-on-learning",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-spend-first"
+          },
+          {
+            "id": "choice-purpose"
+          },
+          {
+            "id": "choice-always-tenth"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-purpose"
+          },
+          {
+            "id": "reason-short"
+          },
+          {
+            "id": "reason-everyone"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-purpose"
+        ],
+        "reasonQuality": {
+          "reason-purpose": "sound",
+          "reason-short": "partial",
+          "reason-everyone": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam's younger sister asks how his plan works. Which explanation should he give?",
+          "feedback": {
+            "met": "You chose the explanation that gives each part a purpose.",
+            "not_yet": "Not yet. Think about what Sam said each part is for."
+          },
+          "choices": [
+            {
+              "label": "Spend first, then see what is left"
+            },
+            {
+              "label": "Each part has a purpose; they add up"
+            },
+            {
+              "label": "You always give away one tenth"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "She can see each part's purpose"
+            },
+            {
+              "label": "It is short and easy to remember"
+            },
+            {
+              "label": "It is how everyone does it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La hermana menor de Sam pregunta cómo funciona su plan. ¿Qué explicación debería darle?",
+          "feedback": {
+            "met": "Elegiste la explicación que da un propósito a cada parte.",
+            "not_yet": "Aún no. Piensa para qué dijo Sam que sirve cada parte."
+          },
+          "choices": [
+            {
+              "label": "Gastar primero y ver si algo sobra"
+            },
+            {
+              "label": "Cada parte tiene un propósito y todas suman"
+            },
+            {
+              "label": "Siempre se da exactamente una décima"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Ella puede ver el propósito de cada parte"
+            },
+            {
+              "label": "Es corto y fácil de recordar"
+            },
+            {
+              "label": "Así lo hace todo el mundo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A irmã mais nova do Sam pergunta como o plano dele funciona. Qual explicação ele deveria dar?",
+          "feedback": {
+            "met": "Você escolheu a explicação que dá um propósito a cada parte.",
+            "not_yet": "Ainda não. Pense para que o Sam disse que serve cada parte."
+          },
+          "choices": [
+            {
+              "label": "Gastar primeiro e ver se sobra algo"
+            },
+            {
+              "label": "Cada parte tem um propósito e todas somam"
+            },
+            {
+              "label": "Sempre se doa exatamente um décimo"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Ela pode ver o propósito de cada parte"
+            },
+            {
+              "label": "É curto e fácil de lembrar"
+            },
+            {
+              "label": "É assim que todo mundo faz"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.save-spend-share",
+      "payload": {
+        "total": 250,
+        "step": 25,
+        "currency": "local"
+      },
+      "rubric": {
+        "minimumSave": 100
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mira earned $250 over the holidays. Save at least 40% and decide what to spend and give.",
+          "feedback": {
+            "met": "Your split saves enough and uses the whole pay.",
+            "not_yet": "Not yet. Find one tenth first, then count tenths for saving."
+          }
+        },
+        "es-MX": {
+          "prompt": "Mira ganó 250 pesos en las vacaciones. Guarda al menos 40% y decide cuánto gastar y cuánto dar.",
+          "feedback": {
+            "met": "Tu reparto guarda lo suficiente y usa toda la paga.",
+            "not_yet": "Aún no. Busca primero una décima y luego cuenta décimas para ahorrar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Mira ganhou 250 reais nas férias. Guarde pelo menos 40% e decida quanto gastar e quanto doar.",
+          "feedback": {
+            "met": "Sua divisão guarda o suficiente e usa todo o pagamento.",
+            "not_yet": "Ainda não. Ache primeiro um décimo e depois conte décimos para guardar."
+          }
+        }
+      }
+    },
+    {
+      "id": "closing-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "wrap",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Dina closes with the plan idea in her own words.",
+          "line": "Plans give each part a purpose, and slipped plans get checked. If you want, explain yours to someone younger."
+        },
+        "es-MX": {
+          "prompt": "Dina cierra con la idea del plan, con sus propias palabras.",
+          "line": "Los planes dan un propósito a cada parte, y un plan atrasado se revisa. Si quieres, cuéntale tu versión a alguien más chico."
+        },
+        "pt-BR": {
+          "prompt": "A Dina fecha com a ideia do plano, com as próprias palavras.",
+          "line": "Os planos dão um propósito a cada parte, e um plano atrasado se confere. Se quiser, conte a sua versão a alguém mais novo."
+        }
+      }
+    }
+  ]
+}

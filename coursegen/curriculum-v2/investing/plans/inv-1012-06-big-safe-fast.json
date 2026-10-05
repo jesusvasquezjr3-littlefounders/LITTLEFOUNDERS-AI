@@ -1,0 +1,1067 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "chapter_id": "inv-1012-luck-risk-and-the-simulator",
+  "lesson_id": "inv-1012-06-big-safe-fast",
+  "knowledge_component_ids": [
+    "invest.no-free-lunch",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara piensa en voz alta frente al tablero del Mercado Sandbox, donde hay seis ofertas: un frasco con candado, un fondo que crece, un cartel que dice \"triplica tus monedas para el viernes\" y otras. Las coloca en un diagrama de grande, segura y rápida, descubre que ninguna cae en las tres y aprende a preguntar quién asume el riesgo de una oferta que presume tenerlas todas, antes de usar cualquier palabra de fraude. Al final el niño aplica la pregunta en un lugar distinto, la feria de la escuela.",
+  "title": {
+    "en-US": "Big, safe, fast: not all three",
+    "es-MX": "Grande, segura, rápida: no las tres",
+    "pt-BR": "Grande, segura, rápida: não as três"
+  },
+  "new_concepts": [
+    "invest.no-free-lunch"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara and Leo read six offers on the Sandbox Market board.",
+          "line": "One poster says \"triple your coins by Friday, no risk.\" Let me sort all six on a diagram first."
+        },
+        "es-MX": {
+          "prompt": "Zara y Leo leen seis ofertas en el tablero del Mercado Sandbox.",
+          "line": "Un cartel dice \"triplica tus monedas para el viernes, sin riesgo\". Primero ordeno las seis en un diagrama."
+        },
+        "pt-BR": {
+          "prompt": "Zara e Leo leem seis ofertas no quadro do Mercado Sandbox.",
+          "line": "Um cartaz diz \"triplique suas moedas até sexta, sem risco\". Primeiro ordeno as seis num diagrama."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-catch"
+          },
+          {
+            "id": "choice-join"
+          },
+          {
+            "id": "choice-skip"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-cost"
+          },
+          {
+            "id": "reason-safe"
+          },
+          {
+            "id": "reason-coins"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-catch"
+        ],
+        "reasonQuality": {
+          "reason-cost": "sound",
+          "reason-safe": "unsupported",
+          "reason-coins": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara and Leo see a stall saying its deal is big, safe and fast. What do you do?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "Ask what the catch is"
+            },
+            {
+              "label": "Join now, it sounds perfect"
+            },
+            {
+              "label": "Skip it, every stall lies"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A big result usually costs something"
+            },
+            {
+              "label": "If it says safe, it is safe"
+            },
+            {
+              "label": "Stalls only want my coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara y Leo ven un puesto que dice que su oferta es grande, segura y rápida. ¿Qué haces?",
+          "feedback": {
+            "met": "Gracias, así vemos de dónde partes. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así vemos de dónde partes. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Preguntar cuál es el truco"
+            },
+            {
+              "label": "Entrar ya, suena perfecto"
+            },
+            {
+              "label": "Irme, todos los puestos mienten"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Un resultado grande suele costar algo"
+            },
+            {
+              "label": "Si dice segura, es segura"
+            },
+            {
+              "label": "Los puestos solo quieren mis monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara e Leo veem uma barraca que diz que a oferta é grande, segura e rápida. O que você faz?",
+          "feedback": {
+            "met": "Certo, isso mostra de onde você parte. Agora vamos ver passo a passo.",
+            "not_yet": "Certo, isso mostra de onde você parte. Agora vamos ver passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Perguntar qual é a pegadinha"
+            },
+            {
+              "label": "Entrar já, parece perfeita"
+            },
+            {
+              "label": "Ir embora, toda barraca mente"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Um resultado grande costuma custar algo"
+            },
+            {
+              "label": "Se diz segura, é segura"
+            },
+            {
+              "label": "As barracas só querem minhas moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "define-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: big pays much more, safe cannot lose coins, fast pays within days.",
+          "line": "Let me test the locked jar: safe yes, big no, fast no. One circle only."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: grande paga mucho más, segura no pierde monedas, rápida paga en pocos días.",
+          "line": "Pruebo el frasco con candado: segura sí, grande no, rápida no. Queda en un solo círculo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: grande paga bem mais, segura não perde moedas, rápida paga em poucos dias.",
+          "line": "Testo o pote com cadeado: segura sim, grande não, rápida não. Fica em um círculo só."
+        }
+      }
+    },
+    {
+      "id": "venn-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "venn"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "set-big"
+            },
+            {
+              "id": "set-safe"
+            },
+            {
+              "id": "set-fast"
+            }
+          ],
+          "regions": [
+            {
+              "sets": [
+                "set-safe"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-big"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-fast"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-safe",
+                "set-fast"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-big",
+                "set-fast"
+              ],
+              "value": 2
+            },
+            {
+              "sets": [
+                "set-big",
+                "set-safe"
+              ],
+              "value": 0
+            },
+            {
+              "sets": [
+                "set-big",
+                "set-safe",
+                "set-fast"
+              ],
+              "value": 0
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara places all six offers on one diagram.",
+          "title": "Six offers on the board",
+          "data": {
+            "categories": [
+              {
+                "label": "Big: pays much more"
+              },
+              {
+                "label": "Safe: no loss"
+              },
+              {
+                "label": "Fast: pays in days"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Zara pone las seis ofertas en un solo diagrama.",
+          "title": "Seis ofertas del tablero",
+          "data": {
+            "categories": [
+              {
+                "label": "Grande: paga mucho más"
+              },
+              {
+                "label": "Segura: sin pérdida"
+              },
+              {
+                "label": "Rápida: paga en días"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Zara coloca as seis ofertas em um só diagrama.",
+          "title": "Seis ofertas do quadro",
+          "data": {
+            "categories": [
+              {
+                "label": "Grande: paga bem mais"
+              },
+              {
+                "label": "Segura: sem perda"
+              },
+              {
+                "label": "Rápida: paga em dias"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "empty-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the middle, where big, safe and fast meet, holds zero offers.",
+          "line": "The poster promised all three, yet lands outside the safe circle. So it can lose coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el centro, donde se juntan grande, segura y rápida, tiene cero ofertas.",
+          "line": "El cartel prometía las tres, pero cae fuera del círculo seguro. Así que puede perder monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o centro, onde grande, segura e rápida se encontram, tem zero ofertas.",
+          "line": "O cartaz prometia as três, mas cai fora do círculo seguro. Então pode perder moedas."
+        }
+      }
+    },
+    {
+      "id": "sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-not-big"
+          },
+          {
+            "id": "bin-not-safe"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-bag"
+          },
+          {
+            "id": "item-club"
+          },
+          {
+            "id": "item-swap"
+          },
+          {
+            "id": "item-chest"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-lose"
+          },
+          {
+            "id": "why-little"
+          },
+          {
+            "id": "why-quick"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-bag": [
+            {
+              "bin": "bin-not-safe",
+              "reason": "why-lose"
+            }
+          ],
+          "item-club": [
+            {
+              "bin": "bin-not-big",
+              "reason": "why-little"
+            }
+          ],
+          "item-swap": [
+            {
+              "bin": "bin-not-safe",
+              "reason": "why-lose"
+            }
+          ],
+          "item-chest": [
+            {
+              "bin": "bin-not-big",
+              "reason": "why-little"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the Sandbox Market, sort four new offers by what each one misses: big or safe.",
+          "feedback": {
+            "met": "You matched each offer to what it misses.",
+            "not_yet": "Not yet. Does each offer lose coins or add little?"
+          },
+          "bins": [
+            {
+              "label": "Not big"
+            },
+            {
+              "label": "Not safe"
+            }
+          ],
+          "items": [
+            {
+              "label": "Sealed bag: pay 5, get 20 or 0"
+            },
+            {
+              "label": "Coin club: 10 in, 10 out tomorrow"
+            },
+            {
+              "label": "Quick swap: pay 5, get 15 or 2"
+            },
+            {
+              "label": "Chest: 20 in, 20 out after 30 weeks"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It can lose coins"
+            },
+            {
+              "label": "It adds almost nothing"
+            },
+            {
+              "label": "It pays very fast"
+            }
+          ],
+          "rule": "Pick the circle each offer misses and say why."
+        },
+        "es-MX": {
+          "prompt": "En el Mercado Sandbox, ordena cuatro ofertas nuevas por lo que le falta a cada una: grande o segura.",
+          "feedback": {
+            "met": "Uniste cada oferta con lo que le falta.",
+            "not_yet": "Aún no. ¿Cada oferta pierde monedas o suma poco?"
+          },
+          "bins": [
+            {
+              "label": "No es grande"
+            },
+            {
+              "label": "No es segura"
+            }
+          ],
+          "items": [
+            {
+              "label": "Bolsa cerrada: pagas 5, recibes 20 o 0"
+            },
+            {
+              "label": "Club de monedas: 10 entran, 10 salen mañana"
+            },
+            {
+              "label": "Cambio rápido: pagas 5, recibes 15 o 2"
+            },
+            {
+              "label": "Cofre: 20 entran, 20 salen en 30 semanas"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Puede perder monedas"
+            },
+            {
+              "label": "Casi no suma nada"
+            },
+            {
+              "label": "Paga muy rápido"
+            }
+          ],
+          "rule": "Elige el círculo que le falta a cada oferta y di por qué."
+        },
+        "pt-BR": {
+          "prompt": "No Mercado Sandbox, ordene quatro ofertas novas pelo que falta em cada uma: grande ou segura.",
+          "feedback": {
+            "met": "Você ligou cada oferta ao que falta nela.",
+            "not_yet": "Ainda não. Cada oferta perde moedas ou soma pouco?"
+          },
+          "bins": [
+            {
+              "label": "Não é grande"
+            },
+            {
+              "label": "Não é segura"
+            }
+          ],
+          "items": [
+            {
+              "label": "Saco fechado: paga 5, recebe 20 ou 0"
+            },
+            {
+              "label": "Clube de moedas: 10 entram, 10 saem amanhã"
+            },
+            {
+              "label": "Troca rápida: paga 5, recebe 15 ou 2"
+            },
+            {
+              "label": "Baú: 20 entram, 20 saem em 30 semanas"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Pode perder moedas"
+            },
+            {
+              "label": "Quase não soma nada"
+            },
+            {
+              "label": "Paga muito rápido"
+            }
+          ],
+          "rule": "Escolha o círculo que falta em cada oferta e diga por quê."
+        }
+      }
+    },
+    {
+      "id": "risk-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: every loss lands on someone. Take the spinner game, 2 coins a ticket.",
+          "line": "Let me ask who loses if the spinner pays nothing: the ticket buyer. That buyer carries the risk."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: toda pérdida le toca a alguien. Toma el juego de la ruleta, a 2 monedas el boleto.",
+          "line": "Veamos quién pierde si la ruleta no paga nada: quien compró el boleto. Esa persona asume el riesgo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: toda perda cai em alguém. Pegue o jogo da roleta, a 2 moedas o bilhete.",
+          "line": "Vejamos quem perde se a roleta não paga nada: quem comprou o bilhete. Essa pessoa assume o risco."
+        }
+      }
+    },
+    {
+      "id": "venn-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "venn"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "set-big"
+            },
+            {
+              "id": "set-safe"
+            },
+            {
+              "id": "set-fast"
+            }
+          ],
+          "regions": [
+            {
+              "sets": [
+                "set-safe"
+              ],
+              "value": 2
+            },
+            {
+              "sets": [
+                "set-big"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-fast"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-safe",
+                "set-fast"
+              ],
+              "value": 1
+            },
+            {
+              "sets": [
+                "set-big",
+                "set-fast"
+              ],
+              "value": 2
+            },
+            {
+              "sets": [
+                "set-big",
+                "set-safe"
+              ],
+              "value": 0
+            },
+            {
+              "sets": [
+                "set-big",
+                "set-safe",
+                "set-fast"
+              ],
+              "value": 0
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-three"
+            },
+            {
+              "id": "ans-four"
+            },
+            {
+              "id": "ans-seven"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-four"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the Sandbox Market, read Leo's seven offers and find which can lose coins.",
+          "feedback": {
+            "met": "You counted the offers outside the safe circle.",
+            "not_yet": "Not yet. Offers outside the safe circle can lose coins."
+          },
+          "title": "Leo's seven offers",
+          "data": {
+            "categories": [
+              {
+                "label": "Big: pays much more"
+              },
+              {
+                "label": "Safe: no loss"
+              },
+              {
+                "label": "Fast: pays in days"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many offers can lose coins?",
+            "options": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "En el Mercado Sandbox, lee las siete ofertas de Leo y busca cuáles pueden perder monedas.",
+          "feedback": {
+            "met": "Contaste las ofertas fuera del círculo seguro.",
+            "not_yet": "Aún no. Las ofertas fuera del círculo seguro pueden perder monedas."
+          },
+          "title": "Las siete ofertas de Leo",
+          "data": {
+            "categories": [
+              {
+                "label": "Grande: paga mucho más"
+              },
+              {
+                "label": "Segura: sin pérdida"
+              },
+              {
+                "label": "Rápida: paga en días"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántas ofertas pueden perder monedas?",
+            "options": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "No Mercado Sandbox, leia as sete ofertas do Leo e ache quais podem perder moedas.",
+          "feedback": {
+            "met": "Você contou as ofertas fora do círculo seguro.",
+            "not_yet": "Ainda não. As ofertas fora do círculo seguro podem perder moedas."
+          },
+          "title": "As sete ofertas do Leo",
+          "data": {
+            "categories": [
+              {
+                "label": "Grande: paga bem mais"
+              },
+              {
+                "label": "Segura: sem perda"
+              },
+              {
+                "label": "Rápida: paga em dias"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantas ofertas podem perder moedas?",
+            "options": [
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "7"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "reply-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-signup"
+          },
+          {
+            "id": "reply-friends"
+          },
+          {
+            "id": "reply-who"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-who"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the Sandbox Market, Leo reads the poster aloud. What do you ask first?",
+          "feedback": {
+            "met": "You asked who carries the risk before anything else.",
+            "not_yet": "Not yet. Look at the spinner: whose coins are at stake?"
+          },
+          "speaker": "Leo",
+          "line": "The poster says \"triple your coins by Friday, no risk.\" Should we join?",
+          "replies": [
+            {
+              "label": "Where do we sign up?"
+            },
+            {
+              "label": "How many friends can join?"
+            },
+            {
+              "label": "Who loses coins if it fails?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el Mercado Sandbox, Leo lee el cartel en voz alta. ¿Qué le preguntas primero?",
+          "feedback": {
+            "met": "Preguntaste quién asume el riesgo antes que nada.",
+            "not_yet": "Aún no. Mira la ruleta: ¿de quién son las monedas en juego?"
+          },
+          "speaker": "Leo",
+          "line": "El cartel dice \"triplica tus monedas para el viernes, sin riesgo\". ¿Entramos?",
+          "replies": [
+            {
+              "label": "¿Dónde nos inscribimos?"
+            },
+            {
+              "label": "¿Cuántos amigos pueden entrar?"
+            },
+            {
+              "label": "¿Quién pierde monedas si falla?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No Mercado Sandbox, o Leo lê o cartaz em voz alta. O que você pergunta primeiro?",
+          "feedback": {
+            "met": "Você perguntou quem assume o risco antes de tudo.",
+            "not_yet": "Ainda não. Veja a roleta: de quem são as moedas em jogo?"
+          },
+          "speaker": "Leo",
+          "line": "O cartaz diz \"triplique suas moedas até sexta, sem risco\". Vamos entrar?",
+          "replies": [
+            {
+              "label": "Onde nos inscrevemos?"
+            },
+            {
+              "label": "Quantos amigos podem entrar?"
+            },
+            {
+              "label": "Quem perde moedas se falhar?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-sign"
+          },
+          {
+            "id": "choice-risk"
+          },
+          {
+            "id": "choice-small"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-someone"
+          },
+          {
+            "id": "reason-bigfast"
+          },
+          {
+            "id": "reason-two"
+          },
+          {
+            "id": "reason-says"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-risk"
+        ],
+        "reasonQuality": {
+          "reason-someone": "sound",
+          "reason-bigfast": "sound",
+          "reason-two": "partial",
+          "reason-says": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the school fair, a sign says \"10 coins in, 15 back by Friday, no loss.\" What does Zara say?",
+          "feedback": {
+            "met": "You asked who carries the risk before joining.",
+            "not_yet": "Not yet. Whose coins are at stake if the promise fails?"
+          },
+          "help": [
+            "Think: can an offer be big, safe and fast at once?"
+          ],
+          "choices": [
+            {
+              "label": "Join, since the sign says no loss"
+            },
+            {
+              "label": "Ask who carries the risk"
+            },
+            {
+              "label": "Join with 2 coins, no questions asked"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Someone must carry the risk of that promise"
+            },
+            {
+              "label": "A big, fast result cannot also be safe"
+            },
+            {
+              "label": "Two coins is a small thing to lose"
+            },
+            {
+              "label": "If it says \"no loss\", there is none"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria de la escuela, un letrero dice \"10 monedas entran, 15 regresan el viernes, sin pérdida\". ¿Qué dice Zara?",
+          "feedback": {
+            "met": "Preguntaste quién asume el riesgo antes de entrar.",
+            "not_yet": "Aún no. ¿De quién son las monedas en juego si la promesa falla?"
+          },
+          "help": [
+            "Piensa: ¿una oferta puede ser grande, segura y rápida a la vez?"
+          ],
+          "choices": [
+            {
+              "label": "Entrar, porque el letrero dice sin pérdida"
+            },
+            {
+              "label": "Preguntar quién asume el riesgo"
+            },
+            {
+              "label": "Entrar con 2 monedas, sin preguntar nada"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Alguien debe asumir el riesgo de esa promesa"
+            },
+            {
+              "label": "Algo grande y rápido no puede ser seguro"
+            },
+            {
+              "label": "Dos monedas es poco para perder"
+            },
+            {
+              "label": "Si dice \"sin pérdida\", entonces no hay riesgo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira da escola, uma placa diz \"10 moedas entram, 15 voltam na sexta, sem perda\". O que a Zara diz?",
+          "feedback": {
+            "met": "Você perguntou quem assume o risco antes de entrar.",
+            "not_yet": "Ainda não. De quem são as moedas em jogo se a promessa falhar?"
+          },
+          "help": [
+            "Pense: uma oferta pode ser grande, segura e rápida ao mesmo tempo?"
+          ],
+          "choices": [
+            {
+              "label": "Entrar, porque a placa diz sem perda"
+            },
+            {
+              "label": "Perguntar quem assume o risco"
+            },
+            {
+              "label": "Entrar com 2 moedas, sem perguntar"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Alguém precisa assumir o risco dessa promessa"
+            },
+            {
+              "label": "Algo grande e rápido não pode ser seguro"
+            },
+            {
+              "label": "Duas moedas é pouco para perder"
+            },
+            {
+              "label": "Se diz \"sem perda\", então não há risco"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

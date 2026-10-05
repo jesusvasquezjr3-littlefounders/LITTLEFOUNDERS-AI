@@ -1,0 +1,497 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-01-count-coins",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.count-mixed-coins",
+    "money.make-amount"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina cuenta sus monedas de mayor a menor valor y muestra que cada pieza suma lo que vale, no uno. Después la niña o el niño arma cantidades exactas con las menos piezas posibles, eligiendo siempre la pieza más grande que quepa.",
+  "title": {
+    "en-US": "Count and make coins",
+    "es-MX": "Cuenta y arma monedas",
+    "pt-BR": "Conte e forme moedas"
+  },
+  "new_concepts": [
+    "money.count-mixed-coins",
+    "money.make-amount"
+  ],
+  "regional": {
+    "universal": "The lesson uses LittleFounders coins only, so no market price, shop, custom or real currency changes it."
+  },
+  "segments": [
+    {
+      "id": "intro-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Dina.",
+          "line": "Hoy cuento monedas. Cada una vale algo distinto.",
+          "narration": {
+            "script": "Cada pieza vale algo distinto. Una de 10 vale más que una de 1."
+          }
+        },
+        "en-US": {
+          "prompt": "Listen to Dina.",
+          "line": "Today I count coins. Each one is worth something different.",
+          "narration": {
+            "script": "Every coin is worth something different. A 10-coin is worth more than a 1-coin."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Dina.",
+          "line": "Hoje eu conto moedas. Cada uma vale algo diferente.",
+          "narration": {
+            "script": "Cada peça vale algo diferente. A peça de 10 vale mais que a de 1."
+          }
+        }
+      }
+    },
+    {
+      "id": "worked-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira cómo cuenta Dina.",
+          "line": "Tengo 10, 5, 1 y 1. Cuento: 10, 15, 16, 17.",
+          "narration": {
+            "script": "Son cuatro piezas, pero valen 17. Empiezo con la más grande y cuento el valor de cada moneda, no cuántas hay."
+          }
+        },
+        "en-US": {
+          "prompt": "Watch how Dina counts.",
+          "line": "My pieces: 10, 5, 1, 1. I count: 10, 15, 16, 17.",
+          "narration": {
+            "script": "That is four pieces, but they are worth 17. I start with the biggest and count what each coin is worth, not how many there are."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Veja como a Dina conta.",
+          "line": "Tenho 10, 5, 1 e 1. Conto: 10, 15, 16, 17.",
+          "narration": {
+            "script": "São quatro peças, mas valem 17. Começo pela maior e conto o valor de cada peça, não quantas há."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-mixed-coins",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 17,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Haz un total de 17 como Dina: 10, 5, 1 y 1.",
+          "feedback": {
+            "met": "Cuatro piezas, pero valen 17. Cada una sumó su valor.",
+            "not_yet": "Cada pieza suma su valor. Empieza con la de 10 y mira el total."
+          },
+          "help": [
+            "Toca «Más» en la de 10 y mira cómo sube el total.",
+            "Sigue con una de 5 y dos de 1."
+          ]
+        },
+        "en-US": {
+          "prompt": "Make a total of 17 like Dina: 10, 5, 1, 1.",
+          "feedback": {
+            "met": "Four pieces, but they are worth 17. Each added its value.",
+            "not_yet": "Each piece adds its value. Start with the 10."
+          },
+          "help": [
+            "Tap “More” on the 10 and watch the total go up.",
+            "Then add a 5 and two 1s."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Forme um total de 17 como a Dina: 10, 5, 1 e 1.",
+          "feedback": {
+            "met": "Quatro peças, mas valem 17. Cada uma somou o seu valor.",
+            "not_yet": "Cada peça soma o seu valor. Comece pela de 10 e olhe o total."
+          },
+          "help": [
+            "Toque em “Mais” na de 10 e veja o total subir.",
+            "Depois uma de 5 e duas de 1."
+          ]
+        }
+      }
+    },
+    {
+      "id": "count-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 13,
+        "fewest": false
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Haz un total de 13.",
+          "feedback": {
+            "met": "El total llegó a 13. Cada pieza sumó su valor, no solo uno.",
+            "not_yet": "Cada pieza suma su valor, no uno. Si te pasas, quita una pieza."
+          },
+          "help": [
+            "Pon una pieza y mira cuánto sube el total.",
+            "Mira cuánto falta y completa con piezas de 1."
+          ]
+        },
+        "en-US": {
+          "prompt": "Make a total of 13.",
+          "feedback": {
+            "met": "The total reached 13. Each piece added its value, not just one.",
+            "not_yet": "Each piece adds its value. If you go over, take one out."
+          },
+          "help": [
+            "Add one piece and see how much the total goes up.",
+            "See how much is left and fill in with 1s."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Forme um total de 13.",
+          "feedback": {
+            "met": "O total chegou a 13. Cada peça somou o seu valor, não só um.",
+            "not_yet": "Cada peça soma o seu valor, não um. Se passar, tire uma peça."
+          },
+          "help": [
+            "Coloque uma peça e veja quanto o total sobe.",
+            "Veja quanto falta e complete com peças de 1."
+          ]
+        }
+      }
+    },
+    {
+      "id": "fewest-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina te da una pista.",
+          "line": "Para usar pocas piezas, elige la más grande que quepa.",
+          "narration": {
+            "script": "Mira cuánto falta y otra vez elige la pieza más grande que quepa. Si te pasas, quita una pieza y mira de nuevo el total."
+          }
+        },
+        "en-US": {
+          "prompt": "Dina gives you a tip.",
+          "line": "To use few pieces, pick the biggest one that fits.",
+          "narration": {
+            "script": "Check how much is left, then pick the biggest piece that fits again. If you go over, take one piece out and look at the total again."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina dá uma dica.",
+          "line": "Para usar poucas peças, escolha a maior que couber.",
+          "narration": {
+            "script": "Veja quanto falta e escolha de novo a maior peça que couber. Se passar, tire uma peça e olhe o total outra vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "make-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 16,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Haz un total de 16 con el menor número de piezas.",
+          "feedback": {
+            "met": "Con 10, 5 y 1 llegaste a 16. Solo tres piezas.",
+            "not_yet": "Revisa el total. Si ya llegaste, busca una forma con menos piezas."
+          },
+          "help": [
+            "Pon la pieza más grande que quepa en 16.",
+            "Mira cuánto falta y vuelve a elegir la más grande."
+          ]
+        },
+        "en-US": {
+          "prompt": "Make a total of 16 with the fewest pieces.",
+          "feedback": {
+            "met": "With 10, 5 and 1 you reached 16. Just three pieces.",
+            "not_yet": "Check the total, then look for a way with fewer pieces."
+          },
+          "help": [
+            "Add the biggest piece that fits in 16.",
+            "See what is left and pick the biggest again."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Forme um total de 16 com o menor número de peças.",
+          "feedback": {
+            "met": "Com 10, 5 e 1 você chegou a 16. Só três peças.",
+            "not_yet": "Confira o total. Se já chegou, procure um jeito com menos peças."
+          },
+          "help": [
+            "Coloque a maior peça que caiba em 16.",
+            "Veja quanto falta e escolha a maior de novo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "make-02",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 14,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Haz un total de 14 con el menor número de piezas.",
+          "feedback": {
+            "met": "10 y cuatro de 1 suman 14. Con una de 5 te pasabas.",
+            "not_yet": "Pon la de 10 y mira cuánto falta. ¿Cabe una de 5?"
+          },
+          "help": [
+            "Pon la de 10. Cuenta cuánto falta.",
+            "¿Cabe una de 5? Si no, usa una más pequeña."
+          ]
+        },
+        "en-US": {
+          "prompt": "Make a total of 14 with the fewest pieces.",
+          "feedback": {
+            "met": "A 10 and four 1s make 14. A 5 would go over.",
+            "not_yet": "Add the 10, then see if a 5 fits."
+          },
+          "help": [
+            "Add the 10. Count how much is left.",
+            "Does a 5 fit? If not, use a smaller one."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Forme um total de 14 com o menor número de peças.",
+          "feedback": {
+            "met": "Uma de 10 e quatro de 1 fazem 14. Com uma de 5 passaria.",
+            "not_yet": "Coloque a de 10 e veja quanto falta. Cabe uma de 5?"
+          },
+          "help": [
+            "Coloque a de 10. Conte quanto falta.",
+            "Cabe uma de 5? Se não, use uma menor."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 4
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 24,
+        "fewest": true
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Haz un total de 24 con el menor número de piezas.",
+          "feedback": {
+            "met": "Dos de 10 y dos de 2 suman 24. Cuatro piezas.",
+            "not_yet": "Revisa el total. Pon la más grande que quepa y mira cuánto falta."
+          },
+          "help": [
+            "Pon las de 10 que quepan en 24. Mira cuánto falta.",
+            "¿Cabe una de 5? Si no, usa la nueva de 2."
+          ]
+        },
+        "en-US": {
+          "prompt": "Make a total of 24 with the fewest pieces.",
+          "feedback": {
+            "met": "Two 10s and two 2s make 24. Four pieces.",
+            "not_yet": "Add the biggest that fits, then see what is left."
+          },
+          "help": [
+            "Add the 10s that fit in 24. See what is left.",
+            "Does a 5 fit? If not, use the new 2."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Forme um total de 24 com o menor número de peças.",
+          "feedback": {
+            "met": "Duas de 10 e duas de 2 somam 24. Quatro peças.",
+            "not_yet": "Confira o total. Coloque a maior que couber e veja quanto falta."
+          },
+          "help": [
+            "Coloque as de 10 que couberem em 24. Veja quanto falta.",
+            "Cabe uma de 5? Se não, use a nova de 2."
+          ]
+        }
+      }
+    }
+  ]
+}

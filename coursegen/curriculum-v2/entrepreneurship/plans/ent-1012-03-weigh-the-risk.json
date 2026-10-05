@@ -1,0 +1,926 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-find-opportunity",
+  "lesson_id": "ent-1012-03-weigh-the-risk",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.risk-and-reward",
+    "biz.profit"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf se emociona con el lote grande porque el mejor caso se ve genial y pone casi toda la caja en él. Luego compara el peor caso, ve cuántas monedas le quedarían y empieza con un lote de prueba. El alumno aprende a pesar lo que puede ganar y lo que puede perder, y a elegir el plan más grande que aún deja la mitad de la caja.",
+  "title": {
+    "en-US": "Weigh the risk",
+    "es-MX": "Pesa el riesgo",
+    "pt-BR": "Pese o risco"
+  },
+  "new_concepts": [
+    "biz.risk-and-reward"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf puts 63 of the 70 coins on the big batch because the best case looks great.",
+    "recovery": "Liruf compares the worst cases, sees that losing 63 leaves almost nothing, and starts with a test batch of 3 bags."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Liruf tiene 70 monedas en una caja y dos montones de bolsas de botana.",
+          "line": "¿Montón grande o chico? Veamos qué podría pasar."
+        },
+        "en-US": {
+          "prompt": "Liruf's team has 70 coins in a box and two piles of snack bags to choose from.",
+          "line": "Big pile or small pile? Let's see what could happen."
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Liruf tem 70 moedas numa caixa e duas pilhas de saquinhos de lanche.",
+          "line": "Pilha grande ou pequena? Vamos ver o que pode acontecer."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-win-only"
+          },
+          {
+            "id": "opt-both"
+          },
+          {
+            "id": "opt-nicest"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-both"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué debe mirar un equipo antes de elegir un plan?",
+          "scene": "El equipo de Liruf tiene monedas en una caja y dos planes para la mesa de la feria. Cada plan puede ganar monedas o perder algunas.",
+          "options": [
+            {
+              "label": "Solo la mayor ganancia"
+            },
+            {
+              "label": "La mayor ganancia y la mayor pérdida"
+            },
+            {
+              "label": "El plan que se vea más bonito"
+            }
+          ],
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora miremos a Liruf.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora miremos a Liruf."
+          }
+        },
+        "en-US": {
+          "prompt": "Before we start: what should a team look at before it picks a plan?",
+          "scene": "Liruf's team has coins in a box and two plans for the fair table. Each plan can win some coins or lose some.",
+          "options": [
+            {
+              "label": "Only the biggest win"
+            },
+            {
+              "label": "The biggest win and the biggest loss"
+            },
+            {
+              "label": "Whichever plan looks nicest"
+            }
+          ],
+          "feedback": {
+            "met": "Thanks, now I see how you think. Let's watch Liruf.",
+            "not_yet": "Thanks, now I see how you think. Let's watch Liruf."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: o que uma equipe deve olhar antes de escolher um plano?",
+          "scene": "A equipe do Liruf tem moedas numa caixa e dois planos para a mesa da feira. Cada plano pode ganhar algumas moedas ou perder algumas.",
+          "options": [
+            {
+              "label": "Só o maior ganho"
+            },
+            {
+              "label": "O maior ganho e a maior perda"
+            },
+            {
+              "label": "O plano que parecer mais bonito"
+            }
+          ],
+          "feedback": {
+            "met": "Certo, agora vejo como você pensa. Vamos olhar o Liruf.",
+            "not_yet": "Certo, agora vejo como você pensa. Vamos olhar o Liruf."
+          }
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Liruf.",
+          "setup": "Nuestra caja tenía 70 monedas. El lote grande de 9 bolsas podía ganar 27 monedas.",
+          "misjudgment": "Se veía tan padre que puse 63 monedas en ese lote.",
+          "recovery": "Luego vi el peor caso, perder 63, y mejor empecé con 3 bolsas."
+        },
+        "en-US": {
+          "prompt": "Look what happened to Liruf.",
+          "setup": "Our box had 70 coins. The big batch of 9 bags could win 27 coins.",
+          "misjudgment": "It looked so great that I put 63 coins on it!",
+          "recovery": "Then I checked the worst case, losing 63, and started with 3 bags."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Nossa caixa tinha 70 moedas. O lote grande de 9 saquinhos podia ganhar 27 moedas.",
+          "misjudgment": "Parecia tão legal que pus 63 moedas nesse lote.",
+          "recovery": "Depois olhei o pior caso, perder 63, e comecei com 3 saquinhos."
+        }
+      }
+    },
+    {
+      "id": "best-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Liruf revisa el lote de prueba: 3 bolsas cuestan 7 monedas cada una y se venden a 10.",
+          "line": "Paso 1, mejor caso: se venden las 3. Entran 30 monedas, salen 21, así que ganamos 9."
+        },
+        "en-US": {
+          "prompt": "Liruf checks the test batch: 3 bags cost 7 coins each and sell for 10 each.",
+          "line": "Step 1, best case: all 3 sell. 30 coins in, 21 out, so we win 9."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf confere o lote de teste: 3 saquinhos custam 7 moedas cada e saem a 10.",
+          "line": "Passo 1, melhor caso: vendem os 3. Entram 30 moedas, saem 21, então ganhamos 9."
+        }
+      }
+    },
+    {
+      "id": "worst-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ahora Liruf pregunta: ¿y si no se vende ninguna bolsa?",
+          "line": "Paso 2, peor caso: no se vende ninguna, así que las 21 monedas se van. Perdemos 21."
+        },
+        "en-US": {
+          "prompt": "Now Liruf asks: what if no bag sells at all?",
+          "line": "Step 2, worst case: no bag sells, so the 21 coins are gone. We lose 21."
+        },
+        "pt-BR": {
+          "prompt": "Agora o Liruf pergunta: e se nenhum saquinho vender?",
+          "line": "Passo 2, pior caso: nenhum vende, então as 21 moedas se vão. Perdemos 21."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-win-12"
+          },
+          {
+            "id": "opt-lose-12"
+          },
+          {
+            "id": "opt-lose-28"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-lose-28"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Liruf mira 4 bolsas que cuestan 7 monedas cada una. Si no se vende ninguna, ¿cuál es el peor caso?",
+          "scene": "El equipo vendería cada bolsa en 10 monedas. Liruf deja la caja abierta en la mesa de la feria.",
+          "feedback": {
+            "met": "Sumaste lo que se pagó, como hizo Liruf.",
+            "not_yet": "Todavía no. Pregunta qué se pierde si no se vende ninguna bolsa."
+          },
+          "options": [
+            {
+              "label": "Ganar 12 monedas"
+            },
+            {
+              "label": "Perder 12 monedas"
+            },
+            {
+              "label": "Perder 28 monedas"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Liruf's team looks at 4 bags at 7 coins each. If none sell, what is the worst case?",
+          "scene": "The team would sell each bag for 10 coins. Liruf keeps the box open on the fair table.",
+          "feedback": {
+            "met": "You added up what was paid, as Liruf did.",
+            "not_yet": "Not yet. Ask what is lost if no bag sells."
+          },
+          "options": [
+            {
+              "label": "Win 12 coins"
+            },
+            {
+              "label": "Lose 12 coins"
+            },
+            {
+              "label": "Lose 28 coins"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Liruf olha 4 saquinhos que custam 7 moedas cada. Se nenhum vender, qual é o pior caso?",
+          "scene": "A equipe venderia cada saquinho por 10 moedas. O Liruf deixa a caixa aberta na mesa da feira.",
+          "feedback": {
+            "met": "Você somou o que foi pago, como o Liruf fez.",
+            "not_yet": "Ainda não. Pergunte o que se perde se nenhum saquinho vender."
+          },
+          "options": [
+            {
+              "label": "Ganhar 12 moedas"
+            },
+            {
+              "label": "Perder 12 moedas"
+            },
+            {
+              "label": "Perder 28 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tokens-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "payload": {
+        "tokens": 10,
+        "options": [
+          {
+            "id": "opt-big",
+            "cost": 9
+          },
+          {
+            "id": "opt-test",
+            "cost": 3
+          },
+          {
+            "id": "opt-sign",
+            "cost": 1
+          },
+          {
+            "id": "opt-extra",
+            "cost": 4
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, lo que queda: la caja tiene 10 fichas de 7 monedas. Elige un plan y mira cuántas fichas quedan.",
+          "options": [
+            {
+              "label": "Lote grande: 9 bolsas"
+            },
+            {
+              "label": "Lote de prueba: 3 bolsas"
+            },
+            {
+              "label": "Letrero para la mesa"
+            },
+            {
+              "label": "Bolsas extra"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Step 3, what is left: the box has 10 tokens of 7 coins. Pick one plan, see what stays.",
+          "options": [
+            {
+              "label": "Big batch: 9 bags"
+            },
+            {
+              "label": "Test batch: 3 bags"
+            },
+            {
+              "label": "Table sign"
+            },
+            {
+              "label": "Extra bags"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, o que sobra: a caixa tem 10 fichas de 7 moedas. Escolha um plano e veja quantas fichas sobram.",
+          "options": [
+            {
+              "label": "Lote grande: 9 saquinhos"
+            },
+            {
+              "label": "Lote de teste: 3 saquinhos"
+            },
+            {
+              "label": "Placa para a mesa"
+            },
+            {
+              "label": "Saquinhos extras"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fits-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La mitad de 70 es 35. Un plan cabe si su peor caso deja al menos 35.",
+          "line": "Paso 4, cabe: el lote de prueba deja 49, así que sí. El lote grande deja 7, así que no."
+        },
+        "en-US": {
+          "prompt": "Half of 70 is 35. A plan fits if its worst case leaves at least 35.",
+          "line": "Step 4, fits: test batch leaves 49, so yes. Big batch leaves 7, so no."
+        },
+        "pt-BR": {
+          "prompt": "A metade de 70 é 35. Um plano cabe se o pior caso deixa pelo menos 35.",
+          "line": "Passo 4, cabe: o lote de teste deixa 49, então sim. O lote grande deixa 7, então não."
+        }
+      }
+    },
+    {
+      "id": "pick-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ahora imagina dos planes que caben: uno podría ganar 9 y el otro 24.",
+          "line": "Paso 5, elegir: si los dos caben, toma la mayor ganancia. Primero que quepa, luego el más grande."
+        },
+        "en-US": {
+          "prompt": "Now imagine two plans that both fit: one could win 9, the other 24.",
+          "line": "Step 5, pick: when both fit, take the bigger win. Fit first, then big."
+        },
+        "pt-BR": {
+          "prompt": "Agora imagine dois planos que cabem: um poderia ganhar 9 e o outro 24.",
+          "line": "Passo 5, escolher: se os dois cabem, fique com o maior ganho. Primeiro caber, depois o maior."
+        }
+      }
+    },
+    {
+      "id": "decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "choices": [
+          {
+            "id": "plan-2"
+          },
+          {
+            "id": "plan-4"
+          },
+          {
+            "id": "plan-6"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-fits"
+          },
+          {
+            "id": "why-fewest"
+          },
+          {
+            "id": "why-small"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "plan-2"
+        ],
+        "reasonQuality": {
+          "why-fits": "sound",
+          "why-fewest": "partial",
+          "why-small": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La caja de Liruf tiene 50 monedas y la mitad se queda en el peor caso. ¿Qué plan cabe?",
+          "feedback": {
+            "met": "Elegiste el único plan que deja la mitad de la caja.",
+            "not_yet": "Todavía no. Revisa qué deja cada plan en el peor caso."
+          },
+          "help": [
+            "La mitad de la caja se queda. Resta cada peor caso a la caja y compara."
+          ],
+          "choices": [
+            {
+              "label": "2 bolsas: ganar 6, perder 14"
+            },
+            {
+              "label": "4 bolsas: ganar 12, perder 28"
+            },
+            {
+              "label": "6 bolsas: ganar 18, perder 42"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "El peor caso deja al menos la mitad"
+            },
+            {
+              "label": "Es el que arriesga menos monedas"
+            },
+            {
+              "label": "Los planes chicos siempre ganan"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Liruf's box has 50 coins and half stays in the worst case. Which plan fits?",
+          "feedback": {
+            "met": "You picked the only plan that leaves half the box.",
+            "not_yet": "Not yet. Check what each plan leaves in the worst case."
+          },
+          "help": [
+            "Half of the box stays. Subtract each worst case from the box and compare."
+          ],
+          "choices": [
+            {
+              "label": "2 bags: win 6, lose 14"
+            },
+            {
+              "label": "4 bags: win 12, lose 28"
+            },
+            {
+              "label": "6 bags: win 18, lose 42"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "The worst case leaves at least half"
+            },
+            {
+              "label": "It risks the fewest coins"
+            },
+            {
+              "label": "Small plans always win"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A caixa do Liruf tem 50 moedas e metade fica no pior caso. Qual plano cabe?",
+          "feedback": {
+            "met": "Você escolheu o único plano que deixa metade da caixa.",
+            "not_yet": "Ainda não. Confira o que cada plano deixa no pior caso."
+          },
+          "help": [
+            "Metade da caixa fica. Tire cada pior caso da caixa e compare."
+          ],
+          "choices": [
+            {
+              "label": "2 saquinhos: ganhar 6, perder 14"
+            },
+            {
+              "label": "4 saquinhos: ganhar 12, perder 28"
+            },
+            {
+              "label": "6 saquinhos: ganhar 18, perder 42"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O pior caso deixa pelo menos metade"
+            },
+            {
+              "label": "É o que arrisca menos moedas"
+            },
+            {
+              "label": "Planos pequenos sempre ganham"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "decide-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "choices": [
+          {
+            "id": "plan-3"
+          },
+          {
+            "id": "plan-6"
+          },
+          {
+            "id": "plan-9"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-more"
+          },
+          {
+            "id": "why-fits"
+          },
+          {
+            "id": "why-middle"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "plan-6"
+        ],
+        "reasonQuality": {
+          "why-fits": "sound",
+          "why-more": "partial",
+          "why-middle": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La caja de Liruf tiene 90 monedas y la mitad se queda en el peor caso. ¿Qué plan gana más y cabe?",
+          "feedback": {
+            "met": "Elegiste la mayor ganancia entre los planes que caben.",
+            "not_yet": "Todavía no. Descarta los planes que no caben y compara ganancias."
+          },
+          "help": [
+            "Primero deja los planes que dejan la mitad de la caja. Luego elige la mayor ganancia."
+          ],
+          "choices": [
+            {
+              "label": "3 bolsas: ganar 9, perder 21"
+            },
+            {
+              "label": "6 bolsas: ganar 18, perder 42"
+            },
+            {
+              "label": "9 bolsas: ganar 27, perder 63"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Gana más que el plan chico"
+            },
+            {
+              "label": "Su peor caso aún deja la mitad"
+            },
+            {
+              "label": "Es el que está en medio"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Liruf's box has 90 coins and half stays in the worst case. Which plan wins most and fits?",
+          "feedback": {
+            "met": "You picked the biggest win among the plans that fit.",
+            "not_yet": "Not yet. Drop plans that do not fit, then compare wins."
+          },
+          "help": [
+            "First keep the plans that leave half the box. Then pick the biggest win."
+          ],
+          "choices": [
+            {
+              "label": "3 bags: win 9, lose 21"
+            },
+            {
+              "label": "6 bags: win 18, lose 42"
+            },
+            {
+              "label": "9 bags: win 27, lose 63"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "It wins more than the small plan"
+            },
+            {
+              "label": "Its worst case still leaves half"
+            },
+            {
+              "label": "It is the one in the middle"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A caixa do Liruf tem 90 moedas e metade fica no pior caso. Qual plano ganha mais e cabe?",
+          "feedback": {
+            "met": "Você escolheu o maior ganho entre os planos que cabem.",
+            "not_yet": "Ainda não. Descarte os planos que não cabem e compare os ganhos."
+          },
+          "help": [
+            "Primeiro fique com os planos que deixam metade da caixa. Depois escolha o maior ganho."
+          ],
+          "choices": [
+            {
+              "label": "3 saquinhos: ganhar 9, perder 21"
+            },
+            {
+              "label": "6 saquinhos: ganhar 18, perder 42"
+            },
+            {
+              "label": "9 saquinhos: ganhar 27, perder 63"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Ganha mais que o plano pequeno"
+            },
+            {
+              "label": "O pior caso ainda deixa metade"
+            },
+            {
+              "label": "É o que está no meio"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "choices": [
+          {
+            "id": "plan-4"
+          },
+          {
+            "id": "plan-6"
+          },
+          {
+            "id": "plan-8"
+          },
+          {
+            "id": "plan-10"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-lot"
+          },
+          {
+            "id": "why-like"
+          },
+          {
+            "id": "why-fits"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "plan-8"
+        ],
+        "reasonQuality": {
+          "why-fits": "sound",
+          "why-lot": "partial",
+          "why-like": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La mesa de pulseras de Liruf tiene 84 monedas. ¿Qué plan gana más y deja la mitad en el peor caso?",
+          "feedback": {
+            "met": "Conservaste la mitad de la caja y elegiste la mayor ganancia.",
+            "not_yet": "Todavía no. Primero mira qué planes dejan la mitad de la caja."
+          },
+          "help": [
+            "Resta cada peor caso a la caja. Deja los planes que dejan la mitad y compara ganancias."
+          ],
+          "choices": [
+            {
+              "label": "4 pulseras: ganar 12, perder 20"
+            },
+            {
+              "label": "6 pulseras: ganar 18, perder 30"
+            },
+            {
+              "label": "8 pulseras: ganar 24, perder 40"
+            },
+            {
+              "label": "10 pulseras: ganar 30, perder 50"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Gana bastante"
+            },
+            {
+              "label": "Es la que más me gusta"
+            },
+            {
+              "label": "Cabe y es la que más gana"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Liruf's bracelet table has 84 coins. Which plan wins most and leaves half in the worst case?",
+          "feedback": {
+            "met": "You kept half the box and still chose the biggest win.",
+            "not_yet": "Not yet. First see which plans leave half the box."
+          },
+          "help": [
+            "Subtract each worst case from the box. Keep the plans that leave half, then compare wins."
+          ],
+          "choices": [
+            {
+              "label": "4 bracelets: win 12, lose 20"
+            },
+            {
+              "label": "6 bracelets: win 18, lose 30"
+            },
+            {
+              "label": "8 bracelets: win 24, lose 40"
+            },
+            {
+              "label": "10 bracelets: win 30, lose 50"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "It wins a lot"
+            },
+            {
+              "label": "It is the one I like most"
+            },
+            {
+              "label": "It fits and wins the most"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mesa de pulseiras do Liruf tem 84 moedas. Qual plano ganha mais e deixa metade no pior caso?",
+          "feedback": {
+            "met": "Você manteve metade da caixa e escolheu o maior ganho.",
+            "not_yet": "Ainda não. Primeiro veja quais planos deixam metade da caixa."
+          },
+          "help": [
+            "Tire cada pior caso da caixa. Fique com os planos que deixam metade e compare os ganhos."
+          ],
+          "choices": [
+            {
+              "label": "4 pulseiras: ganhar 12, perder 20"
+            },
+            {
+              "label": "6 pulseiras: ganhar 18, perder 30"
+            },
+            {
+              "label": "8 pulseiras: ganhar 24, perder 40"
+            },
+            {
+              "label": "10 pulseiras: ganhar 30, perder 50"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Ganha bastante"
+            },
+            {
+              "label": "É a de que mais gosto"
+            },
+            {
+              "label": "Cabe e é a que mais ganha"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

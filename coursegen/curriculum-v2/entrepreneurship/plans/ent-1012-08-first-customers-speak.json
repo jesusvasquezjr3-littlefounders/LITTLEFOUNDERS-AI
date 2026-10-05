@@ -1,0 +1,1218 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-first-version",
+  "lesson_id": "ent-1012-08-first-customers-speak",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.customer-feedback",
+    "biz.make-and-test"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-a"
+  },
+  "brief": "Liruf lee diez tarjetas de niños que probaron la bolsa: las junta en montones, las cuenta y elige qué cambiar. Después el estudiante ordena tarjetas en cambiar, dejar o esperar, lee una gráfica nueva y decide qué preguntar para comprobar un cambio.",
+  "title": {
+    "es-MX": "Los primeros clientes hablan",
+    "en-US": "First customers speak",
+    "pt-BR": "Os primeiros clientes falam"
+  },
+  "new_concepts": [
+    "biz.customer-feedback"
+  ],
+  "regional": {
+    "universal": "Uses no money, places or customs from any market; only kids, a lunch bag and a fair table."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Liruf terminó el primer día. Diez niños probaron la bolsa y regresaron diez tarjetas.",
+          "line": "¡Grrr, qué montón! Cada tarjeta es una pista pequeña de un niño."
+        },
+        "en-US": {
+          "prompt": "Liruf's team finished day one. Ten kids tried the bag, and ten cards came back.",
+          "line": "Roar, what a pile! Each card is a small clue from a kid."
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Liruf terminou o primeiro dia. Dez crianças provaram a sacola e dez cartões voltaram.",
+          "line": "Grrr, que pilha! Cada cartão é uma pista pequena de uma criança."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-colors"
+          },
+          {
+            "id": "reply-fix"
+          },
+          {
+            "id": "reply-fine"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-fix"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "¿Cómo respondes?",
+          "speaker": "Cliente",
+          "line": "Me encanta la bolsa, pero el asa se rompió cuando la levanté.",
+          "replies": [
+            {
+              "label": "Agregaremos más colores la próxima vez."
+            },
+            {
+              "label": "Arreglaremos el asa y volveremos a preguntar."
+            },
+            {
+              "label": "A veces las bolsas se rompen, no pasa nada."
+            }
+          ],
+          "feedback": {
+            "met": "Gracias, eso muestra cómo lees las tarjetas. Ahora los pasos.",
+            "not_yet": "Gracias, eso muestra cómo lees las tarjetas. Ahora los pasos."
+          }
+        },
+        "en-US": {
+          "prompt": "How do you answer?",
+          "speaker": "Customer",
+          "line": "I love the bag, but the handle tore when I picked it up.",
+          "replies": [
+            {
+              "label": "We'll add more colors next time."
+            },
+            {
+              "label": "We'll fix the handle, then ask again."
+            },
+            {
+              "label": "Bags tear sometimes, so it is fine."
+            }
+          ],
+          "feedback": {
+            "met": "Thanks, that shows how you read cards. Now the steps.",
+            "not_yet": "Thanks, that shows how you read cards. Now the steps."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como você responde?",
+          "speaker": "Cliente",
+          "line": "Adorei a sacola, mas a alça rompeu quando eu a peguei.",
+          "replies": [
+            {
+              "label": "Vamos pôr mais cores da próxima vez."
+            },
+            {
+              "label": "Vamos consertar a alça e perguntar de novo."
+            },
+            {
+              "label": "Sacolas às vezes rompem, então está tudo bem."
+            }
+          ],
+          "feedback": {
+            "met": "Isso mostra como você lê os cartões. Agora vêm os passos.",
+            "not_yet": "Isso mostra como você lê os cartões. Agora vêm os passos."
+          }
+        }
+      }
+    },
+    {
+      "id": "step-group-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: el equipo junta las tarjetas del mismo tema en un montón, como juguetes en una caja.",
+          "line": "Cuatro montones: asa, color, rapidez y precio. Con montones es fácil contar las tarjetas."
+        },
+        "en-US": {
+          "prompt": "Step 1: the team puts cards about one thing in one pile, like toys in a box.",
+          "line": "Four piles: handle, color, speed, price. Piles make cards easy to count."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a equipe junta os cartões do mesmo assunto numa pilha, como brinquedos numa caixa.",
+          "line": "Quatro pilhas: alça, cor, rapidez e preço. Com pilhas, é fácil contar os cartões."
+        }
+      }
+    },
+    {
+      "id": "chart-count-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-handle"
+            },
+            {
+              "id": "cat-speed"
+            },
+            {
+              "id": "cat-colors"
+            },
+            {
+              "id": "cat-price"
+            }
+          ],
+          "series": [
+            {
+              "id": "ser-cards",
+              "values": [
+                4,
+                3,
+                2,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: el equipo cuenta cada montón. Cada barra muestra cuántos niños lo dijeron.",
+          "title": "Diez tarjetas, cuatro montones",
+          "data": {
+            "categories": [
+              {
+                "label": "El asa se rompe"
+              },
+              {
+                "label": "Les encanta la rapidez"
+              },
+              {
+                "label": "Quieren más colores"
+              },
+              {
+                "label": "Muy caro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tarjetas"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 2: the team counts each pile. Each bar shows how many kids said it.",
+          "title": "Ten cards, four piles",
+          "data": {
+            "categories": [
+              {
+                "label": "Handle tears"
+              },
+              {
+                "label": "Love the speed"
+              },
+              {
+                "label": "Wants more colors"
+              },
+              {
+                "label": "Too expensive"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cards"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a equipe conta cada pilha. Cada barra mostra quantas crianças disseram isso.",
+          "title": "Dez cartões, quatro pilhas",
+          "data": {
+            "categories": [
+              {
+                "label": "A alça rompe"
+              },
+              {
+                "label": "Adoraram a rapidez"
+              },
+              {
+                "label": "Querem mais cores"
+              },
+              {
+                "label": "Muito caro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cartões"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "step-pick-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: el equipo decide qué hacer con cada montón, según cuántos niños lo dijeron.",
+          "line": "El asa se rompe: 4 de 10 niños, así que la cambiamos. La rapidez les encanta y se queda; una tarjeta de precio espera."
+        },
+        "en-US": {
+          "prompt": "Step 3: the team decides what to do with each pile, by how many kids said it.",
+          "line": "Handle tears: 4 of 10 kids, so we change it. Speed stays since kids love it; one price card waits."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a equipe decide o que fazer com cada pilha, pelo número de crianças que falaram.",
+          "line": "A alça rompe: 4 de 10 crianças, então vamos mudar isso. Adoraram a rapidez, então fica; um cartão de preço pode esperar."
+        }
+      }
+    },
+    {
+      "id": "guided-sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-change"
+          },
+          {
+            "id": "bin-keep"
+          },
+          {
+            "id": "bin-ignore"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-staples"
+          },
+          {
+            "id": "item-fresh"
+          },
+          {
+            "id": "item-sticker"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-many"
+          },
+          {
+            "id": "why-love"
+          },
+          {
+            "id": "why-few"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-staples": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ],
+          "item-fresh": [
+            {
+              "bin": "bin-keep",
+              "reason": "why-love"
+            }
+          ],
+          "item-sticker": [
+            {
+              "bin": "bin-ignore",
+              "reason": "why-few"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Otra clase mandó tres tarjetas. Cuenta los niños, luego ordena cada tarjeta y elige por qué.",
+          "rule": "¿Dónde va cada tarjeta y por qué?",
+          "bins": [
+            {
+              "label": "Cambiarlo"
+            },
+            {
+              "label": "Dejarlo igual"
+            },
+            {
+              "label": "Ignorarlo por ahora"
+            }
+          ],
+          "items": [
+            {
+              "label": "Las grapas sobresalen: 5 niños"
+            },
+            {
+              "label": "Les encanta el sándwich fresco: 4 niños"
+            },
+            {
+              "label": "Quiere una calcomanía: 1 niño"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muchos niños pidieron un cambio"
+            },
+            {
+              "label": "A los niños les encanta cómo funciona"
+            },
+            {
+              "label": "Solo un niño lo pidió"
+            }
+          ],
+          "feedback": {
+            "met": "Contaste a los niños y emparejaste cada tarjeta con una razón.",
+            "not_yet": "Mira cada cifra: ¿un problema, algo que les gusta o una sola voz?"
+          },
+          "help": [
+            "¿Muchos niños pidieron un cambio? Se cambia.",
+            "¿Solo un niño lo pidió? Puede esperar."
+          ]
+        },
+        "en-US": {
+          "prompt": "A second class sent three cards. Count the kids, then sort each card and pick why.",
+          "rule": "Where does each card go, and why?",
+          "bins": [
+            {
+              "label": "Change it"
+            },
+            {
+              "label": "Keep it"
+            },
+            {
+              "label": "Ignore for now"
+            }
+          ],
+          "items": [
+            {
+              "label": "Staples poke out: 5 kids"
+            },
+            {
+              "label": "Love the fresh sandwich: 4 kids"
+            },
+            {
+              "label": "Wants a sticker: 1 kid"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Many kids asked for a change"
+            },
+            {
+              "label": "Kids love how it works"
+            },
+            {
+              "label": "Only one kid asked"
+            }
+          ],
+          "feedback": {
+            "met": "You counted the kids and matched each card to a reason.",
+            "not_yet": "Look at each count: a problem, love, or one voice?"
+          },
+          "help": [
+            "Many kids asked for a change? Change it.",
+            "Only one kid asked? It can wait."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outra turma mandou três cartões. Conte as crianças, depois separe cada cartão e escolha o porquê.",
+          "rule": "Onde vai cada cartão e por quê?",
+          "bins": [
+            {
+              "label": "Mudar isso"
+            },
+            {
+              "label": "Manter"
+            },
+            {
+              "label": "Ignorar por enquanto"
+            }
+          ],
+          "items": [
+            {
+              "label": "Os grampos saem para fora: 5 crianças"
+            },
+            {
+              "label": "Adoram o sanduíche fresco: 4 crianças"
+            },
+            {
+              "label": "Quer um adesivo: 1 criança"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Muitas crianças pediram uma mudança"
+            },
+            {
+              "label": "As crianças adoram como funciona"
+            },
+            {
+              "label": "Só uma criança pediu"
+            }
+          ],
+          "feedback": {
+            "met": "Você contou as crianças e ligou cada cartão a um motivo.",
+            "not_yet": "Olhe cada contagem: um problema, algo que amam ou uma só voz?"
+          },
+          "help": [
+            "Muitas crianças pediram mudança? Então muda.",
+            "Só uma criança pediu? Pode esperar."
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-check-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: el equipo pone un asa más fuerte y el segundo día vuelve a preguntar a diez niños.",
+          "line": "Solo cambió una cosa, así que las tarjetas nuevas nos dirán si funcionó."
+        },
+        "en-US": {
+          "prompt": "Step 4: the team swaps in a stronger handle, then asks ten kids again on day two.",
+          "line": "Only one thing changed, so the new cards can tell us if it worked."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a equipe troca por uma alça mais forte e, no segundo dia, pergunta de novo a dez crianças.",
+          "line": "Só uma coisa mudou, então os novos cartões mostram se funcionou."
+        }
+      }
+    },
+    {
+      "id": "chart-compare-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "grouped-bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-handle"
+            },
+            {
+              "id": "cat-speed"
+            },
+            {
+              "id": "cat-colors"
+            },
+            {
+              "id": "cat-price"
+            }
+          ],
+          "series": [
+            {
+              "id": "ser-day1",
+              "values": [
+                4,
+                3,
+                2,
+                1
+              ]
+            },
+            {
+              "id": "ser-day2",
+              "values": [
+                1,
+                6,
+                2,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Día dos: las tarjetas de asa rota bajaron de 4 a 1. El cambio funcionó.",
+          "title": "Día uno y día dos",
+          "data": {
+            "categories": [
+              {
+                "label": "El asa se rompe"
+              },
+              {
+                "label": "Les encanta la rapidez"
+              },
+              {
+                "label": "Quieren más colores"
+              },
+              {
+                "label": "Muy caro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Día 1"
+              },
+              {
+                "label": "Día 2"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Day two: handle tears fell from 4 cards to 1. The change worked.",
+          "title": "Day one and day two",
+          "data": {
+            "categories": [
+              {
+                "label": "Handle tears"
+              },
+              {
+                "label": "Love the speed"
+              },
+              {
+                "label": "Wants more colors"
+              },
+              {
+                "label": "Too expensive"
+              }
+            ],
+            "series": [
+              {
+                "label": "Day 1"
+              },
+              {
+                "label": "Day 2"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dia dois: os cartões de alça rompida caíram de 4 para 1. A mudança funcionou.",
+          "title": "Dia um e dia dois",
+          "data": {
+            "categories": [
+              {
+                "label": "A alça rompe"
+              },
+              {
+                "label": "Adoraram a rapidez"
+              },
+              {
+                "label": "Querem mais cores"
+              },
+              {
+                "label": "Muito caro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Dia 1"
+              },
+              {
+                "label": "Dia 2"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-chart-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-speed"
+            },
+            {
+              "id": "cat-squash"
+            },
+            {
+              "id": "cat-leak"
+            },
+            {
+              "id": "cat-stickers"
+            }
+          ],
+          "series": [
+            {
+              "id": "ser-cards",
+              "values": [
+                5,
+                4,
+                2,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-squash"
+            },
+            {
+              "id": "opt-speed"
+            },
+            {
+              "id": "opt-leak"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-squash"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El salón 4 mandó doce tarjetas. Busca un problema que compartan muchos niños.",
+          "title": "Tarjetas del salón 4",
+          "data": {
+            "categories": [
+              {
+                "label": "Les encanta la rapidez"
+              },
+              {
+                "label": "El sándwich se aplasta"
+              },
+              {
+                "label": "La bebida se derrama"
+              },
+              {
+                "label": "Quieren calcomanías"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tarjetas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué montón debe cambiar primero el equipo?",
+            "options": [
+              {
+                "label": "El sándwich se aplasta"
+              },
+              {
+                "label": "Les encanta la rapidez"
+              },
+              {
+                "label": "La bebida se derrama"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Leíste las barras y elegiste un problema que comparten muchos niños.",
+            "not_yet": "Mira cada barra: ¿problema o elogio, y cuántos niños?"
+          },
+          "help": [
+            "Lo que gusta se queda. Lo que molesta a muchos se cambia."
+          ]
+        },
+        "en-US": {
+          "prompt": "Room 4 sent twelve cards. Look for a problem that many kids share.",
+          "title": "Cards from room 4",
+          "data": {
+            "categories": [
+              {
+                "label": "Love the speed"
+              },
+              {
+                "label": "Sandwich gets squashed"
+              },
+              {
+                "label": "Drink leaks"
+              },
+              {
+                "label": "Wants stickers"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cards"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which pile should the team change first?",
+            "options": [
+              {
+                "label": "Sandwich gets squashed"
+              },
+              {
+                "label": "Love the speed"
+              },
+              {
+                "label": "Drink leaks"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You read the bars and chose a problem many kids share.",
+            "not_yet": "Look at each bar: problem or praise, and how many kids?"
+          },
+          "help": [
+            "Praise stays. Problems that many kids share get changed."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A sala 4 mandou doze cartões. Procure um problema que muitas crianças repetem.",
+          "title": "Cartões da sala 4",
+          "data": {
+            "categories": [
+              {
+                "label": "Adoraram a rapidez"
+              },
+              {
+                "label": "O sanduíche amassa"
+              },
+              {
+                "label": "A bebida vaza"
+              },
+              {
+                "label": "Querem adesivos"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cartões"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual pilha a equipe deve mudar primeiro?",
+            "options": [
+              {
+                "label": "O sanduíche amassa"
+              },
+              {
+                "label": "Adoraram a rapidez"
+              },
+              {
+                "label": "A bebida vaza"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você leu as barras e escolheu um problema que muitas crianças repetem.",
+            "not_yet": "Olhe cada barra: problema ou elogio, e quantas crianças?"
+          },
+          "help": [
+            "O que agrada fica. O que incomoda muitos muda."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-ignore"
+          },
+          {
+            "id": "bin-change"
+          },
+          {
+            "id": "bin-keep"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-napkin"
+          },
+          {
+            "id": "item-lid"
+          },
+          {
+            "id": "item-purple"
+          },
+          {
+            "id": "item-juice"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-few"
+          },
+          {
+            "id": "why-love"
+          },
+          {
+            "id": "why-many"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-lid": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ],
+          "item-juice": [
+            {
+              "bin": "bin-change",
+              "reason": "why-many"
+            }
+          ],
+          "item-napkin": [
+            {
+              "bin": "bin-keep",
+              "reason": "why-love"
+            }
+          ],
+          "item-purple": [
+            {
+              "bin": "bin-ignore",
+              "reason": "why-few"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El salón 5 mandó cuatro tarjetas. Ordena cada una según lo que dijeron los niños y elige por qué.",
+          "rule": "¿Dónde va cada tarjeta y por qué?",
+          "bins": [
+            {
+              "label": "Ignorarlo por ahora"
+            },
+            {
+              "label": "Cambiarlo"
+            },
+            {
+              "label": "Dejarlo igual"
+            }
+          ],
+          "items": [
+            {
+              "label": "Les encanta la bolsita de servilletas: 4 niños"
+            },
+            {
+              "label": "La tapa no cierra: 6 niños"
+            },
+            {
+              "label": "Quiere una bolsa morada: 1 niño"
+            },
+            {
+              "label": "La cajita de jugo se derrama: 5 niños"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Solo un niño lo pidió"
+            },
+            {
+              "label": "A los niños les encanta cómo funciona"
+            },
+            {
+              "label": "Muchos niños pidieron un cambio"
+            }
+          ],
+          "feedback": {
+            "met": "Emparejaste cada tarjeta con lo que dijeron los niños.",
+            "not_yet": "Relee cada tarjeta y su cifra. ¿Qué dijeron los niños?"
+          },
+          "help": [
+            "Primero cuenta los niños de cada tarjeta."
+          ]
+        },
+        "en-US": {
+          "prompt": "Room 5 sent four cards. Sort each by what the kids said, then pick why.",
+          "rule": "Where does each card go, and why?",
+          "bins": [
+            {
+              "label": "Ignore for now"
+            },
+            {
+              "label": "Change it"
+            },
+            {
+              "label": "Keep it"
+            }
+          ],
+          "items": [
+            {
+              "label": "Love the napkin pouch: 4 kids"
+            },
+            {
+              "label": "Lid will not close: 6 kids"
+            },
+            {
+              "label": "Wants a purple bag: 1 kid"
+            },
+            {
+              "label": "Juice box leaks: 5 kids"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Only one kid asked"
+            },
+            {
+              "label": "Kids love how it works"
+            },
+            {
+              "label": "Many kids asked for a change"
+            }
+          ],
+          "feedback": {
+            "met": "You matched each card to what the kids said.",
+            "not_yet": "Reread each card and its count. What did the kids say?"
+          },
+          "help": [
+            "Count the kids on each card first."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A sala 5 mandou quatro cartões. Separe cada um pelo que as crianças disseram e escolha o porquê.",
+          "rule": "Onde vai cada cartão e por quê?",
+          "bins": [
+            {
+              "label": "Ignorar por enquanto"
+            },
+            {
+              "label": "Mudar isso"
+            },
+            {
+              "label": "Manter"
+            }
+          ],
+          "items": [
+            {
+              "label": "Adoram o saquinho de guardanapos: 4 crianças"
+            },
+            {
+              "label": "A tampa não fecha: 6 crianças"
+            },
+            {
+              "label": "Quer uma sacola roxa: 1 criança"
+            },
+            {
+              "label": "A caixinha de suco vaza: 5 crianças"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Só uma criança pediu"
+            },
+            {
+              "label": "As crianças adoram como funciona"
+            },
+            {
+              "label": "Muitas crianças pediram uma mudança"
+            }
+          ],
+          "feedback": {
+            "met": "Você ligou cada cartão ao que as crianças disseram.",
+            "not_yet": "Releia cada cartão e sua contagem. O que as crianças disseram?"
+          },
+          "help": [
+            "Primeiro conte as crianças de cada cartão."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-table"
+          },
+          {
+            "id": "reply-glitter"
+          },
+          {
+            "id": "reply-easier"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-easier"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la mesa de la feria, hoy las letras son más grandes. ¿Qué le preguntas?",
+          "speaker": "Visitante",
+          "line": "La vez pasada no pude leer tu pancarta.",
+          "replies": [
+            {
+              "label": "¿Te gusta nuestra mesa?"
+            },
+            {
+              "label": "¿Compramos más diamantina?"
+            },
+            {
+              "label": "¿Ahora la pancarta se lee mejor?"
+            }
+          ],
+          "feedback": {
+            "met": "Preguntaste justo por el cambio que hiciste.",
+            "not_yet": "Mira lo que cambiaste. ¿Qué pregunta lo prueba?"
+          },
+          "help": [
+            "Piensa en qué cambió desde el primer día."
+          ]
+        },
+        "en-US": {
+          "prompt": "At the fair table, the letters are bigger today. What do you ask?",
+          "speaker": "Visitor",
+          "line": "Last time I could not read your banner.",
+          "replies": [
+            {
+              "label": "Do you like our table?"
+            },
+            {
+              "label": "Should we buy more glitter?"
+            },
+            {
+              "label": "Is the banner easier to read now?"
+            }
+          ],
+          "feedback": {
+            "met": "You asked about the change you made.",
+            "not_yet": "Look at what you changed. Which question tests it?"
+          },
+          "help": [
+            "Think about what changed since the first day."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na mesa da feira, hoje as letras estão maiores. O que você pergunta?",
+          "speaker": "Visitante",
+          "line": "Da última vez não consegui ler sua faixa.",
+          "replies": [
+            {
+              "label": "Você gosta da nossa mesa?"
+            },
+            {
+              "label": "Devemos comprar mais glitter?"
+            },
+            {
+              "label": "A faixa está mais fácil de ler agora?"
+            }
+          ],
+          "feedback": {
+            "met": "Você perguntou sobre a mudança que fez.",
+            "not_yet": "Olhe o que você mudou. Qual pergunta testa isso?"
+          },
+          "help": [
+            "Pense no que mudou desde o primeiro dia."
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1007 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-first-pay",
+  "lesson_id": "fe-1317-04-first-account",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.safe-keeping",
+    "life.banks-and-accounts",
+    "life.data-privacy"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Maya abre su primera cuenta con uno de sus padres para guardar sus 100 de pago. Rho sigue el dinero del pago a la cuenta y a la tarjeta, revisa saldo y NIP en cada compra, y prueba reglas escritas. Maya elige un NIP que nadie adivina, no lo comparte y apaga el permiso que pide ver sus contactos.",
+  "title": {
+    "en-US": "Open your first account",
+    "es-MX": "Abre tu primera cuenta",
+    "pt-BR": "Abra sua primeira conta"
+  },
+  "new_concepts": [
+    "life.safe-keeping",
+    "life.banks-and-accounts",
+    "life.data-privacy"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Maya opens a first account with a parent. In the US a teen often has a joint checking account with a parent and a debit card with a PIN. Account rules and amounts are illustrative coin values, not advice about any bank.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "debit card",
+          "checking account"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Maya abre su primera cuenta con uno de sus padres. En México muchos bancos ofrecen cuentas para menores con tarjeta de débito y NIP, y las reglas cambian según el banco. Las cantidades son monedas ilustrativas, no consejo sobre ningún banco.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tarjeta de débito",
+          "NIP"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Maya abre a primeira conta com um dos pais. No Brasil, bancos oferecem contas para menores com cartão de débito e senha, e as regras mudam conforme o banco. Os valores são moedas ilustrativas, não conselho sobre nenhum banco.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "cartão de débito",
+          "senha"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya just earned 100 and opens her first account with a parent.",
+          "line": "I will follow that 100 from pay to account to card, one step at a time."
+        },
+        "es-MX": {
+          "prompt": "Maya acaba de ganar 100 y abre su primera cuenta con uno de sus padres.",
+          "line": "Voy a seguir esos 100 del pago a la cuenta y a la tarjeta, un paso a la vez."
+        },
+        "pt-BR": {
+          "prompt": "Maya acabou de ganhar 100 e abre sua primeira conta com um dos pais.",
+          "line": "Vou seguir esses 100 do pagamento à conta e ao cartão, um passo de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-allow"
+          },
+          {
+            "id": "reply-skip"
+          },
+          {
+            "id": "reply-later"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-skip"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A photo app asks to see Maya's contacts to find her friends. What does she do?",
+          "feedback": {
+            "met": "Noted, that shows where you start. Now we go step by step.",
+            "not_yet": "Noted, that shows where you start. Now we go step by step."
+          },
+          "speaker": "Photo app",
+          "line": "Allow access to your contacts to find friends faster.",
+          "replies": [
+            {
+              "label": "She allows it, it saves time"
+            },
+            {
+              "label": "She skips it, the app works without it"
+            },
+            {
+              "label": "She allows it, then checks settings later"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una app de fotos pide ver los contactos de Maya para encontrar a sus amigos. ¿Qué hace?",
+          "feedback": {
+            "met": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso.",
+            "not_yet": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso."
+          },
+          "speaker": "App de fotos",
+          "line": "Permite el acceso a tus contactos para encontrar amigos más rápido.",
+          "replies": [
+            {
+              "label": "Lo permite, ahorra tiempo"
+            },
+            {
+              "label": "Lo omite, la app funciona sin eso"
+            },
+            {
+              "label": "Lo permite y revisa los ajustes después"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um app de fotos pede para ver os contatos da Maya e achar os amigos dela. O que ela faz?",
+          "feedback": {
+            "met": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo.",
+            "not_yet": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo."
+          },
+          "speaker": "App de fotos",
+          "line": "Permita o acesso aos seus contatos para achar amigos mais rápido.",
+          "replies": [
+            {
+              "label": "Permite, economiza tempo"
+            },
+            {
+              "label": "Pula, o app funciona sem isso"
+            },
+            {
+              "label": "Permite e confere as configurações depois"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-money-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the 100 lands in the account, and the card spends from it.",
+          "line": "Maya pays 18 for lunch with her debit card: 100 − 18 leaves a balance of 82 in the account."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: los 100 llegan a la cuenta, y la tarjeta gasta de ahí.",
+          "line": "Maya paga 18 de comida con su tarjeta de débito: 100 − 18 deja un saldo de 82 en la cuenta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: os 100 chegam à conta, e o cartão gasta dela.",
+          "line": "Maya paga 18 no almoço com o cartão de débito: 100 − 18 deixa um saldo de 82 na conta."
+        }
+      }
+    },
+    {
+      "id": "example-checks-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: every card payment asks two questions, first the balance, then the PIN.",
+          "line": "A 90 purchase with 82 in the account is declined. This card spends only what the account holds."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: cada pago con tarjeta hace dos preguntas, primero el saldo y luego el NIP.",
+          "line": "Una compra de 90 con 82 en la cuenta se rechaza. Esta tarjeta solo gasta lo que hay en la cuenta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: todo pagamento com cartão faz duas perguntas, primeiro o saldo e depois a senha.",
+          "line": "Uma compra de 90 com 82 na conta é recusada. Este cartão só gasta o que há na conta."
+        }
+      }
+    },
+    {
+      "id": "guided-flow-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "start": "q-enough",
+        "nodes": [
+          {
+            "id": "q-enough",
+            "kind": "question",
+            "yes": "out-paid",
+            "no": "out-declined"
+          },
+          {
+            "id": "out-paid",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-declined",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-sixty"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-sixty": [
+            "q-enough",
+            "out-paid"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya has 82 in her account. Follow the chart for a 60 purchase.",
+          "feedback": {
+            "met": "You checked the balance first, then followed the arrow.",
+            "not_yet": "Compare the price with the balance, then follow that arrow."
+          },
+          "nodes": [
+            {
+              "label": "Enough money in the account?"
+            },
+            {
+              "label": "Paid: the balance goes down"
+            },
+            {
+              "label": "Declined: nothing is spent"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "A 60 purchase, 82 in the account"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Maya tiene 82 en su cuenta. Sigue el diagrama para una compra de 60.",
+          "feedback": {
+            "met": "Revisaste primero el saldo y luego seguiste la flecha.",
+            "not_yet": "Compara el precio con el saldo y sigue esa flecha."
+          },
+          "nodes": [
+            {
+              "label": "¿Hay suficiente dinero en la cuenta?"
+            },
+            {
+              "label": "Pagado: el saldo baja"
+            },
+            {
+              "label": "Rechazado: no se gasta nada"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Una compra de 60, con 82 en la cuenta"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Maya tem 82 na conta. Siga o diagrama para uma compra de 60.",
+          "feedback": {
+            "met": "Você conferiu o saldo primeiro e depois seguiu a seta.",
+            "not_yet": "Compare o preço com o saldo e siga essa seta."
+          },
+          "nodes": [
+            {
+              "label": "Há dinheiro suficiente na conta?"
+            },
+            {
+              "label": "Pago: o saldo diminui"
+            },
+            {
+              "label": "Recusado: nada é gasto"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Uma compra de 60, com 82 na conta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-pin-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the PIN is the second check, so a guessable PIN protects nothing.",
+          "line": "Birthdays and 1234 are the first guesses. Maya picks digits tied to nothing about her and tells no friend."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el NIP es la segunda revisión, así que un NIP fácil de adivinar no protege nada.",
+          "line": "Los cumpleaños y 1234 son lo primero que se prueba. Maya elige dígitos sin relación con ella y no los comparte."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a senha é a segunda checagem, então uma senha fácil de adivinhar não protege nada.",
+          "line": "Aniversários e 1234 são os primeiros palpites. Maya escolhe dígitos sem relação com ela e não conta a nenhum amigo."
+        }
+      }
+    },
+    {
+      "id": "practice-pin-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-birthday"
+          },
+          {
+            "id": "reply-1234"
+          },
+          {
+            "id": "reply-private"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-private"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya sets the PIN for her new card. Which four digits does she choose?",
+          "feedback": {
+            "met": "You chose digits nobody could guess from her life.",
+            "not_yet": "Which choice could someone guess from what they know about her?"
+          },
+          "speaker": "Bank app",
+          "line": "Choose four digits. This PIN protects every payment you make.",
+          "replies": [
+            {
+              "label": "She uses 0714, her birthday"
+            },
+            {
+              "label": "She uses 1234, easy to remember"
+            },
+            {
+              "label": "She uses digits tied to nothing about her"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Maya define el NIP de su tarjeta nueva. ¿Qué cuatro dígitos elige?",
+          "feedback": {
+            "met": "Elegiste dígitos que nadie adivinaría conociéndola.",
+            "not_yet": "¿Cuál opción podría adivinar alguien que conoce a Maya?"
+          },
+          "speaker": "App del banco",
+          "line": "Elige cuatro dígitos. Este NIP protege cada pago que hagas.",
+          "replies": [
+            {
+              "label": "Usa 1407, su cumpleaños"
+            },
+            {
+              "label": "Usa 1234, fácil de recordar"
+            },
+            {
+              "label": "Usa dígitos sin relación con ella"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Maya define a senha do cartão novo. Quais quatro dígitos ela escolhe?",
+          "feedback": {
+            "met": "Você escolheu dígitos que ninguém adivinharia conhecendo a Maya.",
+            "not_yet": "Qual opção alguém que conhece a Maya poderia adivinhar?"
+          },
+          "speaker": "App do banco",
+          "line": "Escolha quatro dígitos. Esta senha protege cada pagamento que você fizer.",
+          "replies": [
+            {
+              "label": "Usa 1407, o aniversário dela"
+            },
+            {
+              "label": "Usa 1234, fácil de lembrar"
+            },
+            {
+              "label": "Usa dígitos sem relação com ela"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-lunch-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-hand-over"
+          },
+          {
+            "id": "reply-split"
+          },
+          {
+            "id": "reply-whisper"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-split"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At lunch a friend asks to use Maya's card and PIN. What does she say?",
+          "feedback": {
+            "met": "You kept the card and PIN with you and still helped.",
+            "not_yet": "Which reply keeps the card and PIN in your hands?"
+          },
+          "speaker": "Friend",
+          "line": "Let me use your card. I will pay you back tomorrow.",
+          "replies": [
+            {
+              "label": "Sure, here is my card"
+            },
+            {
+              "label": "I pay, and you send me your share"
+            },
+            {
+              "label": "Sure, I whisper the PIN"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la comida, un amigo pide usar la tarjeta y el NIP de Maya. ¿Qué responde ella?",
+          "feedback": {
+            "met": "Dejaste la tarjeta y el NIP contigo y aun así ayudaste.",
+            "not_yet": "¿Qué respuesta deja la tarjeta y el NIP en tus manos?"
+          },
+          "speaker": "Amigo",
+          "line": "Déjame usar tu tarjeta. Mañana te lo pago.",
+          "replies": [
+            {
+              "label": "Sí, aquí tienes mi tarjeta"
+            },
+            {
+              "label": "Yo pago y tú me mandas tu parte"
+            },
+            {
+              "label": "Sí, te digo el NIP en voz baja"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No almoço, um amigo pede para usar o cartão e a senha da Maya. O que ela responde?",
+          "feedback": {
+            "met": "Você manteve cartão e senha com você e ainda ajudou.",
+            "not_yet": "Qual resposta deixa o cartão e a senha com você?"
+          },
+          "speaker": "Amigo",
+          "line": "Deixa eu usar seu cartão. Amanhã eu te pago.",
+          "replies": [
+            {
+              "label": "Pode, aqui está meu cartão"
+            },
+            {
+              "label": "Eu pago e você me manda sua parte"
+            },
+            {
+              "label": "Pode, digo a senha em voz baixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-rule-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: a rule is tested only by the cases that could break it.",
+          "line": "Rule: if the holder is under 18, a parent or guardian signs. Check an under-18 holder and an unsigned account."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: una regla se prueba solo con los casos que podrían romperla.",
+          "line": "Regla: si el titular es menor de 18 años, su madre, padre o tutor firma también. Revisa un menor y una cuenta sin firma."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: uma regra só se testa com os casos que poderiam quebrá-la.",
+          "line": "Regra: se o titular tem menos de 18 anos, um dos pais ou responsável assina também. Confira um menor e qualquer conta sem assinatura."
+        }
+      }
+    },
+    {
+      "id": "practice-rule-01",
+      "type": "logic.rule-checker.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "rule_kind": "causal",
+        "cards": [
+          {
+            "id": "card-birthday"
+          },
+          {
+            "id": "card-other"
+          },
+          {
+            "id": "card-rejected"
+          },
+          {
+            "id": "card-accepted"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-birthday",
+          "card-accepted"
+        ],
+        "roles": {
+          "card-birthday": "p",
+          "card-other": "not_p",
+          "card-rejected": "q",
+          "card-accepted": "not_q"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which cards must Maya turn to test the app's rule?",
+          "feedback": {
+            "met": "You turned the cards that could break the rule.",
+            "not_yet": "Ask which cards could show the rule failing."
+          },
+          "rule": "If a PIN is a birthday, the app rejects it.",
+          "cards": [
+            {
+              "face": "Birthday PIN"
+            },
+            {
+              "face": "Other PIN"
+            },
+            {
+              "face": "Rejected"
+            },
+            {
+              "face": "Accepted"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué tarjetas debe voltear Maya para probar la regla de la app?",
+          "feedback": {
+            "met": "Volteaste las tarjetas que podían romper la regla.",
+            "not_yet": "Pregúntate qué tarjetas mostrarían que la regla falla."
+          },
+          "rule": "Si un NIP es un cumpleaños, la app lo rechaza.",
+          "cards": [
+            {
+              "face": "NIP de cumpleaños"
+            },
+            {
+              "face": "Otro NIP"
+            },
+            {
+              "face": "Rechazado"
+            },
+            {
+              "face": "Aceptado"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quais cartas a Maya precisa virar para testar a regra do app?",
+          "feedback": {
+            "met": "Você virou as cartas que podiam quebrar a regra.",
+            "not_yet": "Pergunte quais cartas mostrariam a regra falhando."
+          },
+          "rule": "Se uma senha é um aniversário, o app a recusa.",
+          "cards": [
+            {
+              "face": "Senha de aniversário"
+            },
+            {
+              "face": "Outra senha"
+            },
+            {
+              "face": "Recusada"
+            },
+            {
+              "face": "Aceita"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-permission-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: an app needs only the access it uses to work. Maya's bank app asks to see her contacts.",
+          "line": "Banking needs no contacts, and those numbers are her friends' too. She turns it off and the app still works."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: una app solo necesita el acceso que usa para funcionar. La app del banco de Maya pide ver sus contactos.",
+          "line": "Un banco no necesita contactos, y esos números también son de sus amigos. Ella apaga el permiso y la app sigue funcionando."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: um app só precisa do acesso que usa para funcionar. O app do banco da Maya pede para ver os contatos dela.",
+          "line": "Um banco não precisa de contatos, e esses números também são dos amigos dela. Ela desliga a permissão e o app segue funcionando."
+        }
+      }
+    },
+    {
+      "id": "practice-flow-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "start": "q-enough",
+        "nodes": [
+          {
+            "id": "q-enough",
+            "kind": "question",
+            "yes": "q-pin",
+            "no": "out-no-money"
+          },
+          {
+            "id": "q-pin",
+            "kind": "question",
+            "yes": "out-paid",
+            "no": "out-bad-pin"
+          },
+          {
+            "id": "out-paid",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-no-money",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-bad-pin",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-lunch"
+          },
+          {
+            "id": "case-jacket"
+          },
+          {
+            "id": "case-game"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-lunch": [
+            "q-enough",
+            "q-pin",
+            "out-paid"
+          ],
+          "case-jacket": [
+            "q-enough",
+            "out-no-money"
+          ],
+          "case-game": [
+            "q-enough",
+            "q-pin",
+            "out-bad-pin"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya has 100 in her account. Follow the chart for each purchase.",
+          "feedback": {
+            "met": "You followed each purchase through the chart to its end.",
+            "not_yet": "Answer each question using the purchase, then follow the arrow."
+          },
+          "nodes": [
+            {
+              "label": "Enough money in the account?"
+            },
+            {
+              "label": "Is the PIN right?"
+            },
+            {
+              "label": "Paid: the balance goes down"
+            },
+            {
+              "label": "Declined: not enough money"
+            },
+            {
+              "label": "Declined: wrong PIN"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Lunch for 18, right PIN"
+            },
+            {
+              "label": "Jacket for 120, right PIN"
+            },
+            {
+              "label": "Game for 25, wrong PIN"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Maya tiene 100 en su cuenta. Sigue el diagrama para cada compra.",
+          "feedback": {
+            "met": "Seguiste cada compra por el diagrama hasta el final.",
+            "not_yet": "Responde cada pregunta con la compra y sigue la flecha."
+          },
+          "nodes": [
+            {
+              "label": "¿Hay suficiente dinero en la cuenta?"
+            },
+            {
+              "label": "¿El NIP es correcto?"
+            },
+            {
+              "label": "Pagado: el saldo baja"
+            },
+            {
+              "label": "Rechazado: no alcanza el dinero"
+            },
+            {
+              "label": "Rechazado: NIP incorrecto"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Comida de 18, NIP correcto"
+            },
+            {
+              "label": "Chamarra de 120, NIP correcto"
+            },
+            {
+              "label": "Juego de 25, NIP incorrecto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Maya tem 100 na conta. Siga o diagrama para cada compra.",
+          "feedback": {
+            "met": "Você seguiu cada compra pelo diagrama até o fim.",
+            "not_yet": "Responda cada pergunta com a compra e siga a seta."
+          },
+          "nodes": [
+            {
+              "label": "Há dinheiro suficiente na conta?"
+            },
+            {
+              "label": "A senha está certa?"
+            },
+            {
+              "label": "Pago: o saldo diminui"
+            },
+            {
+              "label": "Recusado: dinheiro insuficiente"
+            },
+            {
+              "label": "Recusado: senha errada"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Almoço de 18, senha certa"
+            },
+            {
+              "label": "Jaqueta de 120, senha certa"
+            },
+            {
+              "label": "Jogo de 25, senha errada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-coupon-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-skip"
+          },
+          {
+            "id": "reply-share"
+          },
+          {
+            "id": "reply-share-delete"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-skip"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A store app offers Maya a coupon if she shares her contacts. What does she do?",
+          "feedback": {
+            "met": "You kept her friends' numbers private; the coupon never needed them.",
+            "not_yet": "Does a coupon need her friends' numbers to work?"
+          },
+          "speaker": "Store app",
+          "line": "Share your contacts and unlock a coupon today.",
+          "replies": [
+            {
+              "label": "She skips it, a coupon needs no contacts"
+            },
+            {
+              "label": "She shares them, the coupon is worth it"
+            },
+            {
+              "label": "She shares them, then deletes the app"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una app de una tienda ofrece a Maya un cupón si comparte sus contactos. ¿Qué hace?",
+          "feedback": {
+            "met": "Protegiste los números de sus amigos; el cupón nunca los necesitó.",
+            "not_yet": "¿Un cupón necesita los números de sus amigos para funcionar?"
+          },
+          "speaker": "App de la tienda",
+          "line": "Comparte tus contactos y desbloquea un cupón hoy.",
+          "replies": [
+            {
+              "label": "No los comparte, el cupón no los necesita"
+            },
+            {
+              "label": "Los comparte, el cupón lo vale"
+            },
+            {
+              "label": "Los comparte y luego borra la app"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um app de uma loja oferece à Maya um cupom se ela compartilhar os contatos. O que ela faz?",
+          "feedback": {
+            "met": "Você protegeu os números dos amigos dela; o cupom nunca precisou deles.",
+            "not_yet": "Um cupom precisa dos números dos amigos dela para funcionar?"
+          },
+          "speaker": "App da loja",
+          "line": "Compartilhe seus contatos e libere um cupom hoje.",
+          "replies": [
+            {
+              "label": "Não compartilha, o cupom não precisa deles"
+            },
+            {
+              "label": "Compartilha, o cupom vale a pena"
+            },
+            {
+              "label": "Compartilha e depois apaga o app"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

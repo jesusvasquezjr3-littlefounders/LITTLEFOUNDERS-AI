@@ -1,0 +1,238 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-know-your-numbers",
+  "lesson_id": "ent-1317-05-the-real-cost-of-one",
+  "age_band": "13-17",
+  "eligibility": { "minimum_age": 13, "maximum_age": 17 },
+  "knowledge_component_ids": ["biz.full-costing", "biz.cost-vs-price", "money.unit-price"],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": { "character": "zara", "scene": "diorama-a" },
+  "brief": "Zara revisa contigo la libreta de tu negocio de limpieza de tenis. Los insumos cuestan poco, pero al sumar la parte repartida de los costos fijos, el empaque, el transporte y tu propio tiempo, el costo real de cada par resulta ser 19 monedas. Comparas ese número con el precio de 25.",
+  "title": { "en-US": "The real cost of one", "es-MX": "El costo real de uno", "pt-BR": "O custo real de um" },
+  "new_concepts": ["biz.full-costing"],
+  "regional": { "universal": "Uses LittleFounders coins only; no market amounts, places or customs." },
+  "segments": [
+    {
+      "id": "hook-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "hook",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "You sell sneaker cleans, and Zara reads your notebook.", "line": "Supplies cost 3 a pair; a clean sells for 25. That looks like 22 coins of profit." },
+        "es-MX": { "prompt": "Vendes limpiezas de tenis y Zara revisa tu libreta.", "line": "Los insumos cuestan 3 por par; una limpieza se vende en 25. Parecen 22 monedas de ganancia." },
+        "pt-BR": { "prompt": "Você vende limpezas de tênis e a Zara olha o seu caderno.", "line": "Os insumos custam 3 por par; uma limpeza sai por 25. Parecem 22 moedas de lucro." }
+      }
+    },
+    {
+      "id": "pre-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "pre",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "practice", "item_phase": "pre", "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "choices": [{ "id": "only-supplies" }, { "id": "supplies-packaging" }, { "id": "every-cost" }, { "id": "customer-pays" }],
+        "reasons": [{ "id": "reason-more-than-materials" }, { "id": "reason-know-best" }, { "id": "reason-price-only" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["every-cost"],
+        "reasonQuality": { "reason-more-than-materials": "sound", "reason-know-best": "partial", "reason-price-only": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In your sneaker cleans, supplies cost 3 coins a pair. What counts as one pair's cost?",
+          "feedback": { "met": "That is your starting point. Now we test it together.", "not_yet": "That is your starting point. Now we test it together." },
+          "choices": [{ "label": "Only the supplies" }, { "label": "Supplies and packaging" }, { "label": "Every cost of making one pair" }, { "label": "What the customer pays" }],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [{ "label": "A pair costs more than its materials" }, { "label": "Supplies are the cost I know best" }, { "label": "Customers only care about the price" }]
+        },
+        "es-MX": {
+          "prompt": "En tus limpiezas de tenis, los insumos cuestan 3 monedas por par. ¿Qué cuenta como el costo de un par?",
+          "feedback": { "met": "Ese es tu punto de partida. Ahora lo revisamos juntos.", "not_yet": "Ese es tu punto de partida. Ahora lo revisamos juntos." },
+          "choices": [{ "label": "Solo los insumos" }, { "label": "Insumos y empaque" }, { "label": "Todo lo que cuesta hacer un par" }, { "label": "Lo que paga el cliente" }],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [{ "label": "Un par cuesta más que sus materiales" }, { "label": "Los insumos son lo que mejor conozco" }, { "label": "Al cliente solo le importa el precio" }]
+        },
+        "pt-BR": {
+          "prompt": "Nas suas limpezas de tênis, os insumos custam 3 moedas por par. O que conta como o custo de um par?",
+          "feedback": { "met": "Esse é o seu ponto de partida. Agora vamos conferir juntos.", "not_yet": "Esse é o seu ponto de partida. Agora vamos conferir juntos." },
+          "choices": [{ "label": "Só os insumos" }, { "label": "Insumos e embalagem" }, { "label": "Tudo o que custa fazer um par" }, { "label": "O que o cliente paga" }],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [{ "label": "Um par custa mais que os materiais" }, { "label": "Os insumos são o que eu melhor conheço" }, { "label": "O cliente só se importa com o preço" }]
+        }
+      }
+    },
+    {
+      "id": "example-variable-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 1: the costs that come with every pair.", "line": "Supplies 3, packaging 2, transport 4, and your half hour, worth 6. These grow with every pair." },
+        "es-MX": { "prompt": "Paso 1: los costos que llegan con cada par.", "line": "Insumos 3, empaque 2, transporte 4 y tu media hora, que vale 6. Estos crecen con cada par." },
+        "pt-BR": { "prompt": "Passo 1: os custos que vêm com cada par.", "line": "Insumos 3, embalagem 2, transporte 4 e sua meia hora, que vale 6. Eles crescem a cada par." }
+      }
+    },
+    {
+      "id": "example-fixed-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 2: fixed costs get shared, so more pairs means a smaller share.", "line": "Your table and phone plan cost 80 a month. Over 20 pairs, that's 4 a pair." },
+        "es-MX": { "prompt": "Paso 2: los costos fijos se reparten; más pares, menos por par.", "line": "Tu mesa y tu plan de celular cuestan 80 al mes. Entre 20 pares, tocan 4 por par." },
+        "pt-BR": { "prompt": "Passo 2: os custos fixos são divididos; mais pares, menos por par.", "line": "Sua mesa e seu plano de celular custam 80 por mês. Divididos por 20 pares, dá 4 por par." }
+      }
+    },
+    {
+      "id": "example-chart-01", "type": "visual.chart.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "waterfall" },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [{ "id": "cat-fixed" }, { "id": "cat-supplies" }, { "id": "cat-packaging" }, { "id": "cat-transport" }, { "id": "cat-time" }],
+          "series": [{ "id": "ser-cost", "values": [4, 3, 2, 4, 6] }]
+        }
+      },
+      "copy": {
+        "en-US": { "prompt": "Step 3: stack the five costs and read where the last bar ends.", "title": "Real cost of one pair", "data": { "categories": [{ "label": "Fixed share" }, { "label": "Supplies" }, { "label": "Packaging" }, { "label": "Transport" }, { "label": "Your time" }], "series": [{ "label": "Cost per pair" }] } },
+        "es-MX": { "prompt": "Paso 3: apila los cinco costos y lee dónde termina la última barra.", "title": "Costo real de un par", "data": { "categories": [{ "label": "Parte fija" }, { "label": "Insumos" }, { "label": "Empaque" }, { "label": "Transporte" }, { "label": "Tu tiempo" }], "series": [{ "label": "Costo por par" }] } },
+        "pt-BR": { "prompt": "Passo 3: empilhe os cinco custos e veja onde termina a última barra.", "title": "Custo real de um par", "data": { "categories": [{ "label": "Parte fixa" }, { "label": "Insumos" }, { "label": "Embalagem" }, { "label": "Transporte" }, { "label": "Seu tempo" }], "series": [{ "label": "Custo por par" }] } }
+      }
+    },
+    {
+      "id": "guided-sum-01", "type": "math.worked-example.v2", "grading": "server", "teaching_role": "guided",
+      "visual": { "type": "worked-example" },
+      "item_role": "practice", "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "steps": [{ "id": "fixed-share" }, { "id": "per-pair" }, { "id": "real-cost" }],
+        "fade_count": 1,
+        "response_step_ids": ["per-pair", "real-cost"]
+      },
+      "rubric": { "expectedValues": { "per-pair": "12", "real-cost": "18" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Real cost per pair next month? Fixed 90 over 15 pairs; supplies 2, packaging 1, transport 4, time 5.",
+          "feedback": { "met": "You added all four per-pair costs and the fixed share.", "not_yet": "Check Zara's chart: add the per-pair costs, then the fixed share." },
+          "help": ["Add the four per-pair costs, then the fixed share."],
+          "steps": [
+            { "expression": "90 ÷ 15", "result": "6", "spokenText": "Ninety divided by 15 is 6 coins of fixed cost per pair" },
+            { "expression": "Supplies + packaging + transport + time", "result": "12", "spokenText": "Two plus one plus four plus five is 12" },
+            { "expression": "Fixed share + per-pair costs", "result": "18", "spokenText": "Six plus 12 is 18, the real cost of one pair" }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Costo real por par el próximo mes? Fijos 90 entre 15 pares; insumos 2, empaque 1, transporte 4, tiempo 5.",
+          "feedback": { "met": "Sumaste los cuatro costos por par y la parte fija.", "not_yet": "Mira la gráfica de Zara: primero los costos por par, luego la parte fija." },
+          "help": ["Suma los cuatro costos por par y luego la parte fija."],
+          "steps": [
+            { "expression": "90 ÷ 15", "result": "6", "spokenText": "Noventa entre 15 son 6 de costo fijo por par" },
+            { "expression": "Insumos + empaque + transporte + tiempo", "result": "12", "spokenText": "Dos más uno más cuatro más cinco son 12" },
+            { "expression": "Parte fija + costos por par", "result": "18", "spokenText": "Seis más 12 son 18, el costo real de un par" }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Custo real por par no mês seguinte? Fixos 90 para 15 pares; insumos 2, embalagem 1, transporte 4, tempo 5.",
+          "feedback": { "met": "Você somou os quatro custos por par e a parte fixa.", "not_yet": "Veja o gráfico da Zara: primeiro os custos por par, depois a parte fixa." },
+          "help": ["Some os quatro custos por par e depois a parte fixa."],
+          "steps": [
+            { "expression": "90 ÷ 15", "result": "6", "spokenText": "Noventa dividido por 15 é 6 de custo fixo por par" },
+            { "expression": "Insumos + embalagem + transporte + tempo", "result": "12", "spokenText": "Dois mais um mais quatro mais cinco são 12" },
+            { "expression": "Parte fixa + custos por par", "result": "18", "spokenText": "Seis mais 12 são 18, o custo real de um par" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-price-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Back to the 25-coin price.", "line": "Supplies were 3, but the real cost is 19. The price keeps far less than 22." },
+        "es-MX": { "prompt": "De vuelta al precio de 25 monedas.", "line": "Los insumos eran 3, pero el costo real es 19. El precio deja mucho menos que 22." },
+        "pt-BR": { "prompt": "De volta ao preço de 25 moedas.", "line": "Os insumos eram 3, mas o custo real é 19. O preço rende bem menos que 22." }
+      }
+    },
+    {
+      "id": "practice-board-01", "type": "fin.cost-structure.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "cost-structure" },
+      "item_role": "practice", "knowledge_component_id": "biz.full-costing",
+      "payload": { "fixed": 80, "variable": 15, "maxUnits": 50, "goal": { "average": 17 }, "start": 10 },
+      "rubric": { "target": 40 },
+      "copy": {
+        "en-US": { "prompt": "Sneaker cleans, busy month: 80 fixed, 15 a pair. How many pairs bring the real cost to 17?", "feedback": { "met": "You found the pairs where the real cost hits your target.", "not_yet": "More pairs shrink each share of the fixed cost; adjust the pairs." } },
+        "es-MX": { "prompt": "Limpiezas de tenis, mes lleno: 80 fijos, 15 por par. ¿Cuántos pares bajan el costo real a 17?", "feedback": { "met": "Encontraste los pares donde el costo real llega a tu meta.", "not_yet": "Más pares reducen la parte de cada uno; ajusta la cantidad de pares." } },
+        "pt-BR": { "prompt": "Limpezas de tênis, mês cheio: 80 fixos, 15 por par. Quantos pares baixam o custo real para 17?", "feedback": { "met": "Você achou os pares em que o custo real chega à sua meta.", "not_yet": "Mais pares diminuem a parte de cada um; ajuste a quantidade de pares." } }
+      }
+    },
+    {
+      "id": "practice-chart-01", "type": "visual.chart.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "waterfall" },
+      "item_role": "practice", "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [{ "id": "cat-fixed" }, { "id": "cat-supplies" }, { "id": "cat-packaging" }, { "id": "cat-transport" }, { "id": "cat-time" }],
+          "series": [{ "id": "ser-cost", "values": [5, 4, 2, 4, 6] }]
+        },
+        "question": { "options": [{ "id": "opt-16" }, { "id": "opt-21" }, { "id": "opt-15" }] }
+      },
+      "rubric": { "acceptable_choice_ids": ["opt-21"] },
+      "copy": {
+        "en-US": {
+          "prompt": "Your sneaker cleans next month: read the bars to the end.",
+          "feedback": { "met": "You added every bar, your time included, to reach the end.", "not_yet": "Not yet. Add each bar in order, fixed share and time too." },
+          "title": "Next month's real cost",
+          "data": { "categories": [{ "label": "Fixed share" }, { "label": "Supplies" }, { "label": "Packaging" }, { "label": "Transport" }, { "label": "Your time" }], "series": [{ "label": "Cost per pair" }] },
+          "question": { "prompt": "What is the real cost of one pair?", "options": [{ "label": "16 coins" }, { "label": "21 coins" }, { "label": "15 coins" }] }
+        },
+        "es-MX": {
+          "prompt": "Tus limpiezas de tenis el próximo mes: lee las barras hasta el final.",
+          "feedback": { "met": "Sumaste todas las barras, tu tiempo incluido, hasta el final.", "not_yet": "Todavía no. Suma cada barra en orden, con la parte fija y el tiempo." },
+          "title": "Costo real del próximo mes",
+          "data": { "categories": [{ "label": "Parte fija" }, { "label": "Insumos" }, { "label": "Empaque" }, { "label": "Transporte" }, { "label": "Tu tiempo" }], "series": [{ "label": "Costo por par" }] },
+          "question": { "prompt": "¿Cuál es el costo real de un par?", "options": [{ "label": "16 monedas" }, { "label": "21 monedas" }, { "label": "15 monedas" }] }
+        },
+        "pt-BR": {
+          "prompt": "Suas limpezas de tênis no mês seguinte: leia as barras até o fim.",
+          "feedback": { "met": "Você somou todas as barras, seu tempo incluso, até o fim.", "not_yet": "Ainda não. Some cada barra em ordem, com a parte fixa e o tempo." },
+          "title": "Custo real do mês seguinte",
+          "data": { "categories": [{ "label": "Parte fixa" }, { "label": "Insumos" }, { "label": "Embalagem" }, { "label": "Transporte" }, { "label": "Seu tempo" }], "series": [{ "label": "Custo por par" }] },
+          "question": { "prompt": "Qual é o custo real de um par?", "options": [{ "label": "16 moedas" }, { "label": "21 moedas" }, { "label": "15 moedas" }] }
+        }
+      }
+    },
+    {
+      "id": "transfer-cases-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "transfer",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "transfer", "item_phase": "post", "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "choices": [{ "id": "cost-10" }, { "id": "cost-11" }, { "id": "cost-6" }, { "id": "cost-14" }],
+        "reasons": [{ "id": "reason-every-cost" }, { "id": "reason-pay-out" }, { "id": "reason-time-free" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["cost-14"],
+        "reasonQuality": { "reason-every-cost": "sound", "reason-pay-out": "partial", "reason-time-free": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your phone-case line: per case, supplies 6, packaging 1, time 4; table fee 36 over 12 cases. Real cost?",
+          "feedback": { "met": "You counted time and the shared fixed cost, not only materials.", "not_yet": "Like Zara's chart: add every cost, the fixed share and time too." },
+          "choices": [{ "label": "10 coins" }, { "label": "11 coins" }, { "label": "6 coins" }, { "label": "14 coins" }],
+          "reasonPrompt": "Why that number?",
+          "reasons": [{ "label": "I counted every cost, time included" }, { "label": "Materials are what I pay out of pocket" }, { "label": "My own time is not a real cost" }]
+        },
+        "es-MX": {
+          "prompt": "Tu línea de fundas de celular: por funda, insumos 6, empaque 1, tiempo 4; mesa 36 entre 12 fundas. ¿Costo real?",
+          "feedback": { "met": "Contaste el tiempo y el costo fijo repartido, no solo los materiales.", "not_yet": "Como en la gráfica de Zara: suma todo, con la parte fija y el tiempo." },
+          "choices": [{ "label": "10 monedas" }, { "label": "11 monedas" }, { "label": "6 monedas" }, { "label": "14 monedas" }],
+          "reasonPrompt": "¿Por qué ese número?",
+          "reasons": [{ "label": "Conté todos los costos, mi tiempo incluido" }, { "label": "Los materiales son lo que pago de mi bolsillo" }, { "label": "Mi propio tiempo no es un costo real" }]
+        },
+        "pt-BR": {
+          "prompt": "Sua linha de capas de celular: por capa, insumos 6, embalagem 1, tempo 4; mesa 36 para 12 capas. Custo real?",
+          "feedback": { "met": "Você contou o tempo e o custo fixo dividido, não só os materiais.", "not_yet": "Como no gráfico da Zara: some tudo, com a parte fixa e o tempo." },
+          "choices": [{ "label": "10 moedas" }, { "label": "11 moedas" }, { "label": "6 moedas" }, { "label": "14 moedas" }],
+          "reasonPrompt": "Por que esse número?",
+          "reasons": [{ "label": "Contei todos os custos, meu tempo incluso" }, { "label": "Materiais são o que eu pago do bolso" }, { "label": "Meu próprio tempo não é um custo real" }]
+        }
+      }
+    }
+  ]
+}

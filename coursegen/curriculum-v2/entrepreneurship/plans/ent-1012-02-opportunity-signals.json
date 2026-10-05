@@ -1,0 +1,957 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-find-opportunity",
+  "lesson_id": "ent-1012-02-opportunity-signals",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.market-signals",
+    "biz.real-problems"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho enseña a distinguir una señal de una corazonada con un caso: la tiendita de la escuela cierra más temprano. Mide tres señales (se repite, es reciente, hay un hueco), lee una gráfica semanal de quejas y comprueba cada señal con preguntas a una persona real. El alumno practica con otros datos y lo aplica a la calle de la escuela.",
+  "title": {
+    "en-US": "Signal or hunch?",
+    "es-MX": "¿Señal o corazonada?",
+    "pt-BR": "Sinal ou palpite?"
+  },
+  "new_concepts": [
+    "biz.market-signals"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En la escuela de Rho, la tiendita cierra más temprano y nadie vende lonches ya preparados. Cada señal se cuenta y se comprueba con una pregunta a una persona real; los números son inventados para practicar.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tiendita"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na escola do Rho, a cantina passou a fechar mais cedo e ninguém vende almoço pronto. O aluno conta os bilhetes, compara as semanas e confirma cada sinal com uma pergunta; os números são inventados só para treinar.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "cantina"
+        ]
+      },
+      "en-US": {
+        "scenario": "At Rho's school the snack bar now closes early and no one sells ready lunches. Each signal is weighed as evidence, not a hunch, and checked with a question to a real person; the numbers are made up for practice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "snack bar"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho lee un aviso nuevo en la puerta de la tiendita: ahora cierra temprano.",
+          "line": "Interesante. Un cambio así puede esconder una necesidad, así que busquemos señales."
+        },
+        "en-US": {
+          "prompt": "Rho reads a new sign on the snack bar door: it now closes early.",
+          "line": "Interesting. A change like this may hide a need, so let's look for signals."
+        },
+        "pt-BR": {
+          "prompt": "O Rho lê um aviso novo na porta da cantina: agora ela fecha mais cedo.",
+          "line": "Interessante. Uma mudança assim pode esconder uma necessidade, então vamos procurar sinais."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.market-signals",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-ben"
+          },
+          {
+            "id": "opt-mia"
+          },
+          {
+            "id": "opt-both"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-ben"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿cuál idea da una razón más fuerte para empezar?",
+          "scene": "Dos alumnos quieren abrir un puesto de lonches. Mia dice: \"Siento que será un éxito\". Beto dice: \"Nueve compañeros me dijeron que la fila es muy larga\".",
+          "options": [
+            {
+              "label": "Beto, que oyó a nueve compañeros"
+            },
+            {
+              "label": "Mia, que siente que será un éxito"
+            },
+            {
+              "label": "Las dos dan la misma razón"
+            }
+          ],
+          "feedback": {
+            "met": "Gracias, así veo cómo piensas. Veámoslo con más detalle.",
+            "not_yet": "Gracias, así veo cómo piensas. Veámoslo con más detalle."
+          }
+        },
+        "en-US": {
+          "prompt": "Before we start: whose idea gives the stronger reason to begin?",
+          "scene": "Two students want to start a lunch stall. Mia says: \"I just feel it will be a hit.\" Ben says: \"Nine classmates told me the line is too long.\"",
+          "options": [
+            {
+              "label": "Ben, who heard nine classmates"
+            },
+            {
+              "label": "Mia, who feels it will be a hit"
+            },
+            {
+              "label": "Both give the same reason"
+            }
+          ],
+          "feedback": {
+            "met": "Thanks, that shows me how you think. Let's look closer.",
+            "not_yet": "Thanks, that shows me how you think. Let's look closer."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: qual ideia dá um motivo mais forte para começar?",
+          "scene": "Dois alunos querem abrir uma barraca de almoços. A Mia diz: \"Sinto que vai ser um sucesso\". O Beto diz: \"Nove colegas me disseram que a fila é grande demais\".",
+          "options": [
+            {
+              "label": "Beto, que ouviu nove colegas"
+            },
+            {
+              "label": "Mia, que sente que vai dar certo"
+            },
+            {
+              "label": "As duas dão o mesmo motivo"
+            }
+          ],
+          "feedback": {
+            "met": "Entendi como você pensa. Vamos olhar mais de perto.",
+            "not_yet": "Entendi como você pensa. Vamos olhar mais de perto."
+          }
+        }
+      }
+    },
+    {
+      "id": "repeat-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho cuenta las notas sobre la fila para comer: nueve en dos semanas, de nueve alumnos.",
+          "line": "Paso 1, se repite: nueve notas de nueve alumnos son un patrón, no una sola voz fuerte."
+        },
+        "en-US": {
+          "prompt": "Rho counts the notes about the lunch line: nine in two weeks, from nine students.",
+          "line": "Step 1, repeated: nine notes from nine students is a pattern, not one loud voice."
+        },
+        "pt-BR": {
+          "prompt": "O Rho conta os bilhetes sobre a fila do almoço: nove em duas semanas, de nove alunos.",
+          "line": "Passo 1, se repete: nove bilhetes de nove alunos formam um padrão, não uma voz só."
+        }
+      }
+    },
+    {
+      "id": "recent-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "wk-1"
+            },
+            {
+              "id": "wk-2"
+            },
+            {
+              "id": "wk-3"
+            },
+            {
+              "id": "wk-4"
+            },
+            {
+              "id": "wk-5"
+            },
+            {
+              "id": "wk-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-complaints",
+              "values": [
+                1,
+                1,
+                0,
+                1,
+                4,
+                5
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, reciente: la tiendita cerró temprano desde la semana 5, y las quejas subieron de 1 a 4.",
+          "title": "Quejas sobre la fila para comer, por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Quejas"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 2, recent: the snack bar closed early from week 5, and complaints jumped from 1 to 4.",
+          "title": "Complaints about the lunch line, per week",
+          "data": {
+            "categories": [
+              {
+                "label": "Wk 1"
+              },
+              {
+                "label": "Wk 2"
+              },
+              {
+                "label": "Wk 3"
+              },
+              {
+                "label": "Wk 4"
+              },
+              {
+                "label": "Wk 5"
+              },
+              {
+                "label": "Wk 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Complaints"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, recente: a cantina fechou cedo a partir da semana 5, e as reclamações subiram de 1 para 4.",
+          "title": "Reclamações sobre a fila do almoço, por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Reclamações"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "gap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho recorre los puestos de la escuela: bebidas, fruta y dulces, pero ningún lonche preparado.",
+          "line": "Paso 3, hueco: los alumnos quieren comer y nadie lo vende. Si nadie atiende una necesidad, hay una oportunidad."
+        },
+        "en-US": {
+          "prompt": "Rho walks past the school stalls: drinks, fruit and sweets, but no ready lunches.",
+          "line": "Step 3, gap: students want lunch and nobody sells it. Nobody serving a need is an opening."
+        },
+        "pt-BR": {
+          "prompt": "O Rho passa pelas barraquinhas da escola: bebidas, frutas e doces, mas nenhum almoço pronto.",
+          "line": "Passo 3, lacuna: os alunos querem almoçar e ninguém vende. Quando ninguém atende uma necessidade, há uma abertura."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.market-signals",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "wk-1"
+            },
+            {
+              "id": "wk-2"
+            },
+            {
+              "id": "wk-3"
+            },
+            {
+              "id": "wk-4"
+            },
+            {
+              "id": "wk-5"
+            },
+            {
+              "id": "wk-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-complaints",
+              "values": [
+                1,
+                2,
+                1,
+                6,
+                5,
+                6
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-wk2"
+            },
+            {
+              "id": "ans-wk4"
+            },
+            {
+              "id": "ans-wk6"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-wk4"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho grafica las quejas por el servicio lento en la ventanilla de la tiendita. ¿Qué semana muestra el salto?",
+          "feedback": {
+            "met": "Encontraste la semana del salto, como hizo Rho.",
+            "not_yet": "Todavía no. Busca la semana donde la línea sube más."
+          },
+          "help": [
+            "Compara cada semana con la anterior. ¿Dónde está la mayor subida?"
+          ],
+          "title": "Quejas por la ventanilla de la tiendita, por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Quejas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿En qué semana saltaron las quejas?",
+            "options": [
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 6"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Rho charts complaints about slow service at the snack bar window. Which week shows the jump?",
+          "feedback": {
+            "met": "You spotted the week the complaints jumped, as Rho did.",
+            "not_yet": "Not yet. Find the week where the line climbs the most."
+          },
+          "help": [
+            "Compare each week with the week before it. Where is the biggest climb?"
+          ],
+          "title": "Complaints about the snack bar window, per week",
+          "data": {
+            "categories": [
+              {
+                "label": "Wk 1"
+              },
+              {
+                "label": "Wk 2"
+              },
+              {
+                "label": "Wk 3"
+              },
+              {
+                "label": "Wk 4"
+              },
+              {
+                "label": "Wk 5"
+              },
+              {
+                "label": "Wk 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Complaints"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "In which week did complaints jump?",
+            "options": [
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 4"
+              },
+              {
+                "label": "Week 6"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Rho faz o gráfico das reclamações sobre a demora no balcão da cantina. Qual semana mostra o salto?",
+          "feedback": {
+            "met": "Você achou a semana do salto, como o Rho fez.",
+            "not_yet": "Ainda não. Procure a semana em que a linha mais sobe."
+          },
+          "help": [
+            "Compare cada semana com a anterior. Onde está a maior subida?"
+          ],
+          "title": "Reclamações sobre o balcão da cantina, por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem 1"
+              },
+              {
+                "label": "Sem 2"
+              },
+              {
+                "label": "Sem 3"
+              },
+              {
+                "label": "Sem 4"
+              },
+              {
+                "label": "Sem 5"
+              },
+              {
+                "label": "Sem 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Reclamações"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Em que semana as reclamações saltaram?",
+            "options": [
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 6"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ask-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho pregunta a tres alumnos: ¿cada cuánto pasa?, ¿desde cuándo? y ¿qué haces ahora?",
+          "line": "Paso 4, preguntar: una respuesta real vale más que una corazonada. Confirma lo que se repite, lo reciente y el hueco."
+        },
+        "en-US": {
+          "prompt": "Rho asks three students: how often, since when, and what do you do now?",
+          "line": "Step 4, ask: a real answer beats a hunch. It confirms the repeat, the change and the gap."
+        },
+        "pt-BR": {
+          "prompt": "O Rho pergunta a três alunos: com que frequência, desde quando e o que você faz hoje?",
+          "line": "Passo 4, perguntar: uma resposta real vale mais que um palpite. Ela confirma o que se repete, o recente e a lacuna."
+        }
+      }
+    },
+    {
+      "id": "flip-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho prueba otra regla: «Si un alumno compra comida, muestra su ticket».",
+          "line": "Paso 5, prueba: reviso a quien compró comida y a quien no tiene ticket. Los demás no pueden romperla."
+        },
+        "en-US": {
+          "prompt": "Rho tests another rule: \"If a student buys lunch, the student shows a ticket.\"",
+          "line": "Step 5, test: I check who bought lunch and who has no ticket. The rest cannot break it."
+        },
+        "pt-BR": {
+          "prompt": "O Rho testa outra regra: “Se um aluno compra almoço, ele mostra a ficha”.",
+          "line": "Passo 5, teste: confiro quem comprou almoço e quem está sem ficha. Os outros não podem quebrar a regra."
+        }
+      }
+    },
+    {
+      "id": "gap-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.market-signals",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-repeat"
+          },
+          {
+            "id": "opt-recent"
+          },
+          {
+            "id": "opt-gap"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-gap"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la escuela de Rho, ¿qué hallazgo es un hueco?",
+          "scene": "El equipo de Rho junta tres hallazgos. A: seis alumnos dijeron lo mismo este mes. B: cambiaron el bicicletero la semana pasada. C: el club de las cuatro tiene hambre y nada está abierto.",
+          "feedback": {
+            "met": "Encontraste la necesidad que nadie atiende, como hizo Rho.",
+            "not_yet": "Todavía no. Un hueco es una necesidad que nadie atiende."
+          },
+          "options": [
+            {
+              "label": "A: seis alumnos dijeron lo mismo"
+            },
+            {
+              "label": "B: cambiaron el bicicletero la semana pasada"
+            },
+            {
+              "label": "C: el club tiene hambre y nada abre"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "At Rho's school, which finding is a gap?",
+          "scene": "Rho's team collects three findings. A: six students said the same thing this month. B: the bike rack moved last week. C: the 4 o'clock club is hungry and nothing is open.",
+          "feedback": {
+            "met": "You found the need nobody serves, as Rho did.",
+            "not_yet": "Not yet. A gap is a need that nobody serves."
+          },
+          "options": [
+            {
+              "label": "A: six students said the same thing"
+            },
+            {
+              "label": "B: the bike rack moved last week"
+            },
+            {
+              "label": "C: the club is hungry, nothing is open"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na escola do Rho, qual achado é uma lacuna?",
+          "scene": "A equipe do Rho junta três achados. A: seis alunos disseram a mesma coisa este mês. B: o bicicletário mudou de lugar semana passada. C: o clube das quatro está com fome e nada está aberto.",
+          "feedback": {
+            "met": "Você achou a necessidade que ninguém atende, como o Rho fez.",
+            "not_yet": "Ainda não. Uma lacuna é uma necessidade que ninguém atende."
+          },
+          "options": [
+            {
+              "label": "A: seis alunos disseram a mesma coisa"
+            },
+            {
+              "label": "B: o bicicletário mudou semana passada"
+            },
+            {
+              "label": "C: o clube está com fome, nada abre"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "check-01",
+      "type": "logic.rule-checker.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "cards": [
+          {
+            "id": "card-signal"
+          },
+          {
+            "id": "card-hunch"
+          },
+          {
+            "id": "card-asked"
+          },
+          {
+            "id": "card-nobody"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-signal",
+          "card-nobody"
+        ],
+        "roles": {
+          "card-signal": "p",
+          "card-hunch": "not_p",
+          "card-asked": "q",
+          "card-nobody": "not_q"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Rho revisa sus notas. ¿Qué tarjetas debes voltear para probar la regla?",
+          "rule": "Si el equipo dice que es señal, preguntó a una persona real.",
+          "feedback": {
+            "met": "Volteaste solo las tarjetas que podían romper la regla.",
+            "not_yet": "Todavía no. Pregunta qué tarjetas aún podrían romper la regla."
+          },
+          "help": [
+            "Una tarjeta que no puede romper la regla no se voltea. ¿Cuáles sí pueden?"
+          ],
+          "cards": [
+            {
+              "face": "Dijo que es señal"
+            },
+            {
+              "face": "Dijo que es corazonada"
+            },
+            {
+              "face": "Preguntó a una persona"
+            },
+            {
+              "face": "No preguntó a nadie"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's team checks its notes. Which cards must you turn to test the rule?",
+          "rule": "If the team calls it a signal, it asked a real person.",
+          "feedback": {
+            "met": "You turned only the cards that could break the rule.",
+            "not_yet": "Not yet. Ask which cards could still break the rule."
+          },
+          "help": [
+            "A card that cannot break the rule needs no turn. Which ones can?"
+          ],
+          "cards": [
+            {
+              "face": "Called it a signal"
+            },
+            {
+              "face": "Called it a hunch"
+            },
+            {
+              "face": "Asked a real person"
+            },
+            {
+              "face": "Asked nobody"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Rho confere as anotações. Quais cartas você deve virar para testar a regra?",
+          "rule": "Se a equipe diz que é sinal, ela perguntou a uma pessoa real.",
+          "feedback": {
+            "met": "Você virou só as cartas que podiam quebrar a regra.",
+            "not_yet": "Ainda não. Pergunte quais cartas ainda poderiam quebrar a regra."
+          },
+          "help": [
+            "Uma carta que não pode quebrar a regra não precisa virar. Quais podem?"
+          ],
+          "cards": [
+            {
+              "face": "Disse que é sinal"
+            },
+            {
+              "face": "Disse que é palpite"
+            },
+            {
+              "face": "Perguntou a alguém"
+            },
+            {
+              "face": "Não perguntou a ninguém"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "biz.market-signals",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-feel"
+          },
+          {
+            "id": "opt-flats"
+          },
+          {
+            "id": "opt-cool"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-flats"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la calle de la escuela de Rho, ¿qué nota es una señal real para un puesto de arreglo de bicis?",
+          "scene": "El equipo de Rho estudia ahora la calle junto a la escuela. Llegaron tres notas sobre un puesto de arreglo de bicis.",
+          "feedback": {
+            "met": "Elegiste la nota basada en hechos, no en un presentimiento.",
+            "not_yet": "Todavía no. ¿Qué nota cuenta hechos y no sensaciones?"
+          },
+          "options": [
+            {
+              "label": "Siento que a todos les encantaría"
+            },
+            {
+              "label": "Seis ponchaduras en dos semanas, ningún taller cerca"
+            },
+            {
+              "label": "Un puesto de bicis suena genial"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "On the road by Rho's school, which note is a real signal for a bike repair stand?",
+          "scene": "Rho's team now studies the road outside school. Three notes came in about a bike repair stand.",
+          "feedback": {
+            "met": "You chose the note built on events, not a feeling.",
+            "not_yet": "Not yet. Which note counts events instead of feelings?"
+          },
+          "options": [
+            {
+              "label": "I feel everyone would love it"
+            },
+            {
+              "label": "Six flats in two weeks, no shop near"
+            },
+            {
+              "label": "A bike stand sounds cool"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na rua da escola do Rho, qual bilhete é um sinal real para uma barraquinha de conserto de bicicletas?",
+          "scene": "A equipe do Rho agora estuda a rua em frente à escola. Chegaram três bilhetes sobre uma barraquinha de conserto de bicicletas.",
+          "feedback": {
+            "met": "Você escolheu o bilhete baseado em fatos, não em um palpite.",
+            "not_yet": "Ainda não. Qual bilhete conta fatos e não sensações?"
+          },
+          "options": [
+            {
+              "label": "Sinto que todo mundo ia adorar"
+            },
+            {
+              "label": "Seis pneus furados em duas semanas, nenhuma bicicletaria perto"
+            },
+            {
+              "label": "Uma barraquinha de bicicletas parece legal"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

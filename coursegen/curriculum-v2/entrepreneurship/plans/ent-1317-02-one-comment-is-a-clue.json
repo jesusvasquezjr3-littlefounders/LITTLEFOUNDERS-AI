@@ -1,0 +1,989 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-prove-demand",
+  "lesson_id": "ent-1317-02-one-comment-is-a-clue",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.evidence-from-customers",
+    "biz.customer-interviews"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Ocho entrevistas dejan cinco notas sobre un kit de limpieza que falló, un “pagaría ahora mismo” y dos compañeros a quienes no les importa. Zara armó un menú entero con un solo comentario emocionado y, al recontar las ocho entrevistas, decide buscar primero el patrón. El aprendiz separa hechos de opiniones, cuenta qué se repite, lee una gráfica de Pareto y decide qué hacer con una voz entusiasta frente a una queja que se repite.",
+  "title": {
+    "en-US": "One comment is a clue",
+    "es-MX": "Un comentario es una pista",
+    "pt-BR": "Um comentário é uma pista"
+  },
+  "new_concepts": [
+    "biz.evidence-from-customers"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara builds a six-service menu from one excited comment (“I would pay right now”) and never counts the other seven interviews.",
+    "recovery": "Zara recounts all eight interviews, sees that five describe the same failed cleaning kit, and says she will look for the pattern first."
+  },
+  "regional": {
+    "universal": "Only LittleFounders coins; the interview notes are the learner’s own venture and carry no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Eight interviews done, eight sets of notes on your desk.",
+          "line": "One says “I would pay right now,” and it feels like a win. Is it?"
+        },
+        "es-MX": {
+          "prompt": "Ocho entrevistas hechas y ocho hojas de notas en tu escritorio.",
+          "line": "Una dice “pagaría ahora mismo” y se siente como una victoria. ¿Lo es?"
+        },
+        "pt-BR": {
+          "prompt": "Oito entrevistas feitas, oito folhas de anotações na sua mesa.",
+          "line": "Uma diz “eu pagaria agora mesmo” e parece uma vitória. Será que é?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.evidence-from-customers",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-build"
+          },
+          {
+            "id": "choice-ignore"
+          },
+          {
+            "id": "choice-clue"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-useless"
+          },
+          {
+            "id": "reason-group"
+          },
+          {
+            "id": "reason-sure"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-clue"
+        ],
+        "reasonQuality": {
+          "reason-group": "sound",
+          "reason-useless": "partial",
+          "reason-sure": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mara said “I would pay right now.” What does that one comment tell you?",
+          "feedback": {
+            "met": "Noted. We will test that choice against all eight notes.",
+            "not_yet": "Noted. We will test that choice against all eight notes."
+          },
+          "choices": [
+            {
+              "label": "Build the service around her request"
+            },
+            {
+              "label": "Ignore it, one person means nothing"
+            },
+            {
+              "label": "Treat it as a clue, check the rest"
+            }
+          ],
+          "reasonPrompt": "Why that choice?",
+          "reasons": [
+            {
+              "label": "One person’s comment is never useful"
+            },
+            {
+              "label": "One voice cannot show what most want"
+            },
+            {
+              "label": "She sounded sure, so others will pay"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mara dijo “pagaría ahora mismo”. ¿Qué te dice ese único comentario?",
+          "feedback": {
+            "met": "Anotado. Probaremos esa decisión con las ocho notas.",
+            "not_yet": "Anotado. Probaremos esa decisión con las ocho notas."
+          },
+          "choices": [
+            {
+              "label": "Armar el servicio alrededor de su petición"
+            },
+            {
+              "label": "Ignorarlo, una persona no cuenta"
+            },
+            {
+              "label": "Tratarlo como pista y revisar el resto"
+            }
+          ],
+          "reasonPrompt": "¿Por qué esa decisión?",
+          "reasons": [
+            {
+              "label": "El comentario de uno nunca sirve"
+            },
+            {
+              "label": "Una voz no muestra qué quiere la mayoría"
+            },
+            {
+              "label": "Sonó segura, así que otros pagarán"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mara disse “eu pagaria agora mesmo”. O que esse único comentário diz a você?",
+          "feedback": {
+            "met": "Anotado. Vamos testar essa decisão com as oito notas.",
+            "not_yet": "Anotado. Vamos testar essa decisão com as oito notas."
+          },
+          "choices": [
+            {
+              "label": "Montar o serviço em torno do pedido dela"
+            },
+            {
+              "label": "Ignorar, uma pessoa não conta"
+            },
+            {
+              "label": "Tratar como pista e checar o resto"
+            }
+          ],
+          "reasonPrompt": "Por que essa decisão?",
+          "reasons": [
+            {
+              "label": "O comentário de uma pessoa nunca serve"
+            },
+            {
+              "label": "Uma voz não mostra o que a maioria quer"
+            },
+            {
+              "label": "Ela parecia certa, então outros pagarão"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what Zara did with one note.",
+          "setup": "One note said “I would pay right now.” I drafted a six-service menu for you from it.",
+          "misjudgment": "I built the menu on one comment and never counted the other seven interviews.",
+          "recovery": "I recounted all eight. Five said the cleaning kit they bought failed, so now I look for the pattern first."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que hizo Zara con una sola nota.",
+          "setup": "Una nota decía “pagaría ahora mismo”. Con ella te armé un menú de seis servicios.",
+          "misjudgment": "Armé el menú con un solo comentario y no conté las otras siete entrevistas.",
+          "recovery": "Recontré las ocho. Cinco dijeron que el kit de limpieza que compraron falló, así que ahora busco primero el patrón."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que Zara fez com uma única nota.",
+          "setup": "Uma nota dizia “eu pagaria agora mesmo”. Com ela, montei para você um cardápio de seis serviços.",
+          "misjudgment": "Montei o cardápio com um só comentário e não contei as outras sete entrevistas.",
+          "recovery": "Recontei as oito. Cinco disseram que o kit de limpeza que compraram falhou, então agora procuro o padrão primeiro."
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: sort every note into fact or opinion.",
+          "line": "A fact already happened: “my kit left a stain.” A promise like “I would pay” is only a clue."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: clasifica cada nota como hecho u opinión.",
+          "line": "Un hecho ya pasó: “mi kit dejó una mancha”. Una promesa como “yo pagaría” es solo una pista."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: classifique cada nota como fato ou opinião.",
+          "line": "Um fato já aconteceu: “meu kit deixou uma mancha”. Uma promessa como “eu pagaria” é só uma pista."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: count what repeats across all eight notes.",
+          "line": "Five describe the same failed kit. That repetition is a pattern; one “I would pay” is a clue."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: cuenta qué se repite en las ocho notas.",
+          "line": "Cinco describen el mismo kit que falló. Esa repetición es un patrón; un solo “pagaría” es una pista."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: conte o que se repete nas oito notas.",
+          "line": "Cinco descrevem o mesmo kit que falhou. Essa repetição é um padrão; um só “eu pagaria” é uma pista."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "pareto"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.evidence-from-customers",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-slow"
+            },
+            {
+              "id": "cat-stain"
+            },
+            {
+              "id": "cat-pay"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-interviews",
+              "values": [
+                5,
+                2,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-stain"
+            },
+            {
+              "id": "ans-slow"
+            },
+            {
+              "id": "ans-pay"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-slow"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Eight new interviews came in. Read the tallest bar.",
+          "feedback": {
+            "met": "You picked the bar that repeats most: a pattern.",
+            "not_yet": "Not yet. Compare the bars: which answer repeats most?"
+          },
+          "help": [
+            "Step 2 counted what repeats. The tallest bar repeats most."
+          ],
+          "title": "Round two: 8 more classmates",
+          "data": {
+            "categories": [
+              {
+                "label": "Took too long"
+              },
+              {
+                "label": "Stains stayed"
+              },
+              {
+                "label": "Would pay now"
+              }
+            ],
+            "series": [
+              {
+                "label": "Interviews"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which answer do most of these interviews share?",
+            "options": [
+              {
+                "label": "Stains stayed"
+              },
+              {
+                "label": "Took too long"
+              },
+              {
+                "label": "Would pay now"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Llegaron ocho entrevistas nuevas. Lee la barra más alta.",
+          "feedback": {
+            "met": "Elegiste la barra que más se repite: un patrón.",
+            "not_yet": "Todavía no. Compara las barras: ¿qué respuesta se repite más?"
+          },
+          "help": [
+            "El Paso 2 contó lo que se repite. La barra más alta se repite más."
+          ],
+          "title": "Segunda ronda: 8 compañeros más",
+          "data": {
+            "categories": [
+              {
+                "label": "Tardó demasiado"
+              },
+              {
+                "label": "Quedaron manchas"
+              },
+              {
+                "label": "Pagaría ya"
+              }
+            ],
+            "series": [
+              {
+                "label": "Entrevistas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué respuesta comparten la mayoría de estas entrevistas?",
+            "options": [
+              {
+                "label": "Quedaron manchas"
+              },
+              {
+                "label": "Tardó demasiado"
+              },
+              {
+                "label": "Pagaría ya"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Chegaram oito entrevistas novas. Leia a barra mais alta.",
+          "feedback": {
+            "met": "Você escolheu a barra que mais se repete: um padrão.",
+            "not_yet": "Ainda não. Compare as barras: que resposta mais se repete?"
+          },
+          "help": [
+            "O Passo 2 contou o que se repete. A barra mais alta se repete mais."
+          ],
+          "title": "Segunda rodada: mais 8 colegas",
+          "data": {
+            "categories": [
+              {
+                "label": "Demorou demais"
+              },
+              {
+                "label": "Ficaram manchas"
+              },
+              {
+                "label": "Pagaria já"
+              }
+            ],
+            "series": [
+              {
+                "label": "Entrevistas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Que resposta a maioria dessas entrevistas compartilha?",
+            "options": [
+              {
+                "label": "Ficaram manchas"
+              },
+              {
+                "label": "Demorou demais"
+              },
+              {
+                "label": "Pagaria já"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: follow the pattern first, then the clue.",
+          "line": "Ask those five what the kit did. Then ask the “I would pay” classmate when they last paid for cleaning."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: sigue primero el patrón y luego la pista.",
+          "line": "Pregunta a esos cinco qué hizo el kit. Luego pregunta a quien dijo “pagaría” cuándo pagó por última vez una limpieza."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: siga primeiro o padrão e depois a pista.",
+          "line": "Pergunte a esses cinco o que o kit fez. Depois pergunte a quem disse “eu pagaria” quando pagou por limpeza pela última vez."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-interviews",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ravi"
+          },
+          {
+            "id": "choice-dani"
+          },
+          {
+            "id": "choice-noa"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-sure"
+          },
+          {
+            "id": "reason-feel"
+          },
+          {
+            "id": "reason-happened"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-ravi"
+        ],
+        "reasonQuality": {
+          "reason-happened": "sound",
+          "reason-feel": "partial",
+          "reason-sure": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sorting notes from today’s interviews, which one is a fact you can count?",
+          "feedback": {
+            "met": "You picked the note about something that already happened.",
+            "not_yet": "Not yet. Which note describes something that really happened?"
+          },
+          "help": [
+            "Step 1: a fact already happened; a promise or feeling is not."
+          ],
+          "choices": [
+            {
+              "label": "Ravi: “My last kit turned my sneakers yellow.”"
+            },
+            {
+              "label": "Dani: “Clean white sneakers look amazing.”"
+            },
+            {
+              "label": "Noa: “I would totally pay for that.”"
+            }
+          ],
+          "reasonPrompt": "Why that note?",
+          "reasons": [
+            {
+              "label": "He sounds the most certain"
+            },
+            {
+              "label": "It shows how the group feels"
+            },
+            {
+              "label": "It describes something that already happened"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Al clasificar las notas de las entrevistas de hoy, ¿cuál es un hecho que puedes contar?",
+          "feedback": {
+            "met": "Elegiste la nota sobre algo que ya pasó.",
+            "not_yet": "Todavía no. ¿Qué nota describe algo que sí pasó?"
+          },
+          "help": [
+            "Paso 1: un hecho ya pasó; una promesa o un sentimiento no."
+          ],
+          "choices": [
+            {
+              "label": "Ravi: “Mi último kit puso amarillos mis tenis.”"
+            },
+            {
+              "label": "Dani: “Los tenis blancos limpios se ven geniales.”"
+            },
+            {
+              "label": "Noa: “Claro que pagaría por eso.”"
+            }
+          ],
+          "reasonPrompt": "¿Por qué esa nota?",
+          "reasons": [
+            {
+              "label": "Él suena el más seguro"
+            },
+            {
+              "label": "Muestra cómo se siente el grupo"
+            },
+            {
+              "label": "Describe algo que ya pasó"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ao classificar as notas das entrevistas de hoje, qual é um fato que você pode contar?",
+          "feedback": {
+            "met": "Você escolheu a nota sobre algo que já aconteceu.",
+            "not_yet": "Ainda não. Que nota descreve algo que realmente aconteceu?"
+          },
+          "help": [
+            "Passo 1: um fato já aconteceu; uma promessa ou um sentimento não."
+          ],
+          "choices": [
+            {
+              "label": "Ravi: “Meu último kit deixou meu tênis amarelo.”"
+            },
+            {
+              "label": "Dani: “Tênis branco limpo fica incrível.”"
+            },
+            {
+              "label": "Noa: “Claro que eu pagaria por isso.”"
+            }
+          ],
+          "reasonPrompt": "Por que essa nota?",
+          "reasons": [
+            {
+              "label": "Ele parece o mais certo"
+            },
+            {
+              "label": "Mostra como o grupo se sente"
+            },
+            {
+              "label": "Descreve algo que já aconteceu"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "pareto"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.evidence-from-customers",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-far"
+            },
+            {
+              "id": "cat-price"
+            },
+            {
+              "id": "cat-clean"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-classmates",
+              "values": [
+                6,
+                3,
+                1
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-price"
+            },
+            {
+              "id": "ans-clean"
+            },
+            {
+              "id": "ans-far"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-far"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ten classmates skipped your sample cleaning. Read the bars.",
+          "feedback": {
+            "met": "You followed what the bars repeat, not the loudest voice.",
+            "not_yet": "Not yet. Compare the bar heights, not who spoke loudest."
+          },
+          "help": [
+            "A pattern is the bar most classmates share."
+          ],
+          "title": "Why 10 classmates skipped the sample",
+          "data": {
+            "categories": [
+              {
+                "label": "Too far to drop off"
+              },
+              {
+                "label": "Price felt high"
+              },
+              {
+                "label": "Already clean"
+              }
+            ],
+            "series": [
+              {
+                "label": "Classmates"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "A friend wants to fix price because one classmate complained loudly. Which reason do the bars say comes first?",
+            "options": [
+              {
+                "label": "Price felt high"
+              },
+              {
+                "label": "Already clean"
+              },
+              {
+                "label": "Too far to drop off"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Diez compañeros se saltaron tu limpieza de muestra. Lee las barras.",
+          "feedback": {
+            "met": "Seguiste lo que repiten las barras, no la voz más fuerte.",
+            "not_yet": "Todavía no. Compara la altura de las barras, no quién habló más fuerte."
+          },
+          "help": [
+            "Un patrón es la barra que más compañeros comparten."
+          ],
+          "title": "Por qué 10 compañeros no probaron la muestra",
+          "data": {
+            "categories": [
+              {
+                "label": "Muy lejos para entregar"
+              },
+              {
+                "label": "El precio se sintió alto"
+              },
+              {
+                "label": "Ya estaban limpios"
+              }
+            ],
+            "series": [
+              {
+                "label": "Compañeros"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Un amigo quiere arreglar el precio porque un compañero se quejó muy fuerte. ¿Qué razón muestran las barras para revisar primero?",
+            "options": [
+              {
+                "label": "El precio se sintió alto"
+              },
+              {
+                "label": "Ya estaban limpios"
+              },
+              {
+                "label": "Muy lejos para entregar"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dez colegas pularam sua limpeza de amostra. Leia as barras.",
+          "feedback": {
+            "met": "Você seguiu o que as barras repetem, não a voz mais alta.",
+            "not_yet": "Ainda não. Compare a altura das barras, não quem falou mais alto."
+          },
+          "help": [
+            "Um padrão é a barra que mais colegas compartilham."
+          ],
+          "title": "Por que 10 colegas pularam a amostra",
+          "data": {
+            "categories": [
+              {
+                "label": "Longe demais para entregar"
+              },
+              {
+                "label": "O preço pareceu alto"
+              },
+              {
+                "label": "Já estavam limpos"
+              }
+            ],
+            "series": [
+              {
+                "label": "Colegas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Um amigo quer mexer no preço porque um colega reclamou alto. Que motivo as barras mostram para checar primeiro?",
+            "options": [
+              {
+                "label": "O preço pareceu alto"
+              },
+              {
+                "label": "Já estavam limpos"
+              },
+              {
+                "label": "Longe demais para entregar"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.evidence-from-customers",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-fan"
+          },
+          {
+            "id": "choice-fix"
+          },
+          {
+            "id": "choice-wait"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-seven"
+          },
+          {
+            "id": "reason-biggest"
+          },
+          {
+            "id": "reason-more"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-fix"
+        ],
+        "reasonQuality": {
+          "reason-seven": "sound",
+          "reason-more": "partial",
+          "reason-biggest": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your group-chat poll got 12 replies: one says “I would buy three,” seven say pickup takes too long. What now?",
+          "feedback": {
+            "met": "You fixed what seven replies share, not what one reply promised.",
+            "not_yet": "Not yet. Which comment do most of the replies share?"
+          },
+          "help": [
+            "Count which reply repeats. One reply, however big, is a clue."
+          ],
+          "choices": [
+            {
+              "label": "Build everything around the big buyer"
+            },
+            {
+              "label": "Fix the slow pickup, then ask again"
+            },
+            {
+              "label": "Wait for more fans before acting"
+            }
+          ],
+          "reasonPrompt": "Why that choice?",
+          "reasons": [
+            {
+              "label": "Seven of twelve name the same problem"
+            },
+            {
+              "label": "The biggest order matters most"
+            },
+            {
+              "label": "More fans would make it safer"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu encuesta en el chat del grupo tuvo 12 respuestas: una dice “compraría tres”, siete dicen que la entrega tarda demasiado. ¿Ahora qué?",
+          "feedback": {
+            "met": "Arreglaste lo que comparten siete respuestas, no lo que prometió una.",
+            "not_yet": "Todavía no. ¿Qué comentario comparten la mayoría de las respuestas?"
+          },
+          "help": [
+            "Cuenta qué respuesta se repite. Una sola, aunque sea grande, es una pista."
+          ],
+          "choices": [
+            {
+              "label": "Armar todo alrededor del gran comprador"
+            },
+            {
+              "label": "Arreglar la entrega lenta y volver a preguntar"
+            },
+            {
+              "label": "Esperar más fans antes de actuar"
+            }
+          ],
+          "reasonPrompt": "¿Por qué esa decisión?",
+          "reasons": [
+            {
+              "label": "Siete de doce nombran el mismo problema"
+            },
+            {
+              "label": "El pedido más grande importa más"
+            },
+            {
+              "label": "Más fans lo harían más seguro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua enquete no grupo teve 12 respostas: uma diz “eu compraria três”, sete dizem que a entrega demora demais. E agora?",
+          "feedback": {
+            "met": "Você resolveu o que sete respostas compartilham, não o que uma prometeu.",
+            "not_yet": "Ainda não. Que comentário a maioria das respostas compartilha?"
+          },
+          "help": [
+            "Conte qual resposta se repete. Uma só, mesmo grande, é uma pista."
+          ],
+          "choices": [
+            {
+              "label": "Montar tudo em torno do grande comprador"
+            },
+            {
+              "label": "Resolver a entrega lenta e perguntar de novo"
+            },
+            {
+              "label": "Esperar mais fãs antes de agir"
+            }
+          ],
+          "reasonPrompt": "Por que essa decisão?",
+          "reasons": [
+            {
+              "label": "Sete de doze citam o mesmo problema"
+            },
+            {
+              "label": "O maior pedido importa mais"
+            },
+            {
+              "label": "Mais fãs deixariam mais seguro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

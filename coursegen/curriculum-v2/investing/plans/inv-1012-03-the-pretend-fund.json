@@ -1,0 +1,909 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "chapter_id": "inv-1012-growth-you-can-see",
+  "lesson_id": "inv-1012-03-the-pretend-fund",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "invest.compound-growth",
+    "money.percent-intro",
+    "money.simple-interest-peek"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara arma un fondo de práctica con 1,000 monedas que gana 10% al año. El aprendiz calcula las ganancias de cada año, ve que dejarlas adentro agranda la ganancia siguiente, compara qué pasa si se sacan y predice con el tablero cuánto crece el fondo.",
+  "title": {
+    "en-US": "The pretend fund",
+    "es-MX": "El fondo de práctica",
+    "pt-BR": "O fundo de prática"
+  },
+  "new_concepts": [
+    "invest.compound-growth"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A fund that earns every year.",
+          "line": "Hmm, let me try this. A pretend fund starts with 1,000 coins and adds 10% a year."
+        },
+        "es-MX": {
+          "prompt": "Un fondo que gana cada año.",
+          "line": "Hmm, probemos esto. Un fondo de práctica empieza con 1,000 monedas y suma 10% cada año."
+        },
+        "pt-BR": {
+          "prompt": "Um fundo que ganha todo ano.",
+          "line": "Hmm, vou tentar isto. Um fundo de prática começa com 1.000 moedas e soma 10% ao ano."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-out"
+          },
+          {
+            "id": "opt-in"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-in"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two funds start with 1,000 coins and earn 10% a year. After five years, which holds more coins?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "options": [
+            {
+              "label": "The one that takes earnings out"
+            },
+            {
+              "label": "The one that keeps earnings inside"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dos fondos empiezan con 1,000 monedas y ganan 10% al año. Después de cinco años, ¿cuál tiene más monedas?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "options": [
+            {
+              "label": "El que saca las ganancias"
+            },
+            {
+              "label": "El que deja las ganancias adentro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dois fundos começam com 1.000 moedas e ganham 10% ao ano. Depois de cinco anos, qual tem mais moedas?",
+          "feedback": {
+            "met": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "options": [
+            {
+              "label": "O que tira os ganhos"
+            },
+            {
+              "label": "O que deixa os ganhos dentro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-grid-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 1000,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "tax",
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: slide to 10%. Read “Sample tax” as earnings and “New price” as the fund’s total."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: mueve a 10%. Lee “Impuesto de ejemplo” como ganancias y “Precio nuevo” como el total del fondo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: arraste até 10%. Leia “Imposto de exemplo” como ganhos e “Novo preço” como o total do fundo."
+        }
+      }
+    },
+    {
+      "id": "example-year2-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: leave the 100 in.",
+          "line": "The fund holds 1,100 now. I expect more this time: 10% of 1,100 is 110."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: dejamos las 100 adentro.",
+          "line": "Ahora el fondo tiene 1,100. Espero ganar más: el 10% de 1,100 es 110."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: deixamos as 100 dentro.",
+          "line": "Agora o fundo tem 1.100. Espero ganhar mais: 10% de 1.100 é 110."
+        }
+      }
+    },
+    {
+      "id": "example-year3-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: leave year 2’s earnings in too.",
+          "line": "The fund holds 1,210 now, so year 3 earns 10% of it: 121. Each gain beats the last."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: dejamos también las ganancias del año 2.",
+          "line": "Ahora el fondo tiene 1,210, así que el año 3 gana el 10%: 121. Cada ganancia supera a la anterior."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: deixamos também os ganhos do ano 2.",
+          "line": "Agora o fundo tem 1.210, então o ano 3 ganha 10%: 121. Cada ganho supera o anterior."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "steps": [
+          {
+            "id": "y1-gain"
+          },
+          {
+            "id": "y1-fund"
+          },
+          {
+            "id": "y2-gain"
+          },
+          {
+            "id": "y2-fund"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "y1-fund",
+          "y2-gain",
+          "y2-fund"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "y1-fund": "220",
+          "y2-gain": "22",
+          "y2-fund": "242"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A 200-coin fund earns 10% a year; year 1 earned 20. Fill in the rest.",
+          "feedback": {
+            "met": "You used each new total to find the next gain.",
+            "not_yet": "Add the earnings to the fund, then take 10% of that."
+          },
+          "help": [
+            "The fund after year 1 is its start plus its earnings.",
+            "Year 2 earns 10% of the fund after year 1."
+          ],
+          "steps": [
+            {
+              "expression": "Year 1 earnings: 10% of 200",
+              "result": "20",
+              "spokenText": "Ten percent of 200 is 20"
+            },
+            {
+              "expression": "Fund after year 1: 200 + 20",
+              "result": "220",
+              "spokenText": "Two hundred plus 20 is 220"
+            },
+            {
+              "expression": "Year 2 earnings: 10% of the new fund",
+              "result": "22",
+              "spokenText": "Ten percent of 220 is 22"
+            },
+            {
+              "expression": "Fund after year 2",
+              "result": "242",
+              "spokenText": "Two hundred twenty plus 22 is 242"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un fondo de 200 monedas gana 10% al año; el año 1 ganó 20. Completa el resto.",
+          "feedback": {
+            "met": "Usaste cada total nuevo para hallar la siguiente ganancia.",
+            "not_yet": "Suma las ganancias al fondo y luego toma el 10% de eso."
+          },
+          "help": [
+            "El fondo tras el año 1 es su inicio más sus ganancias.",
+            "El año 2 gana el 10% del fondo tras el año 1."
+          ],
+          "steps": [
+            {
+              "expression": "Ganancia del año 1: 10% de 200",
+              "result": "20",
+              "spokenText": "El diez por ciento de 200 es 20"
+            },
+            {
+              "expression": "Fondo tras el año 1: 200 + 20",
+              "result": "220",
+              "spokenText": "Doscientos más 20 son 220"
+            },
+            {
+              "expression": "Ganancia del año 2: 10% del fondo nuevo",
+              "result": "22",
+              "spokenText": "El diez por ciento de 220 es 22"
+            },
+            {
+              "expression": "Fondo tras el año 2",
+              "result": "242",
+              "spokenText": "Doscientos veinte más 22 son 242"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um fundo de 200 moedas ganha 10% ao ano; o ano 1 ganhou 20. Complete o resto.",
+          "feedback": {
+            "met": "Você usou cada novo total para achar o próximo ganho.",
+            "not_yet": "Some os ganhos ao fundo e depois pegue 10% disso."
+          },
+          "help": [
+            "O fundo após o ano 1 é o início mais os ganhos.",
+            "O ano 2 ganha 10% do fundo após o ano 1."
+          ],
+          "steps": [
+            {
+              "expression": "Ganho do ano 1: 10% de 200",
+              "result": "20",
+              "spokenText": "Dez por cento de 200 é 20"
+            },
+            {
+              "expression": "Fundo após o ano 1: 200 + 20",
+              "result": "220",
+              "spokenText": "Duzentos mais 20 são 220"
+            },
+            {
+              "expression": "Ganho do ano 2: 10% do fundo novo",
+              "result": "22",
+              "spokenText": "Dez por cento de 220 é 22"
+            },
+            {
+              "expression": "Fundo após o ano 2",
+              "result": "242",
+              "spokenText": "Duzentos e vinte mais 22 são 242"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-takeout-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: what if the earnings come out?",
+          "line": "I take the 100 out after year 1. The fund is 1,000 again, so year 2 earns only 100."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: ¿y si sacamos las ganancias?",
+          "line": "Saco las 100 después del año 1. El fondo vuelve a 1,000, así que el año 2 gana solo 100."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: e se tirarmos os ganhos?",
+          "line": "Tiro as 100 depois do ano 1. O fundo volta a 1.000, então o ano 2 ganha só 100."
+        }
+      }
+    },
+    {
+      "id": "example-takeout-chart-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "column"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            }
+          ],
+          "series": [
+            {
+              "id": "gain-in",
+              "values": [
+                100,
+                110,
+                121
+              ]
+            },
+            {
+              "id": "gain-out",
+              "values": [
+                100,
+                100,
+                110
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: compare each year’s gain. Taking out 100 once shrinks every later gain.",
+          "title": "Gain each year",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Earnings left in"
+              },
+              {
+                "label": "Year 1’s earnings taken out"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 5: compara la ganancia de cada año. Sacar 100 una vez achica cada ganancia siguiente.",
+          "title": "Ganancia de cada año",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ganancias adentro"
+              },
+              {
+                "label": "Ganancias del año 1 sacadas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: compare o ganho de cada ano. Tirar 100 uma vez diminui cada ganho seguinte.",
+          "title": "Ganho de cada ano",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ganhos dentro"
+              },
+              {
+                "label": "Ganhos do ano 1 tirados"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-grid-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "baseUnits": 500,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "tax",
+        "currency": "coins"
+      },
+      "rubric": {
+        "target_percent": 10
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new fund holds 500 coins. Slide to 10% and type the earnings under “Sample tax”.",
+          "feedback": {
+            "met": "You found 10% of the fund and typed what it earns.",
+            "not_yet": "Slide to 10%, then take that share of 500."
+          }
+        },
+        "es-MX": {
+          "prompt": "Un fondo nuevo tiene 500 monedas. Mueve a 10% y escribe las ganancias en “Impuesto de ejemplo”.",
+          "feedback": {
+            "met": "Hallaste el 10% del fondo y escribiste lo que gana.",
+            "not_yet": "Mueve a 10% y toma esa parte de 500."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um fundo novo tem 500 moedas. Arraste até 10% e digite os ganhos em “Imposto de exemplo”.",
+          "feedback": {
+            "met": "Você achou 10% do fundo e digitou o que ele ganha.",
+            "not_yet": "Arraste até 10% e pegue essa parte de 500."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-takeout-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "payload": {
+        "steps": [
+          {
+            "id": "y1-gain"
+          },
+          {
+            "id": "pot-out"
+          },
+          {
+            "id": "y2-gain"
+          },
+          {
+            "id": "y2-stayed"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "pot-out",
+          "y2-gain",
+          "y2-stayed"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "pot-out": "300",
+          "y2-gain": "30",
+          "y2-stayed": "33"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A 300-coin fund earns 10%; year 1 gives 30, and Zara takes it out. Fill in the rest.",
+          "feedback": {
+            "met": "You compared the gain with and without earnings left in.",
+            "not_yet": "Take 10% of what the fund holds in each case."
+          },
+          "help": [
+            "After the earnings come out, the fund is back at its start.",
+            "If the 30 had stayed in, the fund would hold 330."
+          ],
+          "steps": [
+            {
+              "expression": "Year 1 earnings: 10% of 300",
+              "result": "30",
+              "spokenText": "Ten percent of 300 is 30"
+            },
+            {
+              "expression": "Fund after Zara takes the earnings out",
+              "result": "300",
+              "spokenText": "The fund is back to 300"
+            },
+            {
+              "expression": "Year 2 earnings: 10% of this fund",
+              "result": "30",
+              "spokenText": "Ten percent of 300 is 30"
+            },
+            {
+              "expression": "Year 2 earnings if the 30 had stayed in",
+              "result": "33",
+              "spokenText": "Ten percent of 330 is 33"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un fondo de 300 monedas gana 10%; el año 1 da 30 y Zara los saca. Completa el resto.",
+          "feedback": {
+            "met": "Comparaste la ganancia con y sin las ganancias adentro.",
+            "not_yet": "Toma el 10% de lo que tiene el fondo en cada caso."
+          },
+          "help": [
+            "Al sacar las ganancias, el fondo vuelve a su inicio.",
+            "Si los 30 se hubieran quedado, el fondo tendría 330."
+          ],
+          "steps": [
+            {
+              "expression": "Ganancia del año 1: 10% de 300",
+              "result": "30",
+              "spokenText": "El diez por ciento de 300 es 30"
+            },
+            {
+              "expression": "Fondo tras sacar Zara las ganancias",
+              "result": "300",
+              "spokenText": "El fondo vuelve a 300"
+            },
+            {
+              "expression": "Ganancia del año 2: 10% de este fondo",
+              "result": "30",
+              "spokenText": "El diez por ciento de 300 es 30"
+            },
+            {
+              "expression": "Ganancia del año 2 si los 30 se quedaban",
+              "result": "33",
+              "spokenText": "El diez por ciento de 330 es 33"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um fundo de 300 moedas ganha 10%; o ano 1 dá 30 e a Zara os tira. Complete o resto.",
+          "feedback": {
+            "met": "Você comparou o ganho com e sem os ganhos dentro.",
+            "not_yet": "Pegue 10% do que o fundo tem em cada caso."
+          },
+          "help": [
+            "Ao tirar os ganhos, o fundo volta ao início.",
+            "Se os 30 tivessem ficado, o fundo teria 330."
+          ],
+          "steps": [
+            {
+              "expression": "Ganho do ano 1: 10% de 300",
+              "result": "30",
+              "spokenText": "Dez por cento de 300 é 30"
+            },
+            {
+              "expression": "Fundo após a Zara tirar os ganhos",
+              "result": "300",
+              "spokenText": "O fundo volta a 300"
+            },
+            {
+              "expression": "Ganho do ano 2: 10% deste fundo",
+              "result": "30",
+              "spokenText": "Dez por cento de 300 é 30"
+            },
+            {
+              "expression": "Ganho do ano 2 se os 30 ficassem",
+              "result": "33",
+              "spokenText": "Dez por cento de 330 é 33"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-compound-01",
+      "type": "money.compound-interest.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "compound-interest"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "principalCents": 100000,
+        "scenario": {
+          "rate": 10,
+          "years": 5
+        },
+        "options": [
+          {
+            "id": "opt-a",
+            "cents": 130000
+          },
+          {
+            "id": "opt-b",
+            "cents": 150000
+          },
+          {
+            "id": "opt-c",
+            "cents": 161000
+          },
+          {
+            "id": "opt-d",
+            "cents": 200000
+          }
+        ],
+        "challenge": {
+          "minimumCents": 200000,
+          "maximumYears": 8
+        },
+        "explain": [
+          "deposit-grows",
+          "interest-on-interest",
+          "same-each-year"
+        ]
+      },
+      "rubric": {
+        "predictOption": "opt-c",
+        "explainId": "interest-on-interest"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each $ is one coin. Predict what 1,000 coins grow to in 5 years at 10%, then use the sliders.",
+          "feedback": {
+            "met": "You predicted, used the sliders and named why it grows.",
+            "not_yet": "Check each year again, starting from what the fund held."
+          }
+        },
+        "es-MX": {
+          "prompt": "Aquí cada $ es una moneda. Predice en qué se convierten 1,000 monedas en 5 años al 10%; luego usa los controles.",
+          "feedback": {
+            "met": "Predijiste, probaste con los controles y nombraste por qué crece.",
+            "not_yet": "Revisa cada año otra vez, desde lo que tenía el fondo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Aqui cada $ é uma moeda. Preveja quanto viram 1.000 moedas em 5 anos a 10%; depois use os controles.",
+          "feedback": {
+            "met": "Você previu, testou com os controles e explicou por que cresce.",
+            "not_yet": "Confira cada ano de novo, a partir do que o fundo tinha."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-spend-all"
+          },
+          {
+            "id": "choice-spend-first"
+          },
+          {
+            "id": "choice-keep"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-less"
+          },
+          {
+            "id": "reason-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-keep"
+        ],
+        "reasonQuality": {
+          "reason-bigger": "sound",
+          "reason-less": "partial",
+          "reason-same": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia’s 400-coin fund earns 10% a year. For the biggest fund in 3 years, what should she do?",
+          "feedback": {
+            "met": "You chose to leave the earnings in, so the next gain grows.",
+            "not_yet": "Compare next year’s gain with and without the earnings in the fund."
+          },
+          "choices": [
+            {
+              "label": "Spend earnings each year"
+            },
+            {
+              "label": "Spend only year 1’s"
+            },
+            {
+              "label": "Leave earnings in"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "A bigger fund earns more"
+            },
+            {
+              "label": "Spending leaves less in the fund"
+            },
+            {
+              "label": "The fund earns the same either way"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El fondo de 400 monedas de Nia gana 10% al año. Para tener el fondo más grande en 3 años, ¿qué debe hacer?",
+          "feedback": {
+            "met": "Elegiste dejar las ganancias adentro; así la siguiente crece más.",
+            "not_yet": "Compara la ganancia del próximo año con y sin las ganancias en el fondo."
+          },
+          "choices": [
+            {
+              "label": "Gastar ganancias cada año"
+            },
+            {
+              "label": "Gastar solo las del año 1"
+            },
+            {
+              "label": "Dejar ganancias adentro"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Un fondo más grande gana más"
+            },
+            {
+              "label": "Gastar deja menos en el fondo"
+            },
+            {
+              "label": "El fondo gana lo mismo de cualquier modo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O fundo de 400 moedas da Nia ganha 10% ao ano. Para ter o maior fundo em 3 anos, o que ela deve fazer?",
+          "feedback": {
+            "met": "Você escolheu deixar os ganhos dentro; assim o próximo ganho cresce.",
+            "not_yet": "Compare o ganho do próximo ano com e sem os ganhos no fundo."
+          },
+          "choices": [
+            {
+              "label": "Gastar ganhos a cada ano"
+            },
+            {
+              "label": "Gastar só os do ano 1"
+            },
+            {
+              "label": "Deixar ganhos dentro"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Um fundo maior ganha mais"
+            },
+            {
+              "label": "Gastar deixa menos no fundo"
+            },
+            {
+              "label": "O fundo ganha o mesmo de qualquer jeito"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

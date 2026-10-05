@@ -1,0 +1,978 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-my-paycheck",
+  "lesson_id": "fe-adult-03-quiet-subscriptions",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.recurring-costs",
+    "life.opportunity-cost",
+    "biz.value-of-work"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina acompaña a Lena en la revisión de siete cargos mensuales pequeños: los suma, ve el total del año y lo convierte en horas de trabajo. La historia de Dina con una prueba gratis muestra por qué Lena conserva lo que usó y cancela el resto; luego repite el método con otras tarjetas.",
+  "title": {
+    "en-US": "Quiet subscriptions",
+    "es-MX": "Suscripciones silenciosas",
+    "pt-BR": "Assinaturas silenciosas"
+  },
+  "new_concepts": [
+    "life.recurring-costs",
+    "life.opportunity-cost"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina joins a free trial, forgets the end date and never checks her card, so a recurring charge runs for months.",
+    "recovery": "Dina lists every charge, keeps what she used, cancels the rest, and says next time she notes the end date."
+  },
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "In the US a free trial usually asks for a card and starts billing when the trial ends; the lesson adds small monthly charges into a yearly total. The amounts are illustrative examples, not real prices.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "free trial"
+        ]
+      },
+      "es-MX": {
+        "scenario": "En México muchos servicios se cobran a la tarjeta con un cargo recurrente que sigue cada mes hasta que se cancela; la lección suma esos cargos en un total anual. Los montos son ejemplos ilustrativos, no precios reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "cargo recurrente"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, assinaturas costumam ser cobradas no cartão ou em débito automático todo mês até serem canceladas; a lição soma essas cobranças em um total anual. Os valores são exemplos ilustrativos, não preços reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "débito automático"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's seven monthly charges.",
+          "line": "Take your time. Lena lists seven small monthly charges on her card; we add them up step by step."
+        },
+        "es-MX": {
+          "prompt": "Los siete cargos mensuales de Lena.",
+          "line": "Con calma. Lena anota siete cargos mensuales pequeños de su tarjeta; los sumamos paso a paso."
+        },
+        "pt-BR": {
+          "prompt": "As sete cobranças mensais da Lena.",
+          "line": "Com calma. A Lena lista sete cobranças mensais pequenas do cartão dela; vamos somá-las passo a passo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "keep-just-in-case"
+          },
+          {
+            "id": "cancel-it"
+          },
+          {
+            "id": "wait-and-see"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-year"
+          },
+          {
+            "id": "reason-use"
+          },
+          {
+            "id": "reason-small"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "cancel-it"
+        ],
+        "reasonQuality": {
+          "reason-use": "sound",
+          "reason-year": "partial",
+          "reason-small": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena finds a $12 monthly charge she has not used in two months. What does she do?",
+          "feedback": {
+            "met": "Thanks, I see your thinking. Now we add them up.",
+            "not_yet": "Thanks, I see your thinking. Now we add them up."
+          },
+          "choices": [
+            {
+              "label": "Keep it, just in case"
+            },
+            {
+              "label": "Cancel it"
+            },
+            {
+              "label": "Wait one more month"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "It adds up over a year"
+            },
+            {
+              "label": "It went unused for two months"
+            },
+            {
+              "label": "Twelve is too small to matter"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Lena encuentra un cargo mensual de $12 que no ha usado en dos meses. ¿Qué hace?",
+          "feedback": {
+            "met": "Gracias, veo cómo piensas. Ahora los sumamos.",
+            "not_yet": "Gracias, veo cómo piensas. Ahora los sumamos."
+          },
+          "choices": [
+            {
+              "label": "Lo conserva, por si acaso"
+            },
+            {
+              "label": "Lo cancela"
+            },
+            {
+              "label": "Espera un mes más"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Se acumula durante un año"
+            },
+            {
+              "label": "No se ha usado en dos meses"
+            },
+            {
+              "label": "Doce es muy poco para importar"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Lena encontra uma cobrança mensal de R$ 12 que não usa há dois meses. O que ela faz?",
+          "feedback": {
+            "met": "Entendi, vejo como você pensa. Agora vamos somar.",
+            "not_yet": "Entendi, vejo como você pensa. Agora vamos somar."
+          },
+          "choices": [
+            {
+              "label": "Mantém, por garantia"
+            },
+            {
+              "label": "Cancela"
+            },
+            {
+              "label": "Espera mais um mês"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Acumula ao longo de um ano"
+            },
+            {
+              "label": "Não é usada há dois meses"
+            },
+            {
+              "label": "Doze é pouco demais para importar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-month-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: add the month.",
+          "line": "Each looks small, so Lena adds them: 9.99 + 12 + 5 + 15 + 8 + 4.50 + 22.50 = $76.99 a month."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: suma el mes.",
+          "line": "Cada uno parece pequeño, así que Lena los suma: 9.99 + 12 + 5 + 15 + 8 + 4.50 + 22.50 = $76.99 al mes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: some o mês.",
+          "line": "Cada uma parece pequena, então a Lena soma: 9,99 + 12 + 5 + 15 + 8 + 4,50 + 22,50 = R$ 76,99 por mês."
+        }
+      }
+    },
+    {
+      "id": "example-year-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: a year of it.",
+          "line": "A year has 12 months, so the charge repeats: 76.99 × 12 = $923.88, about $924."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: un año completo.",
+          "line": "Un año tiene 12 meses y el cargo se repite: 76.99 × 12 = $923.88, unos $924."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: um ano inteiro.",
+          "line": "Um ano tem 12 meses e a cobrança se repete: 76,99 × 12 = R$ 923,88, uns R$ 924."
+        }
+      }
+    },
+    {
+      "id": "example-hours-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the year in hours.",
+          "line": "At $13.20 an hour, 924 ÷ 13.20 = 70, so the year costs Lena 70 hours of work."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el año en horas.",
+          "line": "A $13.20 la hora, 924 ÷ 13.20 = 70: el año le cuesta a Lena 70 horas de trabajo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o ano em horas.",
+          "line": "A R$ 13,20 por hora, 924 ÷ 13,20 = 70: o ano custa à Lena 70 horas de trabalho."
+        }
+      }
+    },
+    {
+      "id": "guided-year-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "steps": [
+          {
+            "id": "month"
+          },
+          {
+            "id": "year"
+          },
+          {
+            "id": "hours"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "year",
+          "hours"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year": "312",
+          "hours": "24"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's second card: 8, 11 and 7 a month. At $13 an hour, how many work hours a year?",
+          "feedback": {
+            "met": "You multiplied by the months, then divided by pay.",
+            "not_yet": "Follow the order Lena used: month, year, then hours."
+          },
+          "help": [
+            "Add the charges, multiply by months, then divide by pay."
+          ],
+          "steps": [
+            {
+              "expression": "8 + 11 + 7",
+              "result": "26",
+              "spokenText": "The three charges add up to $26 a month."
+            },
+            {
+              "expression": "26 × 12",
+              "result": "312",
+              "spokenText": "A year of it is 26 × 12 = $312."
+            },
+            {
+              "expression": "Yearly ÷ hourly pay",
+              "result": "24",
+              "spokenText": "$312 ÷ $13 an hour is 24 hours of work."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la segunda tarjeta de Lena: 8, 11 y 7 al mes. A $13 la hora, ¿cuántas horas de trabajo son al año?",
+          "feedback": {
+            "met": "Multiplicaste por los meses y dividiste entre el pago.",
+            "not_yet": "Sigue el orden de Lena: mes, año y luego horas."
+          },
+          "help": [
+            "Suma los cargos, multiplica por los meses y divide entre el pago."
+          ],
+          "steps": [
+            {
+              "expression": "8 + 11 + 7",
+              "result": "26",
+              "spokenText": "Los tres cargos suman $26 al mes."
+            },
+            {
+              "expression": "26 × 12",
+              "result": "312",
+              "spokenText": "Un año son 26 × 12 = $312."
+            },
+            {
+              "expression": "Anual ÷ pago por hora",
+              "result": "24",
+              "spokenText": "$312 ÷ $13 por hora son 24 horas de trabajo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No segundo cartão da Lena: 8, 11 e 7 por mês. A R$ 13 por hora, quantas horas de trabalho são por ano?",
+          "feedback": {
+            "met": "Você multiplicou pelos meses e dividiu pelo pagamento.",
+            "not_yet": "Siga a ordem da Lena: mês, ano e depois horas."
+          },
+          "help": [
+            "Some as cobranças, multiplique pelos meses e divida pelo pagamento."
+          ],
+          "steps": [
+            {
+              "expression": "8 + 11 + 7",
+              "result": "26",
+              "spokenText": "As três cobranças somam R$ 26 por mês."
+            },
+            {
+              "expression": "26 × 12",
+              "result": "312",
+              "spokenText": "Um ano são 26 × 12 = R$ 312."
+            },
+            {
+              "expression": "Anual ÷ pagamento por hora",
+              "result": "24",
+              "spokenText": "R$ 312 ÷ R$ 13 por hora são 24 horas de trabalho."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-trial-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Hear how a free trial cost Dina months.",
+          "setup": "I joined a free trial and forgot its end date.",
+          "misjudgment": "I never checked my card, so it kept charging for months.",
+          "recovery": "I listed every charge, kept what I used, canceled the rest. Next time I note the end date."
+        },
+        "es-MX": {
+          "prompt": "Escucha cómo una prueba gratis le costó meses a Dina.",
+          "setup": "Me inscribí a una prueba gratis y olvidé cuándo terminaba.",
+          "misjudgment": "No revisé mi tarjeta y el cargo recurrente siguió meses.",
+          "recovery": "Listé cada cargo, conservé lo que usaba y cancelé el resto. La próxima vez anoto la fecha de fin."
+        },
+        "pt-BR": {
+          "prompt": "Veja como um teste grátis custou meses à Dina.",
+          "setup": "Assinei um teste grátis e esqueci quando terminava.",
+          "misjudgment": "Não conferi meus gastos e o débito automático seguiu por meses.",
+          "recovery": "Listei cada cobrança, mantive o que usava e cancelei o resto. Da próxima vez anoto a data final."
+        }
+      }
+    },
+    {
+      "id": "example-board-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "tokens": 7,
+        "options": [
+          {
+            "id": "opt-services",
+            "cost": 7
+          },
+          {
+            "id": "opt-weekend",
+            "cost": 4
+          },
+          {
+            "id": "opt-fund",
+            "cost": 3
+          },
+          {
+            "id": "opt-course",
+            "cost": 5
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: each token is 10 work hours, so 70 hours is 7 tokens. Spend them.",
+          "options": [
+            {
+              "label": "All seven services"
+            },
+            {
+              "label": "A weekend away"
+            },
+            {
+              "label": "Add to the emergency fund"
+            },
+            {
+              "label": "A short course"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Paso 4: cada ficha equivale a 10 horas de trabajo, así que 70 horas son 7 fichas. Gástalas.",
+          "options": [
+            {
+              "label": "Los siete servicios"
+            },
+            {
+              "label": "Un fin de semana fuera"
+            },
+            {
+              "label": "Aporte al fondo de emergencia"
+            },
+            {
+              "label": "Un curso corto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: cada ficha vale 10 horas de trabalho, então 70 horas são 7 fichas. Gaste-as.",
+          "options": [
+            {
+              "label": "Os sete serviços"
+            },
+            {
+              "label": "Um fim de semana fora"
+            },
+            {
+              "label": "Reforço da reserva de emergência"
+            },
+            {
+              "label": "Um curso curto"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-keep-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: use decides, not price.",
+          "line": "Lena keeps the three she used last month: $9.99, $4.50 and $22.50. The other four cost $40 a month."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: decide el uso, no el precio.",
+          "line": "Lena conserva los tres que usó el mes pasado: $9.99, $4.50 y $22.50. Los otros cuatro cuestan $40 al mes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o uso decide, não o preço.",
+          "line": "A Lena mantém os três usados no mês passado: R$ 9,99, R$ 4,50 e R$ 22,50. Os outros quatro custam R$ 40 por mês."
+        }
+      }
+    },
+    {
+      "id": "practice-hours-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "month"
+          },
+          {
+            "id": "year"
+          },
+          {
+            "id": "hours"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "year",
+          "hours"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year": "336",
+          "hours": "21"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's third card: 6.50, 9.50 and 12 a month. At $16 an hour, how many work hours a year?",
+          "feedback": {
+            "met": "You turned a monthly total into hours of work.",
+            "not_yet": "Use the order Lena followed: month, year, then hours."
+          },
+          "help": [
+            "Add first, then take the year, then divide by pay."
+          ],
+          "steps": [
+            {
+              "expression": "6.50 + 9.50 + 12",
+              "result": "28",
+              "spokenText": "Together the charges cost $28 a month."
+            },
+            {
+              "expression": "28 × 12",
+              "result": "336",
+              "spokenText": "A year of it is $336."
+            },
+            {
+              "expression": "Yearly ÷ hourly pay",
+              "result": "21",
+              "spokenText": "$336 ÷ $16 an hour is 21 hours of work."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la tercera tarjeta de Lena: 6.50, 9.50 y 12 al mes. A $16 la hora, ¿cuántas horas de trabajo son al año?",
+          "feedback": {
+            "met": "Convertiste un total mensual en horas de trabajo.",
+            "not_yet": "Usa el orden de Lena: mes, año y luego horas."
+          },
+          "help": [
+            "Suma primero, luego toma el año y divide entre el pago."
+          ],
+          "steps": [
+            {
+              "expression": "6.50 + 9.50 + 12",
+              "result": "28",
+              "spokenText": "Juntos, los cargos cuestan $28 al mes."
+            },
+            {
+              "expression": "28 × 12",
+              "result": "336",
+              "spokenText": "Un año son $336."
+            },
+            {
+              "expression": "Anual ÷ pago por hora",
+              "result": "21",
+              "spokenText": "$336 ÷ $16 por hora son 21 horas de trabajo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No terceiro cartão da Lena: 6,50, 9,50 e 12 por mês. A R$ 16 por hora, quantas horas de trabalho são por ano?",
+          "feedback": {
+            "met": "Você transformou um total mensal em horas de trabalho.",
+            "not_yet": "Use a ordem da Lena: mês, ano e depois horas."
+          },
+          "help": [
+            "Some primeiro, depois tome o ano e divida pelo pagamento."
+          ],
+          "steps": [
+            {
+              "expression": "6,50 + 9,50 + 12",
+              "result": "28",
+              "spokenText": "Juntas, as cobranças custam R$ 28 por mês."
+            },
+            {
+              "expression": "28 × 12",
+              "result": "336",
+              "spokenText": "Um ano são R$ 336."
+            },
+            {
+              "expression": "Anual ÷ pagamento por hora",
+              "result": "21",
+              "spokenText": "R$ 336 ÷ R$ 16 por hora são 21 horas de trabalho."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-keep-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "cancel-plan"
+          },
+          {
+            "id": "cancel-both"
+          },
+          {
+            "id": "cancel-app"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-price"
+          },
+          {
+            "id": "reason-all"
+          },
+          {
+            "id": "reason-use"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "cancel-app"
+        ],
+        "reasonQuality": {
+          "reason-use": "sound",
+          "reason-price": "partial",
+          "reason-all": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's third card: a $12 plan used weekly, a $9.50 app unused last month. Which does she cancel?",
+          "feedback": {
+            "met": "You canceled the app that went unused.",
+            "not_yet": "Check which one was actually used last month."
+          },
+          "choices": [
+            {
+              "label": "The $12 plan, the pricier one"
+            },
+            {
+              "label": "Both of them"
+            },
+            {
+              "label": "The $9.50 app, unused"
+            }
+          ],
+          "reasonPrompt": "Which fact decides it?",
+          "reasons": [
+            {
+              "label": "The pricier charge costs more a year"
+            },
+            {
+              "label": "Fewer charges is always better"
+            },
+            {
+              "label": "Keep what is used, cancel the rest"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la tercera tarjeta de Lena: un plan de $12 usado cada semana y una app de $9.50 sin uso el mes pasado. ¿Cuál cancela?",
+          "feedback": {
+            "met": "Cancelaste la app que no se usó.",
+            "not_yet": "Revisa cuál se usó de verdad el mes pasado."
+          },
+          "choices": [
+            {
+              "label": "El plan de $12, el más caro"
+            },
+            {
+              "label": "Los dos"
+            },
+            {
+              "label": "La app de $9.50, sin uso"
+            }
+          ],
+          "reasonPrompt": "¿Qué dato lo decide?",
+          "reasons": [
+            {
+              "label": "El cargo más caro cuesta más al año"
+            },
+            {
+              "label": "Menos cargos siempre es mejor"
+            },
+            {
+              "label": "Conservo lo que uso y cancelo lo demás"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No terceiro cartão da Lena: plano de R$ 12 usado toda semana, app de R$ 9,50 sem uso no mês passado. Qual cancela?",
+          "feedback": {
+            "met": "Você cancelou o app que ficou sem uso.",
+            "not_yet": "Confira qual foi usado de verdade no mês passado."
+          },
+          "choices": [
+            {
+              "label": "O plano de R$ 12, o mais caro"
+            },
+            {
+              "label": "Os dois"
+            },
+            {
+              "label": "O app de R$ 9,50, sem uso"
+            }
+          ],
+          "reasonPrompt": "Qual fato decide?",
+          "reasons": [
+            {
+              "label": "A cobrança mais cara custa mais por ano"
+            },
+            {
+              "label": "Menos cobranças é sempre melhor"
+            },
+            {
+              "label": "Mantenho o que uso e cancelo o resto"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-trial-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "cancel-before"
+          },
+          {
+            "id": "keep-just-in-case"
+          },
+          {
+            "id": "let-it-renew"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-year"
+          },
+          {
+            "id": "reason-once"
+          },
+          {
+            "id": "reason-small"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "cancel-before"
+        ],
+        "reasonQuality": {
+          "reason-year": "sound",
+          "reason-once": "partial",
+          "reason-small": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's free trial of a video service, used once, becomes $14 a month. What does she decide?",
+          "feedback": {
+            "met": "Canceling before the first charge means nothing is billed.",
+            "not_yet": "Price the whole year, then compare it with the use."
+          },
+          "choices": [
+            {
+              "label": "Cancel before the first charge"
+            },
+            {
+              "label": "Keep it, just in case"
+            },
+            {
+              "label": "Let it renew, decide later"
+            }
+          ],
+          "reasonPrompt": "Which fact decides it?",
+          "reasons": [
+            {
+              "label": "A year costs $168 for one use"
+            },
+            {
+              "label": "It was only used once"
+            },
+            {
+              "label": "It is only $14 a month"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La prueba gratis de video de Lena, usada una vez, pasa a $14 al mes. ¿Qué decide ella?",
+          "feedback": {
+            "met": "Cancelar antes del primer cargo evita que se cobre algo.",
+            "not_yet": "Calcula el año completo y compáralo con el uso."
+          },
+          "choices": [
+            {
+              "label": "Cancelar antes del primer cargo"
+            },
+            {
+              "label": "Conservarlo, por si acaso"
+            },
+            {
+              "label": "Dejarlo renovar y decidir después"
+            }
+          ],
+          "reasonPrompt": "¿Qué dato lo decide?",
+          "reasons": [
+            {
+              "label": "Un año cuesta $168 por un uso"
+            },
+            {
+              "label": "Solo se usó una vez"
+            },
+            {
+              "label": "Son solo $14 al mes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O teste grátis de vídeo da Lena, usado uma vez, vira R$ 14 por mês. O que ela decide?",
+          "feedback": {
+            "met": "Cancelar antes da primeira cobrança evita que algo seja cobrado.",
+            "not_yet": "Calcule o ano inteiro e compare com o uso."
+          },
+          "choices": [
+            {
+              "label": "Cancelar antes da primeira cobrança"
+            },
+            {
+              "label": "Manter, por garantia"
+            },
+            {
+              "label": "Deixar renovar e decidir depois"
+            }
+          ],
+          "reasonPrompt": "Qual fato decide?",
+          "reasons": [
+            {
+              "label": "Um ano custa R$ 168 por um uso"
+            },
+            {
+              "label": "Foi usado só uma vez"
+            },
+            {
+              "label": "São só R$ 14 por mês"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

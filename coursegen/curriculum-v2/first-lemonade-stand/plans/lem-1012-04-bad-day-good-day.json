@@ -1,0 +1,1293 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-10-12",
+  "chapter_id": "lem-1012-school-fair-stall",
+  "lesson_id": "lem-1012-04-bad-day-good-day",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.risk-and-reward",
+    "life.review-and-adjust-plan",
+    "biz.profit"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina y el equipo del puesto de la clase estudian seis semanas de ganancias: una con lluvia y otra con calor. Primero se ve qué le dicen al equipo tras una semana mala. Luego Dina lo muestra paso a paso: leer cada punto, ver el riesgo y la recompensa, sumar las semanas para revisar el plan hacia la hielera de 150 monedas, mantener la meta y mover la fecha, y comparar un lote completo con medio lote. Después se practica con otra meta y se transfiere a la mesa de galletas.",
+  "title": {
+    "en-US": "A bad week, a good week",
+    "es-MX": "Una semana mala, una buena",
+    "pt-BR": "Uma semana ruim, uma boa"
+  },
+  "new_concepts": [
+    "biz.risk-and-reward",
+    "life.review-and-adjust-plan"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina and the class stall team check six weeks of profits for the 150-coin cooler.",
+          "line": "Rain and heat changed some weeks, so the 5-week plan needs a look. No rush."
+        },
+        "es-MX": {
+          "prompt": "Dina y el equipo del puesto de la clase revisan seis semanas de ganancias para la hielera de 150 monedas.",
+          "line": "La lluvia y el calor cambiaron algunas semanas, así que el plan de 5 semanas necesita revisión. Sin prisa."
+        },
+        "pt-BR": {
+          "prompt": "A Dina e a equipe da barraca da turma conferem seis semanas de lucros para a caixa térmica de 150 moedas.",
+          "line": "A chuva e o calor mudaram algumas semanas, então o plano de 5 semanas precisa de uma olhada. Sem pressa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-quit"
+          },
+          {
+            "id": "reply-ignore"
+          },
+          {
+            "id": "reply-review"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-review"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "After a rainy week the stall lost 12 coins. What do you tell Mia?",
+          "feedback": {
+            "met": "Thanks, I see your thinking. Let's look together.",
+            "not_yet": "Thanks, I see your thinking. Let's look together."
+          },
+          "speaker": "Mia",
+          "line": "We lost coins today. Should we give up on the cooler?",
+          "replies": [
+            {
+              "label": "Yes, one bad week ruins the plan."
+            },
+            {
+              "label": "Forget that week and keep going."
+            },
+            {
+              "label": "Count how far we are, then adjust."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tras una semana de lluvia, el puesto perdió 12 monedas. ¿Qué le dices a Mia?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora lo vemos juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora lo vemos juntos."
+          },
+          "speaker": "Mia",
+          "line": "Hoy perdimos monedas. ¿Dejamos la meta de la hielera?",
+          "replies": [
+            {
+              "label": "Sí, una mala semana arruina el plan."
+            },
+            {
+              "label": "Olvidemos esa semana y sigamos igual."
+            },
+            {
+              "label": "Contemos cuánto llevamos y ajustemos."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Depois de uma semana de chuva, a barraca perdeu 12 moedas. O que você diz à Mia?",
+          "feedback": {
+            "met": "Já vi como você pensa. Agora vamos ver juntos.",
+            "not_yet": "Já vi como você pensa. Agora vamos ver juntos."
+          },
+          "speaker": "Mia",
+          "line": "Hoje perdemos moedas. Vamos desistir da caixa térmica?",
+          "replies": [
+            {
+              "label": "Sim, uma semana ruim estraga o plano."
+            },
+            {
+              "label": "Vamos esquecer essa semana e seguir igual."
+            },
+            {
+              "label": "Vamos contar quanto temos e ajustar."
+            }
+          ]
+        }
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan"
+    },
+    {
+      "id": "example-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "dot-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk-1"
+            },
+            {
+              "id": "wk-2"
+            },
+            {
+              "id": "wk-3"
+            },
+            {
+              "id": "wk-4"
+            },
+            {
+              "id": "wk-5"
+            },
+            {
+              "id": "wk-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-profit",
+              "values": [
+                30,
+                34,
+                -12,
+                32,
+                48,
+                28
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: each dot is one week's profit. Tap a dot to read it.",
+          "title": "Profit each week",
+          "data": {
+            "categories": [
+              {
+                "label": "Week 1"
+              },
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 3 (rain)"
+              },
+              {
+                "label": "Week 4"
+              },
+              {
+                "label": "Week 5 (heat)"
+              },
+              {
+                "label": "Week 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Profit"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: cada punto es la ganancia de una semana. Toca un punto para leerlo.",
+          "title": "Ganancia de cada semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3 (lluvia)"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 5 (calor)"
+              },
+              {
+                "label": "Semana 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ganancia"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: cada ponto é o lucro de uma semana. Toque em um ponto para lê-lo.",
+          "title": "Lucro de cada semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3 (chuva)"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 5 (calor)"
+              },
+              {
+                "label": "Semana 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lucro"
+              }
+            ]
+          }
+        }
+      },
+      "teaching_role": "example"
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: risk and reward",
+          "line": "Rain gave −12; heat gave 48. A bad week is the risk, a big week the reward."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: riesgo y recompensa",
+          "line": "La lluvia dejó −12 y el calor dejó 48. Una mala semana es el riesgo; una gran semana, la recompensa."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: risco e recompensa",
+          "line": "A chuva deu −12 e o calor deu 48. Uma semana ruim é o risco; uma semana ótima, a recompensa."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: review the plan after week 5",
+          "line": "30 + 34 − 12 + 32 + 48 = 132, so we are 18 short of 150. Are we okay so far?"
+        },
+        "es-MX": {
+          "prompt": "Paso 3: revisar el plan tras la semana 5",
+          "line": "30 + 34 − 12 + 32 + 48 = 132, así que faltan 18 para 150. ¿Vamos bien?"
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: conferir o plano após a semana 5",
+          "line": "30 + 34 − 12 + 32 + 48 = 132, então faltam 18 para 150. Estamos bem?"
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dot-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk-1"
+            },
+            {
+              "id": "wk-2"
+            },
+            {
+              "id": "wk-3"
+            },
+            {
+              "id": "wk-4"
+            },
+            {
+              "id": "wk-5"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-profit",
+              "values": [
+                24,
+                30,
+                -8,
+                28,
+                32
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-short6"
+            },
+            {
+              "id": "ans-short14"
+            },
+            {
+              "id": "ans-over2"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The class's banner fund needs 120 coins. Week 3 had rain.",
+          "title": "Banner fund, profit each week",
+          "data": {
+            "categories": [
+              {
+                "label": "Week 1"
+              },
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 3 (rain)"
+              },
+              {
+                "label": "Week 4"
+              },
+              {
+                "label": "Week 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Profit"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You added every week, loss included, then compared with 120.",
+            "not_yet": "Not yet. Add all five weeks; rain takes coins away."
+          },
+          "question": {
+            "prompt": "After week 5, how far is the fund from 120?",
+            "options": [
+              {
+                "label": "6 coins short"
+              },
+              {
+                "label": "14 coins short"
+              },
+              {
+                "label": "2 coins over"
+              }
+            ]
+          },
+          "help": [
+            "Add the weeks; the loss week subtracts.",
+            "Then see how far the total is from 120."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El fondo de la manta del grupo necesita 120 monedas. La semana 3 llovió.",
+          "title": "Fondo de la manta, ganancia por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3 (lluvia)"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ganancia"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Sumaste todas las semanas, con la pérdida, y comparaste con 120.",
+            "not_yet": "Todavía no. Suma las cinco semanas; la semana de lluvia resta monedas."
+          },
+          "question": {
+            "prompt": "Tras la semana 5, ¿cuánto le falta al fondo para 120?",
+            "options": [
+              {
+                "label": "Faltan 6 monedas"
+              },
+              {
+                "label": "Faltan 14 monedas"
+              },
+              {
+                "label": "Sobran 2 monedas"
+              }
+            ]
+          },
+          "help": [
+            "Suma las semanas; la semana con pérdida resta.",
+            "Luego mira cuánto falta del total a 120."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O fundo da faixa da turma precisa de 120 moedas. Na semana 3 choveu.",
+          "title": "Fundo da faixa, lucro por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3 (chuva)"
+              },
+              {
+                "label": "Semana 4"
+              },
+              {
+                "label": "Semana 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lucro"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você somou todas as semanas, com a perda, e comparou com 120.",
+            "not_yet": "Ainda não. Some as cinco semanas; a semana de chuva tira moedas."
+          },
+          "question": {
+            "prompt": "Após a semana 5, quanto falta ao fundo para 120?",
+            "options": [
+              {
+                "label": "Faltam 6 moedas"
+              },
+              {
+                "label": "Faltam 14 moedas"
+              },
+              {
+                "label": "Sobram 2 moedas"
+              }
+            ]
+          },
+          "help": [
+            "Some as semanas; a semana com perda subtrai.",
+            "Depois veja quanto falta do total até 120."
+          ]
+        }
+      },
+      "teaching_role": "guided",
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-short14"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit"
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: keep the goal, add one week",
+          "line": "A usual week brings about 30, so it covers the 18 left. The 5-week plan becomes 6."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: mantener la meta, sumar una semana",
+          "line": "Una semana normal deja unos 30, y cubre los 18 que faltan. El plan de 5 semanas pasa a 6."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: manter a meta, somar uma semana",
+          "line": "Uma semana normal deixa uns 30, e cobre os 18 que faltam. O plano de 5 semanas passa a 6."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: weeks 3 and 5 used a full batch, 24 cups for 96.",
+          "line": "Rain sold 14 at 6 coins: 84 − 96 = −12. Heat sold all 24: 144 − 96 = 48."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: las semanas 3 y 5 usaron un lote completo, 24 vasos por 96.",
+          "line": "La lluvia vendió 14 a 6 monedas: 84 − 96 = −12. El calor vendió los 24: 144 − 96 = 48."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: as semanas 3 e 5 usaram um lote cheio, 24 copos por 96.",
+          "line": "A chuva vendeu 14 a 6 moedas: 84 − 96 = −12. O calor vendeu os 24: 144 − 96 = 48."
+        }
+      }
+    },
+    {
+      "id": "example-06",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: a half batch is 12 cups for 48.",
+          "line": "All 12 sell either way: 12 × 6 = 72, so 72 − 48 = 24. Safer, but no big week."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: medio lote son 12 vasos por 48.",
+          "line": "Los 12 se venden igual: 12 × 6 = 72, así que 72 − 48 = 24. Más seguro, pero sin gran semana."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: meio lote são 12 copos por 48.",
+          "line": "Os 12 vendem de qualquer jeito: 12 × 6 = 72, então 72 − 48 = 24. Mais seguro, mas sem semana ótima."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dot-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "full-rain"
+            },
+            {
+              "id": "full-heat"
+            },
+            {
+              "id": "half-rain"
+            },
+            {
+              "id": "half-heat"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-profit",
+              "values": [
+                -14,
+                40,
+                20,
+                20
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-full"
+            },
+            {
+              "id": "ans-half"
+            },
+            {
+              "id": "ans-same"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina's team tries a full batch of 20 cups and a half batch of 10.",
+          "title": "Profit by batch and weather",
+          "data": {
+            "categories": [
+              {
+                "label": "Full batch, rain"
+              },
+              {
+                "label": "Full batch, heat"
+              },
+              {
+                "label": "Half batch, rain"
+              },
+              {
+                "label": "Half batch, heat"
+              }
+            ],
+            "series": [
+              {
+                "label": "Profit"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You compared each batch's rain dot with its heat dot.",
+            "not_yet": "Not yet. See how far apart each batch's dots sit."
+          },
+          "question": {
+            "prompt": "Which batch swings more between rain and heat?",
+            "options": [
+              {
+                "label": "Full batch"
+              },
+              {
+                "label": "Half batch"
+              },
+              {
+                "label": "The same"
+              }
+            ]
+          },
+          "help": [
+            "Compare each batch's rain dot with its heat dot.",
+            "A steady batch has dots close together."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El equipo de Dina prueba un lote completo de 20 vasos y medio lote de 10.",
+          "title": "Ganancia por lote y clima",
+          "data": {
+            "categories": [
+              {
+                "label": "Lote completo, lluvia"
+              },
+              {
+                "label": "Lote completo, calor"
+              },
+              {
+                "label": "Medio lote, lluvia"
+              },
+              {
+                "label": "Medio lote, calor"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ganancia"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Comparaste el punto de lluvia y el de calor de cada lote.",
+            "not_yet": "Todavía no. Mira qué tan separados quedan los dos puntos de cada lote."
+          },
+          "question": {
+            "prompt": "¿Qué lote cambia más entre lluvia y calor?",
+            "options": [
+              {
+                "label": "Lote completo"
+              },
+              {
+                "label": "Medio lote"
+              },
+              {
+                "label": "Igual"
+              }
+            ]
+          },
+          "help": [
+            "Compara el punto de lluvia y el de calor de cada lote.",
+            "Un lote estable tiene los puntos juntos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe da Dina testa um lote cheio de 20 copos e meio lote de 10.",
+          "title": "Lucro por lote e clima",
+          "data": {
+            "categories": [
+              {
+                "label": "Lote cheio, chuva"
+              },
+              {
+                "label": "Lote cheio, calor"
+              },
+              {
+                "label": "Meio lote, chuva"
+              },
+              {
+                "label": "Meio lote, calor"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lucro"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você comparou o ponto de chuva e o de calor de cada lote.",
+            "not_yet": "Ainda não. Veja o quanto os dois pontos de cada lote ficam afastados."
+          },
+          "question": {
+            "prompt": "Qual lote muda mais entre chuva e calor?",
+            "options": [
+              {
+                "label": "Lote cheio"
+              },
+              {
+                "label": "Meio lote"
+              },
+              {
+                "label": "Igual"
+              }
+            ]
+          },
+          "help": [
+            "Compare o ponto de chuva e o de calor de cada lote.",
+            "Um lote estável tem os pontos juntos."
+          ]
+        }
+      },
+      "teaching_role": "guided",
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-full"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward"
+    },
+    {
+      "id": "practice-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-give-up"
+          },
+          {
+            "id": "reply-two"
+          },
+          {
+            "id": "reply-one"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-two"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The class saves 100 coins for a tent. What do you tell Mia?",
+          "feedback": {
+            "met": "You fit the gap into usual weeks, goal kept.",
+            "not_yet": "Not yet. Find the gap, then count usual weeks."
+          },
+          "speaker": "Mia",
+          "line": "We have 52 of the 100. A usual week brings 30.",
+          "replies": [
+            {
+              "label": "Give up; the tent is too far."
+            },
+            {
+              "label": "Keep the goal; add two more weeks."
+            },
+            {
+              "label": "Keep the goal; add one more week."
+            }
+          ],
+          "help": [
+            "Subtract what we have from the goal.",
+            "Then see how many usual weeks cover the gap."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El grupo ahorra 100 monedas para una carpa. ¿Qué le dices a Mia?",
+          "feedback": {
+            "met": "Cubriste lo que falta con semanas normales y mantuviste la meta.",
+            "not_yet": "Todavía no. Encuentra lo que falta y compáralo con una semana normal."
+          },
+          "speaker": "Mia",
+          "line": "Tenemos 52 de las 100. Una semana normal deja 30.",
+          "replies": [
+            {
+              "label": "Rendirnos; la carpa está muy lejos."
+            },
+            {
+              "label": "Mantener la meta; sumar dos semanas más."
+            },
+            {
+              "label": "Mantener la meta; sumar una semana más."
+            }
+          ],
+          "help": [
+            "Resta lo que tenemos a la meta.",
+            "Luego mira cuántas semanas normales cubren lo que falta."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A turma guarda 100 moedas para uma tenda. O que você diz à Mia?",
+          "feedback": {
+            "met": "Você cobriu o que falta com semanas normais e manteve a meta.",
+            "not_yet": "Ainda não. Ache o que falta e compare com uma semana normal."
+          },
+          "speaker": "Mia",
+          "line": "Temos 52 das 100. Uma semana normal deixa 30.",
+          "replies": [
+            {
+              "label": "Desistir; a tenda está muito longe."
+            },
+            {
+              "label": "Manter a meta; somar mais duas semanas."
+            },
+            {
+              "label": "Manter a meta; somar mais uma semana."
+            }
+          ],
+          "help": [
+            "Subtraia o que temos da meta.",
+            "Depois veja quantas semanas normais cobrem o que falta."
+          ]
+        }
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan"
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "batch-full"
+          },
+          {
+            "id": "batch-half"
+          },
+          {
+            "id": "batch-none"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-net"
+          },
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-cheap"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "batch-half"
+        ],
+        "reasonQuality": {
+          "reason-net": "sound",
+          "reason-more": "unsupported",
+          "reason-cheap": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rain is forecast: about 16 people will each buy one 6-coin cup. Which batch should the team make?",
+          "feedback": {
+            "met": "The half batch sells out and still earns a profit.",
+            "not_yet": "Not yet. Work out sales minus cost for each batch."
+          },
+          "choices": [
+            {
+              "label": "Full batch: 30 cups for 120"
+            },
+            {
+              "label": "Half batch: 15 cups for 60"
+            },
+            {
+              "label": "No batch this week"
+            }
+          ],
+          "reasonPrompt": "Why?",
+          "reasons": [
+            {
+              "label": "Each batch's sales minus its cost"
+            },
+            {
+              "label": "More cups means more sales"
+            },
+            {
+              "label": "The cheaper batch is safer"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Se anuncia lluvia: unas 16 personas comprarán cada una un vaso de 6 monedas. ¿Qué lote debe hacer el equipo?",
+          "feedback": {
+            "met": "El medio lote se agota y aun así deja ganancia.",
+            "not_yet": "Todavía no. Calcula ventas menos costo de cada lote."
+          },
+          "choices": [
+            {
+              "label": "Lote completo: 30 vasos por 120"
+            },
+            {
+              "label": "Medio lote: 15 vasos por 60"
+            },
+            {
+              "label": "Ningún lote esta semana"
+            }
+          ],
+          "reasonPrompt": "¿Por qué?",
+          "reasons": [
+            {
+              "label": "Las ventas de cada lote menos su costo"
+            },
+            {
+              "label": "Más vasos son más ventas"
+            },
+            {
+              "label": "El lote más barato es más seguro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Há previsão de chuva: umas 16 pessoas vão comprar um copo de 6 moedas cada uma. Qual lote a equipe deve fazer?",
+          "feedback": {
+            "met": "O meio lote esgota e ainda dá lucro.",
+            "not_yet": "Ainda não. Calcule vendas menos custo de cada lote."
+          },
+          "choices": [
+            {
+              "label": "Lote cheio: 30 copos por 120"
+            },
+            {
+              "label": "Meio lote: 15 copos por 60"
+            },
+            {
+              "label": "Nenhum lote esta semana"
+            }
+          ],
+          "reasonPrompt": "Por quê?",
+          "reasons": [
+            {
+              "label": "As vendas de cada lote menos o custo"
+            },
+            {
+              "label": "Mais copos são mais vendas"
+            },
+            {
+              "label": "O lote mais barato é mais seguro"
+            }
+          ]
+        }
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward"
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dot-plot"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "wk-1"
+            },
+            {
+              "id": "wk-2"
+            },
+            {
+              "id": "wk-3"
+            },
+            {
+              "id": "wk-4"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-profit",
+              "values": [
+                25,
+                28,
+                -6,
+                31
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-lower"
+            },
+            {
+              "id": "ans-two"
+            },
+            {
+              "id": "ans-one"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The class wants to save 90 coins from its cookie table; a usual week brings about 28.",
+          "title": "Cookie table, profit each week",
+          "data": {
+            "categories": [
+              {
+                "label": "Week 1"
+              },
+              {
+                "label": "Week 2"
+              },
+              {
+                "label": "Week 3 (rain)"
+              },
+              {
+                "label": "Week 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Profit"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "You totaled the weeks, found the gap, kept the goal.",
+            "not_yet": "Not yet. Total the weeks, find the gap, then compare."
+          },
+          "question": {
+            "prompt": "After week 4, which change keeps 90 with the fewest extra weeks?",
+            "options": [
+              {
+                "label": "Lower the goal to 78"
+              },
+              {
+                "label": "Keep 90 and add two weeks"
+              },
+              {
+                "label": "Keep 90 and add one week"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "El grupo quiere ahorrar 90 monedas con su mesa de galletas; una semana normal deja unas 28.",
+          "title": "Mesa de galletas, ganancia por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3 (lluvia)"
+              },
+              {
+                "label": "Semana 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ganancia"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Sumaste las semanas, hallaste lo que falta y mantuviste la meta.",
+            "not_yet": "Todavía no. Suma las semanas, encuentra lo que falta y compara."
+          },
+          "question": {
+            "prompt": "Tras la semana 4, ¿qué cambio mantiene 90 con la menor cantidad de semanas extra?",
+            "options": [
+              {
+                "label": "Bajar la meta a 78"
+              },
+              {
+                "label": "Mantener 90 y sumar dos semanas"
+              },
+              {
+                "label": "Mantener 90 y sumar una semana"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A turma quer guardar 90 moedas com a mesa de biscoitos; uma semana normal deixa umas 28.",
+          "title": "Mesa de biscoitos, lucro por semana",
+          "data": {
+            "categories": [
+              {
+                "label": "Semana 1"
+              },
+              {
+                "label": "Semana 2"
+              },
+              {
+                "label": "Semana 3 (chuva)"
+              },
+              {
+                "label": "Semana 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Lucro"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Você somou as semanas, achou o que falta e manteve a meta.",
+            "not_yet": "Ainda não. Some as semanas, ache o que falta e compare."
+          },
+          "question": {
+            "prompt": "Após a semana 4, qual mudança mantém 90 com o menor número de semanas extras?",
+            "options": [
+              {
+                "label": "Baixar a meta para 78"
+              },
+              {
+                "label": "Manter 90 e somar duas semanas"
+              },
+              {
+                "label": "Manter 90 e somar uma semana"
+              }
+            ]
+          }
+        }
+      },
+      "teaching_role": "transfer",
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-one"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan"
+    }
+  ]
+}

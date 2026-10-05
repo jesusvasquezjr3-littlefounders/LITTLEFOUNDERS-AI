@@ -1,0 +1,664 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-02-change-counting-up",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.make-change-counting-up",
+    "money.make-amount"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho atiende un puesto en la feria y muestra, con el cuaderno de Ari (cuesta 35, paga 50), cómo dar cambio contando hacia arriba: se parte del precio, se salta a un número redondo y se llega a lo que se pagó. Quien aprende hace el mismo movimiento con números nuevos, primero con ayuda y después solo. Corrige dos errores comunes: sumar el precio y el pago, o devolver todo el pago.",
+  "title": {
+    "en-US": "Give change by counting up",
+    "es-MX": "Da el cambio contando hacia arriba",
+    "pt-BR": "Dê o troco contando para cima"
+  },
+  "new_concepts": [
+    "money.make-change-counting-up"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El puesto de Rho en la feria.",
+          "line": "Ari paga con una moneda grande. Algunas monedas deben volver.",
+          "narration": {
+            "script": "Te doy la bienvenida a mi puesto de la feria LittleFounders. Hoy atiendo la caja. Ari quiere un cuaderno y me entrega una sola moneda grande. El puesto se queda con una parte y la otra tiene que regresar. Fíjate bien, porque voy a medir exactamente cuánto es."
+          }
+        },
+        "en-US": {
+          "prompt": "Rho's stall at the fair.",
+          "line": "Ari pays with a big coin. Some coins must go back.",
+          "narration": {
+            "script": "Welcome to my stall at the LittleFounders fair. Today I run the cash box. Ari wants a notebook and hands me one single big coin. The stall keeps one part, and the other part has to go back. Watch closely, because I'll measure exactly how much."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A lojinha do Rho na feira.",
+          "line": "Ari paga com uma moeda grande. Algumas moedas precisam voltar.",
+          "narration": {
+            "script": "Boas-vindas à minha lojinha na feira LittleFounders. Hoje eu cuido do caixa. Ari quer um caderno e me entrega uma única moeda grande. A lojinha fica com uma parte, e a outra precisa voltar. Observe bem, porque vou medir exatamente quanto é."
+          }
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ],
+        "price_minor": 7,
+        "paid_minor": 10
+      },
+      "rubric": {
+        "change_minor": 3
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Una calcomanía de Rho cuesta 7; quien compra paga 10. Da el cambio.",
+          "feedback": {
+            "met": "Gracias, anoté tu respuesta. Ahora lo vemos paso a paso.",
+            "not_yet": "Gracias, anoté tu respuesta. Ahora lo vemos paso a paso."
+          }
+        },
+        "en-US": {
+          "prompt": "Rho's sticker costs 7; the buyer pays 10. Give the change.",
+          "feedback": {
+            "met": "Thanks, I noted your answer. Now we go step by step.",
+            "not_yet": "Thanks, I noted your answer. Now we go step by step."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma figurinha de Rho custa 7; quem compra paga 10. Dê o troco.",
+          "feedback": {
+            "met": "Anotei sua resposta. Agora vamos ver passo a passo.",
+            "not_yet": "Anotei sua resposta. Agora vamos ver passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ari compra un cuaderno de 35 y paga 50.",
+          "line": "Observa: el puesto se queda con 35. La diferencia hasta 50 se devuelve."
+        },
+        "en-US": {
+          "prompt": "Ari buys a notebook for 35 and pays 50.",
+          "line": "Observe: the stall keeps 35. The gap up to 50 goes back."
+        },
+        "pt-BR": {
+          "prompt": "O Ari compra um caderno de 35 e paga 50.",
+          "line": "Observe: a lojinha fica com 35. A diferença até 50 volta."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1. Empieza en 35 y suma 5 para llegar a 40.",
+          "line": "Elijo 40 porque desde un número redondo el siguiente salto es fácil."
+        },
+        "en-US": {
+          "prompt": "Step 1. Start at 35 and add 5 to reach 40.",
+          "line": "I pick 40 because a round number makes the next jump easy."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Comece em 35 e some 5 para chegar a 40.",
+          "line": "Escolho 40 porque, de um número redondo, o próximo salto fica fácil."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2. Desde 40, suma 10 para llegar a 50, lo que pagó Ari.",
+          "line": "5 + 10 = 15: ese es el cambio. Comprobación: 35 + 15 = 50."
+        },
+        "en-US": {
+          "prompt": "Step 2. From 40, add 10 to reach 50, what Ari paid.",
+          "line": "5 + 10 = 15: that is the change. Check: 35 + 15 = 50."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. De 40, some 10 para chegar a 50, o que Ari pagou.",
+          "line": "5 + 10 = 15: esse é o troco. Conferindo: 35 + 15 = 50."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 4,
+        "fewest": false
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La pera de Rho cuesta 56. Arma el salto de 56 hasta 60.",
+          "help": [
+            "Como en el 35 de Ari: parte del precio y sube a un número redondo.",
+            "Cuenta los pasos de 56 a 60 y elige monedas que los sumen."
+          ],
+          "feedback": {
+            "met": "Tus monedas hacen el salto de 56 hasta 60.",
+            "not_yet": "Rho sumó justo lo necesario para llegar al número redondo. Cuenta tus pasos."
+          }
+        },
+        "en-US": {
+          "prompt": "Rho's pear costs 56. Build the jump from 56 up to 60.",
+          "help": [
+            "Like Ari's 35: start on the price, climb to a round number.",
+            "Count the steps from 56 to 60, then pick matching coins."
+          ],
+          "feedback": {
+            "met": "Your coins make the jump from 56 up to 60.",
+            "not_yet": "Rho added just enough to reach the round number. Count your steps."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A pera de Rho custa 56. Monte o salto de 56 até 60.",
+          "help": [
+            "Como no 35 de Ari: comece no preço e suba até um número redondo.",
+            "Conte os passos de 56 a 60 e escolha moedas que os somem."
+          ],
+          "feedback": {
+            "met": "Suas moedas fazem o salto de 56 até 60.",
+            "not_yet": "Rho somou só o necessário para chegar ao número redondo. Conte seus passos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ],
+        "price_minor": 28,
+        "paid_minor": 40
+      },
+      "rubric": {
+        "change_minor": 12
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El papalote de Rho cuesta 28; quien compra paga 40. Da el cambio.",
+          "help": [
+            "Empieza en 28. Sube a un número redondo y luego hasta 40.",
+            "Suma una moneda a la vez y di cada total nuevo."
+          ],
+          "feedback": {
+            "met": "Subiste de 28 a 40. Esas monedas son el cambio.",
+            "not_yet": "Como con Ari: empieza en el precio y para en lo que se pagó."
+          }
+        },
+        "en-US": {
+          "prompt": "Rho's kite costs 28; the buyer pays 40. Give the change.",
+          "help": [
+            "Start on 28. Climb to a round number, then on to 40.",
+            "Add one coin at a time and say each new total."
+          ],
+          "feedback": {
+            "met": "You climbed from 28 to 40. Those coins are the change.",
+            "not_yet": "As with Ari: start on the price, stop at what was paid."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A pipa de Rho custa 28; quem compra paga 40. Dê o troco.",
+          "help": [
+            "Comece em 28. Suba até um número redondo e depois até 40.",
+            "Some uma moeda por vez e diga cada novo total."
+          ],
+          "feedback": {
+            "met": "Você subiu de 28 a 40. Essas moedas são o troco.",
+            "not_yet": "Como com Ari: comece no preço e pare no que foi pago."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ],
+        "price_minor": 17,
+        "paid_minor": 25
+      },
+      "rubric": {
+        "change_minor": 8
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El juguete de Rho cuesta 17; Mina paga 25. Da el cambio.",
+          "help": [
+            "Empieza en 17, suma una moneda y di el total nuevo."
+          ],
+          "feedback": {
+            "met": "Contaste hacia arriba de 17 a 25. Esas monedas son el cambio.",
+            "not_yet": "Empieza en el precio, no en cero. Para en lo que se pagó."
+          }
+        },
+        "en-US": {
+          "prompt": "Rho's toy costs 17; Mina pays 25. Give the change.",
+          "help": [
+            "Stand on 17, add a coin, say the new total."
+          ],
+          "feedback": {
+            "met": "You counted up from 17 to 25. Those coins are the change.",
+            "not_yet": "Start on the price, not zero. Stop at what was paid."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O brinquedo de Rho custa 17; Mina paga 25. Dê o troco.",
+          "help": [
+            "Comece no 17, some uma moeda e diga o novo total."
+          ],
+          "feedback": {
+            "met": "Você contou para cima de 17 a 25. Essas moedas são o troco.",
+            "not_yet": "Comece no preço, não no zero. Pare no que foi pago."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "choices": [
+          {
+            "id": "back-all"
+          },
+          {
+            "id": "back-gap"
+          },
+          {
+            "id": "back-sum"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-stays"
+          },
+          {
+            "id": "why-count-up"
+          },
+          {
+            "id": "why-paid"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "back-gap"
+        ],
+        "reasonQuality": {
+          "why-count-up": "sound",
+          "why-stays": "partial",
+          "why-paid": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La pelota de Rho cuesta 14; Teo paga 20. ¿Qué se devuelve?",
+          "help": [
+            "Cuenta de 14 a 20, como hizo Rho con Ari."
+          ],
+          "feedback": {
+            "met": "Sí. Contar hacia arriba de 14 a 20 da lo que se devuelve.",
+            "not_yet": "El puesto se queda con el precio. Cuenta de él hasta el pago."
+          },
+          "choices": [
+            {
+              "label": "Devolver 20"
+            },
+            {
+              "label": "Devolver 6"
+            },
+            {
+              "label": "Devolver 34"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "Los 14 se quedan en la caja."
+            },
+            {
+              "label": "Conté hacia arriba hasta 20."
+            },
+            {
+              "label": "Porque 20 es lo que pagó Teo."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's ball costs 14; Teo pays 20. What goes back?",
+          "help": [
+            "Count up from 14 to 20, like Rho did with Ari."
+          ],
+          "feedback": {
+            "met": "Yes. Counting up from 14 to 20 gives what goes back.",
+            "not_yet": "The stall keeps the price. Count up from it to the payment."
+          },
+          "choices": [
+            {
+              "label": "Give back 20"
+            },
+            {
+              "label": "Give back 6"
+            },
+            {
+              "label": "Give back 34"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "14 stays in the box."
+            },
+            {
+              "label": "I counted up to 20."
+            },
+            {
+              "label": "20 is what Teo paid."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A bola de Rho custa 14; Teo paga 20. O que volta?",
+          "help": [
+            "Conte de 14 a 20, como Rho fez com Ari."
+          ],
+          "feedback": {
+            "met": "Isso. Contar para cima de 14 a 20 dá o que volta.",
+            "not_yet": "A lojinha fica com o preço. Conte dele até o pagamento."
+          },
+          "choices": [
+            {
+              "label": "Devolver 20"
+            },
+            {
+              "label": "Devolver 6"
+            },
+            {
+              "label": "Devolver 34"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "Os 14 ficam no caixa."
+            },
+            {
+              "label": "Contei para cima até 20."
+            },
+            {
+              "label": "Porque 20 foi o que Teo pagou."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ],
+        "price_minor": 83,
+        "paid_minor": 100
+      },
+      "rubric": {
+        "change_minor": 17
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El rompecabezas de Rho cuesta 83; Lu paga 100. Da el cambio.",
+          "help": [
+            "El mismo movimiento que con Ari: empieza en el precio y sube."
+          ],
+          "feedback": {
+            "met": "Contaste hacia arriba de 83 a 100. Ese movimiento da el cambio.",
+            "not_yet": "Cuenta hacia arriba desde el precio, no desde cero. Para en lo que se pagó."
+          }
+        },
+        "en-US": {
+          "prompt": "Rho's puzzle costs 83; Lu pays 100. Give the change.",
+          "help": [
+            "Same move as Ari's notebook: stand on the price and climb."
+          ],
+          "feedback": {
+            "met": "You counted up from 83 to 100. That move gives the change.",
+            "not_yet": "Count up from the price, not zero. Stop at what was paid."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O quebra-cabeça de Rho custa 83; Lu paga 100. Dê o troco.",
+          "help": [
+            "O mesmo movimento do Ari: comece no preço e suba."
+          ],
+          "feedback": {
+            "met": "Você contou para cima de 83 a 100. Esse movimento dá o troco.",
+            "not_yet": "Conte para cima a partir do preço, não do zero. Pare no que foi pago."
+          }
+        }
+      }
+    }
+  ]
+}

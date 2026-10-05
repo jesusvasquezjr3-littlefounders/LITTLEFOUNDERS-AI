@@ -1,0 +1,853 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-6-9",
+  "chapter_id": "ent-69-little-inventors",
+  "lesson_id": "ent-69-03-build-and-test",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.make-and-test",
+    "biz.solution-ideas"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf, el dinosaurio, pega toda la caja dura antes de probar nada y el sándwich se aplasta en la primera caída. Aprende a probar una esquina primero, a escribir antes la regla para aprobar (sándwich entero en 5 caídas) y a usar una prueba fallida para reforzar la tapa. El niño lo repite con el jugo de Leo y el barco de papel de Nia.",
+  "title": {
+    "en-US": "Build a little, test a little",
+    "es-MX": "Construye un poco, prueba un poco",
+    "pt-BR": "Monte um pouco, teste um pouco"
+  },
+  "new_concepts": [
+    "biz.make-and-test"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf builds the whole lunch box and glues every side shut before any test, then drops it and the sandwich is squashed.",
+    "recovery": "Liruf sees the test failed too late to fix anything and says that next time he will test one corner first, then glue the rest."
+  },
+  "regional": {
+    "universal": "No money amounts, places or customs; a classroom story that reads the same in every market."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mía's class builds the hard box.",
+          "line": "Cardboard, tape and a sandwich. Liruf holds the glue."
+        },
+        "es-MX": {
+          "prompt": "La clase de Mía arma la caja dura.",
+          "line": "Cartón, cinta y un sándwich. Liruf sostiene el pegamento."
+        },
+        "pt-BR": {
+          "prompt": "A turma da Mía monta a caixa dura.",
+          "line": "Papelão, fita e um sanduíche. O Liruf segura a cola."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-paint"
+          },
+          {
+            "id": "opt-glue-all"
+          },
+          {
+            "id": "opt-test-corner"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-test-corner"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The box plan is ready. What first?",
+          "feedback": {
+            "met": "Noted. Now Liruf shows how his box went.",
+            "not_yet": "Noted. Now Liruf shows how his box went."
+          },
+          "scene": "Mía's class has cardboard on the table. Liruf waits with the glue.",
+          "options": [
+            {
+              "label": "Paint the box blue"
+            },
+            {
+              "label": "Glue the whole box"
+            },
+            {
+              "label": "Test one small corner"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El plan de la caja está listo. ¿Qué va primero?",
+          "feedback": {
+            "met": "Anotado. Ahora Liruf muestra cómo le fue con su caja.",
+            "not_yet": "Anotado. Ahora Liruf muestra cómo le fue con su caja."
+          },
+          "scene": "La clase de Mía tiene cartón en la mesa. Liruf espera con el pegamento.",
+          "options": [
+            {
+              "label": "Pintar la caja de azul"
+            },
+            {
+              "label": "Pegar toda la caja"
+            },
+            {
+              "label": "Probar una esquina pequeña"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O plano da caixa está pronto. O que vem primeiro?",
+          "feedback": {
+            "met": "Anotado. Agora o Liruf mostra como foi com a caixa dele.",
+            "not_yet": "Anotado. Agora o Liruf mostra como foi com a caixa dele."
+          },
+          "scene": "A turma da Mía tem papelão na mesa. O Liruf espera com a cola.",
+          "options": [
+            {
+              "label": "Pintar a caixa de azul"
+            },
+            {
+              "label": "Colar a caixa toda"
+            },
+            {
+              "label": "Testar um canto pequeno"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what Liruf did with the glue.",
+          "setup": "I built my box and glued every side shut.",
+          "misjudgment": "I never tested a corner. The dropped sandwich squished.",
+          "recovery": "Next time I test one corner first, then glue the rest."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que hizo Liruf con el pegamento.",
+          "setup": "Armé mi caja y pegué todos los lados.",
+          "misjudgment": "No probé ni una esquina. El sándwich se aplastó al caer.",
+          "recovery": "La próxima vez pruebo una esquina y luego pego el resto."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que o Liruf fez com a cola.",
+          "setup": "Montei minha caixa e colei todos os lados.",
+          "misjudgment": "Não testei nem um canto. O sanduíche amassou na queda.",
+          "recovery": "Da próxima vez testo um canto e depois colo o resto."
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: write the pass rule first.",
+          "line": "Mía writes: the sandwich stays whole in 5 drops."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: escribe primero la regla de aprobado.",
+          "line": "Mía escribe: el sándwich queda entero en 5 caídas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: escreva primeiro a regra para passar.",
+          "line": "Mía escreve: o sanduíche fica inteiro em 5 quedas."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: build a small test box. Drop it 5 times.",
+          "line": "The lid pops open in 2 of 5 drops. The sandwich squishes."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: arma una cajita de prueba. Suéltala 5 veces.",
+          "line": "La tapa se abre en 2 de 5 caídas. El sándwich se aplasta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: monte uma caixinha de teste. Solte 5 vezes.",
+          "line": "A tampa abre em 2 de 5 quedas. O sanduíche amassa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-looks-nice"
+          },
+          {
+            "id": "opt-no-leaks"
+          },
+          {
+            "id": "opt-leo-likes"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-no-leaks"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which pass rule should Leo write first?",
+          "help": [
+            "A pass rule says what we will see.",
+            "Mía's rule was about the sandwich staying whole."
+          ],
+          "feedback": {
+            "met": "You chose a rule the drops can check.",
+            "not_yet": "Remember Mía's rule: something we can see after a drop."
+          },
+          "scene": "Leo's box will carry his juice. Before the build, he writes a pass rule.",
+          "options": [
+            {
+              "label": "The box looks nice"
+            },
+            {
+              "label": "No leaks in 5 drops"
+            },
+            {
+              "label": "Leo likes the box"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué regla de aprobado escribe Leo primero?",
+          "help": [
+            "Una regla de aprobado dice qué veremos.",
+            "La regla de Mía hablaba del sándwich entero."
+          ],
+          "feedback": {
+            "met": "Elegiste una regla que las caídas pueden comprobar.",
+            "not_yet": "Recuerda la regla de Mía: algo que se ve tras la caída."
+          },
+          "scene": "La caja de Leo llevará su jugo. Antes de armarla, escribe una regla de aprobado.",
+          "options": [
+            {
+              "label": "La caja se ve bonita"
+            },
+            {
+              "label": "Sin derrames en 5 caídas"
+            },
+            {
+              "label": "A Leo le gusta la caja"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Qual regra para passar o Leo escreve primeiro?",
+          "help": [
+            "Uma regra para passar diz o que vamos ver.",
+            "A regra da Mía falava do sanduíche inteiro."
+          ],
+          "feedback": {
+            "met": "Você escolheu uma regra que as quedas podem checar.",
+            "not_yet": "Lembre da regra da Mía: algo que se vê após a queda."
+          },
+          "scene": "A caixa do Leo vai levar o suco. Antes de montar, ele escreve uma regra para passar.",
+          "options": [
+            {
+              "label": "A caixa fica bonita"
+            },
+            {
+              "label": "Sem vazar em 5 quedas"
+            },
+            {
+              "label": "O Leo gosta da caixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: it did not pass, so fix the lid.",
+          "line": "Stronger lid, test again. 5 drops, 5 whole sandwiches."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: no pasó, así que reforzamos la tapa.",
+          "line": "Tapa más fuerte y otra prueba. 5 caídas, 5 sándwiches enteros."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: não passou, então reforçamos a tampa.",
+          "line": "Tampa mais forte e novo teste. 5 quedas, 5 sanduíches inteiros."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-strong-bottom"
+          },
+          {
+            "id": "opt-throw"
+          },
+          {
+            "id": "opt-paint-box"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-strong-bottom"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What should Nia do next?",
+          "help": [
+            "A failed drop shows the weak spot.",
+            "Fix that spot, then test again."
+          ],
+          "feedback": {
+            "met": "You used the failed drops to fix the weak spot.",
+            "not_yet": "Remember the lid: the failed drops showed the weak spot."
+          },
+          "scene": "Nia drops her test box 5 times. The bottom tears in 3 drops.",
+          "options": [
+            {
+              "label": "Make the bottom stronger"
+            },
+            {
+              "label": "Throw the box away"
+            },
+            {
+              "label": "Paint the box"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe hacer Nia ahora?",
+          "help": [
+            "Una caída fallida muestra el punto débil.",
+            "Arregla ese punto y vuelve a probar."
+          ],
+          "feedback": {
+            "met": "Usaste las caídas fallidas para arreglar el punto débil.",
+            "not_yet": "Recuerda la tapa: las caídas fallidas mostraron el punto débil."
+          },
+          "scene": "Nia suelta su cajita de prueba 5 veces. El fondo se rompe en 3 caídas.",
+          "options": [
+            {
+              "label": "Reforzar el fondo"
+            },
+            {
+              "label": "Tirar la caja a la basura"
+            },
+            {
+              "label": "Pintar la caja"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que a Nia deve fazer agora?",
+          "help": [
+            "Uma queda que falha mostra o ponto fraco.",
+            "Conserte esse ponto e teste de novo."
+          ],
+          "feedback": {
+            "met": "Você usou as quedas que falharam para consertar o ponto fraco.",
+            "not_yet": "Lembre da tampa: as quedas que falharam mostraram o ponto fraco."
+          },
+          "scene": "A Nia solta a caixinha de teste 5 vezes. O fundo rasga em 3 quedas.",
+          "options": [
+            {
+              "label": "Reforçar o fundo"
+            },
+            {
+              "label": "Jogar a caixa fora"
+            },
+            {
+              "label": "Pintar a caixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: check a rule with four cards.",
+          "line": "Rule: if a corner is glued, its test is done."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: revisa una regla con cuatro tarjetas.",
+          "line": "Regla: si una esquina está pegada, su prueba ya se hizo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: confira uma regra com quatro cartas.",
+          "line": "Regra: se um canto está colado, o teste já foi feito."
+        }
+      }
+    },
+    {
+      "id": "ex-05",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: turn the glued card and the no-test card.",
+          "line": "Glued could hide no test. No test could hide glue."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: voltea la tarjeta pegada y la sin prueba.",
+          "line": "Pegada podría esconder que no hay prueba. Sin prueba podría esconder pegamento."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: vire a carta colada e a sem teste.",
+          "line": "Colada pode esconder a falta de teste. Sem teste pode esconder cola."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.rule-checker.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "cards": [
+          {
+            "id": "card-untested"
+          },
+          {
+            "id": "card-written"
+          },
+          {
+            "id": "card-nopass"
+          },
+          {
+            "id": "card-tested"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-nopass",
+          "card-tested"
+        ],
+        "roles": {
+          "card-untested": "not_p",
+          "card-written": "q",
+          "card-nopass": "not_q",
+          "card-tested": "p"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At Mía's table, which cards could break the rule?",
+          "help": [
+            "Liruf turned two cards: glued, and no test.",
+            "Turn a card only if its back could break the rule."
+          ],
+          "feedback": {
+            "met": "You turned only the cards that could break the rule.",
+            "not_yet": "Match each card to Liruf's glued and no-test cards."
+          },
+          "rule": "If a box is tested, its pass rule is written.",
+          "cards": [
+            {
+              "face": "Box not tested"
+            },
+            {
+              "face": "Pass rule written"
+            },
+            {
+              "face": "No pass rule written"
+            },
+            {
+              "face": "Box tested"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la mesa de Mía, ¿qué tarjetas podrían romper la regla?",
+          "help": [
+            "Liruf volteó dos tarjetas: pegada y sin prueba.",
+            "Voltea una tarjeta solo si su reverso podría romper la regla."
+          ],
+          "feedback": {
+            "met": "Volteaste solo las tarjetas que podían romper la regla.",
+            "not_yet": "Compara cada tarjeta con la pegada y la sin prueba de Liruf."
+          },
+          "rule": "Si una caja se prueba, su regla de aprobado ya está escrita.",
+          "cards": [
+            {
+              "face": "Caja sin probar"
+            },
+            {
+              "face": "Regla escrita"
+            },
+            {
+              "face": "Sin regla escrita"
+            },
+            {
+              "face": "Caja probada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na mesa da Mía, quais cartas poderiam quebrar a regra?",
+          "help": [
+            "O Liruf virou duas cartas: colada e sem teste.",
+            "Vire uma carta só se o verso puder quebrar a regra."
+          ],
+          "feedback": {
+            "met": "Você virou só as cartas que podiam quebrar a regra.",
+            "not_yet": "Compare cada carta com a colada e a sem teste do Liruf."
+          },
+          "rule": "Se uma caixa é testada, a regra para passar já está escrita.",
+          "cards": [
+            {
+              "face": "Caixa sem teste"
+            },
+            {
+              "face": "Regra escrita"
+            },
+            {
+              "face": "Sem regra escrita"
+            },
+            {
+              "face": "Caixa testada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-say-pass"
+          },
+          {
+            "id": "opt-change-rule"
+          },
+          {
+            "id": "opt-fix-retest"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-fix-retest"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What should Sam do with his box?",
+          "help": [
+            "The rule was written first. It stays.",
+            "A failed drop shows what to fix."
+          ],
+          "feedback": {
+            "met": "You fixed the weak spot instead of changing the rule.",
+            "not_yet": "Sam wrote the rule first. Look at what the one drop showed."
+          },
+          "scene": "Sam's rule: the sandwich stays whole in 5 drops. It squishes in 1 drop.",
+          "options": [
+            {
+              "label": "Say it passes anyway"
+            },
+            {
+              "label": "Change the pass rule"
+            },
+            {
+              "label": "Fix it and test again"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe hacer Sam con su caja?",
+          "help": [
+            "La regla se escribió primero. Se queda igual.",
+            "Una caída fallida muestra qué arreglar."
+          ],
+          "feedback": {
+            "met": "Arreglaste el punto débil en vez de cambiar la regla.",
+            "not_yet": "Sam escribió la regla primero. Mira lo que mostró esa caída."
+          },
+          "scene": "La regla de Sam: el sándwich queda entero en 5 caídas. Se aplasta en 1 caída.",
+          "options": [
+            {
+              "label": "Decir que pasa igual"
+            },
+            {
+              "label": "Cambiar la regla de aprobado"
+            },
+            {
+              "label": "Arreglarla y probar de nuevo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que o Sam deve fazer com a caixa dele?",
+          "help": [
+            "A regra foi escrita primeiro. Ela fica igual.",
+            "Uma queda que falha mostra o que consertar."
+          ],
+          "feedback": {
+            "met": "Você consertou o ponto fraco em vez de mudar a regra.",
+            "not_yet": "O Sam escreveu a regra primeiro. Veja o que aquela queda mostrou."
+          },
+          "scene": "A regra do Sam: o sanduíche fica inteiro em 5 quedas. Ele amassa em 1 queda.",
+          "options": [
+            {
+              "label": "Dizer que passa assim mesmo"
+            },
+            {
+              "label": "Mudar a regra para passar"
+            },
+            {
+              "label": "Consertar e testar de novo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-tape-all"
+          },
+          {
+            "id": "opt-test-fold"
+          },
+          {
+            "id": "opt-paint-sails"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-test-fold"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia's paper boat will carry pebbles. What first?",
+          "help": [
+            "Liruf glued everything and could not fix it.",
+            "Next time Liruf tests one small part first."
+          ],
+          "feedback": {
+            "met": "You tested a small part before finishing everything.",
+            "not_yet": "Think about Liruf's glued box and what he skipped."
+          },
+          "scene": "Nia's class folds paper boats to carry pebbles across the pond.",
+          "options": [
+            {
+              "label": "Tape every fold first"
+            },
+            {
+              "label": "Test one fold in water"
+            },
+            {
+              "label": "Paint the sails"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El barco de papel de Nia llevará piedritas. ¿Qué va primero?",
+          "help": [
+            "Liruf pegó todo y ya no pudo arreglarlo.",
+            "La próxima vez Liruf prueba una parte pequeña primero."
+          ],
+          "feedback": {
+            "met": "Probaste una parte pequeña antes de terminar todo.",
+            "not_yet": "Piensa en la caja pegada de Liruf y lo que se saltó."
+          },
+          "scene": "La clase de Nia dobla barcos de papel para cruzar el estanque con piedritas.",
+          "options": [
+            {
+              "label": "Pegar todos los dobleces"
+            },
+            {
+              "label": "Probar un doblez en agua"
+            },
+            {
+              "label": "Pintar las velas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O barco de papel da Nia vai levar pedrinhas. O que vem primeiro?",
+          "help": [
+            "O Liruf colou tudo e não conseguiu consertar.",
+            "Da próxima vez o Liruf testa uma parte pequena primeiro."
+          ],
+          "feedback": {
+            "met": "Você testou uma parte pequena antes de terminar tudo.",
+            "not_yet": "Pense na caixa colada do Liruf e no que ele pulou."
+          },
+          "scene": "A turma da Nia dobra barcos de papel para cruzar o lago com pedrinhas.",
+          "options": [
+            {
+              "label": "Colar todas as dobras"
+            },
+            {
+              "label": "Testar uma dobra na água"
+            },
+            {
+              "label": "Pintar as velas"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

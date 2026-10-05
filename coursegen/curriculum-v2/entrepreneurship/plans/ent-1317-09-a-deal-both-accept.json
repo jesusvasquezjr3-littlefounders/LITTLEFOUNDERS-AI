@@ -1,0 +1,877 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-negotiate-lead-honest",
+  "lesson_id": "ent-1317-09-a-deal-both-accept",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.negotiation",
+    "biz.margin",
+    "biz.consultative-selling"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina enseña con ejemplos a negociar un trato que ambos aceptan: fija primero su límite, pregunta qué necesita de verdad el club escolar, elige concesiones que le cuestan poco y valen mucho al otro lado, y dice que no con respeto. Primero lo ve en el tianguis con un club escolar; después tú lo aplicas con un estudio de baile y una cafetería.",
+  "title": {
+    "es-MX": "Un trato que ambos aceptan",
+    "en-US": "A deal both sides accept",
+    "pt-BR": "Um acordo que os dois aceitam"
+  },
+  "new_concepts": [
+    "biz.negotiation"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En el tianguis regatear es parte del trato y casi siempre se cierra con un descuento a cambio de algo. Se practica con un club escolar que pide 10 pares a 20 monedas en lugar de 25 y se llega a 22 con recolección gratis y un pedido fijo. Las cantidades van siempre en monedas.",
+        "problem_refs": [
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na feira livre, pechinchar faz parte da conversa e o preço final sai de um meio-termo entre o pedido e a oferta. Pratica-se com um clube escolar que quer 10 pares por 20 moedas em vez de 25, e o acordo fecha em 22 com retirada grátis e pedido mensal. Os valores ficam sempre em moedas.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira livre"
+        ]
+      },
+      "en-US": {
+        "scenario": "At a flea market haggling is expected, and a fair deal usually lands between the first ask and the first offer. Practice it with a school club that wants 10 pairs at 20 coins instead of 25, and close at 22 with free pick-up and a monthly order. Amounts stay in coins.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "flea market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sunday at the flea market, Dina reads a message from the school club.",
+          "line": "Ten pairs cleaned, but at 20 coins instead of 25. I won’t answer yet."
+        },
+        "es-MX": {
+          "prompt": "Domingo en el tianguis, Dina lee un mensaje del club de la escuela.",
+          "line": "Diez pares limpios, pero a 20 monedas en vez de 25. Todavía no respondo."
+        },
+        "pt-BR": {
+          "prompt": "Domingo na feira livre, a Dina lê uma mensagem do clube da escola.",
+          "line": "Dez pares limpos, mas por 20 moedas em vez de 25. Ainda não respondo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-1"
+          },
+          {
+            "id": "reply-2"
+          },
+          {
+            "id": "reply-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-2"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your stand, the school club asks for ten pairs at 20 coins. Choose your first reply.",
+          "feedback": {
+            "met": "Noted. The next steps show how to work this out.",
+            "not_yet": "Noted. The next steps show how to work this out."
+          },
+          "speaker": "School club",
+          "line": "Could you do ten pairs at 20 coins each instead of 25?",
+          "replies": [
+            {
+              "label": "Deal, 20 coins a pair."
+            },
+            {
+              "label": "Let me check my numbers first."
+            },
+            {
+              "label": "No, my price is 25."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En tu puesto, el club de la escuela pide diez pares a 20 monedas. Elige tu primera respuesta.",
+          "feedback": {
+            "met": "Anotado. Los siguientes pasos muestran cómo resolverlo.",
+            "not_yet": "Anotado. Los siguientes pasos muestran cómo resolverlo."
+          },
+          "speaker": "Club escolar",
+          "line": "¿Podrías hacer diez pares a 20 monedas cada uno en vez de 25?",
+          "replies": [
+            {
+              "label": "Trato hecho, 20 monedas el par."
+            },
+            {
+              "label": "Déjame revisar mis números primero."
+            },
+            {
+              "label": "No, mi precio es 25."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na sua banca, o clube da escola pede dez pares por 20 moedas. Escolha sua primeira resposta.",
+          "feedback": {
+            "met": "Anotado. Os próximos passos mostram como resolver isso.",
+            "not_yet": "Anotado. Os próximos passos mostram como resolver isso."
+          },
+          "speaker": "Clube da escola",
+          "line": "Você faria dez pares a 20 moedas cada um em vez de 25?",
+          "replies": [
+            {
+              "label": "Fechado, 20 moedas o par."
+            },
+            {
+              "label": "Deixa eu conferir meus números antes."
+            },
+            {
+              "label": "Não, meu preço é 25."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-limit-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Dina sets her limit before she replies.",
+          "line": "A pair costs me 9 coins and my time needs 9 more. Below 18, I walk away."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Dina fija su límite antes de responder.",
+          "line": "Cada par me cuesta 9 monedas y mi tiempo pide 9 más. Por debajo de 18, no cierro el trato."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a Dina define o limite antes de responder.",
+          "line": "Cada par me custa 9 moedas e meu tempo pede mais 9. Abaixo de 18, eu não fecho."
+        }
+      }
+    },
+    {
+      "id": "ex-needs-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Dina asks the club what it really needs.",
+          "line": "Their answer: nobody can carry ten pairs across town. So pick-up matters more to them than price."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Dina le pregunta al club qué necesita de verdad.",
+          "line": "Responden que nadie puede cargar diez pares por la ciudad. La recolección les importa más que el precio."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Dina pergunta ao clube do que ele precisa de verdade.",
+          "line": "A resposta: ninguém consegue levar dez pares pela cidade. A retirada importa mais para eles do que o preço."
+        }
+      }
+    },
+    {
+      "id": "ex-trade-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Dina lists what she could give and rates each one.",
+          "line": "I look for concessions that cost me little and matter to them. Free pick-up is on my way."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: Dina anota lo que podría ceder y califica cada cosa.",
+          "line": "Busco concesiones que me cuesten poco y les importen a ellos. La recolección gratis me queda de camino."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a Dina lista o que poderia ceder e avalia cada item.",
+          "line": "Procuro concessões que me custem pouco e importem para eles. A retirada grátis está no meu caminho."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "pieces": [
+          "polish",
+          "pickup",
+          "price-15",
+          "laces",
+          "slot",
+          "rush"
+        ],
+        "points": [
+          [
+            3,
+            7
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            9,
+            9
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            4,
+            9
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "polish",
+              "rush"
+            ],
+            "top-right": [
+              "price-15"
+            ],
+            "bottom-left": [
+              "laces"
+            ],
+            "bottom-right": [
+              "pickup",
+              "slot"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "For the club deal, sort each concession by its cost to you and its value to them.",
+          "feedback": {
+            "met": "You sorted by cost to you and value to them.",
+            "not_yet": "Not yet. Read each dot’s cost and value against the middle."
+          },
+          "labels": {
+            "x-name": "Value to them",
+            "y-name": "Cost to me",
+            "x-low": "Low value",
+            "x-high": "High value",
+            "y-low": "Low cost",
+            "y-high": "High cost",
+            "polish": "Extra polish on all pairs",
+            "pickup": "Free pick-up",
+            "price-15": "Price of 15 coins",
+            "laces": "Free new laces",
+            "slot": "Reserved weekly slot",
+            "rush": "Same-day return"
+          }
+        },
+        "es-MX": {
+          "prompt": "Para el trato con el club, ordena cada concesión por su costo para ti y su valor para ellos.",
+          "feedback": {
+            "met": "Ordenaste por costo para ti y valor para ellos.",
+            "not_yet": "Aún no. Lee el costo y el valor de cada punto frente al centro."
+          },
+          "labels": {
+            "x-name": "Valor para ellos",
+            "y-name": "Costo para mí",
+            "x-low": "Poco valor",
+            "x-high": "Mucho valor",
+            "y-low": "Poco costo",
+            "y-high": "Mucho costo",
+            "polish": "Pulido extra en todos los pares",
+            "pickup": "Recolección gratis",
+            "price-15": "Precio de 15 monedas",
+            "laces": "Agujetas nuevas gratis",
+            "slot": "Horario semanal reservado",
+            "rush": "Entrega el mismo día"
+          }
+        },
+        "pt-BR": {
+          "prompt": "No acordo com o clube, ordene cada concessão pelo custo para você e pelo valor para eles.",
+          "feedback": {
+            "met": "Você ordenou por custo para você e valor para eles.",
+            "not_yet": "Ainda não. Leia o custo e o valor de cada ponto contra o meio."
+          },
+          "labels": {
+            "x-name": "Valor para eles",
+            "y-name": "Custo para mim",
+            "x-low": "Pouco valor",
+            "x-high": "Muito valor",
+            "y-low": "Pouco custo",
+            "y-high": "Muito custo",
+            "polish": "Polimento extra em todos os pares",
+            "pickup": "Retirada grátis",
+            "price-15": "Preço de 15 moedas",
+            "laces": "Cadarços novos de graça",
+            "slot": "Horário semanal reservado",
+            "rush": "Entrega no mesmo dia"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-offer-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: Dina trades her cheap concession for something she wants.",
+          "line": "I offer 22 a pair with free pick-up, if they book 5 pairs every month."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: Dina cambia su concesión barata por algo que ella quiere.",
+          "line": "Ofrezco 22 por par con recolección gratis, si me apartan 5 pares cada mes."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a Dina troca a concessão barata por algo que ela quer.",
+          "line": "Ofereço 22 por par com retirada grátis, se reservarem 5 pares por mês."
+        }
+      }
+    },
+    {
+      "id": "ex-check-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the club agrees, and Dina checks the deal against her limit.",
+          "line": "At 22, each pair leaves 13 after costs, and my time needs only 9."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: el club acepta y Dina revisa el trato contra su límite.",
+          "line": "A 22, cada par me deja 13 tras los costos, y mi tiempo solo necesita 9."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o clube aceita e a Dina confere o trato com o limite dela.",
+          "line": "A 22, cada par deixa 13 depois dos custos, e meu tempo precisa só de 9."
+        }
+      }
+    },
+    {
+      "id": "ex-no-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: if the club had pushed to 15, Dina would say no kindly.",
+          "line": "I’d say: “That is under what I can do, but 22 with pick-up still stands.”"
+        },
+        "es-MX": {
+          "prompt": "Paso 6: si el club insistiera en 15, Dina diría que no con amabilidad.",
+          "line": "Diría: “Eso es menos de lo que puedo, pero 22 con recolección gratis sigue en pie.”"
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: se o clube insistisse em 15, a Dina diria não com gentileza.",
+          "line": "Eu diria: “Isso fica abaixo do que posso, mas 22 com retirada grátis continua de pé.”"
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-1"
+          },
+          {
+            "id": "reply-2"
+          },
+          {
+            "id": "reply-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-3"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A studio asks your stand for 8 pairs at 16; your limit is 18. Choose a reply.",
+          "feedback": {
+            "met": "You held your limit and kept the deal open.",
+            "not_yet": "Not yet. Check the offer against your limit and keep talking."
+          },
+          "speaker": "Dance studio",
+          "line": "Eight pairs for 16 each is what we can pay.",
+          "replies": [
+            {
+              "label": "Fine, 16 it is."
+            },
+            {
+              "label": "No. 16 is too low."
+            },
+            {
+              "label": "Not at 16; at 20, pick-up is free."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A tu puesto llega un estudio de baile que pide 8 pares por 16; tu límite es 18. Elige una respuesta.",
+          "feedback": {
+            "met": "Mantuviste tu límite y dejaste la puerta abierta.",
+            "not_yet": "Aún no. Compara la oferta con tu límite y sigue conversando."
+          },
+          "speaker": "Estudio de baile",
+          "line": "Podemos pagar 16 por cada uno de los ocho pares.",
+          "replies": [
+            {
+              "label": "Está bien, 16."
+            },
+            {
+              "label": "No. 16 es muy poco."
+            },
+            {
+              "label": "A 16 no; a 20, recolección gratis."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um estúdio de dança pede 8 pares por 16 na sua banca; seu limite é 18. Escolha uma resposta.",
+          "feedback": {
+            "met": "Você manteve seu limite e deixou a conversa aberta.",
+            "not_yet": "Ainda não. Compare a oferta com seu limite e continue conversando."
+          },
+          "speaker": "Estúdio de dança",
+          "line": "Conseguimos pagar 16 por cada um dos oito pares.",
+          "replies": [
+            {
+              "label": "Tudo bem, 16."
+            },
+            {
+              "label": "Não. 16 é muito pouco."
+            },
+            {
+              "label": "A 16 não; a 20, retirada grátis."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "pieces": [
+          "thursday",
+          "bags",
+          "price-14",
+          "touchup",
+          "code",
+          "overnight"
+        ],
+        "points": [
+          [
+            8,
+            3
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            9,
+            9
+          ],
+          [
+            3,
+            8
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            7,
+            8
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "top-left": [
+              "touchup"
+            ],
+            "top-right": [
+              "price-14",
+              "overnight"
+            ],
+            "bottom-left": [
+              "bags"
+            ],
+            "bottom-right": [
+              "thursday",
+              "code"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "For the dance studio deal, sort each concession by its cost to you and its value to them.",
+          "feedback": {
+            "met": "You sorted each concession by both ratings, not just one.",
+            "not_yet": "Not yet. Use both ratings of each dot against the middle."
+          },
+          "labels": {
+            "x-name": "Value to them",
+            "y-name": "Cost to me",
+            "x-low": "Low value",
+            "x-high": "High value",
+            "y-low": "Low cost",
+            "y-high": "High cost",
+            "thursday": "Ready by Thursday",
+            "bags": "Free shoe bags",
+            "price-14": "Price of 14 coins",
+            "touchup": "Touch-up paint on all",
+            "code": "Dancer discount code",
+            "overnight": "Overnight rush"
+          }
+        },
+        "es-MX": {
+          "prompt": "Para el trato con el estudio de baile, ordena cada concesión por su costo para ti y su valor para ellos.",
+          "feedback": {
+            "met": "Ordenaste cada concesión con las dos calificaciones.",
+            "not_yet": "Aún no. Usa las dos calificaciones de cada punto frente al centro."
+          },
+          "labels": {
+            "x-name": "Valor para ellos",
+            "y-name": "Costo para mí",
+            "x-low": "Poco valor",
+            "x-high": "Mucho valor",
+            "y-low": "Poco costo",
+            "y-high": "Mucho costo",
+            "thursday": "Listos para el jueves",
+            "bags": "Bolsas gratis para tenis",
+            "price-14": "Precio de 14 monedas",
+            "touchup": "Retoque de pintura en todos",
+            "code": "Código de descuento",
+            "overnight": "Trabajar toda la noche"
+          }
+        },
+        "pt-BR": {
+          "prompt": "No acordo com o estúdio de dança, ordene cada concessão pelo custo para você e pelo valor para eles.",
+          "feedback": {
+            "met": "Você ordenou cada concessão pelas duas avaliações.",
+            "not_yet": "Ainda não. Use as duas avaliações de cada ponto contra o meio."
+          },
+          "labels": {
+            "x-name": "Valor para eles",
+            "y-name": "Custo para mim",
+            "x-low": "Pouco valor",
+            "x-high": "Muito valor",
+            "y-low": "Pouco custo",
+            "y-high": "Muito custo",
+            "thursday": "Prontos até quinta",
+            "bags": "Sacolas grátis para tênis",
+            "price-14": "Preço de 14 moedas",
+            "touchup": "Retoque de tinta em todos",
+            "code": "Cupom de desconto",
+            "overnight": "Virar a noite"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-1"
+          },
+          {
+            "id": "choice-2"
+          },
+          {
+            "id": "choice-3"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-1"
+          },
+          {
+            "id": "reason-2"
+          },
+          {
+            "id": "reason-3"
+          },
+          {
+            "id": "reason-4"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-1"
+        ],
+        "reasonQuality": {
+          "reason-1": "sound",
+          "reason-2": "sound",
+          "reason-3": "unsupported",
+          "reason-4": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A café wants sticker packs at 10 coins; your limit is 11. Choose your reply.",
+          "feedback": {
+            "met": "You checked the offer against your limit before replying.",
+            "not_yet": "Not yet. Compare the café’s price with your limit first."
+          },
+          "help": [
+            "Each pack costs 6 coins to make; your time needs 5 more.",
+            "The café needs 30 packs a month for its cups."
+          ],
+          "choices": [
+            {
+              "label": "Hold 11; offer free delivery for monthly orders."
+            },
+            {
+              "label": "Accept 10 to keep the café happy."
+            },
+            {
+              "label": "Refuse and tell them to look elsewhere."
+            }
+          ],
+          "reasonPrompt": "Which reason supports your reply best?",
+          "reasons": [
+            {
+              "label": "Under 11, my time goes unpaid."
+            },
+            {
+              "label": "A steady café order is worth free delivery."
+            },
+            {
+              "label": "Cafés never pay more, so give in."
+            },
+            {
+              "label": "Saying yes keeps this customer."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una cafetería quiere paquetes de calcomanías a 10 monedas; tu límite es 11. Elige tu respuesta.",
+          "feedback": {
+            "met": "Revisaste la oferta contra tu límite antes de responder.",
+            "not_yet": "Aún no. Compara primero el precio de la cafetería con tu límite."
+          },
+          "help": [
+            "Cada paquete cuesta 6 monedas; tu tiempo necesita 5 más.",
+            "La cafetería necesita 30 paquetes al mes para sus vasos."
+          ],
+          "choices": [
+            {
+              "label": "Mantengo 11; ofrezco entrega gratis por pedidos mensuales."
+            },
+            {
+              "label": "Acepto 10 para dejar contenta a la cafetería."
+            },
+            {
+              "label": "Digo que no y que busquen en otro lado."
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu respuesta?",
+          "reasons": [
+            {
+              "label": "Menos de 11, mi tiempo queda sin pago."
+            },
+            {
+              "label": "Un pedido fijo de la cafetería vale una entrega gratis."
+            },
+            {
+              "label": "Las cafeterías nunca pagan más, así que cedo."
+            },
+            {
+              "label": "Decir que sí conserva al cliente."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um café quer pacotes de adesivos por 10 moedas; seu limite é 11. Escolha sua resposta.",
+          "feedback": {
+            "met": "Você conferiu a oferta com seu limite antes de responder.",
+            "not_yet": "Ainda não. Compare primeiro o preço do café com seu limite."
+          },
+          "help": [
+            "Cada pacote custa 6 moedas; seu tempo precisa de mais 5.",
+            "O café precisa de 30 pacotes por mês para seus copos."
+          ],
+          "choices": [
+            {
+              "label": "Mantenho 11; ofereço entrega grátis para pedidos mensais."
+            },
+            {
+              "label": "Aceito 10 para manter o café contente."
+            },
+            {
+              "label": "Digo não e mando procurar em outro lugar."
+            }
+          ],
+          "reasonPrompt": "Qual razão apoia melhor sua resposta?",
+          "reasons": [
+            {
+              "label": "Abaixo de 11, meu tempo fica sem pagamento."
+            },
+            {
+              "label": "Um pedido fixo do café vale entrega grátis."
+            },
+            {
+              "label": "Café nunca paga mais, então eu cedo."
+            },
+            {
+              "label": "Dizer sim mantém esse cliente."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

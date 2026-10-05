@@ -1,0 +1,1173 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-a-plan-that-holds",
+  "lesson_id": "inv-1317-11-the-bad-season",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.stay-the-course",
+    "invest.risk-tolerance",
+    "invest.portfolio-mix"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara repite con el alumno una mala temporada simulada: una mezcla diversificada de 1,000 monedas cae 25% hasta 750. Ella vende en el fondo y se pierde la recuperación; el alumno compara los dos registros, aprende a elegir una mezcla que pueda aguantar y a mantenerla mientras su meta no cambie, y rechaza un mensaje que vende “ganancia segura” en plena caída.",
+  "title": {
+    "es-MX": "La mala temporada",
+    "en-US": "The bad season",
+    "pt-BR": "A temporada ruim"
+  },
+  "new_concepts": [
+    "invest.stay-the-course"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara watches her 1,000-coin mix fall 25 percent to 750, expects the fall to go on, and sells everything at the bottom to stop the losses.",
+    "recovery": "Zara replays the season, sees the mix climb to 900 while her sale stayed at 750, and says she will write her hold rule before the next season starts."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; the mixes, months and messages are made up, with no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara’s 1,000-coin mix in the simulator. Month after month, it ends lower than it began.",
+          "line": "I expected ups and downs, not this. We will replay the season and compare each choice."
+        },
+        "es-MX": {
+          "prompt": "La mezcla de 1,000 monedas de Zara en el simulador. Mes tras mes, termina más abajo de donde empezó.",
+          "line": "Esperaba altibajos, no esto. Repetimos la temporada y comparamos cada decisión."
+        },
+        "pt-BR": {
+          "prompt": "A mistura de 1.000 moedas da Zara no simulador. Mês após mês, termina mais baixo do que começou.",
+          "line": "Eu esperava altos e baixos, não isto. Vamos repetir a temporada e comparar cada decisão."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-sell"
+          },
+          {
+            "id": "opt-plan"
+          },
+          {
+            "id": "opt-chase"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-plan"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we start, what would you do first?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now, step by step.",
+            "not_yet": "Thanks, that shows where you start. Now, step by step."
+          },
+          "scene": "In the simulator, your 500-coin mix drops to 450 in one month. The news sounds worried, and prices keep moving.",
+          "options": [
+            {
+              "label": "Sell it all before it falls more"
+            },
+            {
+              "label": "Check my goal and my plan first"
+            },
+            {
+              "label": "Move it into whatever is rising"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de empezar, ¿qué harías primero?",
+          "feedback": {
+            "met": "Gracias, así veo desde dónde partes. Ahora, paso a paso.",
+            "not_yet": "Gracias, así veo desde dónde partes. Ahora, paso a paso."
+          },
+          "scene": "En el simulador, tu mezcla de 500 monedas baja a 450 en un mes. Las noticias suenan preocupadas y los precios siguen moviéndose.",
+          "options": [
+            {
+              "label": "Vender todo antes de que baje más"
+            },
+            {
+              "label": "Revisar primero mi meta y mi plan"
+            },
+            {
+              "label": "Pasarlo a lo que esté subiendo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar, o que você faria primeiro?",
+          "feedback": {
+            "met": "Certo, isso mostra de onde você parte. Agora, passo a passo.",
+            "not_yet": "Certo, isso mostra de onde você parte. Agora, passo a passo."
+          },
+          "scene": "No simulador, sua mistura de 500 moedas cai para 450 em um mês. As notícias soam preocupadas e os preços continuam se mexendo.",
+          "options": [
+            {
+              "label": "Vender tudo antes que caia mais"
+            },
+            {
+              "label": "Conferir primeiro minha meta e meu plano"
+            },
+            {
+              "label": "Passar para o que estiver subindo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-fall",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "candlestick"
+      },
+      "teaching_role": "example",
+      "knowledge_component_id": "invest.risk-tolerance",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "ohlc": [
+            {
+              "id": "month-1",
+              "open": 1000,
+              "high": 1000,
+              "low": 900,
+              "close": 920
+            },
+            {
+              "id": "month-2",
+              "open": 920,
+              "high": 940,
+              "low": 800,
+              "close": 820
+            },
+            {
+              "id": "month-3",
+              "open": 820,
+              "high": 830,
+              "low": 750,
+              "close": 750
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the fall. Three months take the mix from 1,000 coins to 750, down 25%.",
+          "title": "Mix value by month, in coins",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Month 1"
+              },
+              {
+                "label": "Month 2"
+              },
+              {
+                "label": "Month 3"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: la caída. En tres meses la mezcla baja de 1,000 monedas a 750, un 25% menos.",
+          "title": "Valor de la mezcla por mes, en monedas",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Mes 1"
+              },
+              {
+                "label": "Mes 2"
+              },
+              {
+                "label": "Mes 3"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a queda. Em três meses a mistura cai de 1.000 moedas para 750, ou seja, 25% a menos.",
+          "title": "Valor da mistura por mês, em moedas",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Mês 1"
+              },
+              {
+                "label": "Mês 2"
+              },
+              {
+                "label": "Mês 3"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-zara",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what Zara did at the bottom of the fall.",
+          "setup": "Month 3. My 1,000-coin mix stands at 750, and the news says it will keep falling.",
+          "misjudgment": "I sold all of it at 750 to stop the losses. I expected the fall to go on.",
+          "recovery": "The mix reached 900 while I sat at 750. Next time I set a hold rule before the fall."
+        },
+        "es-MX": {
+          "prompt": "Mira qué hizo Zara en el fondo de la caída.",
+          "setup": "Mes 3. Mi mezcla de 1,000 monedas está en 750 y las noticias dicen que seguirá bajando.",
+          "misjudgment": "Vendí todo en 750 para frenar las pérdidas. Esperaba que la caída siguiera.",
+          "recovery": "La mezcla subió a 900 y yo me quedé en 750. La próxima vez fijo mi regla de mantener antes de la caída."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que a Zara fez no fundo da queda.",
+          "setup": "Mês 3. Minha mistura de 1.000 moedas está em 750 e as notícias dizem que vai cair mais.",
+          "misjudgment": "Vendi tudo a 750 para parar as perdas. Eu esperava que a queda continuasse.",
+          "recovery": "A mistura chegou a 900 e eu fiquei nos 750. Da próxima vez, defino minha regra de manter antes da queda."
+        }
+      }
+    },
+    {
+      "id": "ex-replay",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "candlestick"
+      },
+      "teaching_role": "example",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "ohlc": [
+            {
+              "id": "month-1",
+              "open": 1000,
+              "high": 1000,
+              "low": 900,
+              "close": 920
+            },
+            {
+              "id": "month-2",
+              "open": 920,
+              "high": 940,
+              "low": 800,
+              "close": 820
+            },
+            {
+              "id": "month-3",
+              "open": 820,
+              "high": 830,
+              "low": 750,
+              "close": 750
+            },
+            {
+              "id": "month-4",
+              "open": 750,
+              "high": 810,
+              "low": 750,
+              "close": 800
+            },
+            {
+              "id": "month-5",
+              "open": 800,
+              "high": 860,
+              "low": 790,
+              "close": 850
+            },
+            {
+              "id": "month-6",
+              "open": 850,
+              "high": 910,
+              "low": 840,
+              "close": 900
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the replay. The same season climbs to 900 by month 6; the next may not.",
+          "title": "Mix value by month, in coins",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Month 1"
+              },
+              {
+                "label": "Month 2"
+              },
+              {
+                "label": "Month 3"
+              },
+              {
+                "label": "Month 4"
+              },
+              {
+                "label": "Month 5"
+              },
+              {
+                "label": "Month 6"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 2: la repetición. La misma temporada sube a 900 en el mes 6; la próxima puede no hacerlo.",
+          "title": "Valor de la mezcla por mes, en monedas",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Mes 1"
+              },
+              {
+                "label": "Mes 2"
+              },
+              {
+                "label": "Mes 3"
+              },
+              {
+                "label": "Mes 4"
+              },
+              {
+                "label": "Mes 5"
+              },
+              {
+                "label": "Mes 6"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a repetição. A mesma temporada sobe para 900 no mês 6; a próxima pode não subir.",
+          "title": "Valor da mistura por mês, em moedas",
+          "data": {
+            "ohlc": [
+              {
+                "label": "Mês 1"
+              },
+              {
+                "label": "Mês 2"
+              },
+              {
+                "label": "Mês 3"
+              },
+              {
+                "label": "Mês 4"
+              },
+              {
+                "label": "Mês 5"
+              },
+              {
+                "label": "Mês 6"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          },
+          {
+            "id": "step-4"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "step-2",
+          "step-3",
+          "step-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "750",
+          "step-3": "900",
+          "step-4": "150"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same season, two ledgers: sell or hold. The first step is shown; type the other three.",
+          "feedback": {
+            "met": "You read the last month and compared both ledgers.",
+            "not_yet": "Not yet. Ask what each ledger holds in the last month."
+          },
+          "steps": [
+            {
+              "expression": "Selling at the bottom: 1,000 − 250",
+              "result": "750",
+              "spokenText": "Selling at the bottom: 1,000 minus 250"
+            },
+            {
+              "expression": "Selling: coins at month 6",
+              "result": "750",
+              "spokenText": "Selling: coins at month 6"
+            },
+            {
+              "expression": "Holding: coins at month 6",
+              "result": "900",
+              "spokenText": "Holding: coins at month 6"
+            },
+            {
+              "expression": "Holding minus selling",
+              "result": "150",
+              "spokenText": "Holding minus selling"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La misma temporada, dos registros: vender o mantener. El primer paso ya está; escribe los otros tres.",
+          "feedback": {
+            "met": "Leíste el último mes y comparaste los dos registros.",
+            "not_yet": "Todavía no. Pregunta qué tiene cada registro en el último mes."
+          },
+          "steps": [
+            {
+              "expression": "Vender en el fondo: 1,000 − 250",
+              "result": "750",
+              "spokenText": "Vender en el fondo: 1,000 menos 250"
+            },
+            {
+              "expression": "Vender: monedas en el mes 6",
+              "result": "750",
+              "spokenText": "Vender: monedas en el mes 6"
+            },
+            {
+              "expression": "Mantener: monedas en el mes 6",
+              "result": "900",
+              "spokenText": "Mantener: monedas en el mes 6"
+            },
+            {
+              "expression": "Mantener menos vender",
+              "result": "150",
+              "spokenText": "Mantener menos vender"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mesma temporada, dois registros: vender ou manter. O primeiro passo já está pronto; digite os outros três.",
+          "feedback": {
+            "met": "Você leu o último mês e comparou os dois registros.",
+            "not_yet": "Ainda não. Pergunte o que cada registro tem no último mês."
+          },
+          "steps": [
+            {
+              "expression": "Vender no fundo: 1.000 − 250",
+              "result": "750",
+              "spokenText": "Vender no fundo: 1.000 menos 250"
+            },
+            {
+              "expression": "Vender: moedas no mês 6",
+              "result": "750",
+              "spokenText": "Vender: moedas no mês 6"
+            },
+            {
+              "expression": "Manter: moedas no mês 6",
+              "result": "900",
+              "spokenText": "Manter: moedas no mês 6"
+            },
+            {
+              "expression": "Manter menos vender",
+              "result": "150",
+              "spokenText": "Manter menos vender"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-offer",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mid-fall, a DM: “Your mix is bleeding. Sell now and join my sure thing: +30% in 30 days.”",
+          "line": "Step 3: the offer. It lands when I am scared; honest offers never promise a sure gain."
+        },
+        "es-MX": {
+          "prompt": "En plena caída llega un mensaje: “Tu mezcla se hunde. Vende ya y pásate a mi inversión segura: +30% en 30 días.”",
+          "line": "Paso 3: la oferta. Llega cuando tengo miedo; una oferta honesta nunca promete ganancia segura."
+        },
+        "pt-BR": {
+          "prompt": "No meio da queda chega uma mensagem: “Sua mistura afunda. Venda já e migre para meu investimento garantido: +30% em 30 dias.”",
+          "line": "Passo 3: a oferta. Ela chega quando estou com medo; oferta honesta nunca promete ganho certo."
+        }
+      }
+    },
+    {
+      "id": "ex-rule",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Next season Zara asks first: could she sit through a 25% fall? If not, pick another mix.",
+          "line": "Step 4: the rule. Pick a mix you can sit through, then hold it until your goal changes."
+        },
+        "es-MX": {
+          "prompt": "La próxima temporada Zara pregunta primero: ¿aguantaría una caída de 25%? Si no, la mezcla no le sirve.",
+          "line": "Paso 4: la regla. Elige una mezcla que aguantes y mantenla hasta que cambie tu meta."
+        },
+        "pt-BR": {
+          "prompt": "Na próxima temporada a Zara pergunta primeiro: aguentaria uma queda de 25%? Se não, a mistura não serve.",
+          "line": "Passo 4: a regra. Escolha uma mistura que você aguente e mantenha até sua meta mudar."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          },
+          {
+            "id": "step-4"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "step-2",
+          "step-3",
+          "step-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "600",
+          "step-3": "720",
+          "step-4": "120"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An 800-coin mix falls 25% by month 3, then recovers to 90% of 800 by month 6. Complete both ledgers.",
+          "feedback": {
+            "met": "You kept the sale and hold ledgers apart and compared them.",
+            "not_yet": "Not yet. After a sale, ask what is still invested."
+          },
+          "steps": [
+            {
+              "expression": "Coins lost in the fall: 25% × 800",
+              "result": "200",
+              "spokenText": "Coins lost in the fall: 25 percent times 800"
+            },
+            {
+              "expression": "Selling: coins at month 6",
+              "result": "600",
+              "spokenText": "Selling: coins at month 6"
+            },
+            {
+              "expression": "Holding: coins at month 6",
+              "result": "720",
+              "spokenText": "Holding: coins at month 6"
+            },
+            {
+              "expression": "Holding minus selling",
+              "result": "120",
+              "spokenText": "Holding minus selling"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una mezcla de 800 monedas baja 25% al mes 3 y vuelve a 90% de 800 al mes 6. Completa los dos registros.",
+          "feedback": {
+            "met": "Mantuviste separados los registros de vender y mantener, y los comparaste.",
+            "not_yet": "Todavía no. Después de vender, pregunta qué sigue invertido."
+          },
+          "steps": [
+            {
+              "expression": "Monedas perdidas en la caída: 25% × 800",
+              "result": "200",
+              "spokenText": "Monedas perdidas en la caída: 25 por ciento por 800"
+            },
+            {
+              "expression": "Vender: monedas en el mes 6",
+              "result": "600",
+              "spokenText": "Vender: monedas en el mes 6"
+            },
+            {
+              "expression": "Mantener: monedas en el mes 6",
+              "result": "720",
+              "spokenText": "Mantener: monedas en el mes 6"
+            },
+            {
+              "expression": "Mantener menos vender",
+              "result": "120",
+              "spokenText": "Mantener menos vender"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma mistura de 800 moedas cai 25% até o mês 3 e volta a 90% de 800 no mês 6. Complete os dois registros.",
+          "feedback": {
+            "met": "Você manteve separados os registros de vender e manter, e os comparou.",
+            "not_yet": "Ainda não. Depois de vender, pergunte o que ainda está investido."
+          },
+          "steps": [
+            {
+              "expression": "Moedas perdidas na queda: 25% × 800",
+              "result": "200",
+              "spokenText": "Moedas perdidas na queda: 25 por cento vezes 800"
+            },
+            {
+              "expression": "Vender: moedas no mês 6",
+              "result": "600",
+              "spokenText": "Vender: moedas no mês 6"
+            },
+            {
+              "expression": "Manter: moedas no mês 6",
+              "result": "720",
+              "spokenText": "Manter: moedas no mês 6"
+            },
+            {
+              "expression": "Manter menos vender",
+              "result": "120",
+              "spokenText": "Manter menos vender"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-switch"
+          },
+          {
+            "id": "opt-ask"
+          },
+          {
+            "id": "opt-keep"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-keep"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What do you do with the message?",
+          "feedback": {
+            "met": "You kept your plan and ignored the sure-gain promise.",
+            "not_yet": "Not yet. Which words in the message feed on your fear?"
+          },
+          "scene": "Your sandbox mix is down 20% this month. A stranger writes: “Sell now and switch to my guaranteed fund. 40% by next month.”",
+          "options": [
+            {
+              "label": "Sell now and switch to the fund"
+            },
+            {
+              "label": "Reply and ask how the fund works"
+            },
+            {
+              "label": "Keep the plan, send nothing, tell an adult"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué haces con el mensaje?",
+          "feedback": {
+            "met": "Seguiste tu plan e ignoraste la promesa de ganancia segura.",
+            "not_yet": "Todavía no. ¿Qué palabras del mensaje se aprovechan de tu miedo?"
+          },
+          "scene": "Tu mezcla del simulador baja 20% este mes. Un desconocido escribe: “Vende ya y pásate a mi fondo garantizado. 40% el próximo mes.”",
+          "options": [
+            {
+              "label": "Vender ya y pasarme al fondo"
+            },
+            {
+              "label": "Responder y preguntar cómo funciona"
+            },
+            {
+              "label": "Seguir el plan, no responder, avisar a un adulto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que você faz com a mensagem?",
+          "feedback": {
+            "met": "Você seguiu seu plano e ignorou a promessa de ganho certo.",
+            "not_yet": "Ainda não. Quais palavras da mensagem exploram o seu medo?"
+          },
+          "scene": "Sua mistura do simulador cai 20% neste mês. Um desconhecido escreve: “Venda já e migre para o meu fundo garantido. 40% no mês que vem.”",
+          "options": [
+            {
+              "label": "Vender já e migrar para o fundo"
+            },
+            {
+              "label": "Responder e perguntar como funciona"
+            },
+            {
+              "label": "Seguir o plano, não responder, avisar um adulto"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "column"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.portfolio-mix",
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "categories": [
+            {
+              "id": "mix-one"
+            },
+            {
+              "id": "mix-many"
+            },
+            {
+              "id": "mix-steady"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-fall",
+              "values": [
+                45,
+                25,
+                10
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-steady"
+            },
+            {
+              "id": "opt-many"
+            },
+            {
+              "id": "opt-one"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-steady"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each column is the biggest fall a mix has had in one season.",
+          "feedback": {
+            "met": "Mostly steady is the only mix whose worst fall stays under 15%.",
+            "not_yet": "Not yet. Which column stays below your limit?"
+          },
+          "title": "Worst fall by mix, in one season",
+          "data": {
+            "categories": [
+              {
+                "label": "One holding"
+              },
+              {
+                "label": "Mix of many"
+              },
+              {
+                "label": "Mostly steady"
+              }
+            ],
+            "series": [
+              {
+                "label": "Worst fall"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "You would sell after a fall of 15%. Which mix fits your limit?",
+            "options": [
+              {
+                "label": "Mostly steady"
+              },
+              {
+                "label": "Mix of many"
+              },
+              {
+                "label": "One holding"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Cada columna es la mayor caída que ha tenido una mezcla en una temporada.",
+          "feedback": {
+            "met": "Mayormente estable es la única mezcla cuya peor caída queda bajo 15%.",
+            "not_yet": "Todavía no. ¿Qué columna queda por debajo de tu límite?"
+          },
+          "title": "Peor caída por mezcla en una temporada",
+          "data": {
+            "categories": [
+              {
+                "label": "Un solo activo"
+              },
+              {
+                "label": "Mezcla variada"
+              },
+              {
+                "label": "Mayormente estable"
+              }
+            ],
+            "series": [
+              {
+                "label": "Peor caída"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Venderías después de una caída de 15%. ¿Qué mezcla encaja con tu límite?",
+            "options": [
+              {
+                "label": "Mayormente estable"
+              },
+              {
+                "label": "Mezcla variada"
+              },
+              {
+                "label": "Un solo activo"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cada coluna é a maior queda que uma mistura já teve em uma temporada.",
+          "feedback": {
+            "met": "Majoritariamente estável é a única mistura cuja pior queda fica abaixo de 15%.",
+            "not_yet": "Ainda não. Qual coluna fica abaixo do seu limite?"
+          },
+          "title": "Pior queda por mistura em uma temporada",
+          "data": {
+            "categories": [
+              {
+                "label": "Um só ativo"
+              },
+              {
+                "label": "Mistura variada"
+              },
+              {
+                "label": "Majoritariamente estável"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pior queda"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Você venderia depois de uma queda de 15%. Qual mistura cabe no seu limite?",
+            "options": [
+              {
+                "label": "Majoritariamente estável"
+              },
+              {
+                "label": "Mistura variada"
+              },
+              {
+                "label": "Um só ativo"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.stay-the-course",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-sell"
+          },
+          {
+            "id": "choice-half"
+          },
+          {
+            "id": "choice-hold"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-goal"
+          },
+          {
+            "id": "reason-final"
+          },
+          {
+            "id": "reason-planned"
+          },
+          {
+            "id": "reason-back"
+          },
+          {
+            "id": "reason-others"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-hold"
+        ],
+        "reasonQuality": {
+          "reason-goal": "sound",
+          "reason-final": "sound",
+          "reason-planned": "partial",
+          "reason-back": "unsupported",
+          "reason-others": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your club’s sandbox mix fell 20%, five years from its goal. A member says: sell it all.",
+          "feedback": {
+            "met": "Holding the plan fits a goal that has not changed.",
+            "not_yet": "Not yet. Ask whether the goal changed, or only the price."
+          },
+          "help": [
+            "Check the rule you saw: what has to change before you sell?"
+          ],
+          "choices": [
+            {
+              "label": "Sell it all before it falls more"
+            },
+            {
+              "label": "Sell half and wait in cash"
+            },
+            {
+              "label": "Hold the plan and wait"
+            }
+          ],
+          "reasonPrompt": "Why is that your best choice?",
+          "reasons": [
+            {
+              "label": "The goal is still five years away"
+            },
+            {
+              "label": "Selling now would make the fall final"
+            },
+            {
+              "label": "I planned for falls this size"
+            },
+            {
+              "label": "Prices always come back after a fall"
+            },
+            {
+              "label": "Others in the club are selling"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La mezcla del simulador de tu club cayó 20%, a cinco años de su meta. Un miembro dice: vendan todo.",
+          "feedback": {
+            "met": "Mantener el plan encaja con una meta que no cambió.",
+            "not_yet": "Todavía no. Pregunta si cambió la meta o solo el precio."
+          },
+          "help": [
+            "Repasa la regla que viste: ¿qué tiene que cambiar antes de vender?"
+          ],
+          "choices": [
+            {
+              "label": "Vender todo antes de que baje más"
+            },
+            {
+              "label": "Vender la mitad y esperar en efectivo"
+            },
+            {
+              "label": "Mantener el plan y esperar"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es tu mejor opción?",
+          "reasons": [
+            {
+              "label": "La meta sigue a cinco años"
+            },
+            {
+              "label": "Vender ahora haría definitiva la caída"
+            },
+            {
+              "label": "Ya planeé caídas de este tamaño"
+            },
+            {
+              "label": "Los precios siempre se recuperan"
+            },
+            {
+              "label": "Otros del club están vendiendo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mistura do simulador do seu clube caiu 20%, a cinco anos da meta. Um membro diz: vendam tudo.",
+          "feedback": {
+            "met": "Manter o plano combina com uma meta que não mudou.",
+            "not_yet": "Ainda não. Pergunte se a meta mudou ou só o preço."
+          },
+          "help": [
+            "Reveja a regra que você viu: o que precisa mudar antes de vender?"
+          ],
+          "choices": [
+            {
+              "label": "Vender tudo antes que caia mais"
+            },
+            {
+              "label": "Vender metade e esperar em dinheiro"
+            },
+            {
+              "label": "Manter o plano e esperar"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a sua melhor escolha?",
+          "reasons": [
+            {
+              "label": "A meta ainda está a cinco anos"
+            },
+            {
+              "label": "Vender agora tornaria a queda definitiva"
+            },
+            {
+              "label": "Eu já planejei quedas desse tamanho"
+            },
+            {
+              "label": "Os preços sempre voltam depois de uma queda"
+            },
+            {
+              "label": "Outros do clube estão vendendo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,997 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-first-version",
+  "lesson_id": "ent-1012-06-the-smallest-version",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.mvp",
+    "biz.make-and-test",
+    "biz.opportunity-evaluation"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina enseña con ejemplos a encontrar la versión más pequeña de la bolsa de almuerzo que ya resuelve el problema real: saca cada idea y revisa si los niños aún pueden comer, beber o limpiarse. Después el estudiante ordena ideas en versión 1 o versión 2, coloca ideas en círculos anidados y decide con razones en un salón nuevo.",
+  "title": {
+    "es-MX": "La versión más pequeña",
+    "en-US": "The smallest version",
+    "pt-BR": "A menor versão"
+  },
+  "new_concepts": [
+    "biz.mvp"
+  ],
+  "regional": {
+    "universal": "Uses no money, places or customs from any market; only a school lunch bag and a classroom shelf."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Dina tiene ocho ideas para la bolsa de almuerzo para llevar.",
+          "line": "En la fila del almuerzo los niños no alcanzan a comer. Sin prisa: miramos cada idea."
+        },
+        "en-US": {
+          "prompt": "Dina's team has eight ideas for the grab-and-go bag.",
+          "line": "Kids have no time to eat in the lunch line. No rush: we look at each idea."
+        },
+        "pt-BR": {
+          "prompt": "A equipe da Dina tem oito ideias para a sacola de almoço para levar.",
+          "line": "Na fila do almoço as crianças não têm tempo de comer. Sem pressa: olhamos cada ideia."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.mvp",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-v1"
+          },
+          {
+            "id": "bin-v2"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-sticker"
+          },
+          {
+            "id": "item-sandwich"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-job"
+          },
+          {
+            "id": "why-nice"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-sandwich": [
+            {
+              "bin": "bin-v1",
+              "reason": "why-job"
+            }
+          ],
+          "item-sticker": [
+            {
+              "bin": "bin-v2",
+              "reason": "why-nice"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Dina solo puede armar algunas ideas primero. Ordena estas dos.",
+          "rule": "¿Qué va en la versión 1 y qué puede esperar?",
+          "feedback": {
+            "met": "Gracias, así veo cómo piensas. Ahora vamos paso a paso.",
+            "not_yet": "Gracias, así veo cómo piensas. Ahora vamos paso a paso."
+          },
+          "bins": [
+            {
+              "label": "Versión 1"
+            },
+            {
+              "label": "Espera a la versión 2"
+            }
+          ],
+          "items": [
+            {
+              "label": "Calcomanía"
+            },
+            {
+              "label": "Sándwich"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Hace falta para comer, beber o limpiarse"
+            },
+            {
+              "label": "Es un extra, el almuerzo funciona sin eso"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's team can build only some ideas first. Sort these two.",
+          "rule": "Which goes in version 1, and which can wait?",
+          "feedback": {
+            "met": "Thanks, that shows how you think. Now we go step by step.",
+            "not_yet": "Thanks, that shows how you think. Now we go step by step."
+          },
+          "bins": [
+            {
+              "label": "Version 1"
+            },
+            {
+              "label": "Wait for version 2"
+            }
+          ],
+          "items": [
+            {
+              "label": "Sticker"
+            },
+            {
+              "label": "Sandwich"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Needed to eat, drink or clean up"
+            },
+            {
+              "label": "Nice, but lunch works without it"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe da Dina só pode montar algumas ideias primeiro. Separe estas duas.",
+          "rule": "O que vai na versão 1 e o que pode esperar?",
+          "feedback": {
+            "met": "Isso mostra como você pensa. Agora vamos passo a passo.",
+            "not_yet": "Isso mostra como você pensa. Agora vamos passo a passo."
+          },
+          "bins": [
+            {
+              "label": "Versão 1"
+            },
+            {
+              "label": "Fica para a versão 2"
+            }
+          ],
+          "items": [
+            {
+              "label": "Adesivo"
+            },
+            {
+              "label": "Sanduíche"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Precisa para comer, beber ou se limpar"
+            },
+            {
+              "label": "É um extra, o almoço funciona sem isso"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-problem-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: el problema real es no tener tiempo de comer. La versión 1 debe resolver solo eso.",
+          "line": "El almuerzo necesita tres cosas: comida, bebida y una forma de limpiarse. Lo demás puede esperar."
+        },
+        "en-US": {
+          "prompt": "Step 1: the real problem is no time to eat. Version 1 must fix just that.",
+          "line": "Lunch needs three things: food, a drink, a way to clean up. The rest can wait."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o problema real é não ter tempo de comer. A versão 1 deve resolver só isso.",
+          "line": "O almoço precisa de três coisas: comida, bebida e um jeito de se limpar. O resto pode esperar."
+        }
+      }
+    },
+    {
+      "id": "step-sandwich-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: Dina saca el sándwich de la bolsa y mira qué queda.",
+          "line": "Nada para comer: el problema vuelve. El sándwich va en la versión 1."
+        },
+        "en-US": {
+          "prompt": "Step 2: Dina takes the sandwich out of the bag and looks at what is left.",
+          "line": "Nothing to eat, so the problem is back. The sandwich goes in version 1."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Dina tira o sanduíche da sacola e olha o que sobra.",
+          "line": "Nada para comer: o problema volta. O sanduíche vai na versão 1."
+        }
+      }
+    },
+    {
+      "id": "step-sticker-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: Dina saca la calcomanía y vuelve a mirar.",
+          "line": "Los niños aún pueden comer, así que la calcomanía espera a la versión 2. Tómate tu tiempo."
+        },
+        "en-US": {
+          "prompt": "Step 3: Dina takes the sticker out and looks again.",
+          "line": "Kids can still eat, so the sticker waits for version 2. Take your time with this one."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a Dina tira o adesivo e olha de novo.",
+          "line": "As crianças ainda conseguem comer, então o adesivo espera pela versão 2. Sem pressa."
+        }
+      }
+    },
+    {
+      "id": "guided-sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.mvp",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-v1"
+          },
+          {
+            "id": "bin-v2"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-label"
+          },
+          {
+            "id": "item-juice"
+          },
+          {
+            "id": "item-coupon"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-job"
+          },
+          {
+            "id": "why-nice"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-juice": [
+            {
+              "bin": "bin-v1",
+              "reason": "why-job"
+            }
+          ],
+          "item-label": [
+            {
+              "bin": "bin-v2",
+              "reason": "why-nice"
+            }
+          ],
+          "item-coupon": [
+            {
+              "bin": "bin-v2",
+              "reason": "why-nice"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Para la bolsa de Dina, ordena tres ideas más. Sácalas una por una: ¿vuelve el problema?",
+          "rule": "¿Qué va en la versión 1 y qué puede esperar?",
+          "feedback": {
+            "met": "Sacaste cada idea y revisaste el problema.",
+            "not_yet": "Repite la prueba de Dina: sácala y mira el almuerzo."
+          },
+          "help": [
+            "Dina preguntó: si lo saco, ¿los niños aún pueden comer?",
+            "Comida, bebida y una forma de limpiarse: tres necesidades."
+          ],
+          "bins": [
+            {
+              "label": "Versión 1"
+            },
+            {
+              "label": "Espera a la versión 2"
+            }
+          ],
+          "items": [
+            {
+              "label": "Etiqueta con nombre"
+            },
+            {
+              "label": "Jugo"
+            },
+            {
+              "label": "Cupón"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Hace falta para comer, beber o limpiarse"
+            },
+            {
+              "label": "Es un extra, el almuerzo funciona sin eso"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "For Dina's bag, sort three more ideas. Take each out: does the problem come back?",
+          "rule": "Which goes in version 1, and which can wait?",
+          "feedback": {
+            "met": "You took each idea out and checked the problem.",
+            "not_yet": "Redo Dina's test: take it out and look at lunch."
+          },
+          "help": [
+            "Dina asked: if I take it out, can kids still eat?",
+            "Food, a drink and a way to clean up: three needs."
+          ],
+          "bins": [
+            {
+              "label": "Version 1"
+            },
+            {
+              "label": "Wait for version 2"
+            }
+          ],
+          "items": [
+            {
+              "label": "Name label"
+            },
+            {
+              "label": "Juice"
+            },
+            {
+              "label": "Coupon"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Needed to eat, drink or clean up"
+            },
+            {
+              "label": "Nice, but lunch works without it"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Para a sacola da Dina, separe mais três ideias. Tire cada uma: o problema volta?",
+          "rule": "O que vai na versão 1 e o que pode esperar?",
+          "feedback": {
+            "met": "Você tirou cada ideia e conferiu o problema.",
+            "not_yet": "Refaça o teste da Dina: tire e olhe o almoço."
+          },
+          "help": [
+            "A Dina perguntou: se eu tirar, as crianças ainda conseguem comer?",
+            "Comida, bebida e um jeito de se limpar: três necessidades."
+          ],
+          "bins": [
+            {
+              "label": "Versão 1"
+            },
+            {
+              "label": "Fica para a versão 2"
+            }
+          ],
+          "items": [
+            {
+              "label": "Etiqueta com nome"
+            },
+            {
+              "label": "Suco"
+            },
+            {
+              "label": "Cupom"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Precisa para comer, beber ou se limpar"
+            },
+            {
+              "label": "É um extra, o almoço funciona sem isso"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-list-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: la versión 1 cabe dentro de la bolsa ideal y lo demás va a una lista.",
+          "line": "Armamos la versión 1 ya y la probamos con niños. La lista espera a que opinen."
+        },
+        "en-US": {
+          "prompt": "Step 4: version 1 sits inside the dream bag, and the rest goes on a list.",
+          "line": "We build version 1 now and test it with kids. The list waits until they speak."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a versão 1 fica dentro da sacola ideal e o resto vai para uma lista.",
+          "line": "Montamos a versão 1 agora e testamos com crianças. A lista espera até elas opinarem."
+        }
+      }
+    },
+    {
+      "id": "practice-sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-v2"
+          },
+          {
+            "id": "bin-v1"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-napkin"
+          },
+          {
+            "id": "item-box"
+          },
+          {
+            "id": "item-music"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-job"
+          },
+          {
+            "id": "why-nice"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-napkin": [
+            {
+              "bin": "bin-v1",
+              "reason": "why-job"
+            }
+          ],
+          "item-box": [
+            {
+              "bin": "bin-v2",
+              "reason": "why-nice"
+            }
+          ],
+          "item-music": [
+            {
+              "bin": "bin-v2",
+              "reason": "why-nice"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ordena las últimas tres ideas de Dina. ¿Cuál necesita la versión 1 para arreglar el almuerzo?",
+          "rule": "¿Qué va en la versión 1 y qué puede esperar?",
+          "feedback": {
+            "met": "Dejaste en la versión 1 solo lo que el almuerzo necesita.",
+            "not_yet": "Saca cada una. ¿Los niños aún pueden comer o limpiarse?"
+          },
+          "help": [
+            "Usa las tres necesidades: comer, beber, limpiarse."
+          ],
+          "bins": [
+            {
+              "label": "Espera a la versión 2"
+            },
+            {
+              "label": "Versión 1"
+            }
+          ],
+          "items": [
+            {
+              "label": "Servilleta"
+            },
+            {
+              "label": "Caja reutilizable"
+            },
+            {
+              "label": "Tarjeta de música"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Hace falta para comer, beber o limpiarse"
+            },
+            {
+              "label": "Es un extra, el almuerzo funciona sin eso"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Sort Dina's last three ideas. Which does version 1 need to fix lunch?",
+          "rule": "Which goes in version 1, and which can wait?",
+          "feedback": {
+            "met": "You put only what lunch needs in version 1.",
+            "not_yet": "Take each out. Can kids still eat or clean up?"
+          },
+          "help": [
+            "Use the three needs: eat, drink, clean up."
+          ],
+          "bins": [
+            {
+              "label": "Wait for version 2"
+            },
+            {
+              "label": "Version 1"
+            }
+          ],
+          "items": [
+            {
+              "label": "Napkin"
+            },
+            {
+              "label": "Reusable box"
+            },
+            {
+              "label": "Music card"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Needed to eat, drink or clean up"
+            },
+            {
+              "label": "Nice, but lunch works without it"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Separe as últimas três ideias da Dina. Qual a versão 1 precisa para resolver o almoço?",
+          "rule": "O que vai na versão 1 e o que pode esperar?",
+          "feedback": {
+            "met": "Você deixou na versão 1 só o que o almoço precisa.",
+            "not_yet": "Tire cada uma. As crianças ainda conseguem comer ou se limpar?"
+          },
+          "help": [
+            "Use as três necessidades: comer, beber, se limpar."
+          ],
+          "bins": [
+            {
+              "label": "Fica para a versão 2"
+            },
+            {
+              "label": "Versão 1"
+            }
+          ],
+          "items": [
+            {
+              "label": "Guardanapo"
+            },
+            {
+              "label": "Caixa reutilizável"
+            },
+            {
+              "label": "Cartão de música"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Precisa para comer, beber ou se limpar"
+            },
+            {
+              "label": "É um extra, o almoço funciona sem isso"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-euler-01",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "euler"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.make-and-test",
+      "payload": {
+        "relation": "subset",
+        "sets": [
+          {
+            "id": "set-v1"
+          },
+          {
+            "id": "set-dream"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-print"
+          },
+          {
+            "id": "item-water"
+          },
+          {
+            "id": "item-pencil"
+          },
+          {
+            "id": "item-wipe"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-print": "second",
+          "item-water": "both",
+          "item-pencil": "neither",
+          "item-wipe": "both"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La bolsa ideal guarda todas las ideas; la versión 1 está dentro. Coloca cada idea nueva.",
+          "feedback": {
+            "met": "Colocaste cada idea según lo que necesita la versión 1.",
+            "not_yet": "Pregunta por cada una: ¿el almuerzo la necesita ya?"
+          },
+          "help": [
+            "En los dos círculos: versión 1. Solo el grande: después.",
+            "Fuera de ambos: no es parte de la bolsa."
+          ],
+          "sets": [
+            {
+              "label": "Versión 1"
+            },
+            {
+              "label": "Bolsa ideal"
+            }
+          ],
+          "items": [
+            {
+              "label": "Bolsa con estampado"
+            },
+            {
+              "label": "Botella de agua"
+            },
+            {
+              "label": "Estuche de lápices"
+            },
+            {
+              "label": "Toallita húmeda"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "The dream bag holds every idea; version 1 sits inside. Place each new idea.",
+          "feedback": {
+            "met": "You placed each idea by what version 1 needs.",
+            "not_yet": "Ask of each one: does lunch need it now?"
+          },
+          "help": [
+            "Both circles: version 1. Big circle only: later.",
+            "Outside both: not part of the bag idea."
+          ],
+          "sets": [
+            {
+              "label": "Version 1"
+            },
+            {
+              "label": "Dream bag"
+            }
+          ],
+          "items": [
+            {
+              "label": "Bag with a fun print"
+            },
+            {
+              "label": "Water bottle"
+            },
+            {
+              "label": "Pencil case"
+            },
+            {
+              "label": "Wet wipe"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A sacola ideal guarda todas as ideias; a versão 1 fica dentro. Coloque cada ideia nova.",
+          "feedback": {
+            "met": "Você colocou cada ideia pelo que a versão 1 precisa.",
+            "not_yet": "Pergunte de cada uma: o almoço precisa dela agora?"
+          },
+          "help": [
+            "Nos dois círculos: versão 1. Só no grande: depois.",
+            "Fora dos dois: não faz parte da sacola."
+          ],
+          "sets": [
+            {
+              "label": "Versão 1"
+            },
+            {
+              "label": "Sacola ideal"
+            }
+          ],
+          "items": [
+            {
+              "label": "Sacola com estampa"
+            },
+            {
+              "label": "Garrafinha de água"
+            },
+            {
+              "label": "Estojo de lápis"
+            },
+            {
+              "label": "Lenço umedecido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.mvp",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-shelf"
+          },
+          {
+            "id": "choice-card"
+          },
+          {
+            "id": "choice-app"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-smallest"
+          },
+          {
+            "id": "reason-fixes"
+          },
+          {
+            "id": "reason-fun"
+          },
+          {
+            "id": "reason-big"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-card"
+        ],
+        "reasonQuality": {
+          "reason-fixes": "sound",
+          "reason-smallest": "partial",
+          "reason-fun": "unsupported",
+          "reason-big": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Dina ahora arregla los libros perdidos del salón. ¿Qué idea es la versión 1?",
+          "feedback": {
+            "met": "Elegiste la idea más pequeña que ya arregla los libros perdidos.",
+            "not_yet": "¿Qué idea ya evitaría que se pierdan los libros?"
+          },
+          "help": [
+            "Usa la prueba de Dina: ¿qué debe arreglar primero la versión 1?"
+          ],
+          "choices": [
+            {
+              "label": "Estante pintado con calcomanías de animales"
+            },
+            {
+              "label": "Tarjeta de papel para registrar cada libro"
+            },
+            {
+              "label": "App con escáner, recordatorios e insignias"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la versión 1?",
+          "reasons": [
+            {
+              "label": "Es la idea más pequeña"
+            },
+            {
+              "label": "Arregla los libros perdidos y se arma rápido"
+            },
+            {
+              "label": "Es la que se ve más divertida"
+            },
+            {
+              "label": "La idea más grande siempre gana"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's team now fixes lost classroom books. Which idea is version 1?",
+          "feedback": {
+            "met": "You chose the smallest idea that already fixes lost books.",
+            "not_yet": "Which idea would already stop books getting lost?"
+          },
+          "help": [
+            "Use Dina's test: what must version 1 fix first?"
+          ],
+          "choices": [
+            {
+              "label": "Painted shelf with animal stickers"
+            },
+            {
+              "label": "Paper sign-out card in each book"
+            },
+            {
+              "label": "App with scanner, reminders, badges"
+            }
+          ],
+          "reasonPrompt": "Why is it version 1?",
+          "reasons": [
+            {
+              "label": "It is the smallest idea"
+            },
+            {
+              "label": "Fixes lost books and builds quickly"
+            },
+            {
+              "label": "It looks the most fun"
+            },
+            {
+              "label": "The biggest idea always wins"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe da Dina agora resolve os livros perdidos da sala. Qual ideia é a versão 1?",
+          "feedback": {
+            "met": "Você escolheu a menor ideia que já resolve os livros perdidos.",
+            "not_yet": "Qual ideia já evitaria que os livros se percam?"
+          },
+          "help": [
+            "Use o teste da Dina: o que a versão 1 deve resolver primeiro?"
+          ],
+          "choices": [
+            {
+              "label": "Estante pintada com adesivos de animais"
+            },
+            {
+              "label": "Ficha de papel para registrar cada livro"
+            },
+            {
+              "label": "App com leitor de código, lembretes e medalhas"
+            }
+          ],
+          "reasonPrompt": "Por que é a versão 1?",
+          "reasons": [
+            {
+              "label": "É a menor ideia"
+            },
+            {
+              "label": "Resolve livros perdidos e é rápido de fazer"
+            },
+            {
+              "label": "É a que parece mais divertida"
+            },
+            {
+              "label": "A maior ideia sempre vence"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

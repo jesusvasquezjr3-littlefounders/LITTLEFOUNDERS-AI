@@ -1,0 +1,784 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-market-day",
+  "lesson_id": "fe-69-10-why-coins",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.what-money-is",
+    "money.compare-amounts",
+    "money.count-mixed-coins"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-a"
+  },
+  "brief": "Liruf cuenta un cuento de mercado: Nico tiene conchas, Pia tiene piedras, y nadie las acepta por pescado ni por pan. Una moneda sí sirve en todos los puestos, porque todos confían en ella. Liruf cuenta dos bolsitas, la de Nico (10, 5, 1) y la de Pia (cuatro de 5), y compara 16 con 20. El niño arma una bolsita, compara otras dos contando cada una primero y decide en una kermés de la escuela.",
+  "title": {
+    "en-US": "Why coins work",
+    "es-MX": "Por qué sirven las monedas",
+    "pt-BR": "Por que as moedas funcionam"
+  },
+  "new_concepts": [
+    "life.what-money-is",
+    "money.compare-amounts"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Market day. Nico has shells, Pia has stones.",
+          "line": "Nico wants a fish. Pia wants some bread."
+        },
+        "es-MX": {
+          "prompt": "Día de mercado. Nico tiene conchas, Pia tiene piedras.",
+          "line": "Nico quiere un pescado. Pia quiere pan."
+        },
+        "pt-BR": {
+          "prompt": "Dia de feira. O Nico tem conchas, a Pia tem pedras.",
+          "line": "O Nico quer um peixe. A Pia quer pão."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-nico"
+          },
+          {
+            "id": "reply-pia"
+          },
+          {
+            "id": "reply-cant-tell"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-cant-tell"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Later, Pia and Nico compare pouches. What do you say?",
+          "feedback": {
+            "met": "Thanks. Now we'll look at it together, step by step.",
+            "not_yet": "Thanks. Now we'll look at it together, step by step."
+          },
+          "speaker": "Pia",
+          "line": "My pouch has 4 coins. Nico’s has 3.",
+          "replies": [
+            {
+              "label": "Nico’s pouch holds more."
+            },
+            {
+              "label": "Pia’s pouch holds more."
+            },
+            {
+              "label": "I can’t tell yet."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Más tarde, Pia y Nico comparan sus bolsitas. ¿Qué dices?",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos juntos, paso a paso.",
+            "not_yet": "Gracias. Ahora lo vemos juntos, paso a paso."
+          },
+          "speaker": "Pia",
+          "line": "Mi bolsita tiene 4 monedas. La de Nico tiene 3.",
+          "replies": [
+            {
+              "label": "La de Nico tiene más."
+            },
+            {
+              "label": "La de Pia tiene más."
+            },
+            {
+              "label": "Todavía no puedo saberlo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mais tarde, a Pia e o Nico comparam as bolsinhas. O que você diz?",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver juntos, passo a passo.",
+            "not_yet": "Anotado. Agora vamos ver juntos, passo a passo."
+          },
+          "speaker": "Pia",
+          "line": "Minha bolsinha tem 4 moedas. A do Nico tem 3.",
+          "replies": [
+            {
+              "label": "A do Nico tem mais."
+            },
+            {
+              "label": "A da Pia tem mais."
+            },
+            {
+              "label": "Ainda não dá para saber."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-stuck-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the sellers say no.",
+          "line": "Shells don't buy fish. Stones don't buy bread."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: los vendedores dicen que no.",
+          "line": "Las conchas no compran pescado. Las piedras no compran pan."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: os vendedores dizem não.",
+          "line": "Conchas não compram peixe. Pedras não compram pão."
+        }
+      }
+    },
+    {
+      "id": "ex-trust-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: everyone trusts a coin.",
+          "line": "So the fish seller takes it. The baker does too."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: todos confían en una moneda.",
+          "line": "Así que el pescadero la acepta. El panadero también."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: todos confiam em uma moeda.",
+          "line": "Então o peixeiro aceita. O padeiro também."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.what-money-is",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-shells"
+          },
+          {
+            "id": "reply-coins-ok"
+          },
+          {
+            "id": "reply-stone"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-coins-ok"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You sell kites. What do you say to Nico?",
+          "feedback": {
+            "met": "You took the coin, like both sellers did.",
+            "not_yet": "Not yet: remember the fish seller and the baker."
+          },
+          "help": [
+            "Think of the fish seller and the baker.",
+            "What did they do with a coin?"
+          ],
+          "speaker": "Nico",
+          "line": "Can I buy a kite with this coin?",
+          "replies": [
+            {
+              "label": "No, bring me shells."
+            },
+            {
+              "label": "Yes, everyone takes coins."
+            },
+            {
+              "label": "No, bring me a stone."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tú vendes papalotes. ¿Qué le dices a Nico?",
+          "feedback": {
+            "met": "Aceptaste la moneda, igual que los dos vendedores.",
+            "not_yet": "Todavía no: recuerda al pescadero y al panadero."
+          },
+          "help": [
+            "Piensa en el pescadero y el panadero.",
+            "¿Qué hicieron con una moneda?"
+          ],
+          "speaker": "Nico",
+          "line": "¿Puedo comprar un papalote con esta moneda?",
+          "replies": [
+            {
+              "label": "No, tráeme conchas."
+            },
+            {
+              "label": "Sí, todos aceptan monedas."
+            },
+            {
+              "label": "No, tráeme una piedra."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você vende pipas. O que você diz ao Nico?",
+          "feedback": {
+            "met": "Você aceitou a moeda, como os dois vendedores.",
+            "not_yet": "Ainda não: lembre do peixeiro e do padeiro."
+          },
+          "help": [
+            "Pense no peixeiro e no padeiro.",
+            "O que eles fizeram com uma moeda?"
+          ],
+          "speaker": "Nico",
+          "line": "Posso comprar uma pipa com esta moeda?",
+          "replies": [
+            {
+              "label": "Não, traga conchas."
+            },
+            {
+              "label": "Sim, todos aceitam moedas."
+            },
+            {
+              "label": "Não, traga uma pedra."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-count-nico-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Nico’s pouch is 10, 5, 1.",
+          "line": "Big coins first: 10, 15, 16. It holds 16."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: la bolsita de Nico es 10, 5, 1.",
+          "line": "Monedas grandes primero: 10, 15, 16. Tiene 16."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a bolsinha do Nico é 10, 5, 1.",
+          "line": "Moedas grandes primeiro: 10, 15, 16. Tem 16."
+        }
+      }
+    },
+    {
+      "id": "ex-count-pia-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: Pia’s pouch is 5, 5, 5, 5.",
+          "line": "5, 10, 15, 20. It holds 20."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: la bolsita de Pia es 5, 5, 5, 5.",
+          "line": "5, 10, 15, 20. Tiene 20."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a bolsinha da Pia é 5, 5, 5, 5.",
+          "line": "5, 10, 15, 20. Tem 20."
+        }
+      }
+    },
+    {
+      "id": "ex-compare-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: compare the totals, not the coins.",
+          "line": "20 is more than 16, so Pia’s pouch holds more."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: compara los totales, no las monedas.",
+          "line": "20 es más que 16, así que la bolsita de Pia tiene más."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: compare os totais, não as moedas.",
+          "line": "20 é mais que 16, então a bolsinha da Pia tem mais."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.count-mixed-coins",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 13,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nico’s new pouch holds 13. Build it, big coins first.",
+          "feedback": {
+            "met": "Your coins make 13: every coin counts its own number.",
+            "not_yet": "Not yet: count from the biggest coin, like Nico’s pouch."
+          },
+          "help": [
+            "Start with the biggest coin and count up.",
+            "A 10-coin counts as 10, not as 1."
+          ]
+        },
+        "es-MX": {
+          "prompt": "La bolsita nueva de Nico vale 13. Ármala, de mayor a menor.",
+          "feedback": {
+            "met": "Tus monedas hacen 13: cada moneda cuenta su propio número.",
+            "not_yet": "Todavía no: cuenta desde la moneda más grande, como en la bolsita de Nico."
+          },
+          "help": [
+            "Empieza por la moneda más grande y cuenta.",
+            "Una moneda de 10 cuenta 10, no 1."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A bolsinha nova do Nico vale 13. Monte-a, das maiores às menores.",
+          "feedback": {
+            "met": "Suas moedas fazem 13: cada moeda vale o seu número.",
+            "not_yet": "Ainda não: conte a partir da moeda maior, como na bolsinha do Nico."
+          },
+          "help": [
+            "Comece pela moeda maior e conte.",
+            "Uma moeda de 10 vale 10, não 1."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-line-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: Pia’s total, 20, goes on the line.",
+          "line": "The marks count up by 5. Bigger totals sit farther right."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: el total de Pia, 20, va en la recta.",
+          "line": "Las marcas suben de 5 en 5. Más total, más a la derecha."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: o total da Pia, 20, vai na reta.",
+          "line": "As marcas sobem de 5 em 5. Total maior fica mais à direita."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-nico"
+          },
+          {
+            "id": "reply-pia"
+          },
+          {
+            "id": "reply-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-nico"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nico’s pouch is 10, 10, 1. Whose holds more?",
+          "feedback": {
+            "met": "Nico’s pouch holds more, though Pia’s has more coins.",
+            "not_yet": "Not yet: count each pouch, big coins first."
+          },
+          "help": [
+            "Count Nico’s pouch first, biggest coin first.",
+            "Then count Pia’s pouch and compare."
+          ],
+          "speaker": "Pia",
+          "line": "My pouch: 5, 5, 5, 1, 1.",
+          "replies": [
+            {
+              "label": "Nico’s pouch holds more."
+            },
+            {
+              "label": "Pia’s pouch holds more."
+            },
+            {
+              "label": "They hold the same."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La bolsita de Nico es 10, 10, 1. ¿Cuál tiene más?",
+          "feedback": {
+            "met": "La bolsita de Nico tiene más, aunque la de Pia tiene más monedas.",
+            "not_yet": "Todavía no: cuenta cada bolsita, de mayor a menor."
+          },
+          "help": [
+            "Cuenta primero la de Nico, de mayor a menor.",
+            "Luego cuenta la de Pia y compara."
+          ],
+          "speaker": "Pia",
+          "line": "Mi bolsita: 5, 5, 5, 1, 1.",
+          "replies": [
+            {
+              "label": "La de Nico tiene más."
+            },
+            {
+              "label": "La de Pia tiene más."
+            },
+            {
+              "label": "Tienen lo mismo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A bolsinha do Nico é 10, 10, 1. Qual tem mais?",
+          "feedback": {
+            "met": "A bolsinha do Nico tem mais, embora a da Pia tenha mais moedas.",
+            "not_yet": "Ainda não: conte cada bolsinha, das maiores às menores."
+          },
+          "help": [
+            "Conte primeiro a do Nico, das maiores às menores.",
+            "Depois conte a da Pia e compare."
+          ],
+          "speaker": "Pia",
+          "line": "Minha bolsinha: 5, 5, 5, 1, 1.",
+          "replies": [
+            {
+              "label": "A do Nico tem mais."
+            },
+            {
+              "label": "A da Pia tem mais."
+            },
+            {
+              "label": "Têm o mesmo."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.number-line.order.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "order-number-line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "scale": 0,
+        "low": 0,
+        "step": 5,
+        "count": 8,
+        "values": [
+          25,
+          10,
+          35
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "m-5": [
+              "n-25"
+            ],
+            "m-2": [
+              "n-10"
+            ],
+            "m-7": [
+              "n-35"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Put each pouch total on the line.",
+          "feedback": {
+            "met": "You placed each total by its size.",
+            "not_yet": "Not yet: check each total against the marks."
+          },
+          "help": [
+            "Find the smallest total first.",
+            "Bigger totals sit farther right."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pon el total de cada bolsita en la recta.",
+          "feedback": {
+            "met": "Pusiste cada total según su tamaño.",
+            "not_yet": "Todavía no: revisa cada total contra las marcas."
+          },
+          "help": [
+            "Busca primero el total más pequeño.",
+            "Los totales más grandes van más a la derecha."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coloque o total de cada bolsinha na reta.",
+          "feedback": {
+            "met": "Você colocou cada total pelo tamanho.",
+            "not_yet": "Ainda não: confira cada total com as marcas."
+          },
+          "help": [
+            "Ache primeiro o menor total.",
+            "Totais maiores ficam mais à direita."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-nico"
+          },
+          {
+            "id": "reply-pia"
+          },
+          {
+            "id": "reply-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-pia"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fair, Nico’s jar: 5, 5, 5, 5. Whose holds more?",
+          "feedback": {
+            "met": "Pia’s jar is worth more, though it has fewer coins.",
+            "not_yet": "Not yet: count each jar, like the pouches."
+          },
+          "help": [
+            "Count each jar like a pouch.",
+            "The jar with the bigger total holds more."
+          ],
+          "speaker": "Pia",
+          "line": "My jar: 10, 10, 5.",
+          "replies": [
+            {
+              "label": "Nico’s jar holds more."
+            },
+            {
+              "label": "Pia’s jar holds more."
+            },
+            {
+              "label": "They hold the same."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la kermés, el frasco de Nico es 5, 5, 5, 5. ¿Cuál tiene más?",
+          "feedback": {
+            "met": "El frasco de Pia vale más, aunque tiene menos monedas.",
+            "not_yet": "Todavía no: cuenta cada frasco, como las bolsitas."
+          },
+          "help": [
+            "Cuenta cada frasco como una bolsita.",
+            "El frasco con el total mayor tiene más."
+          ],
+          "speaker": "Pia",
+          "line": "Mi frasco: 10, 10, 5.",
+          "replies": [
+            {
+              "label": "El de Nico tiene más."
+            },
+            {
+              "label": "El de Pia tiene más."
+            },
+            {
+              "label": "Tienen lo mismo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na quermesse, o pote do Nico é 5, 5, 5, 5. Qual tem mais?",
+          "feedback": {
+            "met": "O pote da Pia vale mais, embora tenha menos moedas.",
+            "not_yet": "Ainda não: conte cada pote, como as bolsinhas."
+          },
+          "help": [
+            "Conte cada pote como uma bolsinha.",
+            "O pote com o total maior tem mais."
+          ],
+          "speaker": "Pia",
+          "line": "Meu pote: 10, 10, 5.",
+          "replies": [
+            {
+              "label": "O do Nico tem mais."
+            },
+            {
+              "label": "O da Pia tem mais."
+            },
+            {
+              "label": "Têm o mesmo."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,918 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-corner-shop",
+  "lesson_id": "fe-69-07-people-who-work",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.effort-and-work",
+    "life.jobs-help-others"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho observa la calle: un barrendero, un panadero y un peluquero. El niño ve que todo trabajo cuesta esfuerzo y termina cuando alguien recibe lo que necesitaba, como los 12 panes que alimentan la calle; después decide cómo terminar una tarea y ubica trabajos en dos círculos.",
+  "title": {
+    "en-US": "People who work",
+    "es-MX": "Personas que trabajan",
+    "pt-BR": "Pessoas que trabalham"
+  },
+  "new_concepts": [
+    "life.effort-and-work",
+    "life.jobs-help-others"
+  ],
+  "regional": {
+    "universal": "The lesson uses invented jobs and chores only, with no prices, coins, real shops or customs, so no market changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho watches the street wake up.",
+          "line": "Observe. A street sweeper, a baker and a barber are at work."
+        },
+        "es-MX": {
+          "prompt": "Rho mira cómo despierta la calle.",
+          "line": "Observa. Un barrendero, un panadero y un peluquero trabajan."
+        },
+        "pt-BR": {
+          "prompt": "O Rho vê a rua acordar.",
+          "line": "Observe. Um gari, um padeiro e um barbeiro estão trabalhando."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "visual": {
+        "type": "euler"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.jobs-help-others",
+      "payload": {
+        "relation": "overlap",
+        "sets": [
+          {
+            "id": "set-effort"
+          },
+          {
+            "id": "set-helps"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-baker"
+          },
+          {
+            "id": "item-nap"
+          },
+          {
+            "id": "item-rope"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-baker": "both",
+          "item-nap": "neither",
+          "item-rope": "first"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each of Rho's examples in the circles.",
+          "feedback": {
+            "met": "Noted. Now watch how Rho studies the workers.",
+            "not_yet": "Noted. Now watch how Rho studies the workers."
+          },
+          "sets": [
+            {
+              "label": "Takes effort"
+            },
+            {
+              "label": "Helps someone"
+            }
+          ],
+          "items": [
+            {
+              "label": "Baker bakes bread"
+            },
+            {
+              "label": "Taking a nap"
+            },
+            {
+              "label": "Jumping rope"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Coloca cada ejemplo de Rho en los círculos.",
+          "feedback": {
+            "met": "Anotado. Ahora mira cómo Rho estudia a los trabajadores.",
+            "not_yet": "Anotado. Ahora mira cómo Rho estudia a los trabajadores."
+          },
+          "sets": [
+            {
+              "label": "Requiere esfuerzo"
+            },
+            {
+              "label": "Ayuda a alguien"
+            }
+          ],
+          "items": [
+            {
+              "label": "El panadero hace pan"
+            },
+            {
+              "label": "Dormir la siesta"
+            },
+            {
+              "label": "Saltar la cuerda"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada exemplo do Rho nos círculos.",
+          "feedback": {
+            "met": "Anotado. Agora veja como o Rho estuda os trabalhadores.",
+            "not_yet": "Anotado. Agora veja como o Rho estuda os trabalhadores."
+          },
+          "sets": [
+            {
+              "label": "Exige esforço"
+            },
+            {
+              "label": "Ajuda alguém"
+            }
+          ],
+          "items": [
+            {
+              "label": "O padeiro faz pão"
+            },
+            {
+              "label": "Tirar uma soneca"
+            },
+            {
+              "label": "Pular corda"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "effort-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Rho watches the baker make 12 loaves.",
+          "line": "Observe: he keeps trying hard until he is done. That is effort."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Rho mira al panadero hacer 12 panes.",
+          "line": "Observa: sigue esforzándose hasta terminar. A eso se le llama esfuerzo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: O Rho vê o padeiro fazer 12 pães.",
+          "line": "Observe: ele se esforça até terminar. Isso é esforço."
+        }
+      }
+    },
+    {
+      "id": "helps-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: The 12 loaves feed the whole street.",
+          "line": "We note the result: people got bread. Work helps someone."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Los 12 panes alimentan a toda la calle.",
+          "line": "Anotamos el resultado: la gente tuvo pan. Un trabajo ayuda a alguien."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: Os 12 pães alimentam a rua inteira.",
+          "line": "Anotamos o resultado: as pessoas tiveram pão. Um trabalho ajuda alguém."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "life.effort-and-work",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-leave"
+          },
+          {
+            "id": "opt-finish"
+          },
+          {
+            "id": "opt-bit"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-finish"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick what you do next.",
+          "help": [
+            "Rho watched how the baker worked.",
+            "Think about when the baker stopped."
+          ],
+          "feedback": {
+            "met": "You kept trying until it was done. That is effort.",
+            "not_yet": "Look back at the baker. See when he stopped."
+          },
+          "scene": "You are sweeping the shop floor. It is only half done. A friend calls you to play.",
+          "options": [
+            {
+              "label": "Leave it and play now"
+            },
+            {
+              "label": "Finish sweeping, then play"
+            },
+            {
+              "label": "Sweep a bit, then stop"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Elige qué haces después.",
+          "help": [
+            "Rho miró cómo trabajaba el panadero.",
+            "Piensa en cuándo paró el panadero."
+          ],
+          "feedback": {
+            "met": "Seguiste hasta terminar. Eso es esfuerzo.",
+            "not_yet": "Mira otra vez al panadero. Fíjate cuándo paró."
+          },
+          "scene": "Estás barriendo el piso de la tienda. Solo vas a la mitad. Un amigo te llama a jugar.",
+          "options": [
+            {
+              "label": "Lo dejo y juego ya"
+            },
+            {
+              "label": "Termino de barrer y luego juego"
+            },
+            {
+              "label": "Barro un poco y paro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Escolha o que você faz agora.",
+          "help": [
+            "O Rho viu como o padeiro trabalhava.",
+            "Pense em quando o padeiro parou."
+          ],
+          "feedback": {
+            "met": "Você foi até o fim. Isso é esforço.",
+            "not_yet": "Olhe de novo para o padeiro. Veja quando ele parou."
+          },
+          "scene": "Você está varrendo o chão da loja. Só foi até a metade. Um amigo chama você para brincar.",
+          "options": [
+            {
+              "label": "Deixo assim e vou brincar"
+            },
+            {
+              "label": "Termino de varrer e depois brinco"
+            },
+            {
+              "label": "Varro um pouco e paro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "sweeper-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: The sweeper cleans the street.",
+          "line": "It takes effort and helps everyone. It goes in both circles."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: El barrendero limpia la calle.",
+          "line": "Requiere esfuerzo y ayuda a todos. Va en los dos círculos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: O gari limpa a rua.",
+          "line": "Exige esforço e ajuda todo mundo. Vai nos dois círculos."
+        }
+      }
+    },
+    {
+      "id": "barber-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: The barber cuts hair. A cat naps in the sun.",
+          "line": "The barber's work goes in both circles. The nap goes in neither."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: El peluquero corta pelo. Un gato duerme al sol.",
+          "line": "El trabajo del peluquero va en los dos círculos. La siesta, en ninguno."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: O barbeiro corta cabelo. Um gato cochila ao sol.",
+          "line": "O trabalho do barbeiro vai nos dois círculos. A soneca, em nenhum."
+        }
+      }
+    },
+    {
+      "id": "rope-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: Someone jumps rope hard, just for fun.",
+          "line": "Measure: effort, yes, but it helps no one. Effort circle only."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: Alguien salta la cuerda mucho, solo por diversión.",
+          "line": "Mide: esfuerzo, sí, pero no ayuda a nadie. Solo el círculo del esfuerzo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: Alguém pula corda com vontade, só por diversão.",
+          "line": "Meça: esforço, sim, mas não ajuda ninguém. Só o círculo do esforço."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "visual": {
+        "type": "euler"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "life.jobs-help-others",
+      "payload": {
+        "relation": "overlap",
+        "sets": [
+          {
+            "id": "set-effort"
+          },
+          {
+            "id": "set-helps"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-cook"
+          },
+          {
+            "id": "item-tree"
+          },
+          {
+            "id": "item-farmer"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-cook": "both",
+          "item-tree": "first",
+          "item-farmer": "both"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each one in the circles.",
+          "help": [
+            "Rho checked effort first.",
+            "Then Rho checked who it helps."
+          ],
+          "feedback": {
+            "met": "Yes. Work takes effort and helps someone.",
+            "not_yet": "Observe again, like Rho. Effort first, then who it helps."
+          },
+          "sets": [
+            {
+              "label": "Takes effort"
+            },
+            {
+              "label": "Helps someone"
+            }
+          ],
+          "items": [
+            {
+              "label": "Cook makes lunch"
+            },
+            {
+              "label": "Climbing a tree"
+            },
+            {
+              "label": "Farmer picks apples"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Coloca cada uno en los círculos.",
+          "help": [
+            "Rho revisó primero el esfuerzo.",
+            "Luego revisó a quién ayuda."
+          ],
+          "feedback": {
+            "met": "Sí. Los trabajos requieren esfuerzo y ayudan a alguien.",
+            "not_yet": "Observa otra vez, como Rho. Primero el esfuerzo, luego a quién ayuda."
+          },
+          "sets": [
+            {
+              "label": "Requiere esfuerzo"
+            },
+            {
+              "label": "Ayuda a alguien"
+            }
+          ],
+          "items": [
+            {
+              "label": "La cocinera prepara la comida"
+            },
+            {
+              "label": "Subir a un árbol"
+            },
+            {
+              "label": "El agricultor recoge manzanas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada um nos círculos.",
+          "help": [
+            "O Rho olhou primeiro o esforço.",
+            "Depois olhou quem é ajudado."
+          ],
+          "feedback": {
+            "met": "Isso. Trabalhos exigem esforço e ajudam alguém.",
+            "not_yet": "Observe de novo, como o Rho. Primeiro o esforço, depois quem é ajudado."
+          },
+          "sets": [
+            {
+              "label": "Exige esforço"
+            },
+            {
+              "label": "Ajuda alguém"
+            }
+          ],
+          "items": [
+            {
+              "label": "A cozinheira faz o almoço"
+            },
+            {
+              "label": "Subir numa árvore"
+            },
+            {
+              "label": "O agricultor colhe maçãs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.effort-and-work",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-little"
+          },
+          {
+            "id": "opt-leave"
+          },
+          {
+            "id": "opt-finish"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-finish"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pick what you do next.",
+          "feedback": {
+            "met": "You finished the task. Every plant got water.",
+            "not_yet": "Look back at the baker. See when he stopped."
+          },
+          "scene": "You water the class plants. One pot is left. The bell rings for play.",
+          "options": [
+            {
+              "label": "Pour a little and go"
+            },
+            {
+              "label": "Leave the pot and go"
+            },
+            {
+              "label": "Water the last pot first"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Elige qué haces después.",
+          "feedback": {
+            "met": "Terminaste el trabajo. Todas las plantas tuvieron agua.",
+            "not_yet": "Mira otra vez al panadero. Fíjate cuándo paró."
+          },
+          "scene": "Riegas las plantas del salón. Falta una maceta. Suena el timbre del recreo.",
+          "options": [
+            {
+              "label": "Echo solo un poco y me voy"
+            },
+            {
+              "label": "Dejo la maceta y me voy"
+            },
+            {
+              "label": "Riego la última maceta"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Escolha o que você faz agora.",
+          "feedback": {
+            "met": "Você terminou o trabalho. Todas as plantas tiveram água.",
+            "not_yet": "Olhe de novo para o padeiro. Veja quando ele parou."
+          },
+          "scene": "Você rega as plantas da sala. Falta um vaso. O sinal do recreio toca.",
+          "options": [
+            {
+              "label": "Rego só um pouco e vou"
+            },
+            {
+              "label": "Deixo o vaso e vou embora"
+            },
+            {
+              "label": "Rego o último vaso antes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "visual": {
+        "type": "euler"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.jobs-help-others",
+      "payload": {
+        "relation": "overlap",
+        "sets": [
+          {
+            "id": "set-effort"
+          },
+          {
+            "id": "set-helps"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-teacher"
+          },
+          {
+            "id": "item-rest"
+          },
+          {
+            "id": "item-dance"
+          },
+          {
+            "id": "item-mail"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-teacher": "both",
+          "item-rest": "neither",
+          "item-dance": "first",
+          "item-mail": "both"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each one in the circles.",
+          "feedback": {
+            "met": "Yes. Work takes effort and helps someone.",
+            "not_yet": "Observe again, like Rho. Effort first, then who it helps."
+          },
+          "sets": [
+            {
+              "label": "Takes effort"
+            },
+            {
+              "label": "Helps someone"
+            }
+          ],
+          "items": [
+            {
+              "label": "Teacher teaches a class"
+            },
+            {
+              "label": "Resting in the sun"
+            },
+            {
+              "label": "Dancing in the room"
+            },
+            {
+              "label": "Mail carrier brings letters"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Coloca cada uno en los círculos.",
+          "feedback": {
+            "met": "Sí. Los trabajos requieren esfuerzo y ayudan a alguien.",
+            "not_yet": "Observa otra vez, como Rho. Primero el esfuerzo, luego a quién ayuda."
+          },
+          "sets": [
+            {
+              "label": "Requiere esfuerzo"
+            },
+            {
+              "label": "Ayuda a alguien"
+            }
+          ],
+          "items": [
+            {
+              "label": "La maestra enseña a la clase"
+            },
+            {
+              "label": "Descansar al sol"
+            },
+            {
+              "label": "Bailar en el cuarto"
+            },
+            {
+              "label": "El cartero trae cartas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada um nos círculos.",
+          "feedback": {
+            "met": "Isso. Trabalhos exigem esforço e ajudam alguém.",
+            "not_yet": "Observe de novo, como o Rho. Primeiro o esforço, depois quem é ajudado."
+          },
+          "sets": [
+            {
+              "label": "Exige esforço"
+            },
+            {
+              "label": "Ajuda alguém"
+            }
+          ],
+          "items": [
+            {
+              "label": "A professora ensina a turma"
+            },
+            {
+              "label": "Descansar ao sol"
+            },
+            {
+              "label": "Dançar no quarto"
+            },
+            {
+              "label": "O carteiro traz cartas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "visual": {
+        "type": "euler"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.jobs-help-others",
+      "payload": {
+        "relation": "overlap",
+        "sets": [
+          {
+            "id": "set-effort"
+          },
+          {
+            "id": "set-helps"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-dishes"
+          },
+          {
+            "id": "item-music"
+          },
+          {
+            "id": "item-race"
+          },
+          {
+            "id": "item-table"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-dishes": "both",
+          "item-music": "neither",
+          "item-race": "first",
+          "item-table": "both"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At home, place each one in the circles.",
+          "feedback": {
+            "met": "Yes. At home too, work takes effort and helps someone.",
+            "not_yet": "Observe again, like Rho. Effort first, then who it helps."
+          },
+          "sets": [
+            {
+              "label": "Takes effort"
+            },
+            {
+              "label": "Helps someone"
+            }
+          ],
+          "items": [
+            {
+              "label": "Washing the dishes"
+            },
+            {
+              "label": "Listening to music"
+            },
+            {
+              "label": "Racing around the yard"
+            },
+            {
+              "label": "Setting the table"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En casa, coloca cada uno en los círculos.",
+          "feedback": {
+            "met": "Sí. En casa también, los trabajos requieren esfuerzo y ayudan a alguien.",
+            "not_yet": "Observa otra vez, como Rho. Primero el esfuerzo, luego a quién ayuda."
+          },
+          "sets": [
+            {
+              "label": "Requiere esfuerzo"
+            },
+            {
+              "label": "Ayuda a alguien"
+            }
+          ],
+          "items": [
+            {
+              "label": "Lavar los platos"
+            },
+            {
+              "label": "Escuchar música"
+            },
+            {
+              "label": "Correr por el patio"
+            },
+            {
+              "label": "Poner la mesa"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Em casa, coloque cada um nos círculos.",
+          "feedback": {
+            "met": "Isso. Em casa também, trabalhos exigem esforço e ajudam alguém.",
+            "not_yet": "Observe de novo, como o Rho. Primeiro o esforço, depois quem é ajudado."
+          },
+          "sets": [
+            {
+              "label": "Exige esforço"
+            },
+            {
+              "label": "Ajuda alguém"
+            }
+          ],
+          "items": [
+            {
+              "label": "Lavar a louça"
+            },
+            {
+              "label": "Ouvir música"
+            },
+            {
+              "label": "Correr pelo quintal"
+            },
+            {
+              "label": "Arrumar a mesa"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

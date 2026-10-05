@@ -1,0 +1,676 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-6-9",
+  "chapter_id": "lem-69-open-the-stand",
+  "lesson_id": "lem-69-03-a-fair-price-for-a-cup",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.cost-vs-price",
+    "biz.what-is-price"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf cuenta una historia chiquita: una vez le puso a su vaso de limonada un precio más bajo que su costo y perdió una moneda en cada vaso. Luego ve qué es el costo, qué es el precio y por qué un precio justo es un poco más que el costo. El niño apila lo que cuestan varios vasos, elige el precio justo para un brownie y para una pulsera de la feria, y dice qué pasa cuando el precio queda debajo del costo.",
+  "title": {
+    "en-US": "A fair price for a cup",
+    "es-MX": "Un precio justo para el vaso",
+    "pt-BR": "Um preço justo para o copo"
+  },
+  "new_concepts": [
+    "biz.cost-vs-price"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf sets the price of a cup at 1 coin, below its 2-coin cost, and loses a coin on every cup he sells.",
+    "recovery": "Liruf raises the price above the cost and says that next time he will check the cost first."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf holds a marker over a blank price card.",
+          "line": "A small number sounds nice. Tiny is good!"
+        },
+        "es-MX": {
+          "prompt": "Liruf sostiene un plumón sobre una tarjeta de precio vacía.",
+          "line": "Un número chico suena bien. ¡Chiquito es bueno!"
+        },
+        "pt-BR": {
+          "prompt": "O Liruf segura uma caneta sobre um cartão de preço vazio.",
+          "line": "Um número pequeno parece bom. Pequeno é bom!"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-3"
+          },
+          {
+            "id": "reply-5"
+          },
+          {
+            "id": "reply-12"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-5"
+        ]
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "copy": {
+        "en-US": {
+          "prompt": "Lia needs a price for her cookies. Pick one.",
+          "feedback": {
+            "met": "I noted your answer. Now we go step by step.",
+            "not_yet": "I noted your answer. Now we go step by step."
+          },
+          "speaker": "Lia",
+          "line": "A cookie costs 4 coins to make. What price do we write?",
+          "replies": [
+            {
+              "label": "3 coins"
+            },
+            {
+              "label": "5 coins"
+            },
+            {
+              "label": "12 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Lia necesita un precio para sus galletas. Elige uno.",
+          "feedback": {
+            "met": "Anoté tu respuesta. Ahora vamos paso a paso.",
+            "not_yet": "Anoté tu respuesta. Ahora vamos paso a paso."
+          },
+          "speaker": "Lia",
+          "line": "Hacer una galleta cuesta 4 monedas. ¿Qué precio ponemos?",
+          "replies": [
+            {
+              "label": "3 monedas"
+            },
+            {
+              "label": "5 monedas"
+            },
+            {
+              "label": "12 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Lia precisa de um preço para os biscoitos. Escolha um.",
+          "feedback": {
+            "met": "Anotei sua resposta. Agora vamos passo a passo.",
+            "not_yet": "Anotei sua resposta. Agora vamos passo a passo."
+          },
+          "speaker": "Lia",
+          "line": "Fazer um biscoito custa 4 moedas. Que preço colocamos?",
+          "replies": [
+            {
+              "label": "3 moedas"
+            },
+            {
+              "label": "5 moedas"
+            },
+            {
+              "label": "12 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "I sold cups. One cup cost me 2 coins to make.",
+          "misjudgment": "I set the price at 1 coin. Each cup lost me 1.",
+          "recovery": "I raised the price. Next time I check the cost first."
+        },
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Liruf.",
+          "setup": "Vendí vasos. Hacer un vaso me costaba 2 monedas.",
+          "misjudgment": "Puse el precio en 1 moneda. Cada vaso me hizo perder 1.",
+          "recovery": "Subí el precio. La próxima vez reviso primero el costo."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Vendi copos. Fazer um copo me custava 2 moedas.",
+          "misjudgment": "Pus o preço em 1 moeda. Cada copo me fez perder 1.",
+          "recovery": "Aumentei o preço. Da próxima vez vejo o custo primeiro."
+        }
+      }
+    },
+    {
+      "id": "cost-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. The cost is what we pay to make one cup.",
+          "line": "Lemons, sugar and a cup add up to 2 coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. El costo es lo que pagamos por hacer un vaso.",
+          "line": "Limones, azúcar y un vaso suman 2 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. O custo é o que pagamos para fazer um copo.",
+          "line": "Limões, açúcar e um copo somam 2 moedas."
+        }
+      }
+    },
+    {
+      "id": "price-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. The price is what the customer pays for the cup.",
+          "line": "At price 2, they pay back our 2. Nothing is left."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. El precio es lo que paga el cliente por el vaso.",
+          "line": "Con precio 2, devuelven nuestras 2 monedas. No queda nada."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. O preço é o que o cliente paga pelo copo.",
+          "line": "Com preço 2, devolvem nossas 2 moedas. Não sobra nada."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-stack.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "amount",
+          "total": 800
+        },
+        "step": 1,
+        "max": 12
+      },
+      "rubric": {
+        "target": "8"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "copy": {
+        "en-US": {
+          "prompt": "A cup costs 2 to make. Stack the cost of 4 cups.",
+          "feedback": {
+            "met": "Four cups at 2 coins each: you stacked their cost.",
+            "not_yet": "Not yet. Count by 2s, one count for each cup."
+          },
+          "help": [
+            "Each cup costs 2. Count by 2s, once for each cup.",
+            "Set the number of coins until the stack matches the goal."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Hacer un vaso cuesta 2. Apila el costo de 4 vasos.",
+          "feedback": {
+            "met": "Cuatro vasos de 2 monedas cada uno: apilaste su costo.",
+            "not_yet": "Todavía no. Cuenta de 2 en 2, una vez por vaso."
+          },
+          "help": [
+            "Cada vaso cuesta 2. Cuenta de 2 en 2, una vez por vaso.",
+            "Cambia la cantidad de monedas hasta que la pila llegue a la meta."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fazer um copo custa 2. Empilhe o custo de 4 copos.",
+          "feedback": {
+            "met": "Quatro copos de 2 moedas cada: você empilhou o custo deles.",
+            "not_yet": "Ainda não. Conte de 2 em 2, uma vez por copo."
+          },
+          "help": [
+            "Cada copo custa 2. Conte de 2 em 2, uma vez por copo.",
+            "Mude a quantidade de moedas até a pilha chegar à meta."
+          ]
+        }
+      }
+    },
+    {
+      "id": "fair-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. At price 3, we get 2 back and keep 1.",
+          "line": "A fair price is a little more than the cost."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. Con precio 3, recuperamos 2 y nos queda 1.",
+          "line": "Un precio justo es un poco más que el costo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Com preço 3, recuperamos 2 e sobra 1.",
+          "line": "Um preço justo é um pouco mais que o custo."
+        }
+      }
+    },
+    {
+      "id": "high-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4. At price 6, customers say too much and leave.",
+          "line": "A little more than the cost, not a lot more."
+        },
+        "es-MX": {
+          "prompt": "Paso 4. Con precio 6, los clientes dicen que es mucho y se van.",
+          "line": "Un poco más que el costo, no mucho más."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4. Com preço 6, os clientes acham caro e vão embora.",
+          "line": "Um pouco mais que o custo, não muito mais."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-4"
+          },
+          {
+            "id": "reply-2"
+          },
+          {
+            "id": "reply-9"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-4"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "copy": {
+        "en-US": {
+          "prompt": "Nico needs a price for his brownies. Pick one.",
+          "feedback": {
+            "met": "You chose a price a little above the cost.",
+            "not_yet": "Not yet. Compare each price with the cost Nico said."
+          },
+          "help": [
+            "The price must get the cost back and a little more.",
+            "Liruf's cups: cost 2, fair price 3."
+          ],
+          "speaker": "Nico",
+          "line": "A brownie costs 3 coins to make. What price do we write?",
+          "replies": [
+            {
+              "label": "4 coins"
+            },
+            {
+              "label": "2 coins"
+            },
+            {
+              "label": "9 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nico necesita un precio para sus brownies. Elige uno.",
+          "feedback": {
+            "met": "Elegiste un precio un poco arriba del costo.",
+            "not_yet": "Todavía no. Compara cada precio con el costo que dijo Nico."
+          },
+          "help": [
+            "El precio debe recuperar el costo y un poco más.",
+            "Los vasos de Liruf: costo 2, precio justo 3."
+          ],
+          "speaker": "Nico",
+          "line": "Hacer un brownie cuesta 3 monedas. ¿Qué precio ponemos?",
+          "replies": [
+            {
+              "label": "4 monedas"
+            },
+            {
+              "label": "2 monedas"
+            },
+            {
+              "label": "9 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Nico precisa de um preço para os brownies. Escolha um.",
+          "feedback": {
+            "met": "Você escolheu um preço um pouco acima do custo.",
+            "not_yet": "Ainda não. Compare cada preço com o custo que o Nico disse."
+          },
+          "help": [
+            "O preço deve recuperar o custo e um pouco mais.",
+            "Os copos do Liruf: custo 2, preço justo 3."
+          ],
+          "speaker": "Nico",
+          "line": "Fazer um brownie custa 3 moedas. Que preço colocamos?",
+          "replies": [
+            {
+              "label": "4 moedas"
+            },
+            {
+              "label": "2 moedas"
+            },
+            {
+              "label": "9 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-keep"
+          },
+          {
+            "id": "reply-none"
+          },
+          {
+            "id": "reply-lose"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-lose"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to our coins with each cookie?",
+          "feedback": {
+            "met": "You saw that a price under the cost loses coins.",
+            "not_yet": "Not yet. Which is bigger: the price or the cost?"
+          },
+          "help": [
+            "Liruf priced under the cost and lost 1 each cup.",
+            "Compare the price with the cost, one cookie at a time."
+          ],
+          "speaker": "Lia",
+          "line": "Nico priced cookies at 2 coins. They cost 5 to make.",
+          "replies": [
+            {
+              "label": "We keep coins each time."
+            },
+            {
+              "label": "We keep nothing each time."
+            },
+            {
+              "label": "We lose coins each time."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con nuestras monedas en cada galleta?",
+          "feedback": {
+            "met": "Viste que un precio menor al costo pierde monedas.",
+            "not_yet": "Todavía no. ¿Qué es mayor: el precio o el costo?"
+          },
+          "help": [
+            "Liruf puso un precio bajo el costo y perdió 1 por vaso.",
+            "Compara el precio con el costo, galleta por galleta."
+          ],
+          "speaker": "Lia",
+          "line": "Nico puso las galletas en 2 monedas. Hacerlas cuesta 5.",
+          "replies": [
+            {
+              "label": "Nos quedan monedas cada vez."
+            },
+            {
+              "label": "No nos queda nada cada vez."
+            },
+            {
+              "label": "Perdemos monedas cada vez."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com nossas moedas em cada biscoito?",
+          "feedback": {
+            "met": "Você viu que um preço abaixo do custo perde moedas.",
+            "not_yet": "Ainda não. O que é maior: o preço ou o custo?"
+          },
+          "help": [
+            "O Liruf pôs o preço abaixo do custo e perdeu 1 por copo.",
+            "Compare o preço com o custo, biscoito por biscoito."
+          ],
+          "speaker": "Lia",
+          "line": "O Nico pôs os biscoitos a 2 moedas. Fazê-los custa 5.",
+          "replies": [
+            {
+              "label": "Sobram moedas toda vez."
+            },
+            {
+              "label": "Não sobra nada toda vez."
+            },
+            {
+              "label": "Perdemos moedas toda vez."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-4"
+          },
+          {
+            "id": "reply-6"
+          },
+          {
+            "id": "reply-15"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-6"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "copy": {
+        "en-US": {
+          "prompt": "School fair: Lia needs a price for her bracelets.",
+          "feedback": {
+            "met": "You picked a price that gets the cost back and more.",
+            "not_yet": "Not yet. Compare each price with the bracelet's cost."
+          },
+          "help": [
+            "A fair price gets the cost back and a little more.",
+            "At the fair it works the same as at the stand."
+          ],
+          "speaker": "Lia",
+          "line": "A bracelet costs 5 coins to make. What price do we write?",
+          "replies": [
+            {
+              "label": "4 coins"
+            },
+            {
+              "label": "6 coins"
+            },
+            {
+              "label": "15 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Feria escolar: Lia necesita un precio para sus pulseras.",
+          "feedback": {
+            "met": "Elegiste un precio que recupera el costo y algo más.",
+            "not_yet": "Todavía no. Compara cada precio con el costo de la pulsera."
+          },
+          "help": [
+            "Un precio justo recupera el costo y un poco más.",
+            "En la feria funciona igual que en el puesto."
+          ],
+          "speaker": "Lia",
+          "line": "Hacer una pulsera cuesta 5 monedas. ¿Qué precio ponemos?",
+          "replies": [
+            {
+              "label": "4 monedas"
+            },
+            {
+              "label": "6 monedas"
+            },
+            {
+              "label": "15 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Feira da escola: a Lia precisa de um preço para as pulseiras.",
+          "feedback": {
+            "met": "Você escolheu um preço que recupera o custo e mais um pouco.",
+            "not_yet": "Ainda não. Compare cada preço com o custo da pulseira."
+          },
+          "help": [
+            "Um preço justo recupera o custo e um pouco mais.",
+            "Na feira funciona igual à barraca."
+          ],
+          "speaker": "Lia",
+          "line": "Fazer uma pulseira custa 5 moedas. Que preço colocamos?",
+          "replies": [
+            {
+              "label": "4 moedas"
+            },
+            {
+              "label": "6 moedas"
+            },
+            {
+              "label": "15 moedas"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

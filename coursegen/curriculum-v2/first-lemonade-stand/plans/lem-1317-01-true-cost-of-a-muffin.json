@@ -1,0 +1,845 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-13-17",
+  "chapter_id": "lem-1317-first-micro-business",
+  "lesson_id": "lem-1317-01-true-cost-of-a-muffin",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.full-costing",
+    "biz.cost-vs-price",
+    "money.unit-price"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho enseña con un lote de muffins de plátano para la kermés cómo sacar el costo completo de cada pieza: anota todos los costos, los suma, divide entre las piezas y separa lo que crece con cada muffin de lo que es fijo. Luego tú calculas un lote nuevo, ajustas el tamaño del lote en un tablero y decides el precio de otro producto contando también tu propio tiempo.",
+  "title": {
+    "en-US": "What a muffin box really costs",
+    "es-MX": "Cuánto cuesta de verdad un muffin",
+    "pt-BR": "Quanto custa mesmo uma caixa de muffins"
+  },
+  "new_concepts": [
+    "biz.full-costing"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En la kermés de la escuela, una alumna de preparatoria vende muffins de plátano. Suma harina, plátanos, bolsas, gas del horno y sus horas de trabajo, en pesos, para saber cuánto le cuesta cada muffin. Los precios son ilustrativos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "kermés"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na feira da escola, uma aluna do ensino médio vende caixas com dois muffins de banana. Soma farinha, bananas, embalagem, gás do forno e as horas dela, em reais, para saber quanto custa cada caixa. Valores ilustrativos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira da escola"
+        ]
+      },
+      "en-US": {
+        "scenario": "At a school bake sale, a high-school student sells boxes of six banana muffins. She adds flour, bananas, boxes and labels, oven electricity and her own hours, in dollars, to find what each box really costs. Prices are illustrative.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "bake sale"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Friday’s bake sale: 30 boxes of six banana muffins on the counter.",
+          "line": "The ingredients came to 150, so 5 a box. Is that the whole cost?"
+        },
+        "es-MX": {
+          "prompt": "Viernes en la kermés: 30 muffins de plátano enfriándose en la mesa.",
+          "line": "Los ingredientes costaron 150, o sea 5 por muffin. ¿Ese es todo el costo?"
+        },
+        "pt-BR": {
+          "prompt": "Sexta na feira da escola: 30 caixas de muffin de banana esfriando na bancada.",
+          "line": "Os ingredientes custaram R$ 150, ou R$ 5 por caixa. Esse é o custo todo?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ingredients"
+          },
+          {
+            "id": "choice-everything"
+          },
+          {
+            "id": "choice-packaging"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-time-free"
+          },
+          {
+            "id": "reason-small"
+          },
+          {
+            "id": "reason-used"
+          },
+          {
+            "id": "reason-receipt"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-everything"
+        ],
+        "reasonQuality": {
+          "reason-used": "sound",
+          "reason-time-free": "partial",
+          "reason-receipt": "unsupported",
+          "reason-small": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Batch: ingredients 150, packaging 30, oven 15, your time 75. What counts as its cost?",
+          "feedback": {
+            "met": "Let’s work through the batch step by step.",
+            "not_yet": "Let’s work through the batch step by step."
+          },
+          "choices": [
+            {
+              "label": "Only the ingredients"
+            },
+            {
+              "label": "Everything the batch used"
+            },
+            {
+              "label": "Ingredients and packaging"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Packaging counts, but my time is free"
+            },
+            {
+              "label": "Small costs are not worth counting"
+            },
+            {
+              "label": "Anything the batch uses up is a cost"
+            },
+            {
+              "label": "Only what I paid at the store counts"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Lote: ingredientes 150, bolsas 30, horno 15, tu tiempo 75. ¿Qué cuenta como costo?",
+          "feedback": {
+            "met": "Veamos el lote paso a paso.",
+            "not_yet": "Veamos el lote paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Solo los ingredientes"
+            },
+            {
+              "label": "Todo lo que usó el lote"
+            },
+            {
+              "label": "Ingredientes y bolsas"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Las bolsas cuentan, pero mi tiempo es gratis"
+            },
+            {
+              "label": "Los costos pequeños no valen la pena"
+            },
+            {
+              "label": "Todo lo que gasta el lote es un costo"
+            },
+            {
+              "label": "Solo cuenta lo que pagué en la tienda"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Lote: ingredientes R$ 150, embalagem 30, forno 15, seu tempo 75. O que conta como custo?",
+          "feedback": {
+            "met": "Vamos ver o lote passo a passo.",
+            "not_yet": "Vamos ver o lote passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Só os ingredientes"
+            },
+            {
+              "label": "Tudo o que o lote usou"
+            },
+            {
+              "label": "Ingredientes e embalagem"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "A embalagem conta, mas meu tempo é de graça"
+            },
+            {
+              "label": "Custos pequenos não valem a pena"
+            },
+            {
+              "label": "Tudo que o lote gasta é custo"
+            },
+            {
+              "label": "Só conta o que paguei na loja"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-list-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s 30 boxes: ingredients 150, packaging 30, oven 15, her time 75.",
+          "line": "Step 1: list every cost. The oven and my hours count, even with no receipt."
+        },
+        "es-MX": {
+          "prompt": "El lote de Rho: 30 muffins, ingredientes 150, bolsas 30, horno 15, su tiempo 75.",
+          "line": "Paso 1: anoto todos los costos. El horno y mis horas cuentan, aunque no haya recibo."
+        },
+        "pt-BR": {
+          "prompt": "O lote de Rho: 30 caixas, ingredientes R$ 150, embalagem 30, forno 15, tempo 75.",
+          "line": "Passo 1: listo todos os custos. O forno e minhas horas contam, mesmo sem nota fiscal."
+        }
+      }
+    },
+    {
+      "id": "ex-add-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho puts the four costs on one line.",
+          "line": "Step 2: add them. 150 + 30 + 15 + 75 = 270. That is the full cost of the batch."
+        },
+        "es-MX": {
+          "prompt": "Rho junta los cuatro costos en una sola línea.",
+          "line": "Paso 2: los sumo. 150 + 30 + 15 + 75 = 270. Ese es el costo completo del lote."
+        },
+        "pt-BR": {
+          "prompt": "Rho junta os quatro custos numa só linha.",
+          "line": "Passo 2: somo tudo. 150 + 30 + 15 + 75 = R$ 270. Esse é o custo completo do lote."
+        }
+      }
+    },
+    {
+      "id": "ex-divide-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho shares the batch cost across the 30 boxes.",
+          "line": "Step 3: divide. 270 ÷ 30 = 9. Each box costs 9, not the 5 of the ingredients."
+        },
+        "es-MX": {
+          "prompt": "Rho reparte el costo del lote entre los 30 muffins.",
+          "line": "Paso 3: divido. 270 ÷ 30 = 9. Cada muffin cuesta 9, no los 5 de los ingredientes."
+        },
+        "pt-BR": {
+          "prompt": "Rho divide o custo do lote entre as 30 caixas.",
+          "line": "Passo 3: divido. 270 ÷ 30 = 9. Cada caixa custa 9, não os 5 dos ingredientes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "steps": [
+          {
+            "id": "materials"
+          },
+          {
+            "id": "full-cost"
+          },
+          {
+            "id": "per-box"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "full-cost",
+          "per-box"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "full-cost": "330",
+          "per-box": "11"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your turn, a chocolate batch of 30: ingredients 210, packaging 30, oven 15, time 75.",
+          "feedback": {
+            "met": "You added all four costs and divided correctly.",
+            "not_yet": "Not yet. Add all four costs first, then divide."
+          },
+          "help": [
+            "Add ingredients, packaging, oven and time into one total.",
+            "Then divide that total by the 30 boxes."
+          ],
+          "steps": [
+            {
+              "expression": "210 + 30",
+              "result": "240",
+              "spokenText": "Step 1: ingredients plus packaging is 240"
+            },
+            {
+              "expression": "240 + 15 + 75",
+              "result": "330",
+              "spokenText": "Step 2: add the oven and the time, the full cost is 330"
+            },
+            {
+              "expression": "Full cost ÷ boxes",
+              "result": "11",
+              "spokenText": "Step 3: 330 divided by 30 is 11 a box"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ahora tú, un lote de chocolate de 30: ingredientes 210, bolsas 30, horno 15, tiempo 75.",
+          "feedback": {
+            "met": "Sumaste los cuatro costos y dividiste bien.",
+            "not_yet": "Todavía no. Suma los cuatro costos primero y luego divide."
+          },
+          "help": [
+            "Suma ingredientes, bolsas, horno y tiempo en un solo total.",
+            "Luego divide ese total entre los 30 muffins."
+          ],
+          "steps": [
+            {
+              "expression": "210 + 30",
+              "result": "240",
+              "spokenText": "Paso 1: ingredientes más bolsas son 240"
+            },
+            {
+              "expression": "240 + 15 + 75",
+              "result": "330",
+              "spokenText": "Paso 2: sumo el horno y el tiempo, el costo completo es 330"
+            },
+            {
+              "expression": "Costo completo ÷ muffins",
+              "result": "11",
+              "spokenText": "Paso 3: 330 entre 30 es 11 por muffin"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Agora você, um lote de chocolate com 30 caixas: ingredientes 210, embalagem 30, forno 15, tempo 75.",
+          "feedback": {
+            "met": "Você somou os quatro custos e dividiu certo.",
+            "not_yet": "Ainda não. Some os quatro custos primeiro e depois divida."
+          },
+          "help": [
+            "Some ingredientes, embalagem, forno e tempo num só total.",
+            "Depois divida esse total pelas 30 caixas."
+          ],
+          "steps": [
+            {
+              "expression": "210 + 30",
+              "result": "240",
+              "spokenText": "Passo 1: ingredientes mais embalagem dão 240"
+            },
+            {
+              "expression": "240 + 15 + 75",
+              "result": "330",
+              "spokenText": "Passo 2: somo o forno e o tempo, o custo completo é 330"
+            },
+            {
+              "expression": "Custo completo ÷ caixas",
+              "result": "11",
+              "spokenText": "Passo 3: 330 dividido por 30 dá 11 por caixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-split-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho splits the 270 into what grows with each box and what does not.",
+          "line": "Step 4: ingredients and packaging cost 6 a box. Oven and time are a fixed 90."
+        },
+        "es-MX": {
+          "prompt": "Rho separa los 270 en lo que crece con cada muffin y lo que no.",
+          "line": "Paso 4: ingredientes y bolsas cuestan 6 por muffin. Horno y tiempo son 90 fijos para todo el lote."
+        },
+        "pt-BR": {
+          "prompt": "Rho separa os 270 entre o que cresce com cada caixa e o que não cresce.",
+          "line": "Passo 4: ingredientes e embalagem custam 6 por caixa. Forno e tempo são 90 fixos."
+        }
+      }
+    },
+    {
+      "id": "ex-split-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same fixed 90, two batch sizes: the bigger batch costs less per box.",
+          "line": "Step 5: 90 ÷ 30 = 3, so 6 + 3 = 9. With 15 boxes, 90 ÷ 15 = 6, so 12."
+        },
+        "es-MX": {
+          "prompt": "Mismo fijo de 90, dos tamaños de lote: el lote grande cuesta menos por muffin.",
+          "line": "Paso 5: 90 ÷ 30 = 3, entonces 6 + 3 = 9. Con 15 muffins, 90 ÷ 15 = 6, entonces 12."
+        },
+        "pt-BR": {
+          "prompt": "Mesmo fixo de 90, dois tamanhos de lote: o lote maior custa menos por caixa.",
+          "line": "Passo 5: 90 ÷ 30 = 3, então 6 + 3 = 9. Com 15 caixas, 90 ÷ 15 = 6, então 12."
+        }
+      }
+    },
+    {
+      "id": "practice-board-01",
+      "type": "fin.cost-structure.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "cost-structure"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "fixed": 90,
+        "variable": 6,
+        "maxUnits": 60,
+        "goal": {
+          "average": 8
+        },
+        "start": 20
+      },
+      "rubric": {
+        "target": 45
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fixed 90, 6 per box. Set the batch size so each box costs 8.",
+          "feedback": {
+            "met": "You balanced batch size against the fixed cost.",
+            "not_yet": "Not yet. Move the slider and watch the average cost per box."
+          }
+        },
+        "es-MX": {
+          "prompt": "Fijo 90, 6 por muffin. Ajusta el lote para que cada muffin cueste 8.",
+          "feedback": {
+            "met": "Equilibraste el tamaño del lote con el costo fijo.",
+            "not_yet": "Todavía no. Mueve el control y mira el costo promedio por muffin."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Fixo 90, 6 por caixa. Ajuste o lote para cada caixa custar 8.",
+          "feedback": {
+            "met": "Você equilibrou o tamanho do lote com o custo fixo.",
+            "not_yet": "Ainda não. Mova o controle e veja o custo médio por caixa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-profit-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price",
+      "payload": {
+        "steps": [
+          {
+            "id": "materials"
+          },
+          {
+            "id": "full-cost"
+          },
+          {
+            "id": "per-box"
+          },
+          {
+            "id": "profit"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "full-cost",
+          "per-box",
+          "profit"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "full-cost": "250",
+          "per-box": "10",
+          "profit": "2"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate sells 25 boxes at 12 each. Ingredients 125, packaging 25, oven 15, time 85.",
+          "feedback": {
+            "met": "You turned four costs into a profit per box.",
+            "not_yet": "Not yet. Find the full cost before the cost per box."
+          },
+          "help": [
+            "Add the four costs, divide by the 25 boxes, then subtract from the price."
+          ],
+          "steps": [
+            {
+              "expression": "125 + 25",
+              "result": "150",
+              "spokenText": "Step 1: ingredients plus packaging is 150"
+            },
+            {
+              "expression": "150 + 15 + 85",
+              "result": "250",
+              "spokenText": "Step 2: add oven and time, the full cost is 250"
+            },
+            {
+              "expression": "Full cost ÷ boxes",
+              "result": "10",
+              "spokenText": "Step 3: 250 divided by 25 is 10 a box"
+            },
+            {
+              "expression": "Price − cost per box",
+              "result": "2",
+              "spokenText": "Step 4: 12 minus 10 leaves 2 a box"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un compañero vende 25 muffins a 12 cada uno. Ingredientes 125, bolsas 25, horno 15, tiempo 85.",
+          "feedback": {
+            "met": "Convertiste cuatro costos en una ganancia por muffin.",
+            "not_yet": "Todavía no. Saca el costo completo antes del costo por muffin."
+          },
+          "help": [
+            "Suma los cuatro costos, divide entre los 25 muffins y réstalo al precio."
+          ],
+          "steps": [
+            {
+              "expression": "125 + 25",
+              "result": "150",
+              "spokenText": "Paso 1: ingredientes más bolsas son 150"
+            },
+            {
+              "expression": "150 + 15 + 85",
+              "result": "250",
+              "spokenText": "Paso 2: sumo horno y tiempo, el costo completo es 250"
+            },
+            {
+              "expression": "Costo completo ÷ muffins",
+              "result": "10",
+              "spokenText": "Paso 3: 250 entre 25 es 10 por muffin"
+            },
+            {
+              "expression": "Precio − costo por muffin",
+              "result": "2",
+              "spokenText": "Paso 4: 12 menos 10 deja 2 por muffin"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um colega vende 25 caixas a 12 cada. Ingredientes 125, embalagem 25, forno 15, tempo 85.",
+          "feedback": {
+            "met": "Você transformou quatro custos em lucro por caixa.",
+            "not_yet": "Ainda não. Ache o custo completo antes do custo por caixa."
+          },
+          "help": [
+            "Some os quatro custos, divida pelas 25 caixas e subtraia do preço."
+          ],
+          "steps": [
+            {
+              "expression": "125 + 25",
+              "result": "150",
+              "spokenText": "Passo 1: ingredientes mais embalagem dão 150"
+            },
+            {
+              "expression": "150 + 15 + 85",
+              "result": "250",
+              "spokenText": "Passo 2: somo forno e tempo, o custo completo é 250"
+            },
+            {
+              "expression": "Custo completo ÷ caixas",
+              "result": "10",
+              "spokenText": "Passo 3: 250 dividido por 25 dá 10 por caixa"
+            },
+            {
+              "expression": "Preço − custo por caixa",
+              "result": "2",
+              "spokenText": "Passo 4: 12 menos 10 sobra 2 por caixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-four"
+          },
+          {
+            "id": "choice-five"
+          },
+          {
+            "id": "choice-eight"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-four-beads"
+          },
+          {
+            "id": "reason-full-six"
+          },
+          {
+            "id": "reason-materials"
+          },
+          {
+            "id": "reason-rivals"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-eight"
+        ],
+        "reasonQuality": {
+          "reason-full-six": "sound",
+          "reason-materials": "partial",
+          "reason-four-beads": "unsupported",
+          "reason-rivals": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate sells 20 bracelets: beads 60, packaging 20, her time 40. Which price makes sense?",
+          "feedback": {
+            "met": "You priced from the full cost, time included.",
+            "not_yet": "Not yet. Work out the full cost per bracelet first."
+          },
+          "choices": [
+            {
+              "label": "Price at 4"
+            },
+            {
+              "label": "Price at 5"
+            },
+            {
+              "label": "Price at 8"
+            }
+          ],
+          "reasonPrompt": "Which reason fits best?",
+          "reasons": [
+            {
+              "label": "Beads cost 3, so 4 already earns"
+            },
+            {
+              "label": "Full cost is 6; 8 earns 2"
+            },
+            {
+              "label": "Beads and packaging are 4, so 5 earns"
+            },
+            {
+              "label": "Rivals charge 5, so 5 is safe"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una compañera vende 20 pulseras: cuentas 60, empaque 20, su tiempo 40. ¿Qué precio tiene sentido?",
+          "feedback": {
+            "met": "Pusiste el precio desde el costo completo, tiempo incluido.",
+            "not_yet": "Todavía no. Saca primero el costo completo por pulsera."
+          },
+          "choices": [
+            {
+              "label": "Precio de 4"
+            },
+            {
+              "label": "Precio de 5"
+            },
+            {
+              "label": "Precio de 8"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón encaja mejor?",
+          "reasons": [
+            {
+              "label": "Las cuentas cuestan 3, así que 4 ya gana"
+            },
+            {
+              "label": "El costo completo es 6; con 8 gana 2"
+            },
+            {
+              "label": "Cuentas y empaque son 4, así que 5 gana"
+            },
+            {
+              "label": "Otros vendedores cobran 5, así que 5 es seguro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma colega vende 20 pulseiras: miçangas R$ 60, embalagem 20, tempo dela 40. Que preço faz sentido?",
+          "feedback": {
+            "met": "Você definiu o preço pelo custo completo, tempo incluído.",
+            "not_yet": "Ainda não. Descubra antes o custo completo por pulseira."
+          },
+          "choices": [
+            {
+              "label": "Preço de 4"
+            },
+            {
+              "label": "Preço de 5"
+            },
+            {
+              "label": "Preço de 8"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina mais?",
+          "reasons": [
+            {
+              "label": "Miçangas custam 3, então 4 já lucra"
+            },
+            {
+              "label": "O custo completo é 6; com 8 lucra 2"
+            },
+            {
+              "label": "Miçangas e embalagem são 4, então 5 lucra"
+            },
+            {
+              "label": "Outros vendedores cobram 5, então 5 é seguro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

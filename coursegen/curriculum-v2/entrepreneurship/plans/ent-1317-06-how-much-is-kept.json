@@ -1,0 +1,188 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-know-your-numbers",
+  "lesson_id": "ent-1317-06-how-much-is-kept",
+  "age_band": "13-17",
+  "eligibility": { "minimum_age": 13, "maximum_age": 17 },
+  "knowledge_component_ids": ["biz.margin", "biz.profit", "money.percent-intro"],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": { "character": "dina", "scene": "diorama-b" },
+  "brief": "Dina revisa contigo cuánto se queda de cada limpieza de tenis. Con un precio de 25 y un costo real de 19, el margen es de 6 monedas, el 24% del precio, y no el 32% que sale al dividir entre el costo. Luego ves cómo un descuento de 4 monedas lo reduce a 2, cerca de 9.5%.",
+  "title": { "en-US": "How much is kept", "es-MX": "Cuánto te queda", "pt-BR": "Quanto fica com você" },
+  "new_concepts": ["biz.margin"],
+  "regional": { "universal": "Uses LittleFounders coins only; no market amounts, places or customs." },
+  "segments": [
+    {
+      "id": "hook-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "hook",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Your sneaker cleans sell at 25, and Dina has your real cost: 19.", "line": "She asks how much of that 25 stays with you." },
+        "es-MX": { "prompt": "Tus limpiezas de tenis se venden en 25 y Dina tiene tu costo real: 19.", "line": "Ella pregunta cuánto de esos 25 se queda contigo." },
+        "pt-BR": { "prompt": "Suas limpezas de tênis saem por 25 e a Dina tem o seu custo real: 19.", "line": "Ela pergunta quanto desses 25 fica com você." }
+      }
+    },
+    {
+      "id": "pre-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "pre",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "practice", "item_phase": "pre", "knowledge_component_id": "biz.margin",
+      "payload": {
+        "choices": [{ "id": "drops-tenth" }, { "id": "halves" }, { "id": "drops-quarter" }, { "id": "barely-changes" }],
+        "reasons": [{ "id": "reason-comes-out-of-two" }, { "id": "reason-lose-one" }, { "id": "reason-buyers-ask" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["halves"],
+        "reasonQuality": { "reason-comes-out-of-two": "sound", "reason-lose-one": "partial", "reason-buyers-ask": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your laces cost 8, sell at 10; a buyer asks 1 off. What happens to what you keep?",
+          "feedback": { "met": "Noted. We will test that against the numbers next.", "not_yet": "Noted. We will test that against the numbers next." },
+          "choices": [{ "label": "It drops 10%" }, { "label": "It halves" }, { "label": "It drops 25%" }, { "label": "It barely changes" }],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [{ "label": "The 1 off comes out of my 2" }, { "label": "I lose 1 coin either way" }, { "label": "Buyers always ask for something" }]
+        },
+        "es-MX": {
+          "prompt": "Tus agujetas cuestan 8 y se venden en 10; un cliente pide 1 de descuento. ¿Qué pasa con lo que te queda?",
+          "feedback": { "met": "Anotado. Lo probamos con los números enseguida.", "not_yet": "Anotado. Lo probamos con los números enseguida." },
+          "choices": [{ "label": "Baja 10%" }, { "label": "Se reduce a la mitad" }, { "label": "Baja 25%" }, { "label": "Casi no cambia" }],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [{ "label": "El 1 de descuento sale de mis 2" }, { "label": "Pierdo 1 moneda de todos modos" }, { "label": "Los clientes siempre piden algo" }]
+        },
+        "pt-BR": {
+          "prompt": "Seus cadarços custam 8 e saem por 10; um cliente pede 1 de desconto. O que acontece com o que sobra para você?",
+          "feedback": { "met": "Anotado. Vamos testar isso com os números a seguir.", "not_yet": "Anotado. Vamos testar isso com os números a seguir." },
+          "choices": [{ "label": "Cai 10%" }, { "label": "Cai pela metade" }, { "label": "Cai 25%" }, { "label": "Quase não muda" }],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [{ "label": "O 1 de desconto sai dos meus 2" }, { "label": "Perco 1 moeda de qualquer jeito" }, { "label": "Cliente sempre pede alguma coisa" }]
+        }
+      }
+    },
+    {
+      "id": "example-margin-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 1: the margin is what the price leaves after the real cost.", "line": "25 − 19 = 6 coins. That is the margin on one pair." },
+        "es-MX": { "prompt": "Paso 1: el margen es lo que deja el precio tras el costo real.", "line": "25 − 19 = 6 monedas. Ese es el margen de un par." },
+        "pt-BR": { "prompt": "Passo 1: a margem é o que o preço deixa depois do custo real.", "line": "25 − 19 = 6 moedas. Essa é a margem de um par." }
+      }
+    },
+    {
+      "id": "example-percent-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 2: the same margin, as a share of the price.", "line": "6 ÷ 25 = 24%. So 24% of each sale stays with you." },
+        "es-MX": { "prompt": "Paso 2: el mismo margen, como parte del precio.", "line": "6 ÷ 25 = 24%. Así que el 24% de cada venta se queda contigo." },
+        "pt-BR": { "prompt": "Passo 2: a mesma margem, como parte do preço.", "line": "6 ÷ 25 = 24%. Então 24% de cada venda fica com você." }
+      }
+    },
+    {
+      "id": "example-markup-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 3: divide by the cost instead, and you get a different number.", "line": "6 ÷ 19 is about 32%, a markup; margin always divides by the price." },
+        "es-MX": { "prompt": "Paso 3: si divides entre el costo, sale otro número.", "line": "6 ÷ 19 es cerca de 32%, un recargo; el margen siempre divide entre el precio." },
+        "pt-BR": { "prompt": "Passo 3: se dividir pelo custo, sai outro número.", "line": "6 ÷ 19 dá cerca de 32%, um acréscimo; a margem sempre divide pelo preço." }
+      }
+    },
+    {
+      "id": "guided-ledger-01", "type": "money.running-ledger.v2", "grading": "server", "teaching_role": "guided",
+      "visual": { "type": "balance-meter" },
+      "item_role": "practice", "knowledge_component_id": "biz.profit",
+      "payload": { "initial": 0, "sale": 14, "cost": 9, "maxEntries": 6 },
+      "rubric": { "target_balance": 15 },
+      "copy": {
+        "en-US": {
+          "prompt": "Your polish tins sell at 14 and cost 9. Log sales and costs until you hold 15 coins.",
+          "feedback": { "met": "You logged each sale against its cost and read the balance.", "not_yet": "Not yet. Add each sale and subtract each cost as you go." },
+          "help": ["Each sale adds 14; each cost takes 9."]
+        },
+        "es-MX": {
+          "prompt": "Tus latas de grasa se venden en 14 y cuestan 9. Anota ventas y costos hasta tener 15 monedas.",
+          "feedback": { "met": "Anotaste cada venta frente a su costo y leíste el saldo.", "not_yet": "Todavía no. Suma cada venta y resta cada costo sobre la marcha." },
+          "help": ["Cada venta suma 14; cada costo resta 9."]
+        },
+        "pt-BR": {
+          "prompt": "Suas latas de graxa saem por 14 e custam 9. Anote vendas e custos até ter 15 moedas.",
+          "feedback": { "met": "Você registrou cada venda contra o seu custo e leu o saldo.", "not_yet": "Ainda não. Some cada venda e tire cada custo pelo caminho." },
+          "help": ["Cada venda soma 14; cada custo tira 9."]
+        }
+      }
+    },
+    {
+      "id": "example-discount-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 4: a buyer asks for 4 off the 25.", "line": "At 21 the margin is 2, about 9.5% and no longer 24%; two thirds of it is gone." },
+        "es-MX": { "prompt": "Paso 4: un cliente pide 4 de descuento sobre los 25.", "line": "Con 21 el margen es 2, cerca de 9.5% y ya no 24%; se fueron dos tercios." },
+        "pt-BR": { "prompt": "Passo 4: um cliente pede 4 de desconto sobre os 25.", "line": "Com 21 a margem é 2, cerca de 9,5% e não mais 24%; sumiram dois terços." }
+      }
+    },
+    {
+      "id": "practice-margin-01", "type": "fin.margin-markup.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "margin-markup" },
+      "item_role": "practice", "knowledge_component_id": "biz.margin",
+      "payload": { "cost": 12, "basis": "margin", "percent": 25, "maxPrice": 40, "start": 20 },
+      "rubric": { "target": 16 },
+      "copy": {
+        "en-US": { "prompt": "Your basic wash costs 12. Which price makes the margin 25% of that price?", "feedback": { "met": "You priced it so the margin is a share of the price.", "not_yet": "Margin divides by the price, not the cost; adjust the price." } },
+        "es-MX": { "prompt": "Tu lavado básico cuesta 12. ¿Qué precio deja un margen del 25% sobre ese precio?", "feedback": { "met": "Fijaste el precio para que el margen sea parte del precio.", "not_yet": "El margen se divide entre el precio, no el costo; ajusta el precio." } },
+        "pt-BR": { "prompt": "Sua lavagem básica custa 12. Qual preço dá uma margem de 25% sobre esse preço?", "feedback": { "met": "Você fixou o preço para a margem ser uma parte dele.", "not_yet": "A margem divide pelo preço, não pelo custo; ajuste o preço." } }
+      }
+    },
+    {
+      "id": "practice-markup-01", "type": "fin.margin-markup.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "margin-markup" },
+      "item_role": "practice", "knowledge_component_id": "money.percent-intro",
+      "payload": { "cost": 16, "basis": "markup", "percent": 25, "maxPrice": 40, "start": 10 },
+      "rubric": { "target": 20 },
+      "copy": {
+        "en-US": { "prompt": "Your deluxe wash costs 16. Which price adds a markup of 25% on that cost?", "feedback": { "met": "You added the markup on top of the cost.", "not_yet": "Markup is a share of the cost; adjust the price." } },
+        "es-MX": { "prompt": "Tu lavado de lujo cuesta 16. ¿Qué precio suma un recargo del 25% sobre ese costo?", "feedback": { "met": "Sumaste el recargo encima del costo.", "not_yet": "El recargo es parte del costo; ajusta el precio." } },
+        "pt-BR": { "prompt": "Sua lavagem premium custa 16. Qual preço soma um acréscimo de 25% sobre esse custo?", "feedback": { "met": "Você somou o acréscimo em cima do custo.", "not_yet": "O acréscimo é uma parte do custo; ajuste o preço." } }
+      }
+    },
+    {
+      "id": "transfer-discount-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "transfer",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "transfer", "item_phase": "post", "knowledge_component_id": "biz.margin",
+      "payload": {
+        "choices": [{ "id": "three-old-price" }, { "id": "three-on-cost" }, { "id": "three-new-price" }, { "id": "still-eight" }],
+        "reasons": [{ "id": "reason-over-new-price" }, { "id": "reason-off-old-margin" }, { "id": "reason-no-change" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["three-new-price"],
+        "reasonQuality": { "reason-over-new-price": "sound", "reason-off-old-margin": "partial", "reason-no-change": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your phone cases cost 12 and sell at 20; a shop asks 5 off. What margin is left?",
+          "feedback": { "met": "You measured the margin against the new price, not the old one.", "not_yet": "Recompute: what is left, divided by the price after the discount." },
+          "choices": [{ "label": "3 coins, 15% of the old price" }, { "label": "3 coins, 25% on the cost" }, { "label": "3 coins, 20% of the new price" }, { "label": "Still 8 coins, 40%" }],
+          "reasonPrompt": "Why that margin?",
+          "reasons": [{ "label": "What is left, divided by the new price" }, { "label": "I took the discount off my old margin" }, { "label": "A discount does not change my margin" }]
+        },
+        "es-MX": {
+          "prompt": "Tus fundas de celular cuestan 12 y se venden en 20; una tienda pide 5 de descuento. ¿Qué margen te queda?",
+          "feedback": { "met": "Mediste el margen contra el precio nuevo, no el anterior.", "not_yet": "Recalcula: lo que queda, entre el precio después del descuento." },
+          "choices": [{ "label": "3 monedas, 15% del precio anterior" }, { "label": "3 monedas, 25% sobre el costo" }, { "label": "3 monedas, 20% del precio nuevo" }, { "label": "Sigue en 8 monedas, 40%" }],
+          "reasonPrompt": "¿Por qué ese margen?",
+          "reasons": [{ "label": "Dividí lo que queda entre el precio nuevo" }, { "label": "Le quité el descuento a mi margen anterior" }, { "label": "Un descuento no cambia mi margen" }]
+        },
+        "pt-BR": {
+          "prompt": "Suas capas de celular custam 12 e saem por 20; uma loja pede 5 de desconto. Que margem sobra?",
+          "feedback": { "met": "Você mediu a margem contra o preço novo, não o antigo.", "not_yet": "Refaça: o que sobra, dividido pelo preço depois do desconto." },
+          "choices": [{ "label": "3 moedas, 15% do preço antigo" }, { "label": "3 moedas, 25% sobre o custo" }, { "label": "3 moedas, 20% do preço novo" }, { "label": "Continua em 8 moedas, 40%" }],
+          "reasonPrompt": "Por que essa margem?",
+          "reasons": [{ "label": "Dividi o que sobra pelo preço novo" }, { "label": "Tirei o desconto da minha margem antiga" }, { "label": "Um desconto não muda a minha margem" }]
+        }
+      }
+    }
+  ]
+}

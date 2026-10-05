@@ -1,0 +1,913 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "chapter_id": "inv-1012-luck-risk-and-the-simulator",
+  "lesson_id": "inv-1012-07-the-deadline",
+  "knowledge_component_ids": [
+    "invest.cost-of-delay",
+    "invest.time-value",
+    "life.think-before-buying"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina, con calma, acompaña a Kai frente a un frasco de 60 monedas para un kit de arte. Kai repite \"lo decido la próxima semana\"; Dina cuenta con él cómo cada semana de espera empuja la meta una semana más lejos en la línea de ahorro. Luego distinguen una pausa útil, con una razón y un día final, de seguir posponiendo, y Kai aprende a ponerle fecha límite a su decisión. Al final, tú aplicas la misma idea en la feria de la escuela.",
+  "title": {
+    "en-US": "Waiting costs: set a deadline",
+    "es-MX": "Esperar cuesta: pon una fecha límite",
+    "pt-BR": "Esperar custa: defina um prazo"
+  },
+  "new_concepts": [
+    "invest.cost-of-delay"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina and Kai look at a jar marked 60 coins for an art kit.",
+          "line": "Kai says \"I'll start next week.\" Let's see what one week does, slowly."
+        },
+        "es-MX": {
+          "prompt": "Dina y Kai miran un frasco marcado con 60 monedas para un kit de arte.",
+          "line": "Kai dice: \"empiezo la próxima semana\". Veamos con calma qué hace una semana."
+        },
+        "pt-BR": {
+          "prompt": "Dina e Kai olham um pote marcado com 60 moedas para um kit de arte.",
+          "line": "Kai diz: \"começo na semana que vem\". Vamos ver com calma o que uma semana faz."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-nothing"
+          },
+          {
+            "id": "choice-later"
+          },
+          {
+            "id": "choice-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-delays"
+          },
+          {
+            "id": "reason-time"
+          },
+          {
+            "id": "reason-later"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-later"
+        ],
+        "reasonQuality": {
+          "reason-delays": "sound",
+          "reason-time": "unsupported",
+          "reason-later": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fund jar, Kai says \"I'll start next week.\" What do you tell him?",
+          "feedback": {
+            "met": "Thanks, that shows how you think. Let's look closer.",
+            "not_yet": "Thanks, that shows how you think. Let's look closer."
+          },
+          "choices": [
+            {
+              "label": "One week changes nothing"
+            },
+            {
+              "label": "Waiting moves the goal later"
+            },
+            {
+              "label": "Decide right now, no thinking"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Each week of waiting delays the goal"
+            },
+            {
+              "label": "He has plenty of time anyway"
+            },
+            {
+              "label": "He will still save, just later"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el frasco del fondo, Kai dice \"empiezo la próxima semana\". ¿Qué le dices?",
+          "feedback": {
+            "met": "Gracias, así veo cómo piensas. Ahora lo vemos de cerca.",
+            "not_yet": "Gracias, así veo cómo piensas. Ahora lo vemos de cerca."
+          },
+          "choices": [
+            {
+              "label": "Una semana no cambia nada"
+            },
+            {
+              "label": "Esperar aleja la meta"
+            },
+            {
+              "label": "Decidir ya, sin pensarlo"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Cada semana de espera retrasa la meta"
+            },
+            {
+              "label": "De todos modos le sobra tiempo"
+            },
+            {
+              "label": "Igual ahorrará, solo que después"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No pote do fundo, Kai diz \"começo na semana que vem\". O que você diz a ele?",
+          "feedback": {
+            "met": "Obrigada, assim vejo como você pensa. Agora vemos de perto.",
+            "not_yet": "Obrigada, assim vejo como você pensa. Agora vemos de perto."
+          },
+          "choices": [
+            {
+              "label": "Uma semana não muda nada"
+            },
+            {
+              "label": "Esperar afasta a meta"
+            },
+            {
+              "label": "Decidir já, sem pensar"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Cada semana de espera atrasa a meta"
+            },
+            {
+              "label": "De qualquer jeito ele tem tempo de sobra"
+            },
+            {
+              "label": "Ele ainda vai guardar, só mais tarde"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step1-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Kai's fund aims at 60 coins, saving 5 coins a week.",
+          "line": "Let's count slowly: 5 coins a week, 12 weeks, 60 coins. Week 12 is the finish."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el fondo de Kai quiere llegar a 60 monedas, ahorrando 5 monedas por semana.",
+          "line": "Contemos con calma: 5 monedas por semana, 12 semanas, 60 monedas. La semana 12 es la meta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o fundo do Kai quer chegar a 60 moedas, guardando 5 moedas por semana.",
+          "line": "Vamos contar com calma: 5 moedas por semana, 12 semanas, 60 moedas. A semana 12 é a meta."
+        }
+      }
+    },
+    {
+      "id": "line-01",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 12,
+        "minimum": 0,
+        "maximum": 10,
+        "step": 1,
+        "initial": 5,
+        "currency": "coins",
+        "unit": "week"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina shows Kai's fund. Move the weekly amount and see when the line reaches 60."
+        },
+        "es-MX": {
+          "prompt": "Dina muestra el fondo de Kai. Mueve el monto semanal y mira cuándo la línea llega a 60."
+        },
+        "pt-BR": {
+          "prompt": "Dina mostra o fundo do Kai. Mexa no valor semanal e veja quando a linha chega a 60."
+        }
+      }
+    },
+    {
+      "id": "step2-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Kai waits 3 weeks, then saves 5 a week as before.",
+          "line": "Waiting 3 weeks moves the finish from week 12 to week 15. Each week waited is a week later."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Kai espera 3 semanas y luego ahorra 5 por semana, como antes.",
+          "line": "Esperar 3 semanas mueve la meta de la semana 12 a la 15. Cada semana de espera es una semana más."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: Kai espera 3 semanas e depois guarda 5 por semana, como antes.",
+          "line": "Esperar 3 semanas move a meta da semana 12 para a 15. Cada semana de espera é uma semana a mais."
+        }
+      }
+    },
+    {
+      "id": "delay-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-w12"
+          },
+          {
+            "id": "choice-w13"
+          },
+          {
+            "id": "choice-w14"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-push"
+          },
+          {
+            "id": "reason-same"
+          },
+          {
+            "id": "reason-nothing"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-w14"
+        ],
+        "reasonQuality": {
+          "reason-push": "sound",
+          "reason-same": "partial",
+          "reason-nothing": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the jar, Kai waits 2 weeks, then saves 5 a week toward 60. Which week reaches 60?",
+          "feedback": {
+            "met": "You moved the finish later by the weeks Kai waited.",
+            "not_yet": "Not yet. Look back: what did waiting do to the finish week?"
+          },
+          "help": [
+            "Waiting a week pushes the finish one week later."
+          ],
+          "choices": [
+            {
+              "label": "Week 12"
+            },
+            {
+              "label": "Week 13"
+            },
+            {
+              "label": "Week 14"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Waiting 2 weeks pushes the finish 2 weeks"
+            },
+            {
+              "label": "He still saves 5 coins each week"
+            },
+            {
+              "label": "A short wait changes nothing"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el frasco, Kai espera 2 semanas y luego ahorra 5 por semana hacia 60. ¿En qué semana llega a 60?",
+          "feedback": {
+            "met": "Moviste la meta tantas semanas como Kai esperó.",
+            "not_yet": "Aún no. Mira atrás: ¿qué le hizo la espera a la semana final?"
+          },
+          "help": [
+            "Cada semana de espera empuja la meta una semana."
+          ],
+          "choices": [
+            {
+              "label": "Semana 12"
+            },
+            {
+              "label": "Semana 13"
+            },
+            {
+              "label": "Semana 14"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Esperar 2 semanas empuja la meta 2 semanas"
+            },
+            {
+              "label": "Sigue ahorrando 5 monedas por semana"
+            },
+            {
+              "label": "Una espera corta no cambia nada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No pote, Kai espera 2 semanas e depois guarda 5 por semana até 60. Em qual semana chega a 60?",
+          "feedback": {
+            "met": "Você moveu a meta tantas semanas quanto o Kai esperou.",
+            "not_yet": "Ainda não. Olhe para trás: o que a espera fez com a semana final?"
+          },
+          "help": [
+            "Cada semana de espera empurra a meta uma semana."
+          ],
+          "choices": [
+            {
+              "label": "Semana 12"
+            },
+            {
+              "label": "Semana 13"
+            },
+            {
+              "label": "Semana 14"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Esperar 2 semanas empurra a meta 2 semanas"
+            },
+            {
+              "label": "Ele continua guardando 5 moedas por semana"
+            },
+            {
+              "label": "Uma espera curta não muda nada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step3-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: skipping the fund is also a pick. Kai has 6 coins this week.",
+          "line": "If the 5 coins skip the fund, they go elsewhere. The fund waits another week."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: saltarse el fondo también es una elección. Kai tiene 6 monedas esta semana.",
+          "line": "Si las 5 monedas no van al fondo, van a otra cosa. El fondo espera otra semana."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: pular o fundo também é uma escolha. Kai tem 6 moedas esta semana.",
+          "line": "Se as 5 moedas não vão para o fundo, vão para outra coisa. O fundo espera mais uma semana."
+        }
+      }
+    },
+    {
+      "id": "tokens-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "payload": {
+        "tokens": 6,
+        "options": [
+          {
+            "id": "opt-fund",
+            "cost": 5
+          },
+          {
+            "id": "opt-pack",
+            "cost": 4
+          },
+          {
+            "id": "opt-snack",
+            "cost": 2
+          },
+          {
+            "id": "opt-stickers",
+            "cost": 1
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Try different picks for Kai's 6 coins and see what each gives up.",
+          "options": [
+            {
+              "label": "Add to fund"
+            },
+            {
+              "label": "Game pack"
+            },
+            {
+              "label": "Snack"
+            },
+            {
+              "label": "Stickers"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Prueba distintas elecciones para las 6 monedas de Kai y mira a qué renuncia cada una.",
+          "options": [
+            {
+              "label": "Poner en el fondo"
+            },
+            {
+              "label": "Paquete de juego"
+            },
+            {
+              "label": "Botana"
+            },
+            {
+              "label": "Estampas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Teste escolhas diferentes para as 6 moedas do Kai e veja ao que cada uma renuncia.",
+          "options": [
+            {
+              "label": "Colocar no fundo"
+            },
+            {
+              "label": "Pacote de jogo"
+            },
+            {
+              "label": "Lanche"
+            },
+            {
+              "label": "Figurinhas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step4-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: a useful pause has a reason and an end day.",
+          "line": "Kai checks the art kit price at two stalls, then decides Saturday. \"Next week\" alone has neither."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: una pausa útil tiene una razón y un día final.",
+          "line": "Kai revisa el precio del kit de arte en dos puestos y decide el sábado. \"La próxima semana\" solo no tiene ninguno."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: uma pausa útil tem um motivo e um dia final.",
+          "line": "Kai confere o preço do kit de arte em duas barracas e decide no sábado. \"Semana que vem\" sozinho não tem nenhum."
+        }
+      }
+    },
+    {
+      "id": "pause-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.think-before-buying",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-check"
+          },
+          {
+            "id": "opt-next"
+          },
+          {
+            "id": "opt-ready"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-check"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fund jar, Kai wants to wait again. Which plan is a useful pause?",
+          "feedback": {
+            "met": "You picked the plan with a reason and an end day.",
+            "not_yet": "Not yet. Which plan names what Kai checks and by when?"
+          },
+          "scene": "Kai wants one more week before he starts his 60-coin fund.",
+          "options": [
+            {
+              "label": "By Friday I compare two paint sets."
+            },
+            {
+              "label": "I'll decide next week."
+            },
+            {
+              "label": "I'll start when I feel ready."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el frasco, Kai quiere esperar otra vez. ¿Qué plan es una pausa útil?",
+          "feedback": {
+            "met": "Elegiste el plan con una razón y un día final.",
+            "not_yet": "Aún no. ¿Qué plan dice qué revisa Kai y para cuándo?"
+          },
+          "scene": "Kai quiere una semana más antes de empezar su fondo de 60 monedas.",
+          "options": [
+            {
+              "label": "Para el viernes comparo dos juegos de pintura"
+            },
+            {
+              "label": "Lo decido la próxima semana"
+            },
+            {
+              "label": "Empiezo cuando me sienta listo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No pote, Kai quer esperar de novo. Qual plano é uma pausa útil?",
+          "feedback": {
+            "met": "Você escolheu o plano com um motivo e um dia final.",
+            "not_yet": "Ainda não. Qual plano diz o que o Kai confere e até quando?"
+          },
+          "scene": "Kai quer mais uma semana antes de começar o fundo de 60 moedas.",
+          "options": [
+            {
+              "label": "Até sexta comparo dois kits de pintura"
+            },
+            {
+              "label": "Decido na semana que vem"
+            },
+            {
+              "label": "Começo quando me sentir pronto"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "deadline-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-week"
+          },
+          {
+            "id": "opt-today"
+          },
+          {
+            "id": "opt-third"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-today"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fund jar, Kai has both prices on his deadline. What does he do?",
+          "feedback": {
+            "met": "You held to the deadline Kai set.",
+            "not_yet": "Not yet. Kai chose a day: what does that day mean?"
+          },
+          "scene": "Kai planned to compare two paint sets by Friday. Today is Friday and he has both prices.",
+          "options": [
+            {
+              "label": "Take one more week to be sure"
+            },
+            {
+              "label": "Decide today with the prices he has"
+            },
+            {
+              "label": "Check a third stall first"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el frasco, Kai tiene los dos precios en su fecha límite. ¿Qué hace?",
+          "feedback": {
+            "met": "Respetaste la fecha límite que Kai puso.",
+            "not_yet": "Aún no. Kai eligió un día: ¿qué significa ese día?"
+          },
+          "scene": "Kai planeó comparar dos juegos de pintura para el viernes. Hoy es viernes y ya tiene ambos precios.",
+          "options": [
+            {
+              "label": "Esperar una semana más para estar seguro"
+            },
+            {
+              "label": "Decidir hoy con los precios que tiene"
+            },
+            {
+              "label": "Revisar primero un tercer puesto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No pote, Kai tem os dois preços no dia do prazo. O que ele faz?",
+          "feedback": {
+            "met": "Você respeitou o prazo que o Kai pôs.",
+            "not_yet": "Ainda não. Kai escolheu um dia: o que esse dia significa?"
+          },
+          "scene": "Kai planejou comparar dois kits de pintura até sexta. Hoje é sexta e ele já tem os dois preços.",
+          "options": [
+            {
+              "label": "Esperar mais uma semana para ter certeza"
+            },
+            {
+              "label": "Decidir hoje com os preços que tem"
+            },
+            {
+              "label": "Conferir antes uma terceira barraca"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.cost-of-delay",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-first"
+          },
+          {
+            "id": "choice-again"
+          },
+          {
+            "id": "choice-check"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-pause"
+          },
+          {
+            "id": "reason-later"
+          },
+          {
+            "id": "reason-habit"
+          },
+          {
+            "id": "reason-free"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-check"
+        ],
+        "reasonQuality": {
+          "reason-pause": "sound",
+          "reason-later": "sound",
+          "reason-habit": "partial",
+          "reason-free": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fair, Kai says \"next week\" about where his 40 coins go. What does Dina say?",
+          "feedback": {
+            "met": "You chose a check with a day to decide.",
+            "not_yet": "Not yet. Which choice gives the waiting a reason and an end?"
+          },
+          "help": [
+            "Think back: a useful pause named a check and a day."
+          ],
+          "choices": [
+            {
+              "label": "Pick the first fund you see today"
+            },
+            {
+              "label": "Say next week again, to be safe"
+            },
+            {
+              "label": "Name one check and a day to decide"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A pause needs a reason and a date"
+            },
+            {
+              "label": "Each week of waiting moves the goal later"
+            },
+            {
+              "label": "Checking before choosing is a good habit"
+            },
+            {
+              "label": "Waiting is free while I feel unsure"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria de la escuela, Kai dice \"la próxima semana\" sobre dónde van sus 40 monedas. ¿Qué dice Dina?",
+          "feedback": {
+            "met": "Elegiste una revisión con un día para decidir.",
+            "not_yet": "Aún no. ¿Qué opción le da a la espera una razón y un final?"
+          },
+          "help": [
+            "Piensa: una pausa útil nombraba una revisión y un día."
+          ],
+          "choices": [
+            {
+              "label": "Elegir ya el primer fondo que veas"
+            },
+            {
+              "label": "Decir otra vez la próxima semana, por si acaso"
+            },
+            {
+              "label": "Nombrar una revisión y un día para decidir"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Una pausa necesita una razón y una fecha"
+            },
+            {
+              "label": "Cada semana de espera aleja la meta"
+            },
+            {
+              "label": "Revisar antes de elegir es buena costumbre"
+            },
+            {
+              "label": "Esperar es gratis mientras dudo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira da escola, Kai diz \"semana que vem\" sobre onde vão suas 40 moedas. O que a Dina diz?",
+          "feedback": {
+            "met": "Você escolheu uma checagem com um dia para decidir.",
+            "not_yet": "Ainda não. Qual opção dá à espera um motivo e um fim?"
+          },
+          "help": [
+            "Pense: uma pausa útil tinha uma checagem e um dia."
+          ],
+          "choices": [
+            {
+              "label": "Escolher já o primeiro fundo que vir"
+            },
+            {
+              "label": "Dizer de novo semana que vem, por garantia"
+            },
+            {
+              "label": "Definir uma checagem e um dia para decidir"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Uma pausa precisa de um motivo e uma data"
+            },
+            {
+              "label": "Cada semana de espera afasta a meta"
+            },
+            {
+              "label": "Conferir antes de escolher é um bom hábito"
+            },
+            {
+              "label": "Esperar é de graça enquanto eu duvido"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

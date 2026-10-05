@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-my-coin-jar",
+  "lesson_id": "fe-69-16-three-jars",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.save-spend-share",
+    "money.equal-sharing"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho tiene 12 monedas y las reparte por igual en tres frascos, ahorrar, gastar y compartir, con 4 monedas en cada uno. Luego las 4 monedas de compartir van a dos amigos, 2 y 2. El niño reparte por igual, llena los frascos para un telescopio y decide con una razón: qué reparto sirve para la meta y cómo compartir entre dos amigos que ayudaron igual.",
+  "title": {
+    "en-US": "Three jars",
+    "es-MX": "Tres frascos",
+    "pt-BR": "Três potes"
+  },
+  "new_concepts": [
+    "life.save-spend-share",
+    "money.equal-sharing"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho has 12 coins and three empty jars.",
+          "line": "Observe. Twelve coins, three jars: save, spend, share."
+        },
+        "es-MX": {
+          "prompt": "Rho tiene 12 monedas y tres frascos vacíos.",
+          "line": "Observa. Doce monedas, tres frascos: ahorrar, gastar, compartir."
+        },
+        "pt-BR": {
+          "prompt": "O Rho tem 12 moedas e três potes vazios.",
+          "line": "Observe. Doze moedas, três potes: guardar, gastar, compartilhar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 5
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 4,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two friends share Rho's 8 coins the same. Show one share.",
+          "feedback": {
+            "met": "Thanks. Let's measure it together.",
+            "not_yet": "Thanks. Let's measure it together."
+          }
+        },
+        "es-MX": {
+          "prompt": "Dos amigos reparten 8 monedas, lo mismo para cada uno. Muestra una parte.",
+          "feedback": {
+            "met": "Gracias. Lo medimos juntos.",
+            "not_yet": "Gracias. Lo medimos juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dois amigos dividem 8 moedas, o mesmo para cada um. Mostre uma parte.",
+          "feedback": {
+            "met": "Vamos medir isso juntos.",
+            "not_yet": "Vamos medir isso juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "equal-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho puts the same in every jar.",
+          "line": "Equal means the same. I share 12 coins into 3 jars."
+        },
+        "es-MX": {
+          "prompt": "Rho pone lo mismo en cada frasco.",
+          "line": "Igual significa lo mismo. Reparto 12 monedas en 3 frascos."
+        },
+        "pt-BR": {
+          "prompt": "O Rho põe o mesmo em cada pote.",
+          "line": "Igual quer dizer o mesmo. Divido 12 moedas em 3 potes."
+        }
+      }
+    },
+    {
+      "id": "equal-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho checks the jars: nothing is left over.",
+          "line": "Each jar has 4. Check: 4 + 4 + 4 is 12."
+        },
+        "es-MX": {
+          "prompt": "Rho revisa los frascos: no sobra ninguna.",
+          "line": "Cada frasco tiene 4. Reviso: 4 + 4 + 4 es 12."
+        },
+        "pt-BR": {
+          "prompt": "O Rho confere os potes: não sobra nenhuma.",
+          "line": "Cada pote tem 4. Confiro: 4 + 4 + 4 é 12."
+        }
+      }
+    },
+    {
+      "id": "share-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho's share jar has 4 coins.",
+          "line": "Two friends get 2 each. 2 + 2 is 4."
+        },
+        "es-MX": {
+          "prompt": "El frasco de compartir de Rho tiene 4 monedas.",
+          "line": "Dos amigos reciben 2 cada uno. 2 + 2 es 4."
+        },
+        "pt-BR": {
+          "prompt": "O pote de compartilhar do Rho tem 4 moedas.",
+          "line": "Dois amigos recebem 2 cada. 2 + 2 é 4."
+        }
+      }
+    },
+    {
+      "id": "jars-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 5
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 2,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho puts 6 coins in 3 jars, equally. Show one jar.",
+          "feedback": {
+            "met": "You shared equally and showed one jar's coins.",
+            "not_yet": "Not yet. Equal means the same in every jar."
+          },
+          "help": [
+            "Share the 6 coins one at a time.",
+            "Every jar gets the same."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho pone 6 monedas en 3 frascos por igual. Muestra un frasco.",
+          "feedback": {
+            "met": "Repartiste por igual y mostraste las monedas de un frasco.",
+            "not_yet": "Todavía no. Igual significa lo mismo en cada frasco."
+          },
+          "help": [
+            "Reparte las 6 monedas de una en una.",
+            "Cada frasco recibe lo mismo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Rho põe 6 moedas em 3 potes por igual. Mostre um pote.",
+          "feedback": {
+            "met": "Você dividiu por igual e mostrou as moedas de um pote.",
+            "not_yet": "Ainda não. Igual quer dizer o mesmo em cada pote."
+          },
+          "help": [
+            "Divida as 6 moedas uma de cada vez.",
+            "Cada pote recebe o mesmo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "split-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "This week Rho wants a telescope.",
+          "line": "So I save more: 6 save, 3 spend, 3 share."
+        },
+        "es-MX": {
+          "prompt": "Esta semana Rho quiere un telescopio.",
+          "line": "Por eso ahorro más: 6 ahorro, 3 gasto, 3 comparto."
+        },
+        "pt-BR": {
+          "prompt": "Esta semana o Rho quer um telescópio.",
+          "line": "Por isso guardo mais: 6 guardo, 3 gasto, 3 compartilho."
+        }
+      }
+    },
+    {
+      "id": "split-02",
+      "type": "money.allocation.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.save-spend-share",
+      "payload": {
+        "total": 10,
+        "step": 1,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 5
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho has 10 coins. Fill the jars: save at least 5.",
+          "feedback": {
+            "met": "You placed every coin and kept enough to save.",
+            "not_yet": "Not yet. Every coin needs a jar, and save needs enough."
+          }
+        },
+        "es-MX": {
+          "prompt": "Rho tiene 10 monedas. Llena los frascos: ahorra al menos 5.",
+          "feedback": {
+            "met": "Pusiste cada moneda y dejaste suficiente para ahorrar.",
+            "not_yet": "Todavía no. Cada moneda necesita un frasco y ahorrar necesita suficientes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Rho tem 10 moedas. Encha os potes: guarde pelo menos 5.",
+          "feedback": {
+            "met": "Você colocou cada moeda e deixou o bastante para guardar.",
+            "not_yet": "Ainda não. Toda moeda precisa de um pote, e guardar precisa de bastante."
+          }
+        }
+      }
+    },
+    {
+      "id": "split-03",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.save-spend-share",
+      "payload": {
+        "choices": [
+          {
+            "id": "ch-spend-most"
+          },
+          {
+            "id": "ch-save-most"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "r-more-fun"
+          },
+          {
+            "id": "r-good"
+          },
+          {
+            "id": "r-buys"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "ch-save-most"
+        ],
+        "reasonQuality": {
+          "r-more-fun": "unsupported",
+          "r-buys": "sound",
+          "r-good": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho wants a telescope soon. Which split fits?",
+          "feedback": {
+            "met": "You chose the split that helps the telescope.",
+            "not_yet": "Not yet. Only saved coins can buy the telescope."
+          },
+          "choices": [
+            {
+              "label": "Spend most coins"
+            },
+            {
+              "label": "Save most coins"
+            }
+          ],
+          "reasonPrompt": "Why does Rho pick it?",
+          "reasons": [
+            {
+              "label": "Spending is more fun."
+            },
+            {
+              "label": "Saving is good."
+            },
+            {
+              "label": "Saved coins buy the telescope."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho quiere un telescopio pronto. ¿Qué reparto le sirve?",
+          "feedback": {
+            "met": "Elegiste el reparto que ayuda al telescopio.",
+            "not_yet": "Todavía no. Solo lo ahorrado compra el telescopio."
+          },
+          "choices": [
+            {
+              "label": "Gastar la mayoría"
+            },
+            {
+              "label": "Ahorrar la mayoría"
+            }
+          ],
+          "reasonPrompt": "¿Por qué lo elige Rho?",
+          "reasons": [
+            {
+              "label": "Gastar es más divertido."
+            },
+            {
+              "label": "Ahorrar es bueno."
+            },
+            {
+              "label": "Lo ahorrado compra el telescopio."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Rho quer um telescópio logo. Qual divisão serve?",
+          "feedback": {
+            "met": "Você escolheu a divisão que ajuda o telescópio.",
+            "not_yet": "Ainda não. Só o guardado compra o telescópio."
+          },
+          "choices": [
+            {
+              "label": "Gastar a maioria"
+            },
+            {
+              "label": "Guardar a maioria"
+            }
+          ],
+          "reasonPrompt": "Por que o Rho escolhe isso?",
+          "reasons": [
+            {
+              "label": "Gastar é mais divertido."
+            },
+            {
+              "label": "Guardar é bom."
+            },
+            {
+              "label": "O guardado compra o telescópio."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "jars-02",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 5
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 5,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho puts 10 coins in two jars, equally. Show one jar.",
+          "feedback": {
+            "met": "You shared the coins equally and showed one jar.",
+            "not_yet": "Not yet. Equal means the same in each jar."
+          },
+          "help": [
+            "Share the 10 coins one at a time.",
+            "Both jars get the same."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho pone 10 monedas en dos frascos por igual. Muestra uno.",
+          "feedback": {
+            "met": "Repartiste las monedas por igual y mostraste un frasco.",
+            "not_yet": "Todavía no. Igual significa lo mismo en cada frasco."
+          },
+          "help": [
+            "Reparte las 10 monedas de una en una.",
+            "Los dos frascos reciben lo mismo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Rho põe 10 moedas em dois potes por igual. Mostre um.",
+          "feedback": {
+            "met": "Você dividiu as moedas por igual e mostrou um pote.",
+            "not_yet": "Ainda não. Igual quer dizer o mesmo em cada pote."
+          },
+          "help": [
+            "Divida as 10 moedas uma de cada vez.",
+            "Os dois potes recebem o mesmo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "friends-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "choices": [
+          {
+            "id": "ch-equal"
+          },
+          {
+            "id": "ch-uneven"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "r-number"
+          },
+          {
+            "id": "r-same"
+          },
+          {
+            "id": "r-like"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "ch-equal"
+        ],
+        "reasonQuality": {
+          "r-same": "sound",
+          "r-number": "partial",
+          "r-like": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho shares 6 coins. Both friends helped the same.",
+          "feedback": {
+            "met": "You chose the same share for both friends.",
+            "not_yet": "Not yet. Both friends did the same work."
+          },
+          "choices": [
+            {
+              "label": "3 to each friend"
+            },
+            {
+              "label": "One gets 5, other 1"
+            }
+          ],
+          "reasonPrompt": "Why does Rho pick it?",
+          "reasons": [
+            {
+              "label": "Three is a nice number."
+            },
+            {
+              "label": "Both helped the same."
+            },
+            {
+              "label": "I like one friend more."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho reparte 6 monedas. Los dos amigos ayudaron igual.",
+          "feedback": {
+            "met": "Elegiste la misma parte para los dos amigos.",
+            "not_yet": "Todavía no. Los dos amigos hicieron el mismo trabajo."
+          },
+          "choices": [
+            {
+              "label": "3 a cada amigo"
+            },
+            {
+              "label": "Uno recibe 5, el otro 1"
+            }
+          ],
+          "reasonPrompt": "¿Por qué lo elige Rho?",
+          "reasons": [
+            {
+              "label": "Tres es un buen número."
+            },
+            {
+              "label": "Los dos ayudaron igual."
+            },
+            {
+              "label": "Me cae mejor un amigo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Rho divide 6 moedas. Os dois amigos ajudaram igual.",
+          "feedback": {
+            "met": "Você escolheu a mesma parte para os dois amigos.",
+            "not_yet": "Ainda não. Os dois amigos fizeram o mesmo trabalho."
+          },
+          "choices": [
+            {
+              "label": "3 para cada amigo"
+            },
+            {
+              "label": "Um recebe 5, o outro 1"
+            }
+          ],
+          "reasonPrompt": "Por que o Rho escolhe isso?",
+          "reasons": [
+            {
+              "label": "Três é um bom número."
+            },
+            {
+              "label": "Os dois ajudaram igual."
+            },
+            {
+              "label": "Gosto mais de um amigo."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 4
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 3,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fair, 3 friends share 9 coins equally. Show one share.",
+          "feedback": {
+            "met": "You shared equally at the fair, too.",
+            "not_yet": "Not yet. Equal means the same for every friend."
+          },
+          "help": [
+            "Deal the 9 coins into 3 equal piles.",
+            "One pile is one friend's share."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria, 3 amigos reparten 9 monedas por igual. Muestra una parte.",
+          "feedback": {
+            "met": "Repartiste por igual también en la feria.",
+            "not_yet": "Todavía no. Igual significa lo mismo para cada amigo."
+          },
+          "help": [
+            "Reparte las 9 monedas en 3 montones iguales.",
+            "Un montón es la parte de un amigo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira, 3 amigos dividem 9 moedas por igual. Mostre uma parte.",
+          "feedback": {
+            "met": "Você dividiu por igual na feira também.",
+            "not_yet": "Ainda não. Igual quer dizer o mesmo para cada amigo."
+          },
+          "help": [
+            "Divida as 9 moedas em 3 montes iguais.",
+            "Um monte é a parte de um amigo."
+          ]
+        }
+      }
+    }
+  ]
+}

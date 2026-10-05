@@ -1,0 +1,1173 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-corner-shop",
+  "lesson_id": "fe-69-06-things-and-help",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.goods-vs-services",
+    "biz.needs-vs-wants"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Cuatro clientes de la tienda de la esquina piden a Liruf pan, un corte de pelo, un juguete y un paseo en pony. Primero se ordena cada petición como cosa o ayuda; después, con las mismas tarjetas, como necesidad o deseo. No hay precios ni cuentas con monedas.",
+  "title": {
+    "en-US": "Things and help, needs and wants",
+    "es-MX": "Cosas y ayuda, necesidades y deseos",
+    "pt-BR": "Coisas e ajuda, necessidades e desejos"
+  },
+  "new_concepts": [
+    "biz.goods-vs-services",
+    "biz.needs-vs-wants"
+  ],
+  "regional": {
+    "universal": "The lesson uses invented cards only, with no prices, coins, real shops or customs, so no market changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Four people come to the corner store.",
+          "line": "Bread, a haircut, a toy, a pony ride. Let's sort them."
+        },
+        "es-MX": {
+          "prompt": "Cuatro personas llegan a la tienda de la esquina.",
+          "line": "Pan, corte de pelo, juguete, paseo en pony. Vamos a ordenar."
+        },
+        "pt-BR": {
+          "prompt": "Quatro pessoas chegam à vendinha da esquina.",
+          "line": "Pão, corte de cabelo, brinquedo, passeio de pônei. Vamos separar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.needs-vs-wants",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-need"
+          },
+          {
+            "id": "bin-want"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-stickers"
+          },
+          {
+            "id": "item-soup"
+          },
+          {
+            "id": "item-medicine"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-cannot-go-without"
+          },
+          {
+            "id": "why-just-a-treat"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-stickers": [
+            {
+              "bin": "bin-want",
+              "reason": "why-just-a-treat"
+            }
+          ],
+          "item-soup": [
+            {
+              "bin": "bin-need",
+              "reason": "why-cannot-go-without"
+            }
+          ],
+          "item-medicine": [
+            {
+              "bin": "bin-need",
+              "reason": "why-cannot-go-without"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's soup, stickers and medicine. Sort and pick why.",
+          "feedback": {
+            "met": "Thanks. Now watch how Liruf sorts, step by step.",
+            "not_yet": "Thanks. Now watch how Liruf sorts, step by step."
+          },
+          "bins": [
+            {
+              "label": "Need"
+            },
+            {
+              "label": "Want"
+            }
+          ],
+          "items": [
+            {
+              "label": "Stickers"
+            },
+            {
+              "label": "Soup"
+            },
+            {
+              "label": "Medicine"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "We can't go without it"
+            },
+            {
+              "label": "It's just a treat"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sopa, calcomanías y medicina de Liruf. Ordena y elige por qué.",
+          "feedback": {
+            "met": "Gracias. Ahora mira cómo ordena Liruf, paso a paso.",
+            "not_yet": "Gracias. Ahora mira cómo ordena Liruf, paso a paso."
+          },
+          "bins": [
+            {
+              "label": "Necesidad"
+            },
+            {
+              "label": "Deseo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Calcomanías"
+            },
+            {
+              "label": "Sopa"
+            },
+            {
+              "label": "Medicina"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "No podemos pasar sin eso"
+            },
+            {
+              "label": "Es solo un antojo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sopa, adesivos e remédio do Liruf. Separe e escolha por quê.",
+          "feedback": {
+            "met": "Anotado. Agora veja como o Liruf separa, passo a passo.",
+            "not_yet": "Anotado. Agora veja como o Liruf separa, passo a passo."
+          },
+          "bins": [
+            {
+              "label": "Necessidade"
+            },
+            {
+              "label": "Desejo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Adesivos"
+            },
+            {
+              "label": "Sopa"
+            },
+            {
+              "label": "Remédio"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Não dá para ficar sem"
+            },
+            {
+              "label": "É só vontade"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "thing-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Liruf holds a loaf of bread.",
+          "line": "I can hold it. So bread is a thing."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Liruf sostiene el pan.",
+          "line": "Lo puedo agarrar. Así que el pan es una cosa."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: O Liruf segura o pão.",
+          "line": "Eu posso segurar. Então o pão é uma coisa."
+        }
+      }
+    },
+    {
+      "id": "help-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Liruf gets a haircut.",
+          "line": "Someone does it for me. A haircut is help."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: A Liruf le cortan el pelo.",
+          "line": "Alguien lo hace por mí. Un corte de pelo es ayuda."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: Cortam o cabelo do Liruf.",
+          "line": "Alguém faz isso por mim. Corte de cabelo é ajuda."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.goods-vs-services",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-thing"
+          },
+          {
+            "id": "bin-help"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-toy"
+          },
+          {
+            "id": "item-pony"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-can-hold"
+          },
+          {
+            "id": "why-done-for-you"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-toy": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-can-hold"
+            }
+          ],
+          "item-pony": [
+            {
+              "bin": "bin-help",
+              "reason": "why-done-for-you"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort the toy and the pony ride. Pick why.",
+          "rule": "Thing or help?",
+          "help": [
+            "Liruf held the bread in his hand.",
+            "Someone did the haircut for him."
+          ],
+          "feedback": {
+            "met": "You sorted each card by the rule and gave a reason.",
+            "not_yet": "Think of the bread and the haircut."
+          },
+          "bins": [
+            {
+              "label": "Thing"
+            },
+            {
+              "label": "Help"
+            }
+          ],
+          "items": [
+            {
+              "label": "Toy"
+            },
+            {
+              "label": "Pony ride"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "You can hold it"
+            },
+            {
+              "label": "Someone does it for you"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ordena el juguete y el paseo en pony. Elige por qué.",
+          "rule": "¿Cosa o ayuda?",
+          "help": [
+            "Liruf sostuvo el pan en la mano.",
+            "A Liruf le hicieron el corte de pelo."
+          ],
+          "feedback": {
+            "met": "Ordenaste cada tarjeta con la regla y diste una razón.",
+            "not_yet": "Piensa en el pan y en el corte de pelo."
+          },
+          "bins": [
+            {
+              "label": "Cosa"
+            },
+            {
+              "label": "Ayuda"
+            }
+          ],
+          "items": [
+            {
+              "label": "Juguete"
+            },
+            {
+              "label": "Paseo en pony"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo puedes agarrar"
+            },
+            {
+              "label": "Alguien lo hace por ti"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Separe o brinquedo e o passeio de pônei. Escolha por quê.",
+          "rule": "Coisa ou ajuda?",
+          "help": [
+            "O Liruf segurou o pão na mão.",
+            "Fizeram o corte de cabelo nele."
+          ],
+          "feedback": {
+            "met": "Você separou cada cartão pela regra e deu um motivo.",
+            "not_yet": "Pense no pão e no corte de cabelo."
+          },
+          "bins": [
+            {
+              "label": "Coisa"
+            },
+            {
+              "label": "Ajuda"
+            }
+          ],
+          "items": [
+            {
+              "label": "Brinquedo"
+            },
+            {
+              "label": "Passeio de pônei"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Dá para segurar"
+            },
+            {
+              "label": "Alguém faz por você"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "need-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Can Liruf go without bread?",
+          "line": "No, we can't go without it. Bread is a need."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: ¿Puede Liruf pasar sin pan?",
+          "line": "No, no podemos pasar sin eso. El pan es una necesidad."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: O Liruf pode ficar sem pão?",
+          "line": "Não, não dá para ficar sem. O pão é uma necessidade."
+        }
+      }
+    },
+    {
+      "id": "want-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: Liruf sees a pony ride. It looks fun.",
+          "line": "It is just a treat. A pony ride is a want."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: Liruf ve un paseo en pony. Se ve divertido.",
+          "line": "Es solo un antojo. Un paseo en pony es un deseo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: O Liruf vê um passeio de pônei. Parece divertido.",
+          "line": "É só vontade. Passeio de pônei é um desejo."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.needs-vs-wants",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-need"
+          },
+          {
+            "id": "bin-want"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-toy"
+          },
+          {
+            "id": "item-water"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-cannot-go-without"
+          },
+          {
+            "id": "why-just-a-treat"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-toy": [
+            {
+              "bin": "bin-want",
+              "reason": "why-just-a-treat"
+            }
+          ],
+          "item-water": [
+            {
+              "bin": "bin-need",
+              "reason": "why-cannot-go-without"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort the toy and the water. Pick why.",
+          "help": [
+            "Liruf could not go without bread.",
+            "The pony ride was just a treat."
+          ],
+          "feedback": {
+            "met": "You sorted each card and picked a reason.",
+            "not_yet": "Think of the bread and the pony ride."
+          },
+          "bins": [
+            {
+              "label": "Need"
+            },
+            {
+              "label": "Want"
+            }
+          ],
+          "items": [
+            {
+              "label": "Toy"
+            },
+            {
+              "label": "Water"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "We can't go without it"
+            },
+            {
+              "label": "It's just a treat"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ordena el juguete y el agua. Elige por qué.",
+          "help": [
+            "Liruf no podía pasar sin pan.",
+            "El paseo en pony era solo un antojo."
+          ],
+          "feedback": {
+            "met": "Ordenaste cada tarjeta y elegiste una razón.",
+            "not_yet": "Piensa en el pan y en el paseo en pony."
+          },
+          "bins": [
+            {
+              "label": "Necesidad"
+            },
+            {
+              "label": "Deseo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Juguete"
+            },
+            {
+              "label": "Agua"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "No podemos pasar sin eso"
+            },
+            {
+              "label": "Es solo un antojo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Separe o brinquedo e a água. Escolha por quê.",
+          "help": [
+            "O Liruf não ficava sem pão.",
+            "O passeio de pônei era só vontade."
+          ],
+          "feedback": {
+            "met": "Você separou cada cartão e escolheu um motivo.",
+            "not_yet": "Pense no pão e no passeio de pônei."
+          },
+          "bins": [
+            {
+              "label": "Necessidade"
+            },
+            {
+              "label": "Desejo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Brinquedo"
+            },
+            {
+              "label": "Água"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Não dá para ficar sem"
+            },
+            {
+              "label": "É só vontade"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.goods-vs-services",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-help"
+          },
+          {
+            "id": "bin-thing"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-walk"
+          },
+          {
+            "id": "item-hat"
+          },
+          {
+            "id": "item-bike"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-done-for-you"
+          },
+          {
+            "id": "why-can-hold"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-walk": [
+            {
+              "bin": "bin-help",
+              "reason": "why-done-for-you"
+            }
+          ],
+          "item-hat": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-can-hold"
+            }
+          ],
+          "item-bike": [
+            {
+              "bin": "bin-help",
+              "reason": "why-done-for-you"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three more customers ask. Sort each card and pick why.",
+          "rule": "Thing or help?",
+          "feedback": {
+            "met": "You sorted each card by the rule.",
+            "not_yet": "Think of the bread and the haircut again."
+          },
+          "bins": [
+            {
+              "label": "Help"
+            },
+            {
+              "label": "Thing"
+            }
+          ],
+          "items": [
+            {
+              "label": "Walking a dog"
+            },
+            {
+              "label": "Hat"
+            },
+            {
+              "label": "Fixing a bike"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Someone does it for you"
+            },
+            {
+              "label": "You can hold it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tres clientes más preguntan. Ordena cada tarjeta y elige por qué.",
+          "rule": "¿Cosa o ayuda?",
+          "feedback": {
+            "met": "Ordenaste cada tarjeta con la regla.",
+            "not_yet": "Piensa otra vez en el pan y en el corte de pelo."
+          },
+          "bins": [
+            {
+              "label": "Ayuda"
+            },
+            {
+              "label": "Cosa"
+            }
+          ],
+          "items": [
+            {
+              "label": "Pasear a un perro"
+            },
+            {
+              "label": "Sombrero"
+            },
+            {
+              "label": "Arreglar una bici"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Alguien lo hace por ti"
+            },
+            {
+              "label": "Lo puedes agarrar"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mais três clientes pedem. Separe cada cartão e escolha por quê.",
+          "rule": "Coisa ou ajuda?",
+          "feedback": {
+            "met": "Você separou cada cartão pela regra.",
+            "not_yet": "Pense de novo no pão e no corte de cabelo."
+          },
+          "bins": [
+            {
+              "label": "Ajuda"
+            },
+            {
+              "label": "Coisa"
+            }
+          ],
+          "items": [
+            {
+              "label": "Passear com um cachorro"
+            },
+            {
+              "label": "Chapéu"
+            },
+            {
+              "label": "Consertar uma bicicleta"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Alguém faz por você"
+            },
+            {
+              "label": "Dá para segurar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.needs-vs-wants",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-need"
+          },
+          {
+            "id": "bin-want"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-candy"
+          },
+          {
+            "id": "item-milk"
+          },
+          {
+            "id": "item-game"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-just-a-treat"
+          },
+          {
+            "id": "why-cannot-go-without"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-candy": [
+            {
+              "bin": "bin-want",
+              "reason": "why-just-a-treat"
+            }
+          ],
+          "item-milk": [
+            {
+              "bin": "bin-need",
+              "reason": "why-cannot-go-without"
+            }
+          ],
+          "item-game": [
+            {
+              "bin": "bin-want",
+              "reason": "why-just-a-treat"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sort milk, candy and a video game. Pick why.",
+          "feedback": {
+            "met": "You sorted each card and picked a reason.",
+            "not_yet": "Think of the bread and the pony ride."
+          },
+          "bins": [
+            {
+              "label": "Need"
+            },
+            {
+              "label": "Want"
+            }
+          ],
+          "items": [
+            {
+              "label": "Candy"
+            },
+            {
+              "label": "Milk"
+            },
+            {
+              "label": "Video game"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It's just a treat"
+            },
+            {
+              "label": "We can't go without it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ordena leche, dulces y un videojuego. Elige por qué.",
+          "feedback": {
+            "met": "Ordenaste cada tarjeta y elegiste una razón.",
+            "not_yet": "Piensa en el pan y en el paseo en pony."
+          },
+          "bins": [
+            {
+              "label": "Necesidad"
+            },
+            {
+              "label": "Deseo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Dulces"
+            },
+            {
+              "label": "Leche"
+            },
+            {
+              "label": "Videojuego"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Es solo un antojo"
+            },
+            {
+              "label": "No podemos pasar sin eso"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Separe leite, doces e um videogame. Escolha por quê.",
+          "feedback": {
+            "met": "Você separou cada cartão e escolheu um motivo.",
+            "not_yet": "Pense no pão e no passeio de pônei."
+          },
+          "bins": [
+            {
+              "label": "Necessidade"
+            },
+            {
+              "label": "Desejo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Doces"
+            },
+            {
+              "label": "Leite"
+            },
+            {
+              "label": "Videogame"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "É só vontade"
+            },
+            {
+              "label": "Não dá para ficar sem"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.needs-wants.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.needs-vs-wants",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-need"
+          },
+          {
+            "id": "bin-want"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-lunch"
+          },
+          {
+            "id": "item-kite"
+          },
+          {
+            "id": "item-bubbles"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-cannot-go-without"
+          },
+          {
+            "id": "why-just-a-treat"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-lunch": [
+            {
+              "bin": "bin-need",
+              "reason": "why-cannot-go-without"
+            }
+          ],
+          "item-kite": [
+            {
+              "bin": "bin-want",
+              "reason": "why-just-a-treat"
+            }
+          ],
+          "item-bubbles": [
+            {
+              "bin": "bin-want",
+              "reason": "why-just-a-treat"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the picnic: lunch, a kite, bubbles. Sort and pick why.",
+          "feedback": {
+            "met": "You sorted the picnic cards and picked reasons.",
+            "not_yet": "Think of the bread and the pony ride."
+          },
+          "bins": [
+            {
+              "label": "Need"
+            },
+            {
+              "label": "Want"
+            }
+          ],
+          "items": [
+            {
+              "label": "Lunch"
+            },
+            {
+              "label": "Kite"
+            },
+            {
+              "label": "Bubbles"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "We can't go without it"
+            },
+            {
+              "label": "It's just a treat"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el picnic: comida, un papalote y burbujas. Ordena y elige por qué.",
+          "feedback": {
+            "met": "Ordenaste las tarjetas del picnic y elegiste razones.",
+            "not_yet": "Piensa en el pan y en el paseo en pony."
+          },
+          "bins": [
+            {
+              "label": "Necesidad"
+            },
+            {
+              "label": "Deseo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Comida"
+            },
+            {
+              "label": "Papalote"
+            },
+            {
+              "label": "Burbujas"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "No podemos pasar sin eso"
+            },
+            {
+              "label": "Es solo un antojo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No piquenique: almoço, uma pipa e bolhas. Separe e escolha por quê.",
+          "feedback": {
+            "met": "Você separou os cartões do piquenique e escolheu motivos.",
+            "not_yet": "Pense no pão e no passeio de pônei."
+          },
+          "bins": [
+            {
+              "label": "Necessidade"
+            },
+            {
+              "label": "Desejo"
+            }
+          ],
+          "items": [
+            {
+              "label": "Almoço"
+            },
+            {
+              "label": "Pipa"
+            },
+            {
+              "label": "Bolhas de sabão"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Não dá para ficar sem"
+            },
+            {
+              "label": "É só vontade"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

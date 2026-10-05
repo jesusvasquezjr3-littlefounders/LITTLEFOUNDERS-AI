@@ -1,0 +1,888 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-eyes-open",
+  "lesson_id": "fe-1317-07-fake-deal",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.scam-awareness",
+    "life.data-privacy",
+    "life.banks-and-accounts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho enseña a leer dos mensajes que llegan la misma noche: un aviso de paquetería que cobra por un link y un comprador que paga de más y pide una devolución por SPEI, fuera de la app. Quien aprende marca las señales (prisa, link raro, pago de más, pago fuera de la app), cuida sus códigos y decide no pagar y avisar a la plataforma.",
+  "title": {
+    "es-MX": "Detecta el trato falso",
+    "en-US": "Spot the fake deal",
+    "pt-BR": "Descubra o negócio falso"
+  },
+  "new_concepts": [
+    "life.scam-awareness"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México los adolescentes reciben avisos de paquetería que cobran un envío por link y compradores de apps de compra y venta que pagan de más, piden la devolución y mandan una captura de SPEI. Se practican esas trampas con remitentes y links inventados y se termina sin pagar y avisando a la plataforma.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "SPEI"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil circulam avisos de encomenda com cobrança por link e compradores de apps de compra e venda que pagam a mais, pedem a devolução por Pix e mostram um comprovante falso. Só remetentes e links inventados, e o fecho é não pagar e denunciar no app.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US teens get parcel texts that charge a redelivery fee through a link, and resale buyers who overpay, ask for a refund by payment app and send a screenshot. Only made-up senders and links; it ends with not paying and reporting it.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "payment app"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Esta noche anunciaste unos audífonos usados en $300 en una app de compra y venta. Empiezan a llegar mensajes.",
+          "line": "Leo cada mensaje señal por señal, antes de tocar nada."
+        },
+        "en-US": {
+          "prompt": "Tonight you listed used headphones for $30 on a resale app. Messages start to arrive.",
+          "line": "I read each message one sign at a time, before I touch anything."
+        },
+        "pt-BR": {
+          "prompt": "Esta noite você anunciou fones usados por R$ 120 em um app de compra e venda. Começam a chegar mensagens.",
+          "line": "Leio cada mensagem sinal por sinal, antes de tocar em qualquer coisa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-lock"
+          },
+          {
+            "id": "msg-club"
+          },
+          {
+            "id": "msg-notes"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-lock"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar, marca los mensajes que parezcan trampas.",
+          "feedback": {
+            "met": "Ahora leemos las señales una por una.",
+            "not_yet": "Ahora leemos las señales una por una."
+          },
+          "messages": [
+            {
+              "sender": "Tu banco",
+              "text": "Cuenta bloqueada. Escribe tu NIP en [link] en 10 minutos."
+            },
+            {
+              "sender": "Entrenador",
+              "text": "El entrenamiento de mañana pasó a las 5. Lleva chamarra."
+            },
+            {
+              "sender": "Mariana",
+              "text": "¿Me mandas los apuntes de hoy? No fui, estaba enferma."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Before we start, flag the messages that look like traps.",
+          "feedback": {
+            "met": "Now we read the signs one at a time.",
+            "not_yet": "Now we read the signs one at a time."
+          },
+          "messages": [
+            {
+              "sender": "Your bank",
+              "text": "Account locked. Enter your PIN at [link] in 10 minutes."
+            },
+            {
+              "sender": "Coach",
+              "text": "Practice moved to 5 tomorrow. Bring a jacket."
+            },
+            {
+              "sender": "Maya",
+              "text": "Can you send me today’s notes? I was out sick."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar, marque as mensagens que parecem armadilhas.",
+          "feedback": {
+            "met": "Agora lemos os sinais um a um.",
+            "not_yet": "Agora lemos os sinais um a um."
+          },
+          "messages": [
+            {
+              "sender": "Seu banco",
+              "text": "Conta bloqueada. Digite sua senha em [link] em 10 minutos."
+            },
+            {
+              "sender": "Treinador",
+              "text": "O treino de amanhã passou para as 17h. Leve um casaco."
+            },
+            {
+              "sender": "Marina",
+              "text": "Pode me mandar as anotações de hoje? Faltei, estava doente."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-rush-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho vuelve al mensaje del banco: “Escribe tu NIP en [link] en 10 minutos.”",
+          "line": "Señal uno: “en 10 minutos” es prisa. La prisa te quita el tiempo de comprobar."
+        },
+        "en-US": {
+          "prompt": "Rho rereads the bank message: “Enter your PIN at [link] in 10 minutes.”",
+          "line": "Sign one: “in 10 minutes” is a rush. A rush stops you from checking."
+        },
+        "pt-BR": {
+          "prompt": "O Rho relê a mensagem do banco: “Digite sua senha em [link] em 10 minutos.”",
+          "line": "Sinal um: “em 10 minutos” é pressa. A pressa tira seu tempo de conferir."
+        }
+      }
+    },
+    {
+      "id": "ex-asks-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El mismo mensaje, segunda lectura. El link pide tu NIP.",
+          "line": "Señal dos: un link raro que pide el NIP. Un banco nunca lo pide por mensaje."
+        },
+        "en-US": {
+          "prompt": "Same message, second look. The link asks for your PIN.",
+          "line": "Sign two: an odd link asking for a PIN. Real banks never ask for it by text."
+        },
+        "pt-BR": {
+          "prompt": "A mesma mensagem, segunda leitura. O link pede sua senha.",
+          "line": "Sinal dois: um link estranho que pede a senha. Banco de verdade nunca pede isso por mensagem."
+        }
+      }
+    },
+    {
+      "id": "ex-over-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Otro caso: un comprador “paga” $600 por tu gorra de $200 y quiere $300 de vuelta fuera de la app.",
+          "line": "Señales tres y cuatro: pago de más y devolución fuera de la app. El extra es la carnada."
+        },
+        "en-US": {
+          "prompt": "Another case: a buyer “pays” $60 for your $20 cap and wants $30 back off the app.",
+          "line": "Signs three and four: an overpayment and a refund outside the app. The extra is bait."
+        },
+        "pt-BR": {
+          "prompt": "Outro caso: um comprador “paga” R$ 240 pelo seu boné de R$ 80 e quer R$ 120 de volta fora do app.",
+          "line": "Sinais três e quatro: pagamento a mais e devolução fora do app. O extra é a isca."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-parcel"
+          },
+          {
+            "id": "msg-buyer"
+          },
+          {
+            "id": "msg-cousin"
+          },
+          {
+            "id": "msg-pickup"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-rush"
+          },
+          {
+            "id": "cue-link"
+          },
+          {
+            "id": "cue-over"
+          },
+          {
+            "id": "cue-off"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-parcel",
+          "msg-buyer"
+        ],
+        "cue_ids": {
+          "msg-parcel": [
+            "cue-rush",
+            "cue-link"
+          ],
+          "msg-buyer": [
+            "cue-over",
+            "cue-off"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Anunciaste audífonos en $300. Marca las trampas y toca las señales que veas.",
+          "feedback": {
+            "met": "Marcaste las dos trampas y dejaste en paz los mensajes reales.",
+            "not_yet": "Todavía no. Revisa cada mensaje con las cuatro señales."
+          },
+          "help": [
+            "Busca prisa, link raro, pago de más y pago fuera de la app."
+          ],
+          "messages": [
+            {
+              "sender": "Paquetería",
+              "text": "Tu paquete está retenido. Paga $25 en [link] hoy o se devuelve."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Pagué $800 por tus audífonos de $300. Devuélveme $400 por SPEI, fuera de la app."
+            },
+            {
+              "sender": "Prima",
+              "text": "La cena es a las 8. Mamá dice que lleves el pastel."
+            },
+            {
+              "sender": "Comprador",
+              "text": "¿Los $300 son fijos? Si sí, puedo pagar ya en la app."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Prisa"
+            },
+            {
+              "label": "Link raro"
+            },
+            {
+              "label": "Pago de más"
+            },
+            {
+              "label": "Pago fuera de la app"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "You listed headphones for $30. Flag the traps, then tap the signs you see.",
+          "feedback": {
+            "met": "You flagged both traps and left the real messages alone.",
+            "not_yet": "Not yet. Check each message for the four signs."
+          },
+          "help": [
+            "Look for a rush, an odd link, an overpayment, payment outside the app."
+          ],
+          "messages": [
+            {
+              "sender": "Parcel service",
+              "text": "Parcel on hold. Pay $2.50 at [link] today or it returns."
+            },
+            {
+              "sender": "Buyer",
+              "text": "Paid $80 for your $30 headphones. Send $40 back outside the app."
+            },
+            {
+              "sender": "Cousin",
+              "text": "Dinner is at 8. Mom says bring the cake."
+            },
+            {
+              "sender": "Buyer",
+              "text": "Is $30 firm? If so, I can pay in the app now."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Rush"
+            },
+            {
+              "label": "Odd link"
+            },
+            {
+              "label": "Overpayment"
+            },
+            {
+              "label": "Payment outside the app"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você anunciou fones por R$ 120. Marque as armadilhas e toque nos sinais que vê.",
+          "feedback": {
+            "met": "Você marcou as duas armadilhas e deixou as mensagens reais em paz.",
+            "not_yet": "Ainda não. Revise cada mensagem com os quatro sinais."
+          },
+          "help": [
+            "Procure pressa, link estranho, pagamento a mais e pagamento fora do app."
+          ],
+          "messages": [
+            {
+              "sender": "Entregas",
+              "text": "Sua encomenda está retida. Pague R$ 10 em [link] hoje ou ela volta."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Paguei R$ 320 pelos fones. Devolva R$ 160 por Pix, fora do app."
+            },
+            {
+              "sender": "Prima",
+              "text": "O jantar é às 20h. A mãe pediu para levar o bolo."
+            },
+            {
+              "sender": "Comprador",
+              "text": "O preço de R$ 120 é fechado? Se for, pago agora pelo app."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Pressa"
+            },
+            {
+              "label": "Link estranho"
+            },
+            {
+              "label": "Pagamento a mais"
+            },
+            {
+              "label": "Pagamento fora do app"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-balance-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho revisa la captura de “pago enviado” que manda el comprador.",
+          "line": "Una captura no prueba nada: un comprobante de SPEI se puede inventar. Confía solo en el dinero que ves en tu cuenta."
+        },
+        "en-US": {
+          "prompt": "Rho checks the “payment sent” screenshot the buyer sends.",
+          "line": "A screenshot proves nothing, and a payment app can reverse a transfer. Trust only money in your account."
+        },
+        "pt-BR": {
+          "prompt": "O Rho confere o print de “pagamento enviado” que o comprador manda.",
+          "line": "Um print não prova nada: comprovante de Pix pode ser falso. Confie só no dinheiro que você vê na sua conta."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.scam-spotter.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-receipt"
+          },
+          {
+            "id": "msg-shot"
+          },
+          {
+            "id": "msg-meet"
+          },
+          {
+            "id": "msg-fee"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-shot",
+          "msg-fee"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu app de compra y venta y tu banco te escriben. Marca cada trampa.",
+          "feedback": {
+            "met": "Marcaste las dos trampas y dejaste pasar los avisos reales.",
+            "not_yet": "Todavía no. Un pago real llega a tu cuenta y no te cobra antes."
+          },
+          "messages": [
+            {
+              "sender": "App del banco",
+              "text": "Pagaste $120 en Café Central. Si no fuiste tú, abre tu app del banco."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Pago enviado, mira la captura. Manda los audífonos hoy."
+            },
+            {
+              "sender": "Comprador",
+              "text": "¿Sigue disponible? Te pago en la app esta noche y me lo envías."
+            },
+            {
+              "sender": "Centro de vendedores",
+              "text": "Tu venta está retenida. Paga $50 en [link] para liberarla."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Your resale app and your bank both message you. Flag every trap.",
+          "feedback": {
+            "met": "You flagged both traps and let the real alerts through.",
+            "not_yet": "Not yet. Real payments reach your account; none charge first."
+          },
+          "messages": [
+            {
+              "sender": "Bank app",
+              "text": "Paid $12 at Corner Cafe. If not you, open your bank app."
+            },
+            {
+              "sender": "Buyer",
+              "text": "Payment sent, see screenshot below. Ship the headphones today."
+            },
+            {
+              "sender": "Buyer",
+              "text": "Still available? I’ll pay in the app tonight, then you ship it."
+            },
+            {
+              "sender": "Seller center",
+              "text": "Your sale is on hold. Pay $5 at [link] to release it."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu app de compra e venda e seu banco escrevem para você. Marque cada armadilha.",
+          "feedback": {
+            "met": "Você marcou as duas armadilhas e deixou os avisos reais passarem.",
+            "not_yet": "Ainda não. Pagamento real chega na sua conta e não cobra antes."
+          },
+          "messages": [
+            {
+              "sender": "App do banco",
+              "text": "Compra de R$ 48 no Café Central. Se não foi você, abra o app."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Pagamento enviado, veja o print. Mande os fones hoje."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Ainda está disponível? Pago pelo app hoje à noite e você envia."
+            },
+            {
+              "sender": "Central de vendedores",
+              "text": "Sua venda está retida. Pague R$ 20 em [link] para liberá-la."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-code-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho mira un mensaje de “soporte” que pide el código de 6 dígitos que llegó a tu celular.",
+          "line": "Un código que llega a tu celular es la llave de tu cuenta. El soporte real nunca lo pide."
+        },
+        "en-US": {
+          "prompt": "Rho looks at a “support” text asking for the 6-digit code that reached your phone.",
+          "line": "A code sent to your phone is a key to your account. Real support never asks for it."
+        },
+        "pt-BR": {
+          "prompt": "O Rho olha uma mensagem de “suporte” que pede o código de 6 dígitos que chegou no seu celular.",
+          "line": "Um código que chega no seu celular é a chave da sua conta. Suporte de verdade nunca pede."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-read"
+          },
+          {
+            "id": "reply-call"
+          },
+          {
+            "id": "reply-part"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-call"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El chat de un amigo pide el código que acaba de llegar a tu celular. ¿Qué respondes?",
+          "feedback": {
+            "met": "Guardaste el código en privado y verificaste por otro lado.",
+            "not_yet": "Todavía no. Un código es una llave: no lo compartas con nadie."
+          },
+          "help": [
+            "Una cuenta hackeada puede sonar igual que un amigo."
+          ],
+          "speaker": "Sam",
+          "line": "Te mandé mi código por error. ¿Me lo lees?",
+          "replies": [
+            {
+              "label": "Claro, aquí está."
+            },
+            {
+              "label": "Te llamo para confirmar que eres tú."
+            },
+            {
+              "label": "Solo los primeros tres dígitos, ¿va?"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A friend’s chat asks for the code that just reached your phone. What do you say?",
+          "feedback": {
+            "met": "You kept the code private and checked another way.",
+            "not_yet": "Not yet. A code is a key; never share it."
+          },
+          "help": [
+            "A hacked account can sound exactly like a friend."
+          ],
+          "speaker": "Sam",
+          "line": "I sent my login code to your number by mistake. Read it back?",
+          "replies": [
+            {
+              "label": "Sure, here it is."
+            },
+            {
+              "label": "I’ll call you to check it’s you."
+            },
+            {
+              "label": "Just the first three digits, okay?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O chat de um amigo pede o código que acabou de chegar no seu celular. O que você responde?",
+          "feedback": {
+            "met": "Você guardou o código em segredo e confirmou por outro caminho.",
+            "not_yet": "Ainda não. Código é uma chave: não divida com ninguém."
+          },
+          "help": [
+            "Uma conta hackeada pode soar igual a um amigo."
+          ],
+          "speaker": "Sam",
+          "line": "Mandei meu código para você por engano. Pode ler de volta?",
+          "replies": [
+            {
+              "label": "Claro, aqui está."
+            },
+            {
+              "label": "Ligo para confirmar que é você."
+            },
+            {
+              "label": "Só os três primeiros dígitos, pode ser?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-stop"
+          },
+          {
+            "id": "choice-proof"
+          },
+          {
+            "id": "choice-pay"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-low"
+          },
+          {
+            "id": "reason-clock"
+          },
+          {
+            "id": "reason-outside"
+          },
+          {
+            "id": "reason-photos"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-stop"
+        ],
+        "reasonQuality": {
+          "reason-outside": "sound",
+          "reason-low": "sound",
+          "reason-clock": "unsupported",
+          "reason-photos": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Unos tenis de $1,200 se anuncian en $400, con pago fuera de la app hoy. ¿Qué haces?",
+          "feedback": {
+            "met": "Decidiste no pagar y reportar el anuncio.",
+            "not_yet": "Todavía no. Revisa el precio y dónde te piden pagar."
+          },
+          "help": [
+            "Piensa: ¿un vendedor real te pide pagar fuera de la app?"
+          ],
+          "choices": [
+            {
+              "label": "No pago y reporto el anuncio"
+            },
+            {
+              "label": "Pido fotos y luego pago fuera de la app"
+            },
+            {
+              "label": "Pago ya antes de que se acaben"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón explica mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Un precio muy bajo es la carnada"
+            },
+            {
+              "label": "La fecha límite muestra que hay demanda"
+            },
+            {
+              "label": "Una venta real no necesita pago fuera de la app"
+            },
+            {
+              "label": "El anuncio trae muchas fotos"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Sneakers that cost $120 are listed at $40, with payment outside the app today. What now?",
+          "feedback": {
+            "met": "You declined to pay and reported the listing.",
+            "not_yet": "Not yet. Recheck the price and where they ask you to pay."
+          },
+          "help": [
+            "Think: does a real seller ask you to pay outside the app?"
+          ],
+          "choices": [
+            {
+              "label": "Don’t pay; report the listing"
+            },
+            {
+              "label": "Ask for photos, then pay outside the app"
+            },
+            {
+              "label": "Pay now before they sell out"
+            }
+          ],
+          "reasonPrompt": "Which reason fits your choice best?",
+          "reasons": [
+            {
+              "label": "A price far below normal is the bait"
+            },
+            {
+              "label": "The deadline shows people want them"
+            },
+            {
+              "label": "Real sales never need payment outside the app"
+            },
+            {
+              "label": "The listing has many photos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um tênis que custa R$ 480 está por R$ 160, com pagamento fora do app hoje. O que você faz?",
+          "feedback": {
+            "met": "Você decidiu não pagar e denunciar o anúncio.",
+            "not_yet": "Ainda não. Revise o preço e onde pedem para você pagar."
+          },
+          "help": [
+            "Pense: um vendedor de verdade pede para pagar fora do app?"
+          ],
+          "choices": [
+            {
+              "label": "Não pago e denuncio o anúncio"
+            },
+            {
+              "label": "Peço fotos e depois pago fora do app"
+            },
+            {
+              "label": "Pago já antes que acabem"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina melhor com sua escolha?",
+          "reasons": [
+            {
+              "label": "Um preço muito baixo é a isca"
+            },
+            {
+              "label": "O prazo mostra que há procura"
+            },
+            {
+              "label": "Venda de verdade não exige pagamento fora do app"
+            },
+            {
+              "label": "O anúncio tem muitas fotos"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

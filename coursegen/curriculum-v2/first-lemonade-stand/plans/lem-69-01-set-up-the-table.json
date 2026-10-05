@@ -1,0 +1,1093 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-6-9",
+  "chapter_id": "lem-69-open-the-stand",
+  "lesson_id": "lem-69-01-set-up-the-table",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.what-is-price",
+    "biz.goods-vs-services"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara ayuda a los primos Nico y Lia a armar su mesa de limonada: una jarra, diez vasos y una tarjeta con un número. Primero ven qué es un precio, las monedas que se dan por una sola cosa, con un vaso de 3 monedas. Luego ven cuándo algo es una cosa que se entrega y cuándo es una ayuda que se hace por el cliente. El niño paga un precio, lee cuánto da un cliente por una sola cosa y separa cosas de ayudas, también en la feria de la escuela.",
+  "title": {
+    "en-US": "Set up the table",
+    "es-MX": "Arma la mesa",
+    "pt-BR": "Monte a mesa"
+  },
+  "new_concepts": [
+    "biz.what-is-price",
+    "biz.goods-vs-services"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nico and Lia set up a lemonade table.",
+          "line": "Hmm, a jug, ten cups, and a card with a number."
+        },
+        "es-MX": {
+          "prompt": "Nico y Lia arman su mesa de limonada.",
+          "line": "Hmm, una jarra, diez vasos y una tarjeta con un número."
+        },
+        "pt-BR": {
+          "prompt": "Nico e Lia montam a mesa de limonada.",
+          "line": "Hmm, uma jarra, dez copos e um cartão com um número."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-thing"
+          },
+          {
+            "id": "bin-help"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-napkin"
+          },
+          {
+            "id": "item-wipe-table"
+          },
+          {
+            "id": "item-spoon"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-hold"
+          },
+          {
+            "id": "why-do-for-them"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-napkin": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ],
+          "item-wipe-table": [
+            {
+              "bin": "bin-help",
+              "reason": "why-do-for-them"
+            }
+          ],
+          "item-spoon": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.goods-vs-services",
+      "copy": {
+        "en-US": {
+          "prompt": "At Nico and Lia's table, sort each one. Then pick why.",
+          "feedback": {
+            "met": "I noted your answer. Now we go step by step.",
+            "not_yet": "I noted your answer. Now we go step by step."
+          },
+          "bins": [
+            {
+              "label": "A thing we hand over"
+            },
+            {
+              "label": "A help we give"
+            }
+          ],
+          "items": [
+            {
+              "label": "Napkin"
+            },
+            {
+              "label": "Wipe the table"
+            },
+            {
+              "label": "Spoon"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "They can hold it"
+            },
+            {
+              "label": "We do it for them"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la mesa de Nico y Lia, separa cada cosa y elige por qué.",
+          "feedback": {
+            "met": "Anoté tu respuesta. Ahora vamos paso a paso.",
+            "not_yet": "Anoté tu respuesta. Ahora vamos paso a paso."
+          },
+          "bins": [
+            {
+              "label": "Una cosa que entregamos"
+            },
+            {
+              "label": "Una ayuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Servilleta"
+            },
+            {
+              "label": "Limpiar la mesa"
+            },
+            {
+              "label": "Cuchara"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo pueden tener en la mano"
+            },
+            {
+              "label": "Lo hacemos por ellos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na mesa do Nico e da Lia, separe cada coisa e escolha por quê.",
+          "feedback": {
+            "met": "Anotei sua resposta. Agora vamos passo a passo.",
+            "not_yet": "Anotei sua resposta. Agora vamos passo a passo."
+          },
+          "bins": [
+            {
+              "label": "Uma coisa que entregamos"
+            },
+            {
+              "label": "Uma ajuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Guardanapo"
+            },
+            {
+              "label": "Limpar a mesa"
+            },
+            {
+              "label": "Colher"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Dá para segurar"
+            },
+            {
+              "label": "A gente faz por eles"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "price-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. The card says: one cup, 3 coins.",
+          "line": "So the price is the coins you give for one thing."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. La tarjeta dice: un vaso, 3 monedas.",
+          "line": "Entonces el precio son las monedas que das por una cosa."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. O cartão diz: um copo, 3 moedas.",
+          "line": "Então o preço são as moedas que você dá por uma coisa."
+        }
+      }
+    },
+    {
+      "id": "price-02",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. A customer gives 3 coins and gets one cup.",
+          "line": "Next customer: 3 coins, one more cup. One price, one thing."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Un cliente da 3 monedas y recibe un vaso.",
+          "line": "Otro cliente: 3 monedas, otro vaso. Un precio, una cosa."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Um cliente dá 3 moedas e recebe um copo.",
+          "line": "Outro cliente: 3 moedas, outro copo. Um preço, uma coisa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 2,
+        "fewest": false
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "copy": {
+        "en-US": {
+          "prompt": "Lia's cookie card says 2 coins. Pay for one cookie.",
+          "feedback": {
+            "met": "You paid the price on the card: 2 coins.",
+            "not_yet": "Not yet. Look at the card again, then count that many."
+          },
+          "help": [
+            "Zara showed it: the price is the coins for one thing.",
+            "Add coins one at a time until you match the card."
+          ]
+        },
+        "es-MX": {
+          "prompt": "La tarjeta de galletas de Lia dice 2 monedas. Paga una galleta.",
+          "feedback": {
+            "met": "Pagaste el precio de la tarjeta: 2 monedas.",
+            "not_yet": "Todavía no. Mira otra vez la tarjeta y cuenta esa cantidad."
+          },
+          "help": [
+            "Zara lo mostró: el precio son las monedas por una cosa.",
+            "Pon monedas una por una hasta igualar la tarjeta."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O cartão de biscoitos da Lia diz 2 moedas. Pague um biscoito.",
+          "feedback": {
+            "met": "Você pagou o preço do cartão: 2 moedas.",
+            "not_yet": "Ainda não. Olhe o cartão de novo e conte essa quantidade."
+          },
+          "help": [
+            "A Zara mostrou: o preço são as moedas por uma coisa.",
+            "Ponha moedas uma a uma até igualar o cartão."
+          ]
+        }
+      }
+    },
+    {
+      "id": "thing-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. Nico hands over a cup.",
+          "line": "They can hold it: a thing we hand over."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Nico entrega un vaso.",
+          "line": "Lo pueden tener en la mano: una cosa que entregamos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. O Nico entrega um copo.",
+          "line": "Dá para segurar: uma coisa que entregamos."
+        }
+      }
+    },
+    {
+      "id": "help-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Lia pours, then carries the cup to the shade.",
+          "line": "You can't hold it. We do it for them: a help."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Lia sirve y lleva el vaso a la sombra.",
+          "line": "No se puede tener en la mano. Lo hacemos por ellos: una ayuda."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. A Lia serve e leva o copo para a sombra.",
+          "line": "Não dá para segurar. A gente faz por eles: uma ajuda."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-thing"
+          },
+          {
+            "id": "bin-help"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-bring-chair"
+          },
+          {
+            "id": "item-straw"
+          },
+          {
+            "id": "item-cookie"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-hold"
+          },
+          {
+            "id": "why-do-for-them"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-bring-chair": [
+            {
+              "bin": "bin-help",
+              "reason": "why-do-for-them"
+            }
+          ],
+          "item-straw": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ],
+          "item-cookie": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.goods-vs-services",
+      "copy": {
+        "en-US": {
+          "prompt": "Your turn at Lia's table: sort each, then pick why.",
+          "feedback": {
+            "met": "Straw and cookie are things. Bringing a chair is a help.",
+            "not_yet": "Not yet. Ask about each one: can they hold it?"
+          },
+          "help": [
+            "Zara asked it for the cup: can they hold it?",
+            "Take one. Hand it over, or do it for them?"
+          ],
+          "rule": "A thing they can hold. A help we do for them.",
+          "bins": [
+            {
+              "label": "A thing we hand over"
+            },
+            {
+              "label": "A help we give"
+            }
+          ],
+          "items": [
+            {
+              "label": "Bring a chair"
+            },
+            {
+              "label": "Straw"
+            },
+            {
+              "label": "Cookie"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "They can hold it"
+            },
+            {
+              "label": "We do it for them"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu turno en la mesa de Lia: separa y elige por qué.",
+          "feedback": {
+            "met": "El popote y la galleta son cosas. Traer una silla es una ayuda.",
+            "not_yet": "Todavía no. Pregunta por cada una: ¿lo pueden tener en la mano?"
+          },
+          "help": [
+            "Zara lo preguntó con el vaso: ¿lo pueden tener en la mano?",
+            "Toma una. ¿La entregamos o la hacemos por ellos?"
+          ],
+          "rule": "Una cosa que pueden tener en la mano. Una ayuda que hacemos por ellos.",
+          "bins": [
+            {
+              "label": "Una cosa que entregamos"
+            },
+            {
+              "label": "Una ayuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Traer una silla"
+            },
+            {
+              "label": "Popote"
+            },
+            {
+              "label": "Galleta"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo pueden tener en la mano"
+            },
+            {
+              "label": "Lo hacemos por ellos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua vez na mesa da Lia: separe e escolha por quê.",
+          "feedback": {
+            "met": "Canudo e biscoito são coisas. Trazer uma cadeira é uma ajuda.",
+            "not_yet": "Ainda não. Pergunte de cada uma: dá para segurar?"
+          },
+          "help": [
+            "A Zara perguntou isso com o copo: dá para segurar?",
+            "Pegue uma. A gente entrega ou faz por eles?"
+          ],
+          "rule": "Uma coisa que dá para segurar. Uma ajuda que a gente faz por eles.",
+          "bins": [
+            {
+              "label": "Uma coisa que entregamos"
+            },
+            {
+              "label": "Uma ajuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Trazer uma cadeira"
+            },
+            {
+              "label": "Canudo"
+            },
+            {
+              "label": "Biscoito"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Dá para segurar"
+            },
+            {
+              "label": "A gente faz por eles"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "story-01",
+      "type": "story.branch.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "opt-2-coins"
+          },
+          {
+            "id": "opt-4-coins"
+          },
+          {
+            "id": "opt-6-coins"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-4-coins"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "copy": {
+        "en-US": {
+          "prompt": "At Lia's table, what does the customer give for one brownie?",
+          "feedback": {
+            "met": "You read the brownie card: 4 coins for one brownie.",
+            "not_yet": "Not yet. Find the brownie card: what price does it show?"
+          },
+          "help": [
+            "The price is the coins you give for one thing.",
+            "Look at the card for the thing the customer takes."
+          ],
+          "scene": "Two cards on the table: cookie, 2 coins. Brownie, 4 coins. One customer takes one brownie.",
+          "options": [
+            {
+              "label": "2 coins"
+            },
+            {
+              "label": "4 coins"
+            },
+            {
+              "label": "6 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la mesa de Lia, ¿cuánto da el cliente por un brownie?",
+          "feedback": {
+            "met": "Leíste la tarjeta del brownie: 4 monedas por un brownie.",
+            "not_yet": "Todavía no. Busca la tarjeta del brownie: ¿qué precio muestra?"
+          },
+          "help": [
+            "El precio son las monedas que das por una cosa.",
+            "Mira la tarjeta de la cosa que lleva el cliente."
+          ],
+          "scene": "Dos tarjetas en la mesa: galleta, 2 monedas. Brownie, 4 monedas. Un cliente lleva un brownie.",
+          "options": [
+            {
+              "label": "2 monedas"
+            },
+            {
+              "label": "4 monedas"
+            },
+            {
+              "label": "6 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na mesa da Lia, quanto o cliente dá por um brownie?",
+          "feedback": {
+            "met": "Você leu o cartão do brownie: 4 moedas por um brownie.",
+            "not_yet": "Ainda não. Ache o cartão do brownie: que preço ele mostra?"
+          },
+          "help": [
+            "O preço são as moedas que você dá por uma coisa.",
+            "Olhe o cartão da coisa que o cliente leva."
+          ],
+          "scene": "Dois cartões na mesa: biscoito, 2 moedas. Brownie, 4 moedas. Um cliente leva um brownie.",
+          "options": [
+            {
+              "label": "2 moedas"
+            },
+            {
+              "label": "4 moedas"
+            },
+            {
+              "label": "6 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-thing"
+          },
+          {
+            "id": "bin-help"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-fan-customer"
+          },
+          {
+            "id": "item-lid"
+          },
+          {
+            "id": "item-show-way"
+          },
+          {
+            "id": "item-brownie"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-hold"
+          },
+          {
+            "id": "why-do-for-them"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-fan-customer": [
+            {
+              "bin": "bin-help",
+              "reason": "why-do-for-them"
+            }
+          ],
+          "item-lid": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ],
+          "item-show-way": [
+            {
+              "bin": "bin-help",
+              "reason": "why-do-for-them"
+            }
+          ],
+          "item-brownie": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.goods-vs-services",
+      "copy": {
+        "en-US": {
+          "prompt": "Lia's table again. Sort each one, then pick why.",
+          "feedback": {
+            "met": "Lid and brownie are things. The other two are helps.",
+            "not_yet": "Not yet. For each one, ask: can they hold it?"
+          },
+          "help": [
+            "Nico handed over a cup. Lia poured: a help.",
+            "Try one thing at a time."
+          ],
+          "rule": "A thing they can hold. A help we do for them.",
+          "bins": [
+            {
+              "label": "A thing we hand over"
+            },
+            {
+              "label": "A help we give"
+            }
+          ],
+          "items": [
+            {
+              "label": "Fan a hot customer"
+            },
+            {
+              "label": "Lid"
+            },
+            {
+              "label": "Show the way"
+            },
+            {
+              "label": "Brownie"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "They can hold it"
+            },
+            {
+              "label": "We do it for them"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "De nuevo la mesa de Lia. Separa cada cosa y elige por qué.",
+          "feedback": {
+            "met": "La tapa y el brownie son cosas. Las otras dos son ayudas.",
+            "not_yet": "Todavía no. Con cada una, pregunta: ¿lo pueden tener en la mano?"
+          },
+          "help": [
+            "Nico entregó un vaso. Lia sirvió: una ayuda.",
+            "Ve una cosa a la vez."
+          ],
+          "rule": "Una cosa que pueden tener en la mano. Una ayuda que hacemos por ellos.",
+          "bins": [
+            {
+              "label": "Una cosa que entregamos"
+            },
+            {
+              "label": "Una ayuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Abanicar a un cliente"
+            },
+            {
+              "label": "Tapa"
+            },
+            {
+              "label": "Indicar el camino"
+            },
+            {
+              "label": "Brownie"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo pueden tener en la mano"
+            },
+            {
+              "label": "Lo hacemos por ellos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mesa da Lia de novo. Separe cada coisa e escolha por quê.",
+          "feedback": {
+            "met": "A tampa e o brownie são coisas. As outras duas são ajudas.",
+            "not_yet": "Ainda não. Em cada uma, pergunte: dá para segurar?"
+          },
+          "help": [
+            "O Nico entregou um copo. A Lia serviu: uma ajuda.",
+            "Veja uma coisa de cada vez."
+          ],
+          "rule": "Uma coisa que dá para segurar. Uma ajuda que a gente faz por eles.",
+          "bins": [
+            {
+              "label": "Uma coisa que entregamos"
+            },
+            {
+              "label": "Uma ajuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Abanar um cliente"
+            },
+            {
+              "label": "Tampa"
+            },
+            {
+              "label": "Mostrar o caminho"
+            },
+            {
+              "label": "Brownie"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Dá para segurar"
+            },
+            {
+              "label": "A gente faz por eles"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "logic.sort-by-rule.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-thing"
+          },
+          {
+            "id": "bin-help"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-face-paint"
+          },
+          {
+            "id": "item-sticker"
+          },
+          {
+            "id": "item-carry-bag"
+          },
+          {
+            "id": "item-bracelet"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-hold"
+          },
+          {
+            "id": "why-do-for-them"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-face-paint": [
+            {
+              "bin": "bin-help",
+              "reason": "why-do-for-them"
+            }
+          ],
+          "item-sticker": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ],
+          "item-carry-bag": [
+            {
+              "bin": "bin-help",
+              "reason": "why-do-for-them"
+            }
+          ],
+          "item-bracelet": [
+            {
+              "bin": "bin-thing",
+              "reason": "why-hold"
+            }
+          ]
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.goods-vs-services",
+      "copy": {
+        "en-US": {
+          "prompt": "School fair: Nico and Lia's new table. Sort each, pick why.",
+          "feedback": {
+            "met": "Holding or doing: the same question worked at a new table.",
+            "not_yet": "Not yet. Ask each one: can they hold it?"
+          },
+          "help": [
+            "A fair is a new place, but the question is the same.",
+            "Take one item at a time and ask it."
+          ],
+          "rule": "A thing they can hold. A help we do for them.",
+          "bins": [
+            {
+              "label": "A thing we hand over"
+            },
+            {
+              "label": "A help we give"
+            }
+          ],
+          "items": [
+            {
+              "label": "Paint a face"
+            },
+            {
+              "label": "Sticker"
+            },
+            {
+              "label": "Carry a bag"
+            },
+            {
+              "label": "Bracelet"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "They can hold it"
+            },
+            {
+              "label": "We do it for them"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Feria escolar: nueva mesa de Nico y Lia. Separa y elige por qué.",
+          "feedback": {
+            "met": "Mano o ayuda: la misma pregunta sirvió en otra mesa.",
+            "not_yet": "Todavía no. Pregunta con cada una: ¿lo pueden tener en la mano?"
+          },
+          "help": [
+            "Una feria es otro lugar, pero la pregunta es la misma.",
+            "Toma una cosa a la vez y hazte la pregunta."
+          ],
+          "rule": "Una cosa que pueden tener en la mano. Una ayuda que hacemos por ellos.",
+          "bins": [
+            {
+              "label": "Una cosa que entregamos"
+            },
+            {
+              "label": "Una ayuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Pintar una cara"
+            },
+            {
+              "label": "Calcomanía"
+            },
+            {
+              "label": "Cargar una bolsa"
+            },
+            {
+              "label": "Pulsera"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Lo pueden tener en la mano"
+            },
+            {
+              "label": "Lo hacemos por ellos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Feira da escola: nova mesa do Nico e da Lia. Separe e escolha por quê.",
+          "feedback": {
+            "met": "Segurar ou fazer: a mesma pergunta serviu em outra mesa.",
+            "not_yet": "Ainda não. Pergunte de cada uma: dá para segurar?"
+          },
+          "help": [
+            "Uma feira é outro lugar, mas a pergunta é a mesma.",
+            "Pegue uma coisa de cada vez e faça a pergunta."
+          ],
+          "rule": "Uma coisa que dá para segurar. Uma ajuda que a gente faz por eles.",
+          "bins": [
+            {
+              "label": "Uma coisa que entregamos"
+            },
+            {
+              "label": "Uma ajuda que damos"
+            }
+          ],
+          "items": [
+            {
+              "label": "Pintar um rosto"
+            },
+            {
+              "label": "Adesivo"
+            },
+            {
+              "label": "Carregar uma sacola"
+            },
+            {
+              "label": "Pulseira"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Dá para segurar"
+            },
+            {
+              "label": "A gente faz por eles"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1207 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-a-plan-that-holds",
+  "lesson_id": "inv-1317-10-the-pyramid",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "invest.pyramid-schemes",
+    "invest.fraud-signals"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho mide con el alumno cómo funciona una “red” que cobra 100 monedas de entrada y paga a quien invita: el árbol de socios ronda por ronda, el camino del dinero y el límite de un pueblo de 5,000 personas. El alumno sigue las rondas, distingue un esquema piramidal de un negocio real por de dónde sale el pago y decide ante un chat nuevo, con nombres y montos inventados.",
+  "title": {
+    "es-MX": "La pirámide",
+    "en-US": "The pyramid",
+    "pt-BR": "A pirâmide"
+  },
+  "new_concepts": [
+    "invest.pyramid-schemes"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México la propuesta llega como una “red” de socios: pagas 100 monedas para entrar y ganas por cada persona que invitas, sin vender nada. Solo hay nombres y montos inventados; la cuenta de las rondas es la misma en todos los mercados y un adulto puede preguntar en CONDUSEF.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "red",
+          "CONDUSEF"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil a oferta aparece como um “círculo” de membros: você paga uma adesão e ganha por cada pessoa que convida, sem vender nada. Só nomes e valores inventados; a conta das rodadas é a mesma em todos os mercados e um adulto pode consultar a CVM.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "círculo",
+          "CVM"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US the pitch arrives as a “club” or a group chat: pay to join, then earn for each person you invite, with nothing sold. Only made-up names and amounts; the round-by-round arithmetic is the same in every market and an adult can check a seller on Investor.gov.",
+        "problem_refs": [
+          "us-finfluencer-confidence-gap"
+        ],
+        "anchors": [
+          "club",
+          "Investor.gov"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate shows you the Rise Club: pay 100 coins to join, then earn for each friend you bring.",
+          "line": "Nothing in it is for sale. We will measure where the pay comes from, one step at a time."
+        },
+        "es-MX": {
+          "prompt": "Un compañero te muestra la app Red Alza: pagas 100 monedas para entrar y ganas por cada amigo que traes.",
+          "line": "No hay nada en venta. Vamos a medir de dónde sale el pago, una medida a la vez."
+        },
+        "pt-BR": {
+          "prompt": "Um colega mostra o app Círculo Alta: você paga 100 moedas para entrar e ganha por cada amigo que levar.",
+          "line": "Não há nada à venda. Vamos medir de onde sai o pagamento, uma medida de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.pyramid-schemes",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-speed"
+          },
+          {
+            "id": "opt-invites"
+          },
+          {
+            "id": "opt-customers"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-customers"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we start, what would you want to know first?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now, step by step.",
+            "not_yet": "Thanks, that shows where you start. Now, step by step."
+          },
+          "scene": "The Rise Club chat is busy. Members post that they were paid for inviting friends, and joining costs 100 coins.",
+          "options": [
+            {
+              "label": "How fast I can get my coins back"
+            },
+            {
+              "label": "How many friends I must invite"
+            },
+            {
+              "label": "What customers actually buy from the club"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de empezar, ¿qué querrías saber primero?",
+          "feedback": {
+            "met": "Gracias, así veo desde dónde partes. Ahora, paso a paso.",
+            "not_yet": "Gracias, así veo desde dónde partes. Ahora, paso a paso."
+          },
+          "scene": "El chat de Red Alza está muy activo. Los socios cuentan que les pagaron por invitar amigos, y entrar cuesta 100 monedas.",
+          "options": [
+            {
+              "label": "Qué tan rápido recupero mis monedas"
+            },
+            {
+              "label": "A cuántos amigos debo invitar"
+            },
+            {
+              "label": "Qué compran en realidad los clientes de la red"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar, o que você gostaria de saber primeiro?",
+          "feedback": {
+            "met": "Certo, isso mostra de onde você parte. Agora, passo a passo.",
+            "not_yet": "Certo, isso mostra de onde você parte. Agora, passo a passo."
+          },
+          "scene": "O chat do Círculo Alta está movimentado. Os membros contam que foram pagos por convidar amigos, e entrar custa 100 moedas.",
+          "options": [
+            {
+              "label": "Com que rapidez recupero minhas moedas"
+            },
+            {
+              "label": "Quantos amigos preciso convidar"
+            },
+            {
+              "label": "O que os clientes realmente compram no círculo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-rule",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The app’s rule: each new member pays 100 coins to join.",
+          "line": "Step 1: the rule. Of each 100, 60 goes to whoever invited them, and the club keeps 40."
+        },
+        "es-MX": {
+          "prompt": "La regla de la app: cada socio nuevo paga 100 monedas para entrar.",
+          "line": "Paso 1: la regla. De cada 100, 60 van a quien lo invitó y la red se queda con 40."
+        },
+        "pt-BR": {
+          "prompt": "A regra do app: cada membro novo paga 100 moedas para entrar.",
+          "line": "Passo 1: a regra. De cada 100, 60 vão para quem convidou e o círculo fica com 40."
+        }
+      }
+    },
+    {
+      "id": "ex-tree",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "tree"
+      },
+      "teaching_role": "example",
+      "knowledge_component_id": "invest.pyramid-schemes",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "n-root"
+            },
+            {
+              "id": "n-a"
+            },
+            {
+              "id": "n-b"
+            },
+            {
+              "id": "n-c"
+            },
+            {
+              "id": "n-a1"
+            },
+            {
+              "id": "n-a2"
+            },
+            {
+              "id": "n-a3"
+            },
+            {
+              "id": "n-b1"
+            },
+            {
+              "id": "n-b2"
+            },
+            {
+              "id": "n-b3"
+            },
+            {
+              "id": "n-c1"
+            },
+            {
+              "id": "n-c2"
+            },
+            {
+              "id": "n-c3"
+            }
+          ],
+          "links": [
+            {
+              "from": "n-root",
+              "to": "n-a"
+            },
+            {
+              "from": "n-root",
+              "to": "n-b"
+            },
+            {
+              "from": "n-root",
+              "to": "n-c"
+            },
+            {
+              "from": "n-a",
+              "to": "n-a1"
+            },
+            {
+              "from": "n-a",
+              "to": "n-a2"
+            },
+            {
+              "from": "n-a",
+              "to": "n-a3"
+            },
+            {
+              "from": "n-b",
+              "to": "n-b1"
+            },
+            {
+              "from": "n-b",
+              "to": "n-b2"
+            },
+            {
+              "from": "n-b",
+              "to": "n-b3"
+            },
+            {
+              "from": "n-c",
+              "to": "n-c1"
+            },
+            {
+              "from": "n-c",
+              "to": "n-c2"
+            },
+            {
+              "from": "n-c",
+              "to": "n-c3"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the tree. Round 1 adds 3 members, and round 2 adds 9, because each brings 3.",
+          "title": "Who joins in each round",
+          "data": {
+            "nodes": [
+              {
+                "label": "Founder"
+              },
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "C"
+              },
+              {
+                "label": "A1"
+              },
+              {
+                "label": "A2"
+              },
+              {
+                "label": "A3"
+              },
+              {
+                "label": "B1"
+              },
+              {
+                "label": "B2"
+              },
+              {
+                "label": "B3"
+              },
+              {
+                "label": "C1"
+              },
+              {
+                "label": "C2"
+              },
+              {
+                "label": "C3"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el árbol. La ronda 1 suma 3 socios y la ronda 2 suma 9, porque cada uno trae 3.",
+          "title": "Quién entra en cada ronda",
+          "data": {
+            "nodes": [
+              {
+                "label": "Fundador"
+              },
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "C"
+              },
+              {
+                "label": "A1"
+              },
+              {
+                "label": "A2"
+              },
+              {
+                "label": "A3"
+              },
+              {
+                "label": "B1"
+              },
+              {
+                "label": "B2"
+              },
+              {
+                "label": "B3"
+              },
+              {
+                "label": "C1"
+              },
+              {
+                "label": "C2"
+              },
+              {
+                "label": "C3"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a árvore. A rodada 1 soma 3 membros e a rodada 2 soma 9, porque cada um traz 3.",
+          "title": "Quem entra em cada rodada",
+          "data": {
+            "nodes": [
+              {
+                "label": "Fundador"
+              },
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "C"
+              },
+              {
+                "label": "A1"
+              },
+              {
+                "label": "A2"
+              },
+              {
+                "label": "A3"
+              },
+              {
+                "label": "B1"
+              },
+              {
+                "label": "B2"
+              },
+              {
+                "label": "B3"
+              },
+              {
+                "label": "C1"
+              },
+              {
+                "label": "C2"
+              },
+              {
+                "label": "C3"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-flow",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "sankey"
+      },
+      "teaching_role": "example",
+      "knowledge_component_id": "invest.pyramid-schemes",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "nodes": [
+            {
+              "id": "node-new"
+            },
+            {
+              "id": "node-inviters"
+            },
+            {
+              "id": "node-club"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-new",
+              "to": "node-inviters",
+              "value": 540
+            },
+            {
+              "from": "node-new",
+              "to": "node-club",
+              "value": 360
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the money. The 9 new members pay 900 coins, and every payout comes from them.",
+          "title": "Where round 2’s 900 coins go",
+          "data": {
+            "nodes": [
+              {
+                "label": "9 new members"
+              },
+              {
+                "label": "Paid to inviters"
+              },
+              {
+                "label": "Kept by the club"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el dinero. Los 9 socios nuevos pagan 900 monedas, y cada pago sale de ellos.",
+          "title": "A dónde van las 900 monedas de la ronda 2",
+          "data": {
+            "nodes": [
+              {
+                "label": "9 socios nuevos"
+              },
+              {
+                "label": "Pago a quien invitó"
+              },
+              {
+                "label": "Se queda la red"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o dinheiro. Os 9 membros novos pagam 900 moedas, e cada pagamento sai deles.",
+          "title": "Para onde vão as 900 moedas da rodada 2",
+          "data": {
+            "nodes": [
+              {
+                "label": "9 membros novos"
+              },
+              {
+                "label": "Pago a quem convidou"
+              },
+              {
+                "label": "Fica com o círculo"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.pyramid-schemes",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          },
+          {
+            "id": "step-4"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "step-2",
+          "step-3",
+          "step-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "27",
+          "step-3": "81",
+          "step-4": "243"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Round 2 is shown. Type how many members join in rounds 3, 4 and 5.",
+          "feedback": {
+            "met": "You carried each round forward, times three, in order.",
+            "not_yet": "Not yet. Multiply the previous round’s members by three, then continue."
+          },
+          "steps": [
+            {
+              "expression": "Round 2: last round’s members × 3",
+              "result": "9",
+              "spokenText": "Round 2: last round’s members times 3"
+            },
+            {
+              "expression": "Round 3: last round’s members × 3",
+              "result": "27",
+              "spokenText": "Round 3: last round’s members times 3"
+            },
+            {
+              "expression": "Round 4: last round’s members × 3",
+              "result": "81",
+              "spokenText": "Round 4: last round’s members times 3"
+            },
+            {
+              "expression": "Round 5: last round’s members × 3",
+              "result": "243",
+              "spokenText": "Round 5: last round’s members times 3"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La ronda 2 ya está. Escribe cuántos socios entran en las rondas 3, 4 y 5.",
+          "feedback": {
+            "met": "Llevaste cada ronda hacia adelante, por tres, en orden.",
+            "not_yet": "Todavía no. Multiplica por tres los socios de la ronda anterior y sigue."
+          },
+          "steps": [
+            {
+              "expression": "Ronda 2: socios de la ronda anterior × 3",
+              "result": "9",
+              "spokenText": "Ronda 2: socios de la ronda anterior por 3"
+            },
+            {
+              "expression": "Ronda 3: socios de la ronda anterior × 3",
+              "result": "27",
+              "spokenText": "Ronda 3: socios de la ronda anterior por 3"
+            },
+            {
+              "expression": "Ronda 4: socios de la ronda anterior × 3",
+              "result": "81",
+              "spokenText": "Ronda 4: socios de la ronda anterior por 3"
+            },
+            {
+              "expression": "Ronda 5: socios de la ronda anterior × 3",
+              "result": "243",
+              "spokenText": "Ronda 5: socios de la ronda anterior por 3"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A rodada 2 já está pronta. Digite quantos membros entram nas rodadas 3, 4 e 5.",
+          "feedback": {
+            "met": "Você levou cada rodada adiante, vezes três, em ordem.",
+            "not_yet": "Ainda não. Multiplique por três os membros da rodada anterior e siga."
+          },
+          "steps": [
+            {
+              "expression": "Rodada 2: membros da rodada anterior × 3",
+              "result": "9",
+              "spokenText": "Rodada 2: membros da rodada anterior vezes 3"
+            },
+            {
+              "expression": "Rodada 3: membros da rodada anterior × 3",
+              "result": "27",
+              "spokenText": "Rodada 3: membros da rodada anterior vezes 3"
+            },
+            {
+              "expression": "Rodada 4: membros da rodada anterior × 3",
+              "result": "81",
+              "spokenText": "Rodada 4: membros da rodada anterior vezes 3"
+            },
+            {
+              "expression": "Rodada 5: membros da rodada anterior × 3",
+              "result": "243",
+              "spokenText": "Rodada 5: membros da rodada anterior vezes 3"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-limit",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Picture the club in a town of 5,000 people, where every member keeps bringing 3.",
+          "line": "Step 4: the limit. Round 8 needs 6,561 people, but the town has 5,000, so it stalls."
+        },
+        "es-MX": {
+          "prompt": "Imagina la red en un pueblo de 5,000 personas, donde cada socio sigue trayendo a 3.",
+          "line": "Paso 4: el límite. La ronda 8 pide 6,561 personas, pero el pueblo tiene 5,000, así que se atora."
+        },
+        "pt-BR": {
+          "prompt": "Imagine o círculo numa cidade de 5.000 pessoas, onde cada membro continua trazendo 3.",
+          "line": "Passo 4: o limite. A rodada 8 pede 6.561 pessoas, mas a cidade tem 5.000, então trava."
+        }
+      }
+    },
+    {
+      "id": "ex-last",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Look at who joined last. Each of them paid 100 coins to get in.",
+          "line": "Step 5: the end. About two in three members are the newest, with no one left to pay them."
+        },
+        "es-MX": {
+          "prompt": "Mira quién entró al final. Cada uno pagó 100 monedas para entrar.",
+          "line": "Paso 5: el final. Cerca de dos de cada tres socios son los más nuevos, y nadie más entra a pagarles."
+        },
+        "pt-BR": {
+          "prompt": "Veja quem entrou por último. Cada um pagou 100 moedas para entrar.",
+          "line": "Passo 5: o fim. Cerca de dois em cada três membros são os mais novos, e ninguém entra depois para pagá-los."
+        }
+      }
+    },
+    {
+      "id": "ex-business",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Now compare a bakery. Customers pay 5 coins for bread, and nobody has to recruit anyone.",
+          "line": "Step 6: a real business. It earns from customers who use its product; a pyramid scheme earns from recruits."
+        },
+        "es-MX": {
+          "prompt": "Ahora compara una panadería. Los clientes pagan 5 monedas por pan, y nadie tiene que reclutar a nadie.",
+          "line": "Paso 6: un negocio real. Gana con clientes que usan su producto; un esquema piramidal gana con reclutas."
+        },
+        "pt-BR": {
+          "prompt": "Agora compare uma padaria. Os clientes pagam 5 moedas por pão, e ninguém precisa recrutar ninguém.",
+          "line": "Passo 6: um negócio real. Ganha com clientes que usam o produto; uma pirâmide financeira ganha com recrutas."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "flowchart"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.fraud-signals",
+      "payload": {
+        "start": "q-source",
+        "nodes": [
+          {
+            "id": "q-source",
+            "kind": "question",
+            "yes": "out-scheme",
+            "no": "q-customers"
+          },
+          {
+            "id": "q-customers",
+            "kind": "question",
+            "yes": "out-business",
+            "no": "out-check"
+          },
+          {
+            "id": "out-scheme",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-business",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-check",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-kit"
+          },
+          {
+            "id": "case-tutor"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-kit": [
+            "q-source",
+            "out-scheme"
+          ],
+          "case-tutor": [
+            "q-source",
+            "q-customers",
+            "out-business"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow each case through the chart. Answer yes or no until you reach an outcome.",
+          "feedback": {
+            "met": "You traced each case by where its pay comes from.",
+            "not_yet": "Not yet. Start with where each case’s pay comes from."
+          },
+          "nodes": [
+            {
+              "label": "Does the pay come from new members’ payments?"
+            },
+            {
+              "label": "Do outside customers pay for something useful?"
+            },
+            {
+              "label": "Pyramid scheme: walk away"
+            },
+            {
+              "label": "Looks like a real business"
+            },
+            {
+              "label": "Unclear: an adult checks it on Investor.gov"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "New members must buy a kit; inviters earn."
+            },
+            {
+              "label": "A tutoring app pays tutors from lesson fees."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sigue cada caso por el diagrama. Responde sí o no hasta llegar a un resultado.",
+          "feedback": {
+            "met": "Rastreaste cada caso según de dónde sale su pago.",
+            "not_yet": "Todavía no. Empieza por de dónde sale el pago de cada caso."
+          },
+          "nodes": [
+            {
+              "label": "¿El pago viene de lo que pagan los socios nuevos?"
+            },
+            {
+              "label": "¿Clientes de fuera pagan por algo que usan?"
+            },
+            {
+              "label": "Esquema piramidal: aléjate"
+            },
+            {
+              "label": "Parece un negocio real"
+            },
+            {
+              "label": "Poco claro: un adulto pregunta en CONDUSEF"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Los socios nuevos deben comprar un kit; quien invita gana."
+            },
+            {
+              "label": "Una app paga tutores con el precio de las clases."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Siga cada caso pelo diagrama. Responda sim ou não até chegar a um resultado.",
+          "feedback": {
+            "met": "Você acompanhou cada caso por onde vem o pagamento.",
+            "not_yet": "Ainda não. Comece por onde vem o pagamento de cada caso."
+          },
+          "nodes": [
+            {
+              "label": "O pagamento vem do que os membros novos pagam?"
+            },
+            {
+              "label": "Clientes de fora pagam por algo que usam?"
+            },
+            {
+              "label": "Pirâmide financeira: afaste-se"
+            },
+            {
+              "label": "Parece um negócio real"
+            },
+            {
+              "label": "Pouco claro: um adulto consulta a CVM"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Membros novos precisam comprar um kit; quem convida ganha."
+            },
+            {
+              "label": "Um app paga tutores com o preço das aulas."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "column"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "invest.pyramid-schemes",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "round-5"
+            },
+            {
+              "id": "round-6"
+            },
+            {
+              "id": "round-7"
+            },
+            {
+              "id": "round-8"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-new",
+              "values": [
+                243,
+                729,
+                2187,
+                6561
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-r6"
+            },
+            {
+              "id": "opt-r7"
+            },
+            {
+              "id": "opt-r8"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-r6"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Each column is the new members one round needs.",
+          "feedback": {
+            "met": "Round 6 is the last column below the student count.",
+            "not_yet": "Not yet. Find the last column smaller than the student count."
+          },
+          "title": "New members needed per round",
+          "data": {
+            "categories": [
+              {
+                "label": "Round 5"
+              },
+              {
+                "label": "Round 6"
+              },
+              {
+                "label": "Round 7"
+              },
+              {
+                "label": "Round 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "New members"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "A school has 1,000 students. Which is the last round with fewer new members than students?",
+            "options": [
+              {
+                "label": "Round 6"
+              },
+              {
+                "label": "Round 7"
+              },
+              {
+                "label": "Round 8"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Cada columna muestra los socios nuevos que pide una ronda.",
+          "feedback": {
+            "met": "La ronda 6 es la última columna bajo el número de alumnos.",
+            "not_yet": "Todavía no. Busca la última columna menor que el número de alumnos."
+          },
+          "title": "Socios nuevos que pide cada ronda",
+          "data": {
+            "categories": [
+              {
+                "label": "Ronda 5"
+              },
+              {
+                "label": "Ronda 6"
+              },
+              {
+                "label": "Ronda 7"
+              },
+              {
+                "label": "Ronda 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Socios nuevos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Una escuela tiene 1,000 alumnos. ¿Cuál es la última ronda con menos socios nuevos que alumnos?",
+            "options": [
+              {
+                "label": "Ronda 6"
+              },
+              {
+                "label": "Ronda 7"
+              },
+              {
+                "label": "Ronda 8"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cada coluna mostra os membros novos que uma rodada pede.",
+          "feedback": {
+            "met": "A rodada 6 é a última coluna abaixo do número de alunos.",
+            "not_yet": "Ainda não. Procure a última coluna menor que o número de alunos."
+          },
+          "title": "Membros novos que cada rodada pede",
+          "data": {
+            "categories": [
+              {
+                "label": "Rodada 5"
+              },
+              {
+                "label": "Rodada 6"
+              },
+              {
+                "label": "Rodada 7"
+              },
+              {
+                "label": "Rodada 8"
+              }
+            ],
+            "series": [
+              {
+                "label": "Membros novos"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Uma escola tem 1.000 alunos. Qual é a última rodada com menos membros novos que alunos?",
+            "options": [
+              {
+                "label": "Rodada 6"
+              },
+              {
+                "label": "Rodada 7"
+              },
+              {
+                "label": "Rodada 8"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.pyramid-schemes",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-join"
+          },
+          {
+            "id": "opt-stay"
+          },
+          {
+            "id": "opt-test"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-stay"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What is your best next step?",
+          "feedback": {
+            "met": "You traced the 80 coins to new members and stayed out.",
+            "not_yet": "Not yet. Ask where the 80 coins come from."
+          },
+          "scene": "A classmate adds you to a group chat called Success Team. Joining costs 200 coins, and you earn 80 for each person you bring. The chat sells nothing.",
+          "options": [
+            {
+              "label": "Join now, since early members got paid"
+            },
+            {
+              "label": "Stay out: pay comes only from new members"
+            },
+            {
+              "label": "Join small first, and leave if it stalls"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es tu mejor paso siguiente?",
+          "feedback": {
+            "met": "Rastreaste las 80 monedas hasta los socios nuevos y no entraste.",
+            "not_yet": "Todavía no. Pregunta de dónde salen las 80 monedas."
+          },
+          "scene": "Un compañero te agrega a un chat llamado Equipo Éxito. Entrar cuesta 200 monedas y ganas 80 por cada persona que traigas. El chat no vende nada.",
+          "options": [
+            {
+              "label": "Entro ya, porque los primeros sí cobraron"
+            },
+            {
+              "label": "No entro: el pago sale solo de socios nuevos"
+            },
+            {
+              "label": "Entro con poco y salgo si se atora"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Qual é o seu melhor próximo passo?",
+          "feedback": {
+            "met": "Você rastreou as 80 moedas até os membros novos e ficou de fora.",
+            "not_yet": "Ainda não. Pergunte de onde vêm as 80 moedas."
+          },
+          "scene": "Um colega adiciona você a um chat chamado Time Sucesso. Entrar custa 200 moedas e você ganha 80 por cada pessoa que levar. O chat não vende nada.",
+          "options": [
+            {
+              "label": "Entro já, porque os primeiros receberam"
+            },
+            {
+              "label": "Não entro: o pagamento vem só de membros novos"
+            },
+            {
+              "label": "Entro com pouco e saio se travar"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

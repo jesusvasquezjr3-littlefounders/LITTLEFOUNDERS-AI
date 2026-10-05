@@ -1,0 +1,1615 @@
+{
+  "namespace": "a3c1f0de-5b7e-4c21-9d34-7e6f1b2a8c90",
+  "course_slug": "investing",
+  "tables": {
+    "courses": [
+      {
+        "id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "slug": "investing",
+        "title": {
+          "en-US": "Investing",
+          "es-MX": "Inversiones",
+          "pt-BR": "Investimentos"
+        },
+        "description": {
+          "en-US": "Learn how money can grow over time by putting it to work wisely.",
+          "es-MX": "Aprende cómo el dinero puede crecer con el tiempo al ponerlo a trabajar con sabiduría.",
+          "pt-BR": "Aprenda como o dinheiro pode crescer com o tempo ao colocá-lo para trabalhar com sabedoria."
+        },
+        "subject": "money",
+        "status": "draft",
+        "position": 3,
+        "requires": [
+          "financial-education",
+          "entrepreneurship"
+        ],
+        "badge_asset": "course-badges/investing.png"
+      }
+    ],
+    "adventures": [
+      {
+        "id": "1b277a59-67e2-57d9-a7d6-85b71df249e9",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 1,
+        "slug": "inv-1012-growth-you-can-see",
+        "title": {
+          "en-US": "Growth you can see",
+          "es-MX": "Crecimiento que se ve",
+          "pt-BR": "Crescimento que dá para ver"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 11,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "92511712-d443-597c-8068-c34dd9a3ef4c",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 2,
+        "slug": "inv-1012-luck-risk-and-the-simulator",
+        "title": {
+          "en-US": "Luck",
+          "es-MX": "Suerte",
+          "pt-BR": "Sorte"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 11,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "a5891b5d-a340-5af5-9a72-2b248d2830e1",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 3,
+        "slug": "inv-1317-the-clock-and-your-money",
+        "title": {
+          "en-US": "The clock and your money",
+          "es-MX": "El reloj y tu dinero",
+          "pt-BR": "O relógio e o seu dinheiro"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "5f43ffa7-8b97-534d-8a0b-62ee85bc84c9",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 4,
+        "slug": "inv-1317-risk-and-baskets",
+        "title": {
+          "en-US": "Risk and baskets",
+          "es-MX": "Riesgo y canastas",
+          "pt-BR": "Risco e cestas"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "8b24ee17-02c8-50fe-871f-15e928e6633f",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 5,
+        "slug": "inv-1317-a-plan-that-holds",
+        "title": {
+          "en-US": "A plan that holds",
+          "es-MX": "Un plan que aguanta",
+          "pt-BR": "Um plano que se sustenta"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "8e13a937-7663-58ce-b10b-a6d6d45ef835",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 6,
+        "slug": "inv-adult-time-rates-and-risk",
+        "title": {
+          "en-US": "Time",
+          "es-MX": "Tiempo",
+          "pt-BR": "Tempo"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      },
+      {
+        "id": "62259911-bd2f-5f20-9f19-df6b4cda68a2",
+        "course_id": "8e4f14d0-8488-5154-a9f1-fe5eb24f8852",
+        "position": 7,
+        "slug": "inv-adult-baskets-offers-and-a-plan",
+        "title": {
+          "en-US": "Baskets",
+          "es-MX": "Canastas",
+          "pt-BR": "Cestas"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      }
+    ],
+    "sagas": [
+      {
+        "id": "4d476cfd-3d27-569e-9fd1-237b4be65ef3",
+        "adventure_id": "1b277a59-67e2-57d9-a7d6-85b71df249e9",
+        "position": 1,
+        "slug": "inv-1012-growth-you-can-see",
+        "title": {
+          "en-US": "Growth you can see",
+          "es-MX": "Crecimiento que se ve",
+          "pt-BR": "Crescimento que dá para ver"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "8c35e4c8-19de-5683-b7fa-252af4b36fbc",
+        "adventure_id": "92511712-d443-597c-8068-c34dd9a3ef4c",
+        "position": 1,
+        "slug": "inv-1012-luck-risk-and-the-simulator",
+        "title": {
+          "en-US": "Luck",
+          "es-MX": "Suerte",
+          "pt-BR": "Sorte"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "f4678833-a809-5ae3-8098-ae641a81bde1",
+        "adventure_id": "a5891b5d-a340-5af5-9a72-2b248d2830e1",
+        "position": 1,
+        "slug": "inv-1317-the-clock-and-your-money",
+        "title": {
+          "en-US": "The clock and your money",
+          "es-MX": "El reloj y tu dinero",
+          "pt-BR": "O relógio e o seu dinheiro"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "bea826c4-89d4-5489-9836-29730a389a28",
+        "adventure_id": "5f43ffa7-8b97-534d-8a0b-62ee85bc84c9",
+        "position": 1,
+        "slug": "inv-1317-risk-and-baskets",
+        "title": {
+          "en-US": "Risk and baskets",
+          "es-MX": "Riesgo y canastas",
+          "pt-BR": "Risco e cestas"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "2d304df6-0555-5f47-b005-5672136e96a9",
+        "adventure_id": "8b24ee17-02c8-50fe-871f-15e928e6633f",
+        "position": 1,
+        "slug": "inv-1317-a-plan-that-holds",
+        "title": {
+          "en-US": "A plan that holds",
+          "es-MX": "Un plan que aguanta",
+          "pt-BR": "Um plano que se sustenta"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "b3331224-0e13-55ac-847a-c7c543dfc05a",
+        "adventure_id": "8e13a937-7663-58ce-b10b-a6d6d45ef835",
+        "position": 1,
+        "slug": "inv-adult-time-rates-and-risk",
+        "title": {
+          "en-US": "Time",
+          "es-MX": "Tiempo",
+          "pt-BR": "Tempo"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "d0213480-fc21-50f4-acf6-0089043f4c10",
+        "adventure_id": "62259911-bd2f-5f20-9f19-df6b4cda68a2",
+        "position": 1,
+        "slug": "inv-adult-baskets-offers-and-a-plan",
+        "title": {
+          "en-US": "Baskets",
+          "es-MX": "Canastas",
+          "pt-BR": "Cestas"
+        },
+        "status": "draft"
+      }
+    ],
+    "topics": [
+      {
+        "id": "7fb091d6-de89-5547-a3ce-2feda6c073f5",
+        "saga_id": "4d476cfd-3d27-569e-9fd1-237b4be65ef3",
+        "position": 1,
+        "slug": "inv-1012-01-steady-or-faster",
+        "title": {
+          "en-US": "Steady or faster growth?",
+          "es-MX": "¿Crece parejo o cada vez más?",
+          "pt-BR": "Cresce igual ou cada vez mais?"
+        },
+        "learning_objective": {
+          "en-US": "Tell steady growth (the same amount each step) from accelerating growth (more each step) and describe the shape of each curve.",
+          "es-MX": "Distinguir un crecimiento parejo (lo mismo en cada paso) de uno acelerado (cada vez más) y describir la forma de cada curva.",
+          "pt-BR": "Distinguir um crescimento constante (o mesmo a cada passo) de um acelerado (cada vez mais) e descrever a forma de cada curva."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ce1a37c8-48eb-5524-bbb1-854c3c12e81c",
+        "saga_id": "4d476cfd-3d27-569e-9fd1-237b4be65ef3",
+        "position": 2,
+        "slug": "inv-1012-02-coins-now-or-later",
+        "title": {
+          "en-US": "Coins now or later?",
+          "es-MX": "¿Monedas ahora o después?",
+          "pt-BR": "Moedas agora ou depois?"
+        },
+        "learning_objective": {
+          "en-US": "Explain why money in hand is worth more than the same amount promised later, and when waiting is worth it.",
+          "es-MX": "Explicar por qué el dinero en mano vale más que la misma cantidad prometida para después, y cuándo sí vale la pena esperar.",
+          "pt-BR": "Explicar por que o dinheiro na mão vale mais do que o mesmo valor prometido para depois, e quando vale a pena esperar."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ddffc173-ff56-5e91-8b54-6760d3f6fed8",
+        "saga_id": "4d476cfd-3d27-569e-9fd1-237b4be65ef3",
+        "position": 3,
+        "slug": "inv-1012-03-the-pretend-fund",
+        "title": {
+          "en-US": "The pretend fund",
+          "es-MX": "El fondo de práctica",
+          "pt-BR": "O fundo de prática"
+        },
+        "learning_objective": {
+          "en-US": "Show how leaving earnings in makes each period's gain grow, and what is lost when growth is interrupted.",
+          "es-MX": "Mostrar cómo dejar las ganancias adentro hace crecer la ganancia de cada periodo, y qué se pierde si el crecimiento se interrumpe.",
+          "pt-BR": "Mostrar como deixar os ganhos aplicados faz o ganho de cada período crescer, e o que se perde quando o crescimento é interrompido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8fea8e88-b65c-5bcd-a108-3e9f71c2d7a1",
+        "saga_id": "4d476cfd-3d27-569e-9fd1-237b4be65ef3",
+        "position": 4,
+        "slug": "inv-1012-04-simple-or-compound",
+        "title": {
+          "en-US": "Simple or compound growth",
+          "es-MX": "Crecimiento simple o compuesto",
+          "pt-BR": "Crescimento simples ou composto"
+        },
+        "learning_objective": {
+          "en-US": "Compare simple and compound interest on the same amount and rate, and choose the better one for a goal and time frame.",
+          "es-MX": "Comparar interés simple y compuesto sobre el mismo monto y porcentaje, y elegir el mejor para una meta y un plazo.",
+          "pt-BR": "Comparar juros simples e compostos sobre o mesmo valor e taxa, e escolher o melhor para uma meta e um prazo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "7c154c0c-f03d-58f2-bc71-57d613280be1",
+        "saga_id": "8c35e4c8-19de-5683-b7fa-252af4b36fbc",
+        "position": 1,
+        "slug": "inv-1012-05-one-win-proves-nothing",
+        "title": {
+          "en-US": "One win proves nothing",
+          "es-MX": "Una victoria no prueba nada",
+          "pt-BR": "Uma vitória não prova nada"
+        },
+        "learning_objective": {
+          "en-US": "Judge a risky option by how often it pays and how much, and explain why one win proves nothing.",
+          "es-MX": "Juzgar una opción con riesgo por qué tan seguido paga y cuánto, y explicar por qué ganar una vez no prueba nada.",
+          "pt-BR": "Avaliar uma opção com risco por quantas vezes paga e quanto, e explicar por que ganhar uma vez não prova nada."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "f6ee499e-7f38-5d14-a2d9-1931ad66e000",
+        "saga_id": "8c35e4c8-19de-5683-b7fa-252af4b36fbc",
+        "position": 2,
+        "slug": "inv-1012-06-big-safe-fast",
+        "title": {
+          "en-US": "Big, safe, fast: not all three",
+          "es-MX": "Grande, segura, rápida: no las tres",
+          "pt-BR": "Grande, segura, rápida: não as três"
+        },
+        "learning_objective": {
+          "en-US": "Explain that no option is at once big, safe and fast, and ask who carries the risk in an offer that claims to be.",
+          "es-MX": "Explicar que ninguna opción es grande, segura y rápida a la vez, y preguntar quién carga el riesgo en una oferta que dice serlo.",
+          "pt-BR": "Explicar que nenhuma opção é grande, segura e rápida ao mesmo tempo, e perguntar quem carrega o risco em uma oferta que diz ser."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "cd0b1f0e-8337-5381-af40-deea810fd135",
+        "saga_id": "8c35e4c8-19de-5683-b7fa-252af4b36fbc",
+        "position": 3,
+        "slug": "inv-1012-07-the-deadline",
+        "title": {
+          "en-US": "Waiting costs: set a deadline",
+          "es-MX": "Esperar cuesta: pon una fecha límite",
+          "pt-BR": "Esperar custa: defina um prazo"
+        },
+        "learning_objective": {
+          "en-US": "Recognize that not deciding has a cost, tell a useful pause from putting things off, and set a deadline for a decision.",
+          "es-MX": "Reconocer que no decidir tiene un costo, distinguir una pausa útil de la postergación y ponerle fecha límite a una decisión.",
+          "pt-BR": "Reconhecer que não decidir tem um custo, distinguir uma pausa útil de adiar sem fim e definir um prazo para uma decisão."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ecf6e401-555c-5b4a-982d-bb38ce009226",
+        "saga_id": "8c35e4c8-19de-5683-b7fa-252af4b36fbc",
+        "position": 4,
+        "slug": "inv-1012-08-growth-simulator",
+        "title": {
+          "en-US": "Guess first, then run",
+          "es-MX": "Adivina primero, luego corre",
+          "pt-BR": "Chute primeiro, depois rode"
+        },
+        "learning_objective": {
+          "en-US": "Use a simulation to practice decisions without real money, and remember that it trains judgment rather than giving instructions.",
+          "es-MX": "Usar una simulación para practicar decisiones sin dinero real, y recordar que entrena el criterio en vez de dar instrucciones.",
+          "pt-BR": "Usar uma simulação para praticar decisões sem dinheiro real, e lembrar que ela treina o julgamento em vez de dar instruções."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9c4262c9-d24a-5f4c-bdf2-37e0b149633f",
+        "saga_id": "f4678833-a809-5ae3-8098-ae641a81bde1",
+        "position": 1,
+        "slug": "inv-1317-01-compound-in-a-table",
+        "title": {
+          "en-US": "Compound growth in a table",
+          "es-MX": "El interés compuesto en una tabla",
+          "pt-BR": "Juros compostos em uma tabela"
+        },
+        "learning_objective": {
+          "en-US": "Show how leaving earnings in makes each period's gain grow, and what is lost when growth is interrupted.",
+          "es-MX": "Mostrar cómo dejar las ganancias adentro hace crecer la ganancia de cada periodo, y qué se pierde si el crecimiento se interrumpe.",
+          "pt-BR": "Mostrar como deixar os ganhos aplicados faz o ganho de cada período crescer, e o que se perde quando o crescimento é interrompido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "35d7a708-b7fb-5276-8c8a-8103dd35e26a",
+        "saga_id": "f4678833-a809-5ae3-8098-ae641a81bde1",
+        "position": 2,
+        "slug": "inv-1317-02-money-now-or-later",
+        "title": {
+          "en-US": "Money now or later",
+          "es-MX": "Dinero ahora o después",
+          "pt-BR": "Dinheiro agora ou depois"
+        },
+        "learning_objective": {
+          "en-US": "Explain why money in hand is worth more than the same amount promised later, and when waiting is worth it.",
+          "es-MX": "Explicar por qué el dinero en mano vale más que la misma cantidad prometida para después, y cuándo sí vale la pena esperar.",
+          "pt-BR": "Explicar por que o dinheiro na mão vale mais do que o mesmo valor prometido para depois, e quando vale a pena esperar."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "7480b1ec-e094-5188-8181-950c2657719b",
+        "saga_id": "f4678833-a809-5ae3-8098-ae641a81bde1",
+        "position": 3,
+        "slug": "inv-1317-03-the-early-starter",
+        "title": {
+          "en-US": "The early starter",
+          "es-MX": "El que empieza temprano",
+          "pt-BR": "Quem começa cedo"
+        },
+        "learning_objective": {
+          "en-US": "Compare two people who save the same amount but start at different times, and explain why the earlier start ends with more.",
+          "es-MX": "Comparar a dos personas que ahorran lo mismo pero empiezan en momentos distintos, y explicar por qué quien empieza antes termina con más.",
+          "pt-BR": "Comparar duas pessoas que poupam o mesmo valor mas começam em momentos diferentes, e explicar por que quem começa antes termina com mais."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "7f932598-c3a4-5baa-89e5-38064cb40584",
+        "saga_id": "f4678833-a809-5ae3-8098-ae641a81bde1",
+        "position": 4,
+        "slug": "inv-1317-04-prices-that-rise",
+        "title": {
+          "en-US": "Prices that rise",
+          "es-MX": "Precios que suben",
+          "pt-BR": "Preços que sobem"
+        },
+        "learning_objective": {
+          "en-US": "Work out how much a price rose in currency and percent, and add a buffer to a goal so a price rise does not leave it short.",
+          "es-MX": "Calcular cuánto subió un precio en dinero y en porcentaje, y agregar un colchón a una meta para que una subida no la deje corta.",
+          "pt-BR": "Calcular quanto um preço subiu em dinheiro e em porcentagem, e adicionar uma reserva a uma meta para que uma alta não a deixe curta."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "0923af9f-2bf3-5604-873a-ee08b8985c27",
+        "saga_id": "bea826c4-89d4-5489-9836-29730a389a28",
+        "position": 1,
+        "slug": "inv-1317-05-how-often-and-how-much",
+        "title": {
+          "en-US": "How often, and how much",
+          "es-MX": "Cada cuánto paga y cuánto",
+          "pt-BR": "Com que frequência, e quanto"
+        },
+        "learning_objective": {
+          "en-US": "Judge a risky option by how often it pays and how much, and explain why one win proves nothing.",
+          "es-MX": "Juzgar una opción con riesgo por qué tan seguido paga y cuánto, y explicar por qué ganar una vez no prueba nada.",
+          "pt-BR": "Avaliar uma opção com risco por quantas vezes paga e quanto, e explicar por que ganhar uma vez não prova nada."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "fcee8ecb-8957-50ad-897d-2e2fb12930b8",
+        "saga_id": "bea826c4-89d4-5489-9836-29730a389a28",
+        "position": 2,
+        "slug": "inv-1317-06-risk-and-the-clock",
+        "title": {
+          "en-US": "Risk and the clock",
+          "es-MX": "El riesgo y el reloj",
+          "pt-BR": "O risco e o relógio"
+        },
+        "learning_objective": {
+          "en-US": "Match how much risk to take to the time until a goal and to how much loss you can afford.",
+          "es-MX": "Ajustar cuánto riesgo tomar según el tiempo que falta para una meta y cuánta pérdida puedes permitirte.",
+          "pt-BR": "Ajustar quanto risco assumir ao tempo que falta para uma meta e a quanta perda você pode suportar."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c6b85340-b3b0-5428-b1fc-9fc090be96a5",
+        "saga_id": "bea826c4-89d4-5489-9836-29730a389a28",
+        "position": 3,
+        "slug": "inv-1317-07-baskets-not-eggs",
+        "title": {
+          "en-US": "Baskets, not eggs",
+          "es-MX": "Canastas, no huevos",
+          "pt-BR": "Cestas, não ovos"
+        },
+        "learning_objective": {
+          "en-US": "Explain that a share is a small piece of something and a fund is a basket of many pieces that someone manages.",
+          "es-MX": "Explicar que una acción es un pedacito de algo y un fondo es una canasta de muchos pedacitos que alguien administra.",
+          "pt-BR": "Explicar que uma ação é um pedacinho de algo e um fundo é uma cesta de muitos pedacinhos que alguém administra."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c02ae2e5-ac2b-5748-96cc-1ca5b9eed844",
+        "saga_id": "bea826c4-89d4-5489-9836-29730a389a28",
+        "position": 4,
+        "slug": "inv-1317-08-the-mix-and-the-index",
+        "title": {
+          "en-US": "The mix and the index",
+          "es-MX": "La mezcla y el índice",
+          "pt-BR": "A mistura e o índice"
+        },
+        "learning_objective": {
+          "en-US": "Explain how an index follows a whole group, why nobody can always pick the winner, and when following the group is the better path.",
+          "es-MX": "Explicar cómo un índice sigue a todo un grupo, por qué nadie puede adivinar siempre la ganadora y cuándo conviene seguir al grupo.",
+          "pt-BR": "Explicar como um índice segue um grupo inteiro, por que ninguém acerta sempre a vencedora e quando vale mais seguir o grupo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "51d028d0-7db4-5b1a-93ac-b1da78e1f0ed",
+        "saga_id": "2d304df6-0555-5f47-b005-5672136e96a9",
+        "position": 1,
+        "slug": "inv-1317-09-offers-that-smell",
+        "title": {
+          "en-US": "Offers that smell like a trap",
+          "es-MX": "Ofertas que huelen a trampa",
+          "pt-BR": "Ofertas com cheiro de golpe"
+        },
+        "learning_objective": {
+          "en-US": "Recognize the warning signs of investment fraud, such as guaranteed profit, pressure to decide now and an unexplained source of money, and tell a trusted adult.",
+          "es-MX": "Reconocer las señales de fraude en inversiones, como ganancia garantizada, presión para decidir ya y dinero de origen inexplicable, y contarlo a un adulto de confianza.",
+          "pt-BR": "Reconhecer os sinais de fraude em investimentos, como lucro garantido, pressão para decidir já e dinheiro de origem inexplicável, e contar a um adulto de confiança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "b1ad1c9d-6f5a-5eff-8bdf-4c4254c8b1a3",
+        "saga_id": "2d304df6-0555-5f47-b005-5672136e96a9",
+        "position": 2,
+        "slug": "inv-1317-10-the-pyramid",
+        "title": {
+          "en-US": "The pyramid",
+          "es-MX": "La pirámide",
+          "pt-BR": "A pirâmide"
+        },
+        "learning_objective": {
+          "en-US": "Explain why a scheme that pays earlier members with newer members' money must collapse, and tell it apart from a real business.",
+          "es-MX": "Explicar por qué un esquema que paga a los primeros con el dinero de los nuevos tiene que colapsar, y distinguirlo de un negocio real.",
+          "pt-BR": "Explicar por que um esquema que paga os primeiros com o dinheiro dos novos precisa desmoronar, e distingui-lo de um negócio real."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "6fd713ac-46ee-547d-85ff-2bb319711307",
+        "saga_id": "2d304df6-0555-5f47-b005-5672136e96a9",
+        "position": 3,
+        "slug": "inv-1317-11-the-bad-season",
+        "title": {
+          "en-US": "The bad season",
+          "es-MX": "La mala temporada",
+          "pt-BR": "A temporada ruim"
+        },
+        "learning_objective": {
+          "en-US": "Compare panic selling with waiting during a downturn, and keep a sound plan while rejecting offers that exploit the fear.",
+          "es-MX": "Comparar vender en pánico con esperar durante una baja, y mantener un plan sólido rechazando ofertas que se aprovechan del miedo.",
+          "pt-BR": "Comparar vender em pânico com esperar durante uma queda, e manter um plano sólido recusando ofertas que exploram o medo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "e34f4397-edc0-5ac0-8920-9144d5590c02",
+        "saga_id": "2d304df6-0555-5f47-b005-5672136e96a9",
+        "position": 4,
+        "slug": "inv-1317-12-your-long-term-plan",
+        "title": {
+          "en-US": "Your long-term plan",
+          "es-MX": "Tu plan a largo plazo",
+          "pt-BR": "Seu plano de longo prazo"
+        },
+        "learning_objective": {
+          "en-US": "Combine a goal, a buffer, a diversified mix, a long horizon and protection from interruptions into one long-term plan.",
+          "es-MX": "Combinar una meta, un colchón, una mezcla diversificada, un plazo largo y protección contra interrupciones en un solo plan de largo plazo.",
+          "pt-BR": "Combinar uma meta, uma reserva, uma mistura diversificada, um prazo longo e proteção contra interrupções em um único plano de longo prazo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "3ab98ab5-b4d1-53c5-9038-65cc4af7a723",
+        "saga_id": "b3331224-0e13-55ac-847a-c7c543dfc05a",
+        "position": 1,
+        "slug": "inv-adult-01-a-rate-and-ten-years",
+        "title": {
+          "en-US": "A rate and ten years",
+          "es-MX": "Una tasa y diez años",
+          "pt-BR": "Uma taxa e dez anos"
+        },
+        "learning_objective": {
+          "en-US": "Show how leaving earnings in makes each period's gain grow, and what is lost when growth is interrupted.",
+          "es-MX": "Mostrar cómo dejar las ganancias adentro hace crecer la ganancia de cada periodo, y qué se pierde si el crecimiento se interrumpe.",
+          "pt-BR": "Mostrar como deixar os ganhos aplicados faz o ganho de cada período crescer, e o que se perde quando o crescimento é interrompido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "e0c74f35-d563-58b2-a265-aacb8d135fa8",
+        "saga_id": "b3331224-0e13-55ac-847a-c7c543dfc05a",
+        "position": 2,
+        "slug": "inv-adult-02-the-cost-of-starting-late",
+        "title": {
+          "en-US": "The cost of starting late",
+          "es-MX": "El costo de empezar tarde",
+          "pt-BR": "O custo de começar tarde"
+        },
+        "learning_objective": {
+          "en-US": "Compare two people who save the same amount but start at different times, and explain why the earlier start ends with more.",
+          "es-MX": "Comparar a dos personas que ahorran lo mismo pero empiezan en momentos distintos, y explicar por qué quien empieza antes termina con más.",
+          "pt-BR": "Comparar duas pessoas que poupam o mesmo valor mas começam em momentos diferentes, e explicar por que quem começa antes termina com mais."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "d5ebcc45-44cf-582a-a9dc-ef132e469abe",
+        "saga_id": "b3331224-0e13-55ac-847a-c7c543dfc05a",
+        "position": 3,
+        "slug": "inv-adult-03-what-a-rate-really-buys",
+        "title": {
+          "en-US": "What a rate really buys",
+          "es-MX": "Lo que de verdad compra una tasa",
+          "pt-BR": "O que uma taxa realmente compra"
+        },
+        "learning_objective": {
+          "en-US": "Work out how much a price rose in currency and percent, and add a buffer to a goal so a price rise does not leave it short.",
+          "es-MX": "Calcular cuánto subió un precio en dinero y en porcentaje, y agregar un colchón a una meta para que una subida no la deje corta.",
+          "pt-BR": "Calcular quanto um preço subiu em dinheiro e em porcentagem, e adicionar uma reserva a uma meta para que uma alta não a deixe curta."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "1e0dd15a-ae18-543f-9d52-4886fb0fce48",
+        "saga_id": "b3331224-0e13-55ac-847a-c7c543dfc05a",
+        "position": 4,
+        "slug": "inv-adult-04-what-a-risky-offer-is-worth",
+        "title": {
+          "en-US": "What a risky offer is worth",
+          "es-MX": "Cuánto vale una oferta riesgosa",
+          "pt-BR": "Quanto vale uma oferta arriscada"
+        },
+        "learning_objective": {
+          "en-US": "Judge a risky option by how often it pays and how much, and explain why one win proves nothing.",
+          "es-MX": "Juzgar una opción con riesgo por qué tan seguido paga y cuánto, y explicar por qué ganar una vez no prueba nada.",
+          "pt-BR": "Avaliar uma opção com risco por quantas vezes paga e quanto, e explicar por que ganhar uma vez não prova nada."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "2ac5bf8b-6612-5ccb-9107-3903a22c9c8e",
+        "saga_id": "d0213480-fc21-50f4-acf6-0089043f4c10",
+        "position": 1,
+        "slug": "inv-adult-05-whats-in-the-basket",
+        "title": {
+          "en-US": "What's in the basket",
+          "es-MX": "Qué trae la canasta",
+          "pt-BR": "O que tem na cesta"
+        },
+        "learning_objective": {
+          "en-US": "Explain that a share is a small piece of something and a fund is a basket of many pieces that someone manages.",
+          "es-MX": "Explicar que una acción es un pedacito de algo y un fondo es una canasta de muchos pedacitos que alguien administra.",
+          "pt-BR": "Explicar que uma ação é um pedacinho de algo e um fundo é uma cesta de muitos pedacinhos que alguém administra."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "b31765ea-0545-5357-b715-bea8cc697633",
+        "saga_id": "d0213480-fc21-50f4-acf6-0089043f4c10",
+        "position": 2,
+        "slug": "inv-adult-06-test-a-mix-in-the-simulator",
+        "title": {
+          "en-US": "Test a mix in the simulator",
+          "es-MX": "Prueba una mezcla en el simulador",
+          "pt-BR": "Teste uma mistura no simulador"
+        },
+        "learning_objective": {
+          "en-US": "Choose a mix of safer and riskier pieces for a risk profile, simulate several rounds, and rebalance when the mix drifts.",
+          "es-MX": "Elegir una mezcla de piezas más seguras y más arriesgadas según un perfil, simular varias rondas y reequilibrar cuando la mezcla se mueve.",
+          "pt-BR": "Escolher uma mistura de partes mais seguras e mais arriscadas para um perfil, simular várias rodadas e rebalancear quando a mistura se desvia."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "3eb4dff8-422a-5841-aa3c-d340a49096bc",
+        "saga_id": "d0213480-fc21-50f4-acf6-0089043f4c10",
+        "position": 3,
+        "slug": "inv-adult-07-the-offer-in-the-group-chat",
+        "title": {
+          "en-US": "The offer in the group chat",
+          "es-MX": "La oferta en el grupo de chat",
+          "pt-BR": "A oferta no grupo de mensagens"
+        },
+        "learning_objective": {
+          "en-US": "Recognize the warning signs of investment fraud, such as guaranteed profit, pressure to decide now and an unexplained source of money, and tell a trusted adult.",
+          "es-MX": "Reconocer las señales de fraude en inversiones, como ganancia garantizada, presión para decidir ya y dinero de origen inexplicable, y contarlo a un adulto de confianza.",
+          "pt-BR": "Reconhecer os sinais de fraude em investimentos, como lucro garantido, pressão para decidir já e dinheiro de origem inexplicável, e contar a um adulto de confiança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8217223b-1dd2-56b7-9ab3-9154d1c1ef55",
+        "saga_id": "d0213480-fc21-50f4-acf6-0089043f4c10",
+        "position": 4,
+        "slug": "inv-adult-08-the-plan-in-a-bad-season",
+        "title": {
+          "en-US": "The plan in a bad season",
+          "es-MX": "El plan en una mala temporada",
+          "pt-BR": "O plano em uma temporada ruim"
+        },
+        "learning_objective": {
+          "en-US": "Compare panic selling with waiting during a downturn, and keep a sound plan while rejecting offers that exploit the fear.",
+          "es-MX": "Comparar vender en pánico con esperar durante una baja, y mantener un plan sólido rechazando ofertas que se aprovechan del miedo.",
+          "pt-BR": "Comparar vender em pânico com esperar durante uma queda, e manter um plano sólido recusando ofertas que exploram o medo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "19ecf3fe-7adc-55e8-8449-afdb790793f4",
+        "topic_id": "7fb091d6-de89-5547-a3ce-2feda6c073f5",
+        "position": 1,
+        "slug": "inv-1012-01-steady-or-faster",
+        "title": {
+          "en-US": "Steady or faster growth?",
+          "es-MX": "¿Crece parejo o cada vez más?",
+          "pt-BR": "Cresce igual ou cada vez mais?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "3e8cfb5e-27a5-5ac3-a0c7-ca8d2a1fd079",
+        "topic_id": "ce1a37c8-48eb-5524-bbb1-854c3c12e81c",
+        "position": 1,
+        "slug": "inv-1012-02-coins-now-or-later",
+        "title": {
+          "en-US": "Coins now or later?",
+          "es-MX": "¿Monedas ahora o después?",
+          "pt-BR": "Moedas agora ou depois?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d0807f98-2e4a-593f-a181-e3b2826bb6b6",
+        "topic_id": "ddffc173-ff56-5e91-8b54-6760d3f6fed8",
+        "position": 1,
+        "slug": "inv-1012-03-the-pretend-fund",
+        "title": {
+          "en-US": "The pretend fund",
+          "es-MX": "El fondo de práctica",
+          "pt-BR": "O fundo de prática"
+        },
+        "status": "review"
+      },
+      {
+        "id": "6022f489-970d-5110-8c4b-5cb42ef9e396",
+        "topic_id": "8fea8e88-b65c-5bcd-a108-3e9f71c2d7a1",
+        "position": 1,
+        "slug": "inv-1012-04-simple-or-compound",
+        "title": {
+          "en-US": "Simple or compound growth",
+          "es-MX": "Crecimiento simple o compuesto",
+          "pt-BR": "Crescimento simples ou composto"
+        },
+        "status": "review"
+      },
+      {
+        "id": "5afc6f8a-9e10-5cd5-a6c5-00ea4b0ee381",
+        "topic_id": "7c154c0c-f03d-58f2-bc71-57d613280be1",
+        "position": 1,
+        "slug": "inv-1012-05-one-win-proves-nothing",
+        "title": {
+          "en-US": "One win proves nothing",
+          "es-MX": "Una victoria no prueba nada",
+          "pt-BR": "Uma vitória não prova nada"
+        },
+        "status": "review"
+      },
+      {
+        "id": "657dc9be-3d2e-5cfb-8076-8970383bf753",
+        "topic_id": "f6ee499e-7f38-5d14-a2d9-1931ad66e000",
+        "position": 1,
+        "slug": "inv-1012-06-big-safe-fast",
+        "title": {
+          "en-US": "Big, safe, fast: not all three",
+          "es-MX": "Grande, segura, rápida: no las tres",
+          "pt-BR": "Grande, segura, rápida: não as três"
+        },
+        "status": "review"
+      },
+      {
+        "id": "e2933d18-0659-5565-a56d-18573caad623",
+        "topic_id": "cd0b1f0e-8337-5381-af40-deea810fd135",
+        "position": 1,
+        "slug": "inv-1012-07-the-deadline",
+        "title": {
+          "en-US": "Waiting costs: set a deadline",
+          "es-MX": "Esperar cuesta: pon una fecha límite",
+          "pt-BR": "Esperar custa: defina um prazo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "da69a89c-03cc-57e8-bf6b-8d1232e1c353",
+        "topic_id": "ecf6e401-555c-5b4a-982d-bb38ce009226",
+        "position": 1,
+        "slug": "inv-1012-08-growth-simulator",
+        "title": {
+          "en-US": "Guess first, then run",
+          "es-MX": "Adivina primero, luego corre",
+          "pt-BR": "Chute primeiro, depois rode"
+        },
+        "status": "review"
+      },
+      {
+        "id": "9281e9a8-1f4c-5f4d-a020-348efeee7f96",
+        "topic_id": "9c4262c9-d24a-5f4c-bdf2-37e0b149633f",
+        "position": 1,
+        "slug": "inv-1317-01-compound-in-a-table",
+        "title": {
+          "en-US": "Compound growth in a table",
+          "es-MX": "El interés compuesto en una tabla",
+          "pt-BR": "Juros compostos em uma tabela"
+        },
+        "status": "review"
+      },
+      {
+        "id": "7de64784-4575-571f-8fd6-31a578dc226f",
+        "topic_id": "35d7a708-b7fb-5276-8c8a-8103dd35e26a",
+        "position": 1,
+        "slug": "inv-1317-02-money-now-or-later",
+        "title": {
+          "en-US": "Money now or later",
+          "es-MX": "Dinero ahora o después",
+          "pt-BR": "Dinheiro agora ou depois"
+        },
+        "status": "review"
+      },
+      {
+        "id": "0b608f19-fc69-5ac4-b820-3f94c44f89eb",
+        "topic_id": "7480b1ec-e094-5188-8181-950c2657719b",
+        "position": 1,
+        "slug": "inv-1317-03-the-early-starter",
+        "title": {
+          "en-US": "The early starter",
+          "es-MX": "El que empieza temprano",
+          "pt-BR": "Quem começa cedo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "2ff4a34e-aac7-5dcc-8f23-6c345a33fcaf",
+        "topic_id": "7f932598-c3a4-5baa-89e5-38064cb40584",
+        "position": 1,
+        "slug": "inv-1317-04-prices-that-rise",
+        "title": {
+          "en-US": "Prices that rise",
+          "es-MX": "Precios que suben",
+          "pt-BR": "Preços que sobem"
+        },
+        "status": "review"
+      },
+      {
+        "id": "24044431-c144-55cb-b7af-17691e3c1879",
+        "topic_id": "0923af9f-2bf3-5604-873a-ee08b8985c27",
+        "position": 1,
+        "slug": "inv-1317-05-how-often-and-how-much",
+        "title": {
+          "en-US": "How often, and how much",
+          "es-MX": "Cada cuánto paga y cuánto",
+          "pt-BR": "Com que frequência, e quanto"
+        },
+        "status": "review"
+      },
+      {
+        "id": "b03d299d-ca53-58c3-bff5-8f37ef40d208",
+        "topic_id": "fcee8ecb-8957-50ad-897d-2e2fb12930b8",
+        "position": 1,
+        "slug": "inv-1317-06-risk-and-the-clock",
+        "title": {
+          "en-US": "Risk and the clock",
+          "es-MX": "El riesgo y el reloj",
+          "pt-BR": "O risco e o relógio"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d1f05591-e515-5cca-bfea-9574e76d1794",
+        "topic_id": "c6b85340-b3b0-5428-b1fc-9fc090be96a5",
+        "position": 1,
+        "slug": "inv-1317-07-baskets-not-eggs",
+        "title": {
+          "en-US": "Baskets, not eggs",
+          "es-MX": "Canastas, no huevos",
+          "pt-BR": "Cestas, não ovos"
+        },
+        "status": "review"
+      },
+      {
+        "id": "1d9423a5-3ec6-5589-8845-c33b3ac84211",
+        "topic_id": "c02ae2e5-ac2b-5748-96cc-1ca5b9eed844",
+        "position": 1,
+        "slug": "inv-1317-08-the-mix-and-the-index",
+        "title": {
+          "en-US": "The mix and the index",
+          "es-MX": "La mezcla y el índice",
+          "pt-BR": "A mistura e o índice"
+        },
+        "status": "review"
+      },
+      {
+        "id": "aad40d71-c637-537f-9a66-f0e4cbb812f2",
+        "topic_id": "51d028d0-7db4-5b1a-93ac-b1da78e1f0ed",
+        "position": 1,
+        "slug": "inv-1317-09-offers-that-smell",
+        "title": {
+          "en-US": "Offers that smell like a trap",
+          "es-MX": "Ofertas que huelen a trampa",
+          "pt-BR": "Ofertas com cheiro de golpe"
+        },
+        "status": "review"
+      },
+      {
+        "id": "ec04b8b0-e9f3-5e42-ad8b-09d99a483951",
+        "topic_id": "b1ad1c9d-6f5a-5eff-8bdf-4c4254c8b1a3",
+        "position": 1,
+        "slug": "inv-1317-10-the-pyramid",
+        "title": {
+          "en-US": "The pyramid",
+          "es-MX": "La pirámide",
+          "pt-BR": "A pirâmide"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d1b396ad-d3b1-5f79-bb7f-f80844eab7ae",
+        "topic_id": "6fd713ac-46ee-547d-85ff-2bb319711307",
+        "position": 1,
+        "slug": "inv-1317-11-the-bad-season",
+        "title": {
+          "en-US": "The bad season",
+          "es-MX": "La mala temporada",
+          "pt-BR": "A temporada ruim"
+        },
+        "status": "review"
+      },
+      {
+        "id": "6124f072-49c3-5d51-82c7-c461ce987992",
+        "topic_id": "e34f4397-edc0-5ac0-8920-9144d5590c02",
+        "position": 1,
+        "slug": "inv-1317-12-your-long-term-plan",
+        "title": {
+          "en-US": "Your long-term plan",
+          "es-MX": "Tu plan a largo plazo",
+          "pt-BR": "Seu plano de longo prazo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "83b109e1-82a1-5f7e-98f1-7e88419d2dc9",
+        "topic_id": "3ab98ab5-b4d1-53c5-9038-65cc4af7a723",
+        "position": 1,
+        "slug": "inv-adult-01-a-rate-and-ten-years",
+        "title": {
+          "en-US": "A rate and ten years",
+          "es-MX": "Una tasa y diez años",
+          "pt-BR": "Uma taxa e dez anos"
+        },
+        "status": "review"
+      },
+      {
+        "id": "c13b1b8b-4001-5a13-b1fa-422c823d9b40",
+        "topic_id": "e0c74f35-d563-58b2-a265-aacb8d135fa8",
+        "position": 1,
+        "slug": "inv-adult-02-the-cost-of-starting-late",
+        "title": {
+          "en-US": "The cost of starting late",
+          "es-MX": "El costo de empezar tarde",
+          "pt-BR": "O custo de começar tarde"
+        },
+        "status": "review"
+      },
+      {
+        "id": "233c004b-40d4-516a-b5e8-6a190cfacd01",
+        "topic_id": "d5ebcc45-44cf-582a-a9dc-ef132e469abe",
+        "position": 1,
+        "slug": "inv-adult-03-what-a-rate-really-buys",
+        "title": {
+          "en-US": "What a rate really buys",
+          "es-MX": "Lo que de verdad compra una tasa",
+          "pt-BR": "O que uma taxa realmente compra"
+        },
+        "status": "review"
+      },
+      {
+        "id": "533f5354-0572-56c3-9c37-6bae53f5481d",
+        "topic_id": "1e0dd15a-ae18-543f-9d52-4886fb0fce48",
+        "position": 1,
+        "slug": "inv-adult-04-what-a-risky-offer-is-worth",
+        "title": {
+          "en-US": "What a risky offer is worth",
+          "es-MX": "Cuánto vale una oferta riesgosa",
+          "pt-BR": "Quanto vale uma oferta arriscada"
+        },
+        "status": "review"
+      },
+      {
+        "id": "e79c5a56-2b6e-5690-b9a3-138b43025890",
+        "topic_id": "2ac5bf8b-6612-5ccb-9107-3903a22c9c8e",
+        "position": 1,
+        "slug": "inv-adult-05-whats-in-the-basket",
+        "title": {
+          "en-US": "What's in the basket",
+          "es-MX": "Qué trae la canasta",
+          "pt-BR": "O que tem na cesta"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fac4b083-5265-525d-be04-7c5d3be5f875",
+        "topic_id": "b31765ea-0545-5357-b715-bea8cc697633",
+        "position": 1,
+        "slug": "inv-adult-06-test-a-mix-in-the-simulator",
+        "title": {
+          "en-US": "Test a mix in the simulator",
+          "es-MX": "Prueba una mezcla en el simulador",
+          "pt-BR": "Teste uma mistura no simulador"
+        },
+        "status": "review"
+      },
+      {
+        "id": "02af8299-d52d-5889-ab7b-097e8a4dfd4f",
+        "topic_id": "3eb4dff8-422a-5841-aa3c-d340a49096bc",
+        "position": 1,
+        "slug": "inv-adult-07-the-offer-in-the-group-chat",
+        "title": {
+          "en-US": "The offer in the group chat",
+          "es-MX": "La oferta en el grupo de chat",
+          "pt-BR": "A oferta no grupo de mensagens"
+        },
+        "status": "review"
+      },
+      {
+        "id": "2433be8b-a628-5206-900b-95a30c2db9a1",
+        "topic_id": "8217223b-1dd2-56b7-9ab3-9154d1c1ef55",
+        "position": 1,
+        "slug": "inv-adult-08-the-plan-in-a-bad-season",
+        "title": {
+          "en-US": "The plan in a bad season",
+          "es-MX": "El plan en una mala temporada",
+          "pt-BR": "O plano em uma temporada ruim"
+        },
+        "status": "review"
+      }
+    ],
+    "topic_knowledge_components": [
+      {
+        "topic_id": "7fb091d6-de89-5547-a3ce-2feda6c073f5",
+        "kc_key": "money.linear-vs-accelerating-growth",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7fb091d6-de89-5547-a3ce-2feda6c073f5",
+        "kc_key": "money.add-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ce1a37c8-48eb-5524-bbb1-854c3c12e81c",
+        "kc_key": "invest.time-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ce1a37c8-48eb-5524-bbb1-854c3c12e81c",
+        "kc_key": "life.patience-and-waiting",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ddffc173-ff56-5e91-8b54-6760d3f6fed8",
+        "kc_key": "invest.compound-growth",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ddffc173-ff56-5e91-8b54-6760d3f6fed8",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ddffc173-ff56-5e91-8b54-6760d3f6fed8",
+        "kc_key": "money.simple-interest-peek",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8fea8e88-b65c-5bcd-a108-3e9f71c2d7a1",
+        "kc_key": "invest.simple-vs-compound",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8fea8e88-b65c-5bcd-a108-3e9f71c2d7a1",
+        "kc_key": "invest.compound-growth",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7c154c0c-f03d-58f2-bc71-57d613280be1",
+        "kc_key": "invest.expected-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7c154c0c-f03d-58f2-bc71-57d613280be1",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f6ee499e-7f38-5d14-a2d9-1931ad66e000",
+        "kc_key": "invest.no-free-lunch",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f6ee499e-7f38-5d14-a2d9-1931ad66e000",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cd0b1f0e-8337-5381-af40-deea810fd135",
+        "kc_key": "invest.cost-of-delay",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cd0b1f0e-8337-5381-af40-deea810fd135",
+        "kc_key": "invest.time-value",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cd0b1f0e-8337-5381-af40-deea810fd135",
+        "kc_key": "life.think-before-buying",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ecf6e401-555c-5b4a-982d-bb38ce009226",
+        "kc_key": "invest.simulate-before-deciding",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ecf6e401-555c-5b4a-982d-bb38ce009226",
+        "kc_key": "invest.compound-growth",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ecf6e401-555c-5b4a-982d-bb38ce009226",
+        "kc_key": "invest.expected-value",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9c4262c9-d24a-5f4c-bdf2-37e0b149633f",
+        "kc_key": "invest.compound-growth",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9c4262c9-d24a-5f4c-bdf2-37e0b149633f",
+        "kc_key": "invest.simple-vs-compound",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9c4262c9-d24a-5f4c-bdf2-37e0b149633f",
+        "kc_key": "money.linear-vs-accelerating-growth",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "35d7a708-b7fb-5276-8c8a-8103dd35e26a",
+        "kc_key": "invest.time-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "35d7a708-b7fb-5276-8c8a-8103dd35e26a",
+        "kc_key": "invest.cost-of-delay",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "35d7a708-b7fb-5276-8c8a-8103dd35e26a",
+        "kc_key": "life.think-before-buying",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7480b1ec-e094-5188-8181-950c2657719b",
+        "kc_key": "invest.start-early",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7480b1ec-e094-5188-8181-950c2657719b",
+        "kc_key": "invest.compound-growth",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7f932598-c3a4-5baa-89e5-38064cb40584",
+        "kc_key": "invest.inflation-buffer",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7f932598-c3a4-5baa-89e5-38064cb40584",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7f932598-c3a4-5baa-89e5-38064cb40584",
+        "kc_key": "life.goal-planning",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "0923af9f-2bf3-5604-873a-ee08b8985c27",
+        "kc_key": "invest.expected-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "0923af9f-2bf3-5604-873a-ee08b8985c27",
+        "kc_key": "invest.no-free-lunch",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "0923af9f-2bf3-5604-873a-ee08b8985c27",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "fcee8ecb-8957-50ad-897d-2e2fb12930b8",
+        "kc_key": "invest.risk-tolerance",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "fcee8ecb-8957-50ad-897d-2e2fb12930b8",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c6b85340-b3b0-5428-b1fc-9fc090be96a5",
+        "kc_key": "invest.funds-and-shares",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c6b85340-b3b0-5428-b1fc-9fc090be96a5",
+        "kc_key": "invest.diversification",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c6b85340-b3b0-5428-b1fc-9fc090be96a5",
+        "kc_key": "biz.risk-and-reward",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c02ae2e5-ac2b-5748-96cc-1ca5b9eed844",
+        "kc_key": "invest.index-funds",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c02ae2e5-ac2b-5748-96cc-1ca5b9eed844",
+        "kc_key": "invest.portfolio-mix",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c02ae2e5-ac2b-5748-96cc-1ca5b9eed844",
+        "kc_key": "invest.risk-tolerance",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "51d028d0-7db4-5b1a-93ac-b1da78e1f0ed",
+        "kc_key": "invest.fraud-signals",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "51d028d0-7db4-5b1a-93ac-b1da78e1f0ed",
+        "kc_key": "invest.no-free-lunch",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "51d028d0-7db4-5b1a-93ac-b1da78e1f0ed",
+        "kc_key": "life.scam-awareness",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b1ad1c9d-6f5a-5eff-8bdf-4c4254c8b1a3",
+        "kc_key": "invest.pyramid-schemes",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b1ad1c9d-6f5a-5eff-8bdf-4c4254c8b1a3",
+        "kc_key": "invest.fraud-signals",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6fd713ac-46ee-547d-85ff-2bb319711307",
+        "kc_key": "invest.stay-the-course",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6fd713ac-46ee-547d-85ff-2bb319711307",
+        "kc_key": "invest.risk-tolerance",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6fd713ac-46ee-547d-85ff-2bb319711307",
+        "kc_key": "invest.portfolio-mix",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e34f4397-edc0-5ac0-8920-9144d5590c02",
+        "kc_key": "invest.long-term-plan",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e34f4397-edc0-5ac0-8920-9144d5590c02",
+        "kc_key": "invest.simulate-before-deciding",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e34f4397-edc0-5ac0-8920-9144d5590c02",
+        "kc_key": "invest.start-early",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3ab98ab5-b4d1-53c5-9038-65cc4af7a723",
+        "kc_key": "invest.compound-growth",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3ab98ab5-b4d1-53c5-9038-65cc4af7a723",
+        "kc_key": "invest.simple-vs-compound",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3ab98ab5-b4d1-53c5-9038-65cc4af7a723",
+        "kc_key": "invest.time-value",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e0c74f35-d563-58b2-a265-aacb8d135fa8",
+        "kc_key": "invest.start-early",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e0c74f35-d563-58b2-a265-aacb8d135fa8",
+        "kc_key": "invest.cost-of-delay",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e0c74f35-d563-58b2-a265-aacb8d135fa8",
+        "kc_key": "invest.compound-growth",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d5ebcc45-44cf-582a-a9dc-ef132e469abe",
+        "kc_key": "invest.inflation-buffer",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d5ebcc45-44cf-582a-a9dc-ef132e469abe",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d5ebcc45-44cf-582a-a9dc-ef132e469abe",
+        "kc_key": "life.goal-planning",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "1e0dd15a-ae18-543f-9d52-4886fb0fce48",
+        "kc_key": "invest.expected-value",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "1e0dd15a-ae18-543f-9d52-4886fb0fce48",
+        "kc_key": "invest.no-free-lunch",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "1e0dd15a-ae18-543f-9d52-4886fb0fce48",
+        "kc_key": "invest.risk-tolerance",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2ac5bf8b-6612-5ccb-9107-3903a22c9c8e",
+        "kc_key": "invest.funds-and-shares",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2ac5bf8b-6612-5ccb-9107-3903a22c9c8e",
+        "kc_key": "invest.diversification",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2ac5bf8b-6612-5ccb-9107-3903a22c9c8e",
+        "kc_key": "invest.index-funds",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b31765ea-0545-5357-b715-bea8cc697633",
+        "kc_key": "invest.portfolio-mix",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b31765ea-0545-5357-b715-bea8cc697633",
+        "kc_key": "invest.simulate-before-deciding",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b31765ea-0545-5357-b715-bea8cc697633",
+        "kc_key": "invest.risk-tolerance",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3eb4dff8-422a-5841-aa3c-d340a49096bc",
+        "kc_key": "invest.fraud-signals",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3eb4dff8-422a-5841-aa3c-d340a49096bc",
+        "kc_key": "invest.pyramid-schemes",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3eb4dff8-422a-5841-aa3c-d340a49096bc",
+        "kc_key": "invest.no-free-lunch",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8217223b-1dd2-56b7-9ab3-9154d1c1ef55",
+        "kc_key": "invest.stay-the-course",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8217223b-1dd2-56b7-9ab3-9154d1c1ef55",
+        "kc_key": "invest.long-term-plan",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8217223b-1dd2-56b7-9ab3-9154d1c1ef55",
+        "kc_key": "invest.portfolio-mix",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      }
+    ]
+  }
+}

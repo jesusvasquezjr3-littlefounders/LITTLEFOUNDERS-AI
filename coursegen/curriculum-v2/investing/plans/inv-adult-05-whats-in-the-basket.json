@@ -1,0 +1,1569 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-baskets-offers-and-a-plan",
+  "lesson_id": "inv-adult-05-whats-in-the-basket",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.funds-and-shares",
+    "invest.diversification",
+    "invest.index-funds"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara abre con el menú de fondos de un plan de retiro y enseña con ejemplos qué es una acción, un fondo y un índice. Se lee un fondo amplio por sectores, se ve cómo cae un fondo de un solo sector frente al amplio en un año ilustrativo, se reparte el dinero para bajar el riesgo sin quitarlo y se comprueba que el fondo líder rara vez repite. Cierra con una decisión nueva en el plan de un familiar.",
+  "title": {
+    "es-MX": "Qué trae la canasta",
+    "en-US": "What's in the basket",
+    "pt-BR": "O que tem na cesta"
+  },
+  "new_concepts": [
+    "invest.funds-and-shares",
+    "invest.diversification",
+    "invest.index-funds"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Una persona en México revisa las opciones de fondos de su plan de retiro, de la empresa o de ahorro voluntario en su Afore: un fondo amplio de índice, uno de un solo sector y uno de renta fija. Cifras ilustrativas, sin nombrar fondos ni citar rendimientos actuales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "Afore"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Uma pessoa no Brasil compara as opções de fundos do seu plano de previdência privada: um fundo amplo de índice, um de um só setor e um de renda fixa. Números ilustrativos, sem nomear fundos nem citar rentabilidade atual.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "previdência privada"
+        ]
+      },
+      "en-US": {
+        "scenario": "A US worker reads the fund menu of a 401(k): a broad index fund, a single-sector fund and a fixed-income fund. All figures are illustrative; no fund is named and no current return is quoted.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "401(k)"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your 401(k) sign-up page lists three funds and asks where your contribution goes.",
+          "line": "Three funds, one choice. Let's open each basket and see what's inside."
+        },
+        "es-MX": {
+          "prompt": "Tu plan de retiro, de la empresa o en tu Afore, muestra un menú ilustrativo de tres fondos.",
+          "line": "Tres fondos, una decisión. Abramos cada canasta y veamos qué trae dentro."
+        },
+        "pt-BR": {
+          "prompt": "Seu plano de previdência privada mostra três fundos e pergunta para onde vai sua contribuição.",
+          "line": "Três fundos, uma decisão. Vamos abrir cada cesta e ver o que tem dentro."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-broad"
+          },
+          {
+            "id": "opt-sector"
+          },
+          {
+            "id": "opt-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-sector"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before we start: which fund do you expect to fall more?",
+          "feedback": {
+            "met": "Noted. We'll test that guess with numbers next.",
+            "not_yet": "Noted. We'll test that guess with numbers next."
+          },
+          "scene": "Your menu has a 500-company broad fund and a 15-company sector fund. That sector has a bad year.",
+          "options": [
+            {
+              "label": "The 500-company broad fund"
+            },
+            {
+              "label": "The 15-company sector fund"
+            },
+            {
+              "label": "Both fall the same amount"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Antes de empezar: ¿qué fondo esperas que caiga más?",
+          "feedback": {
+            "met": "Anotado. Probamos esa idea con números enseguida.",
+            "not_yet": "Anotado. Probamos esa idea con números enseguida."
+          },
+          "scene": "Tu menú tiene un fondo amplio de 500 empresas y un fondo sectorial de 15. Ese sector tiene un mal año.",
+          "options": [
+            {
+              "label": "El fondo amplio de 500 empresas"
+            },
+            {
+              "label": "El fondo sectorial de 15 empresas"
+            },
+            {
+              "label": "Los dos caen lo mismo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar: qual fundo você espera que caia mais?",
+          "feedback": {
+            "met": "Anotado. Vamos testar essa ideia com números já.",
+            "not_yet": "Anotado. Vamos testar essa ideia com números já."
+          },
+          "scene": "Seu menu tem um fundo amplo de 500 empresas e um fundo setorial de 15. Esse setor tem um ano ruim.",
+          "options": [
+            {
+              "label": "O fundo amplo de 500 empresas"
+            },
+            {
+              "label": "O fundo setorial de 15 empresas"
+            },
+            {
+              "label": "Os dois caem igual"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01-shares-funds",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: shares and funds.",
+          "line": "A share is one piece of one company. A fund buys many shares for many savers."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: acciones y fondos.",
+          "line": "Una acción es una pieza de una sola empresa. Un fondo compra muchas acciones con el dinero de muchos ahorradores."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: ações e fundos.",
+          "line": "Uma ação é um pedaço de uma só empresa. Um fundo compra muitas ações com o dinheiro de muitos poupadores."
+        }
+      }
+    },
+    {
+      "id": "ex-02-broad-fund",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "treemap"
+      },
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "nodes": [
+            {
+              "id": "node-broad"
+            },
+            {
+              "id": "node-tech",
+              "value": 30
+            },
+            {
+              "id": "node-consumer",
+              "value": 22
+            },
+            {
+              "id": "node-finance",
+              "value": 14
+            },
+            {
+              "id": "node-health",
+              "value": 14
+            },
+            {
+              "id": "node-industry",
+              "value": 10
+            },
+            {
+              "id": "node-energy",
+              "value": 10
+            }
+          ],
+          "links": [
+            {
+              "from": "node-broad",
+              "to": "node-tech"
+            },
+            {
+              "from": "node-broad",
+              "to": "node-consumer"
+            },
+            {
+              "from": "node-broad",
+              "to": "node-finance"
+            },
+            {
+              "from": "node-broad",
+              "to": "node-health"
+            },
+            {
+              "from": "node-broad",
+              "to": "node-industry"
+            },
+            {
+              "from": "node-broad",
+              "to": "node-energy"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the broad fund's sectors. Technology is 30%, so $3,000 of every $10,000.",
+          "title": "Broad fund by sector (% of fund)",
+          "data": {
+            "nodes": [
+              {
+                "label": "Broad fund"
+              },
+              {
+                "label": "Technology"
+              },
+              {
+                "label": "Consumer"
+              },
+              {
+                "label": "Finance"
+              },
+              {
+                "label": "Health care"
+              },
+              {
+                "label": "Industrials"
+              },
+              {
+                "label": "Energy and other"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 2: los sectores del fondo amplio. Tecnología pesa 30%: $3,000 de cada $10,000.",
+          "title": "Fondo amplio por sector (% del fondo)",
+          "data": {
+            "nodes": [
+              {
+                "label": "Fondo amplio"
+              },
+              {
+                "label": "Tecnología"
+              },
+              {
+                "label": "Consumo"
+              },
+              {
+                "label": "Finanzas"
+              },
+              {
+                "label": "Salud"
+              },
+              {
+                "label": "Industria"
+              },
+              {
+                "label": "Energía y otros"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: os setores do fundo amplo. Tecnologia pesa 30%: R$ 3.000 de cada R$ 10.000.",
+          "title": "Fundo amplo por setor (% do fundo)",
+          "data": {
+            "nodes": [
+              {
+                "label": "Fundo amplo"
+              },
+              {
+                "label": "Tecnologia"
+              },
+              {
+                "label": "Consumo"
+              },
+              {
+                "label": "Finanças"
+              },
+              {
+                "label": "Saúde"
+              },
+              {
+                "label": "Indústria"
+              },
+              {
+                "label": "Energia e outros"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-03-bad-year",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: in an illustrative year technology falls 40%. The broad fund holds 30% technology: 30% × 40% = 12%.",
+          "line": "From $10,000, with other sectors flat, the technology fund ends at $6,000 and the broad fund at $8,800."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: en un año ilustrativo, tecnología cae 40%. El fondo amplio tiene 30% en tecnología: 30% × 40% = 12%.",
+          "line": "Desde $10,000, con los demás sectores sin cambio, el fondo de tecnología termina en $6,000 y el amplio en $8,800."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: em um ano ilustrativo, tecnologia cai 40%. O fundo amplo tem 30% em tecnologia: 30% × 40% = 12%.",
+          "line": "De R$ 10.000, com os demais setores sem mudança, o fundo de tecnologia termina em R$ 6.000 e o amplo em R$ 8.800."
+        }
+      }
+    },
+    {
+      "id": "g-01-second-fund",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "treemap"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.funds-and-shares",
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "nodes": [
+            {
+              "id": "node-fundb"
+            },
+            {
+              "id": "node-finance",
+              "value": 25
+            },
+            {
+              "id": "node-tech",
+              "value": 20
+            },
+            {
+              "id": "node-consumer",
+              "value": 20
+            },
+            {
+              "id": "node-health",
+              "value": 15
+            },
+            {
+              "id": "node-industry",
+              "value": 12
+            },
+            {
+              "id": "node-energy",
+              "value": 8
+            }
+          ],
+          "links": [
+            {
+              "from": "node-fundb",
+              "to": "node-finance"
+            },
+            {
+              "from": "node-fundb",
+              "to": "node-tech"
+            },
+            {
+              "from": "node-fundb",
+              "to": "node-consumer"
+            },
+            {
+              "from": "node-fundb",
+              "to": "node-health"
+            },
+            {
+              "from": "node-fundb",
+              "to": "node-industry"
+            },
+            {
+              "from": "node-fundb",
+              "to": "node-energy"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-9500"
+            },
+            {
+              "id": "opt-8000"
+            },
+            {
+              "id": "opt-7500"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-9500"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your menu, a second broad fund. Use the method of Step 3 on its sectors.",
+          "help": [
+            "Finance's share times its fall gives the fund's loss.",
+            "Step 3: 30% of a 40% fall cost 12% of the fund."
+          ],
+          "feedback": {
+            "met": "You applied the sector's share to its fall, then subtracted.",
+            "not_yet": "Only Finance's share of the fund falls, not the whole fund."
+          },
+          "title": "Second broad fund by sector (% of fund)",
+          "data": {
+            "nodes": [
+              {
+                "label": "Second broad fund"
+              },
+              {
+                "label": "Finance"
+              },
+              {
+                "label": "Technology"
+              },
+              {
+                "label": "Consumer"
+              },
+              {
+                "label": "Health care"
+              },
+              {
+                "label": "Industrials"
+              },
+              {
+                "label": "Energy and other"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Finance falls 20% and the other sectors stay flat. How much is left of $10,000?",
+            "options": [
+              {
+                "label": "$9,500"
+              },
+              {
+                "label": "$8,000"
+              },
+              {
+                "label": "$7,500"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "En tu menú, otro fondo amplio. Usa el método del Paso 3 con sus sectores.",
+          "help": [
+            "La parte de Finanzas por su caída da la pérdida del fondo.",
+            "Paso 3: 30% de una caída de 40% costó 12% del fondo."
+          ],
+          "feedback": {
+            "met": "Aplicaste la parte del sector a su caída y luego restaste.",
+            "not_yet": "Solo cae la parte de Finanzas, no todo el fondo."
+          },
+          "title": "Segundo fondo amplio por sector (% del fondo)",
+          "data": {
+            "nodes": [
+              {
+                "label": "Segundo fondo amplio"
+              },
+              {
+                "label": "Finanzas"
+              },
+              {
+                "label": "Tecnología"
+              },
+              {
+                "label": "Consumo"
+              },
+              {
+                "label": "Salud"
+              },
+              {
+                "label": "Industria"
+              },
+              {
+                "label": "Energía y otros"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Finanzas cae 20% y los demás sectores no cambian. ¿Cuánto queda de $10,000?",
+            "options": [
+              {
+                "label": "$9,500"
+              },
+              {
+                "label": "$8,000"
+              },
+              {
+                "label": "$7,500"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "No seu menu, outro fundo amplo. Use o método do Passo 3 nos setores dele.",
+          "help": [
+            "A parte de Finanças vezes a queda dá a perda do fundo.",
+            "Passo 3: 30% de uma queda de 40% custou 12% do fundo."
+          ],
+          "feedback": {
+            "met": "Você aplicou a parte do setor à queda dele e depois subtraiu.",
+            "not_yet": "Só a parte de Finanças cai, não o fundo todo."
+          },
+          "title": "Segundo fundo amplo por setor (% do fundo)",
+          "data": {
+            "nodes": [
+              {
+                "label": "Segundo fundo amplo"
+              },
+              {
+                "label": "Finanças"
+              },
+              {
+                "label": "Tecnologia"
+              },
+              {
+                "label": "Consumo"
+              },
+              {
+                "label": "Saúde"
+              },
+              {
+                "label": "Indústria"
+              },
+              {
+                "label": "Energia e outros"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Finanças cai 20% e os outros setores ficam iguais. Quanto sobra de R$ 10.000?",
+            "options": [
+              {
+                "label": "R$ 9.500"
+              },
+              {
+                "label": "R$ 8.000"
+              },
+              {
+                "label": "R$ 7.500"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-04-two-sectors",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: two sectors do not always fall in the same year.",
+          "line": "Quick check: if I hold both, a bad year in one can be cushioned by the other. That’s diversification."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: dos sectores no siempre caen el mismo año.",
+          "line": "Veamos: si tengo los dos, el mal año de uno puede amortiguarlo el otro. A eso se le llama diversificar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: dois setores nem sempre caem no mesmo ano.",
+          "line": "Vejo assim: se tenho os dois, o ano ruim de um pode ser amortecido pelo outro. Isso se chama diversificar."
+        }
+      }
+    },
+    {
+      "id": "ex-05-split-board",
+      "type": "money.diversification.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "portfolio"
+      },
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "assets": [
+          {
+            "id": "asset-tech",
+            "return_bps": 900,
+            "risk_bps": 3000
+          },
+          {
+            "id": "asset-health",
+            "return_bps": 900,
+            "risk_bps": 3000
+          }
+        ],
+        "step": 10
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: two illustrative sector funds. At 50/50, risk falls from 30% to about 21%, never to zero.",
+          "assets": [
+            {
+              "label": "Technology fund"
+            },
+            {
+              "label": "Health care fund"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Paso 5: dos fondos de sector ilustrativos. Con 50/50, el riesgo baja de 30% a cerca de 21%, nunca a cero.",
+          "assets": [
+            {
+              "label": "Fondo de tecnología"
+            },
+            {
+              "label": "Fondo de salud"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: dois fundos de setor ilustrativos. Com 50/50, o risco cai de 30% para cerca de 21%, nunca a zero.",
+          "assets": [
+            {
+              "label": "Fundo de tecnologia"
+            },
+            {
+              "label": "Fundo de saúde"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p-01-build-mix",
+      "type": "money.diversification.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "portfolio"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "assets": [
+          {
+            "id": "asset-tech",
+            "return_bps": 900,
+            "risk_bps": 3000
+          },
+          {
+            "id": "asset-broad",
+            "return_bps": 700,
+            "risk_bps": 1600
+          },
+          {
+            "id": "asset-fixed",
+            "return_bps": 300,
+            "risk_bps": 400
+          }
+        ],
+        "step": 10
+      },
+      "rubric": {
+        "max_risk_bps": 1300,
+        "min_return_bps": 600
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your menu (illustrative figures), build a mix with risk at most 13% and return at least 6%.",
+          "help": [
+            "Technology adds return but also most of the risk.",
+            "A fixed-income piece lowers risk and some return."
+          ],
+          "feedback": {
+            "met": "Your mix meets both limits, so spreading worked.",
+            "not_yet": "Check the risk and return readings against both limits."
+          },
+          "assets": [
+            {
+              "label": "Technology fund"
+            },
+            {
+              "label": "Broad index fund"
+            },
+            {
+              "label": "Fixed-income fund"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En tu menú (cifras ilustrativas), arma una mezcla con riesgo máximo de 13% y rendimiento mínimo de 6%.",
+          "help": [
+            "Tecnología suma rendimiento, pero también casi todo el riesgo.",
+            "Una parte de renta fija baja el riesgo y algo de rendimiento."
+          ],
+          "feedback": {
+            "met": "Tu mezcla cumple los dos límites: repartir funcionó.",
+            "not_yet": "Compara las lecturas de riesgo y rendimiento con los dos límites."
+          },
+          "assets": [
+            {
+              "label": "Fondo de tecnología"
+            },
+            {
+              "label": "Fondo amplio de índice"
+            },
+            {
+              "label": "Fondo de renta fija"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No seu menu (números ilustrativos), monte uma mistura com risco de no máximo 13% e retorno de no mínimo 6%.",
+          "help": [
+            "Tecnologia soma retorno, mas também quase todo o risco.",
+            "Uma parte de renda fixa reduz o risco e um pouco do retorno."
+          ],
+          "feedback": {
+            "met": "Sua mistura cumpre os dois limites: diversificar funcionou.",
+            "not_yet": "Compare as leituras de risco e retorno com os dois limites."
+          },
+          "assets": [
+            {
+              "label": "Fundo de tecnologia"
+            },
+            {
+              "label": "Fundo amplo de índice"
+            },
+            {
+              "label": "Fundo de renda fixa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-06-who-picks",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: who picks the pieces?",
+          "line": "An index fund copies a published list by rule. A managed fund has a person choosing and swapping shares."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: ¿quién elige las piezas?",
+          "line": "Un fondo indexado copia una lista publicada con una regla. En uno de gestión activa, una persona elige y cambia acciones."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: quem escolhe as peças?",
+          "line": "Um fundo de índice copia uma lista publicada por regra. Em um fundo de gestão ativa, uma pessoa escolhe e troca ações."
+        }
+      }
+    },
+    {
+      "id": "p-02-sort-holdings",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "two-by-two"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.index-funds",
+      "payload": {
+        "pieces": [
+          "piece-tech-person",
+          "piece-tech-list",
+          "piece-broad-list",
+          "piece-many-person",
+          "piece-one-share"
+        ],
+        "points": [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            8
+          ],
+          [
+            9,
+            9
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "bottom-left": [
+              "piece-tech-person",
+              "piece-one-share"
+            ],
+            "top-left": [
+              "piece-tech-list"
+            ],
+            "top-right": [
+              "piece-broad-list"
+            ],
+            "bottom-right": [
+              "piece-many-person"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your menu, place each holding by its spread and who picks the pieces.",
+          "help": [
+            "First ask how many sectors it holds.",
+            "Then ask who chooses what goes in."
+          ],
+          "feedback": {
+            "met": "Each holding sits where its sectors and its picker place it.",
+            "not_yet": "Check each one: how many sectors, and a person or a list?"
+          },
+          "labels": {
+            "x-name": "Spread across sectors",
+            "y-name": "Who picks the pieces",
+            "x-low": "One sector",
+            "x-high": "Many sectors",
+            "y-low": "A person",
+            "y-high": "A published list",
+            "piece-tech-person": "Tech fund, a person picks",
+            "piece-tech-list": "Tech index fund, follows a list",
+            "piece-broad-list": "500-company fund, follows a list",
+            "piece-many-person": "Many-sector fund, a person picks",
+            "piece-one-share": "One company's share, you pick"
+          }
+        },
+        "es-MX": {
+          "prompt": "En tu menú, ubica cada opción por los sectores que abarca y quién elige las piezas.",
+          "help": [
+            "Primero pregunta cuántos sectores abarca.",
+            "Luego pregunta quién decide qué entra."
+          ],
+          "feedback": {
+            "met": "Cada opción quedó donde la ubican sus sectores y quien la elige.",
+            "not_yet": "Revisa cada una: cuántos sectores y si elige una persona o una lista."
+          },
+          "labels": {
+            "x-name": "Sectores que abarca",
+            "y-name": "Quién elige las piezas",
+            "x-low": "Un sector",
+            "x-high": "Muchos sectores",
+            "y-low": "Una persona",
+            "y-high": "Una lista publicada",
+            "piece-tech-person": "Fondo de tecnología, elige una persona",
+            "piece-tech-list": "Fondo indexado de tecnología, sigue una lista",
+            "piece-broad-list": "Fondo de 500 empresas, sigue una lista",
+            "piece-many-person": "Fondo de muchos sectores, elige una persona",
+            "piece-one-share": "Acción de una empresa, tú eliges"
+          }
+        },
+        "pt-BR": {
+          "prompt": "No seu menu, posicione cada opção pelos setores que cobre e por quem escolhe as peças.",
+          "help": [
+            "Primeiro pergunte quantos setores cobre.",
+            "Depois pergunte quem decide o que entra."
+          ],
+          "feedback": {
+            "met": "Cada opção ficou onde seus setores e quem a escolhe a colocam.",
+            "not_yet": "Revise cada uma: quantos setores e se escolhe uma pessoa ou uma lista."
+          },
+          "labels": {
+            "x-name": "Setores que cobre",
+            "y-name": "Quem escolhe as peças",
+            "x-low": "Um setor",
+            "x-high": "Vários setores",
+            "y-low": "Uma pessoa",
+            "y-high": "Uma lista publicada",
+            "piece-tech-person": "Fundo de tecnologia, uma pessoa escolhe",
+            "piece-tech-list": "Fundo de índice de tecnologia, segue uma lista",
+            "piece-broad-list": "Fundo de 500 empresas, segue uma lista",
+            "piece-many-person": "Fundo de vários setores, uma pessoa escolhe",
+            "piece-one-share": "Ação de uma empresa, você escolhe"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-07-first-place",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bump"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-y1"
+            },
+            {
+              "id": "cat-y2"
+            },
+            {
+              "id": "cat-y3"
+            },
+            {
+              "id": "cat-y4"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-broad",
+              "values": [
+                2,
+                2,
+                1,
+                3
+              ]
+            },
+            {
+              "id": "series-tech",
+              "values": [
+                1,
+                3,
+                2,
+                2
+              ]
+            },
+            {
+              "id": "series-fixed",
+              "values": [
+                3,
+                1,
+                3,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 7: follow first place for four years. It changed hands each year, so last year's winner guides little.",
+          "title": "Yearly rank, illustrative (1 = best)",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Broad fund"
+              },
+              {
+                "label": "Technology fund"
+              },
+              {
+                "label": "Fixed-income fund"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 7: sigue el primer lugar cuatro años. Cambió de manos cada año: el líder del año pasado orienta poco.",
+          "title": "Posición por año, ilustrativa (1 = mejor)",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo amplio"
+              },
+              {
+                "label": "Fondo de tecnología"
+              },
+              {
+                "label": "Renta fija"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 7: acompanhe o primeiro lugar por quatro anos. Mudou de mãos todo ano: o líder do ano passado orienta pouco.",
+          "title": "Posição por ano, ilustrativa (1 = melhor)",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 4"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo amplo"
+              },
+              {
+                "label": "Fundo de tecnologia"
+              },
+              {
+                "label": "Renda fixa"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "p-03-repeat-leader",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bump"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.index-funds",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-y5"
+            },
+            {
+              "id": "cat-y6"
+            },
+            {
+              "id": "cat-y7"
+            },
+            {
+              "id": "cat-y8"
+            },
+            {
+              "id": "cat-y9"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-broad",
+              "values": [
+                1,
+                2,
+                3,
+                2,
+                1
+              ]
+            },
+            {
+              "id": "series-tech",
+              "values": [
+                3,
+                1,
+                1,
+                3,
+                3
+              ]
+            },
+            {
+              "id": "series-fixed",
+              "values": [
+                2,
+                3,
+                2,
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-never"
+            },
+            {
+              "id": "opt-once"
+            },
+            {
+              "id": "opt-twice"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-once"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "On your menu, read five more years of the same three funds.",
+          "help": [
+            "Write down each year's first-place fund in order.",
+            "Count only back-to-back repeats, as in Step 7."
+          ],
+          "feedback": {
+            "met": "You compared each year's leader with the next year's.",
+            "not_yet": "List each year's leader, then check neighboring years."
+          },
+          "title": "Yearly rank, illustrative (1 = best)",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 5"
+              },
+              {
+                "label": "Year 6"
+              },
+              {
+                "label": "Year 7"
+              },
+              {
+                "label": "Year 8"
+              },
+              {
+                "label": "Year 9"
+              }
+            ],
+            "series": [
+              {
+                "label": "Broad fund"
+              },
+              {
+                "label": "Technology fund"
+              },
+              {
+                "label": "Fixed-income fund"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many times did a year's top fund also lead the next year?",
+            "options": [
+              {
+                "label": "Never"
+              },
+              {
+                "label": "Once"
+              },
+              {
+                "label": "Twice"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "En tu menú, lee cinco años más de los mismos tres fondos.",
+          "help": [
+            "Anota en orden el fondo de primer lugar de cada año.",
+            "Cuenta solo repeticiones seguidas, como en el Paso 7."
+          ],
+          "feedback": {
+            "met": "Comparaste el líder de cada año con el del siguiente.",
+            "not_yet": "Lista el líder de cada año y revisa los años vecinos."
+          },
+          "title": "Posición por año, ilustrativa (1 = mejor)",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 5"
+              },
+              {
+                "label": "Año 6"
+              },
+              {
+                "label": "Año 7"
+              },
+              {
+                "label": "Año 8"
+              },
+              {
+                "label": "Año 9"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo amplio"
+              },
+              {
+                "label": "Fondo de tecnología"
+              },
+              {
+                "label": "Renta fija"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántas veces el fondo líder de un año lideró también el siguiente?",
+            "options": [
+              {
+                "label": "Nunca"
+              },
+              {
+                "label": "Una vez"
+              },
+              {
+                "label": "Dos veces"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "No seu menu, leia mais cinco anos dos mesmos três fundos.",
+          "help": [
+            "Anote em ordem o fundo em primeiro lugar de cada ano.",
+            "Conte só repetições seguidas, como no Passo 7."
+          ],
+          "feedback": {
+            "met": "Você comparou o líder de cada ano com o do seguinte.",
+            "not_yet": "Liste o líder de cada ano e confira os anos vizinhos."
+          },
+          "title": "Posição por ano, ilustrativa (1 = melhor)",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 5"
+              },
+              {
+                "label": "Ano 6"
+              },
+              {
+                "label": "Ano 7"
+              },
+              {
+                "label": "Ano 8"
+              },
+              {
+                "label": "Ano 9"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo amplo"
+              },
+              {
+                "label": "Fundo de tecnologia"
+              },
+              {
+                "label": "Renda fixa"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantas vezes o fundo líder de um ano liderou também o seguinte?",
+            "options": [
+              {
+                "label": "Nunca"
+              },
+              {
+                "label": "Uma vez"
+              },
+              {
+                "label": "Duas vezes"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "t-01-sisters-plan",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-chase"
+          },
+          {
+            "id": "choice-robotics"
+          },
+          {
+            "id": "choice-spread"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-sector"
+          },
+          {
+            "id": "reason-repeat"
+          },
+          {
+            "id": "reason-bonds"
+          },
+          {
+            "id": "reason-nolose"
+          },
+          {
+            "id": "reason-simple"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-spread"
+        ],
+        "reasonQuality": {
+          "reason-sector": "sound",
+          "reason-repeat": "unsupported",
+          "reason-bonds": "sound",
+          "reason-nolose": "unsupported",
+          "reason-simple": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At your sister's plan, the robotics fund led last year. Which split fits what you saw?",
+          "feedback": {
+            "met": "You chose spread across sectors over last year's winner.",
+            "not_yet": "Revisit how first place moved in the rank chart."
+          },
+          "choices": [
+            {
+              "label": "Switch each year to the latest top fund"
+            },
+            {
+              "label": "All in the robotics fund"
+            },
+            {
+              "label": "Mostly index fund, plus some fixed income"
+            }
+          ],
+          "reasonPrompt": "Which reason supports your choice best?",
+          "reasons": [
+            {
+              "label": "One bad sector hurts a broad fund less."
+            },
+            {
+              "label": "Last year's top fund usually leads again."
+            },
+            {
+              "label": "A fixed-income slice softens swings, never removes them."
+            },
+            {
+              "label": "Spreading out means you cannot lose money."
+            },
+            {
+              "label": "Fewer funds are simpler to follow."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el plan de tu hermana, el fondo de robótica lideró el año pasado. ¿Qué mezcla encaja con lo que viste?",
+          "feedback": {
+            "met": "Elegiste repartir entre sectores en vez de seguir al ganador del año pasado.",
+            "not_yet": "Revisa cómo cambió el primer lugar en la gráfica de posiciones."
+          },
+          "choices": [
+            {
+              "label": "Cambiar cada año al fondo que más subió"
+            },
+            {
+              "label": "Todo en el fondo de robótica"
+            },
+            {
+              "label": "Casi todo en el índice, algo en renta fija"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón respalda mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Un mal sector pesa menos en un fondo amplio."
+            },
+            {
+              "label": "El fondo que lideró el año pasado suele repetir."
+            },
+            {
+              "label": "La renta fija suaviza las caídas, no las quita."
+            },
+            {
+              "label": "Repartir garantiza que no pierdes dinero."
+            },
+            {
+              "label": "Menos fondos son más fáciles de seguir."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No plano da sua irmã, o fundo de robótica liderou no ano passado. Qual divisão combina com o que você viu?",
+          "feedback": {
+            "met": "Você escolheu diversificar entre setores, não o vencedor do ano passado.",
+            "not_yet": "Revise como o primeiro lugar mudou no gráfico de posições."
+          },
+          "choices": [
+            {
+              "label": "Trocar todo ano para o fundo que mais subiu"
+            },
+            {
+              "label": "Tudo no fundo de robótica"
+            },
+            {
+              "label": "Quase tudo no índice, uma parte em renda fixa"
+            }
+          ],
+          "reasonPrompt": "Qual motivo sustenta melhor sua escolha?",
+          "reasons": [
+            {
+              "label": "Um setor ruim pesa menos num fundo amplo."
+            },
+            {
+              "label": "O fundo que liderou no ano passado costuma repetir."
+            },
+            {
+              "label": "A renda fixa suaviza as quedas, mas não as elimina."
+            },
+            {
+              "label": "Diversificar garante que você não perde dinheiro."
+            },
+            {
+              "label": "Menos fundos são mais fáceis de acompanhar."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

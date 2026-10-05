@@ -1,0 +1,1088 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "chapter_id": "inv-1012-growth-you-can-see",
+  "lesson_id": "inv-1012-04-simple-or-compound",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "invest.simple-vs-compound",
+    "invest.compound-growth"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina abre dos fondos de práctica, S y C, que empiezan con 1,000 monedas. El aprendiz ve que S suma lo mismo cada año y que C suma el 10% de su total, nombra el crecimiento simple y el compuesto, compara los dos fondos en el año 2 y en el año 6 y elige el mejor según el tiempo que se puede esperar.",
+  "title": {
+    "en-US": "Simple or compound growth",
+    "es-MX": "Crecimiento simple o compuesto",
+    "pt-BR": "Crescimento simples ou composto"
+  },
+  "new_concepts": [
+    "invest.simple-vs-compound"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina opens two pretend funds, S and C.",
+          "line": "Each starts with 1,000 coins. No rush."
+        },
+        "es-MX": {
+          "prompt": "Dina abre dos fondos de práctica, S y C.",
+          "line": "Cada uno empieza con 1,000 monedas. Sin prisa."
+        },
+        "pt-BR": {
+          "prompt": "A Dina abre dois fundos de prática, S e C.",
+          "line": "Cada um começa com 1.000 moedas. Sem pressa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-c"
+          },
+          {
+            "id": "opt-s"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-c"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fund S adds 100 coins a year; fund C adds 10% of its total. After six years, which holds more?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "options": [
+            {
+              "label": "Fund C"
+            },
+            {
+              "label": "Fund S"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El fondo S suma 100 monedas al año; el fondo C suma 10% de su total. Después de seis años, ¿cuál tiene más?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "options": [
+            {
+              "label": "El fondo C"
+            },
+            {
+              "label": "El fondo S"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O fundo S soma 100 moedas por ano; o fundo C soma 10% do seu total. Depois de seis anos, qual tem mais?",
+          "feedback": {
+            "met": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigada, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "options": [
+            {
+              "label": "O fundo C"
+            },
+            {
+              "label": "O fundo S"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-ratio-01",
+      "type": "math.ratio-table.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "itemsPerPack": 1,
+        "pricePerPack": 100,
+        "minimumPacks": 1,
+        "maximumPacks": 6,
+        "initialPacks": 1,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: fund S earns 100 coins a year. Slide packs as years; “Total price” is its earnings."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el fondo S gana 100 monedas al año. Mueve los paquetes como años; “Precio total” son sus ganancias."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o fundo S ganha 100 moedas por ano. Arraste os pacotes como anos; “Preço total” são seus ganhos."
+        }
+      }
+    },
+    {
+      "id": "example-chart-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            },
+            {
+              "id": "year-4"
+            },
+            {
+              "id": "year-5"
+            },
+            {
+              "id": "year-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-s",
+              "values": [
+                1100,
+                1200,
+                1300,
+                1400,
+                1500,
+                1600
+              ]
+            },
+            {
+              "id": "series-c",
+              "values": [
+                1100,
+                1210,
+                1331,
+                1464,
+                1611,
+                1772
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: both funds, year by year. S climbs in a straight line; C bends upward.",
+          "title": "Fund value after each year",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              },
+              {
+                "label": "Year 4"
+              },
+              {
+                "label": "Year 5"
+              },
+              {
+                "label": "Year 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fund S"
+              },
+              {
+                "label": "Fund C"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 2: los dos fondos, año por año. S sube en línea recta; C se curva hacia arriba.",
+          "title": "Valor del fondo después de cada año",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              },
+              {
+                "label": "Año 4"
+              },
+              {
+                "label": "Año 5"
+              },
+              {
+                "label": "Año 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo S"
+              },
+              {
+                "label": "Fondo C"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: os dois fundos, ano a ano. S sobe em linha reta; C se curva para cima.",
+          "title": "Valor do fundo depois de cada ano",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              },
+              {
+                "label": "Ano 4"
+              },
+              {
+                "label": "Ano 5"
+              },
+              {
+                "label": "Ano 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo S"
+              },
+              {
+                "label": "Fundo C"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-names-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: fund S is simple growth, fund C is compound. Okay so far?",
+          "line": "Simple earns on the start amount only. Compound earns on the whole growing total."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el fondo S es crecimiento simple y el C, compuesto. ¿Vamos bien?",
+          "line": "El simple gana solo sobre la cantidad inicial. El compuesto gana sobre el total completo que va creciendo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o fundo S é crescimento simples e o C, composto. Tudo bem até aqui?",
+          "line": "O simples ganha só sobre o valor inicial. O composto ganha sobre o total inteiro que vai crescendo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "steps": [
+          {
+            "id": "gap-year2"
+          },
+          {
+            "id": "c3-gain"
+          },
+          {
+            "id": "s3-gain"
+          },
+          {
+            "id": "gap-year3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "c3-gain",
+          "s3-gain",
+          "gap-year3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "c3-gain": "121",
+          "s3-gain": "100",
+          "gap-year3": "31"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "After year 2, S holds 1,200 and C holds 1,210. Fill in year 3.",
+          "feedback": {
+            "met": "You compared each fund’s earnings and saw the gap grow.",
+            "not_yet": "Take 10% of what C holds, then compare it with fund S."
+          },
+          "help": [
+            "C earns 10% of what it holds, so year 3 uses 1,210.",
+            "S earns the same every year, however big it is."
+          ],
+          "steps": [
+            {
+              "expression": "Gap after year 2: 1,210 − 1,200",
+              "result": "10",
+              "spokenText": "1,210 minus 1,200 is a gap of 10"
+            },
+            {
+              "expression": "Fund C year 3 earnings: 10% of 1,210",
+              "result": "121",
+              "spokenText": "Ten percent of 1,210 is 121"
+            },
+            {
+              "expression": "Fund S year 3 earnings: the same every year",
+              "result": "100",
+              "spokenText": "Fund S earns 100 again"
+            },
+            {
+              "expression": "Gap after year 3: the old gap plus how much more C earned",
+              "result": "31",
+              "spokenText": "Ten plus 21 is 31"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Después del año 2, S tiene 1,200 y C tiene 1,210. Completa el año 3.",
+          "feedback": {
+            "met": "Comparaste las ganancias de cada fondo y viste crecer la diferencia.",
+            "not_yet": "Toma el 10% de lo que tiene C y compáralo con el fondo S."
+          },
+          "help": [
+            "C gana el 10% de lo que tiene, así que el año 3 usa 1,210.",
+            "S gana lo mismo cada año, sin importar su tamaño."
+          ],
+          "steps": [
+            {
+              "expression": "Diferencia tras el año 2: 1,210 − 1,200",
+              "result": "10",
+              "spokenText": "1,210 menos 1,200 es una diferencia de 10"
+            },
+            {
+              "expression": "Ganancia del fondo C en el año 3: 10% de 1,210",
+              "result": "121",
+              "spokenText": "El diez por ciento de 1,210 es 121"
+            },
+            {
+              "expression": "Ganancia del fondo S en el año 3: lo mismo cada año",
+              "result": "100",
+              "spokenText": "El fondo S gana 100 otra vez"
+            },
+            {
+              "expression": "Diferencia tras el año 3: la anterior más lo que C ganó de más",
+              "result": "31",
+              "spokenText": "Diez más 21 son 31"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Depois do ano 2, S tem 1.200 e C tem 1.210. Complete o ano 3.",
+          "feedback": {
+            "met": "Você comparou os ganhos de cada fundo e viu a diferença crescer.",
+            "not_yet": "Pegue 10% do que o C tem e compare com o fundo S."
+          },
+          "help": [
+            "C ganha 10% do que tem, então o ano 3 usa 1.210.",
+            "S ganha o mesmo todo ano, não importa o tamanho."
+          ],
+          "steps": [
+            {
+              "expression": "Diferença após o ano 2: 1.210 − 1.200",
+              "result": "10",
+              "spokenText": "1.210 menos 1.200 é uma diferença de 10"
+            },
+            {
+              "expression": "Ganho do fundo C no ano 3: 10% de 1.210",
+              "result": "121",
+              "spokenText": "Dez por cento de 1.210 é 121"
+            },
+            {
+              "expression": "Ganho do fundo S no ano 3: o mesmo todo ano",
+              "result": "100",
+              "spokenText": "O fundo S ganha 100 de novo"
+            },
+            {
+              "expression": "Diferença após o ano 3: a anterior mais o que C ganhou a mais",
+              "result": "31",
+              "spokenText": "Dez mais 21 são 31"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-year6-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: now year 6, rounded to the nearest coin.",
+          "line": "S holds 1,600 and C about 1,772. The gap grew from 10 to 172."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: ahora el año 6, redondeado a la moneda más cercana.",
+          "line": "S tiene 1,600 y C cerca de 1,772. La diferencia pasó de 10 a 172."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: agora o ano 6, arredondado para a moeda mais próxima.",
+          "line": "S tem 1.600 e C cerca de 1.772. A diferença passou de 10 para 172."
+        }
+      }
+    },
+    {
+      "id": "example-slope-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "slope"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-s",
+              "values": [
+                1200,
+                1600
+              ]
+            },
+            {
+              "id": "series-c",
+              "values": [
+                1210,
+                1772
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: years 2 and 6 side by side. Two years barely differ; six years clearly do.",
+          "title": "Fund value in year 2 and year 6",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fund S"
+              },
+              {
+                "label": "Fund C"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 5: los años 2 y 6, lado a lado. Con dos años casi no hay diferencia; con seis, sí.",
+          "title": "Valor del fondo en el año 2 y el año 6",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo S"
+              },
+              {
+                "label": "Fondo C"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: os anos 2 e 6, lado a lado. Com dois anos quase não há diferença; com seis, há.",
+          "title": "Valor do fundo no ano 2 e no ano 6",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo S"
+              },
+              {
+                "label": "Fundo C"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-ratio-01",
+      "type": "math.ratio-table.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "itemsPerPack": 1,
+        "pricePerPack": 50,
+        "minimumPacks": 1,
+        "maximumPacks": 6,
+        "initialPacks": 1,
+        "currency": "coins"
+      },
+      "rubric": {
+        "target_packs": 4
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A new simple fund earns 50 coins a year. Slide to 4 years (packs) and type the “Total price”.",
+          "feedback": {
+            "met": "You saw the simple fund adds the same amount each year.",
+            "not_yet": "Each year adds the same 50, so multiply 50 by the years."
+          }
+        },
+        "es-MX": {
+          "prompt": "Un fondo simple nuevo gana 50 monedas al año. Mueve a 4 años (paquetes) y escribe el “Precio total”.",
+          "feedback": {
+            "met": "Viste que el fondo simple suma lo mismo cada año.",
+            "not_yet": "Cada año suma las mismas 50, así que multiplica 50 por los años."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um fundo simples novo ganha 50 moedas por ano. Arraste até 4 anos (pacotes) e digite o “Preço total”.",
+          "feedback": {
+            "met": "Você viu que o fundo simples soma o mesmo a cada ano.",
+            "not_yet": "Cada ano soma as mesmas 50, então multiplique 50 pelos anos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-slope-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "slope"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-6"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-s",
+              "values": [
+                600,
+                800
+              ]
+            },
+            {
+              "id": "series-c",
+              "values": [
+                605,
+                886
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-two"
+            },
+            {
+              "id": "opt-six"
+            },
+            {
+              "id": "opt-same"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-six"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two new funds start at 500 coins: S is simple, C is compound. Read the chart.",
+          "feedback": {
+            "met": "You compared the gap in both years and saw it widen.",
+            "not_yet": "Subtract S from C in each year, then compare the two gaps."
+          },
+          "title": "Two new funds, years 2 and 6",
+          "data": {
+            "categories": [
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fund S"
+              },
+              {
+                "label": "Fund C"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "In which year are the funds farther apart?",
+            "options": [
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 6"
+              },
+              {
+                "label": "The same in both"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Dos fondos nuevos empiezan con 500 monedas: S es simple y C, compuesto. Lee la gráfica.",
+          "feedback": {
+            "met": "Comparaste la diferencia en los dos años y viste que crece.",
+            "not_yet": "Resta S de C en cada año y compara las dos diferencias."
+          },
+          "title": "Dos fondos nuevos, años 2 y 6",
+          "data": {
+            "categories": [
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fondo S"
+              },
+              {
+                "label": "Fondo C"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿En qué año están más separados los fondos?",
+            "options": [
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 6"
+              },
+              {
+                "label": "Igual en los dos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dois fundos novos começam com 500 moedas: S é simples e C, composto. Leia o gráfico.",
+          "feedback": {
+            "met": "Você comparou a diferença nos dois anos e viu que ela cresce.",
+            "not_yet": "Subtraia S de C em cada ano e compare as duas diferenças."
+          },
+          "title": "Dois fundos novos, anos 2 e 6",
+          "data": {
+            "categories": [
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 6"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fundo S"
+              },
+              {
+                "label": "Fundo C"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Em que ano os fundos estão mais afastados?",
+            "options": [
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 6"
+              },
+              {
+                "label": "Igual nos dois"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-dialogue-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-c-small"
+          },
+          {
+            "id": "reply-c-big"
+          },
+          {
+            "id": "reply-either"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-c-small",
+          "reply-either"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Funds S and C both start at 1,000 coins. How do you answer Kai?",
+          "feedback": {
+            "met": "You matched the choice to the short two-year wait.",
+            "not_yet": "Remember year 2: the two funds were almost equal."
+          },
+          "speaker": "Kai",
+          "line": "My goal is 2 years away. Should I pick fund S or fund C?",
+          "replies": [
+            {
+              "label": "C, but only a little bigger"
+            },
+            {
+              "label": "C, it ends far bigger"
+            },
+            {
+              "label": "Either one; they barely differ"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los fondos S y C empiezan con 1,000 monedas. ¿Cómo le respondes a Kai?",
+          "feedback": {
+            "met": "Ajustaste la elección a la espera corta de dos años.",
+            "not_yet": "Recuerda el año 2: los dos fondos estaban casi iguales."
+          },
+          "speaker": "Kai",
+          "line": "Mi meta está a 2 años. ¿Elijo el fondo S o el fondo C?",
+          "replies": [
+            {
+              "label": "C, pero solo un poco más grande"
+            },
+            {
+              "label": "C, termina mucho más grande"
+            },
+            {
+              "label": "Cualquiera; casi no difieren"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os fundos S e C começam com 1.000 moedas. Como você responde ao Kai?",
+          "feedback": {
+            "met": "Você ajustou a escolha à espera curta de dois anos.",
+            "not_yet": "Lembre do ano 2: os dois fundos estavam quase iguais."
+          },
+          "speaker": "Kai",
+          "line": "Minha meta é daqui a 2 anos. Escolho o fundo S ou o fundo C?",
+          "replies": [
+            {
+              "label": "C, mas só um pouco maior"
+            },
+            {
+              "label": "C, termina bem maior"
+            },
+            {
+              "label": "Qualquer um; quase não diferem"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-s"
+          },
+          {
+            "id": "choice-c"
+          },
+          {
+            "id": "choice-either"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-time"
+          },
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-same"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-c"
+        ],
+        "reasonQuality": {
+          "reason-time": "sound",
+          "reason-bigger": "partial",
+          "reason-same": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Teo has 400 coins and can wait 8 years. Which fund?",
+          "feedback": {
+            "met": "You matched the long wait to the fund that keeps growing.",
+            "not_yet": "Compare what each fund earns by year 8."
+          },
+          "choices": [
+            {
+              "label": "S: adds 40 a year"
+            },
+            {
+              "label": "C: adds 10% of its total"
+            },
+            {
+              "label": "Either one"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Over 8 years, C pulls ahead"
+            },
+            {
+              "label": "C ends with a bigger number"
+            },
+            {
+              "label": "Both end the same"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Teo tiene 400 monedas y puede esperar 8 años. ¿Qué fondo elige?",
+          "feedback": {
+            "met": "Relacionaste la espera larga con el fondo que sigue creciendo.",
+            "not_yet": "Compara lo que gana cada fondo hacia el año 8."
+          },
+          "choices": [
+            {
+              "label": "S: suma 40 al año"
+            },
+            {
+              "label": "C: suma 10% de su total"
+            },
+            {
+              "label": "Cualquiera"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "En 8 años, C se adelanta"
+            },
+            {
+              "label": "C termina con un número mayor"
+            },
+            {
+              "label": "Los dos terminan igual"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Teo tem 400 moedas e pode esperar 8 anos. Qual fundo escolher?",
+          "feedback": {
+            "met": "Você ligou a espera longa ao fundo que continua crescendo.",
+            "not_yet": "Compare o que cada fundo ganha por volta do ano 8."
+          },
+          "choices": [
+            {
+              "label": "S: soma 40 por ano"
+            },
+            {
+              "label": "C: soma 10% do seu total"
+            },
+            {
+              "label": "Qualquer um"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Em 8 anos, o C se adianta"
+            },
+            {
+              "label": "C termina com um número maior"
+            },
+            {
+              "label": "Os dois terminam iguais"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

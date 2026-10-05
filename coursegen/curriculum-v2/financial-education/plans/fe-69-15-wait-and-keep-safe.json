@@ -1,0 +1,638 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-my-coin-jar",
+  "lesson_id": "fe-69-15-wait-and-keep-safe",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.patience-and-waiting",
+    "life.safe-keeping",
+    "life.saving-for-later"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf tiene 6 monedas ahorradas para un papalote de 12. Gasta 2 en un dulce, un frasco abierto pierde 1 moneda y mueve el resto a una caja cerrada; luego ahorra 3 monedas por semana. Cuenta su error con calma y dice qué hará la próxima vez. El niño elige dónde cuidar las monedas, sigue ahorrando después de perder una y decide entre algo pequeño ahora y más después.",
+  "title": {
+    "en-US": "Wait and keep safe",
+    "es-MX": "Espera y cuida tus monedas",
+    "pt-BR": "Espere e guarde com segurança"
+  },
+  "new_concepts": [
+    "life.patience-and-waiting",
+    "life.safe-keeping"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf spends 2 of his 6 saved coins on a sweet, leaving 4 for the kite.",
+    "recovery": "Liruf keeps saving and says that next time he will ask: can it wait?"
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf has 6 coins in his jar. The kite costs 12.",
+          "line": "Look at my jar: six coins. I want that kite."
+        },
+        "es-MX": {
+          "prompt": "Liruf tiene 6 monedas en su frasco. El papalote cuesta 12.",
+          "line": "Mira mi frasco: seis monedas. Quiero ese papalote."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf tem 6 moedas no pote. A pipa custa 12.",
+          "line": "Olhe meu pote: seis moedas. Quero aquela pipa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.patience-and-waiting",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-now"
+          },
+          {
+            "id": "opt-later"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf may take coins now or later. Which does he take?",
+          "feedback": {
+            "met": "Thanks. Now let's see Liruf's story.",
+            "not_yet": "Thanks. Now let's see Liruf's story."
+          },
+          "options": [
+            {
+              "label": "1 coin now"
+            },
+            {
+              "label": "3 coins next week"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf puede tomar monedas ahora o después. ¿Cuáles toma?",
+          "feedback": {
+            "met": "Gracias. Ahora vemos la historia de Liruf.",
+            "not_yet": "Gracias. Ahora vemos la historia de Liruf."
+          },
+          "options": [
+            {
+              "label": "1 moneda ahora"
+            },
+            {
+              "label": "3 monedas la próxima semana"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf pode pegar moedas agora ou depois. Quais ele pega?",
+          "feedback": {
+            "met": "Vamos ver a história do Liruf.",
+            "not_yet": "Vamos ver a história do Liruf."
+          },
+          "options": [
+            {
+              "label": "1 moeda agora"
+            },
+            {
+              "label": "3 moedas na próxima semana"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "I had 6 coins for a 12-coin kite.",
+          "misjudgment": "I bought a sweet for 2 coins. Then I had 4.",
+          "recovery": "I keep saving. Next time I ask: can it wait?"
+        },
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Liruf.",
+          "setup": "Tenía 6 monedas para un papalote de 12.",
+          "misjudgment": "Compré un dulce de 2 monedas. Luego me quedaron 4.",
+          "recovery": "Sigo ahorrando. La próxima vez pregunto: ¿puede esperar?"
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Eu tinha 6 moedas para uma pipa de 12.",
+          "misjudgment": "Comprei um doce de 2 moedas. Depois sobraram 4.",
+          "recovery": "Sigo guardando. Da próxima vez pergunto: pode esperar?"
+        }
+      }
+    },
+    {
+      "id": "open-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's jar sits open on the shelf.",
+          "line": "A coin fell out. Now I have 3. I keep saving."
+        },
+        "es-MX": {
+          "prompt": "El frasco de Liruf está abierto en el estante.",
+          "line": "Se cayó una moneda. Ahora tengo 3. Sigo ahorrando."
+        },
+        "pt-BR": {
+          "prompt": "O pote do Liruf fica aberto na prateleira.",
+          "line": "Uma moeda caiu. Agora tenho 3. Sigo guardando."
+        }
+      }
+    },
+    {
+      "id": "box-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf finds a box with a lid.",
+          "line": "My 3 coins go in the box. A lid keeps them safe."
+        },
+        "es-MX": {
+          "prompt": "Liruf encuentra una caja con tapa.",
+          "line": "Mis 3 monedas van en la caja. La tapa las cuida."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf acha uma caixa com tampa.",
+          "line": "Minhas 3 moedas vão na caixa. A tampa cuida delas."
+        }
+      }
+    },
+    {
+      "id": "where-01",
+      "type": "story.branch.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-cup"
+          },
+          {
+            "id": "opt-shelf"
+          },
+          {
+            "id": "opt-box"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-box"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Where do Liruf's 3 new coins go?",
+          "feedback": {
+            "met": "You chose the place with a lid, like Liruf.",
+            "not_yet": "Not yet. Which place keeps coins from falling out?"
+          },
+          "help": [
+            "Think about the open jar. What happened?",
+            "Which place has a lid?"
+          ],
+          "scene": "Liruf gets 3 new coins. He wants to keep them safe.",
+          "options": [
+            {
+              "label": "In an open cup"
+            },
+            {
+              "label": "On the open shelf"
+            },
+            {
+              "label": "In the closed box"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Dónde van las 3 monedas nuevas de Liruf?",
+          "feedback": {
+            "met": "Elegiste el lugar con tapa, como Liruf.",
+            "not_yet": "Todavía no. ¿Cuál lugar evita que se caigan las monedas?"
+          },
+          "help": [
+            "Piensa en el frasco abierto. ¿Qué pasó?",
+            "¿Cuál lugar tiene tapa?"
+          ],
+          "scene": "Liruf recibe 3 monedas nuevas. Quiere cuidarlas.",
+          "options": [
+            {
+              "label": "En una taza abierta"
+            },
+            {
+              "label": "En el estante abierto"
+            },
+            {
+              "label": "En la caja cerrada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Onde vão as 3 moedas novas do Liruf?",
+          "feedback": {
+            "met": "Você escolheu o lugar com tampa, como o Liruf.",
+            "not_yet": "Ainda não. Qual lugar evita que as moedas caiam?"
+          },
+          "help": [
+            "Pense no pote aberto. O que aconteceu?",
+            "Qual lugar tem tampa?"
+          ],
+          "scene": "O Liruf ganha 3 moedas novas. Ele quer cuidar delas.",
+          "options": [
+            {
+              "label": "Em um copo aberto"
+            },
+            {
+              "label": "Na prateleira aberta"
+            },
+            {
+              "label": "Na caixa fechada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "weekly-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Week 1: Liruf puts in 3 more coins.",
+          "line": "The box had 3. Now it has 6."
+        },
+        "es-MX": {
+          "prompt": "Semana 1: Liruf agrega 3 monedas más.",
+          "line": "La caja tenía 3. Ahora tiene 6."
+        },
+        "pt-BR": {
+          "prompt": "Semana 1: o Liruf coloca mais 3 moedas.",
+          "line": "A caixa tinha 3. Agora tem 6."
+        }
+      }
+    },
+    {
+      "id": "weeks-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Week 2: 3 more. Week 3: 3 more.",
+          "line": "Six, nine, twelve. Three weeks of waiting buy the kite."
+        },
+        "es-MX": {
+          "prompt": "Semana 2: 3 más. Semana 3: 3 más.",
+          "line": "Seis, nueve, doce. Tres semanas de espera compran el papalote."
+        },
+        "pt-BR": {
+          "prompt": "Semana 2: mais 3. Semana 3: mais 3.",
+          "line": "Seis, nove, doze. Três semanas de espera compram a pipa."
+        }
+      }
+    },
+    {
+      "id": "loss-01",
+      "type": "story.branch.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-keep-saving"
+          },
+          {
+            "id": "opt-stop"
+          },
+          {
+            "id": "opt-spend-rest"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-keep-saving"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "After the lost coin, what does Liruf do?",
+          "feedback": {
+            "met": "You kept saving, like Liruf after his small loss.",
+            "not_yet": "Not yet. What did Liruf do when his coin fell?"
+          },
+          "help": [
+            "Liruf lost one coin. What did he do next?",
+            "Look at Week 1: he put in more."
+          ],
+          "scene": "A coin fell from Liruf's open jar. The rest are safe in the box.",
+          "options": [
+            {
+              "label": "Keep saving each week"
+            },
+            {
+              "label": "Stop saving for the kite"
+            },
+            {
+              "label": "Spend the rest on sweets"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Después de perder una moneda, ¿qué hace Liruf?",
+          "feedback": {
+            "met": "Seguiste ahorrando, como Liruf después de su pérdida pequeña.",
+            "not_yet": "Todavía no. ¿Qué hizo Liruf cuando se cayó su moneda?"
+          },
+          "help": [
+            "Liruf perdió una moneda. ¿Qué hizo después?",
+            "Mira la semana 1: puso más."
+          ],
+          "scene": "Se cayó una moneda del frasco abierto de Liruf. Las demás están a salvo en la caja.",
+          "options": [
+            {
+              "label": "Seguir ahorrando cada semana"
+            },
+            {
+              "label": "Dejar de ahorrar para el papalote"
+            },
+            {
+              "label": "Gastar el resto en dulces"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Depois da moeda perdida, o que o Liruf faz?",
+          "feedback": {
+            "met": "Você continuou guardando, como o Liruf depois da perda pequena.",
+            "not_yet": "Ainda não. O que o Liruf fez quando a moeda caiu?"
+          },
+          "help": [
+            "O Liruf perdeu uma moeda. O que fez depois?",
+            "Veja a semana 1: ele colocou mais."
+          ],
+          "scene": "Uma moeda caiu do pote aberto do Liruf. As outras estão seguras na caixa.",
+          "options": [
+            {
+              "label": "Continuar guardando toda semana"
+            },
+            {
+              "label": "Parar de guardar para a pipa"
+            },
+            {
+              "label": "Gastar o resto em doces"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wait-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.patience-and-waiting",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-sweet"
+          },
+          {
+            "id": "opt-save"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-save"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf wants the kite. What does he pick today?",
+          "feedback": {
+            "met": "You picked the choice that helps Liruf's goal.",
+            "not_yet": "Not yet. Which pick brings Liruf closer to the kite?"
+          },
+          "options": [
+            {
+              "label": "Buy a sweet now"
+            },
+            {
+              "label": "Keep saving for the kite"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf quiere el papalote. ¿Qué elige hoy?",
+          "feedback": {
+            "met": "Elegiste lo que ayuda a la meta de Liruf.",
+            "not_yet": "Todavía no. ¿Cuál elección acerca a Liruf al papalote?"
+          },
+          "options": [
+            {
+              "label": "Comprar un dulce ahora"
+            },
+            {
+              "label": "Seguir ahorrando para el papalote"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Liruf quer a pipa. O que ele escolhe hoje?",
+          "feedback": {
+            "met": "Você escolheu o que ajuda a meta do Liruf.",
+            "not_yet": "Ainda não. Qual escolha aproxima o Liruf da pipa?"
+          },
+          "options": [
+            {
+              "label": "Comprar um doce agora"
+            },
+            {
+              "label": "Continuar guardando para a pipa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.would-you-rather.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.patience-and-waiting",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-three-later"
+          },
+          {
+            "id": "opt-one-now"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-three-later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the picnic, how many strawberries does Liruf take?",
+          "feedback": {
+            "met": "You waited for more, like Liruf did for the kite.",
+            "not_yet": "Not yet. Ask Liruf's question: can it wait?"
+          },
+          "options": [
+            {
+              "label": "3 strawberries after lunch"
+            },
+            {
+              "label": "1 strawberry right now"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el picnic, ¿cuántas fresas elige Liruf?",
+          "feedback": {
+            "met": "Esperaste por más, como Liruf con el papalote.",
+            "not_yet": "Todavía no. Haz la pregunta de Liruf: ¿puede esperar?"
+          },
+          "options": [
+            {
+              "label": "3 fresas después de comer"
+            },
+            {
+              "label": "1 fresa ahora mismo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No piquenique, quantos morangos o Liruf escolhe?",
+          "feedback": {
+            "met": "Você esperou por mais, como o Liruf com a pipa.",
+            "not_yet": "Ainda não. Faça a pergunta do Liruf: pode esperar?"
+          },
+          "options": [
+            {
+              "label": "3 morangos depois do almoço"
+            },
+            {
+              "label": "1 morango agora mesmo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

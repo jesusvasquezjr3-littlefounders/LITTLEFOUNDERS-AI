@@ -1,0 +1,761 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-first-account",
+  "lesson_id": "fe-1012-11-money-that-grows",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.simple-interest-peek",
+    "money.percent-intro",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara enseña con ejemplos cómo crece el dinero en el banco del salón, que suma 10% al mes sobre el depósito original (un porcentaje de ejemplo). Ve mes a mes 55, 60 y 65, lo lee en una línea de ahorro y después calcula con otros depósitos cuánto crece y cuántos meses faltan para llegar a una meta.",
+  "title": {
+    "es-MX": "Dinero que crece",
+    "en-US": "Money that grows",
+    "pt-BR": "Dinheiro que cresce"
+  },
+  "new_concepts": [
+    "money.simple-interest-peek"
+  ],
+  "regional": {
+    "universal": "A classroom bank in LittleFounders coins with an illustrative rate stated as an example; no market bank, product or amount."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara pone 50 monedas en el banco del salón.",
+          "line": "Nuestro banco del salón suma 10% al mes. Ese porcentaje es solo un ejemplo; los bancos reales pagan mucho menos."
+        },
+        "en-US": {
+          "prompt": "Zara puts 50 coins into the class bank.",
+          "line": "Our class bank adds 10% a month. That rate is only an example; real banks pay much less."
+        },
+        "pt-BR": {
+          "prompt": "A Zara coloca 50 moedas no banco da turma.",
+          "line": "O nosso banco da turma soma 10% ao mês. Essa taxa é só um exemplo; os bancos reais pagam bem menos."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "payload": {
+        "steps": [
+          {
+            "id": "s-start"
+          },
+          {
+            "id": "s-add"
+          },
+          {
+            "id": "s-bal"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "s-add",
+          "s-bal"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "s-add": "4",
+          "s-bal": "44"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Leo pone 40 monedas en el banco del salón, que suma cada mes el 10% de ellas. Completa los pasos.",
+          "feedback": {
+            "met": "Gracias. Ahora vemos juntos cómo suma monedas el banco del salón.",
+            "not_yet": "Gracias. Ahora vemos juntos cómo suma monedas el banco del salón."
+          },
+          "steps": [
+            {
+              "expression": "Leo pone",
+              "result": "40",
+              "spokenText": "Leo pone 40 monedas"
+            },
+            {
+              "expression": "Suma cada mes",
+              "result": "4",
+              "spokenText": "El banco suma 4 monedas cada mes"
+            },
+            {
+              "expression": "Saldo tras el mes 1",
+              "result": "44",
+              "spokenText": "40 más 4 son 44"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Leo puts 40 coins in the class bank, which adds 10% of them each month. Fill in the steps.",
+          "feedback": {
+            "met": "Thanks. Now we watch how the class bank adds coins, together.",
+            "not_yet": "Thanks. Now we watch how the class bank adds coins, together."
+          },
+          "steps": [
+            {
+              "expression": "Leo puts in",
+              "result": "40",
+              "spokenText": "Leo puts in 40 coins"
+            },
+            {
+              "expression": "Added each month",
+              "result": "4",
+              "spokenText": "The bank adds 4 coins each month"
+            },
+            {
+              "expression": "Balance after month 1",
+              "result": "44",
+              "spokenText": "40 plus 4 is 44"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Leo coloca 40 moedas no banco da turma, que soma todo mês 10% delas. Complete os passos.",
+          "feedback": {
+            "met": "Certo. Agora vemos juntos como o banco da turma soma moedas.",
+            "not_yet": "Certo. Agora vemos juntos como o banco da turma soma moedas."
+          },
+          "steps": [
+            {
+              "expression": "O Leo coloca",
+              "result": "40",
+              "spokenText": "O Leo coloca 40 moedas"
+            },
+            {
+              "expression": "Soma por mês",
+              "result": "4",
+              "spokenText": "O banco soma 4 moedas por mês"
+            },
+            {
+              "expression": "Saldo após o mês 1",
+              "result": "44",
+              "spokenText": "40 mais 4 é 44"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-rate",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: 10% es 10 de cada 100, o sea 5 de 50.",
+          "line": "Pongo 50 monedas. El banco suma cada mes el 10% de ellas, lo que se llama interés: 5 monedas."
+        },
+        "en-US": {
+          "prompt": "Step 1: 10% is 10 for every 100, so 5 for 50.",
+          "line": "I put in 50 coins. The bank adds 10% of them each month, called interest: 5 coins."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: 10% é 10 a cada 100, ou seja, 5 a cada 50.",
+          "line": "Eu coloco 50 moedas. O banco soma todo mês 10% delas, o que se chama juros: 5 moedas."
+        }
+      }
+    },
+    {
+      "id": "ex-m1",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: el mes 1.",
+          "line": "El mes 1 suma 5, así que espero 55: 50 + 5 = 55. Miro el saldo: marca 55."
+        },
+        "en-US": {
+          "prompt": "Step 2: month 1.",
+          "line": "Month 1 adds 5, so I expect 55: 50 + 5 = 55. I look: the balance reads 55."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o mês 1.",
+          "line": "O mês 1 soma 5, então espero 55: 50 + 5 = 55. Olho o saldo: marca 55."
+        }
+      }
+    },
+    {
+      "id": "ex-m2",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: el mes 2 suma otra vez los mismos 5.",
+          "line": "Nuestro banco paga sobre los 50 del inicio, no sobre 55: 55 + 5 = 60. El mes 3 da 65."
+        },
+        "en-US": {
+          "prompt": "Step 3: month 2 adds the same 5 again.",
+          "line": "Our bank pays on the first 50, not on 55: 55 + 5 = 60. Month 3 makes 65."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o mês 2 soma os mesmos 5 de novo.",
+          "line": "Nosso banco paga sobre os 50 do início, não sobre 55: 55 + 5 = 60. O mês 3 dá 65."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "steps": [
+          {
+            "id": "s-start"
+          },
+          {
+            "id": "s-int"
+          },
+          {
+            "id": "s-m1"
+          },
+          {
+            "id": "s-m2"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "s-int",
+          "s-m1",
+          "s-m2"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "s-int": "3",
+          "s-m1": "33",
+          "s-m2": "36"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Nina pone 30 monedas en el banco del salón con 10% al mes. Completa los pasos.",
+          "help": [
+            "Primero busca el 10% de los 30; luego súmalo al saldo cada mes."
+          ],
+          "feedback": {
+            "met": "Calculaste el 10% del depósito y lo sumaste cada mes.",
+            "not_yet": "Todavía no. En los pasos de Zara se suma lo mismo cada mes."
+          },
+          "steps": [
+            {
+              "expression": "Nina pone",
+              "result": "30",
+              "spokenText": "Nina pone 30 monedas"
+            },
+            {
+              "expression": "10% × 30",
+              "result": "3",
+              "spokenText": "El diez por ciento de 30 es 3"
+            },
+            {
+              "expression": "Saldo tras el mes 1",
+              "result": "33",
+              "spokenText": "30 más 3 son 33"
+            },
+            {
+              "expression": "Saldo tras el mes 2",
+              "result": "36",
+              "spokenText": "33 más 3 son 36"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Nina puts 30 coins in the class bank at 10% a month. Finish the steps.",
+          "help": [
+            "Find 10% of the 30 first, then add it to the balance each month."
+          ],
+          "feedback": {
+            "met": "You found 10% of the deposit, then added it each month.",
+            "not_yet": "Not yet. Zara's steps add the same amount each month."
+          },
+          "steps": [
+            {
+              "expression": "Nina puts in",
+              "result": "30",
+              "spokenText": "Nina puts in 30 coins"
+            },
+            {
+              "expression": "10% × 30",
+              "result": "3",
+              "spokenText": "Ten percent of 30 is 3"
+            },
+            {
+              "expression": "Balance after month 1",
+              "result": "33",
+              "spokenText": "30 plus 3 is 33"
+            },
+            {
+              "expression": "Balance after month 2",
+              "result": "36",
+              "spokenText": "33 plus 3 is 36"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Nina coloca 30 moedas no banco da turma, a 10% ao mês. Complete os passos.",
+          "help": [
+            "Primeiro ache 10% dos 30; depois some ao saldo todo mês."
+          ],
+          "feedback": {
+            "met": "Você calculou 10% do depósito e somou todo mês.",
+            "not_yet": "Ainda não. A Zara soma o mesmo valor todo mês."
+          },
+          "steps": [
+            {
+              "expression": "A Nina coloca",
+              "result": "30",
+              "spokenText": "A Nina coloca 30 moedas"
+            },
+            {
+              "expression": "10% × 30",
+              "result": "3",
+              "spokenText": "Dez por cento de 30 é 3"
+            },
+            {
+              "expression": "Saldo após o mês 1",
+              "result": "33",
+              "spokenText": "30 mais 3 é 33"
+            },
+            {
+              "expression": "Saldo após o mês 2",
+              "result": "36",
+              "spokenText": "33 mais 3 é 36"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-line",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 6,
+        "minimum": 5,
+        "maximum": 20,
+        "step": 5,
+        "initial": 5,
+        "currency": "coins",
+        "unit": "month"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: quiero 80 monedas, así que necesito 30 más. Con 5 al mes, 6 meses suman 30."
+        },
+        "en-US": {
+          "prompt": "Step 4: I want 80 coins, so I need 30 more. At 5 a month, 6 months make 30."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: quero 80 moedas, então preciso de 30 a mais. Com 5 por mês, 6 meses somam 30."
+        }
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "payload": {
+        "initial": 70,
+        "sale": 7,
+        "cost": 1,
+        "maxEntries": 3
+      },
+      "rubric": {
+        "target_balance": 91
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las 70 monedas de Mia ganan 7 al mes, el 10% de 70. Toca + por tres meses y escribe el saldo.",
+          "help": [
+            "Toca + una vez por mes y lee el saldo."
+          ],
+          "feedback": {
+            "met": "Registraste el interés de cada mes y escribiste el saldo.",
+            "not_yet": "Todavía no. Cada mes se suma lo mismo al saldo."
+          }
+        },
+        "en-US": {
+          "prompt": "Mia's 70 coins earn 7 a month, 10% of 70. Tap + for three months, then type the balance.",
+          "help": [
+            "Tap + once for each month, then read the balance."
+          ],
+          "feedback": {
+            "met": "You logged each month's interest, then typed the balance.",
+            "not_yet": "Not yet. Each month adds the same amount to the balance."
+          }
+        },
+        "pt-BR": {
+          "prompt": "As 70 moedas da Mia rendem 7 por mês, 10% de 70. Toque em + por três meses e digite o saldo.",
+          "help": [
+            "Toque em + uma vez por mês e leia o saldo."
+          ],
+          "feedback": {
+            "met": "Você registrou os juros de cada mês e digitou o saldo.",
+            "not_yet": "Ainda não. Cada mês soma o mesmo valor ao saldo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-months",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "payload": {
+        "steps": [
+          {
+            "id": "s-start"
+          },
+          {
+            "id": "s-add"
+          },
+          {
+            "id": "s-miss"
+          },
+          {
+            "id": "s-months"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "s-add",
+          "s-miss",
+          "s-months"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "s-add": "2",
+          "s-miss": "10",
+          "s-months": "5"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ada pone 20 monedas en el banco del salón y quiere llegar a 30. Suma 10% al mes: completa los pasos.",
+          "help": [
+            "Igual que Zara: encuentra lo que suma cada mes y mira cuántos meses cubren lo que falta."
+          ],
+          "feedback": {
+            "met": "Hallaste lo que suma cada mes y los meses necesarios.",
+            "not_yet": "Todavía no. Repasa los pasos de Zara: lo que falta y luego los meses."
+          },
+          "steps": [
+            {
+              "expression": "Ada pone",
+              "result": "20",
+              "spokenText": "Ada pone 20 monedas"
+            },
+            {
+              "expression": "Suma cada mes",
+              "result": "2",
+              "spokenText": "El diez por ciento de 20 son 2 monedas"
+            },
+            {
+              "expression": "Todavía faltan para 30",
+              "result": "10",
+              "spokenText": "30 menos 20 deja 10 por juntar"
+            },
+            {
+              "expression": "Meses para lograrlo",
+              "result": "5",
+              "spokenText": "10 monedas a 2 por mes tardan 5 meses"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Ada puts 20 coins in the class bank and wants 30. It adds 10% a month: finish the steps.",
+          "help": [
+            "Same as Zara: find the monthly amount, then see how many months cover what is missing."
+          ],
+          "feedback": {
+            "met": "You found the monthly amount, then the months needed.",
+            "not_yet": "Not yet. Review Zara's steps: the missing coins, then the months."
+          },
+          "steps": [
+            {
+              "expression": "Ada puts in",
+              "result": "20",
+              "spokenText": "Ada puts in 20 coins"
+            },
+            {
+              "expression": "Added each month",
+              "result": "2",
+              "spokenText": "Ten percent of 20 is 2 coins"
+            },
+            {
+              "expression": "Still missing for 30",
+              "result": "10",
+              "spokenText": "30 minus 20 leaves 10 to go"
+            },
+            {
+              "expression": "Months to reach it",
+              "result": "5",
+              "spokenText": "10 coins at 2 a month takes 5 months"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Ada coloca 20 moedas no banco da turma e quer chegar a 30. Soma 10% ao mês: complete os passos.",
+          "help": [
+            "Igual à Zara: ache o valor mensal e veja quantos meses cobrem o que falta."
+          ],
+          "feedback": {
+            "met": "Você achou o valor mensal e os meses necessários.",
+            "not_yet": "Ainda não. Revise os passos da Zara: o que falta e depois os meses."
+          },
+          "steps": [
+            {
+              "expression": "A Ada coloca",
+              "result": "20",
+              "spokenText": "A Ada coloca 20 moedas"
+            },
+            {
+              "expression": "Soma por mês",
+              "result": "2",
+              "spokenText": "Dez por cento de 20 são 2 moedas"
+            },
+            {
+              "expression": "Ainda faltam para 30",
+              "result": "10",
+              "spokenText": "30 menos 20 deixa 10 a juntar"
+            },
+            {
+              "expression": "Meses para chegar lá",
+              "result": "5",
+              "spokenText": "10 moedas a 2 por mês levam 5 meses"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "payload": {
+        "steps": [
+          {
+            "id": "s-start"
+          },
+          {
+            "id": "s-add"
+          },
+          {
+            "id": "s-bal2"
+          },
+          {
+            "id": "s-months"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "s-add",
+          "s-bal2",
+          "s-months"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "s-add": "6",
+          "s-bal2": "72",
+          "s-months": "5"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La cuenta del club de ajedrez tiene 60 monedas y suma 10% al mes. La meta es 90: completa los pasos.",
+          "help": [
+            "Busca primero el 10% de lo que hay al inicio y súmalo por dos meses.",
+            "Luego cuenta cuántos meses de ese monto cubren lo que falta."
+          ],
+          "feedback": {
+            "met": "Calculaste lo mensual, el saldo y los meses.",
+            "not_yet": "Todavía no. Sigue los pasos de Ada: primero lo que suma cada mes."
+          },
+          "steps": [
+            {
+              "expression": "El club empieza con",
+              "result": "60",
+              "spokenText": "El club empieza con 60 monedas"
+            },
+            {
+              "expression": "Suma cada mes",
+              "result": "6",
+              "spokenText": "El diez por ciento de 60 son 6 monedas"
+            },
+            {
+              "expression": "Saldo tras 2 meses",
+              "result": "72",
+              "spokenText": "60 más 6 más 6 son 72"
+            },
+            {
+              "expression": "Meses para llegar a 90",
+              "result": "5",
+              "spokenText": "Faltan 30 monedas; a 6 por mes son 5 meses"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "The chess club's account holds 60 coins and adds 10% a month. The goal is 90: finish the steps.",
+          "help": [
+            "Find 10% of the starting amount first, then add it for two months.",
+            "Then count how many months of that amount cover the missing coins."
+          ],
+          "feedback": {
+            "met": "You worked out the monthly amount, the balance and the months.",
+            "not_yet": "Not yet. Follow Ada's steps: the monthly amount comes first."
+          },
+          "steps": [
+            {
+              "expression": "Club starts with",
+              "result": "60",
+              "spokenText": "The club starts with 60 coins"
+            },
+            {
+              "expression": "Added each month",
+              "result": "6",
+              "spokenText": "Ten percent of 60 is 6 coins"
+            },
+            {
+              "expression": "Balance after 2 months",
+              "result": "72",
+              "spokenText": "60 plus 6 plus 6 is 72"
+            },
+            {
+              "expression": "Months to reach 90",
+              "result": "5",
+              "spokenText": "30 coins missing at 6 a month takes 5 months"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A conta do clube de xadrez tem 60 moedas e soma 10% ao mês. A meta é 90: complete os passos.",
+          "help": [
+            "Ache primeiro 10% do valor inicial e some por dois meses.",
+            "Depois conte quantos meses desse valor cobrem o que falta."
+          ],
+          "feedback": {
+            "met": "Você calculou o valor mensal, o saldo e os meses.",
+            "not_yet": "Ainda não. Siga os passos da Ada: primeiro o valor mensal."
+          },
+          "steps": [
+            {
+              "expression": "O clube começa com",
+              "result": "60",
+              "spokenText": "O clube começa com 60 moedas"
+            },
+            {
+              "expression": "Soma por mês",
+              "result": "6",
+              "spokenText": "Dez por cento de 60 são 6 moedas"
+            },
+            {
+              "expression": "Saldo após 2 meses",
+              "result": "72",
+              "spokenText": "60 mais 6 mais 6 é 72"
+            },
+            {
+              "expression": "Meses para chegar a 90",
+              "result": "5",
+              "spokenText": "Faltam 30 moedas; a 6 por mês são 5 meses"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+# Financial Education: v2 pilot structure (2026-10-04).
+#
+# Scope: a small slice of the v2 course used to judge lesson quality before the
+# full catalog is generated. It is NOT the full catalog: lessons per chapter,
+# chapters per pathway and minutes per lesson have no written guidance in the
+# spec, so this pilot fixes them as assumptions to be tested (see `assumptions`).
+#
+# Shape: course -> age pathway -> chapter -> lesson -> segment (OD-16, v2).
+# Each lesson has one plan file in `plans/<lesson_id>.json` (src/v2/plan.ts). The
+# plan, not this file, is what Forge emits and Core validates; this file is the
+# planning record, and the plans must agree with it.
+#
+# Knowledge components use the real keys of database/seeds/kc_graph.v1.json (the
+# Mentor's graph). The first KC of a lesson is its primary one (pathway policy G1).
+# Status is the seed's status: `draft` KCs stay draft until the owner accepts the
+# pathway policy (G5, OD-22).
+#
+# Zero spend: authoring is agentic (Claude Code), gated with `v2:emit` and Core's
+# `forge-v2:check`. Nothing here publishes, calls a provider or writes to Vault.
+#
+# Rounds: `plans/` holds the latest reviewed plans (round 2). `rounds/round-1/plans`
+# and `rounds/round-2/{authored,reviewed}/plans` are frozen snapshots, and
+# docs/content/FORGE-V2-PILOT-ROUNDS.md records what changed between them. The
+# `segment_types`, counts and `tests` below describe the round-2 plans.
+
+course_id: financial-education
+authoring_locale: es-MX
+markets: [es-MX, pt-BR, en-US]
+status: pilot-round-2-reviewed   # 8 plans, 84 segments, two rounds; gated and reviewed, not published, no lessons rows, native review pending
+
+assumptions:
+  - "Four lessons per chapter and one chapter per pathway are pilot values, not spec values. The pilot exists to learn the right numbers."
+  - "The legacy taxonomy.yaml (tiers 6-7 and 8-10) still supplies the forbidden vocabulary (gate 2); ages 11+ have no vocabulary list yet."
+  - "Prerequisite KCs that are not taught in the pilot (see `external_prerequisites`) are assumed to be taught earlier in the full course."
+  - "Lessons that name real money are market-specific (B.16); lessons that use LittleFounders coins are universal."
+
+pathways:
+  - pathway_id: financial-6-9
+    age_band: "6-9"
+    chapters:
+      - chapter_id: fe-69-coins-and-choices
+        title: { en-US: Coins and choices, es-MX: Monedas y decisiones, pt-BR: Moedas e escolhas }
+        objective: Count and use coins, give change, tell needs from wants, and add prices at a stall.
+        external_prerequisites: [money.count-like-coins, money.subtract-money]
+        lessons:
+          - lesson_id: fe-69-01-count-coins
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [money.count-mixed-coins, money.make-amount]
+            kc_status: { money.count-mixed-coins: active, money.make-amount: active }
+            new_concepts: [money.count-mixed-coins, money.make-amount]
+            mentor: { character: dina, scene: diorama-a }
+            regional: universal   # LittleFounders coins only
+            segment_types: [voice.mentor-turn.v2, money.coin-tray.v2]   # 11 segments: 6 Mentor turns, 5 trays (pre, 2 guided, practice, transfer)
+            tests: "Plain coin counting at ages 6-9 with the tier-1 vocabulary list; fewest-pieces rubric; Copy Budget at its tightest (12-word prompts)."
+          - lesson_id: fe-69-02-change-counting-up
+            eligibility: { minimum_age: 8, maximum_age: 9 }
+            knowledge_components: [money.make-change-counting-up, money.make-amount]
+            kc_status: { money.make-change-counting-up: active, money.make-amount: active }
+            new_concepts: [money.make-change-counting-up]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            segment_types: [voice.mentor-turn.v2, money.making-change.v2, money.coin-tray.v2, reasoning.decide-justify.v2]   # 10 segments; decide-justify added by the author
+            tests: "Change by counting up; the arithmetic gate (change = paid - price); transfer item after practice."
+          - lesson_id: fe-69-03-needs-and-wants
+            eligibility: { minimum_age: 6, maximum_age: 9 }
+            knowledge_components: [life.wants-and-choices]
+            kc_status: { life.wants-and-choices: draft }
+            new_concepts: [life.wants-and-choices]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: universal
+            mentor_misjudgment: true   # B.11: Liruf spends first, recovers, and says what he will do next time
+            segment_types: [voice.mentor-turn.v2, money.needs-wants.v2, voice.mentor-episode.v2, story.branch.v2]   # 11 segments
+            tests: "The B.11 mentor episode (gate 15), judgment without shame (B.26), a story decision with no wrong-answer red."
+          - lesson_id: fe-69-04-market-stall
+            eligibility: { minimum_age: 7, maximum_age: 9 }
+            knowledge_components: [money.add-money, money.compare-amounts]
+            kc_status: { money.add-money: active, money.compare-amounts: active }
+            new_concepts: [money.add-money]
+            mentor: { character: zara, scene: diorama-b }
+            regional: scenarios   # a stall in each market's own setting and currency
+            segment_types: [voice.mentor-turn.v2, money.market-stall.v2, money.coin-stack.v2, logic.sort-by-rule.v2]   # 10 segments; sort-by-rule carries money.compare-amounts
+            tests: "A Horizonte money piece (money.market-stall.v2) with per-market scenarios, real-currency facts (gate 3) and pt-BR 'R$ N' pricing."
+  - pathway_id: financial-10-12
+    age_band: "10-12"
+    chapters:
+      - chapter_id: fe-1012-smart-spending
+        title: { en-US: Smart spending, es-MX: Gasto inteligente, pt-BR: Gasto inteligente }
+        objective: Compare prices, plan a budget, build a saving plan and spot a suspicious message.
+        external_prerequisites: [money.subtract-money, biz.saving-goal, life.advertising-literacy]   # life.advertising-literacy is draft (G5)
+        lessons:
+          - lesson_id: fe-1012-01-unit-price
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.unit-price, money.add-money]
+            kc_status: { money.unit-price: active, money.add-money: active }
+            new_concepts: [money.unit-price]
+            mentor: { character: liruf, scene: diorama-b }
+            regional: scenarios   # each market's own shop, prices and currency; per-market rubric
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, math.worked-example.v2, money.unit-price.v2, reasoning.decide-justify.v2]   # 11 segments
+            mentor_misjudgment: true   # added by the author: Liruf compares price tags only, then recovers by dividing
+            tests: "Per-market answer keys (rubric_by_locale), the unit-price arithmetic gate, the B.12 decide-and-justify step, feedback.met on every graded step (ages 10+)."
+          - lesson_id: fe-1012-02-plan-the-budget
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.simple-budget, money.estimate-total]
+            kc_status: { money.simple-budget: active, money.estimate-total: active }
+            new_concepts: [money.simple-budget]
+            mentor: { character: rho, scene: diorama-a }
+            regional: universal
+            approaches: true   # B.24: round-up-first vs add-exactly-then-compare; both chains practise money.estimate-total
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, reasoning.decide-justify.v2]   # 11 segments; round 1 also used the opportunity-cost, allocation and running-ledger boards
+            tests: "Autonomy through two equally valid strategy chains; a decision that spends within a budget; every worked step shown before it is asked."
+          - lesson_id: fe-1012-03-saving-plan
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [money.savings-plan-math, money.simple-budget]
+            kc_status: { money.savings-plan-math: active, money.simple-budget: active }
+            new_concepts: [money.savings-plan-math]
+            mentor: { character: zara, scene: diorama-a }
+            regional: scenarios
+            segment_types: [voice.mentor-turn.v2, math.worked-example.v2, visual.savings-line.v2]   # 10 segments; round 1 also used the goal-bullet board
+            tests: "A worked example with backward fading, the savings line, a transfer item, and per-market anchors."
+          - lesson_id: fe-1012-04-suspicious-messages
+            eligibility: { minimum_age: 10, maximum_age: 12 }
+            knowledge_components: [life.scam-awareness]
+            kc_status: { life.scam-awareness: draft }
+            new_concepts: [life.scam-awareness]
+            mentor: { character: dina, scene: diorama-b }
+            regional: scenarios   # the scam each market's children actually meet (SMS, Pix, texts)
+            segment_types: [voice.mentor-turn.v2, voice.mentor-episode.v2, money.scam-check.v2, story.dialogue-choice.v2, reasoning.decide-justify.v2]   # 10 segments
+            mentor_misjudgment: true   # added by the author: Dina nearly taps a prize link, then stops and tells an adult
+            tests: "Real adaptation, not translation: different messages per market with the same answer ids; hypothesis-backed problems become Stage 3 review items."
+
+evaluation:
+  automatic:
+    - "Emit (gates 1 and 11-19) with zero blocking findings."
+    - "Core strict contract and interactive-behaviour check over every permitted input state."
+    - "First-submission gate pass rate per gate (Appendix C 1.3), recorded for the batch."
+  human:
+    - "Owner reads the es-MX copy of each lesson and judges clarity, tone and difficulty."
+    - "Stage 3 pedagogical review items: mentor episode, regional hypotheses, differentiated narration."
+  not_measurable_here:
+    - "Delayed retention, transfer success and the 70-85% first-try band need real learners (Stage 4)."
+
+counts:
+  pathways: 2
+  chapters: 2
+  lessons: 8
+  segments: 84   # 11+10+11+10+11+11+10+10; 41 graded, 123 across the 24 documents (round 1: 69 segments, 43 graded)

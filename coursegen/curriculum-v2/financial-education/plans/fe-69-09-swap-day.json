@@ -1,0 +1,574 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-market-day",
+  "lesson_id": "fe-69-09-swap-day",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.barter",
+    "biz.trade-and-markets",
+    "biz.what-is-price"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara mira a Mia en el mercado: tiene 3 manzanas y quiere un pan, pero el panadero solo quiere peras. Zara piensa en voz alta: primero cambia las manzanas por peras con la frutera, y luego las peras por el pan. Pesa el primer intercambio (6 y 6) y muestra que un buen intercambio deja contentos a los dos. El niño equilibra platillos y decide qué cambiar primero, también en una mesa de intercambio de la escuela.",
+  "title": {
+    "en-US": "Swap day",
+    "es-MX": "Día de intercambio",
+    "pt-BR": "Dia de troca"
+  },
+  "new_concepts": [
+    "life.barter",
+    "biz.trade-and-markets"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Market day. Mia has 3 apples.",
+          "line": "Hmm. She wants a loaf, but the baker only wants pears."
+        },
+        "es-MX": {
+          "prompt": "Día de mercado. Mia tiene 3 manzanas.",
+          "line": "Hmm. Quiere un pan, pero el panadero solo quiere peras."
+        },
+        "pt-BR": {
+          "prompt": "Dia de feira. A Mia tem 3 maçãs.",
+          "line": "Hmm. Ela quer um pão, mas o padeiro só quer peras."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "life.barter",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-go-home"
+          },
+          {
+            "id": "opt-swap-pears-first"
+          },
+          {
+            "id": "opt-ask-again"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-swap-pears-first"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The baker says no to apples. What could Mia try?",
+          "feedback": {
+            "met": "Thanks. Now we will watch it together, step by step.",
+            "not_yet": "Thanks. Now we will watch it together, step by step."
+          },
+          "scene": "Mia has 3 apples and wants a loaf. The baker only wants pears. The fruit seller has pears.",
+          "options": [
+            {
+              "label": "Go home with the apples"
+            },
+            {
+              "label": "Swap apples for pears first"
+            },
+            {
+              "label": "Ask the baker again"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El panadero no quiere manzanas. ¿Qué puede probar Mia?",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos juntos, paso a paso.",
+            "not_yet": "Gracias. Ahora lo vemos juntos, paso a paso."
+          },
+          "scene": "Mia tiene 3 manzanas y quiere un pan. El panadero solo quiere peras. La frutera tiene peras.",
+          "options": [
+            {
+              "label": "Volver a casa con las manzanas"
+            },
+            {
+              "label": "Primero cambiar manzanas por peras"
+            },
+            {
+              "label": "Pedirle otra vez al panadero"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O padeiro não quer maçãs. O que a Mia pode tentar?",
+          "feedback": {
+            "met": "Vamos ver isso juntos, passo a passo.",
+            "not_yet": "Vamos ver isso juntos, passo a passo."
+          },
+          "scene": "A Mia tem 3 maçãs e quer um pão. O padeiro só quer peras. A fruteira tem peras.",
+          "options": [
+            {
+              "label": "Voltar para casa com as maçãs"
+            },
+            {
+              "label": "Primeiro trocar maçãs por peras"
+            },
+            {
+              "label": "Pedir de novo ao padeiro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-stuck-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the baker wants pears.",
+          "line": "Hmm, stuck. The fruit seller has pears and likes apples."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el panadero quiere peras.",
+          "line": "Hmm, estamos atorados. La frutera tiene peras y quiere manzanas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o padeiro quer peras.",
+          "line": "Hmm, travado. A fruteira tem peras e quer maçãs."
+        }
+      }
+    },
+    {
+      "id": "ex-weigh-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: weigh swap one.",
+          "line": "3 apples, 2 coins each: 6. 2 pears, 3 each: 6."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: pesa el primer intercambio.",
+          "line": "3 manzanas, 2 monedas cada una: 6. 2 peras, 3 cada una: 6."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: pese a primeira troca.",
+          "line": "3 maçãs, 2 moedas cada: 6. 2 peras, 3 cada: 6."
+        }
+      }
+    },
+    {
+      "id": "ex-fair-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the pans match.",
+          "line": "6 and 6: a fair swap. Both sides go home happy."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: los platillos igualan.",
+          "line": "6 y 6: un intercambio justo. Los dos se van contentos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: os pratos se igualam.",
+          "line": "6 e 6: uma troca justa. Os dois vão para casa felizes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.pan-balance.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "pan-balance"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "left": [
+          4,
+          4
+        ],
+        "right": [],
+        "weights": [
+          2,
+          2,
+          2,
+          2,
+          3
+        ]
+      },
+      "rubric": {
+        "target": 0
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia swaps 2 jars of jam for plums. Balance the pans.",
+          "feedback": {
+            "met": "You matched both pans, so the swap is fair.",
+            "not_yet": "Not yet. Do the totals on both pans match?"
+          },
+          "help": [
+            "Each weight is worth coins. Add up the left pan.",
+            "I matched 6 and 6. Match your pans too."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mia cambia 2 frascos de mermelada por ciruelas. Equilibra los platillos.",
+          "feedback": {
+            "met": "Igualaste los dos platillos, así que el intercambio es justo.",
+            "not_yet": "Todavía no. ¿Los totales de los platillos coinciden?"
+          },
+          "help": [
+            "Cada pesa vale monedas. Suma el platillo izquierdo.",
+            "Yo igualé 6 y 6. Iguala tus platillos también."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mia troca 2 potes de geleia por ameixas. Equilibre os pratos.",
+          "feedback": {
+            "met": "Você igualou os dois pratos, então a troca é justa.",
+            "not_yet": "Ainda não. Os totais dos dois pratos combinam?"
+          },
+          "help": [
+            "Cada peso vale moedas. Some o prato esquerdo.",
+            "Eu igualei 6 e 6. Iguale seus pratos também."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-loaf-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: pears for the loaf.",
+          "line": "Now 2 pears for the loaf. Mia and the baker are happy."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: peras por el pan.",
+          "line": "Ahora 2 peras por el pan. Mia y el panadero quedan contentos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: peras pelo pão.",
+          "line": "Agora 2 peras pelo pão. A Mia e o padeiro ficam contentes."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.barter",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-eggs-kite"
+          },
+          {
+            "id": "opt-eggs-flour"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-eggs-flour"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At market, what does Mia swap first?",
+          "feedback": {
+            "met": "You picked the swap that unsticks the trade.",
+            "not_yet": "Not yet. What does the kite seller want?"
+          },
+          "help": [
+            "Look at what the kite seller wants.",
+            "Remember apples to pears first? Same idea here."
+          ],
+          "scene": "Mia has 4 eggs and wants a kite. The kite seller only wants flour. The flour seller wants eggs.",
+          "options": [
+            {
+              "label": "Eggs for the kite"
+            },
+            {
+              "label": "Eggs for flour"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el mercado, ¿qué cambia Mia primero?",
+          "feedback": {
+            "met": "Elegiste el intercambio que destraba el trato.",
+            "not_yet": "Todavía no. ¿Qué quiere el vendedor de papalotes?"
+          },
+          "help": [
+            "Mira qué quiere el vendedor de papalotes.",
+            "¿Recuerdas manzanas por peras primero? Aquí es igual."
+          ],
+          "scene": "Mia tiene 4 huevos y quiere un papalote. El vendedor de papalotes solo quiere harina. La vendedora de harina quiere huevos.",
+          "options": [
+            {
+              "label": "Huevos por el papalote"
+            },
+            {
+              "label": "Huevos por harina"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira, o que a Mia troca primeiro?",
+          "feedback": {
+            "met": "Você escolheu a troca que destrava o negócio.",
+            "not_yet": "Ainda não. O que o vendedor de pipas quer?"
+          },
+          "help": [
+            "Veja o que o vendedor de pipas quer.",
+            "Lembra de maçãs por peras primeiro? Aqui é igual."
+          ],
+          "scene": "A Mia tem 4 ovos e quer uma pipa. O vendedor de pipas só quer farinha. A vendedora de farinha quer ovos.",
+          "options": [
+            {
+              "label": "Ovos pela pipa"
+            },
+            {
+              "label": "Ovos por farinha"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.pan-balance.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "pan-balance"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.trade-and-markets",
+      "payload": {
+        "left": [
+          3,
+          3,
+          3
+        ],
+        "right": [],
+        "weights": [
+          4,
+          5,
+          6,
+          2
+        ]
+      },
+      "rubric": {
+        "target": 0
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At market, Mia swaps 3 eggs for fruit. Balance the pans.",
+          "feedback": {
+            "met": "You matched both pans with weights from the tray.",
+            "not_yet": "Not yet: add up each pan. Which is heavier?"
+          },
+          "help": [
+            "Add up the left pan first.",
+            "Try adding weights to the right pan one by one."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el mercado, Mia cambia 3 huevos por fruta. Equilibra los platillos.",
+          "feedback": {
+            "met": "Igualaste los dos platillos con pesas de la bandeja.",
+            "not_yet": "Todavía no: suma cada platillo. ¿Cuál pesa más?"
+          },
+          "help": [
+            "Suma primero el platillo izquierdo.",
+            "Prueba poner pesas en el derecho, una por una."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira, a Mia troca 3 ovos por fruta. Equilibre os pratos.",
+          "feedback": {
+            "met": "Você igualou os dois pratos com pesos da bandeja.",
+            "not_yet": "Ainda não: some cada prato. Qual pesa mais?"
+          },
+          "help": [
+            "Some primeiro o prato esquerdo.",
+            "Tente pôr pesos no direito, um por um."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "life.barter",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-ana-marbles"
+          },
+          {
+            "id": "opt-ben-crayons"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-ana-marbles"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the swap table, who does Mia swap with first?",
+          "feedback": {
+            "met": "You went for marbles first, the thing Ben wants.",
+            "not_yet": "Not yet: who wants stickers, and who wants marbles?"
+          },
+          "help": [
+            "Find who wants Mia's stickers.",
+            "Like the pears: get what Ben wants first."
+          ],
+          "scene": "Mia has stickers and wants Ben's crayons. Ben only wants marbles. Ana has marbles and wants stickers.",
+          "options": [
+            {
+              "label": "Ana, for marbles"
+            },
+            {
+              "label": "Ben, for crayons"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la mesa de intercambio, ¿con quién cambia Mia primero?",
+          "feedback": {
+            "met": "Fuiste primero por las canicas, lo que Ben quiere.",
+            "not_yet": "Todavía no: ¿quién quiere calcomanías y quién canicas?"
+          },
+          "help": [
+            "Busca quién quiere las calcomanías de Mia.",
+            "Como con las peras: primero lo que Ben quiere."
+          ],
+          "scene": "Mia tiene calcomanías y quiere los crayones de Ben. Ben solo quiere canicas. Ana tiene canicas y quiere calcomanías.",
+          "options": [
+            {
+              "label": "Ana, por canicas"
+            },
+            {
+              "label": "Ben, por crayones"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na mesa de troca, com quem a Mia troca primeiro?",
+          "feedback": {
+            "met": "Você foi primeiro nas bolinhas, o que o Ben quer.",
+            "not_yet": "Ainda não: quem quer figurinhas e quem quer bolinhas?"
+          },
+          "help": [
+            "Veja quem quer as figurinhas da Mia.",
+            "Como nas peras: primeiro o que o Ben quer."
+          ],
+          "scene": "A Mia tem figurinhas e quer os lápis de cera do Ben. O Ben só quer bolinhas de gude. A Ana tem bolinhas e quer figurinhas.",
+          "options": [
+            {
+              "label": "Ana, por bolinhas"
+            },
+            {
+              "label": "Ben, por lápis de cera"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

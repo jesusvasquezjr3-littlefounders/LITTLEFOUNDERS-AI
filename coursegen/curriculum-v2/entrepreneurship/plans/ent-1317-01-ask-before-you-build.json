@@ -1,0 +1,829 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-prove-demand",
+  "lesson_id": "ent-1317-01-ask-before-you-build",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.customer-interviews",
+    "biz.customer-feedback"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Un adolescente prepara cinco entrevistas con compañeros que tienen tenis blancos para su servicio de limpieza y reescribe “¿Pagarías 25 monedas?” como “Cuéntame la última vez que limpiaste tus tenis”. Rho muestra paso a paso por qué una pregunta que induce no prueba nada, cómo una pregunta abierta sobre el pasado trae hechos, qué hacer tras una respuesta corta o un sí por cortesía y cómo auditar el guion con una regla. Después el aprendiz practica con Kai y Lena y decide qué mensaje enviar a Jordan.",
+  "title": {
+    "en-US": "Ask before you build",
+    "es-MX": "Pregunta antes de construir",
+    "pt-BR": "Pergunte antes de construir"
+  },
+  "new_concepts": [
+    "biz.customer-interviews"
+  ],
+  "regional": {
+    "universal": "Only LittleFounders coins; the interview situation is the learner’s own venture and carries no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your sneaker-cleaning service starts with five interviews tomorrow.",
+          "line": "Five classmates with white sneakers said yes. Your first draft question reads: “Would you pay 25 coins?”"
+        },
+        "es-MX": {
+          "prompt": "Tu servicio de limpieza de tenis arranca mañana con cinco entrevistas.",
+          "line": "Cinco compañeros con tenis blancos dijeron que sí. Tu primera pregunta en borrador dice: “¿Pagarías 25 monedas?”"
+        },
+        "pt-BR": {
+          "prompt": "Seu serviço de limpeza de tênis começa amanhã com cinco entrevistas.",
+          "line": "Cinco colegas com tênis branco disseram que sim. Sua primeira pergunta no rascunho diz: “Você pagaria 25 moedas?”"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.customer-interviews",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-hate"
+          },
+          {
+            "id": "choice-past"
+          },
+          {
+            "id": "choice-price"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-yes"
+          },
+          {
+            "id": "reason-did"
+          },
+          {
+            "id": "reason-worth"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-past"
+        ],
+        "reasonQuality": {
+          "reason-did": "sound",
+          "reason-worth": "partial",
+          "reason-yes": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mara owns white sneakers and sits down for your first interview. How do you open?",
+          "feedback": {
+            "met": "Noted. We will test that opener against what a classmate says.",
+            "not_yet": "Noted. We will test that opener against what a classmate says."
+          },
+          "choices": [
+            {
+              "label": "Don’t you hate dirty white sneakers?"
+            },
+            {
+              "label": "Tell me about your last shoe cleaning."
+            },
+            {
+              "label": "Would you pay 25 coins for a cleaning?"
+            }
+          ],
+          "reasonPrompt": "Why that opener?",
+          "reasons": [
+            {
+              "label": "It gets a quick yes or no"
+            },
+            {
+              "label": "It asks about something she really did"
+            },
+            {
+              "label": "It shows what the service is worth"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mara tiene tenis blancos y se sienta a tu primera entrevista. ¿Cómo abres?",
+          "feedback": {
+            "met": "Anotado. Probaremos esa pregunta con lo que diga un compañero.",
+            "not_yet": "Anotado. Probaremos esa pregunta con lo que diga un compañero."
+          },
+          "choices": [
+            {
+              "label": "¿No odias lo rápido que se ensucian los tenis blancos?"
+            },
+            {
+              "label": "Cuéntame la última vez que limpiaste tus tenis."
+            },
+            {
+              "label": "¿Pagarías 25 monedas para que te los limpien?"
+            }
+          ],
+          "reasonPrompt": "¿Por qué esa pregunta?",
+          "reasons": [
+            {
+              "label": "Consigue un sí o un no rápido"
+            },
+            {
+              "label": "Pregunta algo que ella sí hizo"
+            },
+            {
+              "label": "Muestra cuánto vale el servicio"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mara tem tênis branco e senta para sua primeira entrevista. Como você abre?",
+          "feedback": {
+            "met": "Anotado. Vamos testar essa pergunta com o que um colega disser.",
+            "not_yet": "Anotado. Vamos testar essa pergunta com o que um colega disser."
+          },
+          "choices": [
+            {
+              "label": "Você não odeia como o tênis branco suja rápido?"
+            },
+            {
+              "label": "Me conte a última vez que você limpou seu tênis."
+            },
+            {
+              "label": "Você pagaria 25 moedas para alguém limpar os seus?"
+            }
+          ],
+          "reasonPrompt": "Por que essa pergunta?",
+          "reasons": [
+            {
+              "label": "Consegue um sim ou não rápido"
+            },
+            {
+              "label": "Pergunta algo que ela realmente fez"
+            },
+            {
+              "label": "Mostra quanto o serviço vale"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: test the question. A leading question hints at the answer it wants.",
+          "line": "“Would you pay 25 coins?” names your price and invites a polite yes that costs nothing."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: pon a prueba la pregunta. Una pregunta que induce sugiere la respuesta que quiere.",
+          "line": "“¿Pagarías 25 monedas?” dice tu precio e invita a un sí por cortesía que no cuesta nada."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: teste a pergunta. Uma pergunta que induz sugere a resposta que quer.",
+          "line": "“Você pagaria 25 moedas?” diz o seu preço e convida a um sim por educação que não custa nada."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: ask an open question about the past.",
+          "line": "Ask instead: “Tell me about the last time you cleaned your shoes.” It hints at nothing."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: haz una pregunta abierta sobre el pasado.",
+          "line": "Mejor pregunta: “Cuéntame la última vez que limpiaste tus tenis.” No sugiere ninguna respuesta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: faça uma pergunta aberta sobre o passado.",
+          "line": "Pergunte assim: “Me conte a última vez que você limpou seu tênis.” Ela não sugere resposta nenhuma."
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: follow up, then stop talking.",
+          "line": "After a short answer or a polite yes, ask what happened last time. Then stay quiet."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: repregunta y deja de hablar.",
+          "line": "Tras una respuesta corta o un sí por cortesía, pregunta qué pasó la última vez. Luego guarda silencio."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: pergunte de novo e pare de falar.",
+          "line": "Depois de uma resposta curta ou de um sim por educação, pergunte o que aconteceu da última vez. Depois, fique em silêncio."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-interviews",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-past"
+          },
+          {
+            "id": "reply-pitch"
+          },
+          {
+            "id": "reply-price"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-past"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Interviewing Kai about his white sneakers, what do you ask next?",
+          "feedback": {
+            "met": "You asked about the last time instead of pitching or pricing.",
+            "not_yet": "Not yet. Step 3 showed what to ask after a short answer."
+          },
+          "help": [
+            "Kai gave a short answer. Step 3 showed the follow-up for that.",
+            "The best follow-up asks about something that already happened."
+          ],
+          "speaker": "Kai",
+          "line": "I mostly leave them until they’re really dirty.",
+          "replies": [
+            {
+              "label": "What happened last time they got that dirty?"
+            },
+            {
+              "label": "My service fixes exactly that."
+            },
+            {
+              "label": "Would you pay 25 coins to avoid that?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Entrevistas a Kai sobre sus tenis blancos. ¿Qué preguntas ahora?",
+          "feedback": {
+            "met": "Preguntaste por la última vez en lugar de ofrecer o poner precio.",
+            "not_yet": "Todavía no. El Paso 3 mostró qué preguntar tras una respuesta corta."
+          },
+          "help": [
+            "Kai dio una respuesta corta. El Paso 3 mostró la repregunta para eso.",
+            "La mejor repregunta es sobre algo que ya pasó."
+          ],
+          "speaker": "Kai",
+          "line": "Casi siempre los dejo hasta que están muy sucios.",
+          "replies": [
+            {
+              "label": "¿Qué pasó la última vez que se ensuciaron tanto?"
+            },
+            {
+              "label": "Mi servicio arregla justo eso."
+            },
+            {
+              "label": "¿Pagarías 25 monedas por evitar eso?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você entrevista Kai sobre os tênis brancos dele. O que pergunta agora?",
+          "feedback": {
+            "met": "Você perguntou sobre a última vez, em vez de oferecer ou dar preço.",
+            "not_yet": "Ainda não. O Passo 3 mostrou o que perguntar após uma resposta curta."
+          },
+          "help": [
+            "Kai deu uma resposta curta. O Passo 3 mostrou a nova pergunta para isso.",
+            "A melhor nova pergunta é sobre algo que já aconteceu."
+          ],
+          "speaker": "Kai",
+          "line": "Quase sempre deixo até ficarem bem sujos.",
+          "replies": [
+            {
+              "label": "O que aconteceu da última vez que sujaram tanto?"
+            },
+            {
+              "label": "Meu serviço resolve exatamente isso."
+            },
+            {
+              "label": "Você pagaria 25 moedas para evitar isso?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: audit with one rule. If a line pitches the service, its back says Deleted.",
+          "line": "Four cards show Pitch, Past question, Deleted, Kept. Turn Pitch and Kept: only they could break it."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: audita con una regla. Si una línea ofrece el servicio, su reverso dice Eliminada.",
+          "line": "Cuatro cartas muestran Oferta, Pregunta del pasado, Eliminada y En el guion. Voltea Oferta y En el guion: solo ellas podrían romperla."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: audite com uma regra. Se uma linha oferece o serviço, o verso diz Eliminada.",
+          "line": "Quatro cartas mostram Oferta, Pergunta do passado, Eliminada e No roteiro. Vire Oferta e No roteiro: só elas poderiam quebrar a regra."
+        }
+      }
+    },
+    {
+      "id": "ex-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: the rule only governs pitches, so check what could hide one.",
+          "line": "Pitch might not be deleted; Kept might hide a pitch. Past question and Deleted break nothing."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: la regla solo trata de ofertas, así que revisa qué podría esconder una.",
+          "line": "Oferta podría no estar eliminada; En el guion podría esconder una oferta. Pregunta del pasado y Eliminada no rompen nada."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: a regra só trata de ofertas, então veja o que poderia esconder uma.",
+          "line": "Oferta poderia não estar eliminada; No roteiro poderia esconder uma oferta. Pergunta do passado e Eliminada não quebram nada."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.rule-checker.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "rule-cards"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-interviews",
+      "payload": {
+        "cards": [
+          {
+            "id": "card-kept"
+          },
+          {
+            "id": "card-open"
+          },
+          {
+            "id": "card-leading"
+          },
+          {
+            "id": "card-crossed"
+          }
+        ]
+      },
+      "rubric": {
+        "must_flip_ids": [
+          "card-leading",
+          "card-kept"
+        ],
+        "roles": {
+          "card-leading": "p",
+          "card-open": "not_p",
+          "card-crossed": "q",
+          "card-kept": "not_q"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Auditing your interview script, which cards must you turn to test the rule?",
+          "feedback": {
+            "met": "You turned Leading and Kept, the cards that could break the rule.",
+            "not_yet": "Not yet. Ask which cards could still hide a leading question."
+          },
+          "help": [
+            "Turn a card only if a leading question could hide there.",
+            "Think of Steps 4 and 5: some cards can never break it."
+          ],
+          "rule": "If a line is a leading question, its back says Crossed out.",
+          "cards": [
+            {
+              "face": "Kept"
+            },
+            {
+              "face": "Open question"
+            },
+            {
+              "face": "Leading question"
+            },
+            {
+              "face": "Crossed out"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Al auditar tu guion de entrevista, ¿qué cartas debes voltear para probar la regla?",
+          "feedback": {
+            "met": "Volteaste Pregunta que induce y En el guion, las que podían romper la regla.",
+            "not_yet": "Todavía no. Pregúntate qué cartas podrían esconder aún una pregunta que induce."
+          },
+          "help": [
+            "Voltea una carta solo si una pregunta que induce podría esconderse ahí.",
+            "Piensa en los Pasos 4 y 5: algunas cartas nunca rompen la regla."
+          ],
+          "rule": "Si una línea es una pregunta que induce la respuesta, su reverso dice Tachada.",
+          "cards": [
+            {
+              "face": "En el guion"
+            },
+            {
+              "face": "Pregunta abierta"
+            },
+            {
+              "face": "Pregunta que induce"
+            },
+            {
+              "face": "Tachada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ao auditar seu roteiro de entrevista, quais cartas você precisa virar para testar a regra?",
+          "feedback": {
+            "met": "Você virou Pergunta que induz e No roteiro, as que podiam quebrar a regra.",
+            "not_yet": "Ainda não. Pergunte quais cartas ainda poderiam esconder uma pergunta que induz."
+          },
+          "help": [
+            "Vire uma carta só se uma pergunta que induz puder se esconder ali.",
+            "Pense nos Passos 4 e 5: algumas cartas nunca quebram a regra."
+          ],
+          "rule": "Se uma linha é uma pergunta que induz a resposta, o verso diz Riscada.",
+          "cards": [
+            {
+              "face": "No roteiro"
+            },
+            {
+              "face": "Pergunta aberta"
+            },
+            {
+              "face": "Pergunta que induz"
+            },
+            {
+              "face": "Riscada"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.customer-feedback",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-assume"
+          },
+          {
+            "id": "reply-push"
+          },
+          {
+            "id": "reply-last"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-last"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "In your interview with Lena, her answer is a polite yes. What do you say?",
+          "feedback": {
+            "met": "You turned a polite yes into a question about the past.",
+            "not_yet": "Not yet. Reread Step 3: what comes after a polite yes?"
+          },
+          "help": [
+            "Step 3: a future yes shows nothing yet. Ask what already happened."
+          ],
+          "speaker": "Lena",
+          "line": "Sure, I’d pay for that. Sounds great.",
+          "replies": [
+            {
+              "label": "Great, I’ll start cleaning Monday."
+            },
+            {
+              "label": "Would you pay 30 coins, then?"
+            },
+            {
+              "label": "When did you last pay to clean them?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En tu entrevista con Lena, su respuesta es un sí por cortesía. ¿Qué dices?",
+          "feedback": {
+            "met": "Convertiste un sí por cortesía en una pregunta sobre el pasado.",
+            "not_yet": "Todavía no. Relee el Paso 3: ¿qué viene después de un sí por cortesía?"
+          },
+          "help": [
+            "Paso 3: un sí sobre el futuro aún no prueba nada. Pregunta qué ya pasó."
+          ],
+          "speaker": "Lena",
+          "line": "Claro, pagaría por eso. Suena muy bien.",
+          "replies": [
+            {
+              "label": "Perfecto, empiezo a limpiar el lunes."
+            },
+            {
+              "label": "¿Y pagarías 30 monedas?"
+            },
+            {
+              "label": "¿Cuándo fue la última vez que pagaste por limpiarlos?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na sua entrevista com Lena, a resposta dela é um sim por educação. O que você diz?",
+          "feedback": {
+            "met": "Você transformou um sim por educação numa pergunta sobre o passado.",
+            "not_yet": "Ainda não. Releia o Passo 3: o que vem depois de um sim por educação?"
+          },
+          "help": [
+            "Passo 3: um sim sobre o futuro não prova nada. Pergunte o que já aconteceu."
+          ],
+          "speaker": "Lena",
+          "line": "Claro, eu pagaria por isso. Parece ótimo.",
+          "replies": [
+            {
+              "label": "Perfeito, começo a limpar na segunda."
+            },
+            {
+              "label": "E pagaria 30 moedas?"
+            },
+            {
+              "label": "Quando foi a última vez que você pagou para limpar?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.customer-interviews",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-past"
+          },
+          {
+            "id": "choice-pitch"
+          },
+          {
+            "id": "choice-price"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-price"
+          },
+          {
+            "id": "reason-did"
+          },
+          {
+            "id": "reason-short"
+          },
+          {
+            "id": "reason-words"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-past"
+        ],
+        "reasonQuality": {
+          "reason-did": "sound",
+          "reason-words": "sound",
+          "reason-short": "partial",
+          "reason-price": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You message Jordan, who runs the school sneaker club. Which text do you send?",
+          "feedback": {
+            "met": "You asked about the past, even in a written message.",
+            "not_yet": "Not yet. Which text invites a story about something he did?"
+          },
+          "help": [
+            "Reread Step 2: what makes a question hint at nothing?"
+          ],
+          "choices": [
+            {
+              "label": "Tell me about the last pair you cleaned."
+            },
+            {
+              "label": "My deep clean is the best, want one?"
+            },
+            {
+              "label": "Would you buy a 25-coin deep clean?"
+            }
+          ],
+          "reasonPrompt": "Why that text?",
+          "reasons": [
+            {
+              "label": "It tells him my price first"
+            },
+            {
+              "label": "It asks about something he really did"
+            },
+            {
+              "label": "It is short, so he will reply"
+            },
+            {
+              "label": "It lets him answer in his own words"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Le escribes a Jordan, que dirige el club de tenis de la escuela. ¿Qué mensaje envías?",
+          "feedback": {
+            "met": "Preguntaste por el pasado, incluso en un mensaje escrito.",
+            "not_yet": "Todavía no. ¿Qué mensaje invita a contar algo que él hizo?"
+          },
+          "help": [
+            "Relee el Paso 2: ¿qué hace que una pregunta no sugiera nada?"
+          ],
+          "choices": [
+            {
+              "label": "Cuéntame del último par que limpiaste."
+            },
+            {
+              "label": "Mi limpieza profunda es genial, ¿quieres una?"
+            },
+            {
+              "label": "¿Pagarías 25 monedas por una limpieza profunda?"
+            }
+          ],
+          "reasonPrompt": "¿Por qué ese mensaje?",
+          "reasons": [
+            {
+              "label": "Le dice mi precio primero"
+            },
+            {
+              "label": "Pregunta algo que él sí hizo"
+            },
+            {
+              "label": "Es corto, así que responderá"
+            },
+            {
+              "label": "Le deja responder con sus palabras"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você escreve para Jordan, que comanda o clube de tênis da escola. Que mensagem envia?",
+          "feedback": {
+            "met": "Você perguntou sobre o passado, mesmo numa mensagem escrita.",
+            "not_yet": "Ainda não. Que mensagem convida a contar algo que ele fez?"
+          },
+          "help": [
+            "Releia o Passo 2: o que faz uma pergunta não sugerir nada?"
+          ],
+          "choices": [
+            {
+              "label": "Me conte sobre o último par que você limpou."
+            },
+            {
+              "label": "Minha limpeza profunda é ótima, quer uma?"
+            },
+            {
+              "label": "Você pagaria 25 moedas por uma limpeza profunda?"
+            }
+          ],
+          "reasonPrompt": "Por que essa mensagem?",
+          "reasons": [
+            {
+              "label": "Diz o meu preço primeiro"
+            },
+            {
+              "label": "Pergunta algo que ele realmente fez"
+            },
+            {
+              "label": "É curta, então ele responde"
+            },
+            {
+              "label": "Deixa ele responder com as próprias palavras"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

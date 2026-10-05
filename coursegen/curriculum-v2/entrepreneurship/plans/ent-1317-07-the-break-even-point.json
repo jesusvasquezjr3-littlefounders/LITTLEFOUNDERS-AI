@@ -1,0 +1,274 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-know-your-numbers",
+  "lesson_id": "ent-1317-07-the-break-even-point",
+  "age_band": "13-17",
+  "eligibility": { "minimum_age": 13, "maximum_age": 17 },
+  "knowledge_component_ids": ["biz.break-even", "biz.full-costing", "biz.margin"],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": { "character": "rho", "scene": "diorama-a" },
+  "brief": "Rho mide contigo cuántos pares de limpieza de tenis necesitas al mes para cubrir 80 monedas de costos fijos. Con un precio de 25 y 9 de costo por par, cada par deja 16, así que el punto de equilibrio son 5 pares. Ves el cruce en una gráfica y cómo una herramienta de 48 monedas lo mueve a 8.",
+  "title": { "en-US": "The break-even point", "es-MX": "El punto de equilibrio", "pt-BR": "O ponto de equilíbrio" },
+  "new_concepts": ["biz.break-even"],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "Rho divides the 80 coins of fixed costs by the whole 25-coin price and promises that 4 pairs are enough to break even.",
+    "recovery": "Rho sees that each pair also costs 9 to make, uses the 16 each pair really leaves, finds 5 pairs, and commits to checking what each unit leaves before promising a number."
+  },
+  "regional": { "universal": "Uses LittleFounders coins only; no market amounts, places or customs." },
+  "segments": [
+    {
+      "id": "hook-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "hook",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "intro", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Before you sell a pair, 80 coins of fixed costs are already due.", "line": "Rho wants to know how many pairs it takes to cover them." },
+        "es-MX": { "prompt": "Antes de vender un par, ya debes 80 monedas de costos fijos.", "line": "Rho quiere saber cuántos pares hacen falta para cubrirlos." },
+        "pt-BR": { "prompt": "Antes de vender um par, já há 80 moedas de custos fixos a pagar.", "line": "O Rho quer saber quantos pares são necessários para cobri-los." }
+      }
+    },
+    {
+      "id": "pre-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "pre",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "practice", "item_phase": "pre", "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "choices": [{ "id": "twenty" }, { "id": "eight" }, { "id": "sixty" }, { "id": "twelve" }],
+        "reasons": [{ "id": "reason-what-each-leaves" }, { "id": "reason-match-rent" }, { "id": "reason-more-profit" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["twelve"],
+        "reasonQuality": { "reason-what-each-leaves": "sound", "reason-match-rent": "partial", "reason-more-profit": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your stall pays 60 a month; a bracelet sells at 8 and costs 3. How many cover the 60?",
+          "feedback": { "met": "Noted. We will check that against the numbers now.", "not_yet": "Noted. We will check that against the numbers now." },
+          "choices": [{ "label": "20 bracelets" }, { "label": "8 bracelets" }, { "label": "60 bracelets" }, { "label": "12 bracelets" }],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [{ "label": "Each sale only helps by what it leaves" }, { "label": "Sales just have to match the rent" }, { "label": "More sales always means more profit" }]
+        },
+        "es-MX": {
+          "prompt": "Tu puesto paga 60 al mes; una pulsera se vende en 8 y cuesta 3. ¿Cuántas cubren los 60?",
+          "feedback": { "met": "Anotado. Lo revisamos con los números ahora.", "not_yet": "Anotado. Lo revisamos con los números ahora." },
+          "choices": [{ "label": "20 pulseras" }, { "label": "8 pulseras" }, { "label": "60 pulseras" }, { "label": "12 pulseras" }],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [{ "label": "Cada venta ayuda solo con lo que deja" }, { "label": "Las ventas solo deben igualar la renta" }, { "label": "Más ventas siempre es más ganancia" }]
+        },
+        "pt-BR": {
+          "prompt": "Sua barraca paga 60 por mês; uma pulseira sai por 8 e custa 3. Quantas cobrem os 60?",
+          "feedback": { "met": "Anotado. Vamos conferir com os números agora.", "not_yet": "Anotado. Vamos conferir com os números agora." },
+          "choices": [{ "label": "20 pulseiras" }, { "label": "8 pulseiras" }, { "label": "60 pulseiras" }, { "label": "12 pulseiras" }],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [{ "label": "Cada venda ajuda só com o que deixa" }, { "label": "As vendas só precisam igualar o aluguel" }, { "label": "Mais vendas sempre é mais lucro" }]
+        }
+      }
+    },
+    {
+      "id": "example-leaves-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 1: each pair costs 9 to make and sells at 25.", "line": "25 − 9 = 16. Each pair covers 16 coins of the 80." },
+        "es-MX": { "prompt": "Paso 1: cada par cuesta 9 de hacer y se vende en 25.", "line": "25 − 9 = 16. Cada par cubre 16 monedas de las 80." },
+        "pt-BR": { "prompt": "Passo 1: cada par custa 9 para fazer e sai por 25.", "line": "25 − 9 = 16. Cada par cobre 16 moedas das 80." }
+      }
+    },
+    {
+      "id": "example-divide-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 2: the break-even is the fixed costs divided by that 16.", "line": "80 ÷ 16 = 5. At 5 pairs, revenue equals cost." },
+        "es-MX": { "prompt": "Paso 2: el punto de equilibrio son los costos fijos entre esos 16.", "line": "80 ÷ 16 = 5. Con 5 pares, los ingresos igualan los costos." },
+        "pt-BR": { "prompt": "Passo 2: o ponto de equilíbrio é o custo fixo dividido por esses 16.", "line": "80 ÷ 16 = 5. Com 5 pares, a receita iguala o custo." }
+      }
+    },
+    {
+      "id": "episode-01", "type": "voice.mentor-episode.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Rho promised a number too fast.",
+          "setup": "I divided your 80 by the price, 25, and promised 4 pairs.",
+          "misjudgment": "I forgot each pair costs 9 to make, so it does not leave 25.",
+          "recovery": "Each pair leaves 16, so 80 ÷ 16 is 5. Before promising, I check what each unit leaves."
+        },
+        "es-MX": {
+          "prompt": "Rho prometió un número demasiado rápido.",
+          "setup": "Dividí tus 80 entre el precio de 25 y prometí 4 pares.",
+          "misjudgment": "Olvidé que cada par cuesta 9 de hacer, así que no deja 25.",
+          "recovery": "Cada par deja 16, así que 80 ÷ 16 es 5. Antes de prometer, reviso cuánto deja cada unidad."
+        },
+        "pt-BR": {
+          "prompt": "O Rho prometeu um número rápido demais.",
+          "setup": "Dividi seus 80 pelo preço de 25 e prometi 4 pares.",
+          "misjudgment": "Esqueci que cada par custa 9 para fazer, então não deixa 25.",
+          "recovery": "Cada par deixa 16, então 80 ÷ 16 é 5. Antes de prometer, confiro quanto cada unidade deixa."
+        }
+      }
+    },
+    {
+      "id": "guided-divide-01", "type": "math.worked-example.v2", "grading": "server", "teaching_role": "guided",
+      "visual": { "type": "worked-example" },
+      "item_role": "practice", "knowledge_component_id": "biz.margin",
+      "payload": {
+        "steps": [{ "id": "each-leaves" }, { "id": "pairs-needed" }, { "id": "check-cover" }],
+        "fade_count": 1,
+        "response_step_ids": ["pairs-needed", "check-cover"]
+      },
+      "rubric": { "expectedValues": { "pairs-needed": "6", "check-cover": "90" } },
+      "copy": {
+        "en-US": {
+          "prompt": "Next month: fixed 90, price 20, 5 to make a pair. Pairs to break even?",
+          "feedback": { "met": "You divided the fixed costs by what each pair leaves.", "not_yet": "Take what one pair leaves, then divide the fixed costs by it." },
+          "help": ["Take what one pair leaves, then divide the fixed costs by it."],
+          "steps": [
+            { "expression": "20 − 5", "result": "15", "spokenText": "Twenty minus 5 is 15 coins left by each pair" },
+            { "expression": "Fixed costs ÷ what each pair leaves", "result": "6", "spokenText": "Ninety divided by 15 is 6 pairs" },
+            { "expression": "Pairs × what each pair leaves", "result": "90", "spokenText": "Six times 15 is 90, which covers the fixed costs" }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El próximo mes: fijos 90, precio 20, 5 de hacer cada par. ¿Pares para el equilibrio?",
+          "feedback": { "met": "Dividiste los costos fijos entre lo que deja cada par.", "not_yet": "Toma lo que deja un par y divide los costos fijos entre eso." },
+          "help": ["Toma lo que deja un par y divide los costos fijos entre eso."],
+          "steps": [
+            { "expression": "20 − 5", "result": "15", "spokenText": "Veinte menos 5 son 15 monedas que deja cada par" },
+            { "expression": "Costos fijos ÷ lo que deja cada par", "result": "6", "spokenText": "Noventa entre 15 son 6 pares" },
+            { "expression": "Pares × lo que deja cada par", "result": "90", "spokenText": "Seis por 15 son 90, que cubren los costos fijos" }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No mês seguinte: fixos 90, preço 20, 5 para fazer cada par. Pares para o equilíbrio?",
+          "feedback": { "met": "Você dividiu o custo fixo pelo que cada par deixa.", "not_yet": "Pegue o que um par deixa e divida o custo fixo por isso." },
+          "help": ["Pegue o que um par deixa e divida o custo fixo por isso."],
+          "steps": [
+            { "expression": "20 − 5", "result": "15", "spokenText": "Vinte menos 5 são 15 moedas que cada par deixa" },
+            { "expression": "Custo fixo ÷ o que cada par deixa", "result": "6", "spokenText": "Noventa dividido por 15 é 6 pares" },
+            { "expression": "Pares × o que cada par deixa", "result": "90", "spokenText": "Seis vezes 15 são 90, que cobrem o custo fixo" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-chart-01", "type": "visual.chart.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "line" },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [{ "id": "n-0" }, { "id": "n-1" }, { "id": "n-2" }, { "id": "n-3" }, { "id": "n-4" }, { "id": "n-5" }, { "id": "n-6" }, { "id": "n-7" }, { "id": "n-8" }],
+          "series": [
+            { "id": "ser-cost", "values": [80, 89, 98, 107, 116, 125, 134, 143, 152] },
+            { "id": "ser-revenue", "values": [0, 25, 50, 75, 100, 125, 150, 175, 200] }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": { "prompt": "Step 3: the same numbers as lines; revenue meets cost at the break-even.", "title": "Cost and revenue by pairs sold", "data": { "categories": [{ "label": "0" }, { "label": "1" }, { "label": "2" }, { "label": "3" }, { "label": "4" }, { "label": "5" }, { "label": "6" }, { "label": "7" }, { "label": "8" }], "series": [{ "label": "Total cost" }, { "label": "Revenue" }] } },
+        "es-MX": { "prompt": "Paso 3: los mismos números en líneas; los ingresos alcanzan al costo en el equilibrio.", "title": "Costo e ingresos por pares vendidos", "data": { "categories": [{ "label": "0" }, { "label": "1" }, { "label": "2" }, { "label": "3" }, { "label": "4" }, { "label": "5" }, { "label": "6" }, { "label": "7" }, { "label": "8" }], "series": [{ "label": "Costo total" }, { "label": "Ingresos" }] } },
+        "pt-BR": { "prompt": "Passo 3: os mesmos números em linhas; a receita alcança o custo no equilíbrio.", "title": "Custo e receita por pares vendidos", "data": { "categories": [{ "label": "0" }, { "label": "1" }, { "label": "2" }, { "label": "3" }, { "label": "4" }, { "label": "5" }, { "label": "6" }, { "label": "7" }, { "label": "8" }], "series": [{ "label": "Custo total" }, { "label": "Receita" }] } }
+      }
+    },
+    {
+      "id": "example-tool-01", "type": "voice.mentor-turn.v2", "grading": "none", "teaching_role": "example",
+      "visual": { "type": "speech-plate" },
+      "payload": { "role": "transition", "narration": { "mode": "text_only" } },
+      "copy": {
+        "en-US": { "prompt": "Step 4: a 48-coin tool raises the fixed costs, and the break-even moves.", "line": "80 + 48 = 128, and 128 ÷ 16 = 8 pairs; a higher price would move it down instead." },
+        "es-MX": { "prompt": "Paso 4: una herramienta de 48 monedas sube los costos fijos y el equilibrio se mueve.", "line": "80 + 48 = 128, y 128 ÷ 16 = 8 pares; un precio más alto lo bajaría." },
+        "pt-BR": { "prompt": "Passo 4: uma ferramenta de 48 moedas sobe o custo fixo e o equilíbrio se move.", "line": "80 + 48 = 128, e 128 ÷ 16 = 8 pares; um preço mais alto o reduziria." }
+      }
+    },
+    {
+      "id": "practice-board-01", "type": "fin.break-even.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "break-even" },
+      "item_role": "practice", "knowledge_component_id": "biz.break-even",
+      "payload": { "fixed": 150, "price": 24, "unit": 9, "maxUnits": 30, "start": 3 },
+      "rubric": { "target": 10 },
+      "copy": {
+        "en-US": { "prompt": "Your cleans: 150 fixed a month, price 24, 9 to make a pair. How many pairs reach break-even?", "feedback": { "met": "You found the pairs where revenue equals cost.", "not_yet": "Compare revenue and cost at your pairs; move until they match." } },
+        "es-MX": { "prompt": "Tus limpiezas: 150 fijos al mes, precio 24, 9 de hacer cada par. ¿Cuántos pares llegan al equilibrio?", "feedback": { "met": "Encontraste los pares donde los ingresos igualan los costos.", "not_yet": "Compara ingresos y costo con tus pares; ajusta hasta que coincidan." } },
+        "pt-BR": { "prompt": "Suas limpezas: 150 fixos por mês, preço 24, 9 para fazer cada par. Quantos pares chegam ao equilíbrio?", "feedback": { "met": "Você achou os pares em que a receita iguala o custo.", "not_yet": "Compare receita e custo nos seus pares; ajuste até coincidirem." } }
+      }
+    },
+    {
+      "id": "practice-chart-01", "type": "visual.chart.v2", "grading": "server", "teaching_role": "practice",
+      "visual": { "type": "line" },
+      "item_role": "practice", "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [{ "id": "n-0" }, { "id": "n-1" }, { "id": "n-2" }, { "id": "n-3" }, { "id": "n-4" }, { "id": "n-5" }, { "id": "n-6" }, { "id": "n-7" }, { "id": "n-8" }, { "id": "n-9" }],
+          "series": [
+            { "id": "ser-cost", "values": [70, 75, 80, 85, 90, 95, 100, 105, 110, 115] },
+            { "id": "ser-revenue", "values": [0, 15, 30, 45, 60, 75, 90, 105, 120, 135] }
+          ]
+        },
+        "question": { "options": [{ "id": "opt-9" }, { "id": "opt-7" }, { "id": "opt-5" }] }
+      },
+      "rubric": { "acceptable_choice_ids": ["opt-7"] },
+      "copy": {
+        "en-US": {
+          "prompt": "Your phone cases: 70 fixed a month. Read where revenue meets cost.",
+          "feedback": { "met": "You read the crossing point of the two lines.", "not_yet": "Not yet. Find where the revenue line reaches the cost line." },
+          "title": "Phone cases: cost and revenue",
+          "data": { "categories": [{ "label": "0" }, { "label": "1" }, { "label": "2" }, { "label": "3" }, { "label": "4" }, { "label": "5" }, { "label": "6" }, { "label": "7" }, { "label": "8" }, { "label": "9" }], "series": [{ "label": "Total cost" }, { "label": "Revenue" }] },
+          "question": { "prompt": "At how many cases do revenue and cost match?", "options": [{ "label": "9 cases" }, { "label": "7 cases" }, { "label": "5 cases" }] }
+        },
+        "es-MX": {
+          "prompt": "Tus fundas de celular: 70 fijos al mes. Lee dónde los ingresos alcanzan al costo.",
+          "feedback": { "met": "Leíste el punto donde se cruzan las dos líneas.", "not_yet": "Todavía no. Busca dónde la línea de ingresos alcanza la del costo." },
+          "title": "Fundas: costo e ingresos",
+          "data": { "categories": [{ "label": "0" }, { "label": "1" }, { "label": "2" }, { "label": "3" }, { "label": "4" }, { "label": "5" }, { "label": "6" }, { "label": "7" }, { "label": "8" }, { "label": "9" }], "series": [{ "label": "Costo total" }, { "label": "Ingresos" }] },
+          "question": { "prompt": "¿Con cuántas fundas coinciden ingresos y costo?", "options": [{ "label": "9 fundas" }, { "label": "7 fundas" }, { "label": "5 fundas" }] }
+        },
+        "pt-BR": {
+          "prompt": "Suas capas de celular: 70 fixos por mês. Veja onde a receita alcança o custo.",
+          "feedback": { "met": "Você leu o ponto onde as duas linhas se cruzam.", "not_yet": "Ainda não. Procure onde a linha da receita alcança a do custo." },
+          "title": "Capas: custo e receita",
+          "data": { "categories": [{ "label": "0" }, { "label": "1" }, { "label": "2" }, { "label": "3" }, { "label": "4" }, { "label": "5" }, { "label": "6" }, { "label": "7" }, { "label": "8" }, { "label": "9" }], "series": [{ "label": "Custo total" }, { "label": "Receita" }] },
+          "question": { "prompt": "Com quantas capas receita e custo se igualam?", "options": [{ "label": "9 capas" }, { "label": "7 capas" }, { "label": "5 capas" }] }
+        }
+      }
+    },
+    {
+      "id": "transfer-candles-01", "type": "reasoning.decide-justify.v2", "grading": "server", "teaching_role": "transfer",
+      "visual": { "type": "decision-reasons" },
+      "item_role": "transfer", "item_phase": "post", "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "choices": [{ "id": "twenty-candles" }, { "id": "nine-candles" }, { "id": "fifteen-candles" }, { "id": "eight-candles" }],
+        "reasons": [{ "id": "reason-what-a-candle-leaves" }, { "id": "reason-reach-total" }, { "id": "reason-divide-price" }]
+      },
+      "rubric": {
+        "acceptableChoiceIds": ["fifteen-candles"],
+        "reasonQuality": { "reason-what-a-candle-leaves": "sound", "reason-reach-total": "partial", "reason-divide-price": "unsupported" }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your candle stand pays 120 a month; a candle sells at 14, costs 6. How many break even?",
+          "feedback": { "met": "You divided by what each candle leaves, not by the price.", "not_yet": "Like Rho's fix: first what one unit leaves, then divide." },
+          "choices": [{ "label": "20 candles" }, { "label": "9 candles" }, { "label": "15 candles" }, { "label": "8 candles" }],
+          "reasonPrompt": "Why that number?",
+          "reasons": [{ "label": "Fixed costs, divided by what a candle leaves" }, { "label": "The sales have to reach the 120" }, { "label": "Divide by the price; sales pay the costs" }]
+        },
+        "es-MX": {
+          "prompt": "Tu puesto de velas paga 120 al mes; una vela se vende en 14 y cuesta 6. ¿Cuántas llegan al equilibrio?",
+          "feedback": { "met": "Dividiste entre lo que deja cada vela, no entre el precio.", "not_yet": "Como la corrección de Rho: primero lo que deja una unidad, luego divide." },
+          "choices": [{ "label": "20 velas" }, { "label": "9 velas" }, { "label": "15 velas" }, { "label": "8 velas" }],
+          "reasonPrompt": "¿Por qué ese número?",
+          "reasons": [{ "label": "Costos fijos entre lo que deja una vela" }, { "label": "Las ventas deben llegar a 120" }, { "label": "Divido entre el precio; las ventas pagan" }]
+        },
+        "pt-BR": {
+          "prompt": "Sua barraca de velas paga 120 por mês; uma vela sai por 14 e custa 6. Quantas atingem o equilíbrio?",
+          "feedback": { "met": "Você dividiu pelo que cada vela deixa, não pelo preço.", "not_yet": "Como a correção do Rho: primeiro o que uma unidade deixa, depois divida." },
+          "choices": [{ "label": "20 velas" }, { "label": "9 velas" }, { "label": "15 velas" }, { "label": "8 velas" }],
+          "reasonPrompt": "Por que esse número?",
+          "reasons": [{ "label": "Custo fixo pelo que uma vela deixa" }, { "label": "As vendas precisam chegar a 120" }, { "label": "Divido pelo preço; as vendas pagam" }]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1050 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-spend-and-protect",
+  "lesson_id": "fe-adult-08-stop-the-scam",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.scam-awareness",
+    "life.data-privacy",
+    "life.banks-and-accounts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Una persona adulta recibe una llamada que parece del banco y casi entrega un código. Dina cuenta su propio casi-error con calma y enseña cuatro pasos: notar la presión, ver qué se pide, colgar y llamar al número de la tarjeta, y guardar códigos y contraseñas. Después la persona practica con mensajes y una conversación, y cierra con la venta de un objeto usado en línea.",
+  "title": {
+    "en-US": "Stop the scam",
+    "es-MX": "Detén la estafa",
+    "pt-BR": "Pare o golpe"
+  },
+  "new_concepts": [
+    "life.scam-awareness",
+    "life.data-privacy"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina nearly reads an SMS code aloud to a caller who sounds like her bank, because he is calm, sure and says her account is at risk.",
+    "recovery": "Dina hangs up, calls the number printed on her card, learns the bank had not called, and says next time she hangs up first."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Un adulto recibe una llamada que dice ser del banco y pide un código y una transferencia SPEI a una cuenta segura. Aprende a notar la presión y lo que le piden, a colgar y llamar al número de su tarjeta.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "SPEI"
+        ]
+      },
+      "en-US": {
+        "scenario": "An adult gets a call from someone claiming to be the bank, who asks for a texted code and a move to a safe account. They learn to spot pressure and the ask, hang up and use the number on their card.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "fraud department"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Um adulto recebe uma ligação de alguém que diz ser do banco e pede um código e um Pix para uma conta segura. Ele aprende a notar a pressa e o pedido, a desligar e ligar para o número do cartão.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Te llaman de un número desconocido.",
+          "line": "Dice ser del banco. Habla rápido: hay un problema y necesita el código que te llegó por mensaje."
+        },
+        "en-US": {
+          "prompt": "An unknown number calls you.",
+          "line": "He says he's from your bank. There's a problem, and he needs the code just texted to you."
+        },
+        "pt-BR": {
+          "prompt": "Um número desconhecido liga para você.",
+          "line": "Ele diz ser do banco. Fala rápido: há um problema e ele precisa do código que chegou por mensagem."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "pre",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-friend"
+          },
+          {
+            "id": "msg-bank-code"
+          },
+          {
+            "id": "msg-clinic"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-bank-code"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Antes de empezar, marca los mensajes que te parezcan sospechosos.",
+          "feedback": {
+            "met": "Gracias. Ahora vemos cómo funcionan estos mensajes.",
+            "not_yet": "Gracias. Ahora vemos cómo funcionan estos mensajes."
+          },
+          "messages": [
+            {
+              "sender": "Sam",
+              "text": "Voy tarde, empiecen sin mí. Guárdame lugar."
+            },
+            {
+              "sender": "Seguridad del banco",
+              "text": "Acceso inusual. Responde con el código que te enviamos para no cerrar tu cuenta."
+            },
+            {
+              "sender": "Clínica dental",
+              "text": "Recordatorio: tu limpieza es el martes a las 4. Responde C para cancelar."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Before we start, flag the messages that look suspicious to you.",
+          "feedback": {
+            "met": "Thanks. Now we look at how these messages work.",
+            "not_yet": "Thanks. Now we look at how these messages work."
+          },
+          "messages": [
+            {
+              "sender": "Sam",
+              "text": "Running late, start without me. Save me a seat."
+            },
+            {
+              "sender": "Bank security",
+              "text": "Unusual login. Send the code we texted you to keep your account."
+            },
+            {
+              "sender": "Dental clinic",
+              "text": "Reminder: your cleaning is Tuesday at 4. Reply C to cancel."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Antes de começar, marque as mensagens que parecem suspeitas para você.",
+          "feedback": {
+            "met": "Anotado. Agora vemos como essas mensagens funcionam.",
+            "not_yet": "Anotado. Agora vemos como essas mensagens funcionam."
+          },
+          "messages": [
+            {
+              "sender": "Sam",
+              "text": "Vou me atrasar, comecem sem mim. Guarde meu lugar."
+            },
+            {
+              "sender": "Segurança do banco",
+              "text": "Acesso incomum. Para manter seu Pix ativo, responda com o código que enviamos."
+            },
+            {
+              "sender": "Clínica odontológica",
+              "text": "Lembrete: sua limpeza é terça às 16h. Responda C para cancelar."
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.scam-awareness"
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira lo que casi le pasa a Dina.",
+          "setup": "Me llamaron del banco. El hombre sonaba seguro y dijo que mi cuenta estaba en riesgo.",
+          "misjudgment": "Casi le leo el código que me llegó al celular.",
+          "recovery": "Colgué y llamé al número de mi tarjeta; el banco no había llamado. La próxima vez cuelgo primero."
+        },
+        "en-US": {
+          "prompt": "See what almost happened to Dina.",
+          "setup": "A man called from my bank. He sounded sure, and said my account was at risk.",
+          "misjudgment": "I almost read him the code that had just reached my phone.",
+          "recovery": "I hung up and called the number on my card; the bank hadn't called. Next time I hang up first."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que quase aconteceu com a Dina.",
+          "setup": "Me ligaram do banco. O homem parecia seguro e disse que minha conta estava em risco.",
+          "misjudgment": "Quase li para ele o código que chegou no meu celular.",
+          "recovery": "Desliguei e liguei para o número do meu cartão; o banco não tinha ligado. Da próxima vez, desligo primeiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: fíjate en la presión. Sin prisa, vamos paso a paso.",
+          "line": "Dijo \"ahora mismo\" y \"no se lo cuentes a nadie\". La prisa y el secreto te quitan el tiempo de verificar."
+        },
+        "en-US": {
+          "prompt": "Step 1: notice the pressure. No rush, one step at a time.",
+          "line": "He said \"right now\" and \"tell no one\". Urgency and secrecy take away your time to check."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: repare na pressão. Sem pressa, um passo de cada vez.",
+          "line": "Ele disse \"agora mesmo\" e \"não conte a ninguém\". A pressa e o sigilo tiram seu tempo de conferir."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: mira qué te piden. Un código, mover dinero o un enlace para entrar.",
+          "line": "Un banco no necesita que leas un código ni que muevas dinero a una \"cuenta segura\". Eso lo pide un estafador."
+        },
+        "en-US": {
+          "prompt": "Step 2: look at what it asks. A code, a money move, or a login link.",
+          "line": "A bank doesn't need a code read out, or money moved to a \"safe account\". A scammer does."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: veja o que pedem. Um código, mover dinheiro ou um link para entrar.",
+          "line": "Um banco não precisa que você leia um código nem mova dinheiro para uma \"conta segura\". Isso quem pede é golpista."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "guided",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-card-alert"
+          },
+          {
+            "id": "msg-support"
+          },
+          {
+            "id": "msg-dinner"
+          },
+          {
+            "id": "msg-code-ask"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-urgent"
+          },
+          {
+            "id": "cue-secret"
+          },
+          {
+            "id": "cue-move"
+          },
+          {
+            "id": "cue-code"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-support",
+          "msg-code-ask"
+        ],
+        "cue_ids": {
+          "msg-support": [
+            "cue-urgent",
+            "cue-secret",
+            "cue-move"
+          ],
+          "msg-code-ask": [
+            "cue-code"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Marca los mensajes sospechosos y toca las señales que veas, como hizo Dina.",
+          "feedback": {
+            "met": "Marcaste las dos trampas y dejaste pasar los otros avisos.",
+            "not_yet": "Todavía no. Repasa los pasos de Dina: qué te apura y qué te piden."
+          },
+          "help": [
+            "Fíjate en cuánta prisa hay y en lo que pide cada mensaje.",
+            "Un aviso sin prisa ni petición no es sospechoso."
+          ],
+          "messages": [
+            {
+              "sender": "Tu tarjeta",
+              "text": "Compra con tu tarjeta: $240 en una farmacia, hoy 10:15. No necesitas hacer nada."
+            },
+            {
+              "sender": "Departamento antifraude",
+              "text": "Mueve tu dinero por SPEI a una cuenta segura ya. No avises a nadie."
+            },
+            {
+              "sender": "Ana",
+              "text": "La cena cambió al viernes a las 8. Reservé mesa para tres."
+            },
+            {
+              "sender": "Compañía telefónica",
+              "text": "Tu línea necesita renovarse. Dinos el código que te mandamos por mensaje."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Urgencia"
+            },
+            {
+              "label": "Secreto"
+            },
+            {
+              "label": "Mover dinero"
+            },
+            {
+              "label": "Pide un código"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Flag the suspicious messages. Tap each sign you see, as Dina did.",
+          "feedback": {
+            "met": "You flagged both traps and left the other notices alone.",
+            "not_yet": "Not yet. Review Dina's steps: what pushes you, and what it asks."
+          },
+          "help": [
+            "Check how much rush there is and what each message asks.",
+            "A notice with no rush and no request is not suspicious."
+          ],
+          "messages": [
+            {
+              "sender": "Your card",
+              "text": "Card purchase: $24 at a pharmacy, today 10:15. No action needed."
+            },
+            {
+              "sender": "Fraud department",
+              "text": "Move your funds to a safe account now. Tell no one."
+            },
+            {
+              "sender": "Ana",
+              "text": "Dinner moved to 8 on Friday. I booked a table for three."
+            },
+            {
+              "sender": "Phone company",
+              "text": "Your line needs renewing. Give us the code we just texted you."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Urgency"
+            },
+            {
+              "label": "Secrecy"
+            },
+            {
+              "label": "Moves money"
+            },
+            {
+              "label": "Asks for a code"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque as mensagens suspeitas e toque nos sinais que você vê, como a Dina fez.",
+          "feedback": {
+            "met": "Você marcou as duas armadilhas e deixou os outros avisos de lado.",
+            "not_yet": "Ainda não. Reveja os passos da Dina: o que apressa você e o que pedem."
+          },
+          "help": [
+            "Veja quanta pressa há e o que cada mensagem pede.",
+            "Um aviso sem pressa e sem pedido não é suspeito."
+          ],
+          "messages": [
+            {
+              "sender": "Seu cartão",
+              "text": "Compra no cartão: R$ 48 em uma farmácia, hoje 10:15. Nada a fazer."
+            },
+            {
+              "sender": "Central antifraude",
+              "text": "Mova seu dinheiro agora para uma conta segura. Não avise ninguém."
+            },
+            {
+              "sender": "Ana",
+              "text": "O jantar passou para sexta às 20h. Reservei mesa para três."
+            },
+            {
+              "sender": "Operadora",
+              "text": "Sua linha precisa ser renovada. Informe o código que enviamos por mensagem."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Urgência"
+            },
+            {
+              "label": "Sigilo"
+            },
+            {
+              "label": "Mover dinheiro"
+            },
+            {
+              "label": "Pede um código"
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness"
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: cuelga y llama tú. Usa el número impreso en tu tarjeta.",
+          "line": "Una petición real resiste una llamada de vuelta. Un número que te dan durante la llamada no prueba nada."
+        },
+        "en-US": {
+          "prompt": "Step 3: hang up and call them yourself. Use the number on your card.",
+          "line": "A real request survives a call-back. A number given during the call proves nothing."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: desligue e ligue você. Use o número impresso no seu cartão.",
+          "line": "Um pedido real resiste a uma ligação de volta. Um número dado durante a ligação não prova nada."
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: guarda tus códigos y contraseñas solo para ti.",
+          "line": "Un código que llega a tu teléfono prueba que eres tú. Nadie legítimo necesita que lo leas, ni siquiera el banco."
+        },
+        "en-US": {
+          "prompt": "Step 4: keep your codes and passwords to yourself.",
+          "line": "A code sent to your phone proves it's you. Nobody legitimate needs it read out, not even the bank."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: guarde seus códigos e senhas só para você.",
+          "line": "Um código que chega ao seu telefone prova que é você. Ninguém legítimo precisa que você o leia, nem o banco."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.scam-spotter.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "practice",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-wrong-transfer"
+          },
+          {
+            "id": "msg-card-block"
+          },
+          {
+            "id": "msg-investment"
+          },
+          {
+            "id": "msg-landlord"
+          },
+          {
+            "id": "msg-refund-link"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-wrong-transfer",
+          "msg-investment",
+          "msg-refund-link"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cinco mensajes llegan a tu teléfono. Marca los que son trampas.",
+          "feedback": {
+            "met": "Marcaste las trampas y dejaste pasar los avisos reales.",
+            "not_yet": "Todavía no. Revisa quién te apura y a qué canal te manda cada mensaje."
+          },
+          "help": [
+            "Un aviso real puede sonar urgente y aun así mandarte a tu propio canal."
+          ],
+          "messages": [
+            {
+              "sender": "Número desconocido",
+              "text": "Perdón, te transferí $3,000 por error. Devuélvelo hoy por SPEI."
+            },
+            {
+              "sender": "Tu banco",
+              "text": "Tarjeta bloqueada por un cargo que no hiciste. Llama al número de tu tarjeta."
+            },
+            {
+              "sender": "Consejos de dinero",
+              "text": "Duplica tus ahorros en 7 días, garantizado. Cupo limitado, entra hoy."
+            },
+            {
+              "sender": "Arrendador",
+              "text": "Renta de septiembre recibida, gracias. El recibo está en tu portal."
+            },
+            {
+              "sender": "Reembolso de servicios",
+              "text": "Tienes un reembolso pendiente. Reclámalo en [link] en 24 horas."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Five messages reach your phone. Flag the ones that are traps.",
+          "feedback": {
+            "met": "You flagged the traps and let the real notices through.",
+            "not_yet": "Not yet. Check who rushes you and where each message sends you."
+          },
+          "help": [
+            "A real notice may sound urgent, yet point to your own channel."
+          ],
+          "messages": [
+            {
+              "sender": "Unknown number",
+              "text": "Sorry, I sent you $300 by mistake. Please send it back today."
+            },
+            {
+              "sender": "Your bank",
+              "text": "Card blocked: a charge wasn't yours. Call the number on your card."
+            },
+            {
+              "sender": "Money tips",
+              "text": "Double your savings in 7 days, guaranteed. Limited spots, join today."
+            },
+            {
+              "sender": "Landlord",
+              "text": "September rent received, thanks. Your receipt is in the portal."
+            },
+            {
+              "sender": "Utility refund",
+              "text": "You are owed a refund. Claim it at [link] within 24 hours."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cinco mensagens chegam ao seu telefone. Marque as que são armadilhas.",
+          "feedback": {
+            "met": "Você marcou as armadilhas e deixou passar os avisos reais.",
+            "not_yet": "Ainda não. Veja quem apressa você e para que canal cada mensagem manda."
+          },
+          "help": [
+            "Um aviso real pode soar urgente e ainda mandar você ao seu próprio canal."
+          ],
+          "messages": [
+            {
+              "sender": "Número desconhecido",
+              "text": "Desculpe, enviei R$ 600 por engano. Devolva hoje por Pix."
+            },
+            {
+              "sender": "Seu banco",
+              "text": "Cartão bloqueado após uma compra que você não fez. Ligue para o número do cartão."
+            },
+            {
+              "sender": "Dicas de dinheiro",
+              "text": "Dobre suas economias em 7 dias, garantido. Vagas limitadas, entre hoje."
+            },
+            {
+              "sender": "Proprietário",
+              "text": "Aluguel de setembro recebido. O recibo está no seu portal."
+            },
+            {
+              "sender": "Reembolso de serviços",
+              "text": "Você tem um reembolso pendente. Resgate em [link] em 24 horas."
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness"
+    },
+    {
+      "id": "practice-02",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.data-privacy",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-hang-up"
+          },
+          {
+            "id": "reply-ask-name"
+          },
+          {
+            "id": "reply-hurry"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-hang-up"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Una compañera está en plena llamada con alguien. ¿Qué le dices?",
+          "feedback": {
+            "met": "Le dijiste que cuelgue y use el número de su tarjeta.",
+            "not_yet": "Todavía no. Recuerda lo que hizo Dina después de la llamada."
+          },
+          "speaker": "Compañera de trabajo",
+          "line": "El banco está en la línea. Piden mi código y que mueva mi dinero a una cuenta segura.",
+          "replies": [
+            {
+              "label": "Cuelga y llama al número de tu tarjeta."
+            },
+            {
+              "label": "Pregunta su nombre y luego dale el código."
+            },
+            {
+              "label": "Muévelo rápido, antes de que lo bloqueen."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A coworker is on a call with someone. What do you tell her?",
+          "feedback": {
+            "met": "You told her to hang up and use her card's number.",
+            "not_yet": "Not yet. Recall what Dina did after the call."
+          },
+          "speaker": "Coworker",
+          "line": "The bank is on the line. They want my code and a move to a safe account.",
+          "replies": [
+            {
+              "label": "Hang up; call the number on your card."
+            },
+            {
+              "label": "Ask their name, then read out the code."
+            },
+            {
+              "label": "Move it fast, before they freeze it."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma colega está em plena ligação com alguém. O que você diz a ela?",
+          "feedback": {
+            "met": "Você disse a ela para desligar e usar o número do cartão.",
+            "not_yet": "Ainda não. Lembre o que a Dina fez depois da ligação."
+          },
+          "speaker": "Colega de trabalho",
+          "line": "O banco está na linha. Pedem meu código e que eu mova meu dinheiro para uma conta segura.",
+          "replies": [
+            {
+              "label": "Desligue e ligue para o número do cartão."
+            },
+            {
+              "label": "Pergunte o nome da pessoa e depois dê o código."
+            },
+            {
+              "label": "Mova rápido, antes que bloqueiem."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "practice",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-new-card"
+          },
+          {
+            "id": "msg-login-link"
+          },
+          {
+            "id": "msg-rent-reminder"
+          },
+          {
+            "id": "msg-pin"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-login-link",
+          "msg-pin"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cuatro mensajes dicen venir de tu banco. Marca los que son trampas.",
+          "feedback": {
+            "met": "Marcaste las trampas y dejaste los avisos que te mandan a la app.",
+            "not_yet": "Todavía no. Revisa qué te pide cada mensaje y adónde te manda."
+          },
+          "help": [
+            "Un aviso real te dice dónde ver el detalle, sin pedirte datos."
+          ],
+          "messages": [
+            {
+              "sender": "Tu banco",
+              "text": "Tu tarjeta nueva va en camino. Sigue el envío en la app."
+            },
+            {
+              "sender": "Tu banco",
+              "text": "Cuenta bloqueada. Entra en [link] en una hora para desbloquearla."
+            },
+            {
+              "sender": "Tu banco",
+              "text": "Recordatorio: el pago de tu renta se aplica mañana. Detalles en la app."
+            },
+            {
+              "sender": "Servicio de tarjetas",
+              "text": "Para mantener activa tu tarjeta, responde con tu NIP."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Four messages say they're from your bank. Flag the ones that are traps.",
+          "feedback": {
+            "met": "You flagged the traps and left the real notices alone.",
+            "not_yet": "Not yet. Check what each message asks and where it sends you."
+          },
+          "help": [
+            "A real notice says where to see details, without asking for data."
+          ],
+          "messages": [
+            {
+              "sender": "Your bank",
+              "text": "Your new card is on its way. Track it in the app."
+            },
+            {
+              "sender": "Your bank",
+              "text": "Account locked. Log in at [link] within an hour to unlock it."
+            },
+            {
+              "sender": "Your bank",
+              "text": "Reminder: your rent payment posts tomorrow. Details are in the app."
+            },
+            {
+              "sender": "Card service",
+              "text": "To keep your card active, reply with your PIN."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quatro mensagens dizem ser do seu banco. Marque as que são armadilhas.",
+          "feedback": {
+            "met": "Você marcou as armadilhas e deixou os avisos que mandam você ao aplicativo.",
+            "not_yet": "Ainda não. Veja o que cada mensagem pede e para onde manda você."
+          },
+          "help": [
+            "Um aviso real diz onde ver o detalhe, sem pedir dados."
+          ],
+          "messages": [
+            {
+              "sender": "Seu banco",
+              "text": "Seu cartão novo está a caminho. Acompanhe no aplicativo."
+            },
+            {
+              "sender": "Seu banco",
+              "text": "Conta bloqueada. Entre em [link] em uma hora para desbloquear."
+            },
+            {
+              "sender": "Seu banco",
+              "text": "Lembrete: o pagamento do seu aluguel sai amanhã. Detalhes no aplicativo."
+            },
+            {
+              "sender": "Serviço de cartões",
+              "text": "Para manter o cartão ativo, responda com a sua senha."
+            }
+          ]
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts"
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "teaching_role": "transfer",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-buyer-ask"
+          },
+          {
+            "id": "msg-buyer-overpay"
+          },
+          {
+            "id": "msg-courier-code"
+          },
+          {
+            "id": "msg-platform-notice"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-urgent"
+          },
+          {
+            "id": "cue-secret"
+          },
+          {
+            "id": "cue-move"
+          },
+          {
+            "id": "cue-code"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-buyer-overpay",
+          "msg-courier-code"
+        ],
+        "cue_ids": {
+          "msg-buyer-overpay": [
+            "cue-urgent",
+            "cue-secret",
+            "cue-move"
+          ],
+          "msg-courier-code": [
+            "cue-code"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Vendes un escritorio usado en línea. Marca los mensajes sospechosos y toca sus señales.",
+          "feedback": {
+            "met": "Marcaste las dos trampas y dejaste pasar los otros mensajes.",
+            "not_yet": "Todavía no. Repasa los pasos de Dina en cada mensaje."
+          },
+          "messages": [
+            {
+              "sender": "Posible comprador",
+              "text": "¿Sigue disponible el escritorio? Puedo pasar por él el sábado."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Me pasé de más por error. Devuélveme $500 ya y que quede entre nosotros."
+            },
+            {
+              "sender": "Soporte de la plataforma",
+              "text": "Para recibir tu pago, responde con el código que te mandamos por mensaje."
+            },
+            {
+              "sender": "App de ventas",
+              "text": "Se recibió el pago de tu escritorio. Revísalo en la app."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Urgencia"
+            },
+            {
+              "label": "Secreto"
+            },
+            {
+              "label": "Mover dinero"
+            },
+            {
+              "label": "Pide un código"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "You're selling a used desk online. Flag the suspicious messages and tap their signs.",
+          "feedback": {
+            "met": "You flagged both traps and left the other messages alone.",
+            "not_yet": "Not yet. Review Dina's steps on each message."
+          },
+          "messages": [
+            {
+              "sender": "Interested buyer",
+              "text": "Is the desk still available? I can pick it up Saturday."
+            },
+            {
+              "sender": "Buyer",
+              "text": "I overpaid by mistake. Send back $50 now; keep it between us."
+            },
+            {
+              "sender": "Marketplace support",
+              "text": "To receive your payment, reply with the code we just texted you."
+            },
+            {
+              "sender": "Marketplace app",
+              "text": "Payment for your desk was received. Check it in the app."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Urgency"
+            },
+            {
+              "label": "Secrecy"
+            },
+            {
+              "label": "Moves money"
+            },
+            {
+              "label": "Asks for a code"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você vende uma escrivaninha usada on-line. Marque as mensagens suspeitas e toque nos sinais.",
+          "feedback": {
+            "met": "Você marcou as duas armadilhas e deixou as outras mensagens de lado.",
+            "not_yet": "Ainda não. Reveja os passos da Dina em cada mensagem."
+          },
+          "messages": [
+            {
+              "sender": "Possível comprador",
+              "text": "A escrivaninha ainda está disponível? Posso buscar no sábado."
+            },
+            {
+              "sender": "Comprador",
+              "text": "Paguei a mais. Devolva R$ 100 agora por Pix e não conte a ninguém."
+            },
+            {
+              "sender": "Suporte da plataforma",
+              "text": "Para receber seu pagamento, responda com o código que enviamos por mensagem."
+            },
+            {
+              "sender": "App de vendas",
+              "text": "O pagamento da sua escrivaninha foi recebido. Confira no app."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Urgência"
+            },
+            {
+              "label": "Sigilo"
+            },
+            {
+              "label": "Mover dinheiro"
+            },
+            {
+              "label": "Pede um código"
+            }
+          ]
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.scam-awareness"
+    }
+  ]
+}

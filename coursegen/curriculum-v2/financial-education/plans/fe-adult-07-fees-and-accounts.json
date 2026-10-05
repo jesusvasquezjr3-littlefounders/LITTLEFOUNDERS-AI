@@ -1,0 +1,1102 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-spend-and-protect",
+  "lesson_id": "fe-adult-07-fees-and-accounts",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.banks-and-accounts",
+    "life.safe-keeping",
+    "life.recurring-costs"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Una persona adulta compara dos cuentas: una con mensualidad fija y otra que cobra por cada retiro en efectivo. Rho mide una cosa a la vez: el costo anual de cada cuenta según los retiros de esa persona, el punto en que cuestan lo mismo y qué protege sus ahorros si un banco quiebra, con un límite fijo por persona y por banco. Después la persona practica con otras cuentas y cierra con un gasto fijo de otro tipo: el estacionamiento.",
+  "title": {
+    "en-US": "Fees and accounts",
+    "es-MX": "Comisiones y cuentas",
+    "pt-BR": "Tarifas e contas"
+  },
+  "new_concepts": [
+    "life.banks-and-accounts",
+    "life.safe-keeping"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Un adulto compara dos cuentas bancarias: una con mensualidad fija y otra con cobro por retiro en efectivo. Calcula su costo anual según sus retiros y revisa la protección del IPAB.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "IPAB"
+        ]
+      },
+      "en-US": {
+        "scenario": "An adult compares two bank accounts: one with a flat monthly fee and one that charges per cash withdrawal. They price each for a year and check what FDIC coverage means.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "FDIC"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Um adulto compara duas contas: uma com tarifa mensal fixa e outra com cobrança por saque. Ele calcula o custo anual conforme o uso e confere o que o FGC cobre.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "FGC"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dos cuentas, dos formas de cobrarte. Los precios aquí son ejemplos.",
+          "line": "La A cobra 40 al mes. La B no cobra mensualidad, pero cobra 20 por retiro en efectivo."
+        },
+        "en-US": {
+          "prompt": "Two accounts, two ways of charging you. Prices here are examples.",
+          "line": "A charges 4 a month. B has no monthly fee, but charges 2 per withdrawal."
+        },
+        "pt-BR": {
+          "prompt": "Duas contas, duas formas de cobrar você. Os preços aqui são exemplos.",
+          "line": "A conta A cobra 8 por mês. A B não cobra mensalidade, mas cobra 4 por saque."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "choices": [
+          {
+            "id": "account-b"
+          },
+          {
+            "id": "account-a"
+          },
+          {
+            "id": "same-cost"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-priced"
+          },
+          {
+            "id": "reason-no-fee"
+          },
+          {
+            "id": "reason-feel"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "account-a"
+        ],
+        "reasonQuality": {
+          "reason-priced": "sound",
+          "reason-feel": "partial",
+          "reason-no-fee": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La A cobra 40 al mes; la B cobra 20 por retiro. Con 3 retiros al mes, ¿cuál cuesta menos al año?",
+          "feedback": {
+            "met": "Gracias. Ahora calculamos cada cuenta para un año.",
+            "not_yet": "Gracias. Ahora calculamos cada cuenta para un año."
+          },
+          "choices": [
+            {
+              "label": "La cuenta B"
+            },
+            {
+              "label": "La cuenta A"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo decidiste?",
+          "reasons": [
+            {
+              "label": "Calculé las dos para un año"
+            },
+            {
+              "label": "La B no cobra mensualidad"
+            },
+            {
+              "label": "Me parece lo más probable"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A charges 4 a month; B charges 2 per withdrawal. With 3 withdrawals monthly, which costs less per year?",
+          "feedback": {
+            "met": "Thanks. Now we price each account for a year.",
+            "not_yet": "Thanks. Now we price each account for a year."
+          },
+          "choices": [
+            {
+              "label": "Account B"
+            },
+            {
+              "label": "Account A"
+            },
+            {
+              "label": "They cost the same"
+            }
+          ],
+          "reasonPrompt": "How did you decide?",
+          "reasons": [
+            {
+              "label": "I priced both for a year"
+            },
+            {
+              "label": "B has no monthly fee"
+            },
+            {
+              "label": "It felt most likely"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A conta A cobra 8 por mês; a B cobra 4 por saque. Com 3 saques por mês, qual custa menos no ano?",
+          "feedback": {
+            "met": "Anotado. Agora calculamos cada conta para um ano.",
+            "not_yet": "Anotado. Agora calculamos cada conta para um ano."
+          },
+          "choices": [
+            {
+              "label": "A conta B"
+            },
+            {
+              "label": "A conta A"
+            },
+            {
+              "label": "Custam o mesmo"
+            }
+          ],
+          "reasonPrompt": "Como você decidiu?",
+          "reasons": [
+            {
+              "label": "Calculei as duas para um ano"
+            },
+            {
+              "label": "A B não cobra mensalidade"
+            },
+            {
+              "label": "Pareceu o mais provável"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: calcula la cuenta A en un año. La mensualidad se repite cada mes.",
+          "line": "40 al mes durante 12 meses son 40 × 12 = 480 al año."
+        },
+        "en-US": {
+          "prompt": "Step 1: price account A for a year. Its fee repeats every month.",
+          "line": "4 a month for 12 months is 4 × 12 = 48 a year."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: calcule a conta A em um ano. A tarifa se repete todo mês.",
+          "line": "8 por mês durante 12 meses são 8 × 12 = 96 por ano."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: calcula la cuenta B. Su costo sigue a cuántas veces retiras.",
+          "line": "3 retiros de 20 son 60 al mes. 60 × 12 = 720 al año."
+        },
+        "en-US": {
+          "prompt": "Step 2: price account B. Its cost follows how often you withdraw.",
+          "line": "3 withdrawals at 2 is 6 a month. 6 × 12 = 72 a year."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: calcule a conta B. O custo acompanha quantas vezes você saca.",
+          "line": "3 saques de 4 são 12 por mês. 12 × 12 = 144 por ano."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: pon los dos costos anuales lado a lado.",
+          "line": "720 − 480 = 240. Con 3 retiros al mes, la A cuesta 240 menos que la B."
+        },
+        "en-US": {
+          "prompt": "Step 3: put the two yearly costs side by side.",
+          "line": "72 − 48 = 24. At 3 withdrawals a month, A costs 24 less than B."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: coloque os dois custos anuais lado a lado.",
+          "line": "144 − 96 = 48. Com 3 saques por mês, a A custa 48 a menos que a B."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "steps": [
+          {
+            "id": "monthly"
+          },
+          {
+            "id": "yearly"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "yearly",
+          "gap"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "yearly": "1200",
+            "gap": "720"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "yearly": "120",
+            "gap": "72"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "yearly": "240",
+            "gap": "144"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las mismas dos cuentas, pero ahora retiras 5 veces al mes. Calcula la B para un año y compárala con la A.",
+          "help": [
+            "Costo anual = costo mensual × 12, como en el paso 2.",
+            "Compárala con el costo anual de la A, como en el paso 3."
+          ],
+          "feedback": {
+            "met": "Calculaste la B para un año y la comparaste con la A.",
+            "not_yet": "Todavía no. Multiplica el costo mensual por 12 y compara con la A."
+          },
+          "steps": [
+            {
+              "expression": "5 × 20",
+              "result": "100",
+              "spokenText": "Cinco retiros de 20 cuestan 100 al mes"
+            },
+            {
+              "expression": "Costo mensual × 12",
+              "result": "1,200",
+              "spokenText": "100 al mes durante 12 meses son 1,200 al año"
+            },
+            {
+              "expression": "Costo anual de B − costo anual de A",
+              "result": "720",
+              "spokenText": "1,200 menos 480 de la A son 720 más para la B"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Same accounts, but now you withdraw 5 times a month. Price B for a year, then compare it with A.",
+          "help": [
+            "Yearly cost = monthly cost × 12, as in step 2.",
+            "Compare with A's yearly cost, as in step 3."
+          ],
+          "feedback": {
+            "met": "You priced B for a year and compared it with A.",
+            "not_yet": "Not yet. Multiply the monthly cost by 12, then compare with A."
+          },
+          "steps": [
+            {
+              "expression": "5 × 2",
+              "result": "10",
+              "spokenText": "Five withdrawals at 2 cost 10 a month"
+            },
+            {
+              "expression": "Monthly cost × 12",
+              "result": "120",
+              "spokenText": "10 a month for 12 months is 120 a year"
+            },
+            {
+              "expression": "B's yearly cost − A's yearly cost",
+              "result": "72",
+              "spokenText": "120 minus A's 48 is 72 more for B"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As mesmas duas contas, mas agora você saca 5 vezes por mês. Calcule a B para um ano e compare com a A.",
+          "help": [
+            "Custo anual = custo mensal × 12, como no passo 2.",
+            "Compare com o custo anual da A, como no passo 3."
+          ],
+          "feedback": {
+            "met": "Você calculou a B para um ano e comparou com a A.",
+            "not_yet": "Ainda não. Multiplique o custo mensal por 12 e compare com a A."
+          },
+          "steps": [
+            {
+              "expression": "5 × 4",
+              "result": "20",
+              "spokenText": "Cinco saques de 4 custam 20 por mês"
+            },
+            {
+              "expression": "Custo mensal × 12",
+              "result": "240",
+              "spokenText": "20 por mês durante 12 meses são 240 por ano"
+            },
+            {
+              "expression": "Custo anual da B − custo anual da A",
+              "result": "144",
+              "spokenText": "240 menos 96 da A são 144 a mais para a B"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: encuentra dónde las dos cuentas cuestan lo mismo.",
+          "line": "Los 40 de la A equivalen a 2 retiros de 20. Con más de 2 al mes, la A cuesta menos; con menos, la B."
+        },
+        "en-US": {
+          "prompt": "Step 4: find where the two accounts cost the same.",
+          "line": "A's 4 a month equals 2 withdrawals at 2. More than 2 a month, A costs less; fewer, B does."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: ache o ponto em que as duas contas custam o mesmo.",
+          "line": "Os 8 da A equivalem a 2 saques de 4. Com mais de 2 por mês, a A custa menos; com menos, a B."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: las comisiones son un riesgo; que un banco quiebre es otro. El IPAB protege depósitos bancarios.",
+          "line": "La cobertura tiene un límite fijo por persona y por banco. Revisa el vigente en el sitio oficial."
+        },
+        "en-US": {
+          "prompt": "Step 5: fees are one risk; a failed bank is another. The FDIC covers deposits at insured banks.",
+          "line": "Cover has a set limit per person, per bank. Check the current one on the official site."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: tarifas são um risco; um banco quebrar é outro. O FGC protege depósitos em instituições associadas.",
+          "line": "A cobertura tem um limite fixo por pessoa e por instituição. Veja o vigente no site oficial."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "flowchart"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.banks-and-accounts",
+      "payload": {
+        "start": "q-covered",
+        "nodes": [
+          {
+            "id": "q-covered",
+            "kind": "question",
+            "yes": "q-more",
+            "no": "out-check"
+          },
+          {
+            "id": "q-more",
+            "kind": "question",
+            "yes": "out-flat",
+            "no": "out-per"
+          },
+          {
+            "id": "out-check",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-flat",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-per",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "sc-light"
+          },
+          {
+            "id": "sc-open"
+          },
+          {
+            "id": "sc-heavy"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "sc-light": [
+            "q-covered",
+            "q-more",
+            "out-per"
+          ],
+          "sc-open": [
+            "q-covered",
+            "out-check"
+          ],
+          "sc-heavy": [
+            "q-covered",
+            "q-more",
+            "out-flat"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tres titulares de las cuentas A y B. Sigue el diagrama con cada uno, de la primera pregunta al resultado.",
+          "help": [
+            "Responde cada pregunta con los datos de cada caso."
+          ],
+          "feedback": {
+            "met": "Seguiste las preguntas del diagrama en cada caso hasta su resultado.",
+            "not_yet": "Todavía no. Revisa los datos de cada caso en la primera pregunta."
+          },
+          "nodes": [
+            {
+              "label": "¿La entidad tiene protección de depósitos?"
+            },
+            {
+              "label": "¿Más de 2 retiros en efectivo al mes?"
+            },
+            {
+              "label": "Revisar la cobertura antes de comparar comisiones"
+            },
+            {
+              "label": "La cuenta de mensualidad fija encaja con tu uso"
+            },
+            {
+              "label": "La cuenta con cobro por retiro encaja con tu uso"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Entidad con cobertura, 1 retiro al mes"
+            },
+            {
+              "label": "Entidad sin protección de depósitos, 3 retiros al mes"
+            },
+            {
+              "label": "Entidad con cobertura, 5 retiros al mes"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Three holders of accounts A and B. Follow the chart for each one, from first question to result.",
+          "help": [
+            "Answer each question with the case's own facts."
+          ],
+          "feedback": {
+            "met": "You followed the chart's questions for each case to its result.",
+            "not_yet": "Not yet. Check each case's facts against the first question."
+          },
+          "nodes": [
+            {
+              "label": "Is the bank covered by deposit protection?"
+            },
+            {
+              "label": "More than 2 cash withdrawals a month?"
+            },
+            {
+              "label": "Check the cover before comparing fees"
+            },
+            {
+              "label": "The flat-fee account suits your use"
+            },
+            {
+              "label": "The per-withdrawal account suits your use"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Covered bank, 1 withdrawal a month"
+            },
+            {
+              "label": "No deposit protection, 3 withdrawals a month"
+            },
+            {
+              "label": "Covered bank, 5 withdrawals a month"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Três titulares das contas A e B. Siga o fluxograma com cada um, da primeira pergunta ao resultado.",
+          "help": [
+            "Responda cada pergunta com os dados de cada caso."
+          ],
+          "feedback": {
+            "met": "Você seguiu as perguntas do fluxograma em cada caso até o resultado.",
+            "not_yet": "Ainda não. Confira os dados de cada caso na primeira pergunta."
+          },
+          "nodes": [
+            {
+              "label": "A instituição tem proteção de depósitos?"
+            },
+            {
+              "label": "Mais de 2 saques em dinheiro por mês?"
+            },
+            {
+              "label": "Conferir a cobertura antes de comparar tarifas"
+            },
+            {
+              "label": "A conta de tarifa fixa combina com seu uso"
+            },
+            {
+              "label": "A conta com cobrança por saque combina com seu uso"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Instituição com cobertura, 1 saque por mês"
+            },
+            {
+              "label": "Instituição sem proteção de depósitos, 3 saques por mês"
+            },
+            {
+              "label": "Instituição com cobertura, 5 saques por mês"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "steps": [
+          {
+            "id": "a-year"
+          },
+          {
+            "id": "b-year"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "b-year",
+          "gap"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "b-year": "360",
+            "gap": "240"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "b-year": "36",
+            "gap": "24"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "b-year": "72",
+            "gap": "48"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Otras dos cuentas: la A cobra 50 al mes; la B cobra 10 por retiro. Retiras 3 veces al mes.",
+          "help": [
+            "Costo anual de B = retiros × precio × 12, como en el paso 2.",
+            "Resta el costo menor al mayor, como en el paso 3."
+          ],
+          "feedback": {
+            "met": "Calculaste la B para un año y hallaste la diferencia entre las dos.",
+            "not_yet": "Todavía no. Calcula la B para un año; luego resta."
+          },
+          "steps": [
+            {
+              "expression": "12 × 50",
+              "result": "600",
+              "spokenText": "50 al mes durante 12 meses son 600 al año en la A"
+            },
+            {
+              "expression": "3 × 10 × 12",
+              "result": "360",
+              "spokenText": "3 retiros de 10 durante 12 meses son 360 al año en la B"
+            },
+            {
+              "expression": "Costo anual mayor − costo anual menor",
+              "result": "240",
+              "spokenText": "600 menos 360 son 240 de diferencia"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Two other accounts: A charges 5 a month; B charges 1 per withdrawal. You withdraw 3 times a month.",
+          "help": [
+            "B yearly = withdrawals × price × 12, as in step 2.",
+            "Subtract the smaller yearly cost from the larger, as in step 3."
+          ],
+          "feedback": {
+            "met": "You priced B for a year and found the gap.",
+            "not_yet": "Not yet. Price B for a year, then subtract."
+          },
+          "steps": [
+            {
+              "expression": "12 × 5",
+              "result": "60",
+              "spokenText": "5 a month for 12 months is 60 a year for A"
+            },
+            {
+              "expression": "3 × 1 × 12",
+              "result": "36",
+              "spokenText": "3 withdrawals at 1 for 12 months is 36 a year for B"
+            },
+            {
+              "expression": "Larger yearly cost − smaller yearly cost",
+              "result": "24",
+              "spokenText": "60 minus 36 is a gap of 24"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outras duas contas: a A cobra 10 por mês; a B cobra 2 por saque. Você saca 3 vezes por mês.",
+          "help": [
+            "Custo anual da B = saques × preço × 12, como no passo 2.",
+            "Subtraia o custo menor do maior, como no passo 3."
+          ],
+          "feedback": {
+            "met": "Você calculou a B para um ano e achou a diferença entre as duas.",
+            "not_yet": "Ainda não. Calcule a B para um ano; depois subtraia."
+          },
+          "steps": [
+            {
+              "expression": "12 × 10",
+              "result": "120",
+              "spokenText": "10 por mês durante 12 meses são 120 por ano na A"
+            },
+            {
+              "expression": "3 × 2 × 12",
+              "result": "72",
+              "spokenText": "3 saques de 2 durante 12 meses são 72 por ano na B"
+            },
+            {
+              "expression": "Custo anual maior − custo anual menor",
+              "result": "48",
+              "spokenText": "120 menos 72 são 48 de diferença"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.safe-keeping",
+      "payload": {
+        "choices": [
+          {
+            "id": "none-covered"
+          },
+          {
+            "id": "all-covered"
+          },
+          {
+            "id": "up-to-limit"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-assumed"
+          },
+          {
+            "id": "reason-per-person"
+          },
+          {
+            "id": "reason-read"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "up-to-limit"
+        ],
+        "reasonQuality": {
+          "reason-per-person": "sound",
+          "reason-read": "partial",
+          "reason-assumed": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Supón que tus ahorros en un banco protegido por el IPAB superan con mucho el límite. Si el banco quiebra, ¿qué se cubre?",
+          "feedback": {
+            "met": "Elegiste la respuesta que encaja con cómo funciona la cobertura.",
+            "not_yet": "Todavía no. Recuerda qué dice la cobertura sobre el límite."
+          },
+          "choices": [
+            {
+              "label": "Nada de tus ahorros"
+            },
+            {
+              "label": "Todo, sin importar el monto"
+            },
+            {
+              "label": "Solo hasta el límite"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo decidiste?",
+          "reasons": [
+            {
+              "label": "Supuse que el banco lo cubre todo"
+            },
+            {
+              "label": "La cobertura es por persona y por banco"
+            },
+            {
+              "label": "Lo leí una vez en algún lado"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Suppose your savings at one FDIC-insured bank are far above the cover limit. If it fails, what is covered?",
+          "feedback": {
+            "met": "You chose the answer that fits how deposit cover works.",
+            "not_yet": "Not yet. Recall what the cover says about the limit."
+          },
+          "choices": [
+            {
+              "label": "None of your savings"
+            },
+            {
+              "label": "All of it, whatever the amount"
+            },
+            {
+              "label": "Only up to the limit"
+            }
+          ],
+          "reasonPrompt": "How did you decide?",
+          "reasons": [
+            {
+              "label": "I assumed banks cover everything"
+            },
+            {
+              "label": "Cover is per person, per bank"
+            },
+            {
+              "label": "I read it somewhere once"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Suponha que suas economias em uma instituição coberta pelo FGC passem muito do limite. Se ela quebrar, o que é coberto?",
+          "feedback": {
+            "met": "Você escolheu a resposta que combina com como a cobertura funciona.",
+            "not_yet": "Ainda não. Lembre o que a cobertura diz sobre o limite."
+          },
+          "choices": [
+            {
+              "label": "Nada das suas economias"
+            },
+            {
+              "label": "Tudo, qualquer que seja o valor"
+            },
+            {
+              "label": "Só até o limite"
+            }
+          ],
+          "reasonPrompt": "Como você decidiu?",
+          "reasons": [
+            {
+              "label": "Supus que o banco cobre tudo"
+            },
+            {
+              "label": "A cobertura é por pessoa e por instituição"
+            },
+            {
+              "label": "Li isso em algum lugar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "steps": [
+          {
+            "id": "permit-year"
+          },
+          {
+            "id": "day-year"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "day-year",
+          "gap"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "day-year": "3840",
+            "gap": "960"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "day-year": "384",
+            "gap": "96"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "day-year": "768",
+            "gap": "192"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Estacionamiento cerca del trabajo: una mensualidad cuesta 400, el boleto del día 40. Estacionas 8 días al mes.",
+          "help": [
+            "Calcula cada opción para un año, como en los pasos anteriores."
+          ],
+          "feedback": {
+            "met": "Calculaste las dos opciones para un año y las comparaste.",
+            "not_yet": "Todavía no. Calcula cada opción para un año; luego compara."
+          },
+          "steps": [
+            {
+              "expression": "12 × 400",
+              "result": "4,800",
+              "spokenText": "La mensualidad durante 12 meses suma 4,800 al año"
+            },
+            {
+              "expression": "8 × 40 × 12",
+              "result": "3,840",
+              "spokenText": "8 boletos de 40 durante 12 meses suman 3,840 al año"
+            },
+            {
+              "expression": "Costo anual de la mensualidad − costo anual de los boletos",
+              "result": "960",
+              "spokenText": "4,800 menos 3,840 son 960 de diferencia"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Parking near work: a permit costs 40 a month, a day ticket 4. You park 8 days a month.",
+          "help": [
+            "Price each option for a year, as in the earlier steps."
+          ],
+          "feedback": {
+            "met": "You priced both options for a year and compared them.",
+            "not_yet": "Not yet. Price each option for a year, then compare."
+          },
+          "steps": [
+            {
+              "expression": "12 × 40",
+              "result": "480",
+              "spokenText": "The permit for 12 months comes to 480 a year"
+            },
+            {
+              "expression": "8 × 4 × 12",
+              "result": "384",
+              "spokenText": "8 day tickets at 4 for 12 months come to 384 a year"
+            },
+            {
+              "expression": "Permit's yearly cost − day tickets' yearly cost",
+              "result": "96",
+              "spokenText": "480 minus 384 is a gap of 96"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Estacionamento perto do trabalho: a mensalidade custa 80, o ticket do dia 8. Você estaciona 8 dias por mês.",
+          "help": [
+            "Calcule cada opção para um ano, como nos passos anteriores."
+          ],
+          "feedback": {
+            "met": "Você calculou as duas opções para um ano e as comparou.",
+            "not_yet": "Ainda não. Calcule cada opção para um ano; depois compare."
+          },
+          "steps": [
+            {
+              "expression": "12 × 80",
+              "result": "960",
+              "spokenText": "A mensalidade durante 12 meses soma 960 por ano"
+            },
+            {
+              "expression": "8 × 8 × 12",
+              "result": "768",
+              "spokenText": "8 tickets de 8 durante 12 meses somam 768 por ano"
+            },
+            {
+              "expression": "Custo anual da mensalidade − custo anual dos tickets",
+              "result": "192",
+              "spokenText": "960 menos 768 são 192 de diferença"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

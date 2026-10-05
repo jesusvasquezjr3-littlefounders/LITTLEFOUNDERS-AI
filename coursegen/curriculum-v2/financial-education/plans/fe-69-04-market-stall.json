@@ -1,0 +1,794 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-04-market-stall",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 7,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.add-money",
+    "money.compare-amounts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara atiende un puesto en el tianguis y muestra un caso completo: elige el precio grande, cuenta hacia arriba y compara con la meta. Luego el niño llena canastas con apoyo, apila monedas, descubre que más piezas no siempre cuestan más y cierra con un puesto nuevo de juguetes.",
+  "title": {
+    "en-US": "The yard sale snack table",
+    "es-MX": "Un puesto en el tianguis",
+    "pt-BR": "Uma barraca na feira livre"
+  },
+  "new_concepts": [
+    "money.add-money"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Zara atiende un puesto de fruta, pan y jugo en el tianguis del domingo. Cada cosa lleva su cartelito, doña Lupe paga con monedas de $10 y la canasta debe sumar justo lo que trae. Los precios son enteros y chicos, y el puesto de juguetes de al lado cobra igual, en monedas.",
+        "problem_refs": [
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "en-US": {
+        "scenario": "Zara and her dad run a snack table at a Saturday yard sale in the driveway. Every item has a price sticker, Dana pays with a $10 bill and a cash box holds the coins. Prices are whole dollars, the toy table next door works the same way, and the baskets for the sort use yard sale goods.",
+        "problem_refs": [
+          "us-parent-silence"
+        ],
+        "anchors": [
+          "yard sale"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Zara ajuda na barraca de frutas e sucos da feira livre do bairro, no sábado. O feirante grita os preços, dona Marta separou R$ 10 e quer gastar certinho, e paga no Pix. A barraca de brinquedos ao lado funciona igual, e as moedas ficam na pochete.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira livre",
+          "Pix"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "zara-hook",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "Saturday: Zara and Dad open the yard sale table.",
+          "line": "Dana has $10 to spend. Watch how I fill her basket.",
+          "narration": {
+            "script": "Every snack has a price sticker, and the cash box sits by the apples. Dana wants to spend her whole bill, no more and no less, so her basket has to come out to exactly $10."
+          }
+        },
+        "es-MX": {
+          "prompt": "Domingo: Zara abre su puesto en el tianguis.",
+          "line": "Doña Lupe trae $10 en monedas. Mira cómo le lleno la canasta.",
+          "narration": {
+            "script": "Cada cosa lleva su cartelito con el precio. Doña Lupe quiere gastar sus monedas justas, ni una más ni una menos, así que la canasta debe salir exacta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sábado: a Zara abre a barraca na feira livre.",
+          "line": "Dona Marta quer gastar R$ 10 certinho. Veja como encho a cesta.",
+          "narration": {
+            "script": "Eu grito os preços pela feira inteira. A dona Marta separou R$ 10 para a feira e quer gastar tudo, nem a mais nem a menos. Por isso a cesta precisa custar exatamente R$ 10."
+          }
+        }
+      }
+    },
+    {
+      "id": "pre-stall",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "payload": {
+        "items": [
+          {
+            "id": "apple",
+            "price": 200,
+            "stock": 3
+          },
+          {
+            "id": "bread",
+            "price": 300,
+            "stock": 2
+          },
+          {
+            "id": "juice",
+            "price": 500,
+            "stock": 1
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 700
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "apple": [
+              "item"
+            ],
+            "juice": [
+              "item"
+            ]
+          },
+          {
+            "apple": [
+              "item",
+              "item"
+            ],
+            "bread": [
+              "item"
+            ]
+          }
+        ]
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.add-money",
+      "teaching_role": "pre",
+      "copy": {
+        "en-US": {
+          "prompt": "Try one first: fill a basket for exactly $7.",
+          "feedback": {
+            "met": "Noted. Now let's see it step by step.",
+            "not_yet": "Noted. Now let's see it step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Inténtalo tú primero: llena la canasta para que cueste justo $7.",
+          "feedback": {
+            "met": "Anotado. Ahora lo vemos paso a paso.",
+            "not_yet": "Anotado. Ahora lo vemos paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tente você primeiro: encha a cesta para custar exatamente R$ 7.",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver passo a passo.",
+            "not_yet": "Anotado. Agora vamos ver passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-goal",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the prices and the goal.",
+          "line": "Juice $5, bread $3, apple $2. Dana's goal is $10.",
+          "narration": {
+            "script": "I read the whole price list before I touch anything. Three prices and one goal: that is all I need."
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: los precios y la meta.",
+          "line": "Jugo $5, pan $3, manzana $2. La meta de doña Lupe es $10.",
+          "narration": {
+            "script": "Antes de tocar nada leo toda la lista de precios. Tres precios y una meta: con eso me alcanza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: os preços e a meta.",
+          "line": "Suco R$ 5, pão R$ 3, maçã R$ 2. A meta é R$ 10.",
+          "narration": {
+            "script": "Antes de mexer em qualquer coisa, leio a lista de preços inteira. Três preços e uma meta: só preciso disso."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-moves",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: start at the big price, not at zero.",
+          "line": "Juice $5: already at 5. Bread: 6, 7, 8; apple: 9, 10."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: empiezo en el precio grande, no en cero.",
+          "line": "Jugo $5: ya estoy en 5. Pan: 6, 7, 8; manzana: 9, 10."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: começo no preço maior, não no zero.",
+          "line": "Suco R$ 5: já estou no 5. Pão: 6, 7, 8; maçã: 9, 10."
+        }
+      }
+    },
+    {
+      "id": "ex-check",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Dana pays with her $10 bill.",
+          "line": "Basket $10, goal $10: they match. If not, I add or remove."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: doña Lupe paga sus $10 en monedas.",
+          "line": "Canasta $10, meta $10: coinciden. Si no, agrego o quito algo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: dona Marta confere o total e paga no Pix.",
+          "line": "Cesta R$ 10, meta R$ 10: bateu. Se não bater, ponho ou tiro algo."
+        }
+      }
+    },
+    {
+      "id": "guided-stall",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "payload": {
+        "items": [
+          {
+            "id": "apple",
+            "price": 200,
+            "stock": 4
+          },
+          {
+            "id": "bread",
+            "price": 300,
+            "stock": 3
+          },
+          {
+            "id": "juice",
+            "price": 500,
+            "stock": 2
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 800
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "bread": [
+              "item"
+            ],
+            "juice": [
+              "item"
+            ]
+          },
+          {
+            "apple": [
+              "item"
+            ],
+            "bread": [
+              "item",
+              "item"
+            ]
+          },
+          {
+            "apple": [
+              "item",
+              "item",
+              "item",
+              "item"
+            ]
+          }
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Next customer pays $8 in bills. Fill a basket for exactly that.",
+          "help": [
+            "Start with the big price, then count up.",
+            "Count up to $8, then check the goal."
+          ],
+          "feedback": {
+            "met": "Your basket totals exactly $8 and matches the goal.",
+            "not_yet": "Not yet. Check the total against the goal, like Zara did."
+          }
+        },
+        "es-MX": {
+          "prompt": "Otro cliente paga con $8 en monedas. Llena la canasta justo.",
+          "help": [
+            "Empieza con el precio grande y cuenta hacia arriba.",
+            "Cuenta hasta $8 y compara con la meta."
+          ],
+          "feedback": {
+            "met": "Tu canasta suma justo $8 y coincide con la meta.",
+            "not_yet": "Aún no. Compara el total con la meta, como hizo Zara."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Outro freguês quer gastar R$ 8 certinho. Encha a cesta no valor exato.",
+          "help": [
+            "Comece pelo preço maior e conte para cima.",
+            "Conte até R$ 8 e compare com a meta."
+          ],
+          "feedback": {
+            "met": "Sua cesta soma exatos R$ 8 e bate com a meta.",
+            "not_yet": "Ainda não. Compare o total com a meta, como a Zara fez."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-coins",
+      "type": "money.coin-stack.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "height",
+          "mm": 8
+        },
+        "step": 1,
+        "max": 10
+      },
+      "rubric": {
+        "target": "4"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Stack coins up to the phone. See the money add up.",
+          "help": [
+            "Each coin adds $1. Count the coins as you go."
+          ],
+          "feedback": {
+            "met": "The stack reached the phone. Every coin added what it is worth.",
+            "not_yet": "Not yet. Match the top of the stack to the phone."
+          }
+        },
+        "es-MX": {
+          "prompt": "Apila monedas de $1 del puesto hasta el celular. Mira cómo suma el dinero.",
+          "help": [
+            "Cada moneda suma $1. Ve contando las monedas."
+          ],
+          "feedback": {
+            "met": "La pila llegó al celular. Cada moneda sumó lo que vale.",
+            "not_yet": "Aún no. Iguala la parte de arriba de la pila con el celular."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Empilhe moedas de R$ 1 da pochete até o celular. Veja o dinheiro somar.",
+          "help": [
+            "Cada moeda soma R$ 1. Vá contando as moedas."
+          ],
+          "feedback": {
+            "met": "A pilha chegou ao celular. Cada moeda somou o que vale.",
+            "not_yet": "Ainda não. Iguale o topo da pilha com o celular."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-compare",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Another trick: compare the money, not the pieces.",
+          "line": "3 caps at $4 make $12: over $10. A $9 toy: under."
+        },
+        "es-MX": {
+          "prompt": "Otro truco: comparo el dinero, no las piezas.",
+          "line": "3 gorras de $4 suman $12: más de $10. Un juguete de $9: menos."
+        },
+        "pt-BR": {
+          "prompt": "Outro truque: comparo o dinheiro, não as peças.",
+          "line": "3 bonés de R$ 4 dão R$ 12: passa de R$ 10."
+        }
+      }
+    },
+    {
+      "id": "practice-sort",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-more"
+          },
+          {
+            "id": "bin-less"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-many"
+          },
+          {
+            "id": "item-one"
+          },
+          {
+            "id": "item-pair"
+          },
+          {
+            "id": "item-few"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-worth"
+          },
+          {
+            "id": "why-count"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "en-US": {
+          "accepted": {
+            "item-many": [
+              {
+                "bin": "bin-more",
+                "reason": "why-worth"
+              }
+            ],
+            "item-one": [
+              {
+                "bin": "bin-less",
+                "reason": "why-worth"
+              }
+            ],
+            "item-pair": [
+              {
+                "bin": "bin-more",
+                "reason": "why-worth"
+              }
+            ],
+            "item-few": [
+              {
+                "bin": "bin-less",
+                "reason": "why-worth"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "accepted": {
+            "item-many": [
+              {
+                "bin": "bin-less",
+                "reason": "why-worth"
+              }
+            ],
+            "item-one": [
+              {
+                "bin": "bin-more",
+                "reason": "why-worth"
+              }
+            ],
+            "item-pair": [
+              {
+                "bin": "bin-more",
+                "reason": "why-worth"
+              }
+            ],
+            "item-few": [
+              {
+                "bin": "bin-less",
+                "reason": "why-worth"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "accepted": {
+            "item-many": [
+              {
+                "bin": "bin-less",
+                "reason": "why-worth"
+              }
+            ],
+            "item-one": [
+              {
+                "bin": "bin-more",
+                "reason": "why-worth"
+              }
+            ],
+            "item-pair": [
+              {
+                "bin": "bin-less",
+                "reason": "why-worth"
+              }
+            ],
+            "item-few": [
+              {
+                "bin": "bin-more",
+                "reason": "why-worth"
+              }
+            ]
+          }
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Sort the yard sale baskets and pick why.",
+          "rule": "Does it cost more or less than $10?",
+          "bins": [
+            {
+              "label": "More than $10"
+            },
+            {
+              "label": "Less than $10"
+            }
+          ],
+          "items": [
+            {
+              "label": "12 comics at $1 each"
+            },
+            {
+              "label": "1 lamp at $8"
+            },
+            {
+              "label": "2 games at $6 each"
+            },
+            {
+              "label": "3 mugs at $2 each"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "I added the prices"
+            },
+            {
+              "label": "It has more pieces"
+            }
+          ],
+          "help": [
+            "Add the prices in each basket first."
+          ],
+          "feedback": {
+            "met": "You added the prices, so the pieces did not fool you.",
+            "not_yet": "Not yet. Add the prices in each basket, like Zara did."
+          }
+        },
+        "es-MX": {
+          "prompt": "Separa las canastas del tianguis y elige por qué.",
+          "rule": "¿Cuesta más o menos de $10?",
+          "bins": [
+            {
+              "label": "Más de $10"
+            },
+            {
+              "label": "Menos de $10"
+            }
+          ],
+          "items": [
+            {
+              "label": "6 dulces de $1 cada uno"
+            },
+            {
+              "label": "1 bolsa de papitas de $12"
+            },
+            {
+              "label": "2 conchas de $6 cada una"
+            },
+            {
+              "label": "4 paletas de $2 cada una"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Sumé los precios"
+            },
+            {
+              "label": "Tiene más piezas"
+            }
+          ],
+          "help": [
+            "Suma primero los precios de cada canasta."
+          ],
+          "feedback": {
+            "met": "Sumaste los precios, así que las piezas no te engañaron.",
+            "not_yet": "Aún no. Suma los precios de cada canasta, como Zara."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Separe as cestas da feira livre e escolha o motivo.",
+          "rule": "Custa mais ou menos de R$ 10?",
+          "bins": [
+            {
+              "label": "Mais de R$ 10"
+            },
+            {
+              "label": "Menos de R$ 10"
+            }
+          ],
+          "items": [
+            {
+              "label": "6 limões, R$ 1 cada"
+            },
+            {
+              "label": "1 abacaxi, R$ 12"
+            },
+            {
+              "label": "2 melões, R$ 4 cada"
+            },
+            {
+              "label": "4 mangas, R$ 3 cada"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Somei os preços"
+            },
+            {
+              "label": "Tem mais peças"
+            }
+          ],
+          "help": [
+            "Some primeiro os preços de cada cesta."
+          ],
+          "feedback": {
+            "met": "Você somou os preços, então as peças não enganaram.",
+            "not_yet": "Ainda não. Some os preços de cada cesta, como a Zara."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-stall",
+      "type": "money.market-stall.v2",
+      "grading": "server",
+      "visual": {
+        "type": "market-stall"
+      },
+      "payload": {
+        "items": [
+          {
+            "id": "kite",
+            "price": 300,
+            "stock": 3
+          },
+          {
+            "id": "toy",
+            "price": 400,
+            "stock": 3
+          },
+          {
+            "id": "book",
+            "price": 500,
+            "stock": 2
+          }
+        ],
+        "goal": {
+          "kind": "exact",
+          "total": 1100
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "kite": [
+              "item"
+            ],
+            "toy": [
+              "item",
+              "item"
+            ]
+          },
+          {
+            "kite": [
+              "item",
+              "item"
+            ],
+            "book": [
+              "item"
+            ]
+          }
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.add-money",
+      "teaching_role": "transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "A new table sells toys. Fill a basket for exactly $11.",
+          "feedback": {
+            "met": "A new table, new prices: your basket totals exactly $11.",
+            "not_yet": "Not yet. Start with the big price, count up, check the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Otro puesto vende juguetes. Llena una canasta que cueste justo $11.",
+          "feedback": {
+            "met": "Otro puesto, otros precios: tu canasta suma justo $11.",
+            "not_yet": "Aún no. Empieza con el precio grande, cuenta y compara con la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Outra barraca vende brinquedos. Encha uma cesta que custe exatamente R$ 11.",
+          "feedback": {
+            "met": "Outra barraca, outros preços: sua cesta soma exatos R$ 11.",
+            "not_yet": "Ainda não. Comece pelo preço maior, conte e compare com a meta."
+          }
+        }
+      }
+    }
+  ]
+}

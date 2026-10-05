@@ -1,0 +1,910 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-real-business",
+  "lesson_id": "ent-adult-02-how-many-jobs-to-break-even",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.break-even",
+    "biz.full-costing",
+    "biz.margin"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara te acompaña a calcular cuántas reparaciones necesita tu servicio móvil para cubrir sus costos. Separas costos fijos y variables, hallas el margen por reparación, ubicas el punto de equilibrio en una gráfica y ves cómo un nuevo costo fijo lo mueve. Después ordenas un mes en ingreso por trabajo, ingreso pasivo, gastos, activos y pasivos, y al final decides si un puesto extra cubre sus costos.",
+  "title": {
+    "es-MX": "¿Cuántas reparaciones hasta el punto de equilibrio?",
+    "en-US": "How many repairs to break even?",
+    "pt-BR": "Quantos consertos até o ponto de equilíbrio?"
+  },
+  "new_concepts": [
+    "biz.break-even"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México el mes de un taller móvil de bicis tiene renta, seguro y mantenimiento de herramientas como costos fijos, y las refacciones como costo variable. Una reparación rápida, como una ponchadura o un ajuste de frenos, se cobra $50. Los montos son ilustrativos y no son asesoría de negocio.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "renta",
+          "refacciones"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil o mês de uma bicicletaria móvel tem aluguel, seguro e manutenção de ferramentas como custos fixos, e as peças como custo variável. Um conserto rápido, como um furo no pneu ou um ajuste de freio, rende R$ 50. Os valores são ilustrativos e não são conselho de negócio.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "aluguel",
+          "peças"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US the same month has rent, insurance and tool upkeep as fixed costs, and parts as the variable cost. A quick repair, like a flat or a brake adjustment, brings in $50. The amounts are illustrations, not business advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "rent",
+          "parts"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu mes empieza con $600 de costos fijos, antes de la primera reparación.",
+          "line": "¿Cuántas reparaciones hasta que el mes se pague solo? Busquemos el número."
+        },
+        "en-US": {
+          "prompt": "Your month opens with $600 of fixed costs, before one repair.",
+          "line": "How many repairs until the month pays for itself? Let's find the number."
+        },
+        "pt-BR": {
+          "prompt": "Seu mês começa com R$ 600 de custos fixos, antes do primeiro conserto.",
+          "line": "Quantos consertos até o mês se pagar? Vamos achar o número."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-no"
+          },
+          {
+            "id": "choice-yes"
+          },
+          {
+            "id": "choice-unknown"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-parts"
+          },
+          {
+            "id": "reason-large"
+          },
+          {
+            "id": "reason-income"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-no"
+        ],
+        "reasonQuality": {
+          "reason-parts": "sound",
+          "reason-large": "partial",
+          "reason-income": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Los costos fijos son $600 al mes; cobras $50 por reparación y las refacciones cuestan $20. ¿12 reparaciones los cubren?",
+          "feedback": {
+            "met": "Ahora lo contamos paso a paso.",
+            "not_yet": "Ahora lo contamos paso a paso."
+          },
+          "help": [
+            "Piensa: ¿qué pasa con el precio una vez pagadas las refacciones?"
+          ],
+          "choices": [
+            {
+              "label": "No, tras las refacciones queda menos de $600"
+            },
+            {
+              "label": "Sí, 12 reparaciones traen $600"
+            },
+            {
+              "label": "No se sabe hasta que acabe el mes"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es lo correcto?",
+          "reasons": [
+            {
+              "label": "Cada reparación deja solo lo que sobra tras las refacciones"
+            },
+            {
+              "label": "Los costos fijos son altos"
+            },
+            {
+              "label": "Los ingresos bastan para saber si se cubren los costos"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Fixed costs are $600 a month; you charge $50 per repair, parts cost $20. Do 12 repairs cover them?",
+          "feedback": {
+            "met": "Now we count it step by step.",
+            "not_yet": "Now we count it step by step."
+          },
+          "help": [
+            "Think: what happens to the price once parts are paid?"
+          ],
+          "choices": [
+            {
+              "label": "No, after parts less than $600 remains"
+            },
+            {
+              "label": "Yes, 12 repairs bring in $600"
+            },
+            {
+              "label": "Cannot tell until the month ends"
+            }
+          ],
+          "reasonPrompt": "Why is that the right call?",
+          "reasons": [
+            {
+              "label": "Each repair keeps only what parts leave"
+            },
+            {
+              "label": "The fixed costs are large"
+            },
+            {
+              "label": "Income alone shows if costs are met"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Custos fixos: R$ 600 por mês; você cobra R$ 50 por conserto, peças R$ 20. 12 consertos cobrem tudo?",
+          "feedback": {
+            "met": "Agora contamos passo a passo.",
+            "not_yet": "Agora contamos passo a passo."
+          },
+          "help": [
+            "Pense: o que acontece com o preço depois de pagar as peças?"
+          ],
+          "choices": [
+            {
+              "label": "Não, depois das peças sobra menos de R$ 600"
+            },
+            {
+              "label": "Sim, 12 consertos rendem R$ 600"
+            },
+            {
+              "label": "Não dá para saber até o mês acabar"
+            }
+          ],
+          "reasonPrompt": "Por que é a decisão certa?",
+          "reasons": [
+            {
+              "label": "Cada conserto deixa só o que sobra após as peças"
+            },
+            {
+              "label": "Os custos fixos são altos"
+            },
+            {
+              "label": "A receita sozinha mostra se os custos foram cobertos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-costs",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, dos tipos de costo. Los fijos llegan aunque no repares nada.",
+          "line": "Fijos: renta $350, seguro $100, mantenimiento de herramientas $150, $600 al mes. Variable: $20 de refacciones por reparación."
+        },
+        "en-US": {
+          "prompt": "Step 1, two kinds of cost. Fixed ones arrive even with zero repairs.",
+          "line": "Fixed: rent $350, insurance $100, tool upkeep $150, $600 a month. Variable: $20 of parts per repair."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, dois tipos de custo. Os fixos chegam mesmo sem nenhum conserto.",
+          "line": "Fixos: aluguel R$ 350, seguro R$ 100, manutenção de ferramentas R$ 150, R$ 600 por mês. Variável: R$ 20 de peças por conserto."
+        }
+      }
+    },
+    {
+      "id": "ex-margin",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, lo que deja cada reparación.",
+          "line": "Precio $50 menos $20 de refacciones deja $30. Esos $30 son el margen por reparación."
+        },
+        "en-US": {
+          "prompt": "Step 2, what each repair keeps.",
+          "line": "$50 price minus $20 of parts leaves $30. That $30 is the margin per repair."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, o que cada conserto deixa.",
+          "line": "Preço R$ 50 menos R$ 20 de peças deixa R$ 30. Esses R$ 30 são a margem por conserto."
+        }
+      }
+    },
+    {
+      "id": "ex-be",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, el punto de equilibrio.",
+          "line": "$600 ÷ $30 = 20 reparaciones. Con 20 el mes cubre todos los costos; la 21 empieza la ganancia."
+        },
+        "en-US": {
+          "prompt": "Step 3, the break-even point.",
+          "line": "$600 ÷ $30 = 20 repairs. At 20 the month covers every cost; repair 21 starts the profit."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, o ponto de equilíbrio.",
+          "line": "R$ 600 ÷ R$ 30 = 20 consertos. Com 20 o mês cobre todos os custos; o 21º começa o lucro."
+        }
+      }
+    },
+    {
+      "id": "guided-be",
+      "type": "fin.break-even.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "break-even"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "fixed": 480,
+        "price": 50,
+        "unit": 20,
+        "maxUnits": 30,
+        "start": 8
+      },
+      "rubric": {
+        "target": 16
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un mes más ligero: costos fijos $480, precio $50, refacciones $20. Marca las reparaciones del punto de equilibrio.",
+          "feedback": {
+            "met": "Encontraste el punto donde el ingreso iguala el costo.",
+            "not_yet": "Revisa dónde la línea de ingreso cruza la de costo."
+          }
+        },
+        "en-US": {
+          "prompt": "A lighter month: fixed costs $480, price $50, parts $20. Set the repairs that reach break-even.",
+          "feedback": {
+            "met": "You found the point where revenue meets cost.",
+            "not_yet": "Check where the revenue line crosses the cost line."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um mês mais leve: custos fixos R$ 480, preço R$ 50, peças R$ 20. Marque os consertos do ponto de equilíbrio.",
+          "feedback": {
+            "met": "Você achou o ponto em que a receita iguala o custo.",
+            "not_yet": "Veja onde a linha de receita cruza a de custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-loan",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, costeo completo. Como ilustración, un pago mensual de $120 de un préstamo sube los costos fijos a $720.",
+          "line": "$720 ÷ $30 = 24 reparaciones, cuatro más. Con 30 reparaciones, 30 × $30 − $720 = $180 de ganancia."
+        },
+        "en-US": {
+          "prompt": "Step 4, full costing. As an illustration, a $120 monthly loan payment lifts fixed costs to $720.",
+          "line": "$720 ÷ $30 = 24 repairs, four more. At 30 repairs, 30 × $30 − $720 = $180 profit."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, custeio completo. Como ilustração, uma parcela mensal de R$ 120 de um empréstimo sobe os custos fixos para R$ 720.",
+          "line": "R$ 720 ÷ R$ 30 = 24 consertos, quatro a mais. Com 30 consertos, 30 × R$ 30 − R$ 720 = R$ 180 de lucro."
+        }
+      }
+    },
+    {
+      "id": "practice-be",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "steps": [
+          {
+            "id": "fixed-total"
+          },
+          {
+            "id": "margin"
+          },
+          {
+            "id": "break-even"
+          },
+          {
+            "id": "profit"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "margin",
+          "break-even",
+          "profit"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "margin": "30",
+          "break-even": "23",
+          "profit": "150"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Costos fijos: $600 más $90 de bodega; cobras $50, refacciones $20. Punto de equilibrio y ganancia con 28 reparaciones.",
+          "feedback": {
+            "met": "Calculaste el margen, el equilibrio y la ganancia.",
+            "not_yet": "Todavía no. Revisa cada paso contra el anterior."
+          },
+          "help": [
+            "Los $690 ya están. Precio menos refacciones da el margen.",
+            "Luego divide los costos fijos entre el margen; la ganancia va al final."
+          ],
+          "steps": [
+            {
+              "expression": "600 + 90",
+              "result": "690",
+              "spokenText": "Seiscientos más 90 son 690: los costos fijos suman $690 al mes"
+            },
+            {
+              "expression": "50 − 20",
+              "result": "30",
+              "spokenText": "Cincuenta menos 20 son 30: cada reparación deja $30"
+            },
+            {
+              "expression": "Costos fijos ÷ margen",
+              "result": "23",
+              "spokenText": "690 entre 30 son 23: con 23 reparaciones llegas al equilibrio"
+            },
+            {
+              "expression": "Margen de 28 reparaciones − costos fijos",
+              "result": "150",
+              "spokenText": "28 por 30 son 840, menos 690 son 150: ganancia de $150"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Fixed costs: $600 plus $90 of storage; you charge $50, parts $20. Break-even, then profit at 28 repairs?",
+          "feedback": {
+            "met": "You worked out the margin, break-even and profit.",
+            "not_yet": "Not yet. Recheck each step against the one before."
+          },
+          "help": [
+            "The $690 is done. Price minus parts gives the margin.",
+            "Then divide fixed costs by margin; profit comes last."
+          ],
+          "steps": [
+            {
+              "expression": "600 + 90",
+              "result": "690",
+              "spokenText": "Six hundred plus 90 is 690: fixed costs come to $690 a month"
+            },
+            {
+              "expression": "50 − 20",
+              "result": "30",
+              "spokenText": "Fifty minus 20 is 30: each repair keeps $30"
+            },
+            {
+              "expression": "Fixed costs ÷ margin",
+              "result": "23",
+              "spokenText": "690 divided by 30 is 23: 23 repairs break even"
+            },
+            {
+              "expression": "Margin on 28 repairs − fixed costs",
+              "result": "150",
+              "spokenText": "28 times 30 is 840, minus 690 is 150: a profit of $150"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Custos fixos: R$ 600 mais R$ 90 de armazenagem; você cobra R$ 50, peças R$ 20. Ponto de equilíbrio e lucro com 28 consertos.",
+          "feedback": {
+            "met": "Você calculou a margem, o equilíbrio e o lucro.",
+            "not_yet": "Ainda não. Reveja cada passo contra o anterior."
+          },
+          "help": [
+            "Os R$ 690 já estão prontos. Preço menos peças dá a margem.",
+            "Depois divida os custos fixos pela margem; o lucro vem por último."
+          ],
+          "steps": [
+            {
+              "expression": "600 + 90",
+              "result": "690",
+              "spokenText": "Seiscentos mais 90 são 690: os custos fixos somam R$ 690 por mês"
+            },
+            {
+              "expression": "50 − 20",
+              "result": "30",
+              "spokenText": "Cinquenta menos 20 são 30: cada conserto deixa R$ 30"
+            },
+            {
+              "expression": "Custos fixos ÷ margem",
+              "result": "23",
+              "spokenText": "690 dividido por 30 é 23: com 23 consertos você chega ao equilíbrio"
+            },
+            {
+              "expression": "Margem de 28 consertos − custos fixos",
+              "result": "150",
+              "spokenText": "28 vezes 30 é 840, menos 690 é 150: lucro de R$ 150"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-lines",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, tres líneas: ingreso por trabajo, ingreso pasivo, gastos.",
+          "line": "Ingreso por trabajo: lo que ganas reparando tú. Ingreso pasivo: llega sin tus horas, como una mesa rentada."
+        },
+        "en-US": {
+          "prompt": "Step 5, three lines: earned, passive, expenses.",
+          "line": "Earned income: pay from your own repairs. Passive income: arrives without your hours, like a rented bench."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, três linhas: renda do trabalho, renda passiva, despesas.",
+          "line": "Renda do trabalho: o que você ganha consertando. Renda passiva: chega sem suas horas, como uma bancada alugada."
+        }
+      }
+    },
+    {
+      "id": "ex-own",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 6, lo que tienes y lo que debes. El pago de una deuda es un gasto.",
+          "line": "Activos: lo que posees y puede producir, como un soporte de reparación de $300. Pasivos: lo que debes, como un saldo de $200."
+        },
+        "en-US": {
+          "prompt": "Step 6, what you own and what you owe. A payment on a debt is an expense.",
+          "line": "Assets: what you own that earns, like a $300 repair stand. Liabilities: what you owe, like a $200 balance."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6, o que você tem e o que deve. O pagamento de uma dívida é uma despesa.",
+          "line": "Ativos: o que você possui e rende, como um cavalete de R$ 300. Passivos: o que deve, como um saldo de R$ 200."
+        }
+      }
+    },
+    {
+      "id": "ex-goal",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 7, la revisión de la meta: ¿el ingreso pasivo supera los gastos?",
+          "line": "Con $400 de ingreso pasivo y $350 de gastos, la meta se cumple; con $150, no."
+        },
+        "en-US": {
+          "prompt": "Step 7, the goal check: does passive income beat expenses?",
+          "line": "With $400 of passive income and $350 of expenses, the goal is met; with $150, it is not."
+        },
+        "pt-BR": {
+          "prompt": "Passo 7, a checagem da meta: a renda passiva supera as despesas?",
+          "line": "Com R$ 400 de renda passiva e R$ 350 de despesas, a meta é atingida; com R$ 150, não."
+        }
+      }
+    },
+    {
+      "id": "practice-cash",
+      "type": "money.cash-flow.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "statement-board"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "items": [
+          {
+            "id": "repair-income",
+            "amount": 1200
+          },
+          {
+            "id": "bench-income",
+            "amount": 100
+          },
+          {
+            "id": "fixed-costs",
+            "amount": 600
+          },
+          {
+            "id": "loan-payment",
+            "amount": 120
+          },
+          {
+            "id": "parts-spend",
+            "amount": 480
+          },
+          {
+            "id": "toolkit",
+            "amount": 1500
+          },
+          {
+            "id": "loan-balance",
+            "amount": 1200
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "earned": [
+              "repair-income"
+            ],
+            "passive": [
+              "bench-income"
+            ],
+            "expenses": [
+              "fixed-costs",
+              "loan-payment",
+              "parts-spend"
+            ],
+            "assets": [
+              "toolkit"
+            ],
+            "liabilities": [
+              "loan-balance"
+            ],
+            "goal": [
+              "goal-short"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Coloca cada concepto en su línea de este mes y di si el ingreso pasivo supera los gastos.",
+          "feedback": {
+            "met": "Pusiste cada concepto en la línea donde funciona.",
+            "not_yet": "Revisa cada concepto: ¿produce, cuesta, posees o debes? Compara pasivo y gastos."
+          },
+          "labels": {
+            "repair-income": "Ingresos por reparaciones",
+            "bench-income": "Ingreso por una mesa rentada",
+            "fixed-costs": "Costos fijos del mes",
+            "loan-payment": "Pago mensual del préstamo",
+            "parts-spend": "Refacciones usadas",
+            "toolkit": "Tu juego de herramientas",
+            "loan-balance": "Saldo del préstamo"
+          }
+        },
+        "en-US": {
+          "prompt": "Place each item on its line for this month, then say if passive income beats expenses.",
+          "feedback": {
+            "met": "You put every item on the line where it works.",
+            "not_yet": "Check each item: earn, cost, own or owe? Compare passive with expenses."
+          },
+          "labels": {
+            "repair-income": "Repair income",
+            "bench-income": "Income from a rented bench",
+            "fixed-costs": "Fixed costs for the month",
+            "loan-payment": "Monthly loan payment",
+            "parts-spend": "Parts used",
+            "toolkit": "Your toolkit",
+            "loan-balance": "Loan balance owed"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada item na sua linha deste mês e diga se a renda passiva supera as despesas.",
+          "feedback": {
+            "met": "Você colocou cada item na linha em que ele funciona.",
+            "not_yet": "Confira cada item: rende, custa, é seu ou é dívida? Compare renda passiva e despesas."
+          },
+          "labels": {
+            "repair-income": "Receita de consertos",
+            "bench-income": "Renda de uma bancada alugada",
+            "fixed-costs": "Custos fixos do mês",
+            "loan-payment": "Parcela mensal do empréstimo",
+            "parts-spend": "Peças usadas",
+            "toolkit": "Seu kit de ferramentas",
+            "loan-balance": "Saldo do empréstimo"
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.break-even",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-open"
+          },
+          {
+            "id": "choice-change"
+          },
+          {
+            "id": "choice-drop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fee"
+          },
+          {
+            "id": "reason-margin"
+          },
+          {
+            "id": "reason-be"
+          },
+          {
+            "id": "reason-close"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-change"
+        ],
+        "reasonQuality": {
+          "reason-be": "sound",
+          "reason-margin": "partial",
+          "reason-fee": "partial",
+          "reason-close": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Puesto extra: $450 al mes, kits de lubricante a $35 con $20 de materiales, 25 ventas esperadas. ¿Qué haces?",
+          "feedback": {
+            "met": "Ajustaste el plan antes de abrir: las ventas esperadas no cubren el puesto.",
+            "not_yet": "Todavía no. ¿Cuánto deja cada kit tras los materiales?"
+          },
+          "help": [
+            "Piensa: ¿cuántos kits con ese margen cubren $450?"
+          ],
+          "choices": [
+            {
+              "label": "Abrir ya; 25 ventas es casi suficiente"
+            },
+            {
+              "label": "Cambiar precio o costos antes de abrir"
+            },
+            {
+              "label": "Descartarlo; el margen es muy pequeño"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "La cuota del puesto parece alta"
+            },
+            {
+              "label": "Cada kit se vende por encima de sus materiales"
+            },
+            {
+              "label": "El equilibrio es 30 ventas; esperas 25"
+            },
+            {
+              "label": "Casi en equilibrio cuenta como cubierto"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Side stall: $450 a month, lube kits at $35 with $20 materials, 25 expected sales. What do you do?",
+          "feedback": {
+            "met": "You adjusted the plan: expected sales do not cover the stall.",
+            "not_yet": "Not yet. What does each kit keep after materials?"
+          },
+          "help": [
+            "Think: how many kits at that margin cover $450?"
+          ],
+          "choices": [
+            {
+              "label": "Open now; 25 sales is close enough"
+            },
+            {
+              "label": "Change price or costs before opening"
+            },
+            {
+              "label": "Drop it; the margin is too small"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "The stall fee looks high"
+            },
+            {
+              "label": "Each kit sells above its materials"
+            },
+            {
+              "label": "Break-even is 30 sales; you expect 25"
+            },
+            {
+              "label": "Near break-even counts as covered"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Banca extra: R$ 450 por mês, kits de lubrificante a R$ 35 com R$ 20 de material, 25 vendas esperadas. O que você faz?",
+          "feedback": {
+            "met": "Você ajustou o plano antes de abrir: as vendas previstas não cobrem a banca.",
+            "not_yet": "Ainda não. Quanto cada kit deixa após o material?"
+          },
+          "help": [
+            "Pense: quantos kits com essa margem cobrem R$ 450?"
+          ],
+          "choices": [
+            {
+              "label": "Abrir já; 25 vendas é quase suficiente"
+            },
+            {
+              "label": "Mudar preço ou custos antes de abrir"
+            },
+            {
+              "label": "Descartar; a margem é pequena demais"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "A taxa da banca parece alta"
+            },
+            {
+              "label": "Cada kit vende acima do material"
+            },
+            {
+              "label": "O equilíbrio é 30 vendas; você espera 25"
+            },
+            {
+              "label": "Quase no equilíbrio conta como coberto"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

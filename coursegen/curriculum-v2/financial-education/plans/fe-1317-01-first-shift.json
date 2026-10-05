@@ -1,0 +1,725 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-first-pay",
+  "lesson_id": "fe-1317-01-first-shift",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.value-of-work",
+    "life.track-earnings",
+    "life.effort-and-work"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho acompaña a Maya en su primer fin de semana en un puesto de pan: mide el sueldo como horas por pago por hora, suma la propina al final y lleva un registro con saldo acumulado. Después Maya usa lo que vale una hora para responder a una oferta de pago fijo, primero en el puesto y luego con un vecino.",
+  "title": {
+    "en-US": "First shift: what hours are worth",
+    "es-MX": "Primer turno: cuánto valen las horas",
+    "pt-BR": "Primeiro turno: quanto valem as horas"
+  },
+  "new_concepts": [
+    "biz.value-of-work",
+    "life.track-earnings"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Maya works weekends at a bakery stall at a farmers market. In the US most jobs open at 14, with limited hours until 16 and often a work permit. Amounts are illustrative coin values, not real wages.",
+        "problem_refs": [
+          "us-parent-silence"
+        ],
+        "anchors": [
+          "farmers market",
+          "work permit"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Maya trabaja los fines de semana en un puesto de pan del tianguis. En México se trabaja desde los 15 años; antes de los 16 se necesita permiso de los padres o tutores y jornadas más cortas. Las cantidades son monedas ilustrativas, no sueldos reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis",
+          "puesto de pan"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Maya trabalha nos fins de semana no balcão de uma padaria de bairro. No Brasil o trabalho começa aos 16 anos, ou aos 14 como aprendiz, e antes dos 18 não pode ser noturno. Os valores são moedas ilustrativas, não salários reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "padaria",
+          "aprendiz"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya starts weekend shifts at a farmers market bakery stall.",
+          "line": "It pays 9 an hour. Rho helps her measure what the weekend earned, one number at a time."
+        },
+        "es-MX": {
+          "prompt": "Maya empieza un trabajo de fin de semana en un puesto de pan del tianguis.",
+          "line": "Pagan 9 la hora. Rho la ayuda a medir lo que ganó el fin de semana, un dato a la vez."
+        },
+        "pt-BR": {
+          "prompt": "Maya começa um trabalho de fim de semana no balcão de uma padaria.",
+          "line": "Pagam 9 por hora. Rho a ajuda a medir o que o fim de semana rendeu, um dado de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-take"
+          },
+          {
+            "id": "reply-hours"
+          },
+          {
+            "id": "reply-more"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-hours"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya earns 9 an hour; the baker offers a flat 50 for Saturday. What does she say?",
+          "feedback": {
+            "met": "Noted, that shows where you start. Now we go step by step.",
+            "not_yet": "Noted, that shows where you start. Now we go step by step."
+          },
+          "speaker": "Baker",
+          "line": "Saturday will be packed. I'll pay you 50, flat, to cover it.",
+          "replies": [
+            {
+              "label": "Fine, I'll take the 50"
+            },
+            {
+              "label": "How many hours would that be?"
+            },
+            {
+              "label": "Can you make it 60?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Maya gana 9 la hora; el panadero le ofrece 50 fijos por el sábado. ¿Qué responde?",
+          "feedback": {
+            "met": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso.",
+            "not_yet": "Anotado, eso muestra de dónde partes. Ahora vamos paso a paso."
+          },
+          "speaker": "Panadero",
+          "line": "El sábado habrá mucha gente. Te doy 50 fijos por cubrirlo.",
+          "replies": [
+            {
+              "label": "Está bien, acepto los 50"
+            },
+            {
+              "label": "¿Cuántas horas serían?"
+            },
+            {
+              "label": "¿Lo subes a 60?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Maya ganha 9 por hora; o padeiro oferece 50 fixos pelo sábado. O que ela responde?",
+          "feedback": {
+            "met": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo.",
+            "not_yet": "Anotado, isso mostra de onde você parte. Agora vamos passo a passo."
+          },
+          "speaker": "Padeiro",
+          "line": "Sábado vai ter muito movimento. Pago 50 fixos para cobrir.",
+          "replies": [
+            {
+              "label": "Tudo bem, aceito os 50"
+            },
+            {
+              "label": "Quantas horas seriam?"
+            },
+            {
+              "label": "Dá para fazer 60?"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-rules-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: check your state's rule for working at your age.",
+          "line": "In the US, most paid work starts at 14, with limited hours until 16, and often a work permit."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: revisa la regla de tu país para trabajar a tu edad.",
+          "line": "En México se trabaja desde los 15; antes de los 16 se necesita permiso de tus padres o tutores y jornadas más cortas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: veja a regra do seu país para trabalhar na sua idade.",
+          "line": "No Brasil, o trabalho começa aos 16, ou aos 14 como aprendiz. Antes dos 18, nada de trabalho noturno."
+        }
+      }
+    },
+    {
+      "id": "example-wages-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: wages are hours times the rate.",
+          "line": "Saturday: 5 hours at 9 an hour. The wage is 5 × 9, which is 45."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el sueldo es horas trabajadas por pago por hora.",
+          "line": "Sábado: 5 horas a 9 la hora. El sueldo es 5 × 9, que son 45."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o salário é horas trabalhadas vezes o valor da hora.",
+          "line": "Sábado: 5 horas a 9 por hora. O salário é 5 × 9, que dá 45."
+        }
+      }
+    },
+    {
+      "id": "example-tips-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: tips are not promised, so add them last.",
+          "line": "Saturday's tips were 8. Wage plus tips: 45 + 8 = 53, her total for the day."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: la propina no está asegurada, se suma al final.",
+          "line": "Ese sábado dejaron 8 de propina. Sueldo más propina: 45 + 8 = 53, su total del día."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a gorjeta não é garantida, entra no fim.",
+          "line": "No sábado, a gorjeta foi 8. Salário mais gorjeta: 45 + 8 = 53, o total do dia."
+        }
+      }
+    },
+    {
+      "id": "guided-wages-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.effort-and-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "hours"
+          },
+          {
+            "id": "wage"
+          },
+          {
+            "id": "day-total"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "wage",
+          "day-total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wage": "72",
+          "day-total": "87"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's next Saturday: 3 hours, then 5 more, at 9 an hour, plus 15 in tips. Find the total.",
+          "feedback": {
+            "met": "You added the hours, multiplied by the rate, then added the tips.",
+            "not_yet": "Check Rho's wage and tips steps: hours times rate, then tips."
+          },
+          "help": [
+            "Multiply the hours by 9 first, then add the tips."
+          ],
+          "steps": [
+            {
+              "expression": "3 + 5",
+              "result": "8",
+              "spokenText": "Three plus 5 is 8 hours"
+            },
+            {
+              "expression": "8 × 9",
+              "result": "72",
+              "spokenText": "Eight times 9 is 72 in wages"
+            },
+            {
+              "expression": "Wage + tips",
+              "result": "87",
+              "spokenText": "Seventy-two plus 15 is 87 for the day"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El siguiente sábado de Maya: 3 horas y luego 5 más, a 9 la hora, más 15 de propina. Calcula el total.",
+          "feedback": {
+            "met": "Sumaste las horas, multiplicaste por la tarifa y luego sumaste la propina.",
+            "not_yet": "Mira los pasos de sueldo y propina de Rho: horas por tarifa y luego propina."
+          },
+          "help": [
+            "Primero multiplica las horas por 9 y luego suma la propina."
+          ],
+          "steps": [
+            {
+              "expression": "3 + 5",
+              "result": "8",
+              "spokenText": "Tres más 5 son 8 horas"
+            },
+            {
+              "expression": "8 × 9",
+              "result": "72",
+              "spokenText": "Ocho por 9 son 72 de sueldo"
+            },
+            {
+              "expression": "Sueldo + propina",
+              "result": "87",
+              "spokenText": "Setenta y dos más 15 son 87 del día"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No próximo sábado da Maya: 3 horas e mais 5, a 9 por hora, mais 15 de gorjeta. Calcule o total.",
+          "feedback": {
+            "met": "Você somou as horas, multiplicou pelo valor da hora e depois somou a gorjeta.",
+            "not_yet": "Veja os passos de salário e gorjeta do Rho: horas vezes valor, depois gorjeta."
+          },
+          "help": [
+            "Primeiro multiplique as horas por 9 e depois some a gorjeta."
+          ],
+          "steps": [
+            {
+              "expression": "3 + 5",
+              "result": "8",
+              "spokenText": "Três mais 5 são 8 horas"
+            },
+            {
+              "expression": "8 × 9",
+              "result": "72",
+              "spokenText": "Oito vezes 9 são 72 de salário"
+            },
+            {
+              "expression": "Salário + gorjeta",
+              "result": "87",
+              "spokenText": "Setenta e dois mais 15 são 87 do dia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-ledger-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: a ledger keeps each entry and the running balance.",
+          "line": "Start at 8 in tips, then log each hour of 9: 17, 26, 35, 44, 53."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: el registro anota cada entrada y el saldo acumulado.",
+          "line": "Empieza con 8 de propina y anota cada hora de 9: 17, 26, 35, 44, 53."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o registro anota cada entrada e o saldo acumulado.",
+          "line": "Comece com 8 de gorjeta e anote cada hora de 9: 17, 26, 35, 44, 53."
+        }
+      }
+    },
+    {
+      "id": "example-worth-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: what an hour is worth is pay divided by hours.",
+          "line": "A flat 60 for 8 hours is 60 ÷ 8 = 7.5 an hour, 1.5 less than 9."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: lo que vale una hora es el pago entre las horas.",
+          "line": "Un pago fijo de 60 por 8 horas es 60 ÷ 8 = 7.5 la hora, 1.5 menos que 9."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o valor de uma hora é o pagamento dividido pelas horas.",
+          "line": "Um valor fixo de 60 por 8 horas dá 60 ÷ 8 = 7,5 por hora, 1,5 a menos que 9."
+        }
+      }
+    },
+    {
+      "id": "practice-ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "payload": {
+        "initial": 12,
+        "sale": 18,
+        "cost": 6,
+        "maxEntries": 8
+      },
+      "rubric": {
+        "target_balance": 102
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's weekend: start with 12 in tips, then log each 2-hour block of 18 as a Sale until 102.",
+          "feedback": {
+            "met": "You logged each block on top of the tips and reached 102.",
+            "not_yet": "Begin at 12 and add one block of 18 at a time."
+          }
+        },
+        "es-MX": {
+          "prompt": "Fin de semana de Maya: empieza con 12 de propina y anota cada bloque de 2 horas de 18 como Venta hasta 102.",
+          "feedback": {
+            "met": "Anotaste cada bloque sobre la propina y llegaste a 102.",
+            "not_yet": "Empieza en 12 y suma un bloque de 18 a la vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Fim de semana da Maya: comece com 12 de gorjeta e anote cada bloco de 2 horas de 18 como Venda até 102.",
+          "feedback": {
+            "met": "Você anotou cada bloco sobre a gorjeta e chegou a 102.",
+            "not_yet": "Comece em 12 e some um bloco de 18 por vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-worth-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "steps": [
+          {
+            "id": "wage"
+          },
+          {
+            "id": "day-total"
+          },
+          {
+            "id": "hour-worth"
+          },
+          {
+            "id": "tip-lift"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "day-total",
+          "hour-worth",
+          "tip-lift"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "day-total": "44",
+          "hour-worth": "11",
+          "tip-lift": "2"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya's Sunday: 4 hours at 9 an hour plus 8 in tips. Find what an hour was worth.",
+          "feedback": {
+            "met": "You totaled wage and tips, divided by hours, and compared with 9.",
+            "not_yet": "Look back at Rho's tips and worth steps: add tips, then divide."
+          },
+          "help": [
+            "Add the wage and the tips, then divide by 4 hours."
+          ],
+          "steps": [
+            {
+              "expression": "4 × 9",
+              "result": "36",
+              "spokenText": "Four times 9 is 36 in wages"
+            },
+            {
+              "expression": "36 + 8",
+              "result": "44",
+              "spokenText": "Thirty-six plus 8 is 44 for the day"
+            },
+            {
+              "expression": "Day total ÷ hours",
+              "result": "11",
+              "spokenText": "Forty-four divided by 4 is 11 an hour"
+            },
+            {
+              "expression": "Hour worth − hourly rate",
+              "result": "2",
+              "spokenText": "Eleven minus 9 is 2: the tips lift each hour by 2"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El domingo de Maya: 4 horas a 9 la hora más 8 de propina. Calcula cuánto valió una hora.",
+          "feedback": {
+            "met": "Sumaste sueldo y propina, dividiste entre las horas y comparaste con 9.",
+            "not_yet": "Mira los pasos de propina y valor de Rho: suma la propina y luego divide."
+          },
+          "help": [
+            "Suma el sueldo y la propina, y divide entre 4 horas."
+          ],
+          "steps": [
+            {
+              "expression": "4 × 9",
+              "result": "36",
+              "spokenText": "Cuatro por 9 son 36 de sueldo"
+            },
+            {
+              "expression": "36 + 8",
+              "result": "44",
+              "spokenText": "Treinta y seis más 8 son 44 del día"
+            },
+            {
+              "expression": "Total del día ÷ horas",
+              "result": "11",
+              "spokenText": "Cuarenta y cuatro entre 4 son 11 la hora"
+            },
+            {
+              "expression": "Valor de la hora − tarifa",
+              "result": "2",
+              "spokenText": "Once menos 9 son 2: la propina sube cada hora en 2"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No domingo da Maya: 4 horas a 9 por hora mais 8 de gorjeta. Calcule quanto valeu uma hora.",
+          "feedback": {
+            "met": "Você somou salário e gorjeta, dividiu pelas horas e comparou com 9.",
+            "not_yet": "Veja os passos de gorjeta e valor do Rho: some a gorjeta e depois divida."
+          },
+          "help": [
+            "Some o salário e a gorjeta, e divida por 4 horas."
+          ],
+          "steps": [
+            {
+              "expression": "4 × 9",
+              "result": "36",
+              "spokenText": "Quatro vezes 9 são 36 de salário"
+            },
+            {
+              "expression": "36 + 8",
+              "result": "44",
+              "spokenText": "Trinta e seis mais 8 são 44 do dia"
+            },
+            {
+              "expression": "Total do dia ÷ horas",
+              "result": "11",
+              "spokenText": "Quarenta e quatro divididos por 4 são 11 por hora"
+            },
+            {
+              "expression": "Valor da hora − valor combinado",
+              "result": "2",
+              "spokenText": "Onze menos 9 são 2: a gorjeta sobe cada hora em 2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-boxes-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.value-of-work",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-more"
+          },
+          {
+            "id": "reply-take"
+          },
+          {
+            "id": "reply-hours"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-hours"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Maya earns 9 an hour; her neighbor offers a flat 40 to move boxes. How does she reply?",
+          "feedback": {
+            "met": "Asking the hours let you compare the offer with 9 an hour.",
+            "not_yet": "What would you need to compare it with 9 an hour?"
+          },
+          "speaker": "Neighbor",
+          "line": "Help me move boxes this afternoon and I'll pay you 40.",
+          "replies": [
+            {
+              "label": "Can you pay more?"
+            },
+            {
+              "label": "Sure, 40 works"
+            },
+            {
+              "label": "How long will it take?"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Maya gana 9 la hora; su vecino le ofrece 40 fijos por mover cajas. ¿Cómo responde?",
+          "feedback": {
+            "met": "Preguntar las horas te dejó comparar la oferta con 9 la hora.",
+            "not_yet": "¿Qué necesitarías saber para compararlo con 9 la hora?"
+          },
+          "speaker": "Vecino",
+          "line": "Ayúdame a mover cajas esta tarde y te pago 40.",
+          "replies": [
+            {
+              "label": "¿Puedes pagar más?"
+            },
+            {
+              "label": "Va, con 40 está bien"
+            },
+            {
+              "label": "¿Cuánto tiempo tomará?"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Maya ganha 9 por hora; o vizinho oferece 40 fixos para carregar caixas. Como ela responde?",
+          "feedback": {
+            "met": "Perguntar as horas permitiu comparar a oferta com 9 por hora.",
+            "not_yet": "O que você precisaria saber para comparar com 9 por hora?"
+          },
+          "speaker": "Vizinho",
+          "line": "Me ajude a carregar caixas hoje à tarde e eu pago 40.",
+          "replies": [
+            {
+              "label": "Dá para pagar mais?"
+            },
+            {
+              "label": "Pode ser, 40 está bom"
+            },
+            {
+              "label": "Quanto tempo vai levar?"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

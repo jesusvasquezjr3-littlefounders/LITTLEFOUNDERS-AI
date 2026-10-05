@@ -1,0 +1,883 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-13-17",
+  "chapter_id": "ent-1317-prove-demand",
+  "lesson_id": "ent-1317-03-sell-by-asking",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.consultative-selling",
+    "biz.communicate-value"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Antes de ofrecer la limpieza profunda de 25 monedas, el adolescente hace tres preguntas (cada cuánto los usa, qué falló antes y cuál es la ocasión), conecta solo la parte que arregla su problema y cierra con un siguiente paso claro. Dina muestra cada paso con calma, el aprendiz practica con Kai y Lena, arma el diagrama de la charla de venta y decide qué responder a una mamá en la feria escolar.",
+  "title": {
+    "en-US": "Sell by asking",
+    "es-MX": "Vende preguntando",
+    "pt-BR": "Venda perguntando"
+  },
+  "new_concepts": [
+    "biz.consultative-selling"
+  ],
+  "regional": {
+    "universal": "Only LittleFounders coins; the sales talk is the learner’s own venture and carries no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A classmate with muddy sneakers asks what your deep clean includes.",
+          "line": "It has four steps and costs 25 coins. You could list them all, or ask first."
+        },
+        "es-MX": {
+          "prompt": "Un compañero con tenis llenos de lodo pregunta qué incluye tu limpieza profunda.",
+          "line": "Tiene cuatro pasos y cuesta 25 monedas. Podrías enumerarlos todos o preguntar primero."
+        },
+        "pt-BR": {
+          "prompt": "Um colega com tênis cheios de lama pergunta o que sua limpeza profunda inclui.",
+          "line": "São quatro etapas e custa 25 moedas. Você poderia listar todas ou perguntar primeiro."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ask"
+          },
+          {
+            "id": "choice-list"
+          },
+          {
+            "id": "choice-discount"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-detail"
+          },
+          {
+            "id": "reason-problem"
+          },
+          {
+            "id": "reason-price"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-ask"
+        ],
+        "reasonQuality": {
+          "reason-problem": "sound",
+          "reason-price": "partial",
+          "reason-detail": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Noa asks what the deep clean includes. What do you do first?",
+          "feedback": {
+            "met": "Noted. We will test that first move in a real conversation.",
+            "not_yet": "Noted. We will test that first move in a real conversation."
+          },
+          "choices": [
+            {
+              "label": "Ask what went wrong with her sneakers"
+            },
+            {
+              "label": "List all four steps of the deep clean"
+            },
+            {
+              "label": "Offer a discount before she decides"
+            }
+          ],
+          "reasonPrompt": "Why that first move?",
+          "reasons": [
+            {
+              "label": "More detail always makes a stronger pitch"
+            },
+            {
+              "label": "Her problem comes before my service"
+            },
+            {
+              "label": "A lower price keeps her interested"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Noa pregunta qué incluye la limpieza profunda. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Anotado. Probaremos ese primer paso en una conversación real.",
+            "not_yet": "Anotado. Probaremos ese primer paso en una conversación real."
+          },
+          "choices": [
+            {
+              "label": "Preguntar qué les pasó a sus tenis"
+            },
+            {
+              "label": "Enumerar los cuatro pasos de la limpieza"
+            },
+            {
+              "label": "Ofrecer un descuento antes de que decida"
+            }
+          ],
+          "reasonPrompt": "¿Por qué ese primer paso?",
+          "reasons": [
+            {
+              "label": "Más detalle siempre vende mejor"
+            },
+            {
+              "label": "Su problema va antes que mi servicio"
+            },
+            {
+              "label": "Un precio menor la mantiene interesada"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Noa pergunta o que a limpeza profunda inclui. O que você faz primeiro?",
+          "feedback": {
+            "met": "Anotado. Vamos testar esse primeiro passo numa conversa real.",
+            "not_yet": "Anotado. Vamos testar esse primeiro passo numa conversa real."
+          },
+          "choices": [
+            {
+              "label": "Perguntar o que houve com os tênis dela"
+            },
+            {
+              "label": "Listar as quatro etapas da limpeza"
+            },
+            {
+              "label": "Oferecer desconto antes de ela decidir"
+            }
+          ],
+          "reasonPrompt": "Por que esse primeiro passo?",
+          "reasons": [
+            {
+              "label": "Mais detalhe sempre vende melhor"
+            },
+            {
+              "label": "O problema dela vem antes do meu serviço"
+            },
+            {
+              "label": "Um preço menor mantém o interesse dela"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: ask about her sneakers before you mention the price.",
+          "line": "Ask how often she wears them, what went wrong before, and what the occasion is."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: pregunta por sus tenis antes de mencionar el precio.",
+          "line": "Pregunta cada cuánto los usa, qué falló antes y cuál es la ocasión."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: pergunte sobre os tênis dela antes de falar do preço.",
+          "line": "Pergunte com que frequência ela usa, o que deu errado antes e qual é a ocasião."
+        }
+      }
+    },
+    {
+      "id": "ex-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: connect only the part that fixes the problem she named.",
+          "line": "If rain left stains, mention stain removal. The other three steps can wait."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: conecta solo la parte que arregla el problema que nombró.",
+          "line": "Si la lluvia dejó manchas, menciona solo el paso que las quita. Los otros tres pueden esperar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: conecte só a parte que resolve o problema que ela nomeou.",
+          "line": "Se a chuva deixou manchas, mencione a remoção de manchas. As outras três etapas podem esperar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-all"
+          },
+          {
+            "id": "opt-cheap"
+          },
+          {
+            "id": "opt-soles"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-soles"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What do you connect to his problem?",
+          "feedback": {
+            "met": "You connected the one part that fixes his problem.",
+            "not_yet": "Not yet. Which part answers what went wrong with his soles?"
+          },
+          "help": [
+            "Step 2: connect only the part that fixes the problem he named."
+          ],
+          "scene": "Kai wears his sneakers daily, the soles went yellow last time, and the school dance is Friday.",
+          "options": [
+            {
+              "label": "All four steps of the deep clean"
+            },
+            {
+              "label": "Our lowest price on any service"
+            },
+            {
+              "label": "Whitening the soles before Friday"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué conectas con su problema?",
+          "feedback": {
+            "met": "Conectaste la única parte que arregla su problema.",
+            "not_yet": "Todavía no. ¿Qué parte responde a lo que falló con sus suelas?"
+          },
+          "help": [
+            "Paso 2: conecta solo la parte que arregla el problema que nombró."
+          ],
+          "scene": "Kai usa sus tenis a diario, las suelas se amarillaron la última vez y el baile de la escuela es el viernes.",
+          "options": [
+            {
+              "label": "Los cuatro pasos de la limpieza profunda"
+            },
+            {
+              "label": "Nuestro precio más bajo en cualquier servicio"
+            },
+            {
+              "label": "Blanquear las suelas antes del viernes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que você conecta ao problema dele?",
+          "feedback": {
+            "met": "Você conectou a única parte que resolve o problema dele.",
+            "not_yet": "Ainda não. Que parte responde ao que deu errado com as solas?"
+          },
+          "help": [
+            "Passo 2: conecte só a parte que resolve o problema que ele nomeou."
+          ],
+          "scene": "Kai usa os tênis todo dia, as solas amarelaram da última vez e o baile da escola é sexta.",
+          "options": [
+            {
+              "label": "As quatro etapas da limpeza profunda"
+            },
+            {
+              "label": "Nosso menor preço em qualquer serviço"
+            },
+            {
+              "label": "Clarear as solas antes de sexta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: close with a clear next step.",
+          "line": "Name the day, the price and what happens next: “Thursday pickup, 25 coins. Shall I book you?”"
+        },
+        "es-MX": {
+          "prompt": "Paso 3: cierra con un siguiente paso claro.",
+          "line": "Nombra el día, el precio y lo que sigue: “Recojo el jueves, 25 monedas. ¿Te anoto?”"
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: feche com um próximo passo claro.",
+          "line": "Diga o dia, o preço e o que acontece depois: “Busco na quinta, 25 moedas. Posso anotar você?”"
+        }
+      }
+    },
+    {
+      "id": "ex-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: chart the talk by asking: do I know their problem? Do they see how I fix it?",
+          "line": "No to the first: ask more; yes, then no: connect; yes to both: close."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: dibuja la charla preguntando: ¿conozco su problema? ¿Ven cómo lo arreglo?",
+          "line": "No a la primera: pregunta más; sí y luego no: conecta; sí a las dos: cierra."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: desenhe a conversa perguntando: conheço o problema deles? Eles veem como eu resolvo?",
+          "line": "Não à primeira: pergunte mais; sim e depois não: conecte; sim às duas: feche."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "mode": "build",
+        "questions": [
+          {
+            "id": "know-problem"
+          },
+          {
+            "id": "sees-fix"
+          }
+        ],
+        "outcomes": [
+          {
+            "id": "ask-more"
+          },
+          {
+            "id": "connect-part"
+          },
+          {
+            "id": "next-step"
+          }
+        ],
+        "practice": [
+          {
+            "id": "case-mia",
+            "answers": {
+              "know-problem": false,
+              "sees-fix": false
+            }
+          },
+          {
+            "id": "case-kai",
+            "answers": {
+              "know-problem": true,
+              "sees-fix": false
+            }
+          },
+          {
+            "id": "case-lena",
+            "answers": {
+              "know-problem": true,
+              "sees-fix": true
+            }
+          }
+        ]
+      },
+      "rubric": {
+        "cases": [
+          {
+            "answers": {
+              "know-problem": false,
+              "sees-fix": false
+            },
+            "outcome": "ask-more"
+          },
+          {
+            "answers": {
+              "know-problem": true,
+              "sees-fix": false
+            },
+            "outcome": "connect-part"
+          },
+          {
+            "answers": {
+              "know-problem": true,
+              "sees-fix": true
+            },
+            "outcome": "next-step"
+          },
+          {
+            "answers": {
+              "know-problem": false,
+              "sees-fix": false
+            },
+            "outcome": "ask-more"
+          },
+          {
+            "answers": {
+              "know-problem": true,
+              "sees-fix": false
+            },
+            "outcome": "connect-part"
+          },
+          {
+            "answers": {
+              "know-problem": true,
+              "sees-fix": true
+            },
+            "outcome": "next-step"
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Build the sales-talk chart, then test it on the three customers.",
+          "feedback": {
+            "met": "Your chart asks, connects and closes in the right order.",
+            "not_yet": "Not yet. Test your chart on the three customers."
+          },
+          "help": [
+            "Step 4: ask until you know the problem, then connect, then close."
+          ],
+          "questions": [
+            {
+              "label": "Do I know their problem?"
+            },
+            {
+              "label": "Do they see how I fix it?"
+            }
+          ],
+          "outcomes": [
+            {
+              "label": "Ask another question"
+            },
+            {
+              "label": "Connect the relevant part"
+            },
+            {
+              "label": "Offer a clear next step"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Mia asks only: “How much?”"
+            },
+            {
+              "label": "Kai names yellow soles; nothing connected yet"
+            },
+            {
+              "label": "Lena names stains and sees the fix"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Arma el diagrama de la charla de venta y pruébalo con los tres clientes.",
+          "feedback": {
+            "met": "Tu diagrama pregunta, conecta y cierra en el orden correcto.",
+            "not_yet": "Todavía no. Prueba tu diagrama con los tres clientes."
+          },
+          "help": [
+            "Paso 4: pregunta hasta conocer el problema, luego conecta y cierra."
+          ],
+          "questions": [
+            {
+              "label": "¿Conozco su problema?"
+            },
+            {
+              "label": "¿Ven cómo lo arreglo?"
+            }
+          ],
+          "outcomes": [
+            {
+              "label": "Hacer otra pregunta"
+            },
+            {
+              "label": "Conectar la parte relevante"
+            },
+            {
+              "label": "Ofrecer un siguiente paso claro"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Mia solo pregunta: “¿Cuánto cuesta?”"
+            },
+            {
+              "label": "Kai nombra suelas amarillas; nada conectado aún"
+            },
+            {
+              "label": "Lena nombra manchas y ve la solución"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Monte o fluxograma da conversa de venda e teste com os três clientes.",
+          "feedback": {
+            "met": "Seu fluxograma pergunta, conecta e fecha na ordem certa.",
+            "not_yet": "Ainda não. Teste seu fluxograma com os três clientes."
+          },
+          "help": [
+            "Passo 4: pergunte até conhecer o problema, depois conecte e feche."
+          ],
+          "questions": [
+            {
+              "label": "Conheço o problema deles?"
+            },
+            {
+              "label": "Eles veem como eu resolvo?"
+            }
+          ],
+          "outcomes": [
+            {
+              "label": "Fazer outra pergunta"
+            },
+            {
+              "label": "Conectar a parte relevante"
+            },
+            {
+              "label": "Oferecer um próximo passo claro"
+            }
+          ],
+          "practice": [
+            {
+              "label": "Mia só pergunta: “Quanto custa?”"
+            },
+            {
+              "label": "Kai cita solas amarelas; nada conectado ainda"
+            },
+            {
+              "label": "Lena cita manchas e vê a solução"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.communicate-value",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-vague"
+          },
+          {
+            "id": "opt-book"
+          },
+          {
+            "id": "opt-extras"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-book"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "How do you close?",
+          "feedback": {
+            "met": "You closed with a day, a price and a question to book.",
+            "not_yet": "Not yet. Which reply tells her exactly what happens next?"
+          },
+          "help": [
+            "Step 3: name the day, the price and what happens next."
+          ],
+          "scene": "Lena says stain removal sounds right. You can clean her sneakers Saturday for 25 coins.",
+          "options": [
+            {
+              "label": "Tell her to message if interested"
+            },
+            {
+              "label": "Offer Saturday, 25 coins, and ask to book"
+            },
+            {
+              "label": "Add three free extras so she agrees"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Cómo cierras?",
+          "feedback": {
+            "met": "Cerraste con un día, un precio y una pregunta para apartar.",
+            "not_yet": "Todavía no. ¿Qué respuesta le dice exactamente qué sigue?"
+          },
+          "help": [
+            "Paso 3: nombra el día, el precio y lo que sigue."
+          ],
+          "scene": "Lena dice que quitar las manchas le suena bien. Puedes limpiarle los tenis el sábado por 25 monedas.",
+          "options": [
+            {
+              "label": "Decirle que escriba si le interesa"
+            },
+            {
+              "label": "Ofrecer el sábado, 25 monedas, y pedir confirmación"
+            },
+            {
+              "label": "Añadir tres extras gratis para convencerla"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Como você fecha?",
+          "feedback": {
+            "met": "Você fechou com um dia, um preço e uma pergunta para reservar.",
+            "not_yet": "Ainda não. Que resposta diz exatamente o que acontece depois?"
+          },
+          "help": [
+            "Passo 3: diga o dia, o preço e o que acontece depois."
+          ],
+          "scene": "Lena diz que a remoção de manchas parece certa. Você pode limpar os tênis dela no sábado por 25 moedas.",
+          "options": [
+            {
+              "label": "Dizer para ela escrever se quiser"
+            },
+            {
+              "label": "Oferecer sábado, 25 moedas, e pedir confirmação"
+            },
+            {
+              "label": "Dar três extras grátis para ela aceitar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.consultative-selling",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-list"
+          },
+          {
+            "id": "choice-cheap"
+          },
+          {
+            "id": "choice-part"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-detail"
+          },
+          {
+            "id": "reason-next"
+          },
+          {
+            "id": "reason-relevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-part"
+        ],
+        "reasonQuality": {
+          "reason-relevant": "sound",
+          "reason-next": "partial",
+          "reason-detail": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the school fair, a parent says her son’s sneakers still smell after washing. What do you say?",
+          "feedback": {
+            "met": "You connected the one fix she needs and named a next step.",
+            "not_yet": "Not yet. Which reply fits only what she told you?"
+          },
+          "help": [
+            "Reread Step 2: connect only the part that fixes the named problem."
+          ],
+          "choices": [
+            {
+              "label": "Let me list all four deep-clean steps"
+            },
+            {
+              "label": "It is only 25 coins, so why not?"
+            },
+            {
+              "label": "Deodorizing fixes smell; can you drop them Thursday?"
+            }
+          ],
+          "reasonPrompt": "Why that reply?",
+          "reasons": [
+            {
+              "label": "More detail shows how much work I do"
+            },
+            {
+              "label": "It names a clear next step"
+            },
+            {
+              "label": "It connects only what fixes her problem"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria escolar, una mamá dice que los tenis de su hijo siguen oliendo mal tras lavarlos. ¿Qué dices?",
+          "feedback": {
+            "met": "Conectaste la única solución que necesita y nombraste un siguiente paso.",
+            "not_yet": "Todavía no. ¿Qué respuesta encaja solo con lo que te dijo?"
+          },
+          "help": [
+            "Relee el Paso 2: conecta solo la parte que arregla el problema nombrado."
+          ],
+          "choices": [
+            {
+              "label": "Déjame enumerar los cuatro pasos de la limpieza"
+            },
+            {
+              "label": "Son solo 25 monedas, ¿por qué no?"
+            },
+            {
+              "label": "Desodorizar arregla el olor; ¿los traes el jueves?"
+            }
+          ],
+          "reasonPrompt": "¿Por qué esa respuesta?",
+          "reasons": [
+            {
+              "label": "Más detalle muestra cuánto trabajo hago"
+            },
+            {
+              "label": "Nombra un siguiente paso claro"
+            },
+            {
+              "label": "Conecta solo lo que arregla su problema"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira da escola, uma mãe diz que o tênis do filho ainda cheira mal depois de lavar. O que você diz?",
+          "feedback": {
+            "met": "Você conectou a única solução que ela precisa e nomeou um próximo passo.",
+            "not_yet": "Ainda não. Que resposta combina só com o que ela disse?"
+          },
+          "help": [
+            "Releia o Passo 2: conecte só a parte que resolve o problema nomeado."
+          ],
+          "choices": [
+            {
+              "label": "Deixa eu listar as quatro etapas da limpeza"
+            },
+            {
+              "label": "São só 25 moedas, por que não?"
+            },
+            {
+              "label": "A desodorização resolve o cheiro; pode trazer na quinta?"
+            }
+          ],
+          "reasonPrompt": "Por que essa resposta?",
+          "reasons": [
+            {
+              "label": "Mais detalhe mostra quanto trabalho eu faço"
+            },
+            {
+              "label": "Nomeia um próximo passo claro"
+            },
+            {
+              "label": "Conecta só o que resolve o problema dela"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

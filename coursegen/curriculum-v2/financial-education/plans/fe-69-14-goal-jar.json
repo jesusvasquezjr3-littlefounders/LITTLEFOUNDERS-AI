@@ -1,0 +1,583 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-my-coin-jar",
+  "lesson_id": "fe-69-14-goal-jar",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.saving-goal",
+    "life.saving-for-later"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara quiere un papalote de 10 monedas y guarda 2 de cada 5 que recibe. El niño ve que una meta tiene un tamaño, lleva una barra hasta una meta nueva y llena un marco de diez: cada moneda guardada llena un cuadro. Después aplica la misma regla en la feria de la escuela.",
+  "title": {
+    "en-US": "A jar for my goal",
+    "es-MX": "Una alcancía para mi meta",
+    "pt-BR": "Um cofrinho para a minha meta"
+  },
+  "new_concepts": [
+    "biz.saving-goal",
+    "life.saving-for-later"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara sees a red kite. The tag says 10 coins.",
+          "line": "Hmm, I want that kite. My jar is empty."
+        },
+        "es-MX": {
+          "prompt": "Zara ve un papalote rojo. La etiqueta dice 10 monedas.",
+          "line": "Hmm, quiero ese papalote. Mi alcancía está vacía."
+        },
+        "pt-BR": {
+          "prompt": "A Zara vê uma pipa vermelha. A etiqueta diz 10 moedas.",
+          "line": "Hmm, quero aquela pipa. Meu cofrinho está vazio."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.branch.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-spend-all"
+          },
+          {
+            "id": "opt-keep-some"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-keep-some"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What could Zara do with her 5 coins?",
+          "feedback": {
+            "met": "Thanks. Now let's see Zara's plan.",
+            "not_yet": "Thanks. Now let's see Zara's plan."
+          },
+          "scene": "Zara gets 5 coins. The kite costs 10 coins.",
+          "options": [
+            {
+              "label": "Spend all 5 now"
+            },
+            {
+              "label": "Keep some for the kite"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede hacer Zara con sus 5 monedas?",
+          "feedback": {
+            "met": "Gracias. Ahora vemos el plan de Zara.",
+            "not_yet": "Gracias. Ahora vemos el plan de Zara."
+          },
+          "scene": "Zara recibe 5 monedas. El papalote cuesta 10 monedas.",
+          "options": [
+            {
+              "label": "Gastar las 5 ahora"
+            },
+            {
+              "label": "Guardar algunas para el papalote"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que a Zara pode fazer com as 5 moedas?",
+          "feedback": {
+            "met": "Vamos ver o plano da Zara.",
+            "not_yet": "Vamos ver o plano da Zara."
+          },
+          "scene": "A Zara ganha 5 moedas. A pipa custa 10 moedas.",
+          "options": [
+            {
+              "label": "Gastar as 5 agora"
+            },
+            {
+              "label": "Guardar algumas para a pipa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "goal-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The kite costs 10 coins.",
+          "line": "That is my goal: 10 coins. A goal has a size."
+        },
+        "es-MX": {
+          "prompt": "El papalote cuesta 10 monedas.",
+          "line": "Esa es mi meta: 10 monedas. Una meta tiene un tamaño."
+        },
+        "pt-BR": {
+          "prompt": "A pipa custa 10 moedas.",
+          "line": "Essa é minha meta: 10 moedas. Uma meta tem um tamanho."
+        }
+      }
+    },
+    {
+      "id": "goalbar-01",
+      "type": "visual.goal-bullet.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 12,
+        "target": 10,
+        "step": 2,
+        "initial": 0,
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's goal bar: 10 coins. Slide it to the goal mark."
+        },
+        "es-MX": {
+          "prompt": "La barra de Zara: 10 monedas. Deslízala hasta la marca de la meta."
+        },
+        "pt-BR": {
+          "prompt": "A barra da Zara: 10 moedas. Deslize até a marca da meta."
+        }
+      }
+    },
+    {
+      "id": "goalbar-02",
+      "type": "visual.goal-bullet.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "minimum": 0,
+        "maximum": 10,
+        "target": 8,
+        "step": 2,
+        "initial": 0,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 8
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara's sticker book costs 8. Slide the bar to the goal.",
+          "feedback": {
+            "met": "The bar reached the goal mark.",
+            "not_yet": "Not yet. The bar must reach the goal mark."
+          },
+          "help": [
+            "The goal mark shows how big the goal is.",
+            "Slide until the bar reaches the mark."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El álbum de estampas cuesta 8. Desliza la barra hasta la meta.",
+          "feedback": {
+            "met": "La barra llegó a la marca de la meta.",
+            "not_yet": "Todavía no. La barra debe llegar a la marca de la meta."
+          },
+          "help": [
+            "La marca muestra qué tan grande es la meta.",
+            "Desliza hasta que la barra llegue a la marca."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O álbum de figurinhas custa 8. Deslize a barra até a meta.",
+          "feedback": {
+            "met": "A barra chegou à marca da meta.",
+            "not_yet": "Ainda não. A barra deve chegar à marca da meta."
+          },
+          "help": [
+            "A marca mostra o tamanho da meta.",
+            "Deslize até a barra chegar à marca."
+          ]
+        }
+      }
+    },
+    {
+      "id": "rule-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara gets 5 coins each time.",
+          "line": "My rule: keep 2 of every 5 coins. Spend the other 3."
+        },
+        "es-MX": {
+          "prompt": "Zara recibe 5 monedas cada vez.",
+          "line": "Mi regla: guardo 2 de cada 5 monedas. Las otras 3 las gasto."
+        },
+        "pt-BR": {
+          "prompt": "A Zara ganha 5 moedas de cada vez.",
+          "line": "Minha regra: guardo 2 de cada 5 moedas. As outras 3 eu gasto."
+        }
+      }
+    },
+    {
+      "id": "round-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Round 1: Zara keeps 2 coins.",
+          "line": "Each kept coin fills one square. Two coins, two squares."
+        },
+        "es-MX": {
+          "prompt": "Ronda 1: Zara guarda 2 monedas.",
+          "line": "Cada moneda guardada llena un cuadro. Dos monedas, dos cuadros."
+        },
+        "pt-BR": {
+          "prompt": "Rodada 1: a Zara guarda 2 moedas.",
+          "line": "Cada moeda guardada enche um quadrinho. Duas moedas, dois quadrinhos."
+        }
+      }
+    },
+    {
+      "id": "frame-01",
+      "type": "math.ten-frame.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "ten-frame"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "start": [
+          2
+        ]
+      },
+      "rubric": {
+        "target": [
+          4
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Round 2: Zara keeps 2 more coins. Fill 2 squares.",
+          "feedback": {
+            "met": "You filled two more squares, one per kept coin.",
+            "not_yet": "Not yet. One kept coin fills one square."
+          },
+          "help": [
+            "Zara's frame already has two squares full.",
+            "Add two more squares to it."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ronda 2: Zara guarda 2 monedas más. Llena 2 cuadros.",
+          "feedback": {
+            "met": "Llenaste dos cuadros más, uno por moneda guardada.",
+            "not_yet": "Todavía no. Cada moneda guardada llena un cuadro."
+          },
+          "help": [
+            "El marco de Zara ya tiene dos cuadros llenos.",
+            "Agrégale dos cuadros más."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rodada 2: a Zara guarda mais 2 moedas. Encha 2 quadrinhos.",
+          "feedback": {
+            "met": "Você encheu mais dois quadrinhos, um por moeda guardada.",
+            "not_yet": "Ainda não. Cada moeda guardada enche um quadrinho."
+          },
+          "help": [
+            "O quadro da Zara já tem dois quadrinhos cheios.",
+            "Acrescente mais dois quadrinhos."
+          ]
+        }
+      }
+    },
+    {
+      "id": "frame-02",
+      "type": "math.ten-frame.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "ten-frame"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "start": [
+          4
+        ]
+      },
+      "rubric": {
+        "target": [
+          6
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Round 3: Zara's jar gets 2 coins. Show them in the frame.",
+          "feedback": {
+            "met": "You added two squares for two kept coins.",
+            "not_yet": "Not yet. Two kept coins fill two squares."
+          },
+          "help": [
+            "Count the full squares first.",
+            "Then fill two more."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ronda 3: la alcancía de Zara recibe 2 monedas. Muéstralas en el marco.",
+          "feedback": {
+            "met": "Agregaste dos cuadros por dos monedas guardadas.",
+            "not_yet": "Todavía no. Dos monedas guardadas llenan dos cuadros."
+          },
+          "help": [
+            "Primero cuenta los cuadros llenos.",
+            "Luego llena dos más."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rodada 3: o cofrinho da Zara recebe 2 moedas. Mostre-as no quadro.",
+          "feedback": {
+            "met": "Você acrescentou dois quadrinhos por duas moedas guardadas.",
+            "not_yet": "Ainda não. Duas moedas guardadas enchem dois quadrinhos."
+          },
+          "help": [
+            "Primeiro conte os quadrinhos cheios.",
+            "Depois encha mais dois."
+          ]
+        }
+      }
+    },
+    {
+      "id": "frame-03",
+      "type": "math.ten-frame.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "ten-frame"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "start": [
+          6
+        ]
+      },
+      "rubric": {
+        "target": [
+          10
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara has 6 saved. Fill the frame to the kite goal.",
+          "feedback": {
+            "met": "You filled the frame all the way to the goal.",
+            "not_yet": "Not yet. Fill until the whole frame is full."
+          },
+          "help": [
+            "The kite costs 10 coins: the whole frame.",
+            "Keep filling until no square is empty."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara tiene 6 guardadas. Llena el marco hasta la meta del papalote.",
+          "feedback": {
+            "met": "Llenaste el marco hasta la meta.",
+            "not_yet": "Todavía no. Llena hasta que el marco esté lleno."
+          },
+          "help": [
+            "El papalote cuesta 10 monedas: todo el marco.",
+            "Sigue llenando hasta que no quede cuadro vacío."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Zara tem 6 guardadas. Encha o quadro até a meta da pipa.",
+          "feedback": {
+            "met": "Você encheu o quadro até a meta.",
+            "not_yet": "Ainda não. Encha até o quadro ficar cheio."
+          },
+          "help": [
+            "A pipa custa 10 moedas: o quadro todo.",
+            "Continue enchendo até não sobrar quadrinho vazio."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-spend-all"
+          },
+          {
+            "id": "opt-keep-one"
+          },
+          {
+            "id": "opt-keep-two"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-keep-two"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fair, what does Zara do with her 5 coins?",
+          "feedback": {
+            "met": "You kept Zara's rule, even at the fair.",
+            "not_yet": "Not yet. Think of Zara's rule once more."
+          },
+          "help": [
+            "Remember Zara's rule for the kite jar.",
+            "How many of every 5 coins does she keep?"
+          ],
+          "scene": "Zara gets 5 coins at the school fair. She follows her kite rule.",
+          "options": [
+            {
+              "label": "Spend all 5 on games"
+            },
+            {
+              "label": "Keep 1, spend 4"
+            },
+            {
+              "label": "Keep 2, spend 3"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria, ¿qué hace Zara con sus 5 monedas?",
+          "feedback": {
+            "met": "Seguiste la regla de Zara, incluso en la feria.",
+            "not_yet": "Todavía no. Piensa otra vez en la regla de Zara."
+          },
+          "help": [
+            "Recuerda la regla de Zara para el papalote.",
+            "¿Cuántas de cada 5 monedas guarda?"
+          ],
+          "scene": "Zara recibe 5 monedas en la feria de la escuela. Sigue su regla del papalote.",
+          "options": [
+            {
+              "label": "Gastar las 5 en juegos"
+            },
+            {
+              "label": "Guardar 1, gastar 4"
+            },
+            {
+              "label": "Guardar 2, gastar 3"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira, o que a Zara faz com as 5 moedas?",
+          "feedback": {
+            "met": "Você seguiu a regra da Zara, até na feira.",
+            "not_yet": "Ainda não. Pense mais uma vez na regra da Zara."
+          },
+          "help": [
+            "Lembre da regra da Zara para a pipa.",
+            "Quantas de cada 5 moedas ela guarda?"
+          ],
+          "scene": "A Zara ganha 5 moedas na feira da escola. Ela segue a regra da pipa.",
+          "options": [
+            {
+              "label": "Gastar as 5 em jogos"
+            },
+            {
+              "label": "Guardar 1, gastar 4"
+            },
+            {
+              "label": "Guardar 2, gastar 3"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

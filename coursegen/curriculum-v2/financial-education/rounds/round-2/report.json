@@ -1,0 +1,1312 @@
+[
+  {
+    "label": "round-1",
+    "lessons": [
+      {
+        "lessonId": "fe-1012-01-unit-price",
+        "mentor": "liruf",
+        "ageBand": "10-12",
+        "segments": 9,
+        "shown": 3,
+        "asked": 6,
+        "leadIn": 2,
+        "askedPerShown": 2,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 4.3,
+            "promptAverage": 16,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 4.7,
+            "promptAverage": 16.5,
+            "longest": 23
+          },
+          "pt-BR": {
+            "mentorAverage": 5.3,
+            "promptAverage": 16.7,
+            "longest": 24
+          }
+        },
+        "readability": {
+          "en-US": 0.3,
+          "es-MX": 93.5,
+          "pt-BR": 106.4
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-02-plan-the-budget",
+        "mentor": "rho",
+        "ageBand": "10-12",
+        "segments": 12,
+        "shown": 4,
+        "asked": 8,
+        "leadIn": 2,
+        "askedPerShown": 2,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 5.8,
+            "promptAverage": 17.1,
+            "longest": 19
+          },
+          "es-MX": {
+            "mentorAverage": 5.3,
+            "promptAverage": 16.8,
+            "longest": 21
+          },
+          "pt-BR": {
+            "mentorAverage": 4.8,
+            "promptAverage": 17,
+            "longest": 21
+          }
+        },
+        "readability": {
+          "en-US": -1,
+          "es-MX": 95.7,
+          "pt-BR": 114.7
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-03-saving-plan",
+        "mentor": "zara",
+        "ageBand": "10-12",
+        "segments": 7,
+        "shown": 3,
+        "asked": 4,
+        "leadIn": 1,
+        "askedPerShown": 1.33,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 7.7,
+            "promptAverage": 20,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 7.7,
+            "promptAverage": 21.3,
+            "longest": 23
+          },
+          "pt-BR": {
+            "mentorAverage": 7.7,
+            "promptAverage": 22.3,
+            "longest": 24
+          }
+        },
+        "readability": {
+          "en-US": -0.6,
+          "es-MX": 103.2,
+          "pt-BR": 119.2
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-04-suspicious-messages",
+        "mentor": "dina",
+        "ageBand": "10-12",
+        "segments": 8,
+        "shown": 4,
+        "asked": 4,
+        "leadIn": 3,
+        "askedPerShown": 1,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 3.5,
+            "promptAverage": 9.3,
+            "longest": 14
+          },
+          "es-MX": {
+            "mentorAverage": 3.8,
+            "promptAverage": 8.5,
+            "longest": 12
+          },
+          "pt-BR": {
+            "mentorAverage": 4,
+            "promptAverage": 10,
+            "longest": 17
+          }
+        },
+        "readability": {
+          "en-US": 2,
+          "es-MX": 78.7,
+          "pt-BR": 90.2
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-01-count-coins",
+        "mentor": "dina",
+        "ageBand": "6-9",
+        "segments": 8,
+        "shown": 3,
+        "asked": 5,
+        "leadIn": 2,
+        "askedPerShown": 1.67,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 4,
+            "promptAverage": 8.6,
+            "longest": 11
+          },
+          "es-MX": {
+            "mentorAverage": 4,
+            "promptAverage": 10,
+            "longest": 12
+          },
+          "pt-BR": {
+            "mentorAverage": 4.3,
+            "promptAverage": 10.2,
+            "longest": 13
+          }
+        },
+        "readability": {
+          "en-US": -0.4,
+          "es-MX": 107.4,
+          "pt-BR": 120.8
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-02-change-counting-up",
+        "mentor": "rho",
+        "ageBand": "6-9",
+        "segments": 9,
+        "shown": 3,
+        "asked": 6,
+        "leadIn": 2,
+        "askedPerShown": 2,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 3.3,
+            "promptAverage": 9.8,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 3.3,
+            "promptAverage": 9.8,
+            "longest": 12
+          },
+          "pt-BR": {
+            "mentorAverage": 2.7,
+            "promptAverage": 9.7,
+            "longest": 12
+          }
+        },
+        "readability": {
+          "en-US": -1.4,
+          "es-MX": 99.8,
+          "pt-BR": 115.7
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-03-needs-and-wants",
+        "mentor": "liruf",
+        "ageBand": "6-9",
+        "segments": 7,
+        "shown": 3,
+        "asked": 4,
+        "leadIn": 1,
+        "askedPerShown": 1.33,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 4,
+            "promptAverage": 8,
+            "longest": 11
+          },
+          "es-MX": {
+            "mentorAverage": 4.3,
+            "promptAverage": 8.3,
+            "longest": 12
+          },
+          "pt-BR": {
+            "mentorAverage": 4.3,
+            "promptAverage": 8.8,
+            "longest": 12
+          }
+        },
+        "readability": {
+          "en-US": 0.3,
+          "es-MX": 72.5,
+          "pt-BR": 88.8
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-04-market-stall",
+        "mentor": "zara",
+        "ageBand": "6-9",
+        "segments": 9,
+        "shown": 3,
+        "asked": 6,
+        "leadIn": 2,
+        "askedPerShown": 2,
+        "roles": null,
+        "demonstrations": null,
+        "independentExercises": null,
+        "exercisesPerDemonstration": null,
+        "feedbackMetShare": 1,
+        "preItems": 0,
+        "postItems": 0,
+        "words": {
+          "en-US": {
+            "mentorAverage": 3,
+            "promptAverage": 9.2,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 3,
+            "promptAverage": 9.8,
+            "longest": 14
+          },
+          "pt-BR": {
+            "mentorAverage": 3,
+            "promptAverage": 10,
+            "longest": 14
+          }
+        },
+        "readability": {
+          "en-US": 0.3,
+          "es-MX": 91,
+          "pt-BR": 106.4
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      }
+    ],
+    "totals": {
+      "lessons": 8,
+      "segments": 69,
+      "shown": 26,
+      "asked": 43,
+      "shownShare": 0.38,
+      "averageLeadIn": 1.9,
+      "lessonsWithPre": 0,
+      "lessonsWithPost": 1,
+      "lessonsWithRoles": 0,
+      "demonstrations": 0,
+      "independentExercises": 0,
+      "exercisesPerDemonstration": null,
+      "gradedShare": 0.62,
+      "feedbackMetShare": 1,
+      "emitBlocked": 0,
+      "emitReview": 12
+    }
+  },
+  {
+    "label": "round-2-authored",
+    "lessons": [
+      {
+        "lessonId": "fe-1012-01-unit-price",
+        "mentor": "liruf",
+        "ageBand": "10-12",
+        "segments": 11,
+        "shown": 5,
+        "asked": 6,
+        "leadIn": 1,
+        "askedPerShown": 1.2,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 2,
+          "practice": 2,
+          "transfer": 1
+        },
+        "demonstrations": 6,
+        "independentExercises": 3,
+        "exercisesPerDemonstration": 0.5,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 3.8,
+            "promptAverage": 17.5,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 4,
+            "promptAverage": 19.3,
+            "longest": 22
+          },
+          "pt-BR": {
+            "mentorAverage": 4.8,
+            "promptAverage": 19.5,
+            "longest": 24
+          }
+        },
+        "readability": {
+          "en-US": -0.4,
+          "es-MX": 99.2,
+          "pt-BR": 115.3
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-02-plan-the-budget",
+        "mentor": "rho",
+        "ageBand": "10-12",
+        "segments": 11,
+        "shown": 6,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 0.83,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 7,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.29,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 6.7,
+            "promptAverage": 18.8,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 6.7,
+            "promptAverage": 19.6,
+            "longest": 21
+          },
+          "pt-BR": {
+            "mentorAverage": 6.2,
+            "promptAverage": 20.2,
+            "longest": 23
+          }
+        },
+        "readability": {
+          "en-US": -1.3,
+          "es-MX": 105.5,
+          "pt-BR": 122.8
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-03-saving-plan",
+        "mentor": "zara",
+        "ageBand": "10-12",
+        "segments": 10,
+        "shown": 5,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 1,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 6,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.33,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 5.6,
+            "promptAverage": 19.2,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 5.4,
+            "promptAverage": 20.8,
+            "longest": 22
+          },
+          "pt-BR": {
+            "mentorAverage": 5.6,
+            "promptAverage": 22.4,
+            "longest": 24
+          }
+        },
+        "readability": {
+          "en-US": -0.4,
+          "es-MX": 104.1,
+          "pt-BR": 119.9
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-04-suspicious-messages",
+        "mentor": "dina",
+        "ageBand": "10-12",
+        "segments": 9,
+        "shown": 5,
+        "asked": 4,
+        "leadIn": 1,
+        "askedPerShown": 0.8,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 1,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 5,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.4,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 9.6,
+            "promptAverage": 12.3,
+            "longest": 14
+          },
+          "es-MX": {
+            "mentorAverage": 11,
+            "promptAverage": 11.3,
+            "longest": 15
+          },
+          "pt-BR": {
+            "mentorAverage": 12,
+            "promptAverage": 13.3,
+            "longest": 17
+          }
+        },
+        "readability": {
+          "en-US": 1.8,
+          "es-MX": 82.5,
+          "pt-BR": 93.4
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-01-count-coins",
+        "mentor": "dina",
+        "ageBand": "6-9",
+        "segments": 11,
+        "shown": 6,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 0.83,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 7,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.29,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 7.8,
+            "promptAverage": 10.4,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 8.7,
+            "promptAverage": 12.4,
+            "longest": 15
+          },
+          "pt-BR": {
+            "mentorAverage": 9.3,
+            "promptAverage": 12,
+            "longest": 15
+          }
+        },
+        "readability": {
+          "en-US": 0.6,
+          "es-MX": 99.1,
+          "pt-BR": 110.8
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-02-change-counting-up",
+        "mentor": "rho",
+        "ageBand": "6-9",
+        "segments": 10,
+        "shown": 4,
+        "asked": 6,
+        "leadIn": 1,
+        "askedPerShown": 1.5,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 3,
+          "guided": 2,
+          "practice": 2,
+          "transfer": 1
+        },
+        "demonstrations": 5,
+        "independentExercises": 3,
+        "exercisesPerDemonstration": 0.6,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 9.3,
+            "promptAverage": 10.7,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 10.5,
+            "promptAverage": 12.5,
+            "longest": 14
+          },
+          "pt-BR": {
+            "mentorAverage": 10.3,
+            "promptAverage": 12.5,
+            "longest": 14
+          }
+        },
+        "readability": {
+          "en-US": -1.2,
+          "es-MX": 100.1,
+          "pt-BR": 112.5
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-03-needs-and-wants",
+        "mentor": "liruf",
+        "ageBand": "6-9",
+        "segments": 11,
+        "shown": 6,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 0.83,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 7,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.29,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 4.2,
+            "promptAverage": 8.6,
+            "longest": 11
+          },
+          "es-MX": {
+            "mentorAverage": 4.3,
+            "promptAverage": 9.4,
+            "longest": 12
+          },
+          "pt-BR": {
+            "mentorAverage": 5,
+            "promptAverage": 10.2,
+            "longest": 12
+          }
+        },
+        "readability": {
+          "en-US": -0.2,
+          "es-MX": 72.8,
+          "pt-BR": 89.8
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-04-market-stall",
+        "mentor": "zara",
+        "ageBand": "6-9",
+        "segments": 10,
+        "shown": 5,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 1,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 1,
+          "practice": 2,
+          "transfer": 1
+        },
+        "demonstrations": 5,
+        "independentExercises": 3,
+        "exercisesPerDemonstration": 0.6,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 7.8,
+            "promptAverage": 10.4,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 8.8,
+            "promptAverage": 11,
+            "longest": 14
+          },
+          "pt-BR": {
+            "mentorAverage": 8.4,
+            "promptAverage": 11.8,
+            "longest": 14
+          }
+        },
+        "readability": {
+          "en-US": 0.3,
+          "es-MX": 90.8,
+          "pt-BR": 107.4
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      }
+    ],
+    "totals": {
+      "lessons": 8,
+      "segments": 83,
+      "shown": 42,
+      "asked": 41,
+      "shownShare": 0.51,
+      "averageLeadIn": 1,
+      "lessonsWithPre": 8,
+      "lessonsWithPost": 8,
+      "lessonsWithRoles": 8,
+      "demonstrations": 48,
+      "independentExercises": 19,
+      "exercisesPerDemonstration": 0.4,
+      "gradedShare": 0.49,
+      "feedbackMetShare": 1,
+      "emitBlocked": 0,
+      "emitReview": 12
+    }
+  },
+  {
+    "label": "round-2-reviewed",
+    "lessons": [
+      {
+        "lessonId": "fe-1012-01-unit-price",
+        "mentor": "liruf",
+        "ageBand": "10-12",
+        "segments": 11,
+        "shown": 5,
+        "asked": 6,
+        "leadIn": 1,
+        "askedPerShown": 1.2,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 2,
+          "practice": 2,
+          "transfer": 1
+        },
+        "demonstrations": 6,
+        "independentExercises": 3,
+        "exercisesPerDemonstration": 0.5,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 4.4,
+            "promptAverage": 17.8,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 5.4,
+            "promptAverage": 19.5,
+            "longest": 22
+          },
+          "pt-BR": {
+            "mentorAverage": 6.2,
+            "promptAverage": 19.7,
+            "longest": 24
+          }
+        },
+        "readability": {
+          "en-US": -0.6,
+          "es-MX": 99,
+          "pt-BR": 116.8
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-02-plan-the-budget",
+        "mentor": "rho",
+        "ageBand": "10-12",
+        "segments": 11,
+        "shown": 6,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 0.83,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 7,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.29,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 7.3,
+            "promptAverage": 18.8,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 7.7,
+            "promptAverage": 19.6,
+            "longest": 21
+          },
+          "pt-BR": {
+            "mentorAverage": 8,
+            "promptAverage": 20.8,
+            "longest": 23
+          }
+        },
+        "readability": {
+          "en-US": -1,
+          "es-MX": 104.2,
+          "pt-BR": 116.3
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-03-saving-plan",
+        "mentor": "zara",
+        "ageBand": "10-12",
+        "segments": 10,
+        "shown": 5,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 1,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 6,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.33,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 8.2,
+            "promptAverage": 19.2,
+            "longest": 20
+          },
+          "es-MX": {
+            "mentorAverage": 7.8,
+            "promptAverage": 20.8,
+            "longest": 22
+          },
+          "pt-BR": {
+            "mentorAverage": 8.6,
+            "promptAverage": 22.6,
+            "longest": 25
+          }
+        },
+        "readability": {
+          "en-US": -0.5,
+          "es-MX": 105.2,
+          "pt-BR": 121.6
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-1012-04-suspicious-messages",
+        "mentor": "dina",
+        "ageBand": "10-12",
+        "segments": 10,
+        "shown": 6,
+        "asked": 4,
+        "leadIn": 1,
+        "askedPerShown": 0.67,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 1,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 6,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.33,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 9.8,
+            "promptAverage": 12.3,
+            "longest": 14
+          },
+          "es-MX": {
+            "mentorAverage": 11.2,
+            "promptAverage": 11.3,
+            "longest": 15
+          },
+          "pt-BR": {
+            "mentorAverage": 11.8,
+            "promptAverage": 13.3,
+            "longest": 17
+          }
+        },
+        "readability": {
+          "en-US": 1.7,
+          "es-MX": 82.8,
+          "pt-BR": 93.9
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 3,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "14": 1,
+            "16": 2
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-01-count-coins",
+        "mentor": "dina",
+        "ageBand": "6-9",
+        "segments": 11,
+        "shown": 6,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 0.83,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 7,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.29,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 7.8,
+            "promptAverage": 10.4,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 8.7,
+            "promptAverage": 12.4,
+            "longest": 15
+          },
+          "pt-BR": {
+            "mentorAverage": 9.3,
+            "promptAverage": 12.4,
+            "longest": 15
+          }
+        },
+        "readability": {
+          "en-US": 0.2,
+          "es-MX": 101.7,
+          "pt-BR": 113.4
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-02-change-counting-up",
+        "mentor": "rho",
+        "ageBand": "6-9",
+        "segments": 10,
+        "shown": 4,
+        "asked": 6,
+        "leadIn": 1,
+        "askedPerShown": 1.5,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 3,
+          "guided": 2,
+          "practice": 2,
+          "transfer": 1
+        },
+        "demonstrations": 5,
+        "independentExercises": 3,
+        "exercisesPerDemonstration": 0.6,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 9.3,
+            "promptAverage": 10.7,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 10.5,
+            "promptAverage": 12.5,
+            "longest": 14
+          },
+          "pt-BR": {
+            "mentorAverage": 10.5,
+            "promptAverage": 12.5,
+            "longest": 14
+          }
+        },
+        "readability": {
+          "en-US": -1.2,
+          "es-MX": 100.2,
+          "pt-BR": 112.2
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-03-needs-and-wants",
+        "mentor": "liruf",
+        "ageBand": "6-9",
+        "segments": 11,
+        "shown": 6,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 0.83,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 5,
+          "guided": 2,
+          "practice": 1,
+          "transfer": 1
+        },
+        "demonstrations": 7,
+        "independentExercises": 2,
+        "exercisesPerDemonstration": 0.29,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 5.7,
+            "promptAverage": 8.8,
+            "longest": 11
+          },
+          "es-MX": {
+            "mentorAverage": 5.7,
+            "promptAverage": 9.4,
+            "longest": 12
+          },
+          "pt-BR": {
+            "mentorAverage": 6.2,
+            "promptAverage": 10.2,
+            "longest": 12
+          }
+        },
+        "readability": {
+          "en-US": -0.2,
+          "es-MX": 74,
+          "pt-BR": 88
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 1,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 1
+          }
+        }
+      },
+      {
+        "lessonId": "fe-69-04-market-stall",
+        "mentor": "zara",
+        "ageBand": "6-9",
+        "segments": 10,
+        "shown": 5,
+        "asked": 5,
+        "leadIn": 1,
+        "askedPerShown": 1,
+        "roles": {
+          "hook": 1,
+          "pre": 1,
+          "example": 4,
+          "guided": 1,
+          "practice": 2,
+          "transfer": 1
+        },
+        "demonstrations": 5,
+        "independentExercises": 3,
+        "exercisesPerDemonstration": 0.6,
+        "feedbackMetShare": 1,
+        "preItems": 1,
+        "postItems": 1,
+        "words": {
+          "en-US": {
+            "mentorAverage": 8.4,
+            "promptAverage": 10.2,
+            "longest": 12
+          },
+          "es-MX": {
+            "mentorAverage": 8.4,
+            "promptAverage": 11.2,
+            "longest": 14
+          },
+          "pt-BR": {
+            "mentorAverage": 8.8,
+            "promptAverage": 12,
+            "longest": 14
+          }
+        },
+        "readability": {
+          "en-US": 0.2,
+          "es-MX": 95,
+          "pt-BR": 109.9
+        },
+        "emit": {
+          "blocked": 0,
+          "review": 2,
+          "blockedByGate": {},
+          "reviewByGate": {
+            "16": 2
+          }
+        }
+      }
+    ],
+    "totals": {
+      "lessons": 8,
+      "segments": 84,
+      "shown": 43,
+      "asked": 41,
+      "shownShare": 0.51,
+      "averageLeadIn": 1,
+      "lessonsWithPre": 8,
+      "lessonsWithPost": 8,
+      "lessonsWithRoles": 8,
+      "demonstrations": 49,
+      "independentExercises": 19,
+      "exercisesPerDemonstration": 0.39,
+      "gradedShare": 0.49,
+      "feedbackMetShare": 1,
+      "emitBlocked": 0,
+      "emitReview": 13
+    }
+  }
+]

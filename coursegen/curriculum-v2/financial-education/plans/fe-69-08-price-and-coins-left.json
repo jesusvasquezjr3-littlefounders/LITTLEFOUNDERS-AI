@@ -1,0 +1,491 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-corner-shop",
+  "lesson_id": "fe-69-08-price-and-coins-left",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.what-is-price",
+    "money.subtract-money"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina va con el panadero con 10 monedas. Primero recuerda la vez que dio todas sus monedas sin preguntar el precio; después el panadero dice que el pan cuesta 6, el niño paga justo ese precio y cuenta en la recta cuántas monedas quedan.",
+  "title": {
+    "en-US": "Price and coins left",
+    "es-MX": "El precio y las monedas que quedan",
+    "pt-BR": "O preço e as moedas que sobram"
+  },
+  "new_concepts": [
+    "biz.what-is-price",
+    "money.subtract-money"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina hands over all 10 of her coins for a 6-coin loaf without asking the price first.",
+    "recovery": "Dina counts the 4 coins she should have kept and says that next time she will ask the price before she pays."
+  },
+  "regional": {
+    "universal": "The lesson uses play coins and made-up prices only, so no real shop, custom or currency changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina visits the baker with 10 coins.",
+          "line": "No rush today. Take a breath, and we buy a loaf together."
+        },
+        "es-MX": {
+          "prompt": "Dina visita al panadero con 10 monedas.",
+          "line": "Sin prisa hoy. Respira, y compramos un pan juntos."
+        },
+        "pt-BR": {
+          "prompt": "A Dina visita o padeiro com 10 moedas.",
+          "line": "Sem pressa hoje. Respire, e compramos um pão juntos."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.subtract-money",
+      "payload": {
+        "minimum": 0,
+        "maximum": 10,
+        "step": 1,
+        "initial": 0
+      },
+      "rubric": {
+        "target": 7
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina has 9 coins and gives 2 away. Mark the coins left.",
+          "feedback": {
+            "met": "Thanks. Now watch how Dina takes it slowly.",
+            "not_yet": "Thanks. Now watch how Dina takes it slowly."
+          }
+        },
+        "es-MX": {
+          "prompt": "Dina tiene 9 monedas y da 2. Marca cuántas quedan.",
+          "feedback": {
+            "met": "Gracias. Ahora mira cómo Dina lo hace con calma.",
+            "not_yet": "Gracias. Ahora mira cómo Dina lo hace con calma."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina tem 9 moedas e dá 2. Marque quantas sobram.",
+          "feedback": {
+            "met": "Anotado. Agora veja como a Dina faz com calma.",
+            "not_yet": "Anotado. Agora veja como a Dina faz com calma."
+          }
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Dina.",
+          "setup": "Last time I had 10 coins. The loaf cost 6.",
+          "misjudgment": "I gave all 10 coins. I forgot to ask the price.",
+          "recovery": "That’s okay. I could have kept 4. Next time I ask first."
+        },
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Dina.",
+          "setup": "La vez pasada tenía 10 monedas. El pan costaba 6.",
+          "misjudgment": "Di las 10 monedas. Olvidé preguntar el precio.",
+          "recovery": "Está bien. Pude quedarme con 4. La próxima vez pregunto el precio primero."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Dina.",
+          "setup": "Da outra vez eu tinha 10 moedas. O pão custava 6.",
+          "misjudgment": "Dei as 10 moedas. Esqueci de perguntar o preço.",
+          "recovery": "Tudo bem. Eu podia ter guardado 4. Da próxima vez pergunto o preço primeiro."
+        }
+      }
+    },
+    {
+      "id": "price-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: The baker says the loaf costs 6 coins.",
+          "line": "The price is what we give to get the loaf."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: El panadero dice que el pan cuesta 6 monedas.",
+          "line": "El precio es lo que damos para llevarnos el pan."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: O padeiro diz que o pão custa 6 moedas.",
+          "line": "O preço é o que damos para levar o pão."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 4,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A bun costs 4 coins. Give the baker the price.",
+          "help": [
+            "Dina heard the baker say the price.",
+            "Give the baker exactly the price."
+          ],
+          "feedback": {
+            "met": "You gave exactly the price. That is what a buyer gives.",
+            "not_yet": "Look at the price the baker said. Give that many coins."
+          }
+        },
+        "es-MX": {
+          "prompt": "Un bolillo cuesta 4 monedas. Dale al panadero el precio.",
+          "help": [
+            "Dina oyó el precio que dijo el panadero.",
+            "Dale al panadero justo el precio."
+          ],
+          "feedback": {
+            "met": "Diste justo el precio. Eso es lo que da quien compra.",
+            "not_yet": "Mira el precio que dijo el panadero. Da esas monedas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um pãozinho custa 4 moedas. Dê ao padeiro o preço.",
+          "help": [
+            "A Dina ouviu o preço que o padeiro disse.",
+            "Dê ao padeiro exatamente o preço."
+          ],
+          "feedback": {
+            "met": "Você deu exatamente o preço. É isso que quem compra dá.",
+            "not_yet": "Veja o preço que o padeiro disse. Dê essas moedas."
+          }
+        }
+      }
+    },
+    {
+      "id": "left-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: Dina gives 6 coins. She keeps the rest.",
+          "line": "She had 10. Count back 6: 9, 8, 7, 6, 5, 4."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: Dina da 6 monedas. Se queda con el resto.",
+          "line": "Tenía 10. Cuenta hacia atrás 6: 9, 8, 7, 6, 5, 4."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: A Dina dá 6 moedas. Ela fica com o resto.",
+          "line": "Ela tinha 10. Conte 6 para trás: 9, 8, 7, 6, 5, 4."
+        }
+      }
+    },
+    {
+      "id": "left-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Four coins are left. Dina marks 4 on the line.",
+          "line": "10 take away 6 leaves 4. Those are the coins left."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: Quedan cuatro monedas. Dina marca el 4 en la recta.",
+          "line": "10 menos 6 deja 4. Esas son las monedas que quedan."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: Sobram quatro moedas. A Dina marca o 4 na reta.",
+          "line": "10 menos 6 dá 4. Essas são as moedas que sobram."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.subtract-money",
+      "payload": {
+        "minimum": 0,
+        "maximum": 10,
+        "step": 1,
+        "initial": 0
+      },
+      "rubric": {
+        "target": 5
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina pays 3 of her 8 coins. Mark the coins left.",
+          "help": [
+            "Dina counted back from what she had.",
+            "Take away the 3 she paid."
+          ],
+          "feedback": {
+            "met": "You took the price away. Those are the coins left.",
+            "not_yet": "Count back, like Dina. Start at what she had."
+          }
+        },
+        "es-MX": {
+          "prompt": "Dina paga 3 de sus 8 monedas. Marca cuántas quedan.",
+          "help": [
+            "Dina contó hacia atrás desde lo que tenía.",
+            "Quita las 3 que pagó."
+          ],
+          "feedback": {
+            "met": "Quitaste el precio. Esas son las monedas que quedan.",
+            "not_yet": "Cuenta hacia atrás, como Dina. Empieza en lo que tenía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina paga 3 das suas 8 moedas. Marque quantas sobram.",
+          "help": [
+            "A Dina contou de trás para frente.",
+            "Tire as 3 moedas que ela pagou."
+          ],
+          "feedback": {
+            "met": "Você tirou o preço. Essas são as moedas que sobram.",
+            "not_yet": "Conte de trás para frente, como a Dina. Comece no que ela tinha."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 5
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 7,
+        "fewest": false
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A muffin costs 7 coins. Give the baker the price.",
+          "feedback": {
+            "met": "You gave exactly the price. Not more, not less.",
+            "not_yet": "Look at the price the baker said. Give that many coins."
+          }
+        },
+        "es-MX": {
+          "prompt": "Una concha cuesta 7 monedas. Dale al panadero el precio.",
+          "feedback": {
+            "met": "Diste justo el precio. Ni más, ni menos.",
+            "not_yet": "Mira el precio que dijo el panadero. Da esas monedas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um bolinho custa 7 moedas. Dê ao padeiro o preço.",
+          "feedback": {
+            "met": "Você deu exatamente o preço. Nem mais, nem menos.",
+            "not_yet": "Veja o preço que o padeiro disse. Dê essas moedas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.subtract-money",
+      "payload": {
+        "minimum": 0,
+        "maximum": 10,
+        "step": 1,
+        "initial": 0
+      },
+      "rubric": {
+        "target": 3
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina pays 7 of her 10 coins. Mark the coins left.",
+          "feedback": {
+            "met": "You took the price away. Those are the coins left.",
+            "not_yet": "Count back, like Dina. Start at what she had."
+          }
+        },
+        "es-MX": {
+          "prompt": "Dina paga 7 de sus 10 monedas. Marca cuántas quedan.",
+          "feedback": {
+            "met": "Quitaste el precio. Esas son las monedas que quedan.",
+            "not_yet": "Cuenta hacia atrás, como Dina. Empieza en lo que tenía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A Dina paga 7 das suas 10 moedas. Marque quantas sobram.",
+          "feedback": {
+            "met": "Você tirou o preço. Essas são as moedas que sobram.",
+            "not_yet": "Conte de trás para frente, como a Dina. Comece no que ela tinha."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.number-line.whole.v2",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.subtract-money",
+      "payload": {
+        "minimum": 0,
+        "maximum": 10,
+        "step": 1,
+        "initial": 0
+      },
+      "rubric": {
+        "target": 6
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the fair, Dina pays 3 of 9. Mark the coins left.",
+          "feedback": {
+            "met": "Yes. At the fair too, you take the price away.",
+            "not_yet": "Count back, like Dina. Start at what she had."
+          }
+        },
+        "es-MX": {
+          "prompt": "En la kermés, Dina paga 3 de 9. Marca cuántas monedas quedan.",
+          "feedback": {
+            "met": "Sí. También en la kermés, quitas el precio.",
+            "not_yet": "Cuenta hacia atrás, como Dina. Empieza en lo que tenía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na quermesse, a Dina paga 3 de 9. Marque quantas moedas sobram.",
+          "feedback": {
+            "met": "Isso. Na quermesse também, você tira o preço.",
+            "not_yet": "Conte de trás para frente, como a Dina. Comece no que ela tinha."
+          }
+        }
+      }
+    }
+  ]
+}

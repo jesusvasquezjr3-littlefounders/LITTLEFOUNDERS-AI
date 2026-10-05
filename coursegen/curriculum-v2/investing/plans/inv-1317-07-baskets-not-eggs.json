@@ -1,0 +1,1170 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-risk-and-baskets",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "lesson_id": "inv-1317-07-baskets-not-eggs",
+  "knowledge_component_ids": [
+    "invest.funds-and-shares",
+    "invest.diversification",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho tiene 1,000 monedas de simulación y debe decidir entre una sola empresa o una canasta de veinte piezas. Con él la persona distingue una acción de un fondo, lee un mapa de áreas con cuatro sectores, compara lo que pierde quien lo pone todo en uno frente a quien reparte cuando un sector cae 40 por ciento, arma una mezcla que cumple un límite de riesgo y una meta de rendimiento y descubre que repartir reduce el riesgo pero no lo elimina. Cierra en un contexto nuevo, un club con dinero ficticio.",
+  "title": {
+    "en-US": "Baskets, not eggs",
+    "es-MX": "Canastas, no huevos",
+    "pt-BR": "Cestas, não ovos"
+  },
+  "new_concepts": [
+    "invest.funds-and-shares",
+    "invest.diversification"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only, in a pretend sandbox; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho holds 1,000 pretend coins and one question: one company, or a basket of twenty pieces?",
+          "line": "I measure what one bad year costs in each."
+        },
+        "es-MX": {
+          "prompt": "Rho tiene 1,000 monedas de simulación y una pregunta: ¿una sola empresa o una canasta de veinte piezas?",
+          "line": "Mido cuánto cuesta un mal año en cada una."
+        },
+        "pt-BR": {
+          "prompt": "O Rho tem 1.000 moedas da simulação e uma pergunta: uma só empresa, ou uma cesta de vinte peças?",
+          "line": "Eu meço quanto custa um ano ruim em cada uma."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-all"
+          },
+          {
+            "id": "reply-wait"
+          },
+          {
+            "id": "reply-spread"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-spread"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Kai picked one company for all 1,000 coins. What do you say?",
+          "speaker": "Kai",
+          "line": "I know this company best. It's the safest place for all 1,000 coins.",
+          "replies": [
+            {
+              "label": "Put it all in: fewer things to watch"
+            },
+            {
+              "label": "Wait for it to rise twice first"
+            },
+            {
+              "label": "Spread the coins over several companies"
+            }
+          ],
+          "feedback": {
+            "met": "Noted. Now Rho measures it.",
+            "not_yet": "Noted. Now Rho measures it."
+          }
+        },
+        "es-MX": {
+          "prompt": "Kai eligió una sola empresa para sus 1,000 monedas. ¿Qué le dices?",
+          "speaker": "Kai",
+          "line": "Conozco muy bien esta empresa. Es el lugar más seguro para las 1,000 monedas.",
+          "replies": [
+            {
+              "label": "Todo ahí: menos cosas que vigilar"
+            },
+            {
+              "label": "Esperar a que suba dos veces"
+            },
+            {
+              "label": "Repartir las monedas en varias empresas"
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Ahora Rho lo mide.",
+            "not_yet": "Anotado. Ahora Rho lo mide."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Kai escolheu uma só empresa para as 1.000 moedas. O que você diz?",
+          "speaker": "Kai",
+          "line": "Conheço bem essa empresa. É o lugar mais seguro para as 1.000 moedas.",
+          "replies": [
+            {
+              "label": "Tudo nela: menos coisas para vigiar"
+            },
+            {
+              "label": "Esperar ela subir duas vezes"
+            },
+            {
+              "label": "Dividir as moedas entre várias empresas"
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Agora o Rho mede isso.",
+            "not_yet": "Anotado. Agora o Rho mede isso."
+          }
+        }
+      }
+    },
+    {
+      "id": "share-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho buys one share of a pretend bakery company.",
+          "line": "Step 1: a share is a small piece of one company. It rises and falls with that company alone."
+        },
+        "es-MX": {
+          "prompt": "Rho compra una acción de una empresa de panadería de simulación.",
+          "line": "Paso 1: una acción es una parte pequeña de una sola empresa. Sube y baja solo con esa empresa."
+        },
+        "pt-BR": {
+          "prompt": "O Rho compra uma ação de uma padaria da simulação.",
+          "line": "Passo 1: uma ação é uma parte pequena de uma única empresa. Sobe e desce só com essa empresa."
+        }
+      }
+    },
+    {
+      "id": "fund-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Now Rho looks at a fund: twenty pieces in one basket.",
+          "line": "Step 2: a fund is that basket, and someone manages it. It moves with all twenty pieces together."
+        },
+        "es-MX": {
+          "prompt": "Ahora Rho mira un fondo: veinte piezas en una canasta.",
+          "line": "Paso 2: un fondo es esa canasta, y alguien la administra. Se mueve con las veinte piezas juntas."
+        },
+        "pt-BR": {
+          "prompt": "Agora o Rho olha um fundo: vinte peças em uma cesta.",
+          "line": "Passo 2: um fundo é essa cesta, e alguém a administra. Ele se move com as vinte peças juntas."
+        }
+      }
+    },
+    {
+      "id": "euler-01",
+      "type": "logic.euler.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "euler"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.funds-and-shares",
+      "payload": {
+        "relation": "disjoint",
+        "sets": [
+          {
+            "id": "set-piece"
+          },
+          {
+            "id": "set-basket"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-share"
+          },
+          {
+            "id": "item-fund"
+          },
+          {
+            "id": "item-jar"
+          }
+        ]
+      },
+      "rubric": {
+        "regions": {
+          "item-share": "first",
+          "item-fund": "second",
+          "item-jar": "neither"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Place each thing in the group that fits it.",
+          "feedback": {
+            "met": "You told a single piece from a managed basket.",
+            "not_yet": "Not yet. Ask how many companies each thing follows."
+          },
+          "help": [
+            "A basket holds many pieces."
+          ],
+          "sets": [
+            {
+              "label": "One company's piece"
+            },
+            {
+              "label": "Basket of pieces"
+            }
+          ],
+          "items": [
+            {
+              "label": "One ferry-company share"
+            },
+            {
+              "label": "A fund of thirty pieces"
+            },
+            {
+              "label": "Coins in a jar"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Coloca cada cosa en el grupo que le corresponde.",
+          "feedback": {
+            "met": "Distinguiste una pieza suelta de una canasta administrada.",
+            "not_yet": "Todavía no. Pregunta de cuántas empresas depende cada cosa."
+          },
+          "help": [
+            "Una canasta tiene muchas piezas."
+          ],
+          "sets": [
+            {
+              "label": "Pieza de una empresa"
+            },
+            {
+              "label": "Canasta de piezas"
+            }
+          ],
+          "items": [
+            {
+              "label": "Una acción de una empresa de ferris"
+            },
+            {
+              "label": "Un fondo de treinta piezas"
+            },
+            {
+              "label": "Monedas en un frasco"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada coisa no grupo que combina com ela.",
+          "feedback": {
+            "met": "Você distinguiu uma peça solta de uma cesta administrada.",
+            "not_yet": "Ainda não. Pergunte de quantas empresas cada coisa depende."
+          },
+          "help": [
+            "Uma cesta tem muitas peças."
+          ],
+          "sets": [
+            {
+              "label": "Peça de uma empresa"
+            },
+            {
+              "label": "Cesta de peças"
+            }
+          ],
+          "items": [
+            {
+              "label": "Uma ação de uma empresa de balsas"
+            },
+            {
+              "label": "Um fundo de trinta peças"
+            },
+            {
+              "label": "Moedas em um pote"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "tree-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "treemap"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "nodes": [
+            {
+              "id": "node-mix"
+            },
+            {
+              "id": "node-food",
+              "value": 250
+            },
+            {
+              "id": "node-energy",
+              "value": 250
+            },
+            {
+              "id": "node-health",
+              "value": 250
+            },
+            {
+              "id": "node-software",
+              "value": 250
+            }
+          ],
+          "links": [
+            {
+              "from": "node-mix",
+              "to": "node-food"
+            },
+            {
+              "from": "node-mix",
+              "to": "node-energy"
+            },
+            {
+              "from": "node-mix",
+              "to": "node-health"
+            },
+            {
+              "from": "node-mix",
+              "to": "node-software"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Rho splits 1,000 coins over four sectors (kinds of business), 250 each. Area shows the money.",
+          "title": "1,000 coins over four sectors",
+          "data": {
+            "nodes": [
+              {
+                "label": "Four-sector mix"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Energy"
+              },
+              {
+                "label": "Health"
+              },
+              {
+                "label": "Software"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: Rho reparte 1,000 monedas en cuatro sectores (tipos de negocio), 250 cada uno. El área muestra el dinero.",
+          "title": "1,000 monedas en cuatro sectores",
+          "data": {
+            "nodes": [
+              {
+                "label": "Mezcla de cuatro sectores"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Energía"
+              },
+              {
+                "label": "Salud"
+              },
+              {
+                "label": "Software"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o Rho divide 1.000 moedas em quatro setores (tipos de negócio), 250 cada um. A área mostra o dinheiro.",
+          "title": "1.000 moedas em quatro setores",
+          "data": {
+            "nodes": [
+              {
+                "label": "Mistura de quatro setores"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Energia"
+              },
+              {
+                "label": "Saúde"
+              },
+              {
+                "label": "Software"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "fall-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "One sector, Energy, falls 40 percent in a bad year.",
+          "line": "Step 4: a holder with all 1,000 coins there loses 400, or 40 per 100 held."
+        },
+        "es-MX": {
+          "prompt": "Un sector, Energía, cae 40 por ciento en un mal año.",
+          "line": "Paso 4: quien puso las 1,000 monedas ahí pierde 400, es decir, 40 por cada 100 que tenía."
+        },
+        "pt-BR": {
+          "prompt": "Um setor, Energia, cai 40 por cento em um ano ruim.",
+          "line": "Passo 4: quem colocou as 1.000 moedas ali perde 400, ou seja, 40 por 100 que tinha."
+        }
+      }
+    },
+    {
+      "id": "mix-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The four-sector mix holds 1,000 coins, 250 in Energy; the other three stay flat.",
+          "line": "Step 5: 40 percent of 250 is 100, so the mix loses 100, or 10 per 100 held."
+        },
+        "es-MX": {
+          "prompt": "La mezcla de cuatro sectores tiene 1,000 monedas, 250 en Energía; los otros tres siguen igual.",
+          "line": "Paso 5: el 40 por ciento de 250 es 100, así que la mezcla pierde 100, o sea 10 por cada 100 que tiene."
+        },
+        "pt-BR": {
+          "prompt": "A mistura de quatro setores tem 1.000 moedas, 250 em Energia; os outros três ficam iguais.",
+          "line": "Passo 5: 40 por cento de 250 é 100, então a mistura perde 100, ou seja, 10 por 100 que tem."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "steps": [
+          {
+            "id": "all-in"
+          },
+          {
+            "id": "mix-loss"
+          },
+          {
+            "id": "saved"
+          },
+          {
+            "id": "per-hundred"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "mix-loss",
+          "saved",
+          "per-hundred"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "mix-loss": "60",
+          "saved": "120",
+          "per-hundred": "10"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mila holds 600 coins: all in one sector, or 200 in each of three. That sector falls 30 percent.",
+          "feedback": {
+            "met": "You worked the loss for the spread mix and what spreading saved.",
+            "not_yet": "Not yet. Follow Rho: the loss in one sector, then the mix."
+          },
+          "help": [
+            "The mix holds 200 in the sector that falls.",
+            "Compare both losses per 100 coins held."
+          ],
+          "steps": [
+            {
+              "expression": "600 × 30 ÷ 100",
+              "result": "180",
+              "spokenText": "All 600 in the sector loses 180"
+            },
+            {
+              "expression": "200 × 30 ÷ 100",
+              "result": "60",
+              "spokenText": "The mix holds 200 there and loses 60"
+            },
+            {
+              "expression": "All-in loss − mix loss",
+              "result": "120",
+              "spokenText": "Spreading saves 120 coins"
+            },
+            {
+              "expression": "Mix loss per 100 coins held",
+              "result": "10",
+              "spokenText": "Sixty lost on 600 held is 10 per 100"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mila tiene 600 monedas: todas en un sector, o 200 en cada uno de tres. Ese sector cae 30 por ciento.",
+          "feedback": {
+            "met": "Calculaste la pérdida de la mezcla repartida y lo que ahorró repartir.",
+            "not_yet": "Todavía no. Sigue a Rho: la pérdida en un sector, luego la mezcla."
+          },
+          "help": [
+            "La mezcla tiene 200 en el sector que cae.",
+            "Compara las dos pérdidas por cada 100 monedas."
+          ],
+          "steps": [
+            {
+              "expression": "600 × 30 ÷ 100",
+              "result": "180",
+              "spokenText": "Las 600 en el sector pierden 180"
+            },
+            {
+              "expression": "200 × 30 ÷ 100",
+              "result": "60",
+              "spokenText": "La mezcla tiene 200 ahí y pierde 60"
+            },
+            {
+              "expression": "Pérdida de todo en uno − pérdida de la mezcla",
+              "result": "120",
+              "spokenText": "Repartir ahorra 120 monedas"
+            },
+            {
+              "expression": "Pérdida de la mezcla por cada 100 monedas",
+              "result": "10",
+              "spokenText": "Perder sesenta de 600 es 10 por cada 100"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Mila tem 600 moedas: todas em um setor, ou 200 em cada um de três. Esse setor cai 30 por cento.",
+          "feedback": {
+            "met": "Você calculou a perda da mistura dividida e o que dividir poupou.",
+            "not_yet": "Ainda não. Siga o Rho: a perda em um setor, depois a mistura."
+          },
+          "help": [
+            "A mistura tem 200 no setor que cai.",
+            "Compare as duas perdas por 100 moedas."
+          ],
+          "steps": [
+            {
+              "expression": "600 × 30 ÷ 100",
+              "result": "180",
+              "spokenText": "As 600 no setor perdem 180"
+            },
+            {
+              "expression": "200 × 30 ÷ 100",
+              "result": "60",
+              "spokenText": "A mistura tem 200 ali e perde 60"
+            },
+            {
+              "expression": "Perda de tudo em um − perda da mistura",
+              "result": "120",
+              "spokenText": "Dividir poupa 120 moedas"
+            },
+            {
+              "expression": "Perda da mistura por 100 moedas",
+              "result": "10",
+              "spokenText": "Perder sessenta de 600 é 10 por 100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "mix-02",
+      "type": "money.diversification.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "portfolio"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "assets": [
+          {
+            "id": "asset-food",
+            "return_bps": 500,
+            "risk_bps": 2000
+          },
+          {
+            "id": "asset-energy",
+            "return_bps": 800,
+            "risk_bps": 3000
+          },
+          {
+            "id": "asset-health",
+            "return_bps": 600,
+            "risk_bps": 2400
+          }
+        ],
+        "step": 10
+      },
+      "rubric": {
+        "max_risk_bps": 1500,
+        "min_return_bps": 600
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Spread 1,000 coins over three sectors: risk at most 15%, return at least 6%.",
+          "feedback": {
+            "met": "Your mix met both the risk limit and the return goal.",
+            "not_yet": "Not yet. Adjust the mix until both limits are met."
+          },
+          "help": [
+            "Spreading lowers risk faster than it lowers return.",
+            "Watch both numbers as you move money."
+          ],
+          "assets": [
+            {
+              "label": "Food"
+            },
+            {
+              "label": "Energy"
+            },
+            {
+              "label": "Health"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Reparte 1,000 monedas en tres sectores: riesgo máximo 15%, rendimiento mínimo 6%.",
+          "feedback": {
+            "met": "Tu mezcla cumplió el límite de riesgo y la meta de rendimiento.",
+            "not_yet": "Todavía no. Ajusta la mezcla hasta cumplir los dos límites."
+          },
+          "help": [
+            "Repartir baja el riesgo más rápido que el rendimiento.",
+            "Mira los dos números mientras mueves dinero."
+          ],
+          "assets": [
+            {
+              "label": "Comida"
+            },
+            {
+              "label": "Energía"
+            },
+            {
+              "label": "Salud"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Divida 1.000 moedas em três setores: risco no máximo 15%, retorno no mínimo 6%.",
+          "feedback": {
+            "met": "Sua mistura cumpriu o limite de risco e a meta de retorno.",
+            "not_yet": "Ainda não. Ajuste a mistura até cumprir os dois limites."
+          },
+          "help": [
+            "Dividir reduz o risco mais rápido que o retorno.",
+            "Olhe os dois números enquanto move o dinheiro."
+          ],
+          "assets": [
+            {
+              "label": "Comida"
+            },
+            {
+              "label": "Energia"
+            },
+            {
+              "label": "Saúde"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "limit-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho tests a harder case: every sector falls in the same bad year.",
+          "line": "Step 6: spreading cuts the damage from one sector, but cannot stop a fall that hits all of them."
+        },
+        "es-MX": {
+          "prompt": "Rho prueba un caso más duro: todos los sectores caen en el mismo mal año.",
+          "line": "Paso 6: repartir reduce el daño de un sector, pero no frena una caída que golpea a todos."
+        },
+        "pt-BR": {
+          "prompt": "O Rho testa um caso mais duro: todos os setores caem no mesmo ano ruim.",
+          "line": "Passo 6: dividir reduz o dano de um setor, mas não segura uma queda que atinge todos."
+        }
+      }
+    },
+    {
+      "id": "tree-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "treemap"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "nodes": [
+            {
+              "id": "node-basket"
+            },
+            {
+              "id": "node-food",
+              "value": 100
+            },
+            {
+              "id": "node-energy",
+              "value": 100
+            },
+            {
+              "id": "node-health",
+              "value": 100
+            },
+            {
+              "id": "node-software",
+              "value": 700
+            }
+          ],
+          "links": [
+            {
+              "from": "node-basket",
+              "to": "node-food"
+            },
+            {
+              "from": "node-basket",
+              "to": "node-energy"
+            },
+            {
+              "from": "node-basket",
+              "to": "node-health"
+            },
+            {
+              "from": "node-basket",
+              "to": "node-software"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-a"
+            },
+            {
+              "id": "opt-b"
+            },
+            {
+              "id": "opt-c"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-b"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Kai holds four sectors too, but not in equal parts.",
+          "title": "Kai's basket: coins per sector",
+          "feedback": {
+            "met": "You weighed the money in the falling sector, not the sector count.",
+            "not_yet": "Not yet. Find how much sits in Software."
+          },
+          "help": [
+            "Take 40 percent of the Software block only.",
+            "The other sectors stay flat."
+          ],
+          "data": {
+            "nodes": [
+              {
+                "label": "Kai's basket"
+              },
+              {
+                "label": "Food"
+              },
+              {
+                "label": "Energy"
+              },
+              {
+                "label": "Health"
+              },
+              {
+                "label": "Software"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Software falls 40 percent. How much does Kai's basket lose?",
+            "options": [
+              {
+                "label": "100 coins"
+              },
+              {
+                "label": "280 coins"
+              },
+              {
+                "label": "400 coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Kai también tiene cuatro sectores, pero no en partes iguales.",
+          "title": "Canasta de Kai: monedas por sector",
+          "feedback": {
+            "met": "Pesaste el dinero del sector que cae, no cuántos sectores hay.",
+            "not_yet": "Todavía no. Busca cuánto hay en Software."
+          },
+          "help": [
+            "Toma el 40 por ciento solo del bloque de Software.",
+            "Los otros sectores siguen igual."
+          ],
+          "data": {
+            "nodes": [
+              {
+                "label": "Canasta de Kai"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Energía"
+              },
+              {
+                "label": "Salud"
+              },
+              {
+                "label": "Software"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Software cae 40 por ciento. ¿Cuánto pierde la canasta de Kai?",
+            "options": [
+              {
+                "label": "100 monedas"
+              },
+              {
+                "label": "280 monedas"
+              },
+              {
+                "label": "400 monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Kai também tem quatro setores, mas não em partes iguais.",
+          "title": "Cesta do Kai: moedas por setor",
+          "feedback": {
+            "met": "Você pesou o dinheiro do setor que cai, não quantos setores há.",
+            "not_yet": "Ainda não. Descubra quanto há em Software."
+          },
+          "help": [
+            "Pegue 40 por cento só do bloco de Software.",
+            "Os outros setores ficam iguais."
+          ],
+          "data": {
+            "nodes": [
+              {
+                "label": "Cesta do Kai"
+              },
+              {
+                "label": "Comida"
+              },
+              {
+                "label": "Energia"
+              },
+              {
+                "label": "Saúde"
+              },
+              {
+                "label": "Software"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Software cai 40 por cento. Quanto a cesta do Kai perde?",
+            "options": [
+              {
+                "label": "100 moedas"
+              },
+              {
+                "label": "280 moedas"
+              },
+              {
+                "label": "400 moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.diversification",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-one"
+          },
+          {
+            "id": "choice-even"
+          },
+          {
+            "id": "choice-lopsided"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fall"
+          },
+          {
+            "id": "reason-know"
+          },
+          {
+            "id": "reason-watch"
+          },
+          {
+            "id": "reason-never"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-even"
+        ],
+        "reasonQuality": {
+          "reason-know": "unsupported",
+          "reason-watch": "partial",
+          "reason-fall": "sound",
+          "reason-never": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The robotics club holds 900 pretend coins for a season. How should the treasurer hold them?",
+          "choices": [
+            {
+              "label": "All 900 in the club's favorite sector"
+            },
+            {
+              "label": "300 in each of three sectors"
+            },
+            {
+              "label": "800 in the favorite, 50 in each other"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "One sector falling then costs much less"
+            },
+            {
+              "label": "The club knows that sector best"
+            },
+            {
+              "label": "Fewer pieces are easier to watch"
+            },
+            {
+              "label": "Spread money can never lose"
+            }
+          ],
+          "feedback": {
+            "met": "You chose the even spread over a lopsided or single bet.",
+            "not_yet": "Not yet. Ask what one falling sector costs each choice."
+          },
+          "help": [
+            "Imagine one sector falls 40 percent."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El club de robótica tiene 900 monedas de simulación para una temporada. ¿Cómo debería guardarlas el tesorero?",
+          "choices": [
+            {
+              "label": "Las 900 en el sector favorito del club"
+            },
+            {
+              "label": "300 en cada uno de tres sectores"
+            },
+            {
+              "label": "800 en el favorito, 50 en cada otro"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es mejor esa opción?",
+          "reasons": [
+            {
+              "label": "Si un sector cae, cuesta mucho menos"
+            },
+            {
+              "label": "El club conoce mejor ese sector"
+            },
+            {
+              "label": "Con menos piezas es más fácil vigilar"
+            },
+            {
+              "label": "El dinero repartido nunca pierde"
+            }
+          ],
+          "feedback": {
+            "met": "Elegiste el reparto parejo en lugar de apostar todo o casi todo a uno.",
+            "not_yet": "Todavía no. Piensa qué cuesta a cada opción que un sector caiga."
+          },
+          "help": [
+            "Imagina que un sector cae 40 por ciento."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O clube de robótica tem 900 moedas da simulação para uma temporada. Como o tesoureiro deveria guardá-las?",
+          "choices": [
+            {
+              "label": "As 900 no setor favorito do clube"
+            },
+            {
+              "label": "300 em cada um de três setores"
+            },
+            {
+              "label": "800 no favorito, 50 em cada outro"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a melhor opção?",
+          "reasons": [
+            {
+              "label": "Se um setor cai, custa bem menos"
+            },
+            {
+              "label": "O clube conhece melhor esse setor"
+            },
+            {
+              "label": "Com menos peças é mais fácil vigiar"
+            },
+            {
+              "label": "Dinheiro dividido nunca perde"
+            }
+          ],
+          "feedback": {
+            "met": "Você escolheu a divisão igual em vez de apostar tudo ou quase tudo em um.",
+            "not_yet": "Ainda não. Pense no que custa a cada opção um setor cair."
+          },
+          "help": [
+            "Imagine que um setor cai 40 por cento."
+          ]
+        }
+      }
+    }
+  ]
+}

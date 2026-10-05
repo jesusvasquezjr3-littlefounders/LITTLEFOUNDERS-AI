@@ -1,0 +1,765 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-smart-spending",
+  "lesson_id": "fe-1012-04-suspicious-messages",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.scam-awareness"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina enseña a detectar mensajes sospechosos: una rifa o premio falso, un cobro de envío o de pago inventado y una petición de código o dinero. Los niños marcan las señales, practican qué decir y siempre terminan parando y avisando a un adulto de confianza.",
+  "title": {
+    "es-MX": "Detecta mensajes sospechosos",
+    "en-US": "Spot suspicious messages",
+    "pt-BR": "Identifique mensagens suspeitas"
+  },
+  "new_concepts": [
+    "life.scam-awareness"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina gets excited by a prize message and almost taps the link without checking who sent it.",
+    "recovery": "Dina stops, shows the message to a trusted adult, and together they see that it is a trap."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México los niños ven rifas falsas por el chat, avisos de paquetería con un cobro de envío y mensajes de cuentas de juego que piden un código. Se practican esas trampas con remitentes y links inventados y se termina avisando a un adulto.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "rifa"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil circulam cobrança Pix falsa, sorteio falso em grupo e mensagem de “novo número” de um parente pedindo dinheiro. Só remetentes e links inventados, e o fecho é parar e avisar um adulto.",
+        "problem_refs": [
+          "br-instant-payments"
+        ],
+        "anchors": [
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US kids get fake texts charging a delivery fee, fake chat prizes and “new number” family messages asking for money. Only made-up senders and links; it ends with stopping and telling an adult.",
+        "problem_refs": [
+          "us-parent-silence"
+        ],
+        "anchors": [
+          "delivery fee"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "intro-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Dina.",
+          "line": "Hoy miramos los mensajes con calma.",
+          "narration": {
+            "script": "A veces llegan mensajes que prometen premios o piden algo con prisa. Vas a aprender las señales para parar a tiempo."
+          }
+        },
+        "en-US": {
+          "prompt": "Listen to Dina.",
+          "line": "Today we look at messages calmly.",
+          "narration": {
+            "script": "Some messages promise a prize or ask for something in a hurry. You will learn the signs, so you can pause in time."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Dina.",
+          "line": "Hoje olhamos as mensagens com calma.",
+          "narration": {
+            "script": "Algumas mensagens prometem prêmios ou pedem algo com pressa. Você vai aprender os sinais para parar a tempo."
+          }
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Dina.",
+          "setup": "Me llegó un mensaje: ¡ganaste un premio! Me emocioné mucho.",
+          "misjudgment": "Casi toco el link sin mirar quién lo mandó.",
+          "recovery": "Me detuve y se lo enseñé a un adulto; juntos vimos la trampa. La próxima vez paro primero."
+        },
+        "en-US": {
+          "prompt": "See what happened to Dina.",
+          "setup": "A message said I won a prize. I got very excited.",
+          "misjudgment": "I almost tapped the link without checking who sent it.",
+          "recovery": "I stopped and showed a trusted adult; together we saw the trap. Next time I pause first."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Dina.",
+          "setup": "Chegou uma mensagem: você ganhou um prêmio! Me animei muito.",
+          "misjudgment": "Quase toquei no link sem ver quem mandou.",
+          "recovery": "Parei e mostrei a um adulto; juntos vimos a armadilha. Da próxima vez, paro primeiro."
+        }
+      }
+    },
+    {
+      "id": "transition-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Dina.",
+          "line": "Busca cuatro señales en cada mensaje.",
+          "narration": {
+            "script": "Fíjate si te apura, si promete un premio enorme, si pide un código o dinero, o si viene de alguien que no conoces. Por ejemplo: un mensaje que dice “toca ya” tiene prisa. Un mensaje de alguien que no conoces es un desconocido. Una sola señal ya es motivo para parar."
+          }
+        },
+        "en-US": {
+          "prompt": "Listen to Dina.",
+          "line": "Look for four signs in every message.",
+          "narration": {
+            "script": "Check if it rushes you, promises a big prize, asks for a code or money, or comes from someone you do not know. For example: a message that says “tap now” is in a hurry. A message from someone you do not know is an unknown sender. One sign is enough reason to pause."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Dina.",
+          "line": "Procure quatro sinais em cada mensagem.",
+          "narration": {
+            "script": "Veja se ela apressa você, promete um prêmio enorme, pede código ou dinheiro, ou vem de alguém que você não conhece. Por exemplo: uma mensagem que diz “toque já” tem pressa. Uma mensagem de alguém que você não conhece é um desconhecido. Um sinal já é motivo para parar."
+          }
+        }
+      }
+    },
+    {
+      "id": "check-cues-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-parcel"
+          },
+          {
+            "id": "msg-mom"
+          },
+          {
+            "id": "msg-school"
+          },
+          {
+            "id": "msg-raffle"
+          }
+        ],
+        "cues": [
+          {
+            "id": "cue-rush"
+          },
+          {
+            "id": "cue-prize"
+          },
+          {
+            "id": "cue-asks"
+          },
+          {
+            "id": "cue-stranger"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-parcel",
+          "msg-raffle"
+        ],
+        "cue_ids": {
+          "msg-parcel": [
+            "cue-rush",
+            "cue-asks",
+            "cue-stranger"
+          ],
+          "msg-raffle": [
+            "cue-prize",
+            "cue-stranger"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Marca los mensajes sospechosos. Si puedes, toca la señal.",
+          "feedback": {
+            "met": "Marcaste las trampas. Alguien conocido que pide algo normal es seguro.",
+            "not_yet": "Todavía no. Mira quién escribe y qué pide."
+          },
+          "help": [
+            "Pregunta: ¿conozco a quien escribe? ¿Qué me pide?"
+          ],
+          "messages": [
+            {
+              "sender": "Paquetería",
+              "text": "Tu paquete se devuelve hoy. Paga $20 de envío en [link]."
+            },
+            {
+              "sender": "Mamá",
+              "text": "Paso por ti a las 5. Espérame en la entrada."
+            },
+            {
+              "sender": "Escuela",
+              "text": "Mañana hay excursión: lleva gorra y agua. Más info en el cuaderno."
+            },
+            {
+              "sender": "Número nuevo",
+              "text": "¡Ganaste la rifa del chat! Toca [link] y elige tu premio."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Prisa"
+            },
+            {
+              "label": "Premio"
+            },
+            {
+              "label": "Pide código o dinero"
+            },
+            {
+              "label": "Desconocido"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Flag the suspicious messages. If you can, tap the sign.",
+          "feedback": {
+            "met": "You flagged the traps. Known people asking ordinary things are safe.",
+            "not_yet": "Not yet. Look at who writes and what they ask."
+          },
+          "help": [
+            "Ask: do I know who wrote? What do they want?"
+          ],
+          "messages": [
+            {
+              "sender": "Delivery",
+              "text": "Package on hold. Pay the $3 delivery fee today: [link]."
+            },
+            {
+              "sender": "Mom",
+              "text": "I'll pick you up at 5. Wait by the door."
+            },
+            {
+              "sender": "School",
+              "text": "Field trip tomorrow: bring a hat and water. Details in the notebook."
+            },
+            {
+              "sender": "New number",
+              "text": "You won the chat giveaway! Tap [link] to pick your prize."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Hurry"
+            },
+            {
+              "label": "Prize"
+            },
+            {
+              "label": "Asks for code or money"
+            },
+            {
+              "label": "Unknown sender"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque as mensagens suspeitas. Se puder, toque no sinal.",
+          "feedback": {
+            "met": "Você marcou as armadilhas. Quem você conhece pedindo algo normal é seguro.",
+            "not_yet": "Ainda não. Veja quem escreve e o que pede."
+          },
+          "help": [
+            "Pergunte: conheço quem escreveu? O que pede?"
+          ],
+          "messages": [
+            {
+              "sender": "Entregas",
+              "text": "Sua encomenda será devolvida hoje. Pague R$ 5 de taxa em [link]."
+            },
+            {
+              "sender": "Mãe",
+              "text": "Passo para te buscar às 17h. Me espera na entrada."
+            },
+            {
+              "sender": "Escola",
+              "text": "Amanhã tem passeio: leve boné e água. Mais informações no caderno."
+            },
+            {
+              "sender": "Número novo",
+              "text": "Você ganhou o sorteio do grupo! Toque em [link] e pegue o prêmio."
+            }
+          ],
+          "cues": [
+            {
+              "label": "Pressa"
+            },
+            {
+              "label": "Prêmio"
+            },
+            {
+              "label": "Pede código ou dinheiro"
+            },
+            {
+              "label": "Desconhecido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reply-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-rush"
+          },
+          {
+            "id": "reply-answer"
+          },
+          {
+            "id": "reply-adult"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-adult"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "¿Qué le dices a Leo?",
+          "feedback": {
+            "met": "Frenaste antes de tocar y buscaste a un adulto de confianza.",
+            "not_yet": "Todavía no. Piensa quién puede revisar el mensaje contigo."
+          },
+          "speaker": "Leo",
+          "line": "Me llegó una rifa por el chat. ¿Toco el link?",
+          "replies": [
+            {
+              "label": "Tócalo rápido y cobra tu premio."
+            },
+            {
+              "label": "Le respondo y pregunto quién es."
+            },
+            {
+              "label": "No lo toques, vamos con un adulto."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "What do you tell Leo?",
+          "feedback": {
+            "met": "You paused before paying and went to a trusted adult.",
+            "not_yet": "Not yet. Think who can check the message with you."
+          },
+          "speaker": "Leo",
+          "line": "A text says I owe a delivery fee. Should I pay?",
+          "replies": [
+            {
+              "label": "Pay it fast and be done."
+            },
+            {
+              "label": "Text back and ask who it is."
+            },
+            {
+              "label": "Don't pay, let's find an adult."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O que você diz ao Leo?",
+          "feedback": {
+            "met": "Você parou antes de pagar e buscou um adulto de confiança.",
+            "not_yet": "Ainda não. Pense em quem pode conferir a mensagem com você."
+          },
+          "speaker": "Leo",
+          "line": "Chegou uma cobrança Pix. Eu pago agora?",
+          "replies": [
+            {
+              "label": "Pague agora e acabe logo."
+            },
+            {
+              "label": "Respondo e pergunto quem é."
+            },
+            {
+              "label": "Não pague, vamos chamar um adulto."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "check-flags-01",
+      "type": "money.scam-check.v2",
+      "grading": "server",
+      "visual": {
+        "type": "message-list"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "messages": [
+          {
+            "id": "msg-coach"
+          },
+          {
+            "id": "msg-charge"
+          },
+          {
+            "id": "msg-gamefree"
+          },
+          {
+            "id": "msg-cousin"
+          },
+          {
+            "id": "msg-newnum"
+          }
+        ]
+      },
+      "rubric": {
+        "scam_ids": [
+          "msg-charge",
+          "msg-gamefree",
+          "msg-newnum"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ahora sin pistas: marca solo los mensajes sospechosos.",
+          "feedback": {
+            "met": "Marcaste solo los sospechosos y confiaste en la gente conocida.",
+            "not_yet": "Todavía no. Revisa quién escribe, qué pide y si hay prisa."
+          },
+          "messages": [
+            {
+              "sender": "Entrenador",
+              "text": "El entrenamiento cambió a las 4 pm. Lleva agua."
+            },
+            {
+              "sender": "Cuenta de juego",
+              "text": "Tu cuenta se bloquea hoy. Dinos el código que te llegó."
+            },
+            {
+              "sender": "Jugador nuevo",
+              "text": "Te regalo un pase del juego. Solo dime tu contraseña."
+            },
+            {
+              "sender": "Primo",
+              "text": "¿Me mandas la foto de la tarea de mate, porfa?"
+            },
+            {
+              "sender": "Primo, número nuevo",
+              "text": "Cambié de número. Mándame $100 hoy, es urgente."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Now without hints: flag only the suspicious messages.",
+          "feedback": {
+            "met": "You flagged only the suspicious ones and trusted people you know.",
+            "not_yet": "Not yet. Check who writes, what they ask and any rush."
+          },
+          "messages": [
+            {
+              "sender": "Coach",
+              "text": "Practice moved to 4 pm. Bring water."
+            },
+            {
+              "sender": "Account Alert",
+              "text": "Your account will lock today. Reply with the code we sent."
+            },
+            {
+              "sender": "New player",
+              "text": "Free game pass for you! Just tell me your password."
+            },
+            {
+              "sender": "Cousin",
+              "text": "Can you send me the math homework photo, please?"
+            },
+            {
+              "sender": "Cousin, new number",
+              "text": "I changed numbers. Send me $20 today, it is urgent."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Agora sem dicas: marque só as mensagens suspeitas.",
+          "feedback": {
+            "met": "Você marcou só as suspeitas e confiou em quem conhece.",
+            "not_yet": "Ainda não. Veja quem escreve, o que pede e se há pressa."
+          },
+          "messages": [
+            {
+              "sender": "Treinador",
+              "text": "O treino mudou para 16h. Leve água."
+            },
+            {
+              "sender": "Cobrança",
+              "text": "Você tem uma cobrança Pix de R$ 15. Pague agora pelo [link]."
+            },
+            {
+              "sender": "Jogador novo",
+              "text": "Te dou um passe do jogo. É só me dizer sua senha."
+            },
+            {
+              "sender": "Primo",
+              "text": "Me manda a foto do dever de matemática, por favor?"
+            },
+            {
+              "sender": "Primo, número novo",
+              "text": "Troquei de número. Me manda R$ 50 hoje, é urgente."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-send"
+          },
+          {
+            "id": "choice-stop"
+          },
+          {
+            "id": "choice-ask"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-money"
+          },
+          {
+            "id": "reason-hurry"
+          },
+          {
+            "id": "reason-verify"
+          },
+          {
+            "id": "reason-friend"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-stop"
+        ],
+        "reasonQuality": {
+          "reason-verify": "sound",
+          "reason-money": "sound",
+          "reason-hurry": "partial",
+          "reason-friend": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un número nuevo escribe “Soy tu tío, mándame $200 hoy”. ¿Qué haces?",
+          "feedback": {
+            "met": "Elegiste parar y avisar a un adulto. Un adulto puede comprobar quién escribe.",
+            "not_yet": "Todavía no: pedir dinero merece una pausa. ¿Quién puede confirmar quién es?"
+          },
+          "help": [
+            "Piensa: ¿puedo comprobar quién es sin responderle?"
+          ],
+          "choices": [
+            {
+              "label": "Mando el dinero rápido"
+            },
+            {
+              "label": "Paro y se lo cuento a un adulto"
+            },
+            {
+              "label": "Le respondo para preguntar quién es"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "Pide dinero y no puedo comprobar quién es"
+            },
+            {
+              "label": "Tiene mucha prisa"
+            },
+            {
+              "label": "Un adulto puede confirmarlo por el número de siempre"
+            },
+            {
+              "label": "A un amigo le funcionó una vez"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A new number writes “It's Dad, send me $50 today”. What do you do?",
+          "feedback": {
+            "met": "You paused and told an adult. An adult can check who writes.",
+            "not_yet": "Not yet: asking for money needs a pause. Who can confirm?"
+          },
+          "help": [
+            "Think: can I check who it is without replying?"
+          ],
+          "choices": [
+            {
+              "label": "Send the money fast"
+            },
+            {
+              "label": "Stop and tell an adult"
+            },
+            {
+              "label": "Reply and ask who it is"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "It wants money from an unknown sender"
+            },
+            {
+              "label": "It sounds very urgent"
+            },
+            {
+              "label": "An adult can check the usual number"
+            },
+            {
+              "label": "It worked for a friend once"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um número novo escreve “Sou sua mãe, me manda R$ 100 por Pix”. O que você faz?",
+          "feedback": {
+            "met": "Você escolheu parar e contar a um adulto. Um adulto confere quem escreve de verdade.",
+            "not_yet": "Ainda não: pedir dinheiro merece uma pausa. Quem pode confirmar quem é?"
+          },
+          "help": [
+            "Pense: dá para saber quem é sem responder?"
+          ],
+          "choices": [
+            {
+              "label": "Mando o dinheiro rápido"
+            },
+            {
+              "label": "Paro e conto a um adulto"
+            },
+            {
+              "label": "Respondo e pergunto quem é"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor escolha?",
+          "reasons": [
+            {
+              "label": "Pede dinheiro e não sei quem é"
+            },
+            {
+              "label": "Parece muito urgente"
+            },
+            {
+              "label": "Um adulto confirma pelo número de sempre"
+            },
+            {
+              "label": "Deu certo para um amigo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wrap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "wrap",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Dina.",
+          "line": "¿Dudas? Para, no toques y cuéntale a un adulto.",
+          "narration": {
+            "script": "Parar a tiempo nunca es un error. Un adulto de confianza lo revisa contigo, sin regaños."
+          }
+        },
+        "en-US": {
+          "prompt": "Listen to Dina.",
+          "line": "Unsure? Stop, do not tap, tell an adult.",
+          "narration": {
+            "script": "Pausing is never a mistake. A trusted adult checks it with you, with no blame."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça a Dina.",
+          "line": "Em dúvida? Pare, não toque e conte a um adulto.",
+          "narration": {
+            "script": "Parar nunca é erro. Um adulto de confiança confere com você, sem bronca."
+          }
+        }
+      }
+    }
+  ]
+}

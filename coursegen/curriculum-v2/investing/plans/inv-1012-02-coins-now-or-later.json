@@ -1,0 +1,988 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "chapter_id": "inv-1012-growth-you-can-see",
+  "lesson_id": "inv-1012-02-coins-now-or-later",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "invest.time-value",
+    "life.patience-and-waiting"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf cuenta cómo agarró 20 monedas hoy y se perdió 30 monedas que podía recibir en cuatro semanas. El aprendiz pone las dos ofertas en una línea de tiempo, calcula qué haría un fondo de práctica mientras tanto y decide cuándo vale la pena esperar.",
+  "title": {
+    "en-US": "Coins now or later?",
+    "es-MX": "¿Monedas ahora o después?",
+    "pt-BR": "Moedas agora ou depois?"
+  },
+  "new_concepts": [
+    "invest.time-value"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf grabs 20 coins today and misses the 30 coins he could have had by waiting four weeks.",
+    "recovery": "Liruf sees what waiting would have paid and says next time he will ask how much more and how long."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A shop with two signs.",
+          "line": "Look at the shop. One sign says 20 coins today; the other, 30 coins in four weeks."
+        },
+        "es-MX": {
+          "prompt": "Una tienda con dos letreros.",
+          "line": "Mira la tienda. Un letrero dice 20 monedas hoy; el otro, 30 monedas en cuatro semanas."
+        },
+        "pt-BR": {
+          "prompt": "Uma loja com duas placas.",
+          "line": "Olhe a loja. Uma placa diz 20 moedas hoje; a outra, 30 moedas em quatro semanas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-now"
+          },
+          {
+            "id": "opt-later"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-now",
+          "opt-later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same shop, two offers. Which would you take?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "options": [
+            {
+              "label": "20 coins today"
+            },
+            {
+              "label": "30 coins in four weeks"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La misma tienda, dos ofertas. ¿Cuál tomarías?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "options": [
+            {
+              "label": "20 monedas hoy"
+            },
+            {
+              "label": "30 monedas en cuatro semanas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mesma loja, duas ofertas. Qual você pegaria?",
+          "feedback": {
+            "met": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "options": [
+            {
+              "label": "20 moedas hoje"
+            },
+            {
+              "label": "30 moedas em quatro semanas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "The sign said 20 coins today or 30 in four weeks. I wanted my coins today!",
+          "misjudgment": "I grabbed the 20 and bought a shiny stone. I never counted what waiting would give.",
+          "recovery": "Four weeks later, 30 coins went to someone who waited. Next time I ask how much more, and how long."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Liruf.",
+          "setup": "El letrero decía 20 monedas hoy o 30 en cuatro semanas. ¡Yo quería mis monedas hoy!",
+          "misjudgment": "Agarré las 20 y compré una piedra brillante. No conté lo que me daría esperar.",
+          "recovery": "Cuatro semanas después, 30 monedas fueron para quien esperó. La próxima vez pregunto cuánto más y cuánto tiempo."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "A placa dizia 20 moedas hoje ou 30 em quatro semanas. Eu queria minhas moedas hoje!",
+          "misjudgment": "Peguei as 20 e comprei uma pedra brilhante. Não contei o que esperar me daria.",
+          "recovery": "Quatro semanas depois, 30 moedas foram para quem esperou. Da próxima vez pergunto quanto mais e quanto tempo."
+        }
+      }
+    },
+    {
+      "id": "example-timeline-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "timeline"
+      },
+      "payload": {
+        "data": {
+          "unit": "days",
+          "events": [
+            {
+              "id": "ev-wait",
+              "date": "2026-09-07",
+              "end": "2026-10-05"
+            },
+            {
+              "id": "ev-now",
+              "date": "2026-09-07"
+            },
+            {
+              "id": "ev-later",
+              "date": "2026-10-05"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the shop's two offers sit on one timeline, four weeks apart.",
+          "title": "Two moments for coins",
+          "data": {
+            "events": [
+              {
+                "label": "Four weeks of waiting"
+              },
+              {
+                "label": "Now: 20 coins"
+              },
+              {
+                "label": "Week 4: 30 coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: las dos ofertas de la tienda están en una línea de tiempo, separadas por cuatro semanas.",
+          "title": "Dos momentos para las monedas",
+          "data": {
+            "events": [
+              {
+                "label": "Cuatro semanas de espera"
+              },
+              {
+                "label": "Ahora: 20 monedas"
+              },
+              {
+                "label": "Semana 4: 30 monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: as duas ofertas da loja ficam numa linha do tempo, separadas por quatro semanas.",
+          "title": "Dois momentos para as moedas",
+          "data": {
+            "events": [
+              {
+                "label": "Quatro semanas de espera"
+              },
+              {
+                "label": "Agora: 20 moedas"
+              },
+              {
+                "label": "Semana 4: 30 moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-between-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: coins can work while they wait.",
+          "line": "In my pretend fund, 20 coins add 1 coin a week. After week 1, the fund holds 21."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: las monedas pueden trabajar mientras esperan.",
+          "line": "En mi fondo de práctica, 20 monedas suman 1 por semana. Tras la semana 1, el fondo tiene 21."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: as moedas podem trabalhar enquanto esperam.",
+          "line": "No meu fundo de prática, 20 moedas somam 1 por semana. Depois da semana 1, o fundo tem 21."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "steps": [
+          {
+            "id": "wk2-total"
+          },
+          {
+            "id": "wk3-total"
+          },
+          {
+            "id": "wk4-total"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "wk3-total",
+          "wk4-total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wk3-total": "23",
+          "wk4-total": "24"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The fund holds 21 after week 1 and adds 1 a week. Find weeks 3 and 4.",
+          "feedback": {
+            "met": "You added 1 coin to each running total.",
+            "not_yet": "Take the last total and add one more coin."
+          },
+          "help": [
+            "Week 3 is one coin more than week 2.",
+            "Week 4 is one coin more than week 3."
+          ],
+          "steps": [
+            {
+              "expression": "Week 2: 21 + 1",
+              "result": "22",
+              "spokenText": "Twenty-one plus 1 is 22"
+            },
+            {
+              "expression": "Week 2 total + 1",
+              "result": "23",
+              "spokenText": "Twenty-two plus 1 is 23"
+            },
+            {
+              "expression": "Week 3 total + 1",
+              "result": "24",
+              "spokenText": "Twenty-three plus 1 is 24"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El fondo tiene 21 tras la semana 1 y suma 1 por semana. Encuentra las semanas 3 y 4.",
+          "feedback": {
+            "met": "Sumaste 1 moneda a cada total acumulado.",
+            "not_yet": "Toma el último total y suma una moneda más."
+          },
+          "help": [
+            "La semana 3 es una moneda más que la 2.",
+            "La semana 4 es una moneda más que la 3."
+          ],
+          "steps": [
+            {
+              "expression": "Semana 2: 21 + 1",
+              "result": "22",
+              "spokenText": "Veintiuno más 1 son 22"
+            },
+            {
+              "expression": "Total de la semana 2 + 1",
+              "result": "23",
+              "spokenText": "Veintidós más 1 son 23"
+            },
+            {
+              "expression": "Total de la semana 3 + 1",
+              "result": "24",
+              "spokenText": "Veintitrés más 1 son 24"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O fundo tem 21 depois da semana 1 e soma 1 por semana. Encontre as semanas 3 e 4.",
+          "feedback": {
+            "met": "Você somou 1 moeda a cada total acumulado.",
+            "not_yet": "Pegue o último total e some mais uma moeda."
+          },
+          "help": [
+            "A semana 3 é uma moeda a mais que a 2.",
+            "A semana 4 é uma moeda a mais que a 3."
+          ],
+          "steps": [
+            {
+              "expression": "Semana 2: 21 + 1",
+              "result": "22",
+              "spokenText": "Vinte e um mais 1 são 22"
+            },
+            {
+              "expression": "Total da semana 2 + 1",
+              "result": "23",
+              "spokenText": "Vinte e dois mais 1 são 23"
+            },
+            {
+              "expression": "Total da semana 3 + 1",
+              "result": "24",
+              "spokenText": "Vinte e três mais 1 são 24"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-verdict-30-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: compare the fund with the shop's 30 coins.",
+          "line": "After week 4 the fund holds 24. The shop's 30 beats it by 6, so waiting wins."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: compara el fondo con los 30 de la tienda.",
+          "line": "Tras la semana 4, el fondo tiene 24. Los 30 de la tienda son 6 más, así que esperar gana."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: compare o fundo com os 30 da loja.",
+          "line": "Depois da semana 4, o fundo tem 24. Os 30 da loja são 6 a mais, então esperar compensa."
+        }
+      }
+    },
+    {
+      "id": "example-verdict-22-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: now the sign says 22 coins in four weeks.",
+          "line": "The fund holds 24, so the shop's 22 falls short. Wait only when the later coins beat the fund."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: ahora el letrero dice 22 monedas en cuatro semanas.",
+          "line": "El fondo tiene 24, así que los 22 de la tienda no alcanzan. Conviene esperar solo si lo de después supera al fondo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: agora a placa diz 22 moedas em quatro semanas.",
+          "line": "O fundo tem 24, então os 22 da loja ficam abaixo. Vale esperar só se o de depois superar o fundo."
+        }
+      }
+    },
+    {
+      "id": "practice-timeline-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "timeline"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "data": {
+          "unit": "days",
+          "events": [
+            {
+              "id": "ev-now",
+              "date": "2026-09-07"
+            },
+            {
+              "id": "ev-q",
+              "date": "2026-09-21"
+            },
+            {
+              "id": "ev-r",
+              "date": "2026-11-02"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-q"
+            },
+            {
+              "id": "opt-r"
+            },
+            {
+              "id": "opt-same"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-r"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf finds two more offers. Read where each one lands on the timeline.",
+          "feedback": {
+            "met": "You compared the two dates on the timeline.",
+            "not_yet": "Check which offer sits farther from now."
+          },
+          "title": "Two more offers",
+          "data": {
+            "events": [
+              {
+                "label": "Now: 20 coins"
+              },
+              {
+                "label": "Offer Q: 25 coins"
+              },
+              {
+                "label": "Offer R: 24 coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which offer makes you wait longer?",
+            "options": [
+              {
+                "label": "Offer Q"
+              },
+              {
+                "label": "Offer R"
+              },
+              {
+                "label": "Same wait"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Liruf encuentra dos ofertas más. Lee dónde cae cada una en la línea de tiempo.",
+          "feedback": {
+            "met": "Comparaste las dos fechas de la línea de tiempo.",
+            "not_yet": "Mira cuál oferta queda más lejos de ahora."
+          },
+          "title": "Dos ofertas más",
+          "data": {
+            "events": [
+              {
+                "label": "Ahora: 20 monedas"
+              },
+              {
+                "label": "Oferta Q: 25 monedas"
+              },
+              {
+                "label": "Oferta R: 24 monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál oferta te hace esperar más?",
+            "options": [
+              {
+                "label": "Oferta Q"
+              },
+              {
+                "label": "Oferta R"
+              },
+              {
+                "label": "La misma espera"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Liruf acha mais duas ofertas. Veja onde cada uma cai na linha do tempo.",
+          "feedback": {
+            "met": "Você comparou as duas datas da linha do tempo.",
+            "not_yet": "Veja qual oferta fica mais longe de agora."
+          },
+          "title": "Mais duas ofertas",
+          "data": {
+            "events": [
+              {
+                "label": "Agora: 20 moedas"
+              },
+              {
+                "label": "Oferta Q: 25 moedas"
+              },
+              {
+                "label": "Oferta R: 24 moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual oferta faz você esperar mais?",
+            "options": [
+              {
+                "label": "Oferta Q"
+              },
+              {
+                "label": "Oferta R"
+              },
+              {
+                "label": "A mesma espera"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-gap-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "steps": [
+          {
+            "id": "wk1-total"
+          },
+          {
+            "id": "wk2-total"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "wk2-total",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wk2-total": "22",
+          "gap": "3"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Offer Q pays 25 in two weeks; the fund adds 1 a week to 20. Find the difference.",
+          "feedback": {
+            "met": "You found the fund's total, then compared it with Q.",
+            "not_yet": "Find the fund's total first, then compare it with Q."
+          },
+          "help": [
+            "Find the fund's total after two weeks first."
+          ],
+          "steps": [
+            {
+              "expression": "Week 1: 20 + 1",
+              "result": "21",
+              "spokenText": "Twenty plus 1 is 21"
+            },
+            {
+              "expression": "Week 1 total + 1",
+              "result": "22",
+              "spokenText": "Twenty-one plus 1 is 22"
+            },
+            {
+              "expression": "Offer Q's 25 minus the fund's total",
+              "result": "3",
+              "spokenText": "Twenty-five minus 22 is 3"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La oferta Q paga 25 en dos semanas; el fondo suma 1 por semana a 20. Encuentra la diferencia.",
+          "feedback": {
+            "met": "Hallaste el total del fondo y lo comparaste con Q.",
+            "not_yet": "Encuentra primero el total del fondo y compáralo con Q."
+          },
+          "help": [
+            "Primero encuentra el total del fondo tras dos semanas."
+          ],
+          "steps": [
+            {
+              "expression": "Semana 1: 20 + 1",
+              "result": "21",
+              "spokenText": "Veinte más 1 son 21"
+            },
+            {
+              "expression": "Total de la semana 1 + 1",
+              "result": "22",
+              "spokenText": "Veintiuno más 1 son 22"
+            },
+            {
+              "expression": "Los 25 de Q menos el total del fondo",
+              "result": "3",
+              "spokenText": "Veinticinco menos 22 son 3"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A oferta Q paga 25 em duas semanas; o fundo soma 1 por semana a 20. Encontre a diferença.",
+          "feedback": {
+            "met": "Você achou o total do fundo e o comparou com Q.",
+            "not_yet": "Ache primeiro o total do fundo e compare com Q."
+          },
+          "help": [
+            "Primeiro encontre o total do fundo após duas semanas."
+          ],
+          "steps": [
+            {
+              "expression": "Semana 1: 20 + 1",
+              "result": "21",
+              "spokenText": "Vinte mais 1 são 21"
+            },
+            {
+              "expression": "Total da semana 1 + 1",
+              "result": "22",
+              "spokenText": "Vinte e um mais 1 são 22"
+            },
+            {
+              "expression": "Os 25 de Q menos o total do fundo",
+              "result": "3",
+              "spokenText": "Vinte e cinco menos 22 são 3"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.patience-and-waiting",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-wait"
+          },
+          {
+            "id": "choice-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-long"
+          },
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-feel"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-now"
+        ],
+        "reasonQuality": {
+          "reason-long": "sound",
+          "reason-bigger": "partial",
+          "reason-feel": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Offer R pays 24 in eight weeks; the fund adds 1 a week to 20. What would you do?",
+          "feedback": {
+            "met": "You took the 20 today instead of waiting for the 24.",
+            "not_yet": "Check what the fund holds after eight weeks."
+          },
+          "choices": [
+            {
+              "label": "Wait for the 24"
+            },
+            {
+              "label": "Take 20 today"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Eight weeks for only 4 more coins"
+            },
+            {
+              "label": "24 is more than 20"
+            },
+            {
+              "label": "Coins today just feel nicer"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La oferta R paga 24 en ocho semanas; el fondo suma 1 por semana a 20. ¿Qué harías?",
+          "feedback": {
+            "met": "Tomaste las 20 monedas de hoy en vez de esperar las 24.",
+            "not_yet": "Mira cuánto tiene el fondo tras ocho semanas."
+          },
+          "choices": [
+            {
+              "label": "Esperar los 24"
+            },
+            {
+              "label": "Tomar 20 hoy"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Ocho semanas por solo 4 monedas más"
+            },
+            {
+              "label": "24 es más que 20"
+            },
+            {
+              "label": "Las monedas de hoy se sienten mejor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A oferta R paga 24 em oito semanas; o fundo soma 1 por semana a 20. O que você faria?",
+          "feedback": {
+            "met": "Você levou as 20 moedas de hoje em vez de esperar as 24.",
+            "not_yet": "Veja quanto o fundo tem após oito semanas."
+          },
+          "choices": [
+            {
+              "label": "Esperar as 24"
+            },
+            {
+              "label": "Levar 20 hoje"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Oito semanas por só 4 moedas a mais"
+            },
+            {
+              "label": "24 é mais que 20"
+            },
+            {
+              "label": "Moedas hoje parecem melhores"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-wait"
+          },
+          {
+            "id": "choice-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-beats"
+          },
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-always"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-wait"
+        ],
+        "reasonQuality": {
+          "reason-beats": "sound",
+          "reason-more": "partial",
+          "reason-always": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dog-walking pay: 20 coins now or 27 in five weeks. With a fund adding 1 a week, which wins?",
+          "feedback": {
+            "met": "You waited for the 27 instead of taking the 20 now.",
+            "not_yet": "Add the fund's weekly coin for each week, then compare."
+          },
+          "choices": [
+            {
+              "label": "Wait for the 27"
+            },
+            {
+              "label": "Take 20 now"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "The extra coins beat the fund's gain"
+            },
+            {
+              "label": "27 is more than 20"
+            },
+            {
+              "label": "Waiting is always better"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pago por pasear perros: 20 monedas hoy o 27 en cinco semanas. Con un fondo que suma 1 por semana, ¿cuál gana?",
+          "feedback": {
+            "met": "Esperaste las 27 monedas en vez de tomar 20 hoy.",
+            "not_yet": "Suma la moneda semanal del fondo por cada semana y compara."
+          },
+          "choices": [
+            {
+              "label": "Esperar los 27"
+            },
+            {
+              "label": "Tomar 20 hoy"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Las monedas extra superan lo que gana el fondo"
+            },
+            {
+              "label": "27 es más que 20"
+            },
+            {
+              "label": "Esperar siempre es mejor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Pagamento por passear com cachorros: 20 moedas hoje ou 27 em cinco semanas. Com um fundo que soma 1 por semana, qual vence?",
+          "feedback": {
+            "met": "Você esperou as 27 moedas em vez de levar 20 hoje.",
+            "not_yet": "Some a moeda semanal do fundo por semana e compare."
+          },
+          "choices": [
+            {
+              "label": "Esperar as 27"
+            },
+            {
+              "label": "Levar 20 hoje"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "As moedas extras superam o ganho do fundo"
+            },
+            {
+              "label": "27 é mais que 20"
+            },
+            {
+              "label": "Esperar é sempre melhor"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

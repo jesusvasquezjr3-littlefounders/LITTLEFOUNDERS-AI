@@ -1,0 +1,596 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-adult",
+  "chapter_id": "lem-adult-weekend-stall",
+  "lesson_id": "lem-adult-01-all-in-costs",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.full-costing",
+    "life.recurring-costs",
+    "money.unit-price"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho enseña con ejemplos a calcular el costo completo de una vela en un puesto de fin de semana: suma los gastos que se repiten (cuota, transporte, plan de celular), los reparte entre las velas que vendes y compara el precio por unidad de los insumos. Ves el cálculo paso a paso y luego lo haces con tus cifras, también en un mes de pedidos en línea.",
+  "title": {
+    "en-US": "What one candle really costs",
+    "es-MX": "Lo que de verdad cuesta una vela",
+    "pt-BR": "O que uma vela realmente custa"
+  },
+  "new_concepts": [
+    "biz.full-costing",
+    "life.recurring-costs"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México muchas personas venden velas en un tianguis de fin de semana: pagan la cuota del puesto cada sábado, el transporte y un plan de celular para pedidos en línea. Se calcula el costo completo de una vela con cifras de ejemplo.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, quem vende velas numa feira de artesanato de fim de semana paga a taxa da barraca, o transporte e um plano de celular para pedidos online, e muita gente recebe por Pix. O custo completo da vela é calculado com valores de exemplo.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira de artesanato",
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US a weekend candle seller at a farmers market pays a booth fee each Saturday, plus gas and a phone and listing plan for online orders. The all-in cost of one candle is worked out with example figures.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Saturday morning, your candle table at the farmers market. Amounts here are examples in your currency.",
+          "line": "Wax and jars are easy to count. Some costs never show on the table."
+        },
+        "es-MX": {
+          "prompt": "Sábado temprano, tu mesa de velas en el tianguis. Las cifras son ejemplos en tu moneda.",
+          "line": "La cera y los frascos son fáciles de contar. Hay costos que nunca se ven sobre la mesa."
+        },
+        "pt-BR": {
+          "prompt": "Sábado cedo, sua mesa de velas na feira de artesanato. Os valores aqui são exemplos na sua moeda.",
+          "line": "Cera e potes são fáceis de contar. Alguns custos nunca aparecem em cima da mesa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-whole"
+          },
+          {
+            "id": "reply-repeat"
+          },
+          {
+            "id": "reply-fee"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-repeat"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The booth next to yours asks about your candles. What do you answer?",
+          "feedback": {
+            "met": "Now we work it out, one step at a time.",
+            "not_yet": "Now we work it out, one step at a time."
+          },
+          "speaker": "Dana",
+          "line": "You said wax and jar come to 50 a candle. So 50 is your cost?",
+          "replies": [
+            {
+              "label": "Yes, 50 is the whole cost."
+            },
+            {
+              "label": "No, costs that repeat count too."
+            },
+            {
+              "label": "Add the booth fee, nothing else."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El puesto de al lado te pregunta por tus velas. ¿Qué le respondes?",
+          "feedback": {
+            "met": "Ahora lo calculamos paso a paso.",
+            "not_yet": "Ahora lo calculamos paso a paso."
+          },
+          "speaker": "Marta",
+          "line": "Dijiste que la cera y el frasco salen en 50 por vela. ¿Entonces tu costo es 50?",
+          "replies": [
+            {
+              "label": "Sí, 50 es todo el costo."
+            },
+            {
+              "label": "No, los gastos que se repiten también cuentan."
+            },
+            {
+              "label": "Solo falta sumar la cuota del puesto."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A barraca ao lado pergunta sobre as suas velas. O que você responde?",
+          "feedback": {
+            "met": "Agora calculamos passo a passo.",
+            "not_yet": "Agora calculamos passo a passo."
+          },
+          "speaker": "Marta",
+          "line": "Você disse que cera e pote saem a 50 por vela. Então seu custo é 50?",
+          "replies": [
+            {
+              "label": "Sim, 50 é todo o custo."
+            },
+            {
+              "label": "Não, os custos que se repetem também contam."
+            },
+            {
+              "label": "Só falta somar a taxa da barraca."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-repeat-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Example candle: 25 in wax and jar. Each weekend: booth fee 250, travel 150, phone plan 100.",
+          "line": "Step 1. Add what repeats (recurring costs): 250 + 150 + 100 = 500 a weekend. You pay it whatever you sell."
+        },
+        "es-MX": {
+          "prompt": "Vela de ejemplo: 25 de cera y frasco. Cada fin de semana: cuota del puesto 250, transporte 150, plan de celular 100.",
+          "line": "Paso 1. Suma lo que se repite (gastos recurrentes): 250 + 150 + 100 = 500 por fin de semana. Se paga venda lo que venda."
+        },
+        "pt-BR": {
+          "prompt": "Vela de exemplo: 25 de cera e pote. Todo fim de semana: taxa da barraca 250, transporte 150, plano de celular 100.",
+          "line": "Passo 1. Some o que se repete (custos recorrentes): 250 + 150 + 100 = 500 por fim de semana. Você paga isso vendendo muito ou pouco."
+        }
+      }
+    },
+    {
+      "id": "ex-share-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "All-in cost = 25 in wax and jar + the candle's share of the 500. You sell 25 candles.",
+          "line": "Step 2. Each candle carries 500 ÷ 25 = 20, so the all-in (average) cost is 25 + 20 = 45."
+        },
+        "es-MX": {
+          "prompt": "Costo completo = 25 de cera y frasco + la parte de cada vela en los 500. Vendes 25 velas.",
+          "line": "Paso 2. Cada vela lleva 500 ÷ 25 = 20, así que el costo completo (promedio) es 25 + 20 = 45."
+        },
+        "pt-BR": {
+          "prompt": "Custo completo = 25 de cera e pote + a parte de cada vela nos 500. Você vende 25 velas.",
+          "line": "Passo 2. Cada vela leva 500 ÷ 25 = 20, então o custo completo (médio) é 25 + 20 = 45."
+        }
+      }
+    },
+    {
+      "id": "ex-goal-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Goal: an all-in cost 40% above wax and jar, so 35.",
+          "line": "Step 3. Share = 35 − 25 = 10, so 500 ÷ 10 = 50 candles. Check: 25 + 10 = 35."
+        },
+        "es-MX": {
+          "prompt": "Meta: un costo completo 40% arriba de cera y frasco, o sea 35.",
+          "line": "Paso 3. Parte = 35 − 25 = 10, así que 500 ÷ 10 = 50 velas. Comprobación: 25 + 10 = 35."
+        },
+        "pt-BR": {
+          "prompt": "Meta: um custo completo 40% acima de cera e pote, ou seja, 35.",
+          "line": "Passo 3. Parte = 35 − 25 = 10, então 500 ÷ 10 = 50 velas. Conferência: 25 + 10 = 35."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "fin.cost-structure.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "cost-structure"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "fixed": 700,
+        "variable": 50,
+        "maxUnits": 60,
+        "goal": {
+          "average": 70
+        },
+        "start": 10
+      },
+      "rubric": {
+        "target": 35
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your booth: wax and jar 50, recurring 700 a weekend. How many candles make the all-in cost 70?",
+          "feedback": {
+            "met": "You spread the recurring costs and reached the goal.",
+            "not_yet": "Not yet. Revisit the last example: goal minus materials, then divide."
+          },
+          "help": [
+            "The goal minus materials is what each candle can carry."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu puesto: cera y frasco 50, gastos recurrentes 700 por fin de semana. ¿Cuántas velas dejan el costo completo en 70?",
+          "feedback": {
+            "met": "Repartiste los gastos recurrentes y llegaste a la meta.",
+            "not_yet": "Todavía no. Repasa el último ejemplo: meta menos materiales, luego divide."
+          },
+          "help": [
+            "La meta menos los materiales es lo que cada vela puede llevar."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua barraca: cera e pote 50, custos recorrentes 700 por fim de semana. Quantas velas deixam o custo completo em 70?",
+          "feedback": {
+            "met": "Você dividiu os custos recorrentes e chegou à meta.",
+            "not_yet": "Ainda não. Reveja o último exemplo: meta menos materiais, depois divida."
+          },
+          "help": [
+            "A meta menos os materiais é o que cada vela pode carregar."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-unit-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Next batch, two jar offers: 10 for 80, or 16 for 120. Totals hide the pack size.",
+          "line": "Compare per jar: 80 ÷ 10 = 8, and 120 ÷ 16 = 7.5. The 16-jar offer costs less per jar."
+        },
+        "es-MX": {
+          "prompt": "Para el próximo lote, dos ofertas de frascos: 10 por 80 o 16 por 120. Los totales esconden el tamaño del paquete.",
+          "line": "Compara por frasco: 80 ÷ 10 = 8 y 120 ÷ 16 = 7.5. La oferta de 16 cuesta menos por frasco."
+        },
+        "pt-BR": {
+          "prompt": "No próximo lote, duas ofertas de potes: 10 por 80 ou 16 por 120. Os totais escondem o tamanho do pacote.",
+          "line": "Compare por pote: 80 ÷ 10 = 8 e 120 ÷ 16 = 7,5. A oferta de 16 custa menos por pote."
+        }
+      }
+    },
+    {
+      "id": "practice-unit-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "pack-4",
+            "quantity": 4,
+            "price_minor": 6000
+          },
+          {
+            "id": "pack-10",
+            "quantity": 10,
+            "price_minor": 13000
+          },
+          {
+            "id": "pack-20",
+            "quantity": 20,
+            "price_minor": 28000
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "pack-4": "15",
+          "pack-10": "13",
+          "pack-20": "14"
+        },
+        "better_id": "pack-10"
+      },
+      "variant": "ratio-lines",
+      "copy": {
+        "en-US": {
+          "prompt": "Three gift box offers for your candles. Find the price per box, then pick the cheapest.",
+          "feedback": {
+            "met": "You priced each box and compared on the same basis.",
+            "not_yet": "Not yet. Divide each price by the boxes in the pack."
+          },
+          "unitLabel": "box",
+          "offers": [
+            {
+              "label": "Pack of 4"
+            },
+            {
+              "label": "Pack of 10"
+            },
+            {
+              "label": "Pack of 20"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tres ofertas de cajas de regalo para tus velas. Encuentra el precio por caja y elige la más barata.",
+          "feedback": {
+            "met": "Pusiste cada caja a precio unitario y comparaste con la misma base.",
+            "not_yet": "Todavía no. Divide cada precio entre las cajas del paquete."
+          },
+          "unitLabel": "caja",
+          "offers": [
+            {
+              "label": "Paquete de 4"
+            },
+            {
+              "label": "Paquete de 10"
+            },
+            {
+              "label": "Paquete de 20"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Três ofertas de caixas de presente para suas velas. Ache o preço por caixa e escolha a mais barata.",
+          "feedback": {
+            "met": "Você achou o preço de cada caixa e comparou na mesma base.",
+            "not_yet": "Ainda não. Divida cada preço pelas caixas do pacote."
+          },
+          "unitLabel": "caixa",
+          "offers": [
+            {
+              "label": "Pacote com 4"
+            },
+            {
+              "label": "Pacote com 10"
+            },
+            {
+              "label": "Pacote com 20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-cost-01",
+      "type": "fin.cost-structure.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "cost-structure"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.recurring-costs",
+      "payload": {
+        "fixed": 450,
+        "variable": 50,
+        "maxUnits": 60,
+        "goal": {
+          "average": 60
+        },
+        "start": 20
+      },
+      "rubric": {
+        "target": 45
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Half table: wax and jar 50, recurring 450 a weekend. How many candles make the all-in cost 60?",
+          "feedback": {
+            "met": "You found the volume where the all-in cost reaches the goal.",
+            "not_yet": "Not yet. Recurring ÷ what the goal leaves after materials."
+          }
+        },
+        "es-MX": {
+          "prompt": "Media mesa: cera y frasco 50, gastos recurrentes 450 por fin de semana. ¿Cuántas velas dejan el costo completo en 60?",
+          "feedback": {
+            "met": "Hallaste el volumen donde el costo completo llega a la meta.",
+            "not_yet": "Todavía no. Recurrentes ÷ lo que deja la meta después de los materiales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Meia barraca: cera e pote 50, custos recorrentes 450 por fim de semana. Quantas velas deixam o custo completo em 60?",
+          "feedback": {
+            "met": "Você achou o volume em que o custo completo chega à meta.",
+            "not_yet": "Ainda não. Recorrentes ÷ o que a meta deixa depois dos materiais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-cost-02",
+      "type": "fin.cost-structure.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "cost-structure"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "fixed": 240,
+        "variable": 20,
+        "maxUnits": 60,
+        "goal": {
+          "average": 28
+        },
+        "start": 10
+      },
+      "rubric": {
+        "target": 30
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Small candles: wax and tin 20, recurring 240 a weekend. How many make the all-in cost 28?",
+          "feedback": {
+            "met": "You found the volume where the all-in cost reaches the goal.",
+            "not_yet": "Not yet. Goal minus materials is the share each candle can carry."
+          }
+        },
+        "es-MX": {
+          "prompt": "Velas pequeñas: cera y lata 20, gastos recurrentes 240 por fin de semana. ¿Cuántas dejan el costo completo en 28?",
+          "feedback": {
+            "met": "Hallaste el volumen donde el costo completo llega a la meta.",
+            "not_yet": "Todavía no. Meta menos materiales es la parte que cada vela puede llevar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Velas pequenas: cera e lata 20, custos recorrentes 240 por fim de semana. Quantas deixam o custo completo em 28?",
+          "feedback": {
+            "met": "Você achou o volume em que o custo completo chega à meta.",
+            "not_yet": "Ainda não. Meta menos materiais é a parte que cada vela pode carregar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "fin.cost-structure.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "cost-structure"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.full-costing",
+      "payload": {
+        "fixed": 360,
+        "variable": 45,
+        "maxUnits": 60,
+        "goal": {
+          "average": 60
+        },
+        "start": 12
+      },
+      "rubric": {
+        "target": 24
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Online: plan 360 a month, each order one packed candle at 45. How many orders make the all-in cost 60?",
+          "feedback": {
+            "met": "You adapted the method to a monthly plan.",
+            "not_yet": "Not yet. The plan is the recurring cost: same steps as before."
+          }
+        },
+        "es-MX": {
+          "prompt": "En línea: plan de 360 al mes, cada pedido, una vela empacada a 45. ¿Cuántos pedidos dejan el costo completo en 60?",
+          "feedback": {
+            "met": "Adaptaste el método a un plan mensual.",
+            "not_yet": "Todavía no. El plan es el gasto recurrente: mismos pasos de antes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Online: plano de 360 por mês, cada pedido, uma vela embalada a 45. Quantos pedidos deixam o custo completo em 60?",
+          "feedback": {
+            "met": "Você adaptou o método a um plano mensal.",
+            "not_yet": "Ainda não. O plano é o custo recorrente: mesmos passos de antes."
+          }
+        }
+      }
+    }
+  ]
+}

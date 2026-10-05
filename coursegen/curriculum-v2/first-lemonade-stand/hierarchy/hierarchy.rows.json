@@ -1,0 +1,948 @@
+{
+  "namespace": "a3c1f0de-5b7e-4c21-9d34-7e6f1b2a8c90",
+  "course_slug": "first-lemonade-stand",
+  "tables": {
+    "courses": [
+      {
+        "id": "e094da7b-5cce-5f90-ac01-7517609b29e5",
+        "slug": "first-lemonade-stand",
+        "title": {
+          "en-US": "My First Lemonade Stand",
+          "es-MX": "Mi Primer Puesto de Limonada",
+          "pt-BR": "Minha Primeira Banca de Limonada"
+        },
+        "description": {
+          "en-US": "Run a small stall of your own: count coins, give exact change, set a fair price, tell needs from wants, and save what is left. One small money skill per lesson.",
+          "es-MX": "Maneja un puesto propio: contar monedas, dar el cambio exacto, poner un precio justo, distinguir necesidades de deseos y ahorrar lo que sobra. Una habilidad de dinero por lección.",
+          "pt-BR": "Tenha uma banca sua: contar moedas, dar o troco exato, definir um preço justo, separar necessidades de desejos e poupar o que sobra. Uma habilidade de dinheiro por lição."
+        },
+        "subject": "mixed",
+        "status": "draft",
+        "position": 0,
+        "requires": [],
+        "badge_asset": "course-badges/first-lemonade-stand.png"
+      }
+    ],
+    "adventures": [
+      {
+        "id": "9bb2ae49-d23e-5669-b8af-93d21fa2f629",
+        "course_id": "e094da7b-5cce-5f90-ac01-7517609b29e5",
+        "position": 1,
+        "slug": "lem-69-open-the-stand",
+        "title": {
+          "en-US": "Open the stand",
+          "es-MX": "Abre tu puesto",
+          "pt-BR": "Abra a sua banca"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "da532d19-546c-501f-8d75-af58ee5f6bb1",
+        "course_id": "e094da7b-5cce-5f90-ac01-7517609b29e5",
+        "position": 2,
+        "slug": "lem-1012-school-fair-stall",
+        "title": {
+          "en-US": "The school-fair stall",
+          "es-MX": "El puesto de la feria escolar",
+          "pt-BR": "A banca da feira da escola"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "879da5f1-c09b-55ce-bb7c-3b62bcd8936e",
+        "course_id": "e094da7b-5cce-5f90-ac01-7517609b29e5",
+        "position": 3,
+        "slug": "lem-1317-first-micro-business",
+        "title": {
+          "en-US": "My first micro-business",
+          "es-MX": "Mi primer microemprendimiento",
+          "pt-BR": "Meu primeiro microempreendimento"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "9c481c5c-863c-5a7c-8ba7-71ba94d1e50b",
+        "course_id": "e094da7b-5cce-5f90-ac01-7517609b29e5",
+        "position": 4,
+        "slug": "lem-adult-weekend-stall",
+        "title": {
+          "en-US": "The weekend stall",
+          "es-MX": "El puesto de fin de semana",
+          "pt-BR": "A banca de fim de semana"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      }
+    ],
+    "sagas": [
+      {
+        "id": "c426f2f2-7038-5606-9620-99f05260a504",
+        "adventure_id": "9bb2ae49-d23e-5669-b8af-93d21fa2f629",
+        "position": 1,
+        "slug": "lem-69-open-the-stand",
+        "title": {
+          "en-US": "Open the stand",
+          "es-MX": "Abre tu puesto",
+          "pt-BR": "Abra a sua banca"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "ff79a2a6-9a01-5517-95dd-f9b77ce2a344",
+        "adventure_id": "da532d19-546c-501f-8d75-af58ee5f6bb1",
+        "position": 1,
+        "slug": "lem-1012-school-fair-stall",
+        "title": {
+          "en-US": "The school-fair stall",
+          "es-MX": "El puesto de la feria escolar",
+          "pt-BR": "A banca da feira da escola"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "6c28a726-6fc6-5b48-a281-5d4a54dede36",
+        "adventure_id": "879da5f1-c09b-55ce-bb7c-3b62bcd8936e",
+        "position": 1,
+        "slug": "lem-1317-first-micro-business",
+        "title": {
+          "en-US": "My first micro-business",
+          "es-MX": "Mi primer microemprendimiento",
+          "pt-BR": "Meu primeiro microempreendimento"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "a18dbf8a-4cd2-528c-8539-eb1bb9887e92",
+        "adventure_id": "9c481c5c-863c-5a7c-8ba7-71ba94d1e50b",
+        "position": 1,
+        "slug": "lem-adult-weekend-stall",
+        "title": {
+          "en-US": "The weekend stall",
+          "es-MX": "El puesto de fin de semana",
+          "pt-BR": "A banca de fim de semana"
+        },
+        "status": "draft"
+      }
+    ],
+    "topics": [
+      {
+        "id": "6547090e-a9e5-5f3a-bc06-6548952d413a",
+        "saga_id": "c426f2f2-7038-5606-9620-99f05260a504",
+        "position": 1,
+        "slug": "lem-69-01-set-up-the-table",
+        "title": {
+          "en-US": "Set up the table",
+          "es-MX": "Arma la mesa",
+          "pt-BR": "Monte a mesa"
+        },
+        "learning_objective": {
+          "en-US": "Explain that a price is what a buyer gives to get something.",
+          "es-MX": "Explicar que un precio es lo que el comprador da para recibir algo.",
+          "pt-BR": "Explicar que um preço é o que o comprador dá para receber algo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "a35451b4-71cb-5e15-bf8f-410fa9d291d4",
+        "saga_id": "c426f2f2-7038-5606-9620-99f05260a504",
+        "position": 2,
+        "slug": "lem-69-02-count-the-cash-box",
+        "title": {
+          "en-US": "Count the cash box",
+          "es-MX": "Cuenta la caja",
+          "pt-BR": "Conte a caixa"
+        },
+        "learning_objective": {
+          "en-US": "Work out all the money a stand takes in from its sales.",
+          "es-MX": "Calcular todo el dinero que un puesto recibe por sus ventas.",
+          "pt-BR": "Calcular todo o dinheiro que uma barraca recebe por suas vendas."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "abb4464a-c569-5fc0-bbaf-53ae4e48fc01",
+        "saga_id": "c426f2f2-7038-5606-9620-99f05260a504",
+        "position": 3,
+        "slug": "lem-69-03-a-fair-price-for-a-cup",
+        "title": {
+          "en-US": "A fair price for a cup",
+          "es-MX": "Un precio justo para el vaso",
+          "pt-BR": "Um preço justo para o copo"
+        },
+        "learning_objective": {
+          "en-US": "Tell apart what it costs to make something from the price it sells for.",
+          "es-MX": "Distinguir lo que cuesta hacer algo del precio al que se vende.",
+          "pt-BR": "Distinguir o que custa fazer algo do preço pelo qual é vendido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "a8f0ceb9-ba1a-5730-a977-c0e6b9b59a05",
+        "saga_id": "c426f2f2-7038-5606-9620-99f05260a504",
+        "position": 4,
+        "slug": "lem-69-04-spent-and-left",
+        "title": {
+          "en-US": "Spent and left",
+          "es-MX": "Lo gastado y lo que queda",
+          "pt-BR": "O gasto e o que sobra"
+        },
+        "learning_objective": {
+          "en-US": "Find the profit by taking the costs away from the money that came in.",
+          "es-MX": "Encontrar la ganancia quitando los costos al dinero que entró.",
+          "pt-BR": "Encontrar o lucro tirando os custos do dinheiro que entrou."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "2eee94ff-229a-500f-9049-352ed03a713d",
+        "saga_id": "ff79a2a6-9a01-5517-95dd-f9b77ce2a344",
+        "position": 1,
+        "slug": "lem-1012-01-jar-to-cup-cost",
+        "title": {
+          "en-US": "What one cup costs",
+          "es-MX": "Cuánto cuesta un vaso",
+          "pt-BR": "Quanto custa um copo"
+        },
+        "learning_objective": {
+          "en-US": "Tell apart what it costs to make something from the price it sells for.",
+          "es-MX": "Distinguir lo que cuesta hacer algo del precio al que se vende.",
+          "pt-BR": "Distinguir o que custa fazer algo do preço pelo qual é vendido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "5815e472-88eb-5b51-a08e-5ce83c6cf2e2",
+        "saga_id": "ff79a2a6-9a01-5517-95dd-f9b77ce2a344",
+        "position": 2,
+        "slug": "lem-1012-02-fair-day-profit",
+        "title": {
+          "en-US": "Profit on fair day",
+          "es-MX": "La ganancia del día de feria",
+          "pt-BR": "O lucro do dia da feira"
+        },
+        "learning_objective": {
+          "en-US": "Find the profit by taking the costs away from the money that came in.",
+          "es-MX": "Encontrar la ganancia quitando los costos al dinero que entró.",
+          "pt-BR": "Encontrar o lucro tirando os custos do dinheiro que entrou."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8d313e0f-3a33-5ded-9255-eb2c0f27dc73",
+        "saga_id": "ff79a2a6-9a01-5517-95dd-f9b77ce2a344",
+        "position": 3,
+        "slug": "lem-1012-03-goal-and-plan",
+        "title": {
+          "en-US": "A plan for the cooler",
+          "es-MX": "Un plan para la hielera",
+          "pt-BR": "Um plano para a caixa térmica"
+        },
+        "learning_objective": {
+          "en-US": "Turn a wish into a goal with a size and a date, break it into steps, and think ahead about obstacles.",
+          "es-MX": "Convertir un deseo en una meta con tamaño y fecha, dividirla en pasos y pensar por adelantado en los obstáculos.",
+          "pt-BR": "Transformar um desejo em uma meta com tamanho e data, dividi-la em passos e pensar antes nos obstáculos."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "203e9654-c94a-5346-ab2e-dcc06a3583e1",
+        "saga_id": "ff79a2a6-9a01-5517-95dd-f9b77ce2a344",
+        "position": 4,
+        "slug": "lem-1012-04-bad-day-good-day",
+        "title": {
+          "en-US": "A bad week, a good week",
+          "es-MX": "Una semana mala, una buena",
+          "pt-BR": "Uma semana ruim, uma boa"
+        },
+        "learning_objective": {
+          "en-US": "Weigh what can be lost against what can be gained before deciding.",
+          "es-MX": "Comparar lo que se puede perder con lo que se puede ganar antes de decidir.",
+          "pt-BR": "Comparar o que se pode perder com o que se pode ganhar antes de decidir."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "98db6dc4-fe90-5937-9047-ae075c7bc516",
+        "saga_id": "6c28a726-6fc6-5b48-a281-5d4a54dede36",
+        "position": 1,
+        "slug": "lem-1317-01-true-cost-of-a-muffin",
+        "title": {
+          "en-US": "What a muffin box really costs",
+          "es-MX": "Cuánto cuesta de verdad un muffin",
+          "pt-BR": "Quanto custa mesmo uma caixa de muffins"
+        },
+        "learning_objective": {
+          "en-US": "Add fixed, variable and hidden costs and the value of your time to find the real cost of each unit.",
+          "es-MX": "Sumar costos fijos, variables y escondidos y el valor de tu tiempo para encontrar el costo real de cada unidad.",
+          "pt-BR": "Somar custos fixos, variáveis e escondidos e o valor do seu tempo para encontrar o custo real de cada unidade."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "55db3209-b193-5dd8-a0da-9b85b49e633a",
+        "saga_id": "6c28a726-6fc6-5b48-a281-5d4a54dede36",
+        "position": 2,
+        "slug": "lem-1317-02-price-and-margin",
+        "title": {
+          "en-US": "Set your price from your margin",
+          "es-MX": "Fija tu precio a partir de tu margen",
+          "pt-BR": "Defina seu preço pela sua margem"
+        },
+        "learning_objective": {
+          "en-US": "Find the margin in currency and as a percentage of the price, and show how a discount reduces it.",
+          "es-MX": "Calcular el margen en dinero y como porcentaje del precio, y mostrar cómo un descuento lo reduce.",
+          "pt-BR": "Calcular a margem em dinheiro e como porcentagem do preço, e mostrar como um desconto a reduz."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "e87d9d2e-6df2-502c-b078-e9194594d4dc",
+        "saga_id": "6c28a726-6fc6-5b48-a281-5d4a54dede36",
+        "position": 3,
+        "slug": "lem-1317-03-break-even-night",
+        "title": {
+          "en-US": "Sales needed to break even",
+          "es-MX": "Ventas para llegar al equilibrio",
+          "pt-BR": "Vendas para atingir o equilíbrio"
+        },
+        "learning_objective": {
+          "en-US": "Find how many units must be sold to cover fixed costs, and how price and fixed costs move that point.",
+          "es-MX": "Calcular cuántas unidades hay que vender para cubrir los costos fijos y cómo el precio y los costos fijos mueven ese punto.",
+          "pt-BR": "Calcular quantas unidades precisam ser vendidas para cobrir os custos fixos e como o preço e os custos fixos movem esse ponto."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "74660dc2-8b61-5051-b8d8-5edc48ecf82d",
+        "saga_id": "6c28a726-6fc6-5b48-a281-5d4a54dede36",
+        "position": 4,
+        "slug": "lem-1317-04-the-haggling-customer",
+        "title": {
+          "en-US": "Negotiate without losing your margin",
+          "es-MX": "Negocia sin perder tu margen",
+          "pt-BR": "Negocie sem perder sua margem"
+        },
+        "learning_objective": {
+          "en-US": "Set your limit before negotiating, find what the other person really wants, trade low-cost concessions, and say no respectfully.",
+          "es-MX": "Fijar tu límite antes de negociar, descubrir qué quiere de verdad la otra persona, ceder lo que te cuesta poco y decir que no con respeto.",
+          "pt-BR": "Definir seu limite antes de negociar, descobrir o que a outra pessoa realmente quer, ceder o que custa pouco e dizer não com respeito."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "567b072f-946d-5eff-8063-b07b2932049b",
+        "saga_id": "a18dbf8a-4cd2-528c-8539-eb1bb9887e92",
+        "position": 1,
+        "slug": "lem-adult-01-all-in-costs",
+        "title": {
+          "en-US": "What one candle really costs",
+          "es-MX": "Lo que de verdad cuesta una vela",
+          "pt-BR": "O que uma vela realmente custa"
+        },
+        "learning_objective": {
+          "en-US": "Add fixed, variable and hidden costs and the value of your time to find the real cost of each unit.",
+          "es-MX": "Sumar costos fijos, variables y escondidos y el valor de tu tiempo para encontrar el costo real de cada unidad.",
+          "pt-BR": "Somar custos fixos, variáveis e escondidos e o valor do seu tempo para encontrar o custo real de cada unidade."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "d7f07705-3bfc-57d7-87e6-417fc213155b",
+        "saga_id": "a18dbf8a-4cd2-528c-8539-eb1bb9887e92",
+        "position": 2,
+        "slug": "lem-adult-02-floor-price-and-margin",
+        "title": {
+          "en-US": "A floor price before you haggle",
+          "es-MX": "Un precio mínimo antes de regatear",
+          "pt-BR": "Um preço mínimo antes de negociar"
+        },
+        "learning_objective": {
+          "en-US": "Find the margin in currency and as a percentage of the price, and show how a discount reduces it.",
+          "es-MX": "Calcular el margen en dinero y como porcentaje del precio, y mostrar cómo un descuento lo reduce.",
+          "pt-BR": "Calcular a margem em dinheiro e como porcentagem do preço, e mostrar como um desconto a reduz."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ffd95503-4196-5e87-a011-106368744bac",
+        "saga_id": "a18dbf8a-4cd2-528c-8539-eb1bb9887e92",
+        "position": 3,
+        "slug": "lem-adult-03-break-even-and-records",
+        "title": {
+          "en-US": "How many candles cover the weekend",
+          "es-MX": "Cuántas velas cubren el fin de semana",
+          "pt-BR": "Quantas velas cobrem o fim de semana"
+        },
+        "learning_objective": {
+          "en-US": "Find how many units must be sold to cover fixed costs, and how price and fixed costs move that point.",
+          "es-MX": "Calcular cuántas unidades hay que vender para cubrir los costos fijos y cómo el precio y los costos fijos mueven ese punto.",
+          "pt-BR": "Calcular quantas unidades precisam ser vendidas para cobrir os custos fixos e como o preço e os custos fixos movem esse ponto."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8aa6d8be-7b6e-5fdd-b024-f3925ae98868",
+        "saga_id": "a18dbf8a-4cd2-528c-8539-eb1bb9887e92",
+        "position": 4,
+        "slug": "lem-adult-04-reinvest-or-stop",
+        "title": {
+          "en-US": "Reinvest, keep it or stop",
+          "es-MX": "Reinvertir, dejarlo igual o parar",
+          "pt-BR": "Reinvestir, manter ou parar"
+        },
+        "learning_objective": {
+          "en-US": "Weigh what can be lost against what can be gained before deciding.",
+          "es-MX": "Comparar lo que se puede perder con lo que se puede ganar antes de decidir.",
+          "pt-BR": "Comparar o que se pode perder com o que se pode ganhar antes de decidir."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "471d7ce5-b6ec-549b-8b23-cb8e91399142",
+        "topic_id": "6547090e-a9e5-5f3a-bc06-6548952d413a",
+        "position": 1,
+        "slug": "lem-69-01-set-up-the-table",
+        "title": {
+          "en-US": "Set up the table",
+          "es-MX": "Arma la mesa",
+          "pt-BR": "Monte a mesa"
+        },
+        "status": "review"
+      },
+      {
+        "id": "2596e44f-32ca-54d4-80e5-69c0033d6978",
+        "topic_id": "a35451b4-71cb-5e15-bf8f-410fa9d291d4",
+        "position": 1,
+        "slug": "lem-69-02-count-the-cash-box",
+        "title": {
+          "en-US": "Count the cash box",
+          "es-MX": "Cuenta la caja",
+          "pt-BR": "Conte a caixa"
+        },
+        "status": "review"
+      },
+      {
+        "id": "5f9f8038-398f-5dbd-affd-70c32a168282",
+        "topic_id": "abb4464a-c569-5fc0-bbaf-53ae4e48fc01",
+        "position": 1,
+        "slug": "lem-69-03-a-fair-price-for-a-cup",
+        "title": {
+          "en-US": "A fair price for a cup",
+          "es-MX": "Un precio justo para el vaso",
+          "pt-BR": "Um preço justo para o copo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "b6a5537d-4f71-55a5-bab1-ad56189ec607",
+        "topic_id": "a8f0ceb9-ba1a-5730-a977-c0e6b9b59a05",
+        "position": 1,
+        "slug": "lem-69-04-spent-and-left",
+        "title": {
+          "en-US": "Spent and left",
+          "es-MX": "Lo gastado y lo que queda",
+          "pt-BR": "O gasto e o que sobra"
+        },
+        "status": "review"
+      },
+      {
+        "id": "455c6d8e-d755-5559-9426-cc1be334d139",
+        "topic_id": "2eee94ff-229a-500f-9049-352ed03a713d",
+        "position": 1,
+        "slug": "lem-1012-01-jar-to-cup-cost",
+        "title": {
+          "en-US": "What one cup costs",
+          "es-MX": "Cuánto cuesta un vaso",
+          "pt-BR": "Quanto custa um copo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "60bde9b3-d213-536c-ac3f-5f3168d0ef3d",
+        "topic_id": "5815e472-88eb-5b51-a08e-5ce83c6cf2e2",
+        "position": 1,
+        "slug": "lem-1012-02-fair-day-profit",
+        "title": {
+          "en-US": "Profit on fair day",
+          "es-MX": "La ganancia del día de feria",
+          "pt-BR": "O lucro do dia da feira"
+        },
+        "status": "review"
+      },
+      {
+        "id": "7d32bbae-c05b-5129-9ec3-80014ca5e304",
+        "topic_id": "8d313e0f-3a33-5ded-9255-eb2c0f27dc73",
+        "position": 1,
+        "slug": "lem-1012-03-goal-and-plan",
+        "title": {
+          "en-US": "A plan for the cooler",
+          "es-MX": "Un plan para la hielera",
+          "pt-BR": "Um plano para a caixa térmica"
+        },
+        "status": "review"
+      },
+      {
+        "id": "69e2453b-8ac0-5223-bfec-bddc2801d2cb",
+        "topic_id": "203e9654-c94a-5346-ab2e-dcc06a3583e1",
+        "position": 1,
+        "slug": "lem-1012-04-bad-day-good-day",
+        "title": {
+          "en-US": "A bad week, a good week",
+          "es-MX": "Una semana mala, una buena",
+          "pt-BR": "Uma semana ruim, uma boa"
+        },
+        "status": "review"
+      },
+      {
+        "id": "593b0a10-ee2f-542f-995e-60ee38656081",
+        "topic_id": "98db6dc4-fe90-5937-9047-ae075c7bc516",
+        "position": 1,
+        "slug": "lem-1317-01-true-cost-of-a-muffin",
+        "title": {
+          "en-US": "What a muffin box really costs",
+          "es-MX": "Cuánto cuesta de verdad un muffin",
+          "pt-BR": "Quanto custa mesmo uma caixa de muffins"
+        },
+        "status": "review"
+      },
+      {
+        "id": "0cd3db9c-77c6-5a60-92bc-b80198593db7",
+        "topic_id": "55db3209-b193-5dd8-a0da-9b85b49e633a",
+        "position": 1,
+        "slug": "lem-1317-02-price-and-margin",
+        "title": {
+          "en-US": "Set your price from your margin",
+          "es-MX": "Fija tu precio a partir de tu margen",
+          "pt-BR": "Defina seu preço pela sua margem"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8394970d-ef31-5954-818d-99a0e6110ae6",
+        "topic_id": "e87d9d2e-6df2-502c-b078-e9194594d4dc",
+        "position": 1,
+        "slug": "lem-1317-03-break-even-night",
+        "title": {
+          "en-US": "Sales needed to break even",
+          "es-MX": "Ventas para llegar al equilibrio",
+          "pt-BR": "Vendas para atingir o equilíbrio"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4f6387bf-7f94-5673-908d-33d618b3ad47",
+        "topic_id": "74660dc2-8b61-5051-b8d8-5edc48ecf82d",
+        "position": 1,
+        "slug": "lem-1317-04-the-haggling-customer",
+        "title": {
+          "en-US": "Negotiate without losing your margin",
+          "es-MX": "Negocia sin perder tu margen",
+          "pt-BR": "Negocie sem perder sua margem"
+        },
+        "status": "review"
+      },
+      {
+        "id": "e12e0a77-d188-5999-ab4a-a5d69007bdb5",
+        "topic_id": "567b072f-946d-5eff-8063-b07b2932049b",
+        "position": 1,
+        "slug": "lem-adult-01-all-in-costs",
+        "title": {
+          "en-US": "What one candle really costs",
+          "es-MX": "Lo que de verdad cuesta una vela",
+          "pt-BR": "O que uma vela realmente custa"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4092b1ea-4ff5-5cf7-8d91-95b811bfe7ad",
+        "topic_id": "d7f07705-3bfc-57d7-87e6-417fc213155b",
+        "position": 1,
+        "slug": "lem-adult-02-floor-price-and-margin",
+        "title": {
+          "en-US": "A floor price before you haggle",
+          "es-MX": "Un precio mínimo antes de regatear",
+          "pt-BR": "Um preço mínimo antes de negociar"
+        },
+        "status": "review"
+      },
+      {
+        "id": "0cbaa811-2848-5c59-9582-13c55edbe8e5",
+        "topic_id": "ffd95503-4196-5e87-a011-106368744bac",
+        "position": 1,
+        "slug": "lem-adult-03-break-even-and-records",
+        "title": {
+          "en-US": "How many candles cover the weekend",
+          "es-MX": "Cuántas velas cubren el fin de semana",
+          "pt-BR": "Quantas velas cobrem o fim de semana"
+        },
+        "status": "review"
+      },
+      {
+        "id": "85137c43-5ae7-5986-8297-9dfb0d435103",
+        "topic_id": "8aa6d8be-7b6e-5fdd-b024-f3925ae98868",
+        "position": 1,
+        "slug": "lem-adult-04-reinvest-or-stop",
+        "title": {
+          "en-US": "Reinvest, keep it or stop",
+          "es-MX": "Reinvertir, dejarlo igual o parar",
+          "pt-BR": "Reinvestir, manter ou parar"
+        },
+        "status": "review"
+      }
+    ],
+    "topic_knowledge_components": [
+      {
+        "topic_id": "6547090e-a9e5-5f3a-bc06-6548952d413a",
+        "kc_key": "biz.what-is-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6547090e-a9e5-5f3a-bc06-6548952d413a",
+        "kc_key": "biz.goods-vs-services",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a35451b4-71cb-5e15-bf8f-410fa9d291d4",
+        "kc_key": "biz.revenue",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a35451b4-71cb-5e15-bf8f-410fa9d291d4",
+        "kc_key": "money.make-change-counting-up",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a35451b4-71cb-5e15-bf8f-410fa9d291d4",
+        "kc_key": "money.count-mixed-coins",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "abb4464a-c569-5fc0-bbaf-53ae4e48fc01",
+        "kc_key": "biz.cost-vs-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "abb4464a-c569-5fc0-bbaf-53ae4e48fc01",
+        "kc_key": "biz.what-is-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a8f0ceb9-ba1a-5730-a977-c0e6b9b59a05",
+        "kc_key": "biz.profit",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a8f0ceb9-ba1a-5730-a977-c0e6b9b59a05",
+        "kc_key": "money.subtract-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2eee94ff-229a-500f-9049-352ed03a713d",
+        "kc_key": "biz.cost-vs-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2eee94ff-229a-500f-9049-352ed03a713d",
+        "kc_key": "money.unit-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2eee94ff-229a-500f-9049-352ed03a713d",
+        "kc_key": "money.estimate-total",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5815e472-88eb-5b51-a08e-5ce83c6cf2e2",
+        "kc_key": "biz.profit",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5815e472-88eb-5b51-a08e-5ce83c6cf2e2",
+        "kc_key": "biz.revenue",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5815e472-88eb-5b51-a08e-5ce83c6cf2e2",
+        "kc_key": "biz.cost-vs-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8d313e0f-3a33-5ded-9255-eb2c0f27dc73",
+        "kc_key": "life.goal-planning",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8d313e0f-3a33-5ded-9255-eb2c0f27dc73",
+        "kc_key": "biz.saving-goal",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8d313e0f-3a33-5ded-9255-eb2c0f27dc73",
+        "kc_key": "money.savings-plan-math",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "203e9654-c94a-5346-ab2e-dcc06a3583e1",
+        "kc_key": "biz.risk-and-reward",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "203e9654-c94a-5346-ab2e-dcc06a3583e1",
+        "kc_key": "life.review-and-adjust-plan",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "203e9654-c94a-5346-ab2e-dcc06a3583e1",
+        "kc_key": "biz.profit",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "98db6dc4-fe90-5937-9047-ae075c7bc516",
+        "kc_key": "biz.full-costing",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "98db6dc4-fe90-5937-9047-ae075c7bc516",
+        "kc_key": "biz.cost-vs-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "98db6dc4-fe90-5937-9047-ae075c7bc516",
+        "kc_key": "money.unit-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "55db3209-b193-5dd8-a0da-9b85b49e633a",
+        "kc_key": "biz.margin",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "55db3209-b193-5dd8-a0da-9b85b49e633a",
+        "kc_key": "biz.pricing-strategy",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "55db3209-b193-5dd8-a0da-9b85b49e633a",
+        "kc_key": "biz.customer-feedback",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e87d9d2e-6df2-502c-b078-e9194594d4dc",
+        "kc_key": "biz.break-even",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e87d9d2e-6df2-502c-b078-e9194594d4dc",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e87d9d2e-6df2-502c-b078-e9194594d4dc",
+        "kc_key": "biz.full-costing",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "74660dc2-8b61-5051-b8d8-5edc48ecf82d",
+        "kc_key": "biz.negotiation",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "74660dc2-8b61-5051-b8d8-5edc48ecf82d",
+        "kc_key": "biz.ethical-persuasion",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "74660dc2-8b61-5051-b8d8-5edc48ecf82d",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "567b072f-946d-5eff-8063-b07b2932049b",
+        "kc_key": "biz.full-costing",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "567b072f-946d-5eff-8063-b07b2932049b",
+        "kc_key": "life.recurring-costs",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "567b072f-946d-5eff-8063-b07b2932049b",
+        "kc_key": "money.unit-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d7f07705-3bfc-57d7-87e6-417fc213155b",
+        "kc_key": "biz.margin",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d7f07705-3bfc-57d7-87e6-417fc213155b",
+        "kc_key": "biz.pricing-strategy",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d7f07705-3bfc-57d7-87e6-417fc213155b",
+        "kc_key": "biz.negotiation",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ffd95503-4196-5e87-a011-106368744bac",
+        "kc_key": "biz.break-even",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ffd95503-4196-5e87-a011-106368744bac",
+        "kc_key": "life.track-earnings",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ffd95503-4196-5e87-a011-106368744bac",
+        "kc_key": "biz.margin",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8aa6d8be-7b6e-5fdd-b024-f3925ae98868",
+        "kc_key": "biz.risk-and-reward",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8aa6d8be-7b6e-5fdd-b024-f3925ae98868",
+        "kc_key": "life.opportunity-cost",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8aa6d8be-7b6e-5fdd-b024-f3925ae98868",
+        "kc_key": "biz.budget-decisions",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      }
+    ]
+  }
+}

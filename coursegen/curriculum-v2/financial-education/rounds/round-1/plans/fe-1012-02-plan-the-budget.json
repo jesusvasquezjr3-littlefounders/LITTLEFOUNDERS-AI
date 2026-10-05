@@ -1,0 +1,1056 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-smart-spending",
+  "lesson_id": "fe-1012-02-plan-the-budget",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.simple-budget",
+    "money.estimate-total"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho ayuda al club a planear compras: el total nunca debe pasar del dinero disponible. Cada quien elige estimar redondeando hacia arriba o sumar exacto, decide qué quitar cuando no alcanza, y practica con un reparto y un registro de saldo.",
+  "title": {
+    "en-US": "Plan your budget",
+    "es-MX": "Planea tu presupuesto",
+    "pt-BR": "Planeje seu orçamento"
+  },
+  "new_concepts": [
+    "money.simple-budget"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "approaches": {
+    "options": [
+      {
+        "id": "approach-round",
+        "label": {
+          "en-US": "Round up first",
+          "es-MX": "Redondea hacia arriba primero",
+          "pt-BR": "Arredonde para cima primeiro"
+        },
+        "segment_ids": [
+          "roundup-01",
+          "roundup-02"
+        ]
+      },
+      {
+        "id": "approach-exact",
+        "label": {
+          "en-US": "Add exactly, then compare",
+          "es-MX": "Suma exacta y compara",
+          "pt-BR": "Some exato e compare"
+        },
+        "segment_ids": [
+          "exact-01",
+          "exact-02"
+        ]
+      }
+    ]
+  },
+  "segments": [
+    {
+      "id": "intro-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Rho.",
+          "line": "Before we buy, we make a plan. The total must not pass your money.",
+          "narration": {
+            "script": "Today you check whether your money is enough. You can round to go fast or add exactly."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Rho.",
+          "line": "Antes de comprar, hacemos un plan. El total no debe pasar de tu dinero.",
+          "narration": {
+            "script": "Hoy revisas si tu dinero alcanza. Puedes redondear para ir rápido o sumar exacto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça Rho.",
+          "line": "Antes de comprar, fazemos um plano. O total não pode passar do seu dinheiro.",
+          "narration": {
+            "script": "Hoje você confere se o seu dinheiro dá. Você pode arredondar para ir rápido ou somar exato."
+          }
+        }
+      }
+    },
+    {
+      "id": "limit-01",
+      "type": "money.opportunity-cost.v2",
+      "grading": "none",
+      "visual": {
+        "type": "token-chooser"
+      },
+      "payload": {
+        "tokens": 10,
+        "options": [
+          {
+            "id": "opt-fruit",
+            "cost": 3
+          },
+          {
+            "id": "opt-juice",
+            "cost": 2
+          },
+          {
+            "id": "opt-bread",
+            "cost": 4
+          },
+          {
+            "id": "opt-cookies",
+            "cost": 3
+          }
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have 10 coins for the picnic. Pick what you want without going over.",
+          "options": [
+            {
+              "label": "Fruit"
+            },
+            {
+              "label": "Juice"
+            },
+            {
+              "label": "Bread"
+            },
+            {
+              "label": "Cookies"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tienes 10 monedas para el picnic. Elige lo que quieras sin pasarte.",
+          "options": [
+            {
+              "label": "Fruta"
+            },
+            {
+              "label": "Jugo"
+            },
+            {
+              "label": "Pan"
+            },
+            {
+              "label": "Galletas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você tem 10 moedas para o piquenique. Escolha o que quiser sem passar.",
+          "options": [
+            {
+              "label": "Fruta"
+            },
+            {
+              "label": "Suco"
+            },
+            {
+              "label": "Pão"
+            },
+            {
+              "label": "Biscoitos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "roundup-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "round-prices"
+          },
+          {
+            "id": "round-sum"
+          },
+          {
+            "id": "round-left"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "round-sum",
+          "round-left"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "round-sum": "50",
+          "round-left": "10"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sandwich 14, juice 9 and fruit 17. Round each price up to the next ten: is 60 coins enough?",
+          "feedback": {
+            "met": "You rounded up and added: the total stays under 60.",
+            "not_yet": "Not yet. Round each price up to a ten, then add them."
+          },
+          "help": [
+            "Raise 14 to 20 and 17 to 20, then add the three rounded prices."
+          ],
+          "steps": [
+            {
+              "expression": "Round each price up to a ten",
+              "result": "20, 10, 20",
+              "spokenText": "We round 14 to 20, 9 to 10 and 17 to 20"
+            },
+            {
+              "expression": "20 + 10 + 20",
+              "result": "50",
+              "spokenText": "Twenty plus ten plus twenty is 50"
+            },
+            {
+              "expression": "Money − rounded total",
+              "result": "10",
+              "spokenText": "Sixty minus 50 leaves 10"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Torta 14, jugo 9 y fruta 17. Redondea cada precio hacia arriba, hasta la siguiente decena: ¿alcanzan 60 monedas?",
+          "feedback": {
+            "met": "Redondeaste hacia arriba y sumaste: el total queda bajo 60.",
+            "not_yet": "Todavía no. Redondea cada precio hacia arriba y luego suma."
+          },
+          "help": [
+            "Redondea 14 a 20 y 17 a 20, y luego suma los tres precios redondeados."
+          ],
+          "steps": [
+            {
+              "expression": "Redondea cada precio hacia arriba",
+              "result": "20, 10, 20",
+              "spokenText": "Redondeamos 14 a 20, 9 a 10 y 17 a 20"
+            },
+            {
+              "expression": "20 + 10 + 20",
+              "result": "50",
+              "spokenText": "Veinte más diez más veinte son 50"
+            },
+            {
+              "expression": "Dinero − total redondeado",
+              "result": "10",
+              "spokenText": "Sesenta menos 50 deja 10"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sanduíche 14, suco 9 e fruta 17. Arredonde cada preço para cima, até a próxima dezena: 60 moedas são suficientes?",
+          "feedback": {
+            "met": "Você arredondou para cima e somou: o total fica abaixo de 60.",
+            "not_yet": "Ainda não. Arredonde cada preço para cima e depois some."
+          },
+          "help": [
+            "Arredonde 14 para 20 e 17 para 20, e depois some os três preços arredondados."
+          ],
+          "steps": [
+            {
+              "expression": "Arredonde cada preço para cima",
+              "result": "20, 10, 20",
+              "spokenText": "Arredondamos 14 para 20, 9 para 10 e 17 para 20"
+            },
+            {
+              "expression": "20 + 10 + 20",
+              "result": "50",
+              "spokenText": "Vinte mais dez mais vinte são 50"
+            },
+            {
+              "expression": "Dinheiro − total arredondado",
+              "result": "10",
+              "spokenText": "Sessenta menos 50 sobra 10"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "roundup-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "round-prices"
+          },
+          {
+            "id": "round-sum"
+          },
+          {
+            "id": "exact-sum"
+          },
+          {
+            "id": "left"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "round-sum",
+          "exact-sum",
+          "left"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "round-sum": "60",
+          "exact-sum": "43",
+          "left": "2"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Glue 12, paper 15, paint 16: are 45 coins enough? If the rounded total goes over, add exactly.",
+          "feedback": {
+            "met": "You checked exactly: 43 fits in 45, with 2 left.",
+            "not_yet": "Not yet. Add 12, 15 and 16 exactly, then compare with 45."
+          },
+          "help": [
+            "A rounded total can mislead. Add 12, 15 and 16 without rounding."
+          ],
+          "steps": [
+            {
+              "expression": "Round each price up to the next ten",
+              "result": "20, 20, 20",
+              "spokenText": "We round 12 to 20, 15 to 20 and 16 to 20"
+            },
+            {
+              "expression": "20 + 20 + 20",
+              "result": "60",
+              "spokenText": "Twenty plus twenty plus twenty is 60"
+            },
+            {
+              "expression": "12 + 15 + 16",
+              "result": "43",
+              "spokenText": "Twelve plus 15 plus 16 is 43"
+            },
+            {
+              "expression": "Money − exact total",
+              "result": "2",
+              "spokenText": "Forty-five minus 43 leaves 2"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pegamento 12, papel 15, pintura 16: ¿alcanzan 45 monedas? Si el total redondeado se pasa, suma exacto.",
+          "feedback": {
+            "met": "Revisaste con la suma exacta: 43 cabe en 45.",
+            "not_yet": "Todavía no. Suma exacto 12, 15 y 16 y compara con 45."
+          },
+          "help": [
+            "Un total redondeado puede engañar. Suma 12, 15 y 16 sin redondear."
+          ],
+          "steps": [
+            {
+              "expression": "Redondea cada precio hacia arriba",
+              "result": "20, 20, 20",
+              "spokenText": "Redondeamos 12 a 20, 15 a 20 y 16 a 20"
+            },
+            {
+              "expression": "20 + 20 + 20",
+              "result": "60",
+              "spokenText": "Veinte más veinte más veinte son 60"
+            },
+            {
+              "expression": "12 + 15 + 16",
+              "result": "43",
+              "spokenText": "Doce más 15 más 16 son 43"
+            },
+            {
+              "expression": "Dinero − total exacto",
+              "result": "2",
+              "spokenText": "Cuarenta y cinco menos 43 deja 2"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cola 12, papel 15, tinta 16: 45 moedas bastam? Se o total arredondado passar, some exato.",
+          "feedback": {
+            "met": "Você conferiu exato: 43 cabe em 45.",
+            "not_yet": "Ainda não. Some exato 12, 15 e 16 e compare com 45."
+          },
+          "help": [
+            "Um total arredondado pode enganar. Some 12, 15 e 16 sem arredondar."
+          ],
+          "steps": [
+            {
+              "expression": "Arredonde cada preço para cima",
+              "result": "20, 20, 20",
+              "spokenText": "Arredondamos 12 para 20, 15 para 20 e 16 para 20"
+            },
+            {
+              "expression": "20 + 20 + 20",
+              "result": "60",
+              "spokenText": "Vinte mais vinte mais vinte são 60"
+            },
+            {
+              "expression": "12 + 15 + 16",
+              "result": "43",
+              "spokenText": "Doze mais 15 mais 16 são 43"
+            },
+            {
+              "expression": "Dinheiro − total exato",
+              "result": "2",
+              "spokenText": "Quarenta e cinco menos 43 sobra 2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "exact-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "first-pair"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "left"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "total",
+          "left"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "40",
+          "left": "20"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sandwich 14, juice 9 and fruit 17. Add the exact prices: is 60 coins enough?",
+          "feedback": {
+            "met": "You added exactly, 40, and compared it with 60.",
+            "not_yet": "Not yet. Add two prices at a time, then subtract from 60."
+          },
+          "help": [
+            "Add 14 and 9 first; then add 17 to that result."
+          ],
+          "steps": [
+            {
+              "expression": "14 + 9",
+              "result": "23",
+              "spokenText": "Fourteen plus nine is 23"
+            },
+            {
+              "expression": "23 + 17",
+              "result": "40",
+              "spokenText": "Twenty-three plus 17 is 40"
+            },
+            {
+              "expression": "Money − total",
+              "result": "20",
+              "spokenText": "Sixty minus 40 leaves 20"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Torta 14, jugo 9 y fruta 17. Suma los precios exactos: ¿alcanzan 60 monedas?",
+          "feedback": {
+            "met": "Sumaste exacto, 40, y lo comparaste con 60.",
+            "not_yet": "Todavía no. Suma dos precios a la vez y réstale el total a 60."
+          },
+          "help": [
+            "Suma primero 14 y 9; a ese resultado, súmale 17."
+          ],
+          "steps": [
+            {
+              "expression": "14 + 9",
+              "result": "23",
+              "spokenText": "Catorce más nueve son 23"
+            },
+            {
+              "expression": "23 + 17",
+              "result": "40",
+              "spokenText": "Veintitrés más 17 son 40"
+            },
+            {
+              "expression": "Dinero − total",
+              "result": "20",
+              "spokenText": "Sesenta menos 40 deja 20"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sanduíche 14, suco 9 e fruta 17. Some os preços exatos: 60 moedas bastam?",
+          "feedback": {
+            "met": "Você somou exato, 40, e comparou com 60.",
+            "not_yet": "Ainda não. Some dois preços de cada vez e tire o total de 60."
+          },
+          "help": [
+            "Some 14 e 9 primeiro; a esse resultado, some 17."
+          ],
+          "steps": [
+            {
+              "expression": "14 + 9",
+              "result": "23",
+              "spokenText": "Catorze mais nove são 23"
+            },
+            {
+              "expression": "23 + 17",
+              "result": "40",
+              "spokenText": "Vinte e três mais 17 são 40"
+            },
+            {
+              "expression": "Dinheiro − total",
+              "result": "20",
+              "spokenText": "Sessenta menos 40 sobra 20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "exact-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "steps": [
+          {
+            "id": "first-pair"
+          },
+          {
+            "id": "total"
+          },
+          {
+            "id": "over-by"
+          },
+          {
+            "id": "round-total"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "total",
+          "over-by",
+          "round-total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "total": "48",
+          "over-by": "3",
+          "round-total": "50"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Glue 12, paper 15, paint 21: are 45 coins enough? Add exactly, compare, then round up.",
+          "feedback": {
+            "met": "You added exactly, 48, and saw it goes over 45 by 3.",
+            "not_yet": "Not yet. Add the three prices, then take 45 from the total."
+          },
+          "help": [
+            "Add 27 and 21; then compare that total with 45."
+          ],
+          "steps": [
+            {
+              "expression": "12 + 15",
+              "result": "27",
+              "spokenText": "Twelve plus 15 is 27"
+            },
+            {
+              "expression": "27 + 21",
+              "result": "48",
+              "spokenText": "Twenty-seven plus 21 is 48"
+            },
+            {
+              "expression": "Exact total − money",
+              "result": "3",
+              "spokenText": "Forty-eight minus 45 is 3"
+            },
+            {
+              "expression": "Round the total up to a ten",
+              "result": "50",
+              "spokenText": "We round 48 up to 50"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pegamento 12, papel 15, pintura 21: ¿alcanzan 45 monedas? Suma exacto, compara y redondea.",
+          "feedback": {
+            "met": "Sumaste exacto, 48, y viste que pasa de 45 por 3.",
+            "not_yet": "Todavía no. Suma los tres precios y réstale 45 al total."
+          },
+          "help": [
+            "Suma 27 y 21; luego compara ese total con 45."
+          ],
+          "steps": [
+            {
+              "expression": "12 + 15",
+              "result": "27",
+              "spokenText": "Doce más 15 son 27"
+            },
+            {
+              "expression": "27 + 21",
+              "result": "48",
+              "spokenText": "Veintisiete más 21 son 48"
+            },
+            {
+              "expression": "Total exacto − dinero",
+              "result": "3",
+              "spokenText": "Cuarenta y ocho menos 45 son 3"
+            },
+            {
+              "expression": "Redondea el total hacia arriba",
+              "result": "50",
+              "spokenText": "Redondeamos 48 a 50"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cola 12, papel 15, tinta 21: 45 moedas bastam? Some exato, compare e arredonde.",
+          "feedback": {
+            "met": "Você somou exato, 48, e viu que passa de 45 por 3.",
+            "not_yet": "Ainda não. Some os três preços e tire 45 do total."
+          },
+          "help": [
+            "Some 27 e 21; depois compare esse total com 45."
+          ],
+          "steps": [
+            {
+              "expression": "12 + 15",
+              "result": "27",
+              "spokenText": "Doze mais 15 são 27"
+            },
+            {
+              "expression": "27 + 21",
+              "result": "48",
+              "spokenText": "Vinte e sete mais 21 são 48"
+            },
+            {
+              "expression": "Total exato − dinheiro",
+              "result": "3",
+              "spokenText": "Quarenta e oito menos 45 são 3"
+            },
+            {
+              "expression": "Arredonde o total para cima",
+              "result": "50",
+              "spokenText": "Arredondamos 48 para 50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "choices": [
+          {
+            "id": "drop-glue"
+          },
+          {
+            "id": "drop-paper"
+          },
+          {
+            "id": "drop-paint"
+          },
+          {
+            "id": "buy-all"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fits"
+          },
+          {
+            "id": "reason-least-need"
+          },
+          {
+            "id": "reason-similar"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "drop-glue",
+          "drop-paint"
+        ],
+        "reasonQuality": {
+          "reason-fits": "sound",
+          "reason-least-need": "partial",
+          "reason-similar": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Glue 12, paper 15, paint 21 add up to 48. You have 45 coins and need the paper.",
+          "feedback": {
+            "met": "You kept the paper and the total fits in 45.",
+            "not_yet": "Not yet. Drop one item, keep the paper."
+          },
+          "choices": [
+            {
+              "label": "Drop the glue"
+            },
+            {
+              "label": "Drop the paper"
+            },
+            {
+              "label": "Drop the paint"
+            },
+            {
+              "label": "Buy it all anyway"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "The total no longer goes over 45"
+            },
+            {
+              "label": "It is what I need least"
+            },
+            {
+              "label": "The prices are similar"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pegamento 12, papel 15 y pintura 21 suman 48. Tienes 45 monedas y necesitas el papel.",
+          "feedback": {
+            "met": "Conservaste el papel y el total cabe en 45.",
+            "not_yet": "Todavía no. Quita un artículo y conserva el papel."
+          },
+          "choices": [
+            {
+              "label": "Quitar el pegamento"
+            },
+            {
+              "label": "Quitar el papel"
+            },
+            {
+              "label": "Quitar la pintura"
+            },
+            {
+              "label": "Comprar todo de todos modos"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Así el total ya no pasa de 45"
+            },
+            {
+              "label": "Es lo que menos necesito"
+            },
+            {
+              "label": "Los precios son parecidos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cola 12, papel 15 e tinta 21 somam 48. Você tem 45 moedas e precisa do papel.",
+          "feedback": {
+            "met": "Você manteve o papel e o total cabe em 45.",
+            "not_yet": "Ainda não. Tire um item e fique com o papel."
+          },
+          "choices": [
+            {
+              "label": "Tirar a cola"
+            },
+            {
+              "label": "Tirar o papel"
+            },
+            {
+              "label": "Tirar a tinta"
+            },
+            {
+              "label": "Comprar tudo assim mesmo"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Assim o total não passa de 45"
+            },
+            {
+              "label": "É o que menos preciso"
+            },
+            {
+              "label": "Os preços são parecidos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transition-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Rho.",
+          "line": "You can check a total now. Next, split your money and follow your balance.",
+          "narration": {
+            "script": "A plan splits money before you spend it. The balance warns you near the limit."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Rho.",
+          "line": "Ya sabes revisar un total. Ahora reparte tu dinero y sigue tu saldo.",
+          "narration": {
+            "script": "Un plan reparte el dinero antes de gastarlo. El saldo avisa si te acercas al límite."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça Rho.",
+          "line": "Você já sabe conferir um total. Agora divida seu dinheiro e acompanhe o saldo.",
+          "narration": {
+            "script": "Um plano divide o dinheiro antes de gastá-lo. O saldo avisa quando você chega perto do limite."
+          }
+        }
+      }
+    },
+    {
+      "id": "allocate-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "total": 40,
+        "step": 5,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 10
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You have 40 coins this week. Save at least 10 and place the rest.",
+          "feedback": {
+            "met": "You saved at least 10 and gave every coin a place.",
+            "not_yet": "Not yet. Raise your savings until you reach 10."
+          }
+        },
+        "es-MX": {
+          "prompt": "Tienes 40 monedas esta semana. Guarda al menos 10 y reparte el resto.",
+          "feedback": {
+            "met": "Guardaste al menos 10 y le diste lugar a cada moneda.",
+            "not_yet": "Todavía no. Sube lo que guardas hasta llegar a 10."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Você tem 40 moedas esta semana. Guarde pelo menos 10 e reparta o resto.",
+          "feedback": {
+            "met": "Você guardou pelo menos 10 e deu lugar a cada moeda.",
+            "not_yet": "Ainda não. Aumente o que guarda até chegar a 10."
+          }
+        }
+      }
+    },
+    {
+      "id": "ledger-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "initial": 20,
+        "sale": 4,
+        "cost": 6,
+        "maxEntries": 3
+      },
+      "rubric": {
+        "target_balance": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your stand has 20 coins. Log a 4-coin sale and two 6-coin supply costs, then type the balance.",
+          "help": [
+            "Supplies are what you buy to sell. They lower the balance."
+          ],
+          "feedback": {
+            "met": "You logged the sale and both costs, and your balance matches.",
+            "not_yet": "Not yet. Add the sale, then subtract each supply cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "Tu puesto tiene 20 monedas. Anota una venta de 4, dos gastos de materiales de 6 y escribe el saldo.",
+          "help": [
+            "Los materiales son lo que compras para vender. Bajan el saldo."
+          ],
+          "feedback": {
+            "met": "Registraste la venta y los dos gastos, y tu saldo coincide.",
+            "not_yet": "Todavía no. Suma la venta y resta cada gasto de materiales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sua lojinha tem 20 moedas. Anote uma venda de 4, dois gastos de material de 6 e escreva o saldo.",
+          "help": [
+            "Material é o que você compra para vender. Ele reduz o saldo."
+          ],
+          "feedback": {
+            "met": "Você anotou a venda e os dois gastos, e seu saldo confere.",
+            "not_yet": "Ainda não. Some a venda e tire cada gasto de material."
+          }
+        }
+      }
+    },
+    {
+      "id": "ledger-02",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "initial": 30,
+        "sale": 5,
+        "cost": 4,
+        "maxEntries": 5
+      },
+      "rubric": {
+        "target_balance": 37
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Bracelet club: 30 coins. Log 3 sales of 5 and 2 thread costs of 4, then type the balance.",
+          "help": [
+            "Thread is a supply, so it lowers the balance."
+          ],
+          "feedback": {
+            "met": "You logged all five moves, and your balance matches.",
+            "not_yet": "Not yet. Add each sale, then subtract each thread cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "Club de pulseras: 30 monedas. Anota 3 ventas de 5 y 2 gastos de hilo de 4, y escribe el saldo.",
+          "help": [
+            "El hilo es un material, así que baja el saldo."
+          ],
+          "feedback": {
+            "met": "Registraste los cinco movimientos y tu saldo coincide.",
+            "not_yet": "Todavía no. Suma cada venta y resta cada gasto de hilo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Clube de pulseiras: 30 moedas. Anote 3 vendas de 5 e 2 gastos de linha de 4, e escreva o saldo.",
+          "help": [
+            "A linha é material, então reduz o saldo."
+          ],
+          "feedback": {
+            "met": "Você anotou os cinco movimentos e seu saldo confere.",
+            "not_yet": "Ainda não. Some cada venda e tire cada gasto de linha."
+          }
+        }
+      }
+    },
+    {
+      "id": "wrap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "wrap",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Listen to Rho.",
+          "line": "A budget is a plan. The total does not pass the money you have.",
+          "narration": {
+            "script": "Rounding is fast, but it can overshoot. If the rounded total does not fit, add exactly."
+          }
+        },
+        "es-MX": {
+          "prompt": "Escucha a Rho.",
+          "line": "Un presupuesto es un plan. El total no pasa del dinero que tienes.",
+          "narration": {
+            "script": "Redondear es rápido, pero puede pasarse. Si el total redondeado no cabe, suma exacto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça Rho.",
+          "line": "Um orçamento é um plano. O total não passa do dinheiro que você tem.",
+          "narration": {
+            "script": "Arredondar é rápido, mas pode passar. Se o total arredondado não couber, some exato."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,868 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-adult-spend-and-protect",
+  "lesson_id": "fe-adult-05-price-of-one",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "money.unit-price",
+    "life.smart-shopping",
+    "biz.what-is-price"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Una persona adulta compara dos bolsas de arroz en el tianguis y decide cuál le conviene. Antes de ver el método, elige una compra por su cuenta. Luego Zara resuelve el caso paso a paso: divide cada precio entre sus kilos, compara el precio de uno y comprueba que el ahorro de la bolsa grande solo existe si se usa completa. Después la persona calcula el precio de uno con otros productos, escala una compra en una tabla de precios y decide una compra justificando su razón. Cierra con una compra en otro lugar donde la presentación grande no gana.",
+  "title": {
+    "en-US": "The price of one",
+    "es-MX": "El precio de uno",
+    "pt-BR": "O preço de um"
+  },
+  "new_concepts": [
+    "money.unit-price",
+    "life.smart-shopping"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Un adulto compra en el tianguis, donde el mismo producto viene en bolsas y paquetes de tamaños distintos y el letrero casi nunca muestra el precio de uno. La decisión final depende de lo que se usa antes de que se eche a perder.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "en-US": {
+        "scenario": "An adult shops at the grocery store and the warehouse club, where the same item comes in small and bulk sizes, and the price per unit is small print or missing. Whether bulk saves money depends on use and storage.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "grocery store",
+          "warehouse club"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Um adulto compra no atacarejo, onde o mesmo produto vem em pacotes de tamanhos diferentes; comparar o preço de cada unidade é um fundamento que não se supõe aprendido. A compra grande só compensa se der para usar tudo.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "atacarejo"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tianguis, puesto de arroz. Todos los precios de esta lección son de ejemplo.",
+          "line": "Una bolsa chica, una grande, dos precios. Solo con los precios no ves cuál conviene más."
+        },
+        "en-US": {
+          "prompt": "Rice aisle at the grocery store. Every price in this lesson is an example.",
+          "line": "A small bag, a big bag, two tags. Tags alone don't show which is the better buy."
+        },
+        "pt-BR": {
+          "prompt": "Atacarejo, corredor do arroz. Todos os preços desta lição são exemplos.",
+          "line": "Um pacote pequeno, um grande, duas etiquetas. Só pelo preço não dá para ver qual compensa mais."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "pick-small"
+          },
+          {
+            "id": "pick-big"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-unit"
+          },
+          {
+            "id": "reason-tag"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "pick-big"
+        ],
+        "reasonQuality": {
+          "reason-more": "partial",
+          "reason-unit": "sound",
+          "reason-tag": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Jabón para trastes: 1 litro a 38 pesos, o 3 litros a 96. ¿Cuál compras?",
+          "feedback": {
+            "met": "Gracias, así sabemos de dónde partes. Ahora vemos el caso paso a paso.",
+            "not_yet": "Gracias, así sabemos de dónde partes. Ahora vemos el caso paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Botella de 1 litro"
+            },
+            {
+              "label": "Botella de 3 litros"
+            }
+          ],
+          "reasonPrompt": "¿Por qué?",
+          "reasons": [
+            {
+              "label": "Trae más jabón"
+            },
+            {
+              "label": "Cada litro sale más barato"
+            },
+            {
+              "label": "El precio es menor"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Dish soap: 16 oz for 4.00, or 48 oz for 9.00. Which do you buy?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now the case, step by step.",
+            "not_yet": "Thanks, that shows where you start. Now the case, step by step."
+          },
+          "choices": [
+            {
+              "label": "16 oz bottle"
+            },
+            {
+              "label": "48 oz bottle"
+            }
+          ],
+          "reasonPrompt": "Why?",
+          "reasons": [
+            {
+              "label": "It holds more soap"
+            },
+            {
+              "label": "Each ounce costs less"
+            },
+            {
+              "label": "The price tag is lower"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Detergente: 1 litro por 6 reais, ou 3 litros por 15. Qual você leva?",
+          "feedback": {
+            "met": "Anotado: assim sabemos de onde você parte. Agora vemos o caso passo a passo.",
+            "not_yet": "Anotado: assim sabemos de onde você parte. Agora vemos o caso passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Frasco de 1 litro"
+            },
+            {
+              "label": "Frasco de 3 litros"
+            }
+          ],
+          "reasonPrompt": "Por quê?",
+          "reasons": [
+            {
+              "label": "Tem mais detergente"
+            },
+            {
+              "label": "Cada litro sai mais barato"
+            },
+            {
+              "label": "O preço da etiqueta é menor"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: plantear la comparación.",
+          "line": "Arroz: 2 kg a 5.80, o 5 kg a 13.00. Necesito el precio de un kilo."
+        },
+        "en-US": {
+          "prompt": "Step 1: set up the comparison.",
+          "line": "Rice: 2 lb for 5.80, or 5 lb for 13.00. I need the price of one pound."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: montar a comparação.",
+          "line": "Arroz: 2 kg por 5,80, ou 5 kg por 13,00. Preciso do preço de um quilo."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: dividir cada precio entre sus kilos.",
+          "line": "5.80 ÷ 2 = 2.90 el kilo. 13.00 ÷ 5 = 2.60 el kilo."
+        },
+        "en-US": {
+          "prompt": "Step 2: divide each price by its pounds.",
+          "line": "5.80 ÷ 2 = 2.90 a pound. 13.00 ÷ 5 = 2.60 a pound."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: dividir cada preço pelos seus quilos.",
+          "line": "5,80 ÷ 2 = 2,90 o quilo. 13,00 ÷ 5 = 2,60 o quilo."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: comparar los dos.",
+          "line": "2.60 es menos que 2.90, así que gana la de 5 kg. En 5 kg son 1.50 menos."
+        },
+        "en-US": {
+          "prompt": "Step 3: compare the two.",
+          "line": "2.60 beats 2.90, so the 5 lb bag wins. Over 5 lb, that's 1.50 less."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: comparar os dois.",
+          "line": "2,60 é menos que 2,90, então o pacote de 5 kg vence. Em 5 kg são 1,50 a menos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "bag-1",
+            "quantity": 1,
+            "price_minor": 240
+          },
+          {
+            "id": "bag-4",
+            "quantity": 4,
+            "price_minor": 880
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "bag-1": "2.4",
+          "bag-4": "2.2"
+        },
+        "better_id": "bag-4"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Avena: bolsa de 1 kg o de 4 kg. Calcula el precio de un kilo y elige la mejor compra.",
+          "help": [
+            "Como en el paso 2: divide cada precio entre sus kilos.",
+            "Gana el kilo que cuesta menos."
+          ],
+          "feedback": {
+            "met": "Dividiste cada precio entre sus kilos y comparaste.",
+            "not_yet": "Todavía no. Revisa el paso 2: cada precio entre sus kilos."
+          },
+          "unitLabel": "kilo",
+          "offers": [
+            {
+              "label": "Bolsa de 1 kg"
+            },
+            {
+              "label": "Bolsa de 4 kg"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Oats: a 1 lb bag or a 4 lb bag. Find the price of one pound, then pick.",
+          "help": [
+            "Like step 2: divide each price by its pounds.",
+            "The lower price per pound is the better buy."
+          ],
+          "feedback": {
+            "met": "You divided each price by its pounds, then compared.",
+            "not_yet": "Not yet. Revisit step 2: each price divided by its pounds."
+          },
+          "unitLabel": "pound",
+          "offers": [
+            {
+              "label": "1 lb bag"
+            },
+            {
+              "label": "4 lb bag"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Aveia: pacote de 1 kg ou de 4 kg. Calcule o preço de um quilo e escolha a melhor compra.",
+          "help": [
+            "Como no passo 2: divida cada preço pelos quilos.",
+            "Vence o quilo que custa menos."
+          ],
+          "feedback": {
+            "met": "Você dividiu cada preço pelos quilos e comparou.",
+            "not_yet": "Ainda não. Reveja o passo 2: cada preço pelos quilos."
+          },
+          "unitLabel": "quilo",
+          "offers": [
+            {
+              "label": "Pacote de 1 kg"
+            },
+            {
+              "label": "Pacote de 4 kg"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: el ahorro cuenta solo si lo usas todo.",
+          "line": "Si solo usas 4 kg de la grande: 13.00 ÷ 4 = 3.25 el kilo, más que 2.90."
+        },
+        "en-US": {
+          "prompt": "Step 4: savings count only if you use it all.",
+          "line": "Use only 4 lb of the big bag: 13.00 ÷ 4 = 3.25 a pound, above 2.90."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a economia só vale se você usar tudo.",
+          "line": "Se você usar só 4 kg do pacote grande: 13,00 ÷ 4 = 3,25 o quilo, mais que 2,90."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: un precio escala la compra.",
+          "line": "Frijol, 2 kg a 6.00. Necesito 8 kg: 8 ÷ 2 = 4 bolsas, 4 × 6.00 = 24.00."
+        },
+        "en-US": {
+          "prompt": "Step 5: one price scales the purchase.",
+          "line": "Beans, 2 lb for 6.00. Need 8 lb: 8 ÷ 2 = 4 bags, 4 × 6.00 = 24.00."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: o preço de um escala a compra.",
+          "line": "Feijão, 2 kg por 6,00. Preciso de 8 kg: 8 ÷ 2 = 4 pacotes, 4 × 6,00 = 24,00."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.ratio-table.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "itemsPerPack": 3,
+        "pricePerPack": 12,
+        "minimumPacks": 1,
+        "maximumPacks": 6,
+        "initialPacks": 1,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_packs": 3
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Lentejas, bolsas de 3 kg a 12.00. Necesitas 9 kg: ajusta las bolsas y escribe el total.",
+          "help": [
+            "Bolsas: kilos que necesitas ÷ kilos por bolsa.",
+            "Total: bolsas × precio por bolsa."
+          ],
+          "feedback": {
+            "met": "Ajustaste las bolsas a los kilos que necesitas y calculaste el total.",
+            "not_yet": "Todavía no. Kilos que necesitas ÷ kilos por bolsa dan las bolsas."
+          }
+        },
+        "en-US": {
+          "prompt": "Lentils, 3 lb bags at 12.00. You need 9 lb: set the bags, then type the total.",
+          "help": [
+            "Bags needed: pounds needed ÷ pounds per bag.",
+            "Total: bags × price per bag."
+          ],
+          "feedback": {
+            "met": "You set the bags from the pounds needed, then priced them.",
+            "not_yet": "Not yet. Pounds needed ÷ pounds per bag gives the bags."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Lentilhas, pacotes de 3 kg a 12,00. Você precisa de 9 kg: ajuste os pacotes e digite o total.",
+          "help": [
+            "Pacotes: quilos necessários ÷ quilos por pacote.",
+            "Total: pacotes × preço por pacote."
+          ],
+          "feedback": {
+            "met": "Você ajustou os pacotes aos quilos necessários e calculou o total.",
+            "not_yet": "Ainda não. Quilos necessários ÷ quilos por pacote dão os pacotes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "pack-4",
+            "quantity": 4,
+            "price_minor": 600
+          },
+          {
+            "id": "pack-12",
+            "quantity": 12,
+            "price_minor": 1680
+          },
+          {
+            "id": "pack-20",
+            "quantity": 20,
+            "price_minor": 3040
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "pack-4": "1.5",
+          "pack-12": "1.4",
+          "pack-20": "1.52"
+        },
+        "better_id": "pack-12"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En el súper: paquetes de papel higiénico de 4, 12 y 20 rollos. ¿Qué rollo cuesta menos?",
+          "help": [
+            "Divide el precio de cada paquete entre sus rollos, como en el paso 2.",
+            "Si no sale exacto, conserva los decimales."
+          ],
+          "feedback": {
+            "met": "Calculaste el precio de un rollo en cada paquete y comparaste.",
+            "not_yet": "Todavía no. Divide cada precio entre sus rollos; conserva los decimales."
+          },
+          "unitLabel": "rollo",
+          "offers": [
+            {
+              "label": "Paquete de 4"
+            },
+            {
+              "label": "Paquete de 12"
+            },
+            {
+              "label": "Paquete de 20"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Toilet paper at the warehouse club: packs of 4, 12 and 20. Which roll costs least?",
+          "help": [
+            "Divide each pack's price by its rolls, as in step 2.",
+            "If it isn't a whole number, keep the decimals."
+          ],
+          "feedback": {
+            "met": "You priced one roll in each pack and compared.",
+            "not_yet": "Not yet. Divide each price by its rolls; keep decimals."
+          },
+          "unitLabel": "roll",
+          "offers": [
+            {
+              "label": "Pack of 4"
+            },
+            {
+              "label": "Pack of 12"
+            },
+            {
+              "label": "Pack of 20"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "No atacarejo: papel higiênico em pacotes de 4, 12 e 20 rolos. Qual rolo custa menos?",
+          "help": [
+            "Divida o preço de cada pacote pelos rolos, como no passo 2.",
+            "Se não der exato, mantenha os decimais."
+          ],
+          "feedback": {
+            "met": "Você calculou o preço de um rolo em cada pacote e comparou.",
+            "not_yet": "Ainda não. Divida cada preço pelos rolos; mantenha os decimais."
+          },
+          "unitLabel": "rolo",
+          "offers": [
+            {
+              "label": "Pacote de 4"
+            },
+            {
+              "label": "Pacote de 12"
+            },
+            {
+              "label": "Pacote de 20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "buy-small"
+          },
+          {
+            "id": "buy-big"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-unit"
+          },
+          {
+            "id": "reason-use"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "buy-small"
+          ],
+          "reasonQuality": {
+            "reason-bigger": "unsupported",
+            "reason-unit": "partial",
+            "reason-use": "sound"
+          }
+        },
+        "en-US": {
+          "acceptableChoiceIds": [
+            "buy-big"
+          ],
+          "reasonQuality": {
+            "reason-bigger": "unsupported",
+            "reason-unit": "partial",
+            "reason-use": "sound"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "buy-big"
+          ],
+          "reasonQuality": {
+            "reason-bigger": "unsupported",
+            "reason-unit": "partial",
+            "reason-use": "sound"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tianguis: jitomate a 28 pesos el kilo, o 5 kg a 120. Usas 1 kg por semana; el jitomate dura diez días.",
+          "help": [
+            "Recuerda el paso 4: ¿qué pasa con lo que no usas?"
+          ],
+          "feedback": {
+            "met": "Esa compra encaja con lo que de verdad vas a usar.",
+            "not_yet": "Todavía no. Piensa cuánto vas a usar antes de comparar precios."
+          },
+          "choices": [
+            {
+              "label": "Comprar 1 kg"
+            },
+            {
+              "label": "Comprar 5 kg"
+            }
+          ],
+          "reasonPrompt": "¿Cuál razón pesa más?",
+          "reasons": [
+            {
+              "label": "Mientras más grande, mejor"
+            },
+            {
+              "label": "Cada kilo sale más barato"
+            },
+            {
+              "label": "No alcanzo a usar los 5 kg"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Warehouse club: canned tomatoes, 4 for 5.00 or 12 for 12.00. You use 4 a month; they keep.",
+          "help": [
+            "Remember step 4: what happens to what you don't use?"
+          ],
+          "feedback": {
+            "met": "That purchase fits what you'll actually use.",
+            "not_yet": "Not yet. Think about what you'll use before comparing prices."
+          },
+          "choices": [
+            {
+              "label": "Buy 4 cans"
+            },
+            {
+              "label": "Buy 12 cans"
+            }
+          ],
+          "reasonPrompt": "Which reason matters most?",
+          "reasons": [
+            {
+              "label": "Bigger is always better"
+            },
+            {
+              "label": "Each can costs less"
+            },
+            {
+              "label": "I'll use them all, and they keep"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Atacarejo: macarrão, 1 kg por 8,00 ou 3 kg por 21,00. Você usa 1 kg por mês; macarrão seco dura bem mais de três meses.",
+          "help": [
+            "Lembre do passo 4: o que acontece com o que sobra?"
+          ],
+          "feedback": {
+            "met": "Essa compra combina com o que você vai usar de verdade.",
+            "not_yet": "Ainda não. Pense no que você vai usar antes de comparar preços."
+          },
+          "choices": [
+            {
+              "label": "Levar 1 kg"
+            },
+            {
+              "label": "Levar 3 kg"
+            }
+          ],
+          "reasonPrompt": "Qual motivo pesa mais?",
+          "reasons": [
+            {
+              "label": "Quanto maior, melhor"
+            },
+            {
+              "label": "Cada quilo sai mais barato"
+            },
+            {
+              "label": "Vou usar tudo e ele não estraga"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "box-20",
+            "quantity": 20,
+            "price_minor": 600
+          },
+          {
+            "id": "box-60",
+            "quantity": 60,
+            "price_minor": 2100
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "box-20": "0.3",
+          "box-60": "0.35"
+        },
+        "better_id": "box-20"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Detergente para ropa: 20 lavadas a 6.00, o 60 a 21.00. Calcula el precio de una lavada y elige.",
+          "feedback": {
+            "met": "Calculaste el precio de una lavada en cada caja y elegiste por ese precio.",
+            "not_yet": "Todavía no. Recuerda el paso 2: cada precio entre sus lavadas."
+          },
+          "unitLabel": "lavada",
+          "offers": [
+            {
+              "label": "Caja de 20 lavadas"
+            },
+            {
+              "label": "Caja de 60 lavadas"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Laundry detergent: 20 loads for 6.00, or 60 for 21.00. Find the price of one load and pick.",
+          "feedback": {
+            "met": "You priced one load in each box and chose by that price.",
+            "not_yet": "Not yet. Remember step 2: divide each price by its loads."
+          },
+          "unitLabel": "load",
+          "offers": [
+            {
+              "label": "Box of 20 loads"
+            },
+            {
+              "label": "Box of 60 loads"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sabão em pó: 20 lavagens por 6,00, ou 60 por 21,00. Calcule o preço de uma lavagem e escolha.",
+          "feedback": {
+            "met": "Você calculou o preço de uma lavagem em cada caixa e escolheu por ele.",
+            "not_yet": "Ainda não. Lembre do passo 2: cada preço pelas lavagens."
+          },
+          "unitLabel": "lavagem",
+          "offers": [
+            {
+              "label": "Caixa de 20 lavagens"
+            },
+            {
+              "label": "Caixa de 60 lavagens"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1013 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-real-business",
+  "lesson_id": "ent-adult-01-is-it-a-real-opportunity",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.opportunity-evaluation",
+    "biz.market-signals",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho te guía a decidir si tu idea de servicio móvil de reparación de bicis es una oportunidad real. Mide el tamaño del mercado, la brecha frente a dos talleres, tu ventaja y el riesgo de las lluvias; los pondera en una matriz de decisión, lee el orden y su punto más débil, y al final decides con razones: seguir, cambiar o parar.",
+  "title": {
+    "es-MX": "¿Es una oportunidad real?",
+    "en-US": "Is it a real opportunity?",
+    "pt-BR": "É uma oportunidade real?"
+  },
+  "new_concepts": [
+    "biz.opportunity-evaluation"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México la idea se prueba con las personas que pedalean entre dos colonias, los talleres que ya reparan bicis y un tianguis de fin de semana. Los números son ilustrativos y no son asesoría de negocio.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "colonias",
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil a ideia é testada com quem pedala entre dois bairros, as bicicletarias que já consertam bicicletas e uma feira livre de fim de semana. Os números são ilustrativos e não são conselho de negócio.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "bicicletarias",
+          "feira livre"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US the idea is tested with riders who commute between two neighborhoods, the bike shops that already repair bikes and a weekend farmers market. The numbers are illustrations, not business advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "bike shops",
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu idea: un servicio móvil de reparación de bicis. Dos talleres, cinco días de espera.",
+          "line": "Cuatro revisiones te dicen si es real. Una medición a la vez."
+        },
+        "en-US": {
+          "prompt": "Your idea: a mobile bike-repair service. Two bike shops, five-day waits.",
+          "line": "Four checks tell you if it is real. One measurement at a time."
+        },
+        "pt-BR": {
+          "prompt": "Sua ideia: um serviço móvel de conserto de bicicletas. Duas bicicletarias, cinco dias de espera.",
+          "line": "Quatro verificações dizem se ela é real. Uma medição de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-buy"
+          },
+          {
+            "id": "choice-count"
+          },
+          {
+            "id": "choice-wait"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-cost"
+          },
+          {
+            "id": "reason-count"
+          },
+          {
+            "id": "reason-friend"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-count"
+        ],
+        "reasonQuality": {
+          "reason-count": "sound",
+          "reason-cost": "partial",
+          "reason-friend": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un amigo dice que todos necesitan reparar su bici. ¿Qué haces antes de invertir?",
+          "feedback": {
+            "met": "Ahora hacemos las revisiones una por una.",
+            "not_yet": "Ahora hacemos las revisiones una por una."
+          },
+          "help": [
+            "Piensa: ¿qué podrías contar antes de gastar?"
+          ],
+          "choices": [
+            {
+              "label": "Comprar herramientas y una camioneta ya"
+            },
+            {
+              "label": "Contar compradores y sus opciones actuales"
+            },
+            {
+              "label": "Esperar a que más gente me lo pida"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es el mejor primer paso?",
+          "reasons": [
+            {
+              "label": "Gastar menos primero es más seguro"
+            },
+            {
+              "label": "La demanda y las alternativas se pueden contar"
+            },
+            {
+              "label": "La seguridad de un amigo es prueba suficiente"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A friend says everyone needs bike repair. What do you do before investing?",
+          "feedback": {
+            "met": "Now we run the checks one at a time.",
+            "not_yet": "Now we run the checks one at a time."
+          },
+          "help": [
+            "Think: what could you count before you spend?"
+          ],
+          "choices": [
+            {
+              "label": "Buy tools and a van now"
+            },
+            {
+              "label": "Count buyers and their current options"
+            },
+            {
+              "label": "Wait until more people ask"
+            }
+          ],
+          "reasonPrompt": "Why is it the best first step?",
+          "reasons": [
+            {
+              "label": "Spending less first is safer"
+            },
+            {
+              "label": "Demand and alternatives can be counted"
+            },
+            {
+              "label": "A friend's confidence is proof enough"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um amigo diz que todo mundo precisa consertar a bicicleta. O que você faz antes de investir?",
+          "feedback": {
+            "met": "Agora fazemos as verificações uma de cada vez.",
+            "not_yet": "Agora fazemos as verificações uma de cada vez."
+          },
+          "help": [
+            "Pense: o que você poderia contar antes de gastar?"
+          ],
+          "choices": [
+            {
+              "label": "Comprar ferramentas e uma van agora"
+            },
+            {
+              "label": "Contar compradores e as opções atuais deles"
+            },
+            {
+              "label": "Esperar até que mais gente peça"
+            }
+          ],
+          "reasonPrompt": "Por que é o melhor primeiro passo?",
+          "reasons": [
+            {
+              "label": "Gastar menos primeiro é mais seguro"
+            },
+            {
+              "label": "Dá para contar a demanda e as alternativas"
+            },
+            {
+              "label": "A certeza de um amigo já é prova suficiente"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "chart-reach",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "marimekko"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "cat-north"
+            },
+            {
+              "id": "cat-south"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-daily",
+              "values": [
+                1200,
+                700
+              ]
+            },
+            {
+              "id": "series-weekly",
+              "values": [
+                600,
+                500
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, alcance. El ancho es el tamaño: 3,000 personas en dos colonias, así que el alcance vale 5.",
+          "title": "Quienes pedalean, por colonia",
+          "data": {
+            "categories": [
+              {
+                "label": "Colonia norte"
+              },
+              {
+                "label": "Colonia sur"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pedalean a diario"
+              },
+              {
+                "label": "Pedalean cada semana"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 1, reach. Width is size: 3,000 commuters in two neighborhoods, so reach scores 5.",
+          "title": "Commuters who ride, by neighborhood",
+          "data": {
+            "categories": [
+              {
+                "label": "North neighborhood"
+              },
+              {
+                "label": "South neighborhood"
+              }
+            ],
+            "series": [
+              {
+                "label": "Ride daily"
+              },
+              {
+                "label": "Ride weekly"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, alcance. A largura é o tamanho: 3.000 pessoas em dois bairros, então o alcance vale 5.",
+          "title": "Quem pedala, por bairro",
+          "data": {
+            "categories": [
+              {
+                "label": "Bairro norte"
+              },
+              {
+                "label": "Bairro sul"
+              }
+            ],
+            "series": [
+              {
+                "label": "Pedalam todo dia"
+              },
+              {
+                "label": "Pedalam toda semana"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-scores",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, puntajes. La misma escala de 1 a 5 para las otras revisiones.",
+          "line": "Brecha 4: dos talleres, cinco días de espera; ventaja 4: certificación; seguridad ante la lluvia 2."
+        },
+        "en-US": {
+          "prompt": "Step 2, scores. The same 1 to 5 scale for the other checks.",
+          "line": "Gap 4: two shops, five-day waits; edge 4: certified; rain safety 2."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, notas. A mesma escala de 1 a 5 para as outras verificações.",
+          "line": "Lacuna 4: duas bicicletarias, cinco dias de espera; vantagem 4: certificação; segurança contra chuva 2."
+        }
+      }
+    },
+    {
+      "id": "ex-total",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, total ponderado. Ponderaciones: alcance 3, brecha 3, ventaja 2, lluvia 2.",
+          "line": "5×3 + 4×3 + 4×2 + 2×2 = 39 de 50 posibles."
+        },
+        "en-US": {
+          "prompt": "Step 3, weighted total. Weights: reach 3, gap 3, edge 2, rain safety 2.",
+          "line": "5×3 + 4×3 + 4×2 + 2×2 = 39 of a possible 50."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, total ponderado. Ponderações: alcance 3, lacuna 3, vantagem 2, chuva 2.",
+          "line": "5×3 + 4×3 + 4×2 + 2×2 = 39 de 50 possíveis."
+        }
+      }
+    },
+    {
+      "id": "guided-matrix",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.market-signals",
+      "payload": {
+        "pieces": [
+          "mobile-one",
+          "fixed-stall",
+          "mobile-both"
+        ],
+        "criteria": [
+          {
+            "id": "reach",
+            "weight": 3
+          },
+          {
+            "id": "gap",
+            "weight": 3
+          },
+          {
+            "id": "edge",
+            "weight": 2
+          },
+          {
+            "id": "rain-safety",
+            "weight": 2
+          }
+        ],
+        "scores": [
+          [
+            3,
+            4,
+            4,
+            2
+          ],
+          [
+            2,
+            3,
+            3,
+            4
+          ],
+          [
+            5,
+            4,
+            4,
+            2
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "mobile-both"
+            ],
+            "rank-2": [
+              "mobile-one"
+            ],
+            "rank-3": [
+              "fixed-stall"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ordena las tres versiones por total ponderado, de mayor a menor.",
+          "feedback": {
+            "met": "Ordenaste las tres versiones por total ponderado.",
+            "not_yet": "Multiplica cada puntaje por su peso y suma."
+          },
+          "labels": {
+            "mobile-both": "Servicio móvil en las dos colonias",
+            "mobile-one": "Servicio móvil en una colonia",
+            "fixed-stall": "Puesto fijo junto a una estación",
+            "reach": "Alcance",
+            "gap": "Brecha del mercado",
+            "edge": "Tu ventaja",
+            "rain-safety": "Seguridad ante la lluvia"
+          }
+        },
+        "en-US": {
+          "prompt": "Rank the three versions by weighted total, highest first.",
+          "feedback": {
+            "met": "You ranked all three versions by weighted total.",
+            "not_yet": "Multiply each score by its weight, then add."
+          },
+          "labels": {
+            "mobile-both": "Mobile service, both neighborhoods",
+            "mobile-one": "Mobile service, one neighborhood",
+            "fixed-stall": "Fixed stall near one station",
+            "reach": "Reach",
+            "gap": "Market gap",
+            "edge": "Your edge",
+            "rain-safety": "Rain safety"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordene as três versões pelo total ponderado, do maior ao menor.",
+          "feedback": {
+            "met": "Você ordenou as três versões pelo total ponderado.",
+            "not_yet": "Multiplique cada nota pelo peso e some."
+          },
+          "labels": {
+            "mobile-both": "Serviço móvel nos dois bairros",
+            "mobile-one": "Serviço móvel em um bairro",
+            "fixed-stall": "Ponto fixo perto de uma estação",
+            "reach": "Alcance",
+            "gap": "Lacuna de mercado",
+            "edge": "Sua vantagem",
+            "rain-safety": "Segurança contra chuva"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-rule",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, la decisión. Primero el orden, luego el puntaje más bajo del ganador.",
+          "line": "Gana el servicio móvil con 39. Su punto débil es la lluvia, 2: cúbrelo con una prueba barata, no pares."
+        },
+        "en-US": {
+          "prompt": "Step 4, the decision. Rank first, then read the winner's lowest score.",
+          "line": "The mobile service wins with 39. Its weak spot is rain safety, 2: cover it, test cheaply, do not stop."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, a decisão. Primeiro a ordem, depois a nota mais baixa da vencedora.",
+          "line": "O serviço móvel vence com 39. A chuva, nota 2, é o ponto fraco: cubra com um teste barato, não pare."
+        }
+      }
+    },
+    {
+      "id": "ex-weights",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, ponderaciones. Si la lluvia cierra casi todo: alcance 1, brecha 2, ventaja 1, lluvia 5.",
+          "line": "El servicio móvil suma 27 y el puesto fijo 31. Mismos puntajes, otro orden."
+        },
+        "en-US": {
+          "prompt": "Step 5, weights. Rain closes most days, so weigh reach 1, gap 2, edge 1, rain 5.",
+          "line": "The mobile service scores 27 and the fixed stall 31. Same scores, new order."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, ponderações. Se a chuva fecha quase tudo: alcance 1, lacuna 2, vantagem 1, chuva 5.",
+          "line": "O serviço móvel soma 27 e o ponto fixo 31. Mesmas notas, outra ordem."
+        }
+      }
+    },
+    {
+      "id": "practice-matrix",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-matrix"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "pieces": [
+          "stations-rush",
+          "office-garages",
+          "evening-visits"
+        ],
+        "criteria": [
+          {
+            "id": "reach",
+            "weight": 2
+          },
+          {
+            "id": "gap",
+            "weight": 3
+          },
+          {
+            "id": "edge",
+            "weight": 2
+          },
+          {
+            "id": "rain-safety",
+            "weight": 4
+          }
+        ],
+        "scores": [
+          [
+            5,
+            3,
+            4,
+            1
+          ],
+          [
+            2,
+            4,
+            4,
+            5
+          ],
+          [
+            3,
+            5,
+            3,
+            3
+          ]
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "rank-1": [
+              "office-garages"
+            ],
+            "rank-2": [
+              "evening-visits"
+            ],
+            "rank-3": [
+              "stations-rush"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ahora la lluvia pesa 4. Ordena los tres horarios por total ponderado, de mayor a menor.",
+          "feedback": {
+            "met": "Ordenaste los horarios por total ponderado.",
+            "not_yet": "Revisa cada total ponderado y compáralos."
+          },
+          "labels": {
+            "stations-rush": "Hora pico entre semana en estaciones",
+            "office-garages": "Estacionamientos de oficinas al mediodía",
+            "evening-visits": "Visitas a domicilio por la tarde",
+            "reach": "Alcance",
+            "gap": "Brecha del mercado",
+            "edge": "Tu ventaja",
+            "rain-safety": "Seguridad ante la lluvia"
+          }
+        },
+        "en-US": {
+          "prompt": "Rain now weighs 4. Rank the three schedules by weighted total, highest first.",
+          "feedback": {
+            "met": "You ranked the schedules by weighted total.",
+            "not_yet": "Check each weighted total, then compare."
+          },
+          "labels": {
+            "stations-rush": "Weekday rush at stations",
+            "office-garages": "Office garages at lunch",
+            "evening-visits": "Evening home visits",
+            "reach": "Reach",
+            "gap": "Market gap",
+            "edge": "Your edge",
+            "rain-safety": "Rain safety"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Agora a chuva pesa 4. Ordene os três horários pelo total ponderado, do maior ao menor.",
+          "feedback": {
+            "met": "Você ordenou os horários pelo total ponderado.",
+            "not_yet": "Confira cada total ponderado e compare."
+          },
+          "labels": {
+            "stations-rush": "Horário de pico nas estações",
+            "office-garages": "Garagens de escritórios no almoço",
+            "evening-visits": "Visitas em casa à noite",
+            "reach": "Alcance",
+            "gap": "Lacuna de mercado",
+            "edge": "Sua vantagem",
+            "rain-safety": "Segurança contra chuva"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-decide",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-go"
+          },
+          {
+            "id": "choice-stop"
+          },
+          {
+            "id": "choice-change"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-total"
+          },
+          {
+            "id": "reason-lowest"
+          },
+          {
+            "id": "reason-one"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-change"
+        ],
+        "reasonQuality": {
+          "reason-lowest": "sound",
+          "reason-total": "partial",
+          "reason-one": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Los estacionamientos de oficinas quedan primeros con 44, pero su alcance es 2. ¿Qué haces?",
+          "feedback": {
+            "met": "Mantuviste al ganador y cubriste su punto más débil.",
+            "not_yet": "Todavía no. Lee primero el puntaje más bajo del ganador."
+          },
+          "help": [
+            "Piensa: ¿qué puntaje es el más bajo y puedes cambiarlo?"
+          ],
+          "choices": [
+            {
+              "label": "Seguir igual: el total es alto"
+            },
+            {
+              "label": "Parar: un 2 es demasiado débil"
+            },
+            {
+              "label": "Cambiar el plan para llegar a más gente"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "El total es alto, así que funciona"
+            },
+            {
+              "label": "El puntaje más bajo dice qué arreglar"
+            },
+            {
+              "label": "Un puntaje débil siempre acaba la idea"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Office garages rank first with 44, but their reach scores 2. What do you do?",
+          "feedback": {
+            "met": "You kept the winner and planned for its weakest score.",
+            "not_yet": "Not yet. Read the winner's lowest score first."
+          },
+          "help": [
+            "Think: which score is lowest, and can you change it?"
+          ],
+          "choices": [
+            {
+              "label": "Go as planned; the total is high"
+            },
+            {
+              "label": "Stop; a 2 is too weak"
+            },
+            {
+              "label": "Change the plan to reach more riders"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "The total is high, so it works"
+            },
+            {
+              "label": "The lowest score names what to fix"
+            },
+            {
+              "label": "One weak score always ends an idea"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As garagens de escritórios ficam em primeiro com 44, mas o alcance é 2. O que você faz?",
+          "feedback": {
+            "met": "Você manteve a vencedora e cobriu o ponto mais fraco.",
+            "not_yet": "Ainda não. Leia primeiro a nota mais baixa da vencedora."
+          },
+          "help": [
+            "Pense: qual nota é a mais baixa e dá para mudá-la?"
+          ],
+          "choices": [
+            {
+              "label": "Seguir igual: o total é alto"
+            },
+            {
+              "label": "Parar: um 2 é fraco demais"
+            },
+            {
+              "label": "Mudar o plano para alcançar mais gente"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "O total é alto, então funciona"
+            },
+            {
+              "label": "A nota mais baixa diz o que ajustar"
+            },
+            {
+              "label": "Uma nota fraca sempre acaba com a ideia"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.opportunity-evaluation",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-test"
+          },
+          {
+            "id": "choice-quit"
+          },
+          {
+            "id": "choice-skip"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rain"
+          },
+          {
+            "id": "reason-gap"
+          },
+          {
+            "id": "reason-always"
+          },
+          {
+            "id": "reason-test"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-test"
+        ],
+        "reasonQuality": {
+          "reason-test": "sound",
+          "reason-gap": "sound",
+          "reason-rain": "partial",
+          "reason-always": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un puesto en el tianguis del fin de semana: 400 visitantes, sin puesto de reparación, cierra si llueve. ¿Qué haces?",
+          "feedback": {
+            "met": "Probaste antes de comprometerte.",
+            "not_yet": "Todavía no. Separa lo que sabes de lo que debes medir."
+          },
+          "help": [
+            "Piensa: ¿qué te deja medir la demanda antes de comprometerte?"
+          ],
+          "choices": [
+            {
+              "label": "Probar dos fines de semana"
+            },
+            {
+              "label": "Renunciar y abrir de tiempo completo"
+            },
+            {
+              "label": "Descartarlo: la lluvia lo hace muy riesgoso"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "La lluvia cierra el mercado algunos días"
+            },
+            {
+              "label": "Sin puesto de reparación hay un hueco que cubrir"
+            },
+            {
+              "label": "Los mercados siempre dejan ganancias"
+            },
+            {
+              "label": "Dos fines de semana miden la demanda con poco costo"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A weekend farmers market stand: 400 visitors, no repair stall, closed in rain. What do you do?",
+          "feedback": {
+            "met": "You tested before committing.",
+            "not_yet": "Not yet. Separate what you know from what you must measure."
+          },
+          "help": [
+            "Think: what lets you measure demand before you commit?"
+          ],
+          "choices": [
+            {
+              "label": "Run two weekends as a test"
+            },
+            {
+              "label": "Resign and open full time"
+            },
+            {
+              "label": "Skip it; rain makes it too risky"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "Rain closes the market some days"
+            },
+            {
+              "label": "No repair stall leaves a gap"
+            },
+            {
+              "label": "Markets always make money"
+            },
+            {
+              "label": "Two weekends measure demand at low cost"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma banca na feira livre de fim de semana: 400 visitantes, nenhuma banca de conserto, fecha se chove. O que você faz?",
+          "feedback": {
+            "met": "Você testou antes de se comprometer.",
+            "not_yet": "Ainda não. Separe o que você sabe do que precisa medir."
+          },
+          "help": [
+            "Pense: o que deixa medir a demanda antes de se comprometer?"
+          ],
+          "choices": [
+            {
+              "label": "Testar dois fins de semana"
+            },
+            {
+              "label": "Pedir demissão e abrir em tempo integral"
+            },
+            {
+              "label": "Descartar: a chuva deixa arriscado demais"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "A chuva fecha a feira alguns dias"
+            },
+            {
+              "label": "Sem banca de conserto há uma lacuna a preencher"
+            },
+            {
+              "label": "Feiras sempre dão lucro"
+            },
+            {
+              "label": "Dois fins de semana medem a demanda com pouco custo"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

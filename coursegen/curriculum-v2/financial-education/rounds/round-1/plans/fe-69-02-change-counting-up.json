@@ -1,0 +1,643 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-coins-and-choices",
+  "lesson_id": "fe-69-02-change-counting-up",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "money.make-change-counting-up",
+    "money.make-amount"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho enseña a dar cambio contando hacia arriba: se empieza en el precio y se suma hasta lo que el comprador pagó. Quien aprende atiende un puesto con monedas LittleFounders, construye la diferencia y practica con números cada vez más grandes. Corrige dos errores comunes: sumar el precio y el pago, o devolver todo el pago.",
+  "title": {
+    "en-US": "Give change by counting up",
+    "es-MX": "Da el cambio contando hacia arriba",
+    "pt-BR": "Dê o troco contando para cima"
+  },
+  "new_concepts": [
+    "money.make-change-counting-up"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "intro-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Rho.",
+          "line": "El precio se queda en la caja. Solo el resto se devuelve.",
+          "narration": {
+            "script": "Te damos la bienvenida al puesto. Cuando alguien paga con más que el precio, tú le regresas la diferencia. A eso se le llama cambio. El puesto se queda con el precio, y al comprador solo le toca lo que sobra."
+          }
+        },
+        "en-US": {
+          "prompt": "Listen to Rho.",
+          "line": "The price stays in the cash box. Only the rest goes back.",
+          "narration": {
+            "script": "Welcome to the store. When a buyer pays with more than the price, you give back the difference. That is called change. The store keeps the price, and the buyer gets only what is left over."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça Rho.",
+          "line": "O preço fica no caixa. Só o resto volta.",
+          "narration": {
+            "script": "Boas-vindas à lojinha. Quando o comprador paga com mais do que o preço, você devolve a diferença. Isso se chama troco. A lojinha fica com o preço, e o comprador recebe só o que sobrou."
+          }
+        }
+      }
+    },
+    {
+      "id": "model-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira cómo cuenta Rho.",
+          "line": "Precio 6, pagó 10. Digo 6 y cuento hacia arriba hasta 10.",
+          "narration": {
+            "script": "Probemos una. Un comprador paga diez por algo que cuesta seis. Me paro en seis y subo con pasos chicos: siete, ocho, nueve, diez. Fueron cuatro pasos, así que el cambio es cuatro. Lo que sumo es el cambio."
+          }
+        },
+        "en-US": {
+          "prompt": "Watch how Rho counts.",
+          "line": "Price 6, paid 10. I say 6, then count up to 10.",
+          "narration": {
+            "script": "Let's try one. A buyer pays ten for something that costs six. I start on six and climb in small steps: seven, eight, nine, ten. That took four steps, so the change is four. What I add is the change."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Veja como Rho conta.",
+          "line": "Preço 6, pagou 10. Digo 6 e conto para cima até 10.",
+          "narration": {
+            "script": "Vamos fazer uma. Um comprador paga dez por algo que custa seis. Eu começo no seis e subo com passinhos: sete, oito, nove, dez. Foram quatro passos, então o troco é quatro. O que eu somo é o troco."
+          }
+        }
+      }
+    },
+    {
+      "id": "build-01",
+      "type": "money.coin-tray.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-amount",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 3,
+        "fewest": false
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Arma lo que falta para llegar de 7 a 10.",
+          "help": [
+            "¿Cuánto hay de 7 hasta 10? Cuenta los pasos.",
+            "Usa monedas que sumen esos pasos."
+          ],
+          "feedback": {
+            "met": "Esas monedas cubren lo que falta de 7 a 10.",
+            "not_yet": "Cuenta desde 7 hasta 10 y arma esa cantidad."
+          }
+        },
+        "en-US": {
+          "prompt": "Build what is missing to get from 7 up to 10.",
+          "help": [
+            "How far is it from 7 up to 10? Count the steps.",
+            "Use coins that add up to that many steps."
+          ],
+          "feedback": {
+            "met": "Those coins cover what is missing from 7 to 10.",
+            "not_yet": "Count from 7 up to 10, then build that amount."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Monte o que falta para ir de 7 até 10.",
+          "help": [
+            "Quanto falta de 7 até 10? Conte os passos.",
+            "Use moedas que somem esses passos."
+          ],
+          "feedback": {
+            "met": "Essas moedas cobrem o que falta de 7 até 10.",
+            "not_yet": "Conte de 7 até 10 e monte essa quantia."
+          }
+        }
+      }
+    },
+    {
+      "id": "change-01",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ],
+        "price_minor": 8,
+        "paid_minor": 10
+      },
+      "rubric": {
+        "change_minor": 2
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Empieza en 8. Agrega monedas y di cada total hasta 10.",
+          "help": [
+            "Di 8. Agrega una moneda y di el total nuevo.",
+            "Detente cuando digas 10. Las monedas que sumaste son el cambio."
+          ],
+          "feedback": {
+            "met": "Las monedas que sumaste de 8 a 10 son el cambio.",
+            "not_yet": "Empieza en 8, no en cero. Detente cuando llegues a 10."
+          }
+        },
+        "en-US": {
+          "prompt": "Start at 8. Add coins and say each total up to 10.",
+          "help": [
+            "Say 8. Add one coin, then say the new total.",
+            "Stop when you say 10. The coins you added are the change."
+          ],
+          "feedback": {
+            "met": "The coins you added from 8 to 10 are the change.",
+            "not_yet": "Start at 8, not zero. Stop when your total reaches 10."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Comece em 8. Some moedas e diga cada total até 10.",
+          "help": [
+            "Diga 8. Some uma moeda e diga o novo total.",
+            "Pare quando disser 10. As moedas que você somou são o troco."
+          ],
+          "feedback": {
+            "met": "As moedas que você somou de 8 a 10 são o troco.",
+            "not_yet": "Comece em 8, não em zero. Pare quando chegar a 10."
+          }
+        }
+      }
+    },
+    {
+      "id": "change-02",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ],
+        "price_minor": 14,
+        "paid_minor": 20
+      },
+      "rubric": {
+        "change_minor": 6
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Da el cambio. Empieza en el precio y cuenta hacia arriba.",
+          "help": [
+            "Di 14, agrega una moneda y di el total nuevo.",
+            "Detente cuando digas 20. Esas monedas son el cambio."
+          ],
+          "feedback": {
+            "met": "Contaste de 14 a 20. Esas monedas llenan lo que falta.",
+            "not_yet": "Empieza en 14, no en cero. Detente cuando tu total sea 20."
+          }
+        },
+        "en-US": {
+          "prompt": "Give change. Start at the price and count up.",
+          "help": [
+            "Say 14, add a coin, say the new total.",
+            "Stop when you say 20. Those coins are the change."
+          ],
+          "feedback": {
+            "met": "You counted up from 14 to 20. Those coins fill the gap.",
+            "not_yet": "Start at 14, not zero. Stop when your total is 20."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dê o troco. Comece no preço e conte para cima.",
+          "help": [
+            "Diga 14, some uma moeda e diga o novo total.",
+            "Pare quando disser 20. Essas moedas são o troco."
+          ],
+          "feedback": {
+            "met": "Você contou de 14 a 20. Essas moedas completam o que falta.",
+            "not_yet": "Comece em 14, não em zero. Pare quando o total for 20."
+          }
+        }
+      }
+    },
+    {
+      "id": "decide-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "choices": [
+          {
+            "id": "back-gap"
+          },
+          {
+            "id": "back-all"
+          },
+          {
+            "id": "back-sum"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-stays"
+          },
+          {
+            "id": "why-count-up"
+          },
+          {
+            "id": "why-paid"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "back-gap"
+        ],
+        "reasonQuality": {
+          "why-count-up": "sound",
+          "why-stays": "partial",
+          "why-paid": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un juguete cuesta 15 y el comprador paga 20. ¿Qué se devuelve?",
+          "help": [
+            "Dilo en voz alta: cuenta de 15 a 20."
+          ],
+          "feedback": {
+            "met": "Sí. El cambio es lo que falta del precio hasta 20.",
+            "not_yet": "El precio se queda en la caja. Cuenta de 15 a 20."
+          },
+          "choices": [
+            {
+              "label": "Devolver 5"
+            },
+            {
+              "label": "Devolver 20"
+            },
+            {
+              "label": "Devolver 35"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "Los 15 se quedan en la caja."
+            },
+            {
+              "label": "Conté hacia arriba hasta 20."
+            },
+            {
+              "label": "Porque 20 es lo que pagó."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A toy costs 15 and the buyer pays 20. What goes back?",
+          "help": [
+            "Say it out loud: count up from 15 to 20."
+          ],
+          "feedback": {
+            "met": "Yes. The change is the gap from the price up to 20.",
+            "not_yet": "The price stays in the box. Count up from 15 to 20."
+          },
+          "choices": [
+            {
+              "label": "Give back 5"
+            },
+            {
+              "label": "Give back 20"
+            },
+            {
+              "label": "Give back 35"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "15 stays in the box."
+            },
+            {
+              "label": "I counted up to 20."
+            },
+            {
+              "label": "20 is what they paid."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um brinquedo custa 15 e o comprador paga 20. O que volta?",
+          "help": [
+            "Diga em voz alta: conte de 15 até 20."
+          ],
+          "feedback": {
+            "met": "Isso. O troco é o que falta do preço até 20.",
+            "not_yet": "O preço fica no caixa. Conte de 15 até 20."
+          },
+          "choices": [
+            {
+              "label": "Devolver 5"
+            },
+            {
+              "label": "Devolver 20"
+            },
+            {
+              "label": "Devolver 35"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "Os 15 ficam no caixa."
+            },
+            {
+              "label": "Contei para cima até 20."
+            },
+            {
+              "label": "Porque 20 foi o que pagou."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "change-03",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 1
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 3
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 4
+          }
+        ],
+        "price_minor": 17,
+        "paid_minor": 25
+      },
+      "rubric": {
+        "change_minor": 8
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Da el cambio.",
+          "help": [
+            "Di 17 y agrega una moneda. Di el total nuevo.",
+            "Sigue hasta decir 25. Las monedas que sumaste son el cambio."
+          ],
+          "feedback": {
+            "met": "Tus monedas llevan el 17 hasta el 25. Son el cambio.",
+            "not_yet": "Di 17 primero. Luego agrega monedas hasta que tu total sea 25."
+          }
+        },
+        "en-US": {
+          "prompt": "Give the change.",
+          "help": [
+            "Say 17 and add one coin. Say the new total.",
+            "Go on to 25. The coins you added are the change."
+          ],
+          "feedback": {
+            "met": "Your coins take 17 up to 25. They are the change.",
+            "not_yet": "Say 17 first. Then add coins until your total is 25."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dê o troco.",
+          "help": [
+            "Diga 17 e some uma moeda. Diga o novo total.",
+            "Continue até dizer 25. As moedas que você somou são o troco."
+          ],
+          "feedback": {
+            "met": "Suas moedas levam o 17 até o 25. São o troco.",
+            "not_yet": "Diga 17 primeiro. Depois some moedas até o total ser 25."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.making-change.v2",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "money.make-change-counting-up",
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 10,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 5,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 6
+          }
+        ],
+        "price_minor": 35,
+        "paid_minor": 50
+      },
+      "rubric": {
+        "change_minor": 15
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un libro cuesta 35 y el comprador paga 50. Da el cambio.",
+          "help": [
+            "Di 35. Agrega una moneda y di el total nuevo."
+          ],
+          "feedback": {
+            "met": "Contaste de 35 a 50. Esas monedas son el cambio.",
+            "not_yet": "Empieza en 35, no en cero. Detente cuando tu total sea 50."
+          }
+        },
+        "en-US": {
+          "prompt": "A book costs 35 and the buyer pays 50. Give the change.",
+          "help": [
+            "Say 35. Add one coin, then say the new total."
+          ],
+          "feedback": {
+            "met": "You counted up from 35 to 50. Those coins are the change.",
+            "not_yet": "Start at 35, not zero. Stop when your total is 50."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um livro custa 35 e o comprador paga 50. Dê o troco.",
+          "help": [
+            "Diga 35. Some uma moeda e diga o novo total."
+          ],
+          "feedback": {
+            "met": "Você contou de 35 a 50. Essas moedas são o troco.",
+            "not_yet": "Comece em 35, não em zero. Pare quando o total for 50."
+          }
+        }
+      },
+      "item_phase": "post"
+    },
+    {
+      "id": "wrap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "wrap",
+        "narration": {
+          "mode": "differentiated"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Rho.",
+          "line": "Empieza en el precio y cuenta hacia arriba. Eso es el cambio.",
+          "narration": {
+            "script": "La próxima vez que vendas algo, recuerda que el puesto se queda con el precio. Arranca ahí, suma moneda tras moneda y di cada total en voz alta. Cuando llegues a lo que te dio el comprador, para. Todo lo que sumaste vuelve a sus manos."
+          }
+        },
+        "en-US": {
+          "prompt": "Listen to Rho.",
+          "line": "Start at the price and count up. That is the change.",
+          "narration": {
+            "script": "Next time you sell something, remember the store keeps the price. Begin there, add coin after coin, and say each total out loud. When you reach what the buyer gave you, stop. Everything you added goes back to them."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ouça Rho.",
+          "line": "Comece no preço e conte para cima. Isso é o troco.",
+          "narration": {
+            "script": "Na próxima vez que você vender algo, lembre que a lojinha fica com o preço. Comece ali, some moeda após moeda e diga cada total em voz alta. Quando chegar ao que o comprador deu, pare. Tudo o que você somou volta para ele."
+          }
+        }
+      }
+    }
+  ]
+}

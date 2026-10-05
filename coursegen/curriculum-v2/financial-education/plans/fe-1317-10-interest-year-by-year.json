@@ -1,0 +1,1026 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-plans-that-grow",
+  "lesson_id": "fe-1317-10-interest-year-by-year",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "money.simple-interest-peek",
+    "money.percent-intro"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina muestra con Sam cómo una cuenta de ahorro que paga 4% al año (una tasa de ejemplo, nunca una oferta) convierte 500 en 520, 540 y 560: primero qué significa el 4%, luego el interés de cada año y la comparación con los mismos 500 guardados en un cajón. Primero se ve el caso resuelto; los ejercicios solo lo repasan y el final compara a dos ahorradores.",
+  "title": {
+    "en-US": "Interest, year by year",
+    "es-MX": "El interés, año por año",
+    "pt-BR": "Juros, ano a ano"
+  },
+  "new_concepts": [
+    "money.simple-interest-peek"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, una cuenta de ahorro de banco paga un porcentaje anual que cambia según el banco y la época. Aquí 4% es solo una tasa de ejemplo, nunca una oferta ni una promesa, y los montos van en pesos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "cuenta de ahorro",
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, bancos e contas digitais pagam um percentual ao ano que muda conforme a instituição e o momento. Aqui 4% ao ano é só uma taxa de exemplo, nunca uma oferta nem promessa, e os valores são em reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "conta digital",
+          "reais"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, a bank or credit union savings account pays a yearly percentage that changes with the institution and the year. Here 4% is only an example rate, never an offer or a promise, and amounts are in dollars.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "savings account",
+          "credit union"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "Sam keeps $500 from his summer work in a drawer. Dina shows him a savings account page.",
+          "line": "It pays 4% a year, an example rate, not an offer. Dina will show it year by year."
+        },
+        "es-MX": {
+          "prompt": "Sam guarda en un cajón 500 pesos de su trabajo de verano. Dina le muestra una cuenta de ahorro.",
+          "line": "Paga 4% al año, una tasa de ejemplo, no una oferta. Dina mostrará qué hace con el dinero, año por año."
+        },
+        "pt-BR": {
+          "prompt": "O Sam guarda numa gaveta 500 reais do trabalho nas férias. A Dina mostra uma conta digital que rende.",
+          "line": "Ela rende 4% ao ano, uma taxa de exemplo, não uma oferta. A Dina mostra o efeito ano a ano."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "deposit"
+          },
+          {
+            "id": "added"
+          },
+          {
+            "id": "balance"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "added",
+          "balance"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "added": "20",
+          "balance": "520"
+        }
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "pre",
+      "copy": {
+        "en-US": {
+          "prompt": "Sam's account example: 4% a year on $500. Write what it adds in one year, then the balance.",
+          "feedback": {
+            "met": "Noted. Now Dina shows it one step at a time.",
+            "not_yet": "Noted. Now Dina shows it one step at a time."
+          },
+          "steps": [
+            {
+              "expression": "In the account",
+              "result": "500",
+              "spokenText": "Sam puts 500 in the account."
+            },
+            {
+              "expression": "Added in one year",
+              "result": "20",
+              "spokenText": "4% of 500 is 20, added after one year."
+            },
+            {
+              "expression": "Balance after one year",
+              "result": "520",
+              "spokenText": "500 + 20 = 520."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ejemplo de la cuenta de Sam: 4% al año sobre 500 pesos. Escribe lo que suma en un año y luego el saldo.",
+          "feedback": {
+            "met": "Anotado. Ahora Dina lo muestra paso a paso.",
+            "not_yet": "Anotado. Ahora Dina lo muestra paso a paso."
+          },
+          "steps": [
+            {
+              "expression": "En la cuenta",
+              "result": "500",
+              "spokenText": "Sam pone 500 en la cuenta."
+            },
+            {
+              "expression": "Lo que suma en un año",
+              "result": "20",
+              "spokenText": "4% de 500 son 20, que se suman al año."
+            },
+            {
+              "expression": "Saldo después de un año",
+              "result": "520",
+              "spokenText": "500 + 20 = 520."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Exemplo da conta do Sam: 4% ao ano sobre 500 reais. Escreva quanto ela soma em um ano e depois o saldo.",
+          "feedback": {
+            "met": "Anotado. Agora a Dina mostra passo a passo.",
+            "not_yet": "Anotado. Agora a Dina mostra passo a passo."
+          },
+          "steps": [
+            {
+              "expression": "Na conta",
+              "result": "500",
+              "spokenText": "Sam coloca 500 na conta."
+            },
+            {
+              "expression": "O que soma em um ano",
+              "result": "20",
+              "spokenText": "4% de 500 são 20, somados após um ano."
+            },
+            {
+              "expression": "Saldo após um ano",
+              "result": "520",
+              "spokenText": "500 + 20 = 520."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: what 4% means",
+          "line": "4% means 4 for every 100. In 500 there are five hundreds: 5 × 4 = 20, the interest after one year."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: qué significa 4%",
+          "line": "4% significa 4 por cada 100. En 500 hay cinco veces 100: 5 × 4 = 20, el interés de un año."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o que significa 4%",
+          "line": "4% quer dizer 4 a cada 100. Em 500 cabem cinco vezes 100: 5 × 4 = 20, os juros de um ano."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the balance each year",
+          "line": "It is always 4% of the original 500, so each year adds the same 20: 520, 540, 560."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el saldo de cada año",
+          "line": "Siempre es 4% de los 500 iniciales, así que cada año suma los mismos 20: 520, 540, 560."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o saldo de cada ano",
+          "line": "É sempre 4% dos 500 iniciais, então cada ano soma os mesmos 20: 520, 540, 560."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "line"
+      },
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "example",
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "year-0"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-account",
+              "values": [
+                500,
+                520,
+                540,
+                560
+              ]
+            },
+            {
+              "id": "series-drawer",
+              "values": [
+                500,
+                500,
+                500,
+                500
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: the drawer stays at 500. The account reaches 560, so after three years it holds 60 more.",
+          "title": "The account and the drawer",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Account at 4%"
+              },
+              {
+                "label": "Drawer"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: el cajón sigue en 500. La cuenta llega a 560, así que en tres años tiene 60 más.",
+          "title": "La cuenta y el cajón",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cuenta al 4%"
+              },
+              {
+                "label": "Cajón"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: a gaveta fica em 500. A conta chega a 560, então em três anos tem 60 a mais.",
+          "title": "A conta e a gaveta",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Conta a 4%"
+              },
+              {
+                "label": "Gaveta"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "deposit"
+          },
+          {
+            "id": "yearly"
+          },
+          {
+            "id": "balance"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "yearly",
+          "balance"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "yearly": "6",
+          "balance": "212"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Ana puts $200 in an account paying 3% a year, an example rate. Finish the steps for two years.",
+          "help": [
+            "Same as Sam: find one year's interest first, then add it for each year."
+          ],
+          "feedback": {
+            "met": "You found one year's interest, then added it year by year.",
+            "not_yet": "Not yet. Look back at Sam's steps and try again."
+          },
+          "steps": [
+            {
+              "expression": "Deposit",
+              "result": "200",
+              "spokenText": "Ana puts in 200."
+            },
+            {
+              "expression": "3% of 200",
+              "result": "6",
+              "spokenText": "3% of 200: two hundreds, 2 × 3 = 6 each year."
+            },
+            {
+              "expression": "Balance after two years",
+              "result": "212",
+              "spokenText": "200 + 6 + 6 = 212 after two years."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ana pone 200 pesos en una cuenta que paga 3% al año, tasa de ejemplo. Completa los pasos de dos años.",
+          "help": [
+            "Igual que con Sam: primero el interés de un año y luego súmalo por cada año."
+          ],
+          "feedback": {
+            "met": "Hallaste el interés de un año y lo sumaste año por año.",
+            "not_yet": "Aún no. Repasa los pasos de Sam y prueba de nuevo."
+          },
+          "steps": [
+            {
+              "expression": "Depósito",
+              "result": "200",
+              "spokenText": "Ana pone 200."
+            },
+            {
+              "expression": "3% de 200",
+              "result": "6",
+              "spokenText": "3% de 200: dos veces 100, 2 × 3 = 6 cada año."
+            },
+            {
+              "expression": "Saldo después de dos años",
+              "result": "212",
+              "spokenText": "200 + 6 + 6 = 212 después de dos años."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Ana coloca 200 reais numa conta que rende 3% ao ano, taxa de exemplo. Complete as etapas de dois anos.",
+          "help": [
+            "Igual ao Sam: primeiro os juros de um ano e depois some-os a cada ano."
+          ],
+          "feedback": {
+            "met": "Você achou os juros de um ano e os somou ano a ano.",
+            "not_yet": "Ainda não. Reveja os passos do Sam e tente de novo."
+          },
+          "steps": [
+            {
+              "expression": "Depósito",
+              "result": "200",
+              "spokenText": "A Ana coloca 200."
+            },
+            {
+              "expression": "3% de 200",
+              "result": "6",
+              "spokenText": "3% de 200: duas vezes 100, 2 × 3 = 6 por ano."
+            },
+            {
+              "expression": "Saldo após dois anos",
+              "result": "212",
+              "spokenText": "200 + 6 + 6 = 212 após dois anos."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: a shortcut",
+          "line": "This is simple interest: the same 20 every year, so four years add 4 × 20 = 80."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: un atajo",
+          "line": "Esto es interés simple: los mismos 20 cada año, así que cuatro años suman 4 × 20 = 80."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: um atalho",
+          "line": "São os juros simples: os mesmos 20 todo ano, então quatro anos somam 4 × 20 = 80."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "deposit"
+          },
+          {
+            "id": "yearly"
+          },
+          {
+            "id": "interest4"
+          },
+          {
+            "id": "balance4"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "yearly",
+          "interest4",
+          "balance4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "yearly": "40",
+          "interest4": "160",
+          "balance4": "960"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Leo has $800 and an example rate of 5% a year. Finish the steps for four years.",
+          "help": [
+            "One year's interest first, then the same amount for each of the four years."
+          ],
+          "feedback": {
+            "met": "You found the yearly interest and carried it through four years.",
+            "not_yet": "Not yet. Revisit Sam: the same interest is added each year."
+          },
+          "steps": [
+            {
+              "expression": "Deposit",
+              "result": "800",
+              "spokenText": "Leo starts with 800."
+            },
+            {
+              "expression": "5% of 800",
+              "result": "40",
+              "spokenText": "5% of 800: eight hundreds, 8 × 5 = 40 each year."
+            },
+            {
+              "expression": "Interest in four years",
+              "result": "160",
+              "spokenText": "The same 40 every year, so 4 × 40 = 160."
+            },
+            {
+              "expression": "Balance after four years",
+              "result": "960",
+              "spokenText": "800 + 160 = 960 after four years."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo tiene 800 pesos y una tasa de ejemplo de 5% al año. Completa los pasos de cuatro años.",
+          "help": [
+            "Primero el interés de un año y luego la misma cantidad por cada uno de los cuatro años."
+          ],
+          "feedback": {
+            "met": "Hallaste el interés anual y lo llevaste a cuatro años.",
+            "not_yet": "Aún no. Repasa a Sam: se suma el mismo interés cada año."
+          },
+          "steps": [
+            {
+              "expression": "Depósito",
+              "result": "800",
+              "spokenText": "Leo empieza con 800."
+            },
+            {
+              "expression": "5% de 800",
+              "result": "40",
+              "spokenText": "5% de 800: ocho veces 100, 8 × 5 = 40 cada año."
+            },
+            {
+              "expression": "Interés en cuatro años",
+              "result": "160",
+              "spokenText": "Los mismos 40 cada año, así que 4 × 40 = 160."
+            },
+            {
+              "expression": "Saldo después de cuatro años",
+              "result": "960",
+              "spokenText": "800 + 160 = 960 después de cuatro años."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Leo tem 800 reais e uma taxa de exemplo de 5% ao ano. Complete as etapas de quatro anos.",
+          "help": [
+            "Primeiro os juros de um ano e depois o mesmo valor para cada um dos quatro anos."
+          ],
+          "feedback": {
+            "met": "Você achou os juros anuais e os levou a quatro anos.",
+            "not_yet": "Ainda não. Reveja o Sam: soma-se o mesmo juro a cada ano."
+          },
+          "steps": [
+            {
+              "expression": "Depósito",
+              "result": "800",
+              "spokenText": "O Leo começa com 800."
+            },
+            {
+              "expression": "5% de 800",
+              "result": "40",
+              "spokenText": "5% de 800: oito vezes 100, 8 × 5 = 40 por ano."
+            },
+            {
+              "expression": "Juros em quatro anos",
+              "result": "160",
+              "spokenText": "Os mesmos 40 todo ano, então 4 × 40 = 160."
+            },
+            {
+              "expression": "Saldo após quatro anos",
+              "result": "960",
+              "spokenText": "800 + 160 = 960 após quatro anos."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "teaching_role": "practice",
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-account",
+              "values": [
+                400,
+                412,
+                424,
+                436
+              ]
+            },
+            {
+              "id": "series-drawer",
+              "values": [
+                400,
+                400,
+                400,
+                400
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-12"
+            },
+            {
+              "id": "opt-36"
+            },
+            {
+              "id": "opt-436"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-36"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia put $400 in an example account at 3% a year. Read the chart.",
+          "feedback": {
+            "met": "You compared the account with the drawer at the last year.",
+            "not_yet": "Not yet. Subtract the drawer's value at the last year."
+          },
+          "title": "Mia's account and her drawer",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Year 1"
+              },
+              {
+                "label": "Year 2"
+              },
+              {
+                "label": "Year 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Account"
+              },
+              {
+                "label": "Drawer"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "After year 3, how much more is in the account than in the drawer?",
+            "options": [
+              {
+                "label": "$12"
+              },
+              {
+                "label": "$36"
+              },
+              {
+                "label": "$436"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Mia puso 400 pesos en una cuenta de ejemplo al 3% anual. Lee la gráfica.",
+          "feedback": {
+            "met": "Comparaste la cuenta con el cajón en el último año.",
+            "not_yet": "Aún no. Resta lo que hay en el cajón en el último año."
+          },
+          "title": "La cuenta y el cajón de Mia",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Año 1"
+              },
+              {
+                "label": "Año 2"
+              },
+              {
+                "label": "Año 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cuenta"
+              },
+              {
+                "label": "Cajón"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Al final del año 3, ¿cuánto más hay en la cuenta que en el cajón?",
+            "options": [
+              {
+                "label": "12 pesos"
+              },
+              {
+                "label": "36 pesos"
+              },
+              {
+                "label": "436 pesos"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mia colocou 400 reais numa conta de exemplo a 3% ao ano. Leia o gráfico.",
+          "feedback": {
+            "met": "Você comparou a conta com a gaveta no último ano.",
+            "not_yet": "Ainda não. Subtraia o que há na gaveta no último ano."
+          },
+          "title": "A conta e a gaveta da Mia",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Ano 1"
+              },
+              {
+                "label": "Ano 2"
+              },
+              {
+                "label": "Ano 3"
+              }
+            ],
+            "series": [
+              {
+                "label": "Conta"
+              },
+              {
+                "label": "Gaveta"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "No fim do ano 3, quanto a conta tem a mais que a gaveta?",
+            "options": [
+              {
+                "label": "12 reais"
+              },
+              {
+                "label": "36 reais"
+              },
+              {
+                "label": "436 reais"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.simple-interest-peek",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-lena"
+          },
+          {
+            "id": "choice-nico"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-rate"
+          },
+          {
+            "id": "reason-compare"
+          },
+          {
+            "id": "reason-deposit"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-lena"
+        ],
+        "reasonQuality": {
+          "reason-rate": "unsupported",
+          "reason-compare": "sound",
+          "reason-deposit": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nico saved $600 at 5% a year, Lena $900 at 4%, both example rates. After four years, who earned more?",
+          "help": [
+            "Compare the interest each one earned, not just the rates."
+          ],
+          "feedback": {
+            "met": "You chose the saver who earned more interest.",
+            "not_yet": "Not yet. Work out each saver's yearly interest, then take four years."
+          },
+          "choices": [
+            {
+              "label": "Lena earned more"
+            },
+            {
+              "label": "Nico earned more"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Nico's rate is higher"
+            },
+            {
+              "label": "I found each one's four-year interest"
+            },
+            {
+              "label": "Lena put in more money"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Nico ahorró 600 pesos al 5% anual y Lena 900 al 4%, tasas de ejemplo. Tras cuatro años, ¿quién ganó más interés?",
+          "help": [
+            "Compara el interés que ganó cada uno, no solo las tasas."
+          ],
+          "feedback": {
+            "met": "Elegiste a quien ganó más interés.",
+            "not_yet": "Aún no. Calcula el interés de un año de cada uno y luego cuatro años."
+          },
+          "choices": [
+            {
+              "label": "Ganó más Lena"
+            },
+            {
+              "label": "Ganó más Nico"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "La tasa de Nico es más alta"
+            },
+            {
+              "label": "Calculé el interés de cada uno a cuatro años"
+            },
+            {
+              "label": "Lena puso más dinero"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nico guardou 600 reais a 5% ao ano e Lena 900 a 4%, taxas de exemplo. Depois de quatro anos, quem ganhou mais juros?",
+          "help": [
+            "Compare os juros que cada um ganhou, não só as taxas."
+          ],
+          "feedback": {
+            "met": "Você escolheu quem ganhou mais juros.",
+            "not_yet": "Ainda não. Calcule os juros de um ano de cada um e depois quatro anos."
+          },
+          "choices": [
+            {
+              "label": "Lena ganhou mais"
+            },
+            {
+              "label": "Nico ganhou mais"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "A taxa do Nico é mais alta"
+            },
+            {
+              "label": "Calculei os juros de cada um em quatro anos"
+            },
+            {
+              "label": "A Lena colocou mais dinheiro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

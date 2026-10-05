@@ -1,0 +1,902 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-10-12",
+  "chapter_id": "lem-1012-school-fair-stall",
+  "lesson_id": "lem-1012-02-fair-day-profit",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.profit",
+    "biz.revenue",
+    "biz.cost-vs-price"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf mira su caja llena al terminar la feria escolar y grita que ganó 150 monedas. Antes de enseñar, el niño o la niña compara dos puestos que recibieron y gastaron distinto. Luego Liruf cuenta lo que pagó el puesto y descubre que ganancia no es lo que entra: son los ingresos menos los costos. Se muestra el día completo, con ingresos, costos y ganancia, y después se practica en otros días del puesto, con una mesa extra y con un puesto nuevo de galletas.",
+  "title": {
+    "en-US": "Profit on fair day",
+    "es-MX": "La ganancia del día de feria",
+    "pt-BR": "O lucro do dia da feira"
+  },
+  "new_concepts": [
+    "biz.revenue",
+    "biz.profit"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf looks at the 150 coins in the cash box and roars that all of it is his profit, forgetting what the stall paid out.",
+    "recovery": "Liruf counts the supplies and the table fee, sees that only 30 coins are profit, and says that next time he subtracts the costs first."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf and the class run a stall at the school fair.",
+          "line": "Look at my cash box! The fair is over and it is full of coins."
+        },
+        "es-MX": {
+          "prompt": "Liruf y el grupo atienden un puesto en la feria escolar.",
+          "line": "¡Mira mi caja! La feria terminó y está llena de monedas."
+        },
+        "pt-BR": {
+          "prompt": "Liruf e a turma cuidam de uma barraca na feira da escola.",
+          "line": "Olhe a minha caixinha! A feira acabou e ela está cheia de moedas."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "stall-a"
+          },
+          {
+            "id": "stall-b"
+          },
+          {
+            "id": "stall-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-net"
+          },
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-less"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "stall-a"
+        ],
+        "reasonQuality": {
+          "reason-net": "sound",
+          "reason-more": "unsupported",
+          "reason-less": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stall A took in 60 and spent 20; B took in 90 and spent 70. Which did better?",
+          "feedback": {
+            "met": "Thanks, I see how you think. Let's look at it together.",
+            "not_yet": "Thanks, I see how you think. Let's look at it together."
+          },
+          "choices": [
+            {
+              "label": "Stall A"
+            },
+            {
+              "label": "Stall B"
+            },
+            {
+              "label": "Both the same"
+            }
+          ],
+          "reasonPrompt": "Why?",
+          "reasons": [
+            {
+              "label": "Money in minus money spent"
+            },
+            {
+              "label": "Pick the one that took in more"
+            },
+            {
+              "label": "Pick the one that spent less"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El puesto A recibió 60 y gastó 20; el B recibió 90 y gastó 70. ¿A cuál le fue mejor?",
+          "feedback": {
+            "met": "Gracias, así veo cómo piensas. Ahora lo vemos juntos.",
+            "not_yet": "Gracias, así veo cómo piensas. Ahora lo vemos juntos."
+          },
+          "choices": [
+            {
+              "label": "El puesto A"
+            },
+            {
+              "label": "El puesto B"
+            },
+            {
+              "label": "Les fue igual"
+            }
+          ],
+          "reasonPrompt": "¿Por qué?",
+          "reasons": [
+            {
+              "label": "Dinero que entró menos lo gastado"
+            },
+            {
+              "label": "Elegir al que recibió más"
+            },
+            {
+              "label": "Elegir al que gastó menos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A barraca A recebeu 60 e gastou 20; a B recebeu 90 e gastou 70. Qual se saiu melhor?",
+          "feedback": {
+            "met": "Anotado: isso mostra como você pensa. Agora vemos juntos.",
+            "not_yet": "Anotado: isso mostra como você pensa. Agora vemos juntos."
+          },
+          "choices": [
+            {
+              "label": "A barraca A"
+            },
+            {
+              "label": "A barraca B"
+            },
+            {
+              "label": "Foram iguais"
+            }
+          ],
+          "reasonPrompt": "Por quê?",
+          "reasons": [
+            {
+              "label": "Dinheiro que entrou menos o gasto"
+            },
+            {
+              "label": "Escolher quem recebeu mais"
+            },
+            {
+              "label": "Escolher quem gastou menos"
+            }
+          ]
+        }
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.profit"
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "I sold 25 cups at 6 coins each. My box has 150 coins!",
+          "misjudgment": "I roared: I made 150 coins of profit!",
+          "recovery": "I counted what the stall paid out; 150 was too big. Next time I subtract costs first."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Liruf.",
+          "setup": "Vendí 25 vasos a 6 monedas cada uno. ¡Mi caja tiene 150 monedas!",
+          "misjudgment": "Rugí: ¡gané 150 monedas de ganancia!",
+          "recovery": "Conté lo que pagó el puesto y 150 era demasiado. La próxima vez resto los costos primero."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Vendi 25 copos a 6 moedas cada um. Minha caixinha tem 150 moedas!",
+          "misjudgment": "Eu rugi: ganhei 150 moedas de lucro!",
+          "recovery": "Contei o que a barraca pagou e 150 era demais. Da próxima vez, tiro os custos primeiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf counts the money in the box.",
+          "line": "Step 1, revenue is the money that comes in: 6 × 25 = 150 coins."
+        },
+        "es-MX": {
+          "prompt": "Liruf cuenta el dinero de la caja.",
+          "line": "Paso 1, los ingresos son el dinero que entra: 6 × 25 = 150 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Liruf conta o dinheiro da caixinha.",
+          "line": "Passo 1, a receita é o dinheiro que entra: 6 × 25 = 150 moedas."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf adds up what the stall paid.",
+          "line": "Step 2, costs: supplies for 25 cups at 4 each come to 100, plus the 20 table fee. Costs: 120."
+        },
+        "es-MX": {
+          "prompt": "Liruf suma lo que pagó el puesto.",
+          "line": "Paso 2, costos: los insumos de 25 vasos a 4 cada uno son 100, más 20 de la mesa. Costos: 120."
+        },
+        "pt-BR": {
+          "prompt": "Liruf soma o que a barraca pagou.",
+          "line": "Passo 2, custos: os insumos de 25 copos a 4 cada um são 100, mais 20 da mesa. Custos: 120."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "supplies-part"
+          },
+          {
+            "id": "revenue-part"
+          },
+          {
+            "id": "costs-part"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "revenue-part",
+          "costs-part"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "revenue-part": "140",
+          "costs-part": "100"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's day 2: 20 cups at 7 coins; supplies 4 each, table 20. Find revenue and costs.",
+          "feedback": {
+            "met": "You found revenue from price and cups, then added the costs.",
+            "not_yet": "Not yet. Check day 1: price times cups, supplies plus fee."
+          },
+          "steps": [
+            {
+              "expression": "Supplies: 20 cups × 4",
+              "result": "80",
+              "spokenText": "Twenty cups at 4 each is 80 coins of supplies"
+            },
+            {
+              "expression": "Revenue: 7 coins × 20 cups",
+              "result": "140",
+              "spokenText": "Seven times 20 is 140: the money that came in"
+            },
+            {
+              "expression": "Costs: supplies + table fee",
+              "result": "100",
+              "spokenText": "Eighty plus 20 is 100: those are the costs"
+            }
+          ],
+          "help": [
+            "Revenue is the price times the cups sold.",
+            "Costs are the supplies plus the table fee."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Día 2 de Liruf: 20 vasos a 7 monedas; insumos a 4 cada uno, mesa de 20. Calcula ingresos y costos.",
+          "feedback": {
+            "met": "Hallaste los ingresos con precio y vasos, y luego sumaste los costos.",
+            "not_yet": "Todavía no. Mira el día 1: precio por vasos, insumos más cuota."
+          },
+          "steps": [
+            {
+              "expression": "Insumos: 20 vasos × 4",
+              "result": "80",
+              "spokenText": "Veinte vasos a 4 cada uno son 80 monedas de insumos"
+            },
+            {
+              "expression": "Ingresos: 7 monedas × 20 vasos",
+              "result": "140",
+              "spokenText": "Siete por 20 son 140: el dinero que entró"
+            },
+            {
+              "expression": "Costos: insumos + cuota de la mesa",
+              "result": "100",
+              "spokenText": "Ochenta más 20 son 100: esos son los costos"
+            }
+          ],
+          "help": [
+            "Los ingresos son el precio por los vasos vendidos.",
+            "Los costos son los insumos más la cuota de la mesa."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dia 2 do Liruf: 20 copos a 7 moedas; insumos a 4 cada, mesa de 20. Calcule a receita e os custos.",
+          "feedback": {
+            "met": "Você achou a receita com preço e copos e depois somou os custos.",
+            "not_yet": "Ainda não. Veja o dia 1: preço vezes copos, insumos mais taxa."
+          },
+          "steps": [
+            {
+              "expression": "Insumos: 20 copos × 4",
+              "result": "80",
+              "spokenText": "Vinte copos a 4 cada são 80 moedas de insumos"
+            },
+            {
+              "expression": "Receita: 7 moedas × 20 copos",
+              "result": "140",
+              "spokenText": "Sete vezes 20 são 140: o dinheiro que entrou"
+            },
+            {
+              "expression": "Custos: insumos + taxa da mesa",
+              "result": "100",
+              "spokenText": "Oitenta mais 20 são 100: esses são os custos"
+            }
+          ],
+          "help": [
+            "A receita é o preço vezes os copos vendidos.",
+            "Os custos são os insumos mais a taxa da mesa."
+          ]
+        }
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.revenue"
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf takes the costs away from the money in.",
+          "line": "Step 3, profit is revenue minus costs: 150 − 120 = 30. Liruf keeps 30 coins."
+        },
+        "es-MX": {
+          "prompt": "Liruf resta los costos al dinero que entró.",
+          "line": "Paso 3, ganancia es ingresos menos costos: 150 − 120 = 30. Liruf se queda con 30 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Liruf tira os custos do dinheiro que entrou.",
+          "line": "Passo 3, lucro é receita menos custos: 150 − 120 = 30. Liruf fica com 30 moedas."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "supplies-part"
+          },
+          {
+            "id": "costs-part"
+          },
+          {
+            "id": "revenue-part"
+          },
+          {
+            "id": "profit-part"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "costs-part",
+          "revenue-part",
+          "profit-part"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "costs-part": "84",
+          "revenue-part": "128",
+          "profit-part": "44"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's day 3: 16 cups at 8 coins; supplies 4 each, table 20. How much profit?",
+          "feedback": {
+            "met": "You subtracted costs from revenue to find the profit.",
+            "not_yet": "Not yet. Profit is revenue minus costs, not the money in."
+          },
+          "steps": [
+            {
+              "expression": "Supplies: 16 cups × 4",
+              "result": "64",
+              "spokenText": "Sixteen cups at 4 each is 64 coins of supplies"
+            },
+            {
+              "expression": "Costs: supplies + table fee",
+              "result": "84",
+              "spokenText": "Sixty-four plus 20 is 84 coins of costs"
+            },
+            {
+              "expression": "Revenue: 8 coins × 16 cups",
+              "result": "128",
+              "spokenText": "Eight times 16 is 128: the money that came in"
+            },
+            {
+              "expression": "Profit: revenue − costs",
+              "result": "44",
+              "spokenText": "128 minus 84 is 44: Liruf's profit"
+            }
+          ],
+          "help": [
+            "Costs are the supplies plus the table fee.",
+            "Profit is revenue minus costs."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Día 3 de Liruf: 16 vasos a 8 monedas; insumos a 4 cada uno, mesa de 20. ¿Cuánta ganancia queda?",
+          "feedback": {
+            "met": "Restaste los costos a los ingresos para hallar la ganancia.",
+            "not_yet": "Todavía no. La ganancia es ingresos menos costos, no lo que entró."
+          },
+          "steps": [
+            {
+              "expression": "Insumos: 16 vasos × 4",
+              "result": "64",
+              "spokenText": "Dieciséis vasos a 4 cada uno son 64 monedas de insumos"
+            },
+            {
+              "expression": "Costos: insumos + cuota de la mesa",
+              "result": "84",
+              "spokenText": "Sesenta y cuatro más 20 son 84 monedas de costos"
+            },
+            {
+              "expression": "Ingresos: 8 monedas × 16 vasos",
+              "result": "128",
+              "spokenText": "Ocho por 16 son 128: el dinero que entró"
+            },
+            {
+              "expression": "Ganancia: ingresos − costos",
+              "result": "44",
+              "spokenText": "128 menos 84 son 44: la ganancia de Liruf"
+            }
+          ],
+          "help": [
+            "Los costos son los insumos más la cuota de la mesa.",
+            "La ganancia es ingresos menos costos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dia 3 do Liruf: 16 copos a 8 moedas; insumos a 4 cada, mesa de 20. Quanto sobra de lucro?",
+          "feedback": {
+            "met": "Você tirou os custos da receita para achar o lucro.",
+            "not_yet": "Ainda não. O lucro é receita menos custos, não o que entrou."
+          },
+          "steps": [
+            {
+              "expression": "Insumos: 16 copos × 4",
+              "result": "64",
+              "spokenText": "Dezesseis copos a 4 cada são 64 moedas de insumos"
+            },
+            {
+              "expression": "Custos: insumos + taxa da mesa",
+              "result": "84",
+              "spokenText": "Sessenta e quatro mais 20 são 84 moedas de custos"
+            },
+            {
+              "expression": "Receita: 8 moedas × 16 copos",
+              "result": "128",
+              "spokenText": "Oito vezes 16 são 128: o dinheiro que entrou"
+            },
+            {
+              "expression": "Lucro: receita − custos",
+              "result": "44",
+              "spokenText": "128 menos 84 são 44: o lucro do Liruf"
+            }
+          ],
+          "help": [
+            "Os custos são os insumos mais a taxa da mesa.",
+            "O lucro é a receita menos os custos."
+          ]
+        }
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit"
+    },
+    {
+      "id": "practice-01",
+      "type": "money.lemonade-stand.v2",
+      "grading": "server",
+      "visual": {
+        "type": "lemonade-stand"
+      },
+      "payload": {
+        "currency": "coins",
+        "cost_per_cup_minor": 4,
+        "fixed_cost_minor": 20,
+        "max_price_minor": 12,
+        "price_step_minor": 1,
+        "demand_at_zero": 43,
+        "cups_lost_per_step": 3,
+        "max_cups": 45
+      },
+      "rubric": {
+        "target_profit_minor": 40
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's cups cost 4, his table 20. Find a price and cups with at least 40 profit.",
+          "help": [
+            "Higher prices sell fewer cups, but each earns more.",
+            "Profit is revenue minus supplies minus the table fee."
+          ],
+          "feedback": {
+            "met": "Your profit is at least 40: goal reached.",
+            "not_yet": "Not yet. Change one thing, then check the profit."
+          }
+        },
+        "es-MX": {
+          "prompt": "Los vasos de Liruf cuestan 4 y su mesa 20. Busca un precio y vasos con al menos 40 de ganancia.",
+          "help": [
+            "Un precio alto vende menos vasos, pero cada uno gana más.",
+            "La ganancia es ingresos menos insumos menos la cuota de la mesa."
+          ],
+          "feedback": {
+            "met": "Tu ganancia es de al menos 40: meta lograda.",
+            "not_yet": "Todavía no. Cambia una cosa y revisa la ganancia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Os copos do Liruf custam 4 e a mesa 20. Ache um preço e copos com pelo menos 40 de lucro.",
+          "help": [
+            "Preço alto vende menos copos, mas cada um rende mais.",
+            "O lucro é a receita menos os insumos menos a taxa da mesa."
+          ],
+          "feedback": {
+            "met": "Seu lucro é de pelo menos 40: meta atingida.",
+            "not_yet": "Ainda não. Mude uma coisa e confira o lucro."
+          }
+        }
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit"
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "rent-extra"
+          },
+          {
+            "id": "keep-one"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-extra"
+          },
+          {
+            "id": "reason-cups"
+          },
+          {
+            "id": "reason-fee"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "keep-one"
+        ],
+        "reasonQuality": {
+          "reason-extra": "sound",
+          "reason-cups": "unsupported",
+          "reason-fee": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's extra table costs 30 and sells 10 cups at 6; supplies are 4 per cup. Rent it?",
+          "feedback": {
+            "met": "You kept one table: extra costs beat the extra money.",
+            "not_yet": "Not yet. Compare the extra revenue with all the extra costs."
+          },
+          "choices": [
+            {
+              "label": "Rent the extra table"
+            },
+            {
+              "label": "Keep one table"
+            }
+          ],
+          "reasonPrompt": "Why?",
+          "reasons": [
+            {
+              "label": "Extra money in versus extra costs"
+            },
+            {
+              "label": "Ten more cups always helps"
+            },
+            {
+              "label": "Look only at the table fee"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La mesa extra de Liruf cuesta 30 y vende 10 vasos a 6; insumos a 4 por vaso. ¿Debe rentarla Liruf?",
+          "feedback": {
+            "met": "Te quedaste con una mesa: los costos extra superan al dinero extra.",
+            "not_yet": "Todavía no. Compara los ingresos extra con todos los costos extra."
+          },
+          "choices": [
+            {
+              "label": "Rentar la mesa extra"
+            },
+            {
+              "label": "Quedarse con una mesa"
+            }
+          ],
+          "reasonPrompt": "¿Por qué?",
+          "reasons": [
+            {
+              "label": "Ingresos extra frente a costos extra"
+            },
+            {
+              "label": "Diez vasos más siempre ayudan"
+            },
+            {
+              "label": "Mirar solo la cuota de la mesa"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mesa extra do Liruf custa 30 e vende 10 copos a 6; insumos a 4 por copo. Ele deve alugá-la?",
+          "feedback": {
+            "met": "Você ficou com uma mesa: os custos extras superam o dinheiro extra.",
+            "not_yet": "Ainda não. Compare a receita extra com todos os custos extras."
+          },
+          "choices": [
+            {
+              "label": "Alugar a mesa extra"
+            },
+            {
+              "label": "Ficar com uma mesa"
+            }
+          ],
+          "reasonPrompt": "Por quê?",
+          "reasons": [
+            {
+              "label": "Receita extra contra custos extras"
+            },
+            {
+              "label": "Dez copos a mais sempre ajudam"
+            },
+            {
+              "label": "Olhar só a taxa da mesa"
+            }
+          ]
+        }
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "biz.cost-vs-price"
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "supplies-part"
+          },
+          {
+            "id": "revenue-part"
+          },
+          {
+            "id": "costs-part"
+          },
+          {
+            "id": "profit-part"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "revenue-part",
+          "costs-part",
+          "profit-part"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "revenue-part": "90",
+          "costs-part": "40",
+          "profit-part": "50"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Liruf's cookie stall sold 30 at 3 coins; supplies 1 each, table 10. What is the profit?",
+          "feedback": {
+            "met": "You found revenue and costs, then subtracted to get the profit.",
+            "not_yet": "Not yet. Remember Liruf: profit is revenue minus all the costs."
+          },
+          "steps": [
+            {
+              "expression": "Supplies: 30 cookies × 1",
+              "result": "30",
+              "spokenText": "Thirty cookies at 1 each is 30 coins of supplies"
+            },
+            {
+              "expression": "Revenue: 3 coins × 30 cookies",
+              "result": "90",
+              "spokenText": "Three times 30 is 90: the money that came in"
+            },
+            {
+              "expression": "Costs: supplies + table fee",
+              "result": "40",
+              "spokenText": "Thirty plus 10 is 40 coins of costs"
+            },
+            {
+              "expression": "Profit: revenue − costs",
+              "result": "50",
+              "spokenText": "90 minus 40 is 50: the cookie stall's profit"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Liruf vende galletas: 30 a 3 monedas, insumos a 1 cada una, mesa de 10. ¿Cuál es la ganancia?",
+          "feedback": {
+            "met": "Hallaste ingresos y costos, y restaste para sacar la ganancia.",
+            "not_yet": "Todavía no. Recuerda a Liruf: la ganancia es ingresos menos todos los costos."
+          },
+          "steps": [
+            {
+              "expression": "Insumos: 30 galletas × 1",
+              "result": "30",
+              "spokenText": "Treinta galletas a 1 cada una son 30 monedas de insumos"
+            },
+            {
+              "expression": "Ingresos: 3 monedas × 30 galletas",
+              "result": "90",
+              "spokenText": "Tres por 30 son 90: el dinero que entró"
+            },
+            {
+              "expression": "Costos: insumos + cuota de la mesa",
+              "result": "40",
+              "spokenText": "Treinta más 10 son 40 monedas de costos"
+            },
+            {
+              "expression": "Ganancia: ingresos − costos",
+              "result": "50",
+              "spokenText": "90 menos 40 son 50: la ganancia del puesto"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Liruf vende biscoitos: 30 a 3 moedas, insumos a 1 cada, mesa de 10. Qual é o lucro?",
+          "feedback": {
+            "met": "Você achou receita e custos e subtraiu para tirar o lucro.",
+            "not_yet": "Ainda não. Lembre do Liruf: o lucro é a receita menos todos os custos."
+          },
+          "steps": [
+            {
+              "expression": "Insumos: 30 biscoitos × 1",
+              "result": "30",
+              "spokenText": "Trinta biscoitos a 1 cada são 30 moedas de insumos"
+            },
+            {
+              "expression": "Receita: 3 moedas × 30 biscoitos",
+              "result": "90",
+              "spokenText": "Três vezes 30 são 90: o dinheiro que entrou"
+            },
+            {
+              "expression": "Custos: insumos + taxa da mesa",
+              "result": "40",
+              "spokenText": "Trinta mais 10 são 40 moedas de custos"
+            },
+            {
+              "expression": "Lucro: receita − custos",
+              "result": "50",
+              "spokenText": "90 menos 40 são 50: o lucro da barraca"
+            }
+          ]
+        }
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.profit"
+    }
+  ]
+}

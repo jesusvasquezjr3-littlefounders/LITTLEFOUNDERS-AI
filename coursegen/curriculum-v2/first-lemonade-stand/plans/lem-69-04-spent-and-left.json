@@ -1,0 +1,680 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-6-9",
+  "chapter_id": "lem-69-open-the-stand",
+  "lesson_id": "lem-69-04-spent-and-left",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "biz.profit",
+    "money.subtract-money"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina cuenta con el niño el día del puesto de limonada, sin prisa. Ve lo que entró, lo que se gastó y lo que queda, que es la ganancia, y por qué los vasos que no se venden también cuestan. El niño apila lo que se gastó, abre el puesto hasta dejar 6 monedas o más, arma la ganancia de otro día y compara dos mesas de una feria.",
+  "title": {
+    "en-US": "Spent and left",
+    "es-MX": "Lo gastado y lo que queda",
+    "pt-BR": "O gasto e o que sobra"
+  },
+  "new_concepts": [
+    "biz.profit"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Closing time at the stand. Two cups sit on the table.",
+          "line": "Let's count the day together, one small step at a time."
+        },
+        "es-MX": {
+          "prompt": "Hora de cerrar el puesto. Dos vasos siguen en la mesa.",
+          "line": "Contemos el día juntos, un paso pequeño a la vez."
+        },
+        "pt-BR": {
+          "prompt": "Hora de fechar a barraca. Dois copos ficaram na mesa.",
+          "line": "Vamos contar o dia juntos, um passinho de cada vez."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-b"
+          },
+          {
+            "id": "choice-a"
+          },
+          {
+            "id": "choice-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-both"
+          },
+          {
+            "id": "reason-one"
+          },
+          {
+            "id": "reason-pick"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-a"
+        ],
+        "reasonQuality": {
+          "reason-both": "sound",
+          "reason-one": "partial",
+          "reason-pick": "unsupported"
+        }
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.profit",
+      "copy": {
+        "en-US": {
+          "prompt": "Both stands took in 9 coins. A spent 4, B spent 7.",
+          "feedback": {
+            "met": "Noted. Next we look at the day in small steps.",
+            "not_yet": "Noted. Next we look at the day in small steps."
+          },
+          "choices": [
+            {
+              "label": "B has more left"
+            },
+            {
+              "label": "A has more left"
+            },
+            {
+              "label": "Both have the same left"
+            }
+          ],
+          "reasonPrompt": "How did you decide?",
+          "reasons": [
+            {
+              "label": "I used both numbers"
+            },
+            {
+              "label": "I used one number"
+            },
+            {
+              "label": "I just picked one"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los dos puestos recibieron 9 monedas. A gastó 4 y B gastó 7.",
+          "feedback": {
+            "met": "Anotado. Ahora vemos el día en pasos pequeños.",
+            "not_yet": "Anotado. Ahora vemos el día en pasos pequeños."
+          },
+          "choices": [
+            {
+              "label": "Al puesto B le queda más"
+            },
+            {
+              "label": "Al puesto A le queda más"
+            },
+            {
+              "label": "A los dos les queda igual"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo decidiste?",
+          "reasons": [
+            {
+              "label": "Usé los dos números"
+            },
+            {
+              "label": "Usé un solo número"
+            },
+            {
+              "label": "Solo elegí una"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As duas barracas receberam 9 moedas. A gastou 4 e B gastou 7.",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver o dia em passos pequenos.",
+            "not_yet": "Anotado. Agora vamos ver o dia em passos pequenos."
+          },
+          "choices": [
+            {
+              "label": "Na barraca B sobra mais"
+            },
+            {
+              "label": "Na barraca A sobra mais"
+            },
+            {
+              "label": "Nas duas sobra igual"
+            }
+          ],
+          "reasonPrompt": "Como você decidiu?",
+          "reasons": [
+            {
+              "label": "Usei os dois números"
+            },
+            {
+              "label": "Usei um só número"
+            },
+            {
+              "label": "Só escolhi uma"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "spent-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1. We made 8 cups and each cost 2 coins.",
+          "line": "No rush. Count by 2s, eight times: we spent 16 coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 1. Hicimos 8 vasos y cada uno costó 2 monedas.",
+          "line": "Sin prisa. Contamos de 2 en 2, ocho veces: gastamos 16 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1. Fizemos 8 copos e cada um custou 2 moedas.",
+          "line": "Sem pressa. Contamos de 2 em 2, oito vezes: gastamos 16 moedas."
+        }
+      }
+    },
+    {
+      "id": "in-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2. Only 6 cups sold, at 3 coins each.",
+          "line": "Count by 3s, six times: 18 coins came in."
+        },
+        "es-MX": {
+          "prompt": "Paso 2. Solo se vendieron 6 vasos, a 3 monedas cada uno.",
+          "line": "Contamos de 3 en 3, seis veces: entraron 18 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2. Só 6 copos foram vendidos, a 3 moedas cada.",
+          "line": "Contamos de 3 em 3, seis vezes: entraram 18 moedas."
+        }
+      }
+    },
+    {
+      "id": "left-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3. Take the coins spent from the coins in.",
+          "line": "18 take away 16 leaves 2. Those 2 coins are the profit."
+        },
+        "es-MX": {
+          "prompt": "Paso 3. A lo que entró, réstale lo que gastamos.",
+          "line": "18 menos 16 son 2. Esas 2 monedas son la ganancia."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3. Tire o que gastamos do que entrou.",
+          "line": "18 menos 16 são 2. Essas 2 moedas são o lucro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.coin-stack.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "coin-stack"
+      },
+      "payload": {
+        "piece": "coin",
+        "value": 100,
+        "goal": {
+          "kind": "amount",
+          "total": 1000
+        },
+        "step": 1,
+        "max": 12
+      },
+      "rubric": {
+        "target": "10"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "copy": {
+        "en-US": {
+          "prompt": "Another day: 5 cups at 2 coins. Stack what we spent.",
+          "feedback": {
+            "met": "Five cups at 2 coins each: you stacked what we spent.",
+            "not_yet": "Not yet. Look at Step 1: count by 2s, once per cup."
+          },
+          "help": [
+            "In Step 1 we counted by 2s, once for each cup.",
+            "Set the coins until the stack matches the goal."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Otro día: 5 vasos de 2 monedas. Apila lo que gastamos.",
+          "feedback": {
+            "met": "Cinco vasos de 2 monedas: apilaste lo que se gastó.",
+            "not_yet": "Todavía no. Mira el Paso 1: cuenta de 2 en 2, una vez por vaso."
+          },
+          "help": [
+            "En el Paso 1 contamos de 2 en 2, una vez por vaso.",
+            "Cambia la cantidad de monedas hasta que la pila llegue a la meta."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outro dia: 5 copos de 2 moedas. Empilhe o que gastamos.",
+          "feedback": {
+            "met": "Cinco copos de 2 moedas: você empilhou o que gastamos.",
+            "not_yet": "Ainda não. Veja o Passo 1: conte de 2 em 2, uma vez por copo."
+          },
+          "help": [
+            "No Passo 1 contamos de 2 em 2, uma vez por copo.",
+            "Mude a quantidade de moedas até a pilha chegar à meta."
+          ]
+        }
+      }
+    },
+    {
+      "id": "unsold-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4. Two cups did not sell, yet we paid for them.",
+          "line": "Those 2 cups cost 4 coins. Making fewer cups spends less."
+        },
+        "es-MX": {
+          "prompt": "Paso 4. Dos vasos no se vendieron, pero los pagamos.",
+          "line": "Esos 2 vasos costaron 4 monedas. Hacer menos vasos gasta menos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4. Dois copos não foram vendidos, mas pagamos por eles.",
+          "line": "Esses 2 copos custaram 4 moedas. Fazer menos copos gasta menos."
+        }
+      }
+    },
+    {
+      "id": "board-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5. On the board, set the price and the cups.",
+          "line": "Then open the stand. Sales, cups cost and profit show up."
+        },
+        "es-MX": {
+          "prompt": "Paso 5. En el tablero, elige el precio y los vasos.",
+          "line": "Luego abre el puesto. Salen ventas, costo de vasos y ganancia."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5. No quadro, escolha o preço e os copos.",
+          "line": "Depois abra a barraca. Aparecem vendas, custo dos copos e lucro."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.lemonade-stand.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "lemonade-stand"
+      },
+      "payload": {
+        "currency": "coins",
+        "cost_per_cup_minor": 2,
+        "fixed_cost_minor": 0,
+        "max_price_minor": 3,
+        "price_step_minor": 1,
+        "demand_at_zero": 12,
+        "cups_lost_per_step": 2,
+        "max_cups": 10
+      },
+      "rubric": {
+        "target_profit_minor": 6
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "copy": {
+        "en-US": {
+          "prompt": "Sell at 3 coins. Make cups to leave 6 coins or more.",
+          "feedback": {
+            "met": "You chose a price and cups that left 6 coins or more.",
+            "not_yet": "Not yet. Compare the cups made with the cups sold."
+          },
+          "help": [
+            "Open the stand to see the day. Read the profit.",
+            "Cups nobody buys still cost coins. Try fewer cups."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Vende a 3 monedas. Haz vasos para que queden 6 monedas o más.",
+          "feedback": {
+            "met": "Elegiste un precio y vasos que dejaron 6 monedas o más.",
+            "not_yet": "Todavía no. Compara los vasos hechos con los vendidos."
+          },
+          "help": [
+            "Abre el puesto para ver el día. Lee la ganancia.",
+            "Los vasos que nadie compra también cuestan. Prueba menos vasos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Venda a 3 moedas. Faça copos para sobrarem 6 moedas ou mais.",
+          "feedback": {
+            "met": "Você escolheu um preço e copos que deixaram 6 moedas ou mais.",
+            "not_yet": "Ainda não. Compare os copos feitos com os vendidos."
+          },
+          "help": [
+            "Abra a barraca para ver o dia. Leia o lucro.",
+            "Copos que ninguém compra também custam. Teste menos copos."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "money.coin-tray.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "coin-tray"
+      },
+      "payload": {
+        "currency": "coins",
+        "denominations": [
+          {
+            "value_minor": 2,
+            "kind": "coin",
+            "available": 2
+          },
+          {
+            "value_minor": 1,
+            "kind": "coin",
+            "available": 3
+          }
+        ]
+      },
+      "rubric": {
+        "target_minor": 3,
+        "fewest": false
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.subtract-money",
+      "copy": {
+        "en-US": {
+          "prompt": "We took in 12 coins and spent 9. Build the profit.",
+          "feedback": {
+            "met": "You built the profit: the coins left after paying.",
+            "not_yet": "Not yet. Start at 12 and take away what we spent."
+          },
+          "help": [
+            "Profit is the coins left after we pay.",
+            "Take 9 away from 12. Build what is left."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Entraron 12 monedas y gastamos 9. Arma la ganancia.",
+          "feedback": {
+            "met": "Armaste la ganancia: las monedas que quedan al pagar.",
+            "not_yet": "Todavía no. Empieza en 12 y quita lo que gastamos."
+          },
+          "help": [
+            "La ganancia son las monedas que quedan al pagar.",
+            "Quita 9 de 12. Arma lo que queda."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Entraram 12 moedas e gastamos 9. Monte o lucro.",
+          "feedback": {
+            "met": "Você montou o lucro: as moedas que sobram após pagar.",
+            "not_yet": "Ainda não. Comece em 12 e tire o que gastamos."
+          },
+          "help": [
+            "O lucro são as moedas que sobram ao pagar.",
+            "Tire 9 de 12. Monte o que sobra."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-ten"
+          },
+          {
+            "id": "choice-same"
+          },
+          {
+            "id": "choice-eight"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-less"
+          },
+          {
+            "id": "reason-same-in"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-eight"
+        ],
+        "reasonQuality": {
+          "reason-bigger": "unsupported",
+          "reason-less": "sound",
+          "reason-same-in": "partial"
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.profit",
+      "copy": {
+        "en-US": {
+          "prompt": "Bracelets cost 2. Tables made 10 and 8; both took in 24.",
+          "feedback": {
+            "met": "You picked the table that spent less, so more is left.",
+            "not_yet": "Not yet. Each took in 24, so compare what each spent."
+          },
+          "choices": [
+            {
+              "label": "Made 10 has more left"
+            },
+            {
+              "label": "Both have the same left"
+            },
+            {
+              "label": "Made 8 has more left"
+            }
+          ],
+          "reasonPrompt": "Why did you pick that?",
+          "reasons": [
+            {
+              "label": "10 is the biggest number"
+            },
+            {
+              "label": "That table spent fewer coins"
+            },
+            {
+              "label": "Both took in 24 coins"
+            }
+          ],
+          "help": [
+            "Count the cost of 10 bracelets and of 8, by 2s.",
+            "Left is coins in take away coins spent."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Hacer una pulsera cuesta 2. Dos mesas hicieron 10 y 8; ambas recibieron 24.",
+          "feedback": {
+            "met": "Elegiste la mesa que gastó menos, así que le queda más.",
+            "not_yet": "Todavía no. Cada una recibió 24, compara lo que gastó cada una."
+          },
+          "choices": [
+            {
+              "label": "La que hizo 10 tiene más"
+            },
+            {
+              "label": "Las dos tienen lo mismo"
+            },
+            {
+              "label": "La que hizo 8 tiene más"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "10 es el número más grande"
+            },
+            {
+              "label": "Esa mesa gastó menos monedas"
+            },
+            {
+              "label": "Las dos recibieron 24 monedas"
+            }
+          ],
+          "help": [
+            "Cuenta el costo de 10 pulseras y de 8, de 2 en 2.",
+            "Lo que queda es lo que entró menos lo gastado."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fazer uma pulseira custa 2. As mesas fizeram 10 e 8; ambas receberam 24.",
+          "feedback": {
+            "met": "Você escolheu a mesa que gastou menos, então sobra mais.",
+            "not_yet": "Ainda não. Cada uma recebeu 24, compare o que cada uma gastou."
+          },
+          "choices": [
+            {
+              "label": "A que fez 10 tem mais"
+            },
+            {
+              "label": "As duas têm o mesmo"
+            },
+            {
+              "label": "A que fez 8 tem mais"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "10 é o número maior"
+            },
+            {
+              "label": "Essa mesa gastou menos moedas"
+            },
+            {
+              "label": "As duas receberam 24 moedas"
+            }
+          ],
+          "help": [
+            "Conte o custo de 10 pulseiras e de 8, de 2 em 2.",
+            "O que sobra é o que entrou menos o gasto."
+          ]
+        }
+      }
+    }
+  ]
+}

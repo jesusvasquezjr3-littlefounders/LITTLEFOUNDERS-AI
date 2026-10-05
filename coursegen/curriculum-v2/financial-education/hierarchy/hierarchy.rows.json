@@ -1,0 +1,3159 @@
+{
+  "namespace": "a3c1f0de-5b7e-4c21-9d34-7e6f1b2a8c90",
+  "course_slug": "financial-education",
+  "tables": {
+    "courses": [
+      {
+        "id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "slug": "financial-education",
+        "title": {
+          "en-US": "Financial Education",
+          "es-MX": "Educación Financiera",
+          "pt-BR": "Educação Financeira"
+        },
+        "description": {
+          "en-US": "Learn what money is, how it works, and how to make it work for you.",
+          "es-MX": "Aprende qué es el dinero, cómo funciona y cómo hacerlo trabajar para ti.",
+          "pt-BR": "Aprenda o que é dinheiro, como funciona e como fazê-lo trabalhar para você."
+        },
+        "subject": "money",
+        "status": "draft",
+        "position": 1,
+        "requires": [],
+        "badge_asset": "course-badges/financial-education.png"
+      }
+    ],
+    "adventures": [
+      {
+        "id": "5b507fcc-d1f3-5054-96b0-724fbf723a14",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 1,
+        "slug": "fe-69-corner-shop",
+        "title": {
+          "en-US": "The corner shop",
+          "es-MX": "La tiendita de la esquina",
+          "pt-BR": "A vendinha da esquina"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "a0218502-ade7-52f5-8f04-a1006b43148c",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 2,
+        "slug": "fe-69-coins-and-choices",
+        "title": {
+          "en-US": "Coins and choices",
+          "es-MX": "Monedas y decisiones",
+          "pt-BR": "Moedas e escolhas"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "0616dbba-fcf9-5320-9282-a43e86596e16",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 3,
+        "slug": "fe-69-market-day",
+        "title": {
+          "en-US": "Market day",
+          "es-MX": "Día de mercado",
+          "pt-BR": "Dia de feira"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "6f08a98e-9c42-53e1-a4d1-6125602c9708",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 4,
+        "slug": "fe-69-my-coin-jar",
+        "title": {
+          "en-US": "My coin jar",
+          "es-MX": "Mi alcancía",
+          "pt-BR": "Meu cofrinho"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier1",
+        "status": "draft",
+        "pathway_stage": "child",
+        "eligibility_min_age": 6,
+        "eligibility_max_age": 9
+      },
+      {
+        "id": "07ae30bf-8ceb-5683-8cc8-05196c2f5b4f",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 5,
+        "slug": "fe-1012-smart-spending",
+        "title": {
+          "en-US": "Smart spending",
+          "es-MX": "Gasto inteligente",
+          "pt-BR": "Gasto inteligente"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "7216e6b1-37d0-59ec-9b1b-da54a10400c9",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 6,
+        "slug": "fe-1012-sale-season",
+        "title": {
+          "en-US": "Sale season",
+          "es-MX": "Temporada de rebajas",
+          "pt-BR": "Temporada de promoções"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "aa025b55-b9be-5a4f-915a-b313dcd9ca6a",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 7,
+        "slug": "fe-1012-first-account",
+        "title": {
+          "en-US": "My first account",
+          "es-MX": "Mi primera cuenta",
+          "pt-BR": "Minha primeira conta"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "b1c0c3f3-17db-54d8-9348-a6fc8963c548",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 8,
+        "slug": "fe-1012-class-garden",
+        "title": {
+          "en-US": "The class garden",
+          "es-MX": "El huerto del salón",
+          "pt-BR": "A horta da turma"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier3",
+        "status": "draft",
+        "pathway_stage": "tween",
+        "eligibility_min_age": 10,
+        "eligibility_max_age": 12
+      },
+      {
+        "id": "10f2cd9f-ba18-510b-989d-d5d2397c8cac",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 9,
+        "slug": "fe-1317-first-pay",
+        "title": {
+          "en-US": "My first pay",
+          "es-MX": "Mi primer pago",
+          "pt-BR": "Meu primeiro pagamento"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "03b0fb62-82ae-56d7-b7f5-8fde79a0488d",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 10,
+        "slug": "fe-1317-eyes-open",
+        "title": {
+          "en-US": "Eyes open",
+          "es-MX": "Ojos abiertos",
+          "pt-BR": "De olho aberto"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "4ea49f28-6f6b-56b8-88b9-b50307f9fba2",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 11,
+        "slug": "fe-1317-plans-that-grow",
+        "title": {
+          "en-US": "Plans that grow",
+          "es-MX": "Planes que crecen",
+          "pt-BR": "Planos que crescem"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "teen",
+        "eligibility_min_age": 13,
+        "eligibility_max_age": 17
+      },
+      {
+        "id": "6fb30a7b-f45f-53d8-b039-b2dd8483813d",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 12,
+        "slug": "fe-adult-my-paycheck",
+        "title": {
+          "en-US": "My paycheck",
+          "es-MX": "Mi sueldo",
+          "pt-BR": "Meu salário"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      },
+      {
+        "id": "bb44ea54-0e44-5ac4-a6ed-0d107f01f4e7",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 13,
+        "slug": "fe-adult-spend-and-protect",
+        "title": {
+          "en-US": "Spend wisely and stay safe",
+          "es-MX": "Gastar bien y cuidarse",
+          "pt-BR": "Gastar bem e se proteger"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      },
+      {
+        "id": "3da9ed31-45d9-59d3-8bc1-55f888994f1d",
+        "course_id": "229108e1-4e81-5636-aae6-f0dc74249569",
+        "position": 14,
+        "slug": "fe-adult-plan-ahead",
+        "title": {
+          "en-US": "Plan what comes next",
+          "es-MX": "Planear lo que sigue",
+          "pt-BR": "Planejar o que vem"
+        },
+        "theme": "archipelago",
+        "age_tier": "tier4",
+        "status": "draft",
+        "pathway_stage": "adult",
+        "eligibility_min_age": 18,
+        "eligibility_max_age": 119
+      }
+    ],
+    "sagas": [
+      {
+        "id": "59852db9-98fa-5757-b5e4-5327ed9cc866",
+        "adventure_id": "5b507fcc-d1f3-5054-96b0-724fbf723a14",
+        "position": 1,
+        "slug": "fe-69-corner-shop",
+        "title": {
+          "en-US": "The corner shop",
+          "es-MX": "La tiendita de la esquina",
+          "pt-BR": "A vendinha da esquina"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "6ddbc9b8-92fd-5d7a-aaf5-336b6dd14f77",
+        "adventure_id": "a0218502-ade7-52f5-8f04-a1006b43148c",
+        "position": 1,
+        "slug": "fe-69-coins-and-choices",
+        "title": {
+          "en-US": "Coins and choices",
+          "es-MX": "Monedas y decisiones",
+          "pt-BR": "Moedas e escolhas"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "e5e496ea-9ecf-5a87-9260-663189634d16",
+        "adventure_id": "0616dbba-fcf9-5320-9282-a43e86596e16",
+        "position": 1,
+        "slug": "fe-69-market-day",
+        "title": {
+          "en-US": "Market day",
+          "es-MX": "Día de mercado",
+          "pt-BR": "Dia de feira"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "09005fd1-1580-5fdd-af4e-a34b7daabbfb",
+        "adventure_id": "6f08a98e-9c42-53e1-a4d1-6125602c9708",
+        "position": 1,
+        "slug": "fe-69-my-coin-jar",
+        "title": {
+          "en-US": "My coin jar",
+          "es-MX": "Mi alcancía",
+          "pt-BR": "Meu cofrinho"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "4f108471-a2cd-58fd-a5df-62dfe2569bfa",
+        "adventure_id": "07ae30bf-8ceb-5683-8cc8-05196c2f5b4f",
+        "position": 1,
+        "slug": "fe-1012-smart-spending",
+        "title": {
+          "en-US": "Smart spending",
+          "es-MX": "Gasto inteligente",
+          "pt-BR": "Gasto inteligente"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "4da97dea-c374-5e8c-96a9-24bd9518a4a1",
+        "adventure_id": "7216e6b1-37d0-59ec-9b1b-da54a10400c9",
+        "position": 1,
+        "slug": "fe-1012-sale-season",
+        "title": {
+          "en-US": "Sale season",
+          "es-MX": "Temporada de rebajas",
+          "pt-BR": "Temporada de promoções"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "6aad9b9f-26f4-58fc-831e-c239c3b023d2",
+        "adventure_id": "aa025b55-b9be-5a4f-915a-b313dcd9ca6a",
+        "position": 1,
+        "slug": "fe-1012-first-account",
+        "title": {
+          "en-US": "My first account",
+          "es-MX": "Mi primera cuenta",
+          "pt-BR": "Minha primeira conta"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "86d3cc09-9073-5ba6-b4f8-34e2ff87f1c5",
+        "adventure_id": "b1c0c3f3-17db-54d8-9348-a6fc8963c548",
+        "position": 1,
+        "slug": "fe-1012-class-garden",
+        "title": {
+          "en-US": "The class garden",
+          "es-MX": "El huerto del salón",
+          "pt-BR": "A horta da turma"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "155c7ff0-221d-5c52-8c67-e9abec13ecf4",
+        "adventure_id": "10f2cd9f-ba18-510b-989d-d5d2397c8cac",
+        "position": 1,
+        "slug": "fe-1317-first-pay",
+        "title": {
+          "en-US": "My first pay",
+          "es-MX": "Mi primer pago",
+          "pt-BR": "Meu primeiro pagamento"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "8adb8841-01a8-5236-ad7a-1d18f156c41f",
+        "adventure_id": "03b0fb62-82ae-56d7-b7f5-8fde79a0488d",
+        "position": 1,
+        "slug": "fe-1317-eyes-open",
+        "title": {
+          "en-US": "Eyes open",
+          "es-MX": "Ojos abiertos",
+          "pt-BR": "De olho aberto"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "12c3ad5b-ac9d-5d54-985f-d7d1a353f150",
+        "adventure_id": "4ea49f28-6f6b-56b8-88b9-b50307f9fba2",
+        "position": 1,
+        "slug": "fe-1317-plans-that-grow",
+        "title": {
+          "en-US": "Plans that grow",
+          "es-MX": "Planes que crecen",
+          "pt-BR": "Planos que crescem"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "2da49058-982e-521a-9c82-dbe654ac20a2",
+        "adventure_id": "6fb30a7b-f45f-53d8-b039-b2dd8483813d",
+        "position": 1,
+        "slug": "fe-adult-my-paycheck",
+        "title": {
+          "en-US": "My paycheck",
+          "es-MX": "Mi sueldo",
+          "pt-BR": "Meu salário"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "32ca9632-ee8d-5aab-af68-7e5e47c5f693",
+        "adventure_id": "bb44ea54-0e44-5ac4-a6ed-0d107f01f4e7",
+        "position": 1,
+        "slug": "fe-adult-spend-and-protect",
+        "title": {
+          "en-US": "Spend wisely and stay safe",
+          "es-MX": "Gastar bien y cuidarse",
+          "pt-BR": "Gastar bem e se proteger"
+        },
+        "status": "draft"
+      },
+      {
+        "id": "809ffade-5526-50dc-8e02-c101b17e59d0",
+        "adventure_id": "3da9ed31-45d9-59d3-8bc1-55f888994f1d",
+        "position": 1,
+        "slug": "fe-adult-plan-ahead",
+        "title": {
+          "en-US": "Plan what comes next",
+          "es-MX": "Planear lo que sigue",
+          "pt-BR": "Planejar o que vem"
+        },
+        "status": "draft"
+      }
+    ],
+    "topics": [
+      {
+        "id": "ac41587d-de4c-543f-8ddf-03fa1f74fd6b",
+        "saga_id": "59852db9-98fa-5757-b5e4-5327ed9cc866",
+        "position": 1,
+        "slug": "fe-69-05-name-the-coins",
+        "title": {
+          "en-US": "Name the coins, count the pile",
+          "es-MX": "Nombra las monedas y cuenta la pila",
+          "pt-BR": "Nomeie as moedas e conte a pilha"
+        },
+        "learning_objective": {
+          "en-US": "Name each coin and bill and say how much it is worth.",
+          "es-MX": "Nombrar cada moneda y billete y decir cuánto vale.",
+          "pt-BR": "Nomear cada moeda e cédula e dizer quanto vale."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "a341fd0b-02fc-5e15-8fd4-2990402c2627",
+        "saga_id": "59852db9-98fa-5757-b5e4-5327ed9cc866",
+        "position": 2,
+        "slug": "fe-69-06-things-and-help",
+        "title": {
+          "en-US": "Things and help, needs and wants",
+          "es-MX": "Cosas y ayuda, necesidades y deseos",
+          "pt-BR": "Coisas e ajuda, necessidades e desejos"
+        },
+        "learning_objective": {
+          "en-US": "Tell apart selling a thing from selling help or work.",
+          "es-MX": "Distinguir entre vender una cosa y vender ayuda o trabajo.",
+          "pt-BR": "Distinguir entre vender uma coisa e vender ajuda ou trabalho."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c54534c2-db8e-5a46-a70c-332845dae0c9",
+        "saga_id": "59852db9-98fa-5757-b5e4-5327ed9cc866",
+        "position": 3,
+        "slug": "fe-69-07-people-who-work",
+        "title": {
+          "en-US": "People who work",
+          "es-MX": "Personas que trabajan",
+          "pt-BR": "Pessoas que trabalham"
+        },
+        "learning_objective": {
+          "en-US": "Recognize that getting things done takes effort, that helping at home is work, and that finishing a task matters.",
+          "es-MX": "Reconocer que lograr algo pide esfuerzo, que ayudar en casa es trabajo y que terminar una tarea importa.",
+          "pt-BR": "Reconhecer que conseguir algo exige esforço, que ajudar em casa é trabalho e que terminar uma tarefa importa."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "962778ec-d590-5e1c-94cf-9686c93b827d",
+        "saga_id": "59852db9-98fa-5757-b5e4-5327ed9cc866",
+        "position": 4,
+        "slug": "fe-69-08-price-and-coins-left",
+        "title": {
+          "en-US": "Price and coins left",
+          "es-MX": "El precio y las monedas que quedan",
+          "pt-BR": "O preço e as moedas que sobram"
+        },
+        "learning_objective": {
+          "en-US": "Explain that a price is what a buyer gives to get something.",
+          "es-MX": "Explicar que un precio es lo que el comprador da para recibir algo.",
+          "pt-BR": "Explicar que um preço é o que o comprador dá para receber algo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "cb4d9b46-8a3c-5fb9-b8de-ae4a2c12a1ae",
+        "saga_id": "6ddbc9b8-92fd-5d7a-aaf5-336b6dd14f77",
+        "position": 1,
+        "slug": "fe-69-01-count-coins",
+        "title": {
+          "en-US": "Count coins, fill a light pouch",
+          "es-MX": "Cuenta monedas, llena la bolsita",
+          "pt-BR": "Conte moedas, encha a bolsinha"
+        },
+        "learning_objective": {
+          "en-US": "Find the total of mixed coins and bills, starting from the biggest value.",
+          "es-MX": "Encontrar el total de monedas y billetes mezclados, empezando por el de mayor valor.",
+          "pt-BR": "Encontrar o total de moedas e cédulas misturadas, começando pelo maior valor."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "231c129c-5f78-5f1d-91ed-d56863443f0a",
+        "saga_id": "6ddbc9b8-92fd-5d7a-aaf5-336b6dd14f77",
+        "position": 2,
+        "slug": "fe-69-02-change-counting-up",
+        "title": {
+          "en-US": "Give change by counting up",
+          "es-MX": "Da el cambio contando hacia arriba",
+          "pt-BR": "Dê o troco contando para cima"
+        },
+        "learning_objective": {
+          "en-US": "Give the right change by counting up from the price to the money handed over.",
+          "es-MX": "Dar el cambio correcto contando desde el precio hasta el dinero entregado.",
+          "pt-BR": "Dar o troco certo contando do preço até o dinheiro entregue."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "e07403db-0c28-5628-83f9-4aa3d0c31d59",
+        "saga_id": "6ddbc9b8-92fd-5d7a-aaf5-336b6dd14f77",
+        "position": 3,
+        "slug": "fe-69-03-needs-and-wants",
+        "title": {
+          "en-US": "Needs and wants",
+          "es-MX": "Necesidades y deseos",
+          "pt-BR": "Necessidades e desejos"
+        },
+        "learning_objective": {
+          "en-US": "Name things you want and explain why you cannot have everything at once, so you choose.",
+          "es-MX": "Nombrar cosas que quieres y explicar por qué no puedes tenerlo todo a la vez, así que eliges.",
+          "pt-BR": "Nomear coisas que você quer e explicar por que não dá para ter tudo de uma vez, então você escolhe."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "7983c595-795c-5874-ade1-0ceea01e1aa9",
+        "saga_id": "6ddbc9b8-92fd-5d7a-aaf5-336b6dd14f77",
+        "position": 4,
+        "slug": "fe-69-04-market-stall",
+        "title": {
+          "en-US": "The yard sale snack table",
+          "es-MX": "Un puesto en el tianguis",
+          "pt-BR": "Uma barraca na feira livre"
+        },
+        "learning_objective": {
+          "en-US": "Add two prices or amounts of money together.",
+          "es-MX": "Sumar dos precios o cantidades de dinero.",
+          "pt-BR": "Somar dois preços ou quantias de dinheiro."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "30ca48f6-8bda-5c0c-8e6c-0e916987a6ef",
+        "saga_id": "e5e496ea-9ecf-5a87-9260-663189634d16",
+        "position": 1,
+        "slug": "fe-69-09-swap-day",
+        "title": {
+          "en-US": "Swap day",
+          "es-MX": "Día de intercambio",
+          "pt-BR": "Dia de troca"
+        },
+        "learning_objective": {
+          "en-US": "Swap something you have for something you want, and spot when a swap gets stuck because the other person wants something else.",
+          "es-MX": "Cambiar algo que tienes por algo que quieres y notar cuándo el trueque se traba porque la otra persona quiere otra cosa.",
+          "pt-BR": "Trocar algo que você tem por algo que quer e perceber quando a troca trava porque a outra pessoa quer outra coisa."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "918f2c95-51ba-573b-8b26-c295f7c6a8c1",
+        "saga_id": "e5e496ea-9ecf-5a87-9260-663189634d16",
+        "position": 2,
+        "slug": "fe-69-10-why-coins",
+        "title": {
+          "en-US": "Why coins work",
+          "es-MX": "Por qué sirven las monedas",
+          "pt-BR": "Por que as moedas funcionam"
+        },
+        "learning_objective": {
+          "en-US": "Explain that money is something everyone agrees to accept in exchange, and that it works because people trust it.",
+          "es-MX": "Explicar que el dinero es algo que todos aceptan a cambio y que funciona porque la gente confía en él.",
+          "pt-BR": "Explicar que o dinheiro é algo que todos aceitam em troca e que funciona porque as pessoas confiam nele."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "54451bff-f199-52ce-836e-3dfd9ba96c44",
+        "saga_id": "e5e496ea-9ecf-5a87-9260-663189634d16",
+        "position": 3,
+        "slug": "fe-69-11-which-stall-is-cheaper",
+        "title": {
+          "en-US": "Which stall is cheaper",
+          "es-MX": "¿Qué puesto es más barato?",
+          "pt-BR": "Qual barraca é mais barata?"
+        },
+        "learning_objective": {
+          "en-US": "Check and compare prices and quality in different places before choosing what to buy.",
+          "es-MX": "Revisar y comparar precios y calidad en distintos lugares antes de elegir qué comprar.",
+          "pt-BR": "Verificar e comparar preços e qualidade em lugares diferentes antes de escolher o que comprar."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "7ec94588-61ff-56dc-815d-be5713bb6f92",
+        "saga_id": "e5e496ea-9ecf-5a87-9260-663189634d16",
+        "position": 4,
+        "slug": "fe-69-12-pause-before-you-buy",
+        "title": {
+          "en-US": "Pause before you buy",
+          "es-MX": "Haz una pausa antes de comprar",
+          "pt-BR": "Pare antes de comprar"
+        },
+        "learning_objective": {
+          "en-US": "Pause before a purchase, ask whether it can wait, and ask a trusted adult when a choice is hard.",
+          "es-MX": "Detenerse antes de una compra, preguntarse si puede esperar y pedir ayuda a un adulto de confianza cuando la decisión es difícil.",
+          "pt-BR": "Parar antes de uma compra, perguntar se ela pode esperar e pedir ajuda a um adulto de confiança quando a escolha é difícil."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8374a055-02f4-560b-b8ac-62e57957a552",
+        "saga_id": "09005fd1-1580-5fdd-af4e-a34b7daabbfb",
+        "position": 1,
+        "slug": "fe-69-13-earn-and-write-it-down",
+        "title": {
+          "en-US": "Earn it and write it down",
+          "es-MX": "Gana y anótalo",
+          "pt-BR": "Ganhe e anote"
+        },
+        "learning_objective": {
+          "en-US": "Explain that time and effort put into work deserve to be paid.",
+          "es-MX": "Explicar que el tiempo y el esfuerzo del trabajo merecen un pago.",
+          "pt-BR": "Explicar que o tempo e o esforço do trabalho merecem pagamento."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8b5db202-c158-554a-b04a-082bde97690a",
+        "saga_id": "09005fd1-1580-5fdd-af4e-a34b7daabbfb",
+        "position": 2,
+        "slug": "fe-69-14-goal-jar",
+        "title": {
+          "en-US": "A jar for my goal",
+          "es-MX": "Una alcancía para mi meta",
+          "pt-BR": "Um cofrinho para a minha meta"
+        },
+        "learning_objective": {
+          "en-US": "Set a goal and decide how much to keep aside each time money comes in.",
+          "es-MX": "Fijar una meta y decidir cuánto apartar cada vez que entra dinero.",
+          "pt-BR": "Definir uma meta e decidir quanto guardar cada vez que entra dinheiro."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "70ba4f34-3463-5456-9b9a-5745ff278302",
+        "saga_id": "09005fd1-1580-5fdd-af4e-a34b7daabbfb",
+        "position": 3,
+        "slug": "fe-69-15-wait-and-keep-safe",
+        "title": {
+          "en-US": "Wait and keep safe",
+          "es-MX": "Espera y cuida tus monedas",
+          "pt-BR": "Espere e guarde com segurança"
+        },
+        "learning_objective": {
+          "en-US": "Compare a small thing you could have now with a bigger thing you could have later, and choose to wait when it is worth it.",
+          "es-MX": "Comparar algo pequeño que podrías tener ahora con algo más grande que podrías tener después, y esperar cuando vale la pena.",
+          "pt-BR": "Comparar algo pequeno que você poderia ter agora com algo maior que poderia ter depois, e esperar quando vale a pena."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "1503df9e-97b2-5c92-9732-c8b4cecd98a8",
+        "saga_id": "09005fd1-1580-5fdd-af4e-a34b7daabbfb",
+        "position": 4,
+        "slug": "fe-69-16-three-jars",
+        "title": {
+          "en-US": "Three jars",
+          "es-MX": "Tres frascos",
+          "pt-BR": "Três potes"
+        },
+        "learning_objective": {
+          "en-US": "Split the coins you receive between saving, spending and sharing, and explain the choice.",
+          "es-MX": "Repartir las monedas que recibes entre ahorrar, gastar y compartir, y explicar la decisión.",
+          "pt-BR": "Dividir as moedas que você recebe entre poupar, gastar e compartilhar, e explicar a escolha."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "39571a41-ea6f-52b7-9d61-400cd9036cc3",
+        "saga_id": "4f108471-a2cd-58fd-a5df-62dfe2569bfa",
+        "position": 1,
+        "slug": "fe-1012-01-unit-price",
+        "title": {
+          "en-US": "The price of one",
+          "es-MX": "El precio de uno",
+          "pt-BR": "O preço de um"
+        },
+        "learning_objective": {
+          "en-US": "Find the price of one item when several cost a known total.",
+          "es-MX": "Encontrar el precio de un artículo cuando varios cuestan un total conocido.",
+          "pt-BR": "Descobrir o preço de um item quando vários custam um total conhecido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "d764c9f9-ecee-560d-ab53-7c51676276d3",
+        "saga_id": "4f108471-a2cd-58fd-a5df-62dfe2569bfa",
+        "position": 2,
+        "slug": "fe-1012-02-plan-the-budget",
+        "title": {
+          "en-US": "Plan a budget that fits",
+          "es-MX": "Planea un presupuesto que alcance",
+          "pt-BR": "Planeje um orçamento que caiba"
+        },
+        "learning_objective": {
+          "en-US": "Choose what to buy so the total never passes the money available.",
+          "es-MX": "Elegir qué comprar de modo que el total nunca pase del dinero disponible.",
+          "pt-BR": "Escolher o que comprar para que o total nunca passe do dinheiro disponível."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "9dddc44e-8e1b-51c4-82cb-0177854f8ec6",
+        "saga_id": "4f108471-a2cd-58fd-a5df-62dfe2569bfa",
+        "position": 3,
+        "slug": "fe-1012-03-saving-plan",
+        "title": {
+          "en-US": "How many weeks to your goal?",
+          "es-MX": "¿Cuántas semanas para tu meta?",
+          "pt-BR": "Quantas semanas até a meta?"
+        },
+        "learning_objective": {
+          "en-US": "Work out how many weeks of saving it takes to reach a goal.",
+          "es-MX": "Calcular cuántas semanas de ahorro se necesitan para llegar a una meta.",
+          "pt-BR": "Calcular quantas semanas de poupança são necessárias para alcançar uma meta."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "2572c90e-9a95-5459-b4fd-0a4b4f19a9cf",
+        "saga_id": "4f108471-a2cd-58fd-a5df-62dfe2569bfa",
+        "position": 4,
+        "slug": "fe-1012-04-suspicious-messages",
+        "title": {
+          "en-US": "Spot suspicious messages",
+          "es-MX": "Detecta mensajes sospechosos",
+          "pt-BR": "Identifique mensagens suspeitas"
+        },
+        "learning_objective": {
+          "en-US": "Spot the signs of a suspicious message or fake profile, stop, and tell a trusted adult.",
+          "es-MX": "Notar las señales de un mensaje sospechoso o de un perfil falso, detenerse y contarlo a un adulto de confianza.",
+          "pt-BR": "Notar os sinais de uma mensagem suspeita ou de um perfil falso, parar e contar a um adulto de confiança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "5a490905-03c1-59dd-b3f2-51ae755caee8",
+        "saga_id": "4da97dea-c374-5e8c-96a9-24bd9518a4a1",
+        "position": 1,
+        "slug": "fe-1012-05-quarter-off",
+        "title": {
+          "en-US": "A quarter off",
+          "es-MX": "Un cuarto de descuento",
+          "pt-BR": "Um quarto de desconto"
+        },
+        "learning_objective": {
+          "en-US": "Find half, a third or a quarter of an amount of money.",
+          "es-MX": "Encontrar la mitad, un tercio o un cuarto de una cantidad de dinero.",
+          "pt-BR": "Encontrar a metade, um terço ou um quarto de uma quantia de dinheiro."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "19df2393-a0cc-5c3d-b933-e488def5d3f3",
+        "saga_id": "4da97dea-c374-5e8c-96a9-24bd9518a4a1",
+        "position": 2,
+        "slug": "fe-1012-06-ten-percent-and-half",
+        "title": {
+          "en-US": "Ten percent and half",
+          "es-MX": "Diez por ciento y la mitad",
+          "pt-BR": "Dez por cento e a metade"
+        },
+        "learning_objective": {
+          "en-US": "Find 10 percent and 50 percent of an amount, and use them to build other percentages.",
+          "es-MX": "Encontrar el 10 y el 50 por ciento de una cantidad, y usarlos para armar otros porcentajes.",
+          "pt-BR": "Encontrar 10 e 50 por cento de uma quantia, e usá-los para montar outras porcentagens."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c7ba3037-6595-5681-a181-efb7df10b0c5",
+        "saga_id": "4da97dea-c374-5e8c-96a9-24bd9518a4a1",
+        "position": 3,
+        "slug": "fe-1012-07-charges-that-repeat",
+        "title": {
+          "en-US": "Charges that repeat",
+          "es-MX": "Cobros que se repiten",
+          "pt-BR": "Cobranças que se repetem"
+        },
+        "learning_objective": {
+          "en-US": "Work out how a small recurring charge or a platform fee adds up over a year, and decide whether to keep it.",
+          "es-MX": "Calcular cuánto suma en un año un cobro recurrente pequeño o una comisión de plataforma, y decidir si conviene mantenerlo.",
+          "pt-BR": "Calcular quanto soma em um ano uma cobrança recorrente pequena ou uma taxa de plataforma, e decidir se vale manter."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "23bcb0b5-84fc-5922-a47c-3c1e3728fa85",
+        "saga_id": "4da97dea-c374-5e8c-96a9-24bd9518a4a1",
+        "position": 4,
+        "slug": "fe-1012-08-what-a-bargain-costs",
+        "title": {
+          "en-US": "What a bargain costs",
+          "es-MX": "Lo que cuesta una ganga",
+          "pt-BR": "O que custa uma pechincha"
+        },
+        "learning_objective": {
+          "en-US": "Name what you give up when you choose one option, including time, and weigh it before deciding.",
+          "es-MX": "Nombrar lo que dejas ir al elegir una opción, incluido el tiempo, y ponerlo en la balanza antes de decidir.",
+          "pt-BR": "Nomear o que você deixa de lado ao escolher uma opção, inclusive o tempo, e pesar isso antes de decidir."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "85dff1df-47f5-5723-80bc-1e09e3d723fe",
+        "saga_id": "6aad9b9f-26f4-58fc-831e-c239c3b023d2",
+        "position": 1,
+        "slug": "fe-1012-09-what-a-bank-is-for",
+        "title": {
+          "en-US": "What a bank is for",
+          "es-MX": "Para qué sirve un banco",
+          "pt-BR": "Para que serve um banco"
+        },
+        "learning_objective": {
+          "en-US": "Explain what a bank and a savings account are for, how money is taken out, and how cards connect to saved money.",
+          "es-MX": "Explicar para qué sirven un banco y una cuenta de ahorro, cómo se retira el dinero y cómo las tarjetas se conectan con el dinero guardado.",
+          "pt-BR": "Explicar para que servem um banco e uma conta poupança, como o dinheiro é retirado e como os cartões se ligam ao dinheiro guardado."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "39936817-6b6c-5731-8e96-9cb6213abf11",
+        "saga_id": "6aad9b9f-26f4-58fc-831e-c239c3b023d2",
+        "position": 2,
+        "slug": "fe-1012-10-keep-it-private",
+        "title": {
+          "en-US": "Keep it private",
+          "es-MX": "Mantenlo en privado",
+          "pt-BR": "Mantenha em sigilo"
+        },
+        "learning_objective": {
+          "en-US": "Keep private information, passwords and photos protected, and share them only with permission from a trusted adult.",
+          "es-MX": "Proteger la información privada, las contraseñas y las fotos, y compartirlas solo con permiso de un adulto de confianza.",
+          "pt-BR": "Proteger informações pessoais, senhas e fotos, e compartilhá-las só com permissão de um adulto de confiança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ac2045be-dadb-5d80-b6a1-55e157e3b8f7",
+        "saga_id": "6aad9b9f-26f4-58fc-831e-c239c3b023d2",
+        "position": 3,
+        "slug": "fe-1012-11-money-that-grows",
+        "title": {
+          "en-US": "Money that grows",
+          "es-MX": "Dinero que crece",
+          "pt-BR": "Dinheiro que cresce"
+        },
+        "learning_objective": {
+          "en-US": "Work out how saved money grows step by step when it earns a little each period.",
+          "es-MX": "Calcular paso a paso cómo crece el dinero ahorrado cuando gana un poco cada periodo.",
+          "pt-BR": "Calcular passo a passo como o dinheiro guardado cresce quando rende um pouco a cada período."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "b4460d8e-824f-50ce-86a9-7d93e6193911",
+        "saga_id": "6aad9b9f-26f4-58fc-831e-c239c3b023d2",
+        "position": 4,
+        "slug": "fe-1012-12-dream-to-plan",
+        "title": {
+          "en-US": "From dream to plan",
+          "es-MX": "De un sueño a un plan",
+          "pt-BR": "De um sonho a um plano"
+        },
+        "learning_objective": {
+          "en-US": "Turn a wish into a goal with a size and a date, break it into steps, and think ahead about obstacles.",
+          "es-MX": "Convertir un deseo en una meta con tamaño y fecha, dividirla en pasos y pensar por adelantado en los obstáculos.",
+          "pt-BR": "Transformar um desejo em uma meta com tamanho e data, dividi-la em passos e pensar antes nos obstáculos."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "79ded9b5-139d-57c1-acc7-191d875864fe",
+        "saga_id": "86d3cc09-9073-5ba6-b4f8-34e2ff87f1c5",
+        "position": 1,
+        "slug": "fe-1012-13-share-the-garden",
+        "title": {
+          "en-US": "Share the garden",
+          "es-MX": "Compartir el huerto",
+          "pt-BR": "Dividir a horta"
+        },
+        "learning_objective": {
+          "en-US": "Care for things a group shares, take turns fairly, and do your part so the work does not fall on others.",
+          "es-MX": "Cuidar las cosas que un grupo comparte, turnarse con justicia y poner tu parte para que el trabajo no caiga en otros.",
+          "pt-BR": "Cuidar das coisas que um grupo compartilha, revezar com justiça e fazer a sua parte para o trabalho não cair nos outros."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "2fd971b8-6fc5-5631-9b99-81cf0c63a2de",
+        "saga_id": "86d3cc09-9073-5ba6-b4f8-34e2ff87f1c5",
+        "position": 2,
+        "slug": "fe-1012-14-many-small-shares",
+        "title": {
+          "en-US": "Many small shares",
+          "es-MX": "Muchas partes pequeñas",
+          "pt-BR": "Muitas partes pequenas"
+        },
+        "learning_objective": {
+          "en-US": "Explain how small contributions from many families pay for roads, parks and public services that everyone uses.",
+          "es-MX": "Explicar cómo pequeñas aportaciones de muchas familias pagan caminos, parques y servicios públicos que todos usan.",
+          "pt-BR": "Explicar como pequenas contribuições de muitas famílias pagam ruas, parques e serviços públicos que todos usam."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "07e903de-1c0d-5914-8b27-82a1e9635570",
+        "saga_id": "86d3cc09-9073-5ba6-b4f8-34e2ff87f1c5",
+        "position": 3,
+        "slug": "fe-1012-15-plan-the-project",
+        "title": {
+          "en-US": "Plan the project",
+          "es-MX": "Planear el proyecto",
+          "pt-BR": "Planejar o projeto"
+        },
+        "learning_objective": {
+          "en-US": "Plan a shared project: split the tasks, thank the people who helped, and review what the group achieved.",
+          "es-MX": "Planear un proyecto compartido: repartir las tareas, agradecer a quienes ayudaron y revisar lo que logró el grupo.",
+          "pt-BR": "Planejar um projeto compartilhado: dividir as tarefas, agradecer a quem ajudou e revisar o que o grupo conseguiu."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "84377b3f-6c39-55ee-b7d8-15c7720251f3",
+        "saga_id": "86d3cc09-9073-5ba6-b4f8-34e2ff87f1c5",
+        "position": 4,
+        "slug": "fe-1012-16-give-and-explain",
+        "title": {
+          "en-US": "Give and explain",
+          "es-MX": "Dar y explicar",
+          "pt-BR": "Doar e explicar"
+        },
+        "learning_objective": {
+          "en-US": "Give time, things or money to help others without expecting a return, keep a part for yourself, and check where the help goes.",
+          "es-MX": "Dar tiempo, cosas o dinero para ayudar sin esperar algo a cambio, guardar una parte para ti y revisar a dónde va la ayuda.",
+          "pt-BR": "Doar tempo, coisas ou dinheiro para ajudar sem esperar retorno, guardar uma parte para você e verificar para onde vai a ajuda."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "fe99ffa4-1a46-5fbe-9c43-84e9b530d68c",
+        "saga_id": "155c7ff0-221d-5c52-8c67-e9abec13ecf4",
+        "position": 1,
+        "slug": "fe-1317-01-first-shift",
+        "title": {
+          "en-US": "First shift: what hours are worth",
+          "es-MX": "Primer turno: cuánto valen las horas",
+          "pt-BR": "Primeiro turno: quanto valem as horas"
+        },
+        "learning_objective": {
+          "en-US": "Explain that time and effort put into work deserve to be paid.",
+          "es-MX": "Explicar que el tiempo y el esfuerzo del trabajo merecen un pago.",
+          "pt-BR": "Explicar que o tempo e o esforço do trabalho merecem pagamento."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "a2129b34-b9ef-5028-9b99-db795ad346a2",
+        "saga_id": "155c7ff0-221d-5c52-8c67-e9abec13ecf4",
+        "position": 2,
+        "slug": "fe-1317-02-split-the-pay",
+        "title": {
+          "en-US": "Split the pay: needs, wants, saving",
+          "es-MX": "Reparte el pago: necesidades, deseos, ahorro",
+          "pt-BR": "Divida o pagamento: necessidades, desejos, poupança"
+        },
+        "learning_objective": {
+          "en-US": "Choose what to buy so the total never passes the money available.",
+          "es-MX": "Elegir qué comprar de modo que el total nunca pase del dinero disponible.",
+          "pt-BR": "Escolher o que comprar para que o total nunca passe do dinheiro disponível."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "6ad79b7e-2c0c-5add-adc3-26fd8bbbf9f9",
+        "saga_id": "155c7ff0-221d-5c52-8c67-e9abec13ecf4",
+        "position": 3,
+        "slug": "fe-1317-03-phone-plan-year",
+        "title": {
+          "en-US": "Phone plan: the hours it costs",
+          "es-MX": "Plan de celular: cuántas horas cuesta",
+          "pt-BR": "Plano de celular: quantas horas custa"
+        },
+        "learning_objective": {
+          "en-US": "Work out how a small recurring charge or a platform fee adds up over a year, and decide whether to keep it.",
+          "es-MX": "Calcular cuánto suma en un año un cobro recurrente pequeño o una comisión de plataforma, y decidir si conviene mantenerlo.",
+          "pt-BR": "Calcular quanto soma em um ano uma cobrança recorrente pequena ou uma taxa de plataforma, e decidir se vale manter."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "df09456c-23b7-53a6-90e2-da8771cf9d9a",
+        "saga_id": "155c7ff0-221d-5c52-8c67-e9abec13ecf4",
+        "position": 4,
+        "slug": "fe-1317-04-first-account",
+        "title": {
+          "en-US": "Open your first account",
+          "es-MX": "Abre tu primera cuenta",
+          "pt-BR": "Abra sua primeira conta"
+        },
+        "learning_objective": {
+          "en-US": "Choose a safe place for savings, look after it, and keep saving even after a small loss.",
+          "es-MX": "Elegir un lugar seguro para los ahorros, cuidarlo y seguir ahorrando aunque se pierda algo pequeño.",
+          "pt-BR": "Escolher um lugar seguro para as economias, cuidar dele e continuar guardando mesmo depois de uma pequena perda."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "21f76f0e-e30c-58d4-b35a-cca76390f275",
+        "saga_id": "8adb8841-01a8-5236-ad7a-1d18f156c41f",
+        "position": 1,
+        "slug": "fe-1317-05-why-prices-differ",
+        "title": {
+          "en-US": "Why prices differ",
+          "es-MX": "Por qué cambian los precios",
+          "pt-BR": "Por que os preços mudam"
+        },
+        "learning_objective": {
+          "en-US": "Explain that a price is what a buyer gives to get something.",
+          "es-MX": "Explicar que un precio es lo que el comprador da para recibir algo.",
+          "pt-BR": "Explicar que um preço é o que o comprador dá para receber algo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "4a281ad3-a724-584d-b78b-1d1febac7635",
+        "saga_id": "8adb8841-01a8-5236-ad7a-1d18f156c41f",
+        "position": 2,
+        "slug": "fe-1317-06-last-chance-ad",
+        "title": {
+          "en-US": "The last-chance ad",
+          "es-MX": "El anuncio de última hora",
+          "pt-BR": "O anúncio de última hora"
+        },
+        "learning_objective": {
+          "en-US": "Recognize an ad, tell a true description from an exaggeration, and spot fake \"free\" offers, rush tactics and paid endorsements.",
+          "es-MX": "Reconocer un anuncio, distinguir una descripción real de una exageración y notar ofertas \"gratis\" falsas, prisas y recomendaciones pagadas.",
+          "pt-BR": "Reconhecer um anúncio, distinguir uma descrição real de um exagero e notar ofertas \"grátis\" falsas, pressa e recomendações pagas."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ad8e45e4-849c-50c6-bb36-99e80c0d0563",
+        "saga_id": "8adb8841-01a8-5236-ad7a-1d18f156c41f",
+        "position": 3,
+        "slug": "fe-1317-07-fake-deal",
+        "title": {
+          "en-US": "Spot the fake deal",
+          "es-MX": "Detecta el trato falso",
+          "pt-BR": "Descubra o negócio falso"
+        },
+        "learning_objective": {
+          "en-US": "Spot the signs of a suspicious message or fake profile, stop, and tell a trusted adult.",
+          "es-MX": "Notar las señales de un mensaje sospechoso o de un perfil falso, detenerse y contarlo a un adulto de confianza.",
+          "pt-BR": "Notar os sinais de uma mensagem suspeita ou de um perfil falso, parar e contar a um adulto de confiança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "f4183208-3b75-50e7-93b8-61bdcad25197",
+        "saga_id": "8adb8841-01a8-5236-ad7a-1d18f156c41f",
+        "position": 4,
+        "slug": "fe-1317-08-wait-and-cushion",
+        "title": {
+          "en-US": "Wait and cushion",
+          "es-MX": "Espera y colchón",
+          "pt-BR": "Espera e reserva"
+        },
+        "learning_objective": {
+          "en-US": "Compare a small thing you could have now with a bigger thing you could have later, and choose to wait when it is worth it.",
+          "es-MX": "Comparar algo pequeño que podrías tener ahora con algo más grande que podrías tener después, y esperar cuando vale la pena.",
+          "pt-BR": "Comparar algo pequeno que você poderia ter agora com algo maior que poderia ter depois, e esperar quando vale a pena."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "f7f69eb8-c471-5ed3-86de-8561b881be46",
+        "saga_id": "12c3ad5b-ac9d-5d54-985f-d7d1a353f150",
+        "position": 1,
+        "slug": "fe-1317-09-laptop-by-december",
+        "title": {
+          "en-US": "A laptop by December",
+          "es-MX": "Una laptop para diciembre",
+          "pt-BR": "Um notebook até dezembro"
+        },
+        "learning_objective": {
+          "en-US": "Work out how many weeks of saving it takes to reach a goal.",
+          "es-MX": "Calcular cuántas semanas de ahorro se necesitan para llegar a una meta.",
+          "pt-BR": "Calcular quantas semanas de poupança são necessárias para alcançar uma meta."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "ef02ca16-2db8-513a-805b-046314022e83",
+        "saga_id": "12c3ad5b-ac9d-5d54-985f-d7d1a353f150",
+        "position": 2,
+        "slug": "fe-1317-10-interest-year-by-year",
+        "title": {
+          "en-US": "Interest, year by year",
+          "es-MX": "El interés, año por año",
+          "pt-BR": "Juros, ano a ano"
+        },
+        "learning_objective": {
+          "en-US": "Work out how saved money grows step by step when it earns a little each period.",
+          "es-MX": "Calcular paso a paso cómo crece el dinero ahorrado cuando gana un poco cada periodo.",
+          "pt-BR": "Calcular passo a passo como o dinheiro guardado cresce quando rende um pouco a cada período."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "15cdc035-fe2c-56c3-bb4f-578490bc5f71",
+        "saga_id": "12c3ad5b-ac9d-5d54-985f-d7d1a353f150",
+        "position": 3,
+        "slug": "fe-1317-11-when-the-plan-slips",
+        "title": {
+          "en-US": "When the plan slips",
+          "es-MX": "Cuando el plan se atrasa",
+          "pt-BR": "Quando o plano atrasa"
+        },
+        "learning_objective": {
+          "en-US": "Check a plan against what really happened and adjust one part, such as the amount, the time or the goal, to keep going.",
+          "es-MX": "Comparar un plan con lo que de verdad pasó y ajustar una parte, como el monto, el tiempo o la meta, para seguir avanzando.",
+          "pt-BR": "Comparar um plano com o que realmente aconteceu e ajustar uma parte, como o valor, o prazo ou a meta, para seguir em frente."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "72d45970-7360-5e57-aabf-1d594b53ffb2",
+        "saga_id": "12c3ad5b-ac9d-5d54-985f-d7d1a353f150",
+        "position": 4,
+        "slug": "fe-1317-12-share-and-teach",
+        "title": {
+          "en-US": "Share and teach",
+          "es-MX": "Reparte y enseña",
+          "pt-BR": "Reparta e ensine"
+        },
+        "learning_objective": {
+          "en-US": "Split the coins you receive between saving, spending and sharing, and explain the choice.",
+          "es-MX": "Repartir las monedas que recibes entre ahorrar, gastar y compartir, y explicar la decisión.",
+          "pt-BR": "Dividir as moedas que você recebe entre poupar, gastar e compartilhar, e explicar a escolha."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "5a1ef1d7-29fa-5aaf-bd26-5f11ea17a82e",
+        "saga_id": "2da49058-982e-521a-9c82-dbe654ac20a2",
+        "position": 1,
+        "slug": "fe-adult-01-read-the-payslip",
+        "title": {
+          "en-US": "Read the pay stub",
+          "es-MX": "Lee el recibo de nómina",
+          "pt-BR": "Leia o contracheque"
+        },
+        "learning_objective": {
+          "en-US": "Keep a simple record of what you earn and notice that it can change from one day to the next.",
+          "es-MX": "Llevar un registro sencillo de lo que ganas y notar que puede cambiar de un día a otro.",
+          "pt-BR": "Manter um registro simples do que você ganha e perceber que pode mudar de um dia para o outro."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "3595746a-3efe-52a8-9606-7d46808d4ddb",
+        "saga_id": "2da49058-982e-521a-9c82-dbe654ac20a2",
+        "position": 2,
+        "slug": "fe-adult-02-monthly-budget",
+        "title": {
+          "en-US": "Plan your month",
+          "es-MX": "Planea tu mes",
+          "pt-BR": "Planeje seu mês"
+        },
+        "learning_objective": {
+          "en-US": "Choose what to buy so the total never passes the money available.",
+          "es-MX": "Elegir qué comprar de modo que el total nunca pase del dinero disponible.",
+          "pt-BR": "Escolher o que comprar para que o total nunca passe do dinheiro disponível."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8a4be783-2fbf-5a06-8275-e7e0c9cc0df0",
+        "saga_id": "2da49058-982e-521a-9c82-dbe654ac20a2",
+        "position": 3,
+        "slug": "fe-adult-03-quiet-subscriptions",
+        "title": {
+          "en-US": "Quiet subscriptions",
+          "es-MX": "Suscripciones silenciosas",
+          "pt-BR": "Assinaturas silenciosas"
+        },
+        "learning_objective": {
+          "en-US": "Work out how a small recurring charge or a platform fee adds up over a year, and decide whether to keep it.",
+          "es-MX": "Calcular cuánto suma en un año un cobro recurrente pequeño o una comisión de plataforma, y decidir si conviene mantenerlo.",
+          "pt-BR": "Calcular quanto soma em um ano uma cobrança recorrente pequena ou uma taxa de plataforma, e decidir se vale manter."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "081e18f6-127c-5171-bc6a-4c502b3473a4",
+        "saga_id": "2da49058-982e-521a-9c82-dbe654ac20a2",
+        "position": 4,
+        "slug": "fe-adult-04-price-my-time",
+        "title": {
+          "en-US": "Price my time",
+          "es-MX": "Ponle precio a tu tiempo",
+          "pt-BR": "Dê preço ao seu tempo"
+        },
+        "learning_objective": {
+          "en-US": "Explain that a price is what a buyer gives to get something.",
+          "es-MX": "Explicar que un precio es lo que el comprador da para recibir algo.",
+          "pt-BR": "Explicar que um preço é o que o comprador dá para receber algo."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "70fd08e8-3d1a-5571-b627-6325aad1de55",
+        "saga_id": "32ca9632-ee8d-5aab-af68-7e5e47c5f693",
+        "position": 1,
+        "slug": "fe-adult-05-price-of-one",
+        "title": {
+          "en-US": "The price of one",
+          "es-MX": "El precio de uno",
+          "pt-BR": "O preço de um"
+        },
+        "learning_objective": {
+          "en-US": "Find the price of one item when several cost a known total.",
+          "es-MX": "Encontrar el precio de un artículo cuando varios cuestan un total conocido.",
+          "pt-BR": "Descobrir o preço de um item quando vários custam um total conhecido."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "70d8e9cd-d7d4-5838-a312-18b297260d56",
+        "saga_id": "32ca9632-ee8d-5aab-af68-7e5e47c5f693",
+        "position": 2,
+        "slug": "fe-adult-06-read-the-pitch",
+        "title": {
+          "en-US": "Read the pitch",
+          "es-MX": "Lee la oferta",
+          "pt-BR": "Leia a oferta"
+        },
+        "learning_objective": {
+          "en-US": "Recognize an ad, tell a true description from an exaggeration, and spot fake \"free\" offers, rush tactics and paid endorsements.",
+          "es-MX": "Reconocer un anuncio, distinguir una descripción real de una exageración y notar ofertas \"gratis\" falsas, prisas y recomendaciones pagadas.",
+          "pt-BR": "Reconhecer um anúncio, distinguir uma descrição real de um exagero e notar ofertas \"grátis\" falsas, pressa e recomendações pagas."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "5281bac4-aef2-502d-a49e-69075af5a8d0",
+        "saga_id": "32ca9632-ee8d-5aab-af68-7e5e47c5f693",
+        "position": 3,
+        "slug": "fe-adult-07-fees-and-accounts",
+        "title": {
+          "en-US": "Fees and accounts",
+          "es-MX": "Comisiones y cuentas",
+          "pt-BR": "Tarifas e contas"
+        },
+        "learning_objective": {
+          "en-US": "Explain what a bank and a savings account are for, how money is taken out, and how cards connect to saved money.",
+          "es-MX": "Explicar para qué sirven un banco y una cuenta de ahorro, cómo se retira el dinero y cómo las tarjetas se conectan con el dinero guardado.",
+          "pt-BR": "Explicar para que servem um banco e uma conta poupança, como o dinheiro é retirado e como os cartões se ligam ao dinheiro guardado."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "39cfbc8e-bed2-5337-9f50-810809c31010",
+        "saga_id": "32ca9632-ee8d-5aab-af68-7e5e47c5f693",
+        "position": 4,
+        "slug": "fe-adult-08-stop-the-scam",
+        "title": {
+          "en-US": "Stop the scam",
+          "es-MX": "Detén la estafa",
+          "pt-BR": "Pare o golpe"
+        },
+        "learning_objective": {
+          "en-US": "Spot the signs of a suspicious message or fake profile, stop, and tell a trusted adult.",
+          "es-MX": "Notar las señales de un mensaje sospechoso o de un perfil falso, detenerse y contarlo a un adulto de confianza.",
+          "pt-BR": "Notar os sinais de uma mensagem suspeita ou de um perfil falso, parar e contar a um adulto de confiança."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "60d20c1b-ccb3-546d-8512-4d6b246a1541",
+        "saga_id": "809ffade-5526-50dc-8e02-c101b17e59d0",
+        "position": 1,
+        "slug": "fe-adult-09-goals-with-a-date",
+        "title": {
+          "en-US": "Goals with a date",
+          "es-MX": "Metas con fecha",
+          "pt-BR": "Metas com data"
+        },
+        "learning_objective": {
+          "en-US": "Set a goal and decide how much to keep aside each time money comes in.",
+          "es-MX": "Fijar una meta y decidir cuánto apartar cada vez que entra dinero.",
+          "pt-BR": "Definir uma meta e decidir quanto guardar cada vez que entra dinheiro."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "87557d78-7679-5ae9-9304-eb8fc665a0b9",
+        "saga_id": "809ffade-5526-50dc-8e02-c101b17e59d0",
+        "position": 2,
+        "slug": "fe-adult-10-interest-and-time",
+        "title": {
+          "en-US": "Interest and time",
+          "es-MX": "Interés y tiempo",
+          "pt-BR": "Juros e tempo"
+        },
+        "learning_objective": {
+          "en-US": "Work out how saved money grows step by step when it earns a little each period.",
+          "es-MX": "Calcular paso a paso cómo crece el dinero ahorrado cuando gana un poco cada periodo.",
+          "pt-BR": "Calcular passo a passo como o dinheiro guardado cresce quando rende um pouco a cada período."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "8823700a-859a-57b2-b9e2-196448f09ef0",
+        "saga_id": "809ffade-5526-50dc-8e02-c101b17e59d0",
+        "position": 3,
+        "slug": "fe-adult-11-when-life-changes",
+        "title": {
+          "en-US": "When life changes",
+          "es-MX": "Cuando la vida cambia",
+          "pt-BR": "Quando a vida muda"
+        },
+        "learning_objective": {
+          "en-US": "Check a plan against what really happened and adjust one part, such as the amount, the time or the goal, to keep going.",
+          "es-MX": "Comparar un plan con lo que de verdad pasó y ajustar una parte, como el monto, el tiempo o la meta, para seguir avanzando.",
+          "pt-BR": "Comparar um plano com o que realmente aconteceu e ajustar uma parte, como o valor, o prazo ou a meta, para seguir em frente."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      },
+      {
+        "id": "c048dcbb-8096-589a-b304-551e505dc881",
+        "saga_id": "809ffade-5526-50dc-8e02-c101b17e59d0",
+        "position": 4,
+        "slug": "fe-adult-12-share-and-teach",
+        "title": {
+          "en-US": "Share and teach",
+          "es-MX": "Compartir y enseñar",
+          "pt-BR": "Compartilhar e ensinar"
+        },
+        "learning_objective": {
+          "en-US": "Explain how small contributions from many families pay for roads, parks and public services that everyone uses.",
+          "es-MX": "Explicar cómo pequeñas aportaciones de muchas familias pagan caminos, parques y servicios públicos que todos usan.",
+          "pt-BR": "Explicar como pequenas contribuições de muitas famílias pagam ruas, parques e serviços públicos que todos usam."
+        },
+        "kind": "teaching",
+        "status": "draft"
+      }
+    ],
+    "lessons": [
+      {
+        "id": "eb35244b-96b0-5883-bfa3-248de3ffb1f9",
+        "topic_id": "ac41587d-de4c-543f-8ddf-03fa1f74fd6b",
+        "position": 1,
+        "slug": "fe-69-05-name-the-coins",
+        "title": {
+          "en-US": "Name the coins, count the pile",
+          "es-MX": "Nombra las monedas y cuenta la pila",
+          "pt-BR": "Nomeie as moedas e conte a pilha"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fa36b4fb-4591-509c-845a-fe0740c163ef",
+        "topic_id": "a341fd0b-02fc-5e15-8fd4-2990402c2627",
+        "position": 1,
+        "slug": "fe-69-06-things-and-help",
+        "title": {
+          "en-US": "Things and help, needs and wants",
+          "es-MX": "Cosas y ayuda, necesidades y deseos",
+          "pt-BR": "Coisas e ajuda, necessidades e desejos"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4b761999-ce63-5edc-9b27-0fc4a07c3894",
+        "topic_id": "c54534c2-db8e-5a46-a70c-332845dae0c9",
+        "position": 1,
+        "slug": "fe-69-07-people-who-work",
+        "title": {
+          "en-US": "People who work",
+          "es-MX": "Personas que trabajan",
+          "pt-BR": "Pessoas que trabalham"
+        },
+        "status": "review"
+      },
+      {
+        "id": "321e5286-e9f5-5430-a97a-6695f9ecf52d",
+        "topic_id": "962778ec-d590-5e1c-94cf-9686c93b827d",
+        "position": 1,
+        "slug": "fe-69-08-price-and-coins-left",
+        "title": {
+          "en-US": "Price and coins left",
+          "es-MX": "El precio y las monedas que quedan",
+          "pt-BR": "O preço e as moedas que sobram"
+        },
+        "status": "review"
+      },
+      {
+        "id": "1093d2a4-356e-5319-94ba-e75ef6c8c5dc",
+        "topic_id": "cb4d9b46-8a3c-5fb9-b8de-ae4a2c12a1ae",
+        "position": 1,
+        "slug": "fe-69-01-count-coins",
+        "title": {
+          "en-US": "Count coins, fill a light pouch",
+          "es-MX": "Cuenta monedas, llena la bolsita",
+          "pt-BR": "Conte moedas, encha a bolsinha"
+        },
+        "status": "review"
+      },
+      {
+        "id": "0ac3e80d-2303-5229-ab9b-c63ec76950a9",
+        "topic_id": "231c129c-5f78-5f1d-91ed-d56863443f0a",
+        "position": 1,
+        "slug": "fe-69-02-change-counting-up",
+        "title": {
+          "en-US": "Give change by counting up",
+          "es-MX": "Da el cambio contando hacia arriba",
+          "pt-BR": "Dê o troco contando para cima"
+        },
+        "status": "review"
+      },
+      {
+        "id": "6218c87f-2a16-54cb-b069-7635b805f590",
+        "topic_id": "e07403db-0c28-5628-83f9-4aa3d0c31d59",
+        "position": 1,
+        "slug": "fe-69-03-needs-and-wants",
+        "title": {
+          "en-US": "Needs and wants",
+          "es-MX": "Necesidades y deseos",
+          "pt-BR": "Necessidades e desejos"
+        },
+        "status": "review"
+      },
+      {
+        "id": "a6fd6054-0c0b-5ac0-93fa-c2f19e5681d9",
+        "topic_id": "7983c595-795c-5874-ade1-0ceea01e1aa9",
+        "position": 1,
+        "slug": "fe-69-04-market-stall",
+        "title": {
+          "en-US": "The yard sale snack table",
+          "es-MX": "Un puesto en el tianguis",
+          "pt-BR": "Uma barraca na feira livre"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d5873343-18fe-5a5e-91af-0f7f6521c0ed",
+        "topic_id": "30ca48f6-8bda-5c0c-8e6c-0e916987a6ef",
+        "position": 1,
+        "slug": "fe-69-09-swap-day",
+        "title": {
+          "en-US": "Swap day",
+          "es-MX": "Día de intercambio",
+          "pt-BR": "Dia de troca"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4288eef6-0425-552b-90de-6c64d3655add",
+        "topic_id": "918f2c95-51ba-573b-8b26-c295f7c6a8c1",
+        "position": 1,
+        "slug": "fe-69-10-why-coins",
+        "title": {
+          "en-US": "Why coins work",
+          "es-MX": "Por qué sirven las monedas",
+          "pt-BR": "Por que as moedas funcionam"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fb2466bf-9af0-5f0b-bd23-3a25faffcd42",
+        "topic_id": "54451bff-f199-52ce-836e-3dfd9ba96c44",
+        "position": 1,
+        "slug": "fe-69-11-which-stall-is-cheaper",
+        "title": {
+          "en-US": "Which stall is cheaper",
+          "es-MX": "¿Qué puesto es más barato?",
+          "pt-BR": "Qual barraca é mais barata?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8edc7531-be98-5697-b184-b8639c556ef2",
+        "topic_id": "7ec94588-61ff-56dc-815d-be5713bb6f92",
+        "position": 1,
+        "slug": "fe-69-12-pause-before-you-buy",
+        "title": {
+          "en-US": "Pause before you buy",
+          "es-MX": "Haz una pausa antes de comprar",
+          "pt-BR": "Pare antes de comprar"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d1e05a2a-ef59-531c-a729-922421c469dd",
+        "topic_id": "8374a055-02f4-560b-b8ac-62e57957a552",
+        "position": 1,
+        "slug": "fe-69-13-earn-and-write-it-down",
+        "title": {
+          "en-US": "Earn it and write it down",
+          "es-MX": "Gana y anótalo",
+          "pt-BR": "Ganhe e anote"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4428a9c1-5528-599a-8da4-befa393072ac",
+        "topic_id": "8b5db202-c158-554a-b04a-082bde97690a",
+        "position": 1,
+        "slug": "fe-69-14-goal-jar",
+        "title": {
+          "en-US": "A jar for my goal",
+          "es-MX": "Una alcancía para mi meta",
+          "pt-BR": "Um cofrinho para a minha meta"
+        },
+        "status": "review"
+      },
+      {
+        "id": "7292dca6-22f8-5a6a-9492-5533c19a01ad",
+        "topic_id": "70ba4f34-3463-5456-9b9a-5745ff278302",
+        "position": 1,
+        "slug": "fe-69-15-wait-and-keep-safe",
+        "title": {
+          "en-US": "Wait and keep safe",
+          "es-MX": "Espera y cuida tus monedas",
+          "pt-BR": "Espere e guarde com segurança"
+        },
+        "status": "review"
+      },
+      {
+        "id": "96b2c4c7-0cb1-526c-ab81-b344df7be81c",
+        "topic_id": "1503df9e-97b2-5c92-9732-c8b4cecd98a8",
+        "position": 1,
+        "slug": "fe-69-16-three-jars",
+        "title": {
+          "en-US": "Three jars",
+          "es-MX": "Tres frascos",
+          "pt-BR": "Três potes"
+        },
+        "status": "review"
+      },
+      {
+        "id": "73622dd5-78ef-50ec-bea8-d389e26e74f2",
+        "topic_id": "39571a41-ea6f-52b7-9d61-400cd9036cc3",
+        "position": 1,
+        "slug": "fe-1012-01-unit-price",
+        "title": {
+          "en-US": "The price of one",
+          "es-MX": "El precio de uno",
+          "pt-BR": "O preço de um"
+        },
+        "status": "review"
+      },
+      {
+        "id": "35afbd06-9e6f-5acc-8f1e-ce4fcd912fd7",
+        "topic_id": "d764c9f9-ecee-560d-ab53-7c51676276d3",
+        "position": 1,
+        "slug": "fe-1012-02-plan-the-budget",
+        "title": {
+          "en-US": "Plan a budget that fits",
+          "es-MX": "Planea un presupuesto que alcance",
+          "pt-BR": "Planeje um orçamento que caiba"
+        },
+        "status": "review"
+      },
+      {
+        "id": "20634961-cf32-5d46-8494-678ce5533c77",
+        "topic_id": "9dddc44e-8e1b-51c4-82cb-0177854f8ec6",
+        "position": 1,
+        "slug": "fe-1012-03-saving-plan",
+        "title": {
+          "en-US": "How many weeks to your goal?",
+          "es-MX": "¿Cuántas semanas para tu meta?",
+          "pt-BR": "Quantas semanas até a meta?"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8400f065-15ed-5bc2-a84d-dd98f4099857",
+        "topic_id": "2572c90e-9a95-5459-b4fd-0a4b4f19a9cf",
+        "position": 1,
+        "slug": "fe-1012-04-suspicious-messages",
+        "title": {
+          "en-US": "Spot suspicious messages",
+          "es-MX": "Detecta mensajes sospechosos",
+          "pt-BR": "Identifique mensagens suspeitas"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d7c77cbb-43ce-5cd2-b6fe-eb84ecf61958",
+        "topic_id": "5a490905-03c1-59dd-b3f2-51ae755caee8",
+        "position": 1,
+        "slug": "fe-1012-05-quarter-off",
+        "title": {
+          "en-US": "A quarter off",
+          "es-MX": "Un cuarto de descuento",
+          "pt-BR": "Um quarto de desconto"
+        },
+        "status": "review"
+      },
+      {
+        "id": "f6e3a5b1-029e-511f-a4fd-aff6ed5ff783",
+        "topic_id": "19df2393-a0cc-5c3d-b933-e488def5d3f3",
+        "position": 1,
+        "slug": "fe-1012-06-ten-percent-and-half",
+        "title": {
+          "en-US": "Ten percent and half",
+          "es-MX": "Diez por ciento y la mitad",
+          "pt-BR": "Dez por cento e a metade"
+        },
+        "status": "review"
+      },
+      {
+        "id": "18525223-c860-5574-b7f3-8ebe11a3dde9",
+        "topic_id": "c7ba3037-6595-5681-a181-efb7df10b0c5",
+        "position": 1,
+        "slug": "fe-1012-07-charges-that-repeat",
+        "title": {
+          "en-US": "Charges that repeat",
+          "es-MX": "Cobros que se repiten",
+          "pt-BR": "Cobranças que se repetem"
+        },
+        "status": "review"
+      },
+      {
+        "id": "164b3766-bbe6-5b02-bc35-8849dd1fdc78",
+        "topic_id": "23bcb0b5-84fc-5922-a47c-3c1e3728fa85",
+        "position": 1,
+        "slug": "fe-1012-08-what-a-bargain-costs",
+        "title": {
+          "en-US": "What a bargain costs",
+          "es-MX": "Lo que cuesta una ganga",
+          "pt-BR": "O que custa uma pechincha"
+        },
+        "status": "review"
+      },
+      {
+        "id": "9a3ee045-3b07-5660-82d4-5b15de3dc2f5",
+        "topic_id": "85dff1df-47f5-5723-80bc-1e09e3d723fe",
+        "position": 1,
+        "slug": "fe-1012-09-what-a-bank-is-for",
+        "title": {
+          "en-US": "What a bank is for",
+          "es-MX": "Para qué sirve un banco",
+          "pt-BR": "Para que serve um banco"
+        },
+        "status": "review"
+      },
+      {
+        "id": "93c625d7-6b5c-5620-9b28-34a30ddf4396",
+        "topic_id": "39936817-6b6c-5731-8e96-9cb6213abf11",
+        "position": 1,
+        "slug": "fe-1012-10-keep-it-private",
+        "title": {
+          "en-US": "Keep it private",
+          "es-MX": "Mantenlo en privado",
+          "pt-BR": "Mantenha em sigilo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "828ab1a3-99ec-5ed5-8268-3f12693c7a85",
+        "topic_id": "ac2045be-dadb-5d80-b6a1-55e157e3b8f7",
+        "position": 1,
+        "slug": "fe-1012-11-money-that-grows",
+        "title": {
+          "en-US": "Money that grows",
+          "es-MX": "Dinero que crece",
+          "pt-BR": "Dinheiro que cresce"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fea37fc6-e6b3-53a2-af68-af0b230c439f",
+        "topic_id": "b4460d8e-824f-50ce-86a9-7d93e6193911",
+        "position": 1,
+        "slug": "fe-1012-12-dream-to-plan",
+        "title": {
+          "en-US": "From dream to plan",
+          "es-MX": "De un sueño a un plan",
+          "pt-BR": "De um sonho a um plano"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fffb63a5-f4ca-55b6-8d05-21d997621847",
+        "topic_id": "79ded9b5-139d-57c1-acc7-191d875864fe",
+        "position": 1,
+        "slug": "fe-1012-13-share-the-garden",
+        "title": {
+          "en-US": "Share the garden",
+          "es-MX": "Compartir el huerto",
+          "pt-BR": "Dividir a horta"
+        },
+        "status": "review"
+      },
+      {
+        "id": "ddf662a0-71dc-5882-aa0b-10e91f4f24b0",
+        "topic_id": "2fd971b8-6fc5-5631-9b99-81cf0c63a2de",
+        "position": 1,
+        "slug": "fe-1012-14-many-small-shares",
+        "title": {
+          "en-US": "Many small shares",
+          "es-MX": "Muchas partes pequeñas",
+          "pt-BR": "Muitas partes pequenas"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4af22258-a8e5-5991-bfe1-e3925300dc18",
+        "topic_id": "07e903de-1c0d-5914-8b27-82a1e9635570",
+        "position": 1,
+        "slug": "fe-1012-15-plan-the-project",
+        "title": {
+          "en-US": "Plan the project",
+          "es-MX": "Planear el proyecto",
+          "pt-BR": "Planejar o projeto"
+        },
+        "status": "review"
+      },
+      {
+        "id": "5be52a1c-2832-5efa-a507-da01da52ded6",
+        "topic_id": "84377b3f-6c39-55ee-b7d8-15c7720251f3",
+        "position": 1,
+        "slug": "fe-1012-16-give-and-explain",
+        "title": {
+          "en-US": "Give and explain",
+          "es-MX": "Dar y explicar",
+          "pt-BR": "Doar e explicar"
+        },
+        "status": "review"
+      },
+      {
+        "id": "96c67962-57de-5d85-bc57-5fba09013a2c",
+        "topic_id": "fe99ffa4-1a46-5fbe-9c43-84e9b530d68c",
+        "position": 1,
+        "slug": "fe-1317-01-first-shift",
+        "title": {
+          "en-US": "First shift: what hours are worth",
+          "es-MX": "Primer turno: cuánto valen las horas",
+          "pt-BR": "Primeiro turno: quanto valem as horas"
+        },
+        "status": "review"
+      },
+      {
+        "id": "ba944d04-57dc-5694-9ae4-b36a3ccfc714",
+        "topic_id": "a2129b34-b9ef-5028-9b99-db795ad346a2",
+        "position": 1,
+        "slug": "fe-1317-02-split-the-pay",
+        "title": {
+          "en-US": "Split the pay: needs, wants, saving",
+          "es-MX": "Reparte el pago: necesidades, deseos, ahorro",
+          "pt-BR": "Divida o pagamento: necessidades, desejos, poupança"
+        },
+        "status": "review"
+      },
+      {
+        "id": "6c91b812-fba4-5610-89de-ecec94e71cda",
+        "topic_id": "6ad79b7e-2c0c-5add-adc3-26fd8bbbf9f9",
+        "position": 1,
+        "slug": "fe-1317-03-phone-plan-year",
+        "title": {
+          "en-US": "Phone plan: the hours it costs",
+          "es-MX": "Plan de celular: cuántas horas cuesta",
+          "pt-BR": "Plano de celular: quantas horas custa"
+        },
+        "status": "review"
+      },
+      {
+        "id": "03ce8096-7218-5ba9-9572-5956c27948b5",
+        "topic_id": "df09456c-23b7-53a6-90e2-da8771cf9d9a",
+        "position": 1,
+        "slug": "fe-1317-04-first-account",
+        "title": {
+          "en-US": "Open your first account",
+          "es-MX": "Abre tu primera cuenta",
+          "pt-BR": "Abra sua primeira conta"
+        },
+        "status": "review"
+      },
+      {
+        "id": "1937afd6-1f94-5fc3-8479-a3013597d79b",
+        "topic_id": "21f76f0e-e30c-58d4-b35a-cca76390f275",
+        "position": 1,
+        "slug": "fe-1317-05-why-prices-differ",
+        "title": {
+          "en-US": "Why prices differ",
+          "es-MX": "Por qué cambian los precios",
+          "pt-BR": "Por que os preços mudam"
+        },
+        "status": "review"
+      },
+      {
+        "id": "55f32974-fd5c-5f89-89d4-2880828dcdf8",
+        "topic_id": "4a281ad3-a724-584d-b78b-1d1febac7635",
+        "position": 1,
+        "slug": "fe-1317-06-last-chance-ad",
+        "title": {
+          "en-US": "The last-chance ad",
+          "es-MX": "El anuncio de última hora",
+          "pt-BR": "O anúncio de última hora"
+        },
+        "status": "review"
+      },
+      {
+        "id": "ffa2de5c-f334-524a-a456-44b80ed6094e",
+        "topic_id": "ad8e45e4-849c-50c6-bb36-99e80c0d0563",
+        "position": 1,
+        "slug": "fe-1317-07-fake-deal",
+        "title": {
+          "en-US": "Spot the fake deal",
+          "es-MX": "Detecta el trato falso",
+          "pt-BR": "Descubra o negócio falso"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fd97b238-641a-5f44-a7ab-ca505d360691",
+        "topic_id": "f4183208-3b75-50e7-93b8-61bdcad25197",
+        "position": 1,
+        "slug": "fe-1317-08-wait-and-cushion",
+        "title": {
+          "en-US": "Wait and cushion",
+          "es-MX": "Espera y colchón",
+          "pt-BR": "Espera e reserva"
+        },
+        "status": "review"
+      },
+      {
+        "id": "a0be3560-f07f-5586-b0a7-5deb821e4b12",
+        "topic_id": "f7f69eb8-c471-5ed3-86de-8561b881be46",
+        "position": 1,
+        "slug": "fe-1317-09-laptop-by-december",
+        "title": {
+          "en-US": "A laptop by December",
+          "es-MX": "Una laptop para diciembre",
+          "pt-BR": "Um notebook até dezembro"
+        },
+        "status": "review"
+      },
+      {
+        "id": "b32e8b21-bb22-576a-8b6b-96ce510d5070",
+        "topic_id": "ef02ca16-2db8-513a-805b-046314022e83",
+        "position": 1,
+        "slug": "fe-1317-10-interest-year-by-year",
+        "title": {
+          "en-US": "Interest, year by year",
+          "es-MX": "El interés, año por año",
+          "pt-BR": "Juros, ano a ano"
+        },
+        "status": "review"
+      },
+      {
+        "id": "40dd93a1-6abc-50b9-991b-68d2fe0d1bd7",
+        "topic_id": "15cdc035-fe2c-56c3-bb4f-578490bc5f71",
+        "position": 1,
+        "slug": "fe-1317-11-when-the-plan-slips",
+        "title": {
+          "en-US": "When the plan slips",
+          "es-MX": "Cuando el plan se atrasa",
+          "pt-BR": "Quando o plano atrasa"
+        },
+        "status": "review"
+      },
+      {
+        "id": "590c5d46-dc12-5fa8-8620-166578a60dfc",
+        "topic_id": "72d45970-7360-5e57-aabf-1d594b53ffb2",
+        "position": 1,
+        "slug": "fe-1317-12-share-and-teach",
+        "title": {
+          "en-US": "Share and teach",
+          "es-MX": "Reparte y enseña",
+          "pt-BR": "Reparta e ensine"
+        },
+        "status": "review"
+      },
+      {
+        "id": "3e0e9a4c-9f88-55db-809c-b077d90d3302",
+        "topic_id": "5a1ef1d7-29fa-5aaf-bd26-5f11ea17a82e",
+        "position": 1,
+        "slug": "fe-adult-01-read-the-payslip",
+        "title": {
+          "en-US": "Read the pay stub",
+          "es-MX": "Lee el recibo de nómina",
+          "pt-BR": "Leia o contracheque"
+        },
+        "status": "review"
+      },
+      {
+        "id": "4a3ea85e-f26a-54f6-9789-fa277970db0c",
+        "topic_id": "3595746a-3efe-52a8-9606-7d46808d4ddb",
+        "position": 1,
+        "slug": "fe-adult-02-monthly-budget",
+        "title": {
+          "en-US": "Plan your month",
+          "es-MX": "Planea tu mes",
+          "pt-BR": "Planeje seu mês"
+        },
+        "status": "review"
+      },
+      {
+        "id": "fca1952b-c7ae-5265-ac9e-ca4450f5f8d8",
+        "topic_id": "8a4be783-2fbf-5a06-8275-e7e0c9cc0df0",
+        "position": 1,
+        "slug": "fe-adult-03-quiet-subscriptions",
+        "title": {
+          "en-US": "Quiet subscriptions",
+          "es-MX": "Suscripciones silenciosas",
+          "pt-BR": "Assinaturas silenciosas"
+        },
+        "status": "review"
+      },
+      {
+        "id": "c6ee521b-a63f-51f9-a8b5-ac621ae81207",
+        "topic_id": "081e18f6-127c-5171-bc6a-4c502b3473a4",
+        "position": 1,
+        "slug": "fe-adult-04-price-my-time",
+        "title": {
+          "en-US": "Price my time",
+          "es-MX": "Ponle precio a tu tiempo",
+          "pt-BR": "Dê preço ao seu tempo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "68fa4250-4365-5dc2-a1f2-97359344e1e3",
+        "topic_id": "70fd08e8-3d1a-5571-b627-6325aad1de55",
+        "position": 1,
+        "slug": "fe-adult-05-price-of-one",
+        "title": {
+          "en-US": "The price of one",
+          "es-MX": "El precio de uno",
+          "pt-BR": "O preço de um"
+        },
+        "status": "review"
+      },
+      {
+        "id": "8a8024d4-cf24-5b32-a2ed-57c5c02a2a73",
+        "topic_id": "70d8e9cd-d7d4-5838-a312-18b297260d56",
+        "position": 1,
+        "slug": "fe-adult-06-read-the-pitch",
+        "title": {
+          "en-US": "Read the pitch",
+          "es-MX": "Lee la oferta",
+          "pt-BR": "Leia a oferta"
+        },
+        "status": "review"
+      },
+      {
+        "id": "037e15ba-3cb1-5c1b-829a-12e59b12f98f",
+        "topic_id": "5281bac4-aef2-502d-a49e-69075af5a8d0",
+        "position": 1,
+        "slug": "fe-adult-07-fees-and-accounts",
+        "title": {
+          "en-US": "Fees and accounts",
+          "es-MX": "Comisiones y cuentas",
+          "pt-BR": "Tarifas e contas"
+        },
+        "status": "review"
+      },
+      {
+        "id": "2b3eea23-eda3-528f-aa3f-15db352b280f",
+        "topic_id": "39cfbc8e-bed2-5337-9f50-810809c31010",
+        "position": 1,
+        "slug": "fe-adult-08-stop-the-scam",
+        "title": {
+          "en-US": "Stop the scam",
+          "es-MX": "Detén la estafa",
+          "pt-BR": "Pare o golpe"
+        },
+        "status": "review"
+      },
+      {
+        "id": "0f51150a-1c25-5042-871a-7a5832f87e62",
+        "topic_id": "60d20c1b-ccb3-546d-8512-4d6b246a1541",
+        "position": 1,
+        "slug": "fe-adult-09-goals-with-a-date",
+        "title": {
+          "en-US": "Goals with a date",
+          "es-MX": "Metas con fecha",
+          "pt-BR": "Metas com data"
+        },
+        "status": "review"
+      },
+      {
+        "id": "a20740e4-bd48-5b55-b590-8c6af6f6b13d",
+        "topic_id": "87557d78-7679-5ae9-9304-eb8fc665a0b9",
+        "position": 1,
+        "slug": "fe-adult-10-interest-and-time",
+        "title": {
+          "en-US": "Interest and time",
+          "es-MX": "Interés y tiempo",
+          "pt-BR": "Juros e tempo"
+        },
+        "status": "review"
+      },
+      {
+        "id": "d4f115ac-a867-5d03-80e2-d0c8eb6b5ef5",
+        "topic_id": "8823700a-859a-57b2-b9e2-196448f09ef0",
+        "position": 1,
+        "slug": "fe-adult-11-when-life-changes",
+        "title": {
+          "en-US": "When life changes",
+          "es-MX": "Cuando la vida cambia",
+          "pt-BR": "Quando a vida muda"
+        },
+        "status": "review"
+      },
+      {
+        "id": "cf63125b-6c39-5450-a68a-a724296b9de9",
+        "topic_id": "c048dcbb-8096-589a-b304-551e505dc881",
+        "position": 1,
+        "slug": "fe-adult-12-share-and-teach",
+        "title": {
+          "en-US": "Share and teach",
+          "es-MX": "Compartir y enseñar",
+          "pt-BR": "Compartilhar e ensinar"
+        },
+        "status": "review"
+      }
+    ],
+    "topic_knowledge_components": [
+      {
+        "topic_id": "ac41587d-de4c-543f-8ddf-03fa1f74fd6b",
+        "kc_key": "money.coin-recognition",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ac41587d-de4c-543f-8ddf-03fa1f74fd6b",
+        "kc_key": "money.count-like-coins",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a341fd0b-02fc-5e15-8fd4-2990402c2627",
+        "kc_key": "biz.goods-vs-services",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a341fd0b-02fc-5e15-8fd4-2990402c2627",
+        "kc_key": "biz.needs-vs-wants",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c54534c2-db8e-5a46-a70c-332845dae0c9",
+        "kc_key": "life.effort-and-work",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c54534c2-db8e-5a46-a70c-332845dae0c9",
+        "kc_key": "life.jobs-help-others",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "962778ec-d590-5e1c-94cf-9686c93b827d",
+        "kc_key": "biz.what-is-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "962778ec-d590-5e1c-94cf-9686c93b827d",
+        "kc_key": "money.subtract-money",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cb4d9b46-8a3c-5fb9-b8de-ae4a2c12a1ae",
+        "kc_key": "money.count-mixed-coins",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "cb4d9b46-8a3c-5fb9-b8de-ae4a2c12a1ae",
+        "kc_key": "money.make-amount",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "231c129c-5f78-5f1d-91ed-d56863443f0a",
+        "kc_key": "money.make-change-counting-up",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "231c129c-5f78-5f1d-91ed-d56863443f0a",
+        "kc_key": "money.make-amount",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "e07403db-0c28-5628-83f9-4aa3d0c31d59",
+        "kc_key": "life.wants-and-choices",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7983c595-795c-5874-ade1-0ceea01e1aa9",
+        "kc_key": "money.add-money",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7983c595-795c-5874-ade1-0ceea01e1aa9",
+        "kc_key": "money.compare-amounts",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "30ca48f6-8bda-5c0c-8e6c-0e916987a6ef",
+        "kc_key": "life.barter",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "30ca48f6-8bda-5c0c-8e6c-0e916987a6ef",
+        "kc_key": "biz.trade-and-markets",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "30ca48f6-8bda-5c0c-8e6c-0e916987a6ef",
+        "kc_key": "biz.what-is-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "918f2c95-51ba-573b-8b26-c295f7c6a8c1",
+        "kc_key": "life.what-money-is",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "918f2c95-51ba-573b-8b26-c295f7c6a8c1",
+        "kc_key": "money.compare-amounts",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "918f2c95-51ba-573b-8b26-c295f7c6a8c1",
+        "kc_key": "money.count-mixed-coins",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "54451bff-f199-52ce-836e-3dfd9ba96c44",
+        "kc_key": "life.smart-shopping",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "54451bff-f199-52ce-836e-3dfd9ba96c44",
+        "kc_key": "money.estimate-total",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "54451bff-f199-52ce-836e-3dfd9ba96c44",
+        "kc_key": "money.compare-amounts",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7ec94588-61ff-56dc-815d-be5713bb6f92",
+        "kc_key": "life.think-before-buying",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7ec94588-61ff-56dc-815d-be5713bb6f92",
+        "kc_key": "life.advertising-literacy",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "7ec94588-61ff-56dc-815d-be5713bb6f92",
+        "kc_key": "biz.needs-vs-wants",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8374a055-02f4-560b-b8ac-62e57957a552",
+        "kc_key": "biz.value-of-work",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8374a055-02f4-560b-b8ac-62e57957a552",
+        "kc_key": "life.track-earnings",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8374a055-02f4-560b-b8ac-62e57957a552",
+        "kc_key": "money.add-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8b5db202-c158-554a-b04a-082bde97690a",
+        "kc_key": "biz.saving-goal",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8b5db202-c158-554a-b04a-082bde97690a",
+        "kc_key": "life.saving-for-later",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70ba4f34-3463-5456-9b9a-5745ff278302",
+        "kc_key": "life.patience-and-waiting",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70ba4f34-3463-5456-9b9a-5745ff278302",
+        "kc_key": "life.safe-keeping",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70ba4f34-3463-5456-9b9a-5745ff278302",
+        "kc_key": "life.saving-for-later",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "1503df9e-97b2-5c92-9732-c8b4cecd98a8",
+        "kc_key": "life.save-spend-share",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "1503df9e-97b2-5c92-9732-c8b4cecd98a8",
+        "kc_key": "money.equal-sharing",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39571a41-ea6f-52b7-9d61-400cd9036cc3",
+        "kc_key": "money.unit-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39571a41-ea6f-52b7-9d61-400cd9036cc3",
+        "kc_key": "money.add-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d764c9f9-ecee-560d-ab53-7c51676276d3",
+        "kc_key": "money.simple-budget",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "d764c9f9-ecee-560d-ab53-7c51676276d3",
+        "kc_key": "money.estimate-total",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9dddc44e-8e1b-51c4-82cb-0177854f8ec6",
+        "kc_key": "money.savings-plan-math",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "9dddc44e-8e1b-51c4-82cb-0177854f8ec6",
+        "kc_key": "money.simple-budget",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2572c90e-9a95-5459-b4fd-0a4b4f19a9cf",
+        "kc_key": "life.scam-awareness",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5a490905-03c1-59dd-b3f2-51ae755caee8",
+        "kc_key": "money.fraction-of-amount",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5a490905-03c1-59dd-b3f2-51ae755caee8",
+        "kc_key": "money.equal-sharing",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5a490905-03c1-59dd-b3f2-51ae755caee8",
+        "kc_key": "money.subtract-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "19df2393-a0cc-5c3d-b933-e488def5d3f3",
+        "kc_key": "money.percent-intro",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "19df2393-a0cc-5c3d-b933-e488def5d3f3",
+        "kc_key": "money.fraction-of-amount",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c7ba3037-6595-5681-a181-efb7df10b0c5",
+        "kc_key": "life.recurring-costs",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c7ba3037-6595-5681-a181-efb7df10b0c5",
+        "kc_key": "money.add-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c7ba3037-6595-5681-a181-efb7df10b0c5",
+        "kc_key": "money.estimate-total",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "23bcb0b5-84fc-5922-a47c-3c1e3728fa85",
+        "kc_key": "life.opportunity-cost",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "23bcb0b5-84fc-5922-a47c-3c1e3728fa85",
+        "kc_key": "life.wants-and-choices",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "23bcb0b5-84fc-5922-a47c-3c1e3728fa85",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "85dff1df-47f5-5723-80bc-1e09e3d723fe",
+        "kc_key": "life.banks-and-accounts",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "85dff1df-47f5-5723-80bc-1e09e3d723fe",
+        "kc_key": "life.safe-keeping",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "85dff1df-47f5-5723-80bc-1e09e3d723fe",
+        "kc_key": "money.subtract-money",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39936817-6b6c-5731-8e96-9cb6213abf11",
+        "kc_key": "life.data-privacy",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39936817-6b6c-5731-8e96-9cb6213abf11",
+        "kc_key": "life.banks-and-accounts",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39936817-6b6c-5731-8e96-9cb6213abf11",
+        "kc_key": "life.scam-awareness",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ac2045be-dadb-5d80-b6a1-55e157e3b8f7",
+        "kc_key": "money.simple-interest-peek",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ac2045be-dadb-5d80-b6a1-55e157e3b8f7",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ac2045be-dadb-5d80-b6a1-55e157e3b8f7",
+        "kc_key": "money.savings-plan-math",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b4460d8e-824f-50ce-86a9-7d93e6193911",
+        "kc_key": "life.goal-planning",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b4460d8e-824f-50ce-86a9-7d93e6193911",
+        "kc_key": "biz.saving-goal",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "b4460d8e-824f-50ce-86a9-7d93e6193911",
+        "kc_key": "money.savings-plan-math",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "79ded9b5-139d-57c1-acc7-191d875864fe",
+        "kc_key": "life.shared-resources",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "79ded9b5-139d-57c1-acc7-191d875864fe",
+        "kc_key": "money.equal-sharing",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2fd971b8-6fc5-5631-9b99-81cf0c63a2de",
+        "kc_key": "life.common-good",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2fd971b8-6fc5-5631-9b99-81cf0c63a2de",
+        "kc_key": "life.shared-resources",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "2fd971b8-6fc5-5631-9b99-81cf0c63a2de",
+        "kc_key": "money.equal-sharing",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "07e903de-1c0d-5914-8b27-82a1e9635570",
+        "kc_key": "life.community-projects",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "07e903de-1c0d-5914-8b27-82a1e9635570",
+        "kc_key": "life.review-and-adjust-plan",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "07e903de-1c0d-5914-8b27-82a1e9635570",
+        "kc_key": "life.goal-planning",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "84377b3f-6c39-55ee-b7d8-15c7720251f3",
+        "kc_key": "life.giving",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "84377b3f-6c39-55ee-b7d8-15c7720251f3",
+        "kc_key": "life.reflect-on-learning",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "84377b3f-6c39-55ee-b7d8-15c7720251f3",
+        "kc_key": "life.save-spend-share",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "fe99ffa4-1a46-5fbe-9c43-84e9b530d68c",
+        "kc_key": "biz.value-of-work",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "fe99ffa4-1a46-5fbe-9c43-84e9b530d68c",
+        "kc_key": "life.track-earnings",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "fe99ffa4-1a46-5fbe-9c43-84e9b530d68c",
+        "kc_key": "life.effort-and-work",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a2129b34-b9ef-5028-9b99-db795ad346a2",
+        "kc_key": "money.simple-budget",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a2129b34-b9ef-5028-9b99-db795ad346a2",
+        "kc_key": "money.percent-intro",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "a2129b34-b9ef-5028-9b99-db795ad346a2",
+        "kc_key": "money.estimate-total",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6ad79b7e-2c0c-5add-adc3-26fd8bbbf9f9",
+        "kc_key": "life.recurring-costs",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6ad79b7e-2c0c-5add-adc3-26fd8bbbf9f9",
+        "kc_key": "life.opportunity-cost",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "6ad79b7e-2c0c-5add-adc3-26fd8bbbf9f9",
+        "kc_key": "biz.value-of-work",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "df09456c-23b7-53a6-90e2-da8771cf9d9a",
+        "kc_key": "life.safe-keeping",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "df09456c-23b7-53a6-90e2-da8771cf9d9a",
+        "kc_key": "life.banks-and-accounts",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "df09456c-23b7-53a6-90e2-da8771cf9d9a",
+        "kc_key": "life.data-privacy",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "21f76f0e-e30c-58d4-b35a-cca76390f275",
+        "kc_key": "biz.what-is-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "21f76f0e-e30c-58d4-b35a-cca76390f275",
+        "kc_key": "biz.trade-and-markets",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "21f76f0e-e30c-58d4-b35a-cca76390f275",
+        "kc_key": "life.smart-shopping",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "4a281ad3-a724-584d-b78b-1d1febac7635",
+        "kc_key": "life.advertising-literacy",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "4a281ad3-a724-584d-b78b-1d1febac7635",
+        "kc_key": "life.think-before-buying",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ad8e45e4-849c-50c6-bb36-99e80c0d0563",
+        "kc_key": "life.scam-awareness",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ad8e45e4-849c-50c6-bb36-99e80c0d0563",
+        "kc_key": "life.data-privacy",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ad8e45e4-849c-50c6-bb36-99e80c0d0563",
+        "kc_key": "life.banks-and-accounts",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f4183208-3b75-50e7-93b8-61bdcad25197",
+        "kc_key": "life.patience-and-waiting",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f4183208-3b75-50e7-93b8-61bdcad25197",
+        "kc_key": "biz.saving-goal",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f4183208-3b75-50e7-93b8-61bdcad25197",
+        "kc_key": "life.saving-for-later",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f7f69eb8-c471-5ed3-86de-8561b881be46",
+        "kc_key": "money.savings-plan-math",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f7f69eb8-c471-5ed3-86de-8561b881be46",
+        "kc_key": "life.goal-planning",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "f7f69eb8-c471-5ed3-86de-8561b881be46",
+        "kc_key": "biz.saving-goal",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ef02ca16-2db8-513a-805b-046314022e83",
+        "kc_key": "money.simple-interest-peek",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "ef02ca16-2db8-513a-805b-046314022e83",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "15cdc035-fe2c-56c3-bb4f-578490bc5f71",
+        "kc_key": "life.review-and-adjust-plan",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "15cdc035-fe2c-56c3-bb4f-578490bc5f71",
+        "kc_key": "life.goal-planning",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "15cdc035-fe2c-56c3-bb4f-578490bc5f71",
+        "kc_key": "money.savings-plan-math",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "72d45970-7360-5e57-aabf-1d594b53ffb2",
+        "kc_key": "life.save-spend-share",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "72d45970-7360-5e57-aabf-1d594b53ffb2",
+        "kc_key": "life.giving",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "72d45970-7360-5e57-aabf-1d594b53ffb2",
+        "kc_key": "life.reflect-on-learning",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5a1ef1d7-29fa-5aaf-bd26-5f11ea17a82e",
+        "kc_key": "life.track-earnings",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5a1ef1d7-29fa-5aaf-bd26-5f11ea17a82e",
+        "kc_key": "biz.value-of-work",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5a1ef1d7-29fa-5aaf-bd26-5f11ea17a82e",
+        "kc_key": "money.percent-intro",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3595746a-3efe-52a8-9606-7d46808d4ddb",
+        "kc_key": "money.simple-budget",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3595746a-3efe-52a8-9606-7d46808d4ddb",
+        "kc_key": "life.track-earnings",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "3595746a-3efe-52a8-9606-7d46808d4ddb",
+        "kc_key": "money.estimate-total",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8a4be783-2fbf-5a06-8275-e7e0c9cc0df0",
+        "kc_key": "life.recurring-costs",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8a4be783-2fbf-5a06-8275-e7e0c9cc0df0",
+        "kc_key": "life.opportunity-cost",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8a4be783-2fbf-5a06-8275-e7e0c9cc0df0",
+        "kc_key": "biz.value-of-work",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "081e18f6-127c-5171-bc6a-4c502b3473a4",
+        "kc_key": "biz.what-is-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "081e18f6-127c-5171-bc6a-4c502b3473a4",
+        "kc_key": "biz.trade-and-markets",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "081e18f6-127c-5171-bc6a-4c502b3473a4",
+        "kc_key": "biz.value-of-work",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70fd08e8-3d1a-5571-b627-6325aad1de55",
+        "kc_key": "money.unit-price",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70fd08e8-3d1a-5571-b627-6325aad1de55",
+        "kc_key": "life.smart-shopping",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70fd08e8-3d1a-5571-b627-6325aad1de55",
+        "kc_key": "biz.what-is-price",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70d8e9cd-d7d4-5838-a312-18b297260d56",
+        "kc_key": "life.advertising-literacy",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70d8e9cd-d7d4-5838-a312-18b297260d56",
+        "kc_key": "life.think-before-buying",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "70d8e9cd-d7d4-5838-a312-18b297260d56",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5281bac4-aef2-502d-a49e-69075af5a8d0",
+        "kc_key": "life.banks-and-accounts",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5281bac4-aef2-502d-a49e-69075af5a8d0",
+        "kc_key": "life.safe-keeping",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "5281bac4-aef2-502d-a49e-69075af5a8d0",
+        "kc_key": "life.recurring-costs",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39cfbc8e-bed2-5337-9f50-810809c31010",
+        "kc_key": "life.scam-awareness",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39cfbc8e-bed2-5337-9f50-810809c31010",
+        "kc_key": "life.data-privacy",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "39cfbc8e-bed2-5337-9f50-810809c31010",
+        "kc_key": "life.banks-and-accounts",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "60d20c1b-ccb3-546d-8512-4d6b246a1541",
+        "kc_key": "biz.saving-goal",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "60d20c1b-ccb3-546d-8512-4d6b246a1541",
+        "kc_key": "life.goal-planning",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "60d20c1b-ccb3-546d-8512-4d6b246a1541",
+        "kc_key": "money.savings-plan-math",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "87557d78-7679-5ae9-9304-eb8fc665a0b9",
+        "kc_key": "money.simple-interest-peek",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "87557d78-7679-5ae9-9304-eb8fc665a0b9",
+        "kc_key": "money.percent-intro",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "87557d78-7679-5ae9-9304-eb8fc665a0b9",
+        "kc_key": "life.opportunity-cost",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8823700a-859a-57b2-b9e2-196448f09ef0",
+        "kc_key": "life.review-and-adjust-plan",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8823700a-859a-57b2-b9e2-196448f09ef0",
+        "kc_key": "life.goal-planning",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "8823700a-859a-57b2-b9e2-196448f09ef0",
+        "kc_key": "money.simple-budget",
+        "role": "reviews",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c048dcbb-8096-589a-b304-551e505dc881",
+        "kc_key": "life.common-good",
+        "role": "teaches",
+        "is_primary": true,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c048dcbb-8096-589a-b304-551e505dc881",
+        "kc_key": "life.giving",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      },
+      {
+        "topic_id": "c048dcbb-8096-589a-b304-551e505dc881",
+        "kc_key": "life.reflect-on-learning",
+        "role": "teaches",
+        "is_primary": false,
+        "map_version": 1
+      }
+    ]
+  }
+}

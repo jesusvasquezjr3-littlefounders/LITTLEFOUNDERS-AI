@@ -1,0 +1,982 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-lead-and-last",
+  "lesson_id": "ent-adult-10-growing-from-two-to-five",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.leading-growth",
+    "biz.delegation",
+    "biz.team-culture"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina cuenta primero su propio error y luego muestra, con un caso resuelto, cómo un servicio de reparación crece de dos a cinco personas: nombrar tres roles que responden por un resultado y por sus decisiones, armar una primera semana en orden y con pocas tareas a la vez, y hablar con respeto cuando un rol no encaja. Después aplicas esos pasos en un tablero y en un caso nuevo, y decides tú en un puesto de sábado.",
+  "title": {
+    "es-MX": "De dos a cinco personas",
+    "en-US": "Growing from two to five",
+    "pt-BR": "De duas a cinco pessoas"
+  },
+  "new_concepts": [
+    "biz.leading-growth"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina keeps every decision for herself as her service grows from two to five people, and three bikes sit waiting for her answer.",
+    "recovery": "Dina names three roles and a first-week plan, and says that next time she will hand over a whole role from the first day."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "El caso ocurre en México: un taller de bicicletas crece de dos a cinco personas y abre un puesto de sábado en el tianguis. No hay montos ni trámites; la contratación se describe en general, sin consejo legal.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "O caso acontece no Brasil: uma oficina de bicicletas cresce de duas para cinco pessoas e abre uma banca de sábado na feira livre. Sem valores nem trâmites; a contratação é descrita em termos gerais, sem aconselhamento jurídico.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira livre"
+        ]
+      },
+      "en-US": {
+        "scenario": "The case is set in the US: a bike repair service grows from two to five people and opens a Saturday stall at a farmers market. No amounts or paperwork; hiring is described in general terms, with no legal advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mes seis, 6 pm. Cinco personas trabajan en tu servicio de reparación y tu celular sigue llenándose de dudas.",
+          "line": "Con calma. Veamos quién decide qué antes de cambiar algo."
+        },
+        "en-US": {
+          "prompt": "Month six, 6 pm. Five people work at your repair service, and your phone still fills with questions.",
+          "line": "Take your time. Let's look at who decides what before we change anything."
+        },
+        "pt-BR": {
+          "prompt": "Mês seis, 18h. Cinco pessoas trabalham no seu serviço de reparo e seu celular continua cheio de dúvidas.",
+          "line": "Com calma. Vamos ver quem decide o quê antes de mudar qualquer coisa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.leading-growth",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-wait"
+          },
+          {
+            "id": "reply-own"
+          },
+          {
+            "id": "reply-ask"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-own"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dani pregunta por un cambio de llanta. Elige tu respuesta.",
+          "feedback": {
+            "met": "Anotado. Ahora vemos quién se encarga de qué, paso a paso.",
+            "not_yet": "Anotado. Ahora vemos quién se encarga de qué, paso a paso."
+          },
+          "speaker": "Dani",
+          "line": "Un cliente quiere hoy el cambio de llanta trasera. ¿Empiezo o te espero?",
+          "replies": [
+            {
+              "label": "Espera, lo reviso esta noche."
+            },
+            {
+              "label": "Empieza; avísame si cambia el precio."
+            },
+            {
+              "label": "Pregunta a alguien del equipo qué hacer."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Dani asks about a tire swap. Choose your reply.",
+          "feedback": {
+            "met": "Noted. Now we look at who owns what, step by step.",
+            "not_yet": "Noted. Now we look at who owns what, step by step."
+          },
+          "speaker": "Dani",
+          "line": "A client wants a rear tire swapped today. Do I start, or wait for you?",
+          "replies": [
+            {
+              "label": "Wait, I will check it tonight."
+            },
+            {
+              "label": "Start it; tell me if the price changes."
+            },
+            {
+              "label": "Ask someone on the team what to do."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Dani pergunta sobre uma troca de pneu. Escolha sua resposta.",
+          "feedback": {
+            "met": "Anotado. Agora vemos quem cuida de quê, passo a passo.",
+            "not_yet": "Anotado. Agora vemos quem cuida de quê, passo a passo."
+          },
+          "speaker": "Dani",
+          "line": "Um cliente quer trocar o pneu traseiro hoje. Começo ou espero você?",
+          "replies": [
+            {
+              "label": "Espere, eu confiro hoje à noite."
+            },
+            {
+              "label": "Comece; me avise se o preço mudar."
+            },
+            {
+              "label": "Pergunte a alguém da equipe o que fazer."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Dina.",
+          "setup": "Cuando mi servicio pasó de dos a cinco personas, me quedé con todas las decisiones. Las dudas se acumularon toda la semana.",
+          "misjudgment": "Creí que decidirlo todo mantenía la calidad. Pero tres bicis esperaron mi respuesta.",
+          "recovery": "Nombré tres roles y una primera semana. La próxima vez entrego un rol completo desde el primer día."
+        },
+        "en-US": {
+          "prompt": "Look at what happened to Dina.",
+          "setup": "When my service grew from two to five, I kept every decision. Questions piled up all week.",
+          "misjudgment": "I thought holding every decision kept quality up. Instead, three bikes sat waiting for my answer.",
+          "recovery": "I named three roles and a first-week plan. Next time I hand over a whole role."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com a Dina.",
+          "setup": "Quando meu serviço passou de duas para cinco pessoas, fiquei com todas as decisões. As dúvidas se acumularam a semana toda.",
+          "misjudgment": "Achei que decidir tudo mantinha a qualidade. Mas três bicicletas esperaram minha resposta.",
+          "recovery": "Defini três funções e uma primeira semana. Da próxima vez entrego uma função inteira desde o primeiro dia."
+        }
+      }
+    },
+    {
+      "id": "org-before-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "org-chart"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-owner"
+            },
+            {
+              "id": "node-dani"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-owner",
+              "to": "node-dani"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Dos personas. Cada decisión pasa por ti.",
+          "title": "Antes: dos personas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Tú: dirección"
+              },
+              {
+                "label": "Dani: ayudante"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Two people. Every decision runs through you.",
+          "title": "Before: two people",
+          "data": {
+            "nodes": [
+              {
+                "label": "You: owner"
+              },
+              {
+                "label": "Dani: helper"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Duas pessoas. Toda decisão passa por você.",
+          "title": "Antes: duas pessoas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Você: direção"
+              },
+              {
+                "label": "Dani: ajudante"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "org-after-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "org-chart"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "nodes": [
+            {
+              "id": "node-owner"
+            },
+            {
+              "id": "node-dani"
+            },
+            {
+              "id": "node-mech"
+            },
+            {
+              "id": "node-desk"
+            },
+            {
+              "id": "node-pickups"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-owner",
+              "to": "node-dani"
+            },
+            {
+              "from": "node-owner",
+              "to": "node-desk"
+            },
+            {
+              "from": "node-owner",
+              "to": "node-pickups"
+            },
+            {
+              "from": "node-dani",
+              "to": "node-mech"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, nombra tres roles. Cada uno responde por un resultado y por las decisiones que trae.",
+          "title": "Después: cinco personas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Tú: dirección"
+              },
+              {
+                "label": "Dani: líder de reparaciones"
+              },
+              {
+                "label": "Reparación: bicis bien reparadas"
+              },
+              {
+                "label": "Recepción: el calendario"
+              },
+              {
+                "label": "Recolecciones: la ruta"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 1, name three roles. Each one owns a result and the decisions that come with it.",
+          "title": "After: five people",
+          "data": {
+            "nodes": [
+              {
+                "label": "You: owner"
+              },
+              {
+                "label": "Dani: repairs lead"
+              },
+              {
+                "label": "Mechanic: bikes fixed right"
+              },
+              {
+                "label": "Front desk: the calendar"
+              },
+              {
+                "label": "Pickups: the route"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, nomeie três funções. Cada uma responde por um resultado e pelas decisões que vêm com ele.",
+          "title": "Depois: cinco pessoas",
+          "data": {
+            "nodes": [
+              {
+                "label": "Você: direção"
+              },
+              {
+                "label": "Dani: líder de reparos"
+              },
+              {
+                "label": "Reparos: bicicletas bem consertadas"
+              },
+              {
+                "label": "Recepção: a agenda"
+              },
+              {
+                "label": "Coletas: a rota"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.delegation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-move"
+          },
+          {
+            "id": "reply-me"
+          },
+          {
+            "id": "reply-dani"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-move"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Leo, en recepción, pregunta por la cita de un cliente. Elige tu respuesta.",
+          "feedback": {
+            "met": "Asignaste la decisión al rol que responde por el calendario.",
+            "not_yet": "Todavía no. Mira qué resultado le dio la gráfica a recepción."
+          },
+          "help": [
+            "Cada rol responde por un resultado y por las decisiones que trae."
+          ],
+          "speaker": "Leo",
+          "line": "Un cliente quiere pasar su cita de reparación a mañana. ¿Te pregunto antes?",
+          "replies": [
+            {
+              "label": "No hace falta; cámbiala, el calendario es tuyo."
+            },
+            {
+              "label": "Pregúntame antes de mover algo."
+            },
+            {
+              "label": "Pregunta a Dani; ella conoce la agenda."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Leo, at the front desk, asks about a client's appointment. Choose your reply.",
+          "feedback": {
+            "met": "You matched the decision to the role that owns the calendar.",
+            "not_yet": "Not yet. Check which result the chart gave the front desk."
+          },
+          "help": [
+            "Each role owns one result and the decisions that come with it."
+          ],
+          "speaker": "Leo",
+          "line": "A client wants a repair appointment moved to tomorrow. Should I ask you first?",
+          "replies": [
+            {
+              "label": "No need; move it, the calendar is yours."
+            },
+            {
+              "label": "Ask me before you move anything."
+            },
+            {
+              "label": "Ask Dani; she knows the schedule."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Leo, na recepção, pergunta sobre o horário de um cliente. Escolha sua resposta.",
+          "feedback": {
+            "met": "Você passou a decisão à função que responde pela agenda.",
+            "not_yet": "Ainda não. Veja que resultado o gráfico deu à recepção."
+          },
+          "help": [
+            "Cada função responde por um resultado e pelas decisões que vêm com ele."
+          ],
+          "speaker": "Leo",
+          "line": "Um cliente quer remarcar o reparo para amanhã. Pergunto antes a você?",
+          "replies": [
+            {
+              "label": "Não precisa; mude, a agenda é sua."
+            },
+            {
+              "label": "Me pergunte antes de mover algo."
+            },
+            {
+              "label": "Pergunte à Dani; ela conhece a agenda."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-week-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, planea la primera semana. Una tarea empieza cuando todo lo que necesita está hecho; máximo dos abiertas.",
+          "line": "Reparación: la bienvenida y las herramientas están listas, así que empieza el acompañamiento: verte trabajar. Reparar sin ayuda también lo necesita, y espera."
+        },
+        "en-US": {
+          "prompt": "Step 2, plan the first week. A task starts when all it needs is done; two open at most.",
+          "line": "Mechanic: welcome and tools are done, so shadowing starts: watching you work. Repairing alone needs it too, so it waits."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, planeje a primeira semana. Uma tarefa começa quando tudo o que ela precisa está feito; no máximo duas abertas.",
+          "line": "Reparos: as boas-vindas e as ferramentas estão prontas, então o acompanhamento começa: ver você trabalhar. Consertar sem ajuda também o exige, e espera."
+        }
+      }
+    },
+    {
+      "id": "week-board-01",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "kanban"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "tasks": [
+          {
+            "id": "welcome",
+            "after": []
+          },
+          {
+            "id": "access",
+            "after": []
+          },
+          {
+            "id": "shadow",
+            "after": [
+              "welcome",
+              "access"
+            ]
+          },
+          {
+            "id": "rule",
+            "after": [
+              "welcome"
+            ]
+          },
+          {
+            "id": "book",
+            "after": [
+              "access",
+              "rule"
+            ]
+          },
+          {
+            "id": "alone",
+            "after": [
+              "book",
+              "shadow"
+            ]
+          },
+          {
+            "id": "checkin",
+            "after": [
+              "alone"
+            ]
+          }
+        ],
+        "done": [
+          "welcome",
+          "access"
+        ],
+        "limit": 2
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "doing": [
+              "shadow",
+              "rule"
+            ],
+            "todo": [
+              "book",
+              "alone",
+              "checkin"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Primera semana de Leo en recepción: inicia cada tarea que ya puede empezar.",
+          "feedback": {
+            "met": "Iniciaste solo lo que tenía todo lo anterior hecho.",
+            "not_yet": "Todavía no. Revisa qué necesita cada tarea antes de empezar."
+          },
+          "labels": {
+            "welcome": "Bienvenida y recorrido del taller",
+            "access": "Acceso al calendario y al grupo",
+            "shadow": "Escuchar tus llamadas",
+            "rule": "Leer la regla del calendario",
+            "book": "Agendar cinco visitas con revisión",
+            "alone": "Atender llamadas sin ayuda",
+            "checkin": "Revisión del quinto día"
+          }
+        },
+        "en-US": {
+          "prompt": "Leo's first week at the front desk: start every task that can start now.",
+          "feedback": {
+            "met": "You started only what had everything before it done.",
+            "not_yet": "Not yet. Check what each task needs before it can start."
+          },
+          "labels": {
+            "welcome": "Welcome and shop tour",
+            "access": "Calendar and chat access",
+            "shadow": "Listen in on your calls",
+            "rule": "Read the calendar rule",
+            "book": "Book five visits with review",
+            "alone": "Take calls alone",
+            "checkin": "Day-five check-in"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Primeira semana do Leo na recepção: inicie cada tarefa que já pode começar.",
+          "feedback": {
+            "met": "Você iniciou só o que tinha tudo o que vem antes feito.",
+            "not_yet": "Ainda não. Veja o que cada tarefa precisa antes de começar."
+          },
+          "labels": {
+            "welcome": "Boas-vindas e visita à oficina",
+            "access": "Acesso à agenda e ao grupo",
+            "shadow": "Ouvir suas ligações",
+            "rule": "Ler a regra da agenda",
+            "book": "Agendar cinco visitas com revisão",
+            "alone": "Atender ligações sem ajuda",
+            "checkin": "Revisão do quinto dia"
+          }
+        }
+      }
+    },
+    {
+      "id": "step-talk-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, cuando un rol no encaja, habla pronto y en privado. Describe lo que viste.",
+          "line": "A Leo: “Esta semana dos llamadas quedaron sin respuesta. ¿Cómo te va en recepción?”"
+        },
+        "en-US": {
+          "prompt": "Step 3, when a role does not fit, talk early and in private. Describe what you saw.",
+          "line": "To Leo: “Two calls went unanswered this week. How is the front desk going for you?”"
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, quando uma função não encaixa, converse cedo e em particular. Descreva o que você viu.",
+          "line": "Ao Leo: “Esta semana duas ligações ficaram sem resposta. Como está sendo a recepção para você?”"
+        }
+      }
+    },
+    {
+      "id": "step-path-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, escucha y ofrece un camino con fecha de revisión.",
+          "line": "Leo prefiere el taller. Le ofreces dos semanas allí y una revisión para decidir juntos."
+        },
+        "en-US": {
+          "prompt": "Step 4, listen, then offer a path with a review date.",
+          "line": "Leo prefers the workshop. You offer two weeks there, then a check-in to decide together."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, escute e ofereça um caminho com data de revisão.",
+          "line": "O Leo prefere a oficina. Você oferece duas semanas lá e uma revisão para decidir juntos."
+        }
+      }
+    },
+    {
+      "id": "fit-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.team-culture",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-team"
+          },
+          {
+            "id": "opt-move"
+          },
+          {
+            "id": "opt-private"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-private"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "¿Cómo abres la conversación con Mara?",
+          "feedback": {
+            "met": "Abriste en privado y con lo que viste.",
+            "not_yet": "Todavía no. Recuerda cómo se habló con Leo: pronto, en privado, con hechos."
+          },
+          "help": [
+            "Describe lo que viste, en privado, antes de ofrecer cambios."
+          ],
+          "scene": "Mara entró a recolecciones. Dos veces esta semana llegó tarde a su última parada y se ve agotada.",
+          "options": [
+            {
+              "label": "Decir al equipo que la ruta falla."
+            },
+            {
+              "label": "Cambiarla a recepción sin avisarle."
+            },
+            {
+              "label": "Preguntarle en privado por sus dos retrasos."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "How do you open the conversation with Mara?",
+          "feedback": {
+            "met": "You opened privately, with what you saw.",
+            "not_yet": "Not yet. Recall how Leo was approached: early, private, specific."
+          },
+          "help": [
+            "Describe what you saw, in private, before offering any change."
+          ],
+          "scene": "Mara joined pickups. Twice this week she reached her last stop late, and she looks worn out.",
+          "options": [
+            {
+              "label": "Tell the team the route needs fixing."
+            },
+            {
+              "label": "Move her to the front desk, unannounced."
+            },
+            {
+              "label": "Ask her privately about the two late arrivals."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Como você abre a conversa com a Mara?",
+          "feedback": {
+            "met": "Você abriu em particular, com o que viu.",
+            "not_yet": "Ainda não. Lembre como se falou com o Leo: cedo, em particular, com fatos."
+          },
+          "help": [
+            "Descreva o que você viu, em particular, antes de oferecer mudanças."
+          ],
+          "scene": "A Mara entrou em coletas. Duas vezes esta semana ela chegou atrasada à última parada e parece esgotada.",
+          "options": [
+            {
+              "label": "Dizer à equipe que a rota precisa mudar."
+            },
+            {
+              "label": "Mudá-la para a recepção sem avisar."
+            },
+            {
+              "label": "Perguntar em particular sobre os dois atrasos."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.leading-growth",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-help"
+          },
+          {
+            "id": "choice-role"
+          },
+          {
+            "id": "choice-ask"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-act"
+          },
+          {
+            "id": "reason-clear"
+          },
+          {
+            "id": "reason-time"
+          },
+          {
+            "id": "reason-never"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-role"
+        ],
+        "reasonQuality": {
+          "reason-act": "sound",
+          "reason-clear": "sound",
+          "reason-time": "partial",
+          "reason-never": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Una persona nueva atenderá tu puesto de sábado en el tianguis. ¿Qué haces primero?",
+          "feedback": {
+            "met": "Empezaste nombrando el resultado y las decisiones propias.",
+            "not_yet": "Todavía no. ¿Qué permite que alguien nuevo actúe sin preguntar?"
+          },
+          "help": [
+            "Piensa en qué decide por su cuenta quien responde por un resultado."
+          ],
+          "choices": [
+            {
+              "label": "Decirle que ayude en todo"
+            },
+            {
+              "label": "Definir un resultado y las decisiones de su rol"
+            },
+            {
+              "label": "Que me pregunte antes de cada venta"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es el mejor primer paso?",
+          "reasons": [
+            {
+              "label": "Le permite actuar sin esperarme"
+            },
+            {
+              "label": "Un resultado claro muestra qué decisiones son suyas"
+            },
+            {
+              "label": "Me cuesta menos tiempo hoy"
+            },
+            {
+              "label": "Las personas nuevas no deben decidir nada"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A new hire will run your Saturday farmers market stall. What do you do first?",
+          "feedback": {
+            "met": "You started by naming the result and decisions they own.",
+            "not_yet": "Not yet. What lets a new person act without asking?"
+          },
+          "help": [
+            "Think about what the owner of a result decides alone."
+          ],
+          "choices": [
+            {
+              "label": "Tell them to just help out"
+            },
+            {
+              "label": "Name one result and the decisions they own"
+            },
+            {
+              "label": "Have them ask me before every sale"
+            }
+          ],
+          "reasonPrompt": "Why is that the best first step?",
+          "reasons": [
+            {
+              "label": "It lets them act without waiting for me"
+            },
+            {
+              "label": "A clear result shows which decisions are theirs"
+            },
+            {
+              "label": "It costs me the least time today"
+            },
+            {
+              "label": "New people should not decide anything"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma pessoa nova vai cuidar da sua banca de sábado na feira livre. O que você faz primeiro?",
+          "feedback": {
+            "met": "Você começou nomeando o resultado e as decisões da função.",
+            "not_yet": "Ainda não. O que permite que alguém novo aja sem perguntar?"
+          },
+          "help": [
+            "Pense no que decide por conta própria quem responde por um resultado."
+          ],
+          "choices": [
+            {
+              "label": "Dizer para ajudar em tudo"
+            },
+            {
+              "label": "Definir um resultado e as decisões da função"
+            },
+            {
+              "label": "Que me consulte antes de cada venda"
+            }
+          ],
+          "reasonPrompt": "Por que é o melhor primeiro passo?",
+          "reasons": [
+            {
+              "label": "Permite agir sem esperar por mim"
+            },
+            {
+              "label": "Um resultado claro mostra quais decisões lhe cabem"
+            },
+            {
+              "label": "Me custa menos tempo hoje"
+            },
+            {
+              "label": "Pessoas novas não devem decidir nada"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

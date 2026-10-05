@@ -1,0 +1,982 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-adult",
+  "chapter_id": "inv-adult-time-rates-and-risk",
+  "lesson_id": "inv-adult-01-a-rate-and-ten-years",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "invest.compound-growth",
+    "invest.simple-vs-compound",
+    "invest.time-value"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho compara 100,000 unidades guardadas diez años a una tasa ilustrativa de 4%: interés solo sobre el monto inicial frente a interés que se queda dentro y se compone. Después muestra cuánto vale hoy un pago prometido a cinco años, y la persona adulta practica con cifras nuevas y decide entre dinero hoy y dinero después.",
+  "title": {
+    "en-US": "A rate and ten years",
+    "es-MX": "Una tasa y diez años",
+    "pt-BR": "Uma taxa e dez anos"
+  },
+  "new_concepts": [
+    "invest.compound-growth",
+    "invest.simple-vs-compound",
+    "invest.time-value"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, una persona adulta compara dejar $100,000 pesos diez años en una cuenta de ahorro a plazo o en un instrumento de renta fija del gobierno, como los CETES. La tasa de 4% es ilustrativa, nunca una oferta ni un pronóstico.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "CETES"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, uma pessoa adulta compara deixar R$ 100.000 por dez anos em um CDB, um certificado de depósito bancário, ou no Tesouro Direto. A taxa de 4% é ilustrativa, nunca uma oferta nem uma previsão.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "CDB"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, an adult compares leaving $100,000 for ten years in a savings account or a certificate of deposit. The 4% rate is illustrative, never an offer or a forecast.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "certificate of deposit"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Picture $100,000 in a certificate of deposit for ten years.",
+          "line": "Illustrative rate: 4% a year, not an offer. Two ways to count what the sum becomes."
+        },
+        "es-MX": {
+          "prompt": "Imagina $100,000 en un instrumento de renta fija, como los CETES, por diez años.",
+          "line": "Tasa ilustrativa de 4% anual, no una oferta. Hay dos formas de contar en qué se convierte la suma."
+        },
+        "pt-BR": {
+          "prompt": "Imagine R$ 100.000 em um CDB por dez anos.",
+          "line": "Taxa ilustrativa de 4% ao ano, não uma oferta. Há duas formas de contar no que a quantia se torna."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "take-later"
+          },
+          {
+            "id": "take-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-earns"
+          },
+          {
+            "id": "reason-larger"
+          },
+          {
+            "id": "reason-short"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "take-now"
+        ],
+        "reasonQuality": {
+          "reason-earns": "sound",
+          "reason-larger": "unsupported",
+          "reason-short": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At an illustrative 4%, which do you take: $90,000 now or $100,000 in three years?",
+          "feedback": {
+            "met": "Noted. Rho shows the working next.",
+            "not_yet": "Noted. Rho shows the working next."
+          },
+          "choices": [
+            {
+              "label": "Take $100,000 in three years"
+            },
+            {
+              "label": "Take $90,000 now"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Money in hand can start earning"
+            },
+            {
+              "label": "The larger figure is the better offer"
+            },
+            {
+              "label": "Three years is a short wait"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Con una tasa ilustrativa de 4%, ¿cuál tomas: $90,000 hoy o $100,000 en tres años?",
+          "feedback": {
+            "met": "Anotado. Rho muestra el procedimiento a continuación.",
+            "not_yet": "Anotado. Rho muestra el procedimiento a continuación."
+          },
+          "choices": [
+            {
+              "label": "Tomar $100,000 en tres años"
+            },
+            {
+              "label": "Tomar $90,000 hoy"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "El dinero en mano puede empezar a rendir"
+            },
+            {
+              "label": "La cifra mayor es la mejor oferta"
+            },
+            {
+              "label": "Tres años es una espera corta"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com uma taxa ilustrativa de 4%, qual você escolhe: R$ 90.000 hoje ou R$ 100.000 em três anos?",
+          "feedback": {
+            "met": "Anotado. Rho mostra o cálculo a seguir.",
+            "not_yet": "Anotado. Rho mostra o cálculo a seguir."
+          },
+          "choices": [
+            {
+              "label": "Receber R$ 100.000 em três anos"
+            },
+            {
+              "label": "Receber R$ 90.000 hoje"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "O dinheiro na mão já pode render"
+            },
+            {
+              "label": "O valor maior é a melhor oferta"
+            },
+            {
+              "label": "Três anos é uma espera curta"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-simple-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: interest on the start amount only.",
+          "line": "4% of $100,000 is $4,000 a year. Ten years pay $40,000, so the sum reaches $140,000."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: interés solo sobre el monto inicial.",
+          "line": "El 4% de $100,000 son $4,000 al año. En diez años suman $40,000 y la cantidad llega a $140,000."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: juros só sobre o valor inicial.",
+          "line": "4% de R$ 100.000 são R$ 4.000 por ano. Em dez anos somam R$ 40.000, e o total chega a R$ 140.000."
+        }
+      }
+    },
+    {
+      "id": "example-compound-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: leave the interest in.",
+          "line": "Year 1 ends at $104,000. Year 2 earns 4% of that, $4,160, and ends at $108,160."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: deja el interés dentro.",
+          "line": "El año 1 termina en $104,000. El año 2 gana 4% de esa cantidad, $4,160, y termina en $108,160."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: deixe os juros dentro.",
+          "line": "O ano 1 termina em R$ 104.000. O ano 2 rende 4% desse valor, R$ 4.160, e termina em R$ 108.160."
+        }
+      }
+    },
+    {
+      "id": "example-chart-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "year-0"
+            },
+            {
+              "id": "year-1"
+            },
+            {
+              "id": "year-2"
+            },
+            {
+              "id": "year-3"
+            },
+            {
+              "id": "year-4"
+            },
+            {
+              "id": "year-5"
+            },
+            {
+              "id": "year-6"
+            },
+            {
+              "id": "year-7"
+            },
+            {
+              "id": "year-8"
+            },
+            {
+              "id": "year-9"
+            },
+            {
+              "id": "year-10"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-simple",
+              "values": [
+                100000,
+                104000,
+                108000,
+                112000,
+                116000,
+                120000,
+                124000,
+                128000,
+                132000,
+                136000,
+                140000
+              ]
+            },
+            {
+              "id": "series-compound",
+              "values": [
+                100000,
+                104000,
+                108160,
+                112486,
+                116986,
+                121665,
+                126532,
+                131593,
+                136857,
+                142331,
+                148024
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: at year 10, $148,024 against $140,000. The $8,024 gap is interest on interest.",
+          "title": "Dollars by year at 4%",
+          "data": {
+            "categories": [
+              {
+                "label": "0"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "6"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "8"
+              },
+              {
+                "label": "9"
+              },
+              {
+                "label": "10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Interest on start amount only"
+              },
+              {
+                "label": "Interest left in"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 3: en el año 10, $148,024 frente a $140,000. La brecha de $8,024 es interés sobre interés.",
+          "title": "Pesos por año al 4%",
+          "data": {
+            "categories": [
+              {
+                "label": "0"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "6"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "8"
+              },
+              {
+                "label": "9"
+              },
+              {
+                "label": "10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Interés solo sobre el monto inicial"
+              },
+              {
+                "label": "Interés dejado dentro"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: no ano 10, R$ 148.024 contra R$ 140.000. A diferença de R$ 8.024 é juro sobre juro.",
+          "title": "Reais por ano a 4%",
+          "data": {
+            "categories": [
+              {
+                "label": "0"
+              },
+              {
+                "label": "1"
+              },
+              {
+                "label": "2"
+              },
+              {
+                "label": "3"
+              },
+              {
+                "label": "4"
+              },
+              {
+                "label": "5"
+              },
+              {
+                "label": "6"
+              },
+              {
+                "label": "7"
+              },
+              {
+                "label": "8"
+              },
+              {
+                "label": "9"
+              },
+              {
+                "label": "10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Juros só sobre o valor inicial"
+              },
+              {
+                "label": "Juros deixados dentro"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-compound-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.compound-growth",
+      "payload": {
+        "steps": [
+          {
+            "id": "year-one"
+          },
+          {
+            "id": "year-two"
+          },
+          {
+            "id": "year-three"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "year-two",
+          "year-three"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "year-two": "135200",
+          "year-three": "140608"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "You leave $125,000 at 4% with interest in. Find the value after year 2, then year 3.",
+          "feedback": {
+            "met": "You added 4% to each year's value and carried it forward.",
+            "not_yet": "Look at step 2: each year earns 4% of the new total."
+          },
+          "help": [
+            "Do as step 2 did: add 4% of the current value."
+          ],
+          "steps": [
+            {
+              "expression": "Year 1: $125,000 + 4% of $125,000",
+              "result": "$130,000",
+              "spokenText": "4% of $125,000 is $5,000, so year 1 ends at $130,000"
+            },
+            {
+              "expression": "Year 2: $130,000 + 4% of $130,000",
+              "result": "$135,200",
+              "spokenText": "4% of $130,000 is $5,200, so year 2 ends at $135,200"
+            },
+            {
+              "expression": "Year 3: year 2 value + 4% of it",
+              "result": "$140,608",
+              "spokenText": "4% of $135,200 is $5,408, so year 3 ends at $140,608"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dejas $125,000 al 4% con el interés dentro. Calcula el valor al año 2 y luego al año 3.",
+          "feedback": {
+            "met": "Sumaste 4% al valor de cada año y lo llevaste al siguiente.",
+            "not_yet": "Mira el paso 2: cada año gana 4% del nuevo total."
+          },
+          "help": [
+            "Haz como en el paso 2: suma 4% del valor actual."
+          ],
+          "steps": [
+            {
+              "expression": "Año 1: $125,000 + 4% de $125,000",
+              "result": "$130,000",
+              "spokenText": "El 4% de $125,000 es $5,000, así que el año 1 cierra en $130,000"
+            },
+            {
+              "expression": "Año 2: $130,000 + 4% de $130,000",
+              "result": "$135,200",
+              "spokenText": "El 4% de $130,000 es $5,200, así que el año 2 cierra en $135,200"
+            },
+            {
+              "expression": "Año 3: valor del año 2 + 4% de ese valor",
+              "result": "$140,608",
+              "spokenText": "El 4% de $135,200 es $5,408, así que el año 3 cierra en $140,608"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você deixa R$ 125.000 a 4% com os juros dentro. Calcule o valor no ano 2 e depois no ano 3.",
+          "feedback": {
+            "met": "Você somou 4% ao valor de cada ano e levou para o seguinte.",
+            "not_yet": "Veja o passo 2: cada ano rende 4% do novo total."
+          },
+          "help": [
+            "Faça como no passo 2: some 4% do valor atual."
+          ],
+          "steps": [
+            {
+              "expression": "Ano 1: R$ 125.000 + 4% de R$ 125.000",
+              "result": "R$ 130.000",
+              "spokenText": "4% de R$ 125.000 é R$ 5.000, então o ano 1 termina em R$ 130.000"
+            },
+            {
+              "expression": "Ano 2: R$ 130.000 + 4% de R$ 130.000",
+              "result": "R$ 135.200",
+              "spokenText": "4% de R$ 130.000 é R$ 5.200, então o ano 2 termina em R$ 135.200"
+            },
+            {
+              "expression": "Ano 3: valor do ano 2 + 4% desse valor",
+              "result": "R$ 140.608",
+              "spokenText": "4% de R$ 135.200 é R$ 5.408, então o ano 3 termina em R$ 140.608"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-compound-01",
+      "type": "money.compound-interest.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "compound-interest"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.simple-vs-compound",
+      "payload": {
+        "principalCents": 5000000,
+        "scenario": {
+          "rate": 5,
+          "years": 8
+        },
+        "options": [
+          {
+            "id": "opt-a",
+            "cents": 6500000
+          },
+          {
+            "id": "opt-b",
+            "cents": 7000000
+          },
+          {
+            "id": "opt-c",
+            "cents": 7400000
+          },
+          {
+            "id": "opt-d",
+            "cents": 8200000
+          }
+        ],
+        "challenge": {
+          "minimumCents": 9000000,
+          "maximumYears": 12
+        },
+        "explain": [
+          "deposit-grows",
+          "interest-on-interest",
+          "same-each-year"
+        ]
+      },
+      "rubric": {
+        "predictOption": "opt-c",
+        "explainId": "interest-on-interest"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Predict $50,000 after 8 years at an illustrative 5%, then use the sliders to reach $90,000 within 12 years.",
+          "feedback": {
+            "met": "You predicted compounding, named why it grows and met the goal.",
+            "not_yet": "Recheck Rho’s values, your reason, and the slider goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "Predice $50,000 a 8 años con una tasa ilustrativa de 5%; luego usa los controles para llegar a $90,000 en 12 años o menos.",
+          "feedback": {
+            "met": "Predijiste el valor compuesto, nombraste por qué crece y llegaste a la meta.",
+            "not_yet": "Revisa los valores de Rho, tu razón y la meta de los controles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preveja R$ 50.000 após 8 anos com taxa ilustrativa de 5%; depois use os controles para chegar a R$ 90.000 em até 12 anos.",
+          "feedback": {
+            "met": "Você previu o valor composto, explicou por que cresce e atingiu a meta.",
+            "not_yet": "Revise os valores de Rho, seu motivo e a meta dos controles."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-later-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: $100,000 due in a year is worth less today.",
+          "line": "$96,154 kept a year at 4% becomes about $100,000. So $96,154 is today's worth of that payment."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: $100,000 que vencen en un año valen menos hoy.",
+          "line": "$96,154 guardados un año al 4% se vuelven unos $100,000. Así que $96,154 es el valor de hoy de ese pago."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: R$ 100.000 que vencem em um ano valem menos hoje.",
+          "line": "R$ 96.154 guardados por um ano a 4% viram cerca de R$ 100.000. Então R$ 96.154 é o valor de hoje desse pagamento."
+        }
+      }
+    },
+    {
+      "id": "example-back-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: bring five years back to today.",
+          "line": "Divide by 1.04 once per year. $100,000 due in five years, divided five times, is about $82,193."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: trae cinco años de vuelta a hoy.",
+          "line": "Divide entre 1.04 una vez por año. $100,000 a cinco años, divididos cinco veces, valen unos $82,193."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: traga cinco anos de volta para hoje.",
+          "line": "Divida por 1,04 uma vez por ano. R$ 100.000 em cinco anos, divididos cinco vezes, valem cerca de R$ 82.193."
+        }
+      }
+    },
+    {
+      "id": "example-order-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: the larger payment goes first.",
+          "line": "Payments of $40,000 and $10,000 arrive in years 1 and 2. Larger first is worth $47,707 today; smaller first, $46,598."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: el pago mayor va primero.",
+          "line": "Pagos de $40,000 y $10,000 llegan en los años 1 y 2. El mayor primero vale $47,707 hoy; el menor primero, $46,598."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: o pagamento maior vem primeiro.",
+          "line": "Pagamentos de R$ 40.000 e R$ 10.000 chegam nos anos 1 e 2. Maior primeiro vale R$ 47.707 hoje; menor primeiro, R$ 46.598."
+        }
+      }
+    },
+    {
+      "id": "practice-order-01",
+      "type": "money.time-value.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "time-value"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "rateBps": 400,
+        "ask": "present",
+        "task": {
+          "kind": "order",
+          "side": "receive",
+          "amountsCents": [
+            2000000,
+            5000000,
+            3000000
+          ]
+        }
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "year-1": [
+              "pay-2"
+            ],
+            "year-2": [
+              "pay-3"
+            ],
+            "year-3": [
+              "pay-1"
+            ]
+          }
+        ],
+        "tolerance": {
+          "absolute": "1"
+        },
+        "review": {
+          "absolute": "25"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At an illustrative 4%, order the payments for the most value today. Type that worth, rounded to a whole number.",
+          "feedback": {
+            "met": "You ordered for the most value today and typed its worth.",
+            "not_yet": "Recheck the order and your worth: waiting shrinks each payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "A una tasa ilustrativa de 4%, ordena los pagos para que valgan lo máximo hoy. Escribe ese valor, redondeado a un número entero.",
+          "feedback": {
+            "met": "Ordenaste para el mayor valor de hoy y escribiste cuánto vale.",
+            "not_yet": "Revisa el orden y tu valor: esperar reduce cada pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A uma taxa ilustrativa de 4%, ordene os pagamentos para valerem o máximo hoje. Digite esse valor, arredondado para um número inteiro.",
+          "feedback": {
+            "met": "Você ordenou para o maior valor de hoje e digitou quanto vale.",
+            "not_yet": "Revise a ordem e o seu valor: esperar reduz cada pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-invoice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.time-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "take-later"
+          },
+          {
+            "id": "take-now"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-larger"
+          },
+          {
+            "id": "reason-same-date"
+          },
+          {
+            "id": "reason-safe"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "take-later"
+        ],
+        "reasonQuality": {
+          "reason-larger": "unsupported",
+          "reason-same-date": "sound",
+          "reason-safe": "partial"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A client offers $70,000 now or $80,000 in three years. At an illustrative 4%, which is worth more today?",
+          "feedback": {
+            "met": "At an illustrative 4%, the later offer is worth more today.",
+            "not_yet": "Put both offers on one date, as in Rho’s examples."
+          },
+          "choices": [
+            {
+              "label": "Take $80,000 in three years"
+            },
+            {
+              "label": "Take $70,000 now"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "A larger figure always wins"
+            },
+            {
+              "label": "I moved both amounts to one date"
+            },
+            {
+              "label": "Money now is always safer"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un cliente ofrece $70,000 hoy o $80,000 en tres años. Con una tasa ilustrativa de 4%, ¿cuál vale más hoy?",
+          "feedback": {
+            "met": "Con el 4% ilustrativo, la oferta posterior vale más hoy.",
+            "not_yet": "Lleva ambas ofertas a una misma fecha, como en los ejemplos de Rho."
+          },
+          "choices": [
+            {
+              "label": "Aceptar $80,000 en tres años"
+            },
+            {
+              "label": "Aceptar $70,000 hoy"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Una cifra mayor siempre gana"
+            },
+            {
+              "label": "Llevé ambas cantidades a una misma fecha"
+            },
+            {
+              "label": "El dinero hoy siempre es más seguro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um cliente oferece R$ 70.000 hoje ou R$ 80.000 em três anos. Com uma taxa ilustrativa de 4%, qual vale mais hoje?",
+          "feedback": {
+            "met": "Com os 4% ilustrativos, a oferta futura vale mais hoje.",
+            "not_yet": "Leve as duas ofertas para uma mesma data, como nos exemplos de Rho."
+          },
+          "choices": [
+            {
+              "label": "Aceitar R$ 80.000 em três anos"
+            },
+            {
+              "label": "Aceitar R$ 70.000 hoje"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "O valor maior sempre ganha"
+            },
+            {
+              "label": "Levei os dois valores para uma mesma data"
+            },
+            {
+              "label": "Dinheiro hoje é sempre mais seguro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

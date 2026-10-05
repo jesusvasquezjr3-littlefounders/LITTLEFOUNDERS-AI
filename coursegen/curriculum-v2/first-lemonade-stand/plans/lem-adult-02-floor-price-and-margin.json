@@ -1,0 +1,697 @@
+{
+  "plan_version": 1,
+  "course_id": "first-lemonade-stand",
+  "pathway_id": "lemonade-adult",
+  "chapter_id": "lem-adult-weekend-stall",
+  "lesson_id": "lem-adult-02-floor-price-and-margin",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.margin",
+    "biz.pricing-strategy",
+    "biz.negotiation"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara muestra con ejemplos cómo calcular el margen de una vela y el precio mínimo por debajo del cual una venta pierde dinero. Ves la diferencia entre margen y recargo, qué responder cuando un cliente pide tres por el precio de dos y cómo se mueve el precio cuando cambia el mercado. Luego lo aplicas tú, con una contraoferta en un producto distinto.",
+  "title": {
+    "en-US": "A floor price before you haggle",
+    "es-MX": "Un precio mínimo antes de regatear",
+    "pt-BR": "Um preço mínimo antes de negociar"
+  },
+  "new_concepts": [
+    "biz.margin",
+    "biz.pricing-strategy",
+    "biz.negotiation"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En un tianguis de fin de semana es normal regatear, y a media tarde los clientes piden un trato por llevar varias velas. Antes de contestar se calcula el margen de una vela y el precio mínimo con cifras de ejemplo.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Na feira de artesanato é comum pedir desconto na compra de várias peças, e muita gente paga por Pix. Antes de responder, calcula-se a margem de uma vela e o preço mínimo com valores de exemplo.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "feira de artesanato",
+          "Pix"
+        ]
+      },
+      "en-US": {
+        "scenario": "At a US farmers market, a customer near closing time often asks for a bundle price on several candles. The seller works out the margin on a candle and a floor price from example figures before answering.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "farmers market"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "4 pm, farmers market: a customer holds three candles. Amounts here are examples in your currency.",
+          "line": "The booths around you are packing up. She is about to ask for a deal."
+        },
+        "es-MX": {
+          "prompt": "Cuatro de la tarde en el tianguis: una clienta toma tres velas. Las cifras son ejemplos en tu moneda.",
+          "line": "Los demás puestos ya recogen. En un momento te pedirá un trato."
+        },
+        "pt-BR": {
+          "prompt": "Quatro da tarde na feira de artesanato: uma cliente pega três velas. Os valores aqui são exemplos na sua moeda.",
+          "line": "As outras barracas já estão guardando tudo. Daqui a pouco ela vai pedir um desconto."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-deal"
+          },
+          {
+            "id": "reply-never"
+          },
+          {
+            "id": "reply-floor"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-floor"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "She waits for your answer. What do you say?",
+          "feedback": {
+            "met": "Now the numbers. Short steps, nothing skipped.",
+            "not_yet": "Now the numbers. Short steps, nothing skipped."
+          },
+          "speaker": "Maya",
+          "line": "I'll take three if you give me the price of two.",
+          "replies": [
+            {
+              "label": "Deal, a sale is a sale."
+            },
+            {
+              "label": "No, I never discount."
+            },
+            {
+              "label": "Let me work out my lowest price."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ella espera tu respuesta. ¿Qué dices?",
+          "feedback": {
+            "met": "Ahora los números, en pasos cortos y sin saltarse nada.",
+            "not_yet": "Ahora los números, en pasos cortos y sin saltarse nada."
+          },
+          "speaker": "Rosa",
+          "line": "Me llevo tres si me das el precio de dos.",
+          "replies": [
+            {
+              "label": "Trato hecho, vender es vender."
+            },
+            {
+              "label": "No, yo nunca hago descuentos."
+            },
+            {
+              "label": "Déjame calcular mi precio mínimo."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ela espera a sua resposta. O que você diz?",
+          "feedback": {
+            "met": "Agora os números, em passos curtos e sem pular nada.",
+            "not_yet": "Agora os números, em passos curtos e sem pular nada."
+          },
+          "speaker": "Renata",
+          "line": "Levo três se você fizer o preço de duas.",
+          "replies": [
+            {
+              "label": "Fechado, vender é vender."
+            },
+            {
+              "label": "Não, eu nunca dou desconto."
+            },
+            {
+              "label": "Deixe-me calcular meu preço mínimo."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-margin-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your candle: all-in cost 70, listed at 120.",
+          "line": "Step 1. Margin per candle: 120 − 70 = 50, and 50 ÷ 120 ≈ 42% of the price."
+        },
+        "es-MX": {
+          "prompt": "Tu vela: costo completo 70, precio de lista 120.",
+          "line": "Paso 1. Margen por vela: 120 − 70 = 50, y 50 ÷ 120 ≈ 42% del precio."
+        },
+        "pt-BR": {
+          "prompt": "Sua vela: custo completo 70, preço de venda 120.",
+          "line": "Passo 1. Margem por vela: 120 − 70 = 50, e 50 ÷ 120 ≈ 42% do preço."
+        }
+      }
+    },
+    {
+      "id": "ex-price-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cost 60. Compare a 25% markup on cost with a 25% margin on price.",
+          "line": "Step 2. Markup: 60 × 1.25 = 75. Margin: 60 ÷ 0.75 = 80, since cost is 75% of the price."
+        },
+        "es-MX": {
+          "prompt": "Costo 60. Compara un recargo de 25% sobre el costo con un margen de 25% sobre el precio.",
+          "line": "Paso 2. Recargo: 60 × 1.25 = 75. Margen: 60 ÷ 0.75 = 80, porque el costo es 75% del precio."
+        },
+        "pt-BR": {
+          "prompt": "Custo 60. Compare um acréscimo de 25% sobre o custo com uma margem de 25% sobre o preço.",
+          "line": "Passo 2. Acréscimo: 60 × 1,25 = 75. Margem: 60 ÷ 0,75 = 80, pois o custo é 75% do preço."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "fin.margin-markup.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "margin-markup"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "cost": 70,
+        "basis": "margin",
+        "percent": 30,
+        "maxPrice": 200,
+        "start": 70
+      },
+      "rubric": {
+        "target": 100
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your candle costs 70 all-in. Set the price so the margin is 30% of the price.",
+          "feedback": {
+            "met": "You set a price whose margin is 30% of the price.",
+            "not_yet": "Not yet. Revisit the example: cost is the rest of the price."
+          },
+          "help": [
+            "Price = cost ÷ the share of the price the cost covers."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu vela tiene un costo completo de 70. Fija el precio para que el margen sea 30% del precio.",
+          "feedback": {
+            "met": "Fijaste un precio cuyo margen es 30% del precio.",
+            "not_yet": "Todavía no. Repasa el ejemplo: el costo es el resto del precio."
+          },
+          "help": [
+            "Precio = costo ÷ la parte del precio que cubre el costo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sua vela tem custo completo de 70. Defina o preço para que a margem seja 30% do preço.",
+          "feedback": {
+            "met": "Você definiu um preço cuja margem é 30% do preço.",
+            "not_yet": "Ainda não. Reveja o exemplo: o custo é o resto do preço."
+          },
+          "help": [
+            "Preço = custo ÷ a parte do preço que o custo cobre."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-markup-01",
+      "type": "fin.margin-markup.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "margin-markup"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "cost": 90,
+        "basis": "markup",
+        "percent": 40,
+        "maxPrice": 200,
+        "start": 90
+      },
+      "rubric": {
+        "target": 126
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A larger candle costs 90 all-in. Set the price with a markup of 40% on the cost.",
+          "feedback": {
+            "met": "You set a price with a 40% markup on the cost.",
+            "not_yet": "Not yet. Markup is a share of the cost."
+          },
+          "help": [
+            "Add that share of the cost to the cost."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una vela más grande tiene un costo completo de 90. Fija el precio con un recargo de 40% sobre el costo.",
+          "feedback": {
+            "met": "Fijaste un precio con recargo de 40% sobre el costo.",
+            "not_yet": "Todavía no. El recargo es una parte del costo."
+          },
+          "help": [
+            "Suma esa parte del costo al costo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma vela maior tem custo completo de 90. Defina o preço com um acréscimo de 40% sobre o custo.",
+          "feedback": {
+            "met": "Você definiu um preço com acréscimo de 40% sobre o custo.",
+            "not_yet": "Ainda não. O acréscimo é uma parte do custo."
+          },
+          "help": [
+            "Some essa parte do custo ao custo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-floor-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Floor price = all-in cost = 70. Below it, a sale loses money.",
+          "line": "Step 3. Three for two: 2 × 120 = 240, and 240 ÷ 3 = 80 each. That clears the floor by 10."
+        },
+        "es-MX": {
+          "prompt": "Precio mínimo = costo completo = 70. Por debajo, la venta pierde dinero.",
+          "line": "Paso 3. Tres por dos: 2 × 120 = 240, y 240 ÷ 3 = 80 cada una. Supera el mínimo por 10."
+        },
+        "pt-BR": {
+          "prompt": "Preço mínimo = custo completo = 70. Abaixo disso, a venda dá prejuízo.",
+          "line": "Passo 3. Três pelo preço de duas: 2 × 120 = 240, e 240 ÷ 3 = 80 cada. Passa do mínimo em 10."
+        }
+      }
+    },
+    {
+      "id": "ex-counter-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Another customer offers 190 for three candles. The floor for three is 3 × 70 = 210.",
+          "line": "Step 4. 190 is under 210, so it loses money. Counter at 225, which is 75 each."
+        },
+        "es-MX": {
+          "prompt": "Otro cliente ofrece 190 por tres velas. El mínimo para tres es 3 × 70 = 210.",
+          "line": "Paso 4. 190 queda debajo de 210, así que pierdes dinero. Contraoferta de 225: 75 cada una."
+        },
+        "pt-BR": {
+          "prompt": "Outro cliente oferece 190 por três velas. O mínimo para três é 3 × 70 = 210.",
+          "line": "Passo 4. 190 fica abaixo de 210, então você perde dinheiro. Contraproposta de 225: 75 cada."
+        }
+      }
+    },
+    {
+      "id": "practice-haggle-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-take"
+          },
+          {
+            "id": "reply-high"
+          },
+          {
+            "id": "reply-near"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-high"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Your all-in cost is 70 a candle. What do you answer?",
+          "feedback": {
+            "met": "Your counter clears the floor: three times the cost.",
+            "not_yet": "Not yet. Compare each offer with three times the cost."
+          },
+          "speaker": "Leo",
+          "line": "I can do 200 for the three.",
+          "replies": [
+            {
+              "label": "Take it: 200 for three."
+            },
+            {
+              "label": "Counter: three for 225."
+            },
+            {
+              "label": "Counter: three for 205."
+            }
+          ],
+          "help": [
+            "The floor for three candles is three times the cost."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tu costo completo es 70 por vela. ¿Qué respondes?",
+          "feedback": {
+            "met": "Tu contraoferta supera el mínimo: tres veces el costo.",
+            "not_yet": "Todavía no. Compara cada oferta con tres veces el costo."
+          },
+          "speaker": "Luis",
+          "line": "Te doy 200 por las tres.",
+          "replies": [
+            {
+              "label": "Acepto: 200 por las tres."
+            },
+            {
+              "label": "Contraoferta: tres por 225."
+            },
+            {
+              "label": "Contraoferta: tres por 205."
+            }
+          ],
+          "help": [
+            "El mínimo para tres velas es tres veces el costo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Seu custo completo é 70 por vela. O que você responde?",
+          "feedback": {
+            "met": "Sua contraproposta supera o mínimo: três vezes o custo.",
+            "not_yet": "Ainda não. Compare cada oferta com três vezes o custo."
+          },
+          "speaker": "Leonardo",
+          "line": "Posso pagar 200 pelas três.",
+          "replies": [
+            {
+              "label": "Aceito: 200 pelas três."
+            },
+            {
+              "label": "Contraproposta: três por 225."
+            },
+            {
+              "label": "Contraproposta: três por 205."
+            }
+          ],
+          "help": [
+            "O mínimo para três velas é três vezes o custo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-shift-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Votives at your market sell at 20. A festival adds demand for 18 more at each price.",
+          "line": "Step 5. More buyers lift the price to 23; more sellers lower it. Your floor stays at your cost."
+        },
+        "es-MX": {
+          "prompt": "Las veladoras de tu tianguis se venden a 20. Un festival suma demanda de 18 más en cada precio.",
+          "line": "Paso 5. Más compradores suben el precio a 23; más vendedores lo bajan. Tu mínimo sigue siendo tu costo."
+        },
+        "pt-BR": {
+          "prompt": "As velas votivas da feira saem a 20. Um festival soma demanda de 18 a mais em cada preço.",
+          "line": "Passo 5. Mais compradores elevam o preço para 23; mais vendedores o reduzem. Seu mínimo continua sendo o seu custo."
+        }
+      }
+    },
+    {
+      "id": "practice-shift-01",
+      "type": "econ.market-shift.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "market-shift"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "pMax": 40,
+        "qMax": 140,
+        "demand": {
+          "a": 120,
+          "b": 3
+        },
+        "supply": {
+          "c": 0,
+          "d": 3
+        },
+        "shift": {
+          "curve": "supply",
+          "by": 12
+        },
+        "start": 20
+      },
+      "rubric": {
+        "target": {
+          "direction": "down",
+          "price": 18
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Another booth brings 12 more votives at each price. Choose the direction, then set the new price.",
+          "feedback": {
+            "met": "You read the shift and set the new price.",
+            "not_yet": "Not yet. Find where the curves meet after the shift."
+          },
+          "help": [
+            "The supply curve moved. Read where it now crosses demand."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Otro puesto trae 12 veladoras más en cada precio. Elige la dirección y fija el precio nuevo.",
+          "feedback": {
+            "met": "Leíste el desplazamiento y fijaste el precio nuevo.",
+            "not_yet": "Todavía no. Busca dónde se cruzan las curvas tras el desplazamiento."
+          },
+          "help": [
+            "La curva de oferta se movió. Lee dónde cruza ahora la demanda."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Outra barraca traz 12 velas votivas a mais em cada preço. Escolha a direção e defina o novo preço.",
+          "feedback": {
+            "met": "Você leu o deslocamento e definiu o novo preço.",
+            "not_yet": "Ainda não. Procure onde as curvas se cruzam após o deslocamento."
+          },
+          "help": [
+            "A curva de oferta se moveu. Veja onde ela cruza a demanda agora."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.negotiation",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-counter"
+          },
+          {
+            "id": "reply-accept"
+          },
+          {
+            "id": "reply-low"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-counter"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Tote bags cost you 90 all-in and are listed at 150. Your answer?",
+          "feedback": {
+            "met": "Your counter stays above the floor, so the sale still pays.",
+            "not_yet": "Not yet. Check each price against what a bag costs you."
+          },
+          "speaker": "Sam",
+          "line": "I run a café. I'll take six bags at 80 each.",
+          "replies": [
+            {
+              "label": "Counter at 105 each for the six."
+            },
+            {
+              "label": "Accept: six at 80 each."
+            },
+            {
+              "label": "Counter at 85 each for the six."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Cada bolsa tiene un costo completo de 90 y se anuncia en 150. ¿Qué respondes?",
+          "feedback": {
+            "met": "Tu contraoferta queda sobre el mínimo, así que la venta sí deja ganancia.",
+            "not_yet": "Todavía no. Compara cada precio con lo que te cuesta una bolsa."
+          },
+          "speaker": "Iván",
+          "line": "Tengo una cafetería. Me llevo seis bolsas a 80 cada una.",
+          "replies": [
+            {
+              "label": "Contraoferta: 105 cada una por las seis."
+            },
+            {
+              "label": "Acepto: seis a 80 cada una."
+            },
+            {
+              "label": "Contraoferta: 85 cada una por las seis."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cada bolsa de tecido tem custo completo de 90 e está anunciada por 150. O que você responde?",
+          "feedback": {
+            "met": "Sua contraproposta fica acima do mínimo, então a venda ainda compensa.",
+            "not_yet": "Ainda não. Compare cada preço com o que uma bolsa custa para você."
+          },
+          "speaker": "Rafael",
+          "line": "Tenho uma cafeteria. Levo seis bolsas a 80 cada.",
+          "replies": [
+            {
+              "label": "Contraproposta: 105 cada, pelas seis."
+            },
+            {
+              "label": "Aceito: seis a 80 cada."
+            },
+            {
+              "label": "Contraproposta: 85 cada, pelas seis."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

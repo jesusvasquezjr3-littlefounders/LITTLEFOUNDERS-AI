@@ -1,0 +1,1056 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-market-day",
+  "lesson_id": "fe-69-11-which-stall-is-cheaper",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 8,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.smart-shopping",
+    "money.estimate-total",
+    "money.compare-amounts"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-b"
+  },
+  "brief": "Dina tiene 60 monedas para un papalote y un libro, y dos puestos venden los dos. Al redondear cada precio a la decena más cercana, los dos puestos salen en cerca de 60. Como redondear no alcanza para elegir, Dina suma los precios exactos: 28 y 31 hacen 59, y 25 y 33 hacen 58. El niño redondea, lee una gráfica y compara puestos con precios nuevos, y decide en una feria de la escuela.",
+  "title": {
+    "en-US": "Which stall is cheaper",
+    "es-MX": "¿Qué puesto es más barato?",
+    "pt-BR": "Qual barraca é mais barata?"
+  },
+  "new_concepts": [
+    "life.smart-shopping",
+    "money.estimate-total"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "hook",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina has 60 coins for a kite and a book.",
+          "line": "Stall A and Stall B sell both. No rush."
+        },
+        "es-MX": {
+          "prompt": "Dina tiene 60 monedas para un papalote y un libro.",
+          "line": "El puesto A y el puesto B venden los dos. Sin prisa."
+        },
+        "pt-BR": {
+          "prompt": "A Dina tem 60 moedas para uma pipa e um livro.",
+          "line": "A barraca A e a barraca B vendem os dois. Sem pressa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "pre",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_phase": "pre",
+      "item_role": "practice",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-a"
+          },
+          {
+            "id": "choice-b"
+          },
+          {
+            "id": "choice-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-kite"
+          },
+          {
+            "id": "why-added"
+          },
+          {
+            "id": "why-feel"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-b"
+        ],
+        "reasonQuality": {
+          "why-added": "sound",
+          "why-kite": "partial",
+          "why-feel": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which stall costs less for a kite and a book?",
+          "feedback": {
+            "met": "Thanks. Now we'll look at it together, step by step.",
+            "not_yet": "Thanks. Now we'll look at it together, step by step."
+          },
+          "choices": [
+            {
+              "label": "Stall A: 12 and 19"
+            },
+            {
+              "label": "Stall B: 14 and 15"
+            },
+            {
+              "label": "They cost the same"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "A has the cheaper kite."
+            },
+            {
+              "label": "I added each stall’s prices."
+            },
+            {
+              "label": "It just feels cheaper."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué puesto cuesta menos por un papalote y un libro?",
+          "feedback": {
+            "met": "Gracias. Ahora lo vemos juntos, paso a paso.",
+            "not_yet": "Gracias. Ahora lo vemos juntos, paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Puesto A: 12 y 19"
+            },
+            {
+              "label": "Puesto B: 14 y 15"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "El A tiene el papalote más barato."
+            },
+            {
+              "label": "Sumé los precios de cada puesto."
+            },
+            {
+              "label": "Solo me parece más barato."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Qual barraca custa menos por uma pipa e um livro?",
+          "feedback": {
+            "met": "Anotado. Agora vamos ver juntos, passo a passo.",
+            "not_yet": "Anotado. Agora vamos ver juntos, passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Barraca A: 12 e 19"
+            },
+            {
+              "label": "Barraca B: 14 e 15"
+            },
+            {
+              "label": "Custam o mesmo"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "A tem a pipa mais barata."
+            },
+            {
+              "label": "Somei os preços de cada barraca."
+            },
+            {
+              "label": "Só parece mais barato."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-chart-01",
+      "type": "visual.chart.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "grouped-bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "item-kite"
+            },
+            {
+              "id": "item-book"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-stall-a",
+              "values": [
+                28,
+                31
+              ]
+            },
+            {
+              "id": "series-stall-b",
+              "values": [
+                25,
+                33
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: Press “Show as table” to read each price.",
+          "title": "Prices at each stall",
+          "data": {
+            "categories": [
+              {
+                "label": "Kite"
+              },
+              {
+                "label": "Book"
+              }
+            ],
+            "series": [
+              {
+                "label": "Stall A"
+              },
+              {
+                "label": "Stall B"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: Toca “Ver tabla” para leer cada precio.",
+          "title": "Precios en cada puesto",
+          "data": {
+            "categories": [
+              {
+                "label": "Papalote"
+              },
+              {
+                "label": "Libro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Puesto A"
+              },
+              {
+                "label": "Puesto B"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: Toque em “Ver tabela” para ler cada preço.",
+          "title": "Preços em cada barraca",
+          "data": {
+            "categories": [
+              {
+                "label": "Pipa"
+              },
+              {
+                "label": "Livro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Barraca A"
+              },
+              {
+                "label": "Barraca B"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-round-a-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: round each price to the nearest ten.",
+          "line": "28 and 31 are both about 30. Stall A: about 60."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: redondea cada precio a la decena más cercana.",
+          "line": "28 y 31 están cerca de 30. Puesto A: cerca de 60."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: arredonde cada preço para a dezena mais próxima.",
+          "line": "28 e 31 ficam perto de 30. Barraca A: perto de 60."
+        }
+      }
+    },
+    {
+      "id": "ex-round-b-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: Stall B. 25 is halfway: round up to 30.",
+          "line": "33 is about 30 too. Stall B: about 60 as well."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: puesto B. 25 está a la mitad: sube a 30.",
+          "line": "33 está cerca de 30. Puesto B: cerca de 60 también."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: barraca B. 25 está no meio: sobe para 30.",
+          "line": "33 fica perto de 30. Barraca B: perto de 60 também."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.number-line.whole.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 10,
+        "initial": 0
+      },
+      "rubric": {
+        "target": 50
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Dina sees a drum for 47. Mark the nearest ten.",
+          "feedback": {
+            "met": "You marked the ten that 47 is closest to.",
+            "not_yet": "Not yet: check which ten sits closer to 47."
+          },
+          "help": [
+            "Find the tens just below and above 47.",
+            "Which one is 47 closer to? No rush."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Dina ve un tambor de 47. Marca la decena más cercana.",
+          "feedback": {
+            "met": "Marcaste la decena más cercana a 47.",
+            "not_yet": "Todavía no: mira qué decena queda más cerca de 47."
+          },
+          "help": [
+            "Busca las decenas justo abajo y arriba de 47.",
+            "¿A cuál se acerca más 47? Sin prisa."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Dina vê um tambor de 47. Marque a dezena mais próxima.",
+          "feedback": {
+            "met": "Você marcou a dezena mais próxima de 47.",
+            "not_yet": "Ainda não: veja qual dezena fica mais perto de 47."
+          },
+          "help": [
+            "Ache as dezenas logo abaixo e acima de 47.",
+            "De qual 47 está mais perto? Sem pressa."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-tie-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: both stalls are about 60. Okay so far?",
+          "line": "Both about 60, so we add exactly. Far apart, rounding is enough."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: los dos puestos están cerca de 60. ¿Vamos bien?",
+          "line": "Los dos cerca de 60, así que sumamos exacto. Si están lejos, redondear basta."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: as duas barracas ficam perto de 60. Tudo bem até aqui?",
+          "line": "As duas perto de 60, então somamos exato. Se estiverem longe, arredondar basta."
+        }
+      }
+    },
+    {
+      "id": "ex-add-a-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: add Stall A. 28 and 31.",
+          "line": "28 and 30 is 58. One more is 59."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: suma el puesto A. 28 y 31.",
+          "line": "28 y 30 son 58. Uno más son 59."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: some a barraca A. 28 e 31.",
+          "line": "28 e 30 são 58. Mais um são 59."
+        }
+      }
+    },
+    {
+      "id": "ex-add-b-01",
+      "type": "voice.mentor-turn.v2",
+      "teaching_role": "example",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 6: Stall B is 25 and 33. That makes 58.",
+          "line": "58 is less than 59. Stall B costs less."
+        },
+        "es-MX": {
+          "prompt": "Paso 6: el puesto B es 25 y 33. Eso hace 58.",
+          "line": "58 es menos que 59. El puesto B cuesta menos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: a barraca B é 25 e 33. Isso dá 58.",
+          "line": "58 é menos que 59. A barraca B custa menos."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "visual.chart.v2",
+      "teaching_role": "guided",
+      "grading": "server",
+      "visual": {
+        "type": "grouped-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "item-hat"
+            },
+            {
+              "id": "item-ball"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-stall-c",
+              "values": [
+                18,
+                21
+              ]
+            },
+            {
+              "id": "series-stall-d",
+              "values": [
+                21,
+                19
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-c"
+            },
+            {
+              "id": "opt-d"
+            },
+            {
+              "id": "opt-same"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-c"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two stalls sell a hat and a ball. Use “Show as table”.",
+          "help": [
+            "No rush. Round each price to the nearest ten.",
+            "Do both round the same? Then add exactly."
+          ],
+          "feedback": {
+            "met": "Yes. Stall C costs a little less for both.",
+            "not_yet": "Not yet: add the two bars of each stall."
+          },
+          "title": "Hat and ball prices",
+          "data": {
+            "categories": [
+              {
+                "label": "Hat"
+              },
+              {
+                "label": "Ball"
+              }
+            ],
+            "series": [
+              {
+                "label": "Stall C"
+              },
+              {
+                "label": "Stall D"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which stall costs less for both?",
+            "options": [
+              {
+                "label": "Stall C costs less"
+              },
+              {
+                "label": "Stall D costs less"
+              },
+              {
+                "label": "They cost the same"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Dos puestos venden un sombrero y una pelota. Usa “Ver tabla”.",
+          "help": [
+            "Sin prisa. Redondea cada precio a la decena más cercana.",
+            "¿Redondean igual? Entonces suma exacto."
+          ],
+          "feedback": {
+            "met": "Sí. El puesto C cuesta un poco menos por los dos.",
+            "not_yet": "Todavía no: suma las dos barras de cada puesto."
+          },
+          "title": "Precios de sombrero y pelota",
+          "data": {
+            "categories": [
+              {
+                "label": "Sombrero"
+              },
+              {
+                "label": "Pelota"
+              }
+            ],
+            "series": [
+              {
+                "label": "Puesto C"
+              },
+              {
+                "label": "Puesto D"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué puesto cuesta menos por los dos?",
+            "options": [
+              {
+                "label": "El puesto C cuesta menos"
+              },
+              {
+                "label": "El puesto D cuesta menos"
+              },
+              {
+                "label": "Cuestan lo mismo"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Duas barracas vendem um chapéu e uma bola. Use “Ver tabela”.",
+          "help": [
+            "Sem pressa. Arredonde cada preço para a dezena mais próxima.",
+            "Deu igual? Então some os preços exatos."
+          ],
+          "feedback": {
+            "met": "Isso. A barraca C custa um pouco menos pelos dois.",
+            "not_yet": "Ainda não: some as duas barras de cada barraca."
+          },
+          "title": "Preços de chapéu e bola",
+          "data": {
+            "categories": [
+              {
+                "label": "Chapéu"
+              },
+              {
+                "label": "Bola"
+              }
+            ],
+            "series": [
+              {
+                "label": "Barraca C"
+              },
+              {
+                "label": "Barraca D"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual barraca custa menos pelos dois?",
+            "options": [
+              {
+                "label": "A barraca C custa menos"
+              },
+              {
+                "label": "A barraca D custa menos"
+              },
+              {
+                "label": "Custam o mesmo"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.number-line.whole.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "number-line"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.estimate-total",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "step": 10,
+        "initial": 0
+      },
+      "rubric": {
+        "target": 60
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A lamp costs 64. Mark the nearest ten.",
+          "feedback": {
+            "met": "You marked the ten that 64 is closest to.",
+            "not_yet": "Not yet: check which ten sits closer to 64."
+          },
+          "help": [
+            "Find the tens just below and above 64.",
+            "Which one is 64 closer to?"
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una lámpara cuesta 64. Marca la decena más cercana.",
+          "feedback": {
+            "met": "Marcaste la decena más cercana a 64.",
+            "not_yet": "Todavía no: mira qué decena queda más cerca de 64."
+          },
+          "help": [
+            "Busca las decenas justo abajo y arriba de 64.",
+            "¿A cuál se acerca más 64?"
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma lâmpada custa 64. Marque a dezena mais próxima.",
+          "feedback": {
+            "met": "Você marcou a dezena mais próxima de 64.",
+            "not_yet": "Ainda não: veja qual dezena fica mais perto de 64."
+          },
+          "help": [
+            "Ache as dezenas logo abaixo e acima de 64.",
+            "De qual 64 está mais perto?"
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "practice",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.compare-amounts",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-x"
+          },
+          {
+            "id": "choice-y"
+          },
+          {
+            "id": "choice-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-round"
+          },
+          {
+            "id": "why-small"
+          },
+          {
+            "id": "why-feel"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-x"
+        ],
+        "reasonQuality": {
+          "why-round": "sound",
+          "why-small": "partial",
+          "why-feel": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Which stall costs less for a pencil and a notebook?",
+          "help": [
+            "Round each stall’s two prices. Compare the totals.",
+            "Are they far apart? Then no need to add exactly."
+          ],
+          "feedback": {
+            "met": "Yes, stall X costs much less. Rounding was enough.",
+            "not_yet": "Not yet: round each stall’s prices, then compare."
+          },
+          "choices": [
+            {
+              "label": "Stall X: 18 and 22"
+            },
+            {
+              "label": "Stall Y: 31 and 29"
+            },
+            {
+              "label": "They cost the same"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "Rounding showed one is less."
+            },
+            {
+              "label": "One price there is smaller."
+            },
+            {
+              "label": "It looks cheaper to me."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Qué puesto cuesta menos por un lápiz y un cuaderno?",
+          "help": [
+            "Redondea los dos precios de cada puesto. Compara los totales.",
+            "¿Están muy lejos? Entonces no hace falta sumar exacto."
+          ],
+          "feedback": {
+            "met": "Sí, el puesto X cuesta mucho menos. Redondear bastó.",
+            "not_yet": "Todavía no: redondea los precios de cada puesto y compara."
+          },
+          "choices": [
+            {
+              "label": "Puesto X: 18 y 22"
+            },
+            {
+              "label": "Puesto Y: 31 y 29"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "Redondear mostró que uno es menos."
+            },
+            {
+              "label": "Un precio ahí es más chico."
+            },
+            {
+              "label": "Me parece más barato."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Qual barraca custa menos por um lápis e um caderno?",
+          "help": [
+            "Arredonde os dois preços de cada barraca. Compare os totais.",
+            "Estão bem longe? Então não precisa somar exato."
+          ],
+          "feedback": {
+            "met": "Isso, a barraca X custa bem menos. Arredondar bastou.",
+            "not_yet": "Ainda não: arredonde os preços de cada barraca e compare."
+          },
+          "choices": [
+            {
+              "label": "Barraca X: 18 e 22"
+            },
+            {
+              "label": "Barraca Y: 31 e 29"
+            },
+            {
+              "label": "Custam o mesmo"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "Arredondar mostrou que um é menos."
+            },
+            {
+              "label": "Um preço ali é menor."
+            },
+            {
+              "label": "Me parece mais barato."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "teaching_role": "transfer",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_phase": "post",
+      "item_role": "transfer",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-stand-1"
+          },
+          {
+            "id": "choice-stand-2"
+          },
+          {
+            "id": "choice-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "why-rounded"
+          },
+          {
+            "id": "why-smallest"
+          },
+          {
+            "id": "why-exact"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-stand-2"
+        ],
+        "reasonQuality": {
+          "why-exact": "sound",
+          "why-rounded": "partial",
+          "why-smallest": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cup and plate at the fair. Which stall costs less?",
+          "help": [
+            "Round each price first, like Dina did.",
+            "Still tied? Add the exact prices."
+          ],
+          "feedback": {
+            "met": "Yes. Stall two costs a little less.",
+            "not_yet": "Not yet: add the two prices at each stall."
+          },
+          "choices": [
+            {
+              "label": "Stall 1: 27 and 34"
+            },
+            {
+              "label": "Stall 2: 29 and 31"
+            },
+            {
+              "label": "They cost the same"
+            }
+          ],
+          "reasonPrompt": "How do you know?",
+          "reasons": [
+            {
+              "label": "I rounded each price."
+            },
+            {
+              "label": "I chose the smallest price."
+            },
+            {
+              "label": "I added each stall exactly."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Taza y plato en la feria. ¿Qué puesto cuesta menos?",
+          "help": [
+            "Redondea primero cada precio, como hizo Dina.",
+            "¿Siguen igual? Suma los precios exactos."
+          ],
+          "feedback": {
+            "met": "Sí. El segundo puesto cuesta un poco menos.",
+            "not_yet": "Todavía no: suma los dos precios de cada puesto."
+          },
+          "choices": [
+            {
+              "label": "Puesto 1: 27 y 34"
+            },
+            {
+              "label": "Puesto 2: 29 y 31"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo sabes?",
+          "reasons": [
+            {
+              "label": "Redondeé cada precio."
+            },
+            {
+              "label": "Elegí el precio más chico."
+            },
+            {
+              "label": "Sumé cada puesto exacto."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Copo e prato na feira. Qual barraca custa menos?",
+          "help": [
+            "Arredonde primeiro cada preço, como a Dina fez.",
+            "Ainda igual? Some os preços exatos."
+          ],
+          "feedback": {
+            "met": "Isso. A segunda barraca custa um pouco menos.",
+            "not_yet": "Ainda não: some os dois preços de cada barraca."
+          },
+          "choices": [
+            {
+              "label": "Barraca 1: 27 e 34"
+            },
+            {
+              "label": "Barraca 2: 29 e 31"
+            },
+            {
+              "label": "Custam o mesmo"
+            }
+          ],
+          "reasonPrompt": "Como você sabe?",
+          "reasons": [
+            {
+              "label": "Arredondei cada preço."
+            },
+            {
+              "label": "Escolhi o menor preço."
+            },
+            {
+              "label": "Somei os preços exatos."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,940 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-eyes-open",
+  "lesson_id": "fe-1317-05-why-prices-differ",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "biz.what-is-price",
+    "biz.trade-and-markets",
+    "life.smart-shopping"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara enseña con ejemplos por qué un mismo par de tenis cuesta precios distintos: cuánta gente lo quiere y cuántos pares existen. Después suma el costo completo de una oferta, con envío, espera y estado, y quien aprende compara tres ofertas y elige según lo que le importa.",
+  "title": {
+    "es-MX": "Por qué cambian los precios",
+    "en-US": "Why prices differ",
+    "pt-BR": "Por que os preços mudam"
+  },
+  "new_concepts": [
+    "biz.what-is-price",
+    "biz.trade-and-markets",
+    "life.smart-shopping"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México un par de tenis se compra en una tienda en línea, en un sitio de segunda mano o en el tianguis, y cada vendedor cobra envío o pide recoger. Los precios son ilustrativos y la decisión es de quien compra.",
+        "problem_refs": [
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tianguis"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil um par de tênis se compra em loja online, em brechó ou na loja do bairro, e o frete pesa no preço final. Os valores são ilustrativos e a escolha é de quem compra.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "brechó"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US a sneaker drop sells out in minutes while older pairs sit, and shipping or a resale app changes the final cost. Prices are illustrative and the choice is the buyer’s.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "resale app"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un lanzamiento de tenis se agota a $2,400. El par de la temporada pasada sigue a $1,600 y luego a $1,000.",
+          "line": "Una marca, tres precios. Quiero saber qué mueve un precio."
+        },
+        "en-US": {
+          "prompt": "A sneaker drop sells out at 120. Last season’s pair sits at 80, then 50.",
+          "line": "One brand, three prices. I want to know what moves a price."
+        },
+        "pt-BR": {
+          "prompt": "Um lançamento de tênis esgota a R$ 600. O par da temporada passada fica em R$ 400 e depois em R$ 250.",
+          "line": "Uma marca, três preços. Quero saber o que faz um preço mudar."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-shop-a"
+          },
+          {
+            "id": "choice-shop-b"
+          },
+          {
+            "id": "choice-same"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-added"
+          },
+          {
+            "id": "reason-tag"
+          },
+          {
+            "id": "reason-pickup"
+          },
+          {
+            "id": "reason-online"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-shop-b"
+        ],
+        "reasonQuality": {
+          "reason-added": "sound",
+          "reason-pickup": "partial",
+          "reason-tag": "unsupported",
+          "reason-online": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Quieres el mismo par de tenis en dos tiendas. ¿Cuál te sale más barato?",
+          "feedback": {
+            "met": "Gracias. Ahora vemos cómo lee Zara un precio.",
+            "not_yet": "Gracias. Ahora vemos cómo lee Zara un precio."
+          },
+          "choices": [
+            {
+              "label": "Tienda A: $800 más $160 de envío"
+            },
+            {
+              "label": "Tienda B: $920, recoges gratis"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            }
+          ],
+          "reasonPrompt": "¿Cómo lo decidiste?",
+          "reasons": [
+            {
+              "label": "Sumé todo lo que cobra cada tienda"
+            },
+            {
+              "label": "Gana la etiqueta más baja"
+            },
+            {
+              "label": "Recoger también me cuesta tiempo"
+            },
+            {
+              "label": "Prefiero comprar en línea"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "You want the same pair of sneakers from two shops. Which costs you less?",
+          "feedback": {
+            "met": "Thanks. Now let’s see how Zara reads a price.",
+            "not_yet": "Thanks. Now let’s see how Zara reads a price."
+          },
+          "choices": [
+            {
+              "label": "Shop A: 40 plus 8 shipping"
+            },
+            {
+              "label": "Shop B: 46, free pickup"
+            },
+            {
+              "label": "They cost the same"
+            }
+          ],
+          "reasonPrompt": "How did you decide?",
+          "reasons": [
+            {
+              "label": "I added what each shop charges"
+            },
+            {
+              "label": "The smaller price tag wins"
+            },
+            {
+              "label": "Pickup costs me time too"
+            },
+            {
+              "label": "I prefer shopping online"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você quer o mesmo par de tênis em duas lojas. Qual sai mais barato para você?",
+          "feedback": {
+            "met": "Certo. Agora vamos ver como a Zara lê um preço.",
+            "not_yet": "Certo. Agora vamos ver como a Zara lê um preço."
+          },
+          "choices": [
+            {
+              "label": "Loja A: R$ 200 mais R$ 40 de frete"
+            },
+            {
+              "label": "Loja B: R$ 230, retirada grátis"
+            },
+            {
+              "label": "Custam o mesmo"
+            }
+          ],
+          "reasonPrompt": "Como você decidiu?",
+          "reasons": [
+            {
+              "label": "Somei tudo o que cada loja cobra"
+            },
+            {
+              "label": "Vale a etiqueta mais baixa"
+            },
+            {
+              "label": "Retirar também me custa tempo"
+            },
+            {
+              "label": "Prefiro comprar online"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-want-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara mira el lanzamiento: 200 personas quieren un par, pero solo hay 50.",
+          "line": "Hay más gente que pares, así que el vendedor cobra mucho y aun así se agota. Por eso $2,400."
+        },
+        "en-US": {
+          "prompt": "Zara watches the drop: 200 people want a pair, but only 50 exist.",
+          "line": "More want it than exist, so sellers ask a lot and still sell out. That is the 120."
+        },
+        "pt-BR": {
+          "prompt": "A Zara olha o lançamento: 200 pessoas querem um par, mas só existem 50.",
+          "line": "Tem mais gente querendo do que pares, então o vendedor cobra muito e ainda esgota. Por isso R$ 600."
+        }
+      }
+    },
+    {
+      "id": "ex-stock-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El par de la temporada pasada: hay muchos en las tiendas y casi nadie lo quiere ya.",
+          "line": "Con muchos pares y pocos compradores, nadie paga $1,600. El vendedor lo baja a $1,000."
+        },
+        "en-US": {
+          "prompt": "Last season’s pair: shops have plenty and few people want it now.",
+          "line": "Plenty of pairs and few buyers: nobody pays 80, so sellers drop it to 50."
+        },
+        "pt-BR": {
+          "prompt": "O par da temporada passada: as lojas têm de sobra e quase ninguém o quer agora.",
+          "line": "Muitos pares e poucos compradores: ninguém paga R$ 400, então o vendedor baixa para R$ 250."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "econ.supply-demand.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "supply-demand"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.what-is-price",
+      "payload": {
+        "demand": {
+          "intercept": 100,
+          "slope": 1
+        },
+        "supply": {
+          "intercept": 20,
+          "slope": 1
+        },
+        "shift_step": 10,
+        "max_shift": 2
+      },
+      "rubric": {
+        "curve": "demand",
+        "direction": 1
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un streamer usa el par viejo y más gente lo quiere. Mueve una curva un paso y lee el precio.",
+          "help": [
+            "¿Quién cambió, quienes compran o quienes venden? Mueve esa curva."
+          ],
+          "feedback": {
+            "met": "Subiste la curva de quienes compran y viste subir el precio.",
+            "not_yet": "Aún no. Piensa quién cambió: quienes compran o quienes venden."
+          },
+          "labels": {
+            "price": "Precio",
+            "quantity": "Pares vendidos",
+            "demand": "Paga quien compra",
+            "supply": "Pide quien vende"
+          }
+        },
+        "en-US": {
+          "prompt": "A streamer wears the old pair and more people want it. Move one curve one step, then read the price.",
+          "help": [
+            "Who changed here, the buyers or the sellers? Move that curve."
+          ],
+          "feedback": {
+            "met": "You moved the buyers’ curve up and saw the price rise.",
+            "not_yet": "Not yet. Ask who changed: the buyers or the sellers."
+          },
+          "labels": {
+            "price": "Price",
+            "quantity": "Pairs sold",
+            "demand": "What buyers pay",
+            "supply": "What sellers ask"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um streamer usa o par antigo e mais gente o quer. Mova uma curva um passo e leia o preço.",
+          "help": [
+            "Quem mudou aqui, quem compra ou quem vende? Mova essa curva."
+          ],
+          "feedback": {
+            "met": "Você subiu a curva de quem compra e viu o preço subir.",
+            "not_yet": "Ainda não. Pense em quem mudou: quem compra ou quem vende."
+          },
+          "labels": {
+            "price": "Preço",
+            "quantity": "Pares vendidos",
+            "demand": "Paga quem compra",
+            "supply": "Pede quem vende"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "econ.supply-demand.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "supply-demand"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.trade-and-markets",
+      "payload": {
+        "demand": {
+          "intercept": 100,
+          "slope": 1
+        },
+        "supply": {
+          "intercept": 20,
+          "slope": 1
+        },
+        "shift_step": 10,
+        "max_shift": 2
+      },
+      "rubric": {
+        "curve": "supply",
+        "direction": -1
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Llegan muchos más pares viejos a las tiendas. Mueve una curva un paso y lee el precio.",
+          "help": [
+            "Con más pares en las tiendas, quienes venden piden menos para venderlos."
+          ],
+          "feedback": {
+            "met": "Bajaste la curva de quienes venden y viste bajar el precio.",
+            "not_yet": "Aún no. Más pares en las tiendas cambian a quienes venden."
+          },
+          "labels": {
+            "price": "Precio",
+            "quantity": "Pares vendidos",
+            "demand": "Paga quien compra",
+            "supply": "Pide quien vende"
+          }
+        },
+        "en-US": {
+          "prompt": "More old pairs reach the shops after a restock. Move one curve one step, then read the price.",
+          "help": [
+            "More pairs on the shelf means sellers ask less to move them."
+          ],
+          "feedback": {
+            "met": "You moved the sellers’ curve down and saw the price fall.",
+            "not_yet": "Not yet. More pairs in the shops changes the sellers’ side."
+          },
+          "labels": {
+            "price": "Price",
+            "quantity": "Pairs sold",
+            "demand": "What buyers pay",
+            "supply": "What sellers ask"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Chegam muito mais pares antigos às lojas. Mova uma curva um passo e leia o preço.",
+          "help": [
+            "Com mais pares nas lojas, quem vende pede menos para vendê-los."
+          ],
+          "feedback": {
+            "met": "Você baixou a curva de quem vende e viu o preço cair.",
+            "not_yet": "Ainda não. Mais pares nas lojas mudam o lado de quem vende."
+          },
+          "labels": {
+            "price": "Preço",
+            "quantity": "Pares vendidos",
+            "demand": "Paga quem compra",
+            "supply": "Pede quem vende"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-ship-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara tiene dos ofertas del mismo par: $900 más $240 de envío, o $1,000 y recoges gratis.",
+          "line": "Sumo todo lo que pago: 900 + 240 = 1,140. El par de $1,000 sale más barato aunque su etiqueta sea mayor."
+        },
+        "en-US": {
+          "prompt": "Zara has two offers for one pair: 45 plus 12 shipping, or 50 with free pickup.",
+          "line": "I add everything I pay: 45 + 12 = 57. The 50 pair is cheaper, despite the bigger tag."
+        },
+        "pt-BR": {
+          "prompt": "A Zara tem duas ofertas do mesmo par: R$ 225 mais R$ 60 de frete, ou R$ 250 com retirada grátis.",
+          "line": "Somo tudo o que pago: 225 + 60 = 285. O par de R$ 250 sai mais barato, mesmo com a etiqueta maior."
+        }
+      }
+    },
+    {
+      "id": "ex-wait-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara encuentra un par usado: $720 más $240 de envío, llega en 9 días. Lo necesita en 5.",
+          "line": "El total es $960, el más bajo, pero llega tarde. La espera y el desgaste también cuestan."
+        },
+        "en-US": {
+          "prompt": "Zara finds a used pair: 36 plus 12 shipping, arriving in 9 days. She needs it in 5.",
+          "line": "The total is 48, the lowest, but too late. Wait and wear are costs too."
+        },
+        "pt-BR": {
+          "prompt": "A Zara acha um par usado: R$ 180 mais R$ 60 de frete, chega em 9 dias. Ela precisa em 5.",
+          "line": "O total é R$ 240, o menor, mas chega tarde. A espera e o desgaste também custam."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "steps": [
+          {
+            "id": "ship-total"
+          },
+          {
+            "id": "pickup-total"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "pickup-total",
+          "gap"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "pickup-total": "920",
+            "gap": "80"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "pickup-total": "46",
+            "gap": "4"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "pickup-total": "230",
+            "gap": "20"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Zara revisa otras dos ofertas: $760 más $240 de envío, o $920 y recoges gratis. Completa los pasos.",
+          "help": [
+            "Igual que Zara: suma el envío a la etiqueta y compara los dos totales."
+          ],
+          "feedback": {
+            "met": "Encontraste el total recogiendo en tienda y lo que suma el envío.",
+            "not_yet": "Aún no. Recoger gratis no suma nada; luego compara los totales."
+          },
+          "steps": [
+            {
+              "expression": "760 + 240",
+              "result": "1000",
+              "spokenText": "Sumo los $240 de envío a los $760: $1,000."
+            },
+            {
+              "expression": "Total recogiendo en tienda",
+              "result": "920",
+              "spokenText": "Recoger gratis no suma nada: este par cuesta $920."
+            },
+            {
+              "expression": "Cuánto más cuesta con envío",
+              "result": "80",
+              "spokenText": "1,000 menos 920: con envío cuesta $80 más."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Zara checks two more offers: 38 plus 12 shipping, or 46 with free pickup. Finish the steps.",
+          "help": [
+            "Same as Zara: add shipping to the tag, then compare both totals."
+          ],
+          "feedback": {
+            "met": "You found the pickup total and the extra cost of shipping.",
+            "not_yet": "Not yet. Free pickup adds nothing; then compare the totals."
+          },
+          "steps": [
+            {
+              "expression": "38 + 12",
+              "result": "50",
+              "spokenText": "I add the 12 shipping to the 38 tag: 50."
+            },
+            {
+              "expression": "Pickup pair total",
+              "result": "46",
+              "spokenText": "Free pickup adds nothing: this pair costs 46."
+            },
+            {
+              "expression": "How much more with shipping",
+              "result": "4",
+              "spokenText": "50 take away 46: with shipping it costs 4 more."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Zara confere outras duas ofertas: R$ 190 mais R$ 60 de frete, ou R$ 230 com retirada grátis. Complete as etapas.",
+          "help": [
+            "Como a Zara: some o frete à etiqueta e compare os dois totais."
+          ],
+          "feedback": {
+            "met": "Você achou o total com retirada e quanto o frete acrescenta.",
+            "not_yet": "Ainda não. Retirada grátis não soma nada; depois compare os totais."
+          },
+          "steps": [
+            {
+              "expression": "190 + 60",
+              "result": "250",
+              "spokenText": "Somo os R$ 60 de frete aos R$ 190: R$ 250."
+            },
+            {
+              "expression": "Total com retirada",
+              "result": "230",
+              "spokenText": "Retirada grátis não soma nada: este par custa R$ 230."
+            },
+            {
+              "expression": "Quanto a mais custa com frete",
+              "result": "20",
+              "spokenText": "250 menos 230: com frete custa R$ 20 a mais."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "steps": [
+          {
+            "id": "first-total"
+          },
+          {
+            "id": "second-total"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "second-total",
+          "gap"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "second-total": "1220",
+            "gap": "60"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "second-total": "61",
+            "gap": "3"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "second-total": "305",
+            "gap": "15"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Comparas un par de $1,040 más $240 de envío con uno de $1,100 más $120 de envío. Completa los pasos.",
+          "help": [
+            "Suma a cada etiqueta su envío y mira cuánto se separan los totales."
+          ],
+          "feedback": {
+            "met": "Sumaste el envío al segundo par y comparaste los totales.",
+            "not_yet": "Aún no. Suma al segundo par su propio envío y compara."
+          },
+          "steps": [
+            {
+              "expression": "1040 + 240",
+              "result": "1280",
+              "spokenText": "Primer par: $1,040 más $240 de envío son $1,280."
+            },
+            {
+              "expression": "Total del segundo par",
+              "result": "1220",
+              "spokenText": "Segundo par: $1,100 más $120 de envío son $1,220."
+            },
+            {
+              "expression": "Cuánto más cuesta el primero",
+              "result": "60",
+              "spokenText": "1,280 menos 1,220: el primero cuesta $60 más."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "You compare a 52 pair plus 12 shipping with a 55 pair plus 6 shipping. Finish the steps.",
+          "help": [
+            "Add each shipping to its tag, then see how far apart the totals are."
+          ],
+          "feedback": {
+            "met": "You added the shipping to the second tag and compared the totals.",
+            "not_yet": "Not yet. Add that pair’s own shipping to its tag, then compare."
+          },
+          "steps": [
+            {
+              "expression": "52 + 12",
+              "result": "64",
+              "spokenText": "Pair one: 52 plus 12 shipping makes 64."
+            },
+            {
+              "expression": "Second pair total",
+              "result": "61",
+              "spokenText": "Pair two: 55 plus 6 shipping makes 61."
+            },
+            {
+              "expression": "How much more the first costs",
+              "result": "3",
+              "spokenText": "64 take away 61: pair one costs 3 more."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você compara um par de R$ 260 mais R$ 60 de frete com um de R$ 275 mais R$ 30 de frete. Complete as etapas.",
+          "help": [
+            "Some a cada etiqueta o seu frete e veja quanto os totais se afastam."
+          ],
+          "feedback": {
+            "met": "Você somou o frete ao segundo par e comparou os totais.",
+            "not_yet": "Ainda não. Some ao segundo par o frete dele e compare."
+          },
+          "steps": [
+            {
+              "expression": "260 + 60",
+              "result": "320",
+              "spokenText": "Primeiro par: R$ 260 mais R$ 60 de frete dão R$ 320."
+            },
+            {
+              "expression": "Total do segundo par",
+              "result": "305",
+              "spokenText": "Segundo par: R$ 275 mais R$ 30 de frete dão R$ 305."
+            },
+            {
+              "expression": "Quanto a mais custa o primeiro",
+              "result": "15",
+              "spokenText": "320 menos 305: o primeiro custa R$ 15 a mais."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.smart-shopping",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-store"
+          },
+          {
+            "id": "choice-resale"
+          },
+          {
+            "id": "choice-local"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-fit"
+          },
+          {
+            "id": "reason-total"
+          },
+          {
+            "id": "reason-tag"
+          },
+          {
+            "id": "reason-used"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-local"
+        ],
+        "reasonQuality": {
+          "reason-fit": "sound",
+          "reason-total": "partial",
+          "reason-tag": "unsupported",
+          "reason-used": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Necesitas una mochila para un viaje en 5 días y quieres el total más bajo que llegue a tiempo. ¿Qué oferta te conviene?",
+          "help": [
+            "Primero descarta lo que llega tarde. Luego suma el envío a lo demás."
+          ],
+          "feedback": {
+            "met": "Elegiste la oferta más barata entre las que llegan a tiempo.",
+            "not_yet": "Aún no. Revisa los días de llegada y suma el envío a cada etiqueta."
+          },
+          "choices": [
+            {
+              "label": "Tienda en línea: $960 + $240 de envío, 3 días"
+            },
+            {
+              "label": "Segunda mano en línea: $720 + $240 de envío, 9 días"
+            },
+            {
+              "label": "Tianguis: $1,080, te lo llevas hoy"
+            }
+          ],
+          "reasonPrompt": "¿Por qué te conviene más?",
+          "reasons": [
+            {
+              "label": "La más barata de las que llegan a tiempo"
+            },
+            {
+              "label": "El total importa más que la etiqueta"
+            },
+            {
+              "label": "Su etiqueta es la que mejor se ve"
+            },
+            {
+              "label": "Lo usado siempre vale el ahorro"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "You need a backpack in 5 days and want the lowest total that arrives in time. Which offer fits?",
+          "help": [
+            "First drop any offer that comes too late. Then add shipping to the rest."
+          ],
+          "feedback": {
+            "met": "You chose the cheapest offer among those that arrive on time.",
+            "not_yet": "Not yet. Check the arrival days, then add shipping to each tag."
+          },
+          "choices": [
+            {
+              "label": "Store site: 48 + 12 shipping, 3 days"
+            },
+            {
+              "label": "Resale app: 36 + 12 shipping, used, 9 days"
+            },
+            {
+              "label": "Local store: 54, pickup today"
+            }
+          ],
+          "reasonPrompt": "Why does it fit best?",
+          "reasons": [
+            {
+              "label": "Cheapest of the offers on time"
+            },
+            {
+              "label": "The total matters more than the tag"
+            },
+            {
+              "label": "Its price tag looks the best"
+            },
+            {
+              "label": "Used is always worth the saving"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você precisa de uma mochila para uma viagem em 5 dias e quer o menor total que chegue a tempo. Qual oferta serve?",
+          "help": [
+            "Primeiro descarte o que chega tarde. Depois some o frete ao resto."
+          ],
+          "feedback": {
+            "met": "Você escolheu a oferta mais barata entre as que chegam a tempo.",
+            "not_yet": "Ainda não. Veja os dias de entrega e some o frete a cada etiqueta."
+          },
+          "choices": [
+            {
+              "label": "Loja online: R$ 240 + R$ 60 de frete, 3 dias"
+            },
+            {
+              "label": "Brechó online: R$ 180 + R$ 60 de frete, 9 dias"
+            },
+            {
+              "label": "Loja do bairro: R$ 270, retirada hoje"
+            }
+          ],
+          "reasonPrompt": "Por que ela serve mais?",
+          "reasons": [
+            {
+              "label": "A mais barata das que chegam a tempo"
+            },
+            {
+              "label": "O total pesa mais que a etiqueta"
+            },
+            {
+              "label": "A etiqueta dela parece a melhor"
+            },
+            {
+              "label": "Usado sempre compensa a economia"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

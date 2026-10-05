@@ -1,0 +1,944 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-smart-spending",
+  "lesson_id": "fe-1012-01-unit-price",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.unit-price",
+    "money.add-money"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Liruf va a la tiendita por jugos para sus amigos. Antes de enseñar, la niña o el niño elige una compra sin ayuda. Luego ve a Liruf equivocarse al comparar solo las etiquetas y recuperarse dividiendo, y ve dos casos nuevos resueltos paso a paso: el precio de uno y cuándo la bolsa grande no conviene. Después suma una compra chica con ese precio, practica con tres opciones y decide una compra donde el producto se echa a perder o se guarda.",
+  "title": {
+    "en-US": "The price of one",
+    "es-MX": "El precio de uno",
+    "pt-BR": "O preço de um"
+  },
+  "new_concepts": [
+    "money.unit-price"
+  ],
+  "mentor_misjudgment": {
+    "character": "liruf",
+    "misjudgment": "Liruf compares only the price tags: he picks the pack of 4 juices for 20 coins over the pack of 6 for 24, and pays more for each juice.",
+    "recovery": "Liruf divides each price by the number of juices (5 and 4), says he now compares the price of one, and would pick the pack of 6."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "Liruf compra en la tiendita de doña Lupe y en el tianguis, donde la misma fruta o bebida viene en bolsas y paquetes de tamaños distintos y el efectivo se cuenta a la vista. La decisión final usa pan del día, que se echa a perder.",
+        "problem_refs": [
+          "mx-cash-and-informal-commerce"
+        ],
+        "anchors": [
+          "tiendita",
+          "tianguis"
+        ]
+      },
+      "en-US": {
+        "scenario": "Liruf shops at the corner store, where the same snack or school item comes in packs of different sizes; a child can get the choice wrong with coins already in hand. The final decision uses notebooks, which keep, so the big pack wins here.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "corner store"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Liruf compra na padaria do seu Zé e na feira livre do bairro, onde o mesmo produto vem em sacos e pacotes de tamanhos diferentes; comparar o preço de cada unidade é um fundamento que não se supõe aprendido. A decisão final usa pão de hot dog, que endurece, então o pacote pequeno vence.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "padaria",
+          "feira livre"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "hook",
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Escucha a Liruf.",
+          "line": "Hoy voy a la tiendita de doña Lupe por jugos. Vienen mis amigos y quiero comprar bien."
+        },
+        "en-US": {
+          "prompt": "Listen to Liruf.",
+          "line": "I'm off to the corner store for juice. My friends are coming, and I want to buy smart."
+        },
+        "pt-BR": {
+          "prompt": "Ouça o Liruf.",
+          "line": "Hoje vou à padaria do seu Zé buscar suco. Meus amigos vêm aqui e quero comprar do jeito certo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "pick-small"
+          },
+          {
+            "id": "pick-big"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-unit"
+          },
+          {
+            "id": "reason-more"
+          },
+          {
+            "id": "reason-total"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "pick-big"
+        ],
+        "reasonQuality": {
+          "reason-unit": "sound",
+          "reason-more": "partial",
+          "reason-total": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tianguis: bolsa de 3 mangos por 15 monedas, o de 5 por 20. ¿Cuál es la mejor compra?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo vemos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo vemos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Bolsa de 3 mangos"
+            },
+            {
+              "label": "Bolsa de 5 mangos"
+            }
+          ],
+          "reasonPrompt": "¿Por qué?",
+          "reasons": [
+            {
+              "label": "Cada mango sale más barato"
+            },
+            {
+              "label": "Trae más mangos"
+            },
+            {
+              "label": "Cuesta menos en total"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Corner store: 3 granola bars for 15 coins, or 5 for 20. Which is the better buy?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now, step by step.",
+            "not_yet": "Thanks, that shows where you start. Now, step by step."
+          },
+          "choices": [
+            {
+              "label": "Pack of 3 bars"
+            },
+            {
+              "label": "Pack of 5 bars"
+            }
+          ],
+          "reasonPrompt": "Why?",
+          "reasons": [
+            {
+              "label": "Each bar costs less"
+            },
+            {
+              "label": "It has more bars"
+            },
+            {
+              "label": "It costs less in total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Feira livre: saco com 3 mangas por 15 moedas, ou com 5 por 20. Qual é a melhor compra?",
+          "feedback": {
+            "met": "Obrigado, assim sabemos de onde partir. Agora vemos passo a passo.",
+            "not_yet": "Obrigado, assim sabemos de onde partir. Agora vemos passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Saco com 3 mangas"
+            },
+            {
+              "label": "Saco com 5 mangas"
+            }
+          ],
+          "reasonPrompt": "Por quê?",
+          "reasons": [
+            {
+              "label": "Cada manga sai mais barata"
+            },
+            {
+              "label": "Tem mais mangas"
+            },
+            {
+              "label": "Custa menos no total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira qué le pasó a Liruf.",
+          "setup": "En la tiendita de doña Lupe: 4 jugos por 20 monedas, o 6 jugos por 24.",
+          "misjudgment": "Elegí los 4 por 20 porque el número era más chico. Pero cada jugo me salió más caro.",
+          "recovery": "Dividí: 20 ÷ 4 son 5 monedas cada jugo, 24 ÷ 6 son 4. Ahora comparo el precio de uno: me quedo con los 6."
+        },
+        "en-US": {
+          "prompt": "See what happened to Liruf.",
+          "setup": "At the corner store: 4 juices for 20 coins, or 6 juices for 24.",
+          "misjudgment": "I picked the 20 because the number was smaller. But each juice cost me more.",
+          "recovery": "I divide: 20 ÷ 4 is 5, 24 ÷ 6 is 4. Compare the price of one, and the 6 win."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Liruf.",
+          "setup": "Na padaria do seu Zé: 4 sucos por 20 moedas, ou 6 sucos por 24.",
+          "misjudgment": "Escolhi os 4 por 20 porque o número era menor. Mas cada suco saiu mais caro.",
+          "recovery": "Dividi: 20 ÷ 4 dá 5 moedas por suco, 24 ÷ 6 dá 4. Agora comparo o preço de um: fico com os 6."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mira cómo Liruf compara.",
+          "line": "Tianguis: 3 plátanos por 12 monedas, o 5 por 15. Divido cada precio: 12 ÷ 3 = 4 y 15 ÷ 5 = 3."
+        },
+        "en-US": {
+          "prompt": "Watch Liruf compare.",
+          "line": "Corner store: 2 yogurts for 6 coins, or 5 for 10. Divide: 6 ÷ 2 = 3, and 10 ÷ 5 = 2."
+        },
+        "pt-BR": {
+          "prompt": "Veja como o Liruf compara.",
+          "line": "Na feira livre: a dúzia de bananas custa 24 moedas e a meia dúzia, 18. Divido: 24 ÷ 12 = 2 e 18 ÷ 6 = 3."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ahora Liruf decide.",
+          "line": "Comparo: 3 es menos que 4, gana la bolsa de 5. Pero si no uso los 5, lo que sobra se echa a perder."
+        },
+        "en-US": {
+          "prompt": "Now Liruf decides.",
+          "line": "Compare: 2 coins beats 3, so the 5-pack wins. But if I eat 3, two yogurts spoil."
+        },
+        "pt-BR": {
+          "prompt": "Agora o Liruf decide.",
+          "line": "Comparo: 2 é menos que 3, a dúzia ganha. Mas se eu comer só 6 antes de escurecerem, as outras 6 vão pro lixo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "coins",
+        "offers": [
+          {
+            "id": "pack-6",
+            "quantity": 6,
+            "price_minor": 18
+          },
+          {
+            "id": "pack-4",
+            "quantity": 4,
+            "price_minor": 8
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "pack-6": "3",
+          "pack-4": "2"
+        },
+        "better_id": "pack-4"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tiendita: mazapanes en bolsa de 6 o de 4. Calcula el precio de uno y elige la mejor compra.",
+          "help": [
+            "Como hizo Liruf: divide el precio de cada bolsa entre los mazapanes que trae.",
+            "Compara los dos resultados: gana el que cuesta menos por mazapán."
+          ],
+          "feedback": {
+            "met": "Dividiste cada precio entre sus mazapanes y comparaste los dos.",
+            "not_yet": "Todavía no. Mira cómo dividió Liruf cada precio y compara de nuevo."
+          },
+          "unitLabel": "mazapán",
+          "offers": [
+            {
+              "label": "Bolsa de 6"
+            },
+            {
+              "label": "Bolsa de 4"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Corner store: pencils in a pack of 6 or 4. Find the price of one and pick the better buy.",
+          "help": [
+            "Like Liruf: divide each pack's price by how many pencils it holds.",
+            "Compare the two results: the one that costs less per pencil wins."
+          ],
+          "feedback": {
+            "met": "You divided each price by its pencils and compared the two.",
+            "not_yet": "Not yet. Look at how Liruf divided each price, then compare."
+          },
+          "unitLabel": "pencil",
+          "offers": [
+            {
+              "label": "Pack of 6"
+            },
+            {
+              "label": "Pack of 4"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Padaria: pães de queijo em pacote com 6 ou com 4. Ache o preço de um e escolha a melhor compra.",
+          "help": [
+            "Como o Liruf: divida o preço de cada pacote pela quantidade de pães de queijo.",
+            "Compare os dois resultados: vence o que custa menos por pão de queijo."
+          ],
+          "feedback": {
+            "met": "Você dividiu cada preço pelos pães de queijo e comparou os dois.",
+            "not_yet": "Ainda não. Veja como o Liruf dividiu cada preço e compare de novo."
+          },
+          "unitLabel": "pão de queijo",
+          "offers": [
+            {
+              "label": "Pacote com 6"
+            },
+            {
+              "label": "Pacote com 4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "teaching_role": "example",
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Liruf suma su compra.",
+          "line": "Con el precio de uno puedo sumar: 4 plátanos a 3 monedas y un jugo de 5. 3 × 4 = 12, y 12 + 5 = 17."
+        },
+        "en-US": {
+          "prompt": "Liruf adds up his buy.",
+          "line": "One price helps me add: 3 yogurts at 2 coins is 6, plus a 4-coin juice is 10."
+        },
+        "pt-BR": {
+          "prompt": "O Liruf soma a compra.",
+          "line": "Com o preço de um eu somo: 5 bananas a 2 moedas, 5 × 2 = 10. Mais um pão de 6: 10 + 6 = 16."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "money.add-money",
+      "payload": {
+        "steps": [
+          {
+            "id": "one-price"
+          },
+          {
+            "id": "few-price"
+          },
+          {
+            "id": "plus-drink"
+          },
+          {
+            "id": "plus-snack"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "few-price",
+          "plus-drink",
+          "plus-snack"
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "expectedValues": {
+            "few-price": "12",
+            "plus-drink": "20",
+            "plus-snack": "25"
+          }
+        },
+        "en-US": {
+          "expectedValues": {
+            "few-price": "8",
+            "plus-drink": "11",
+            "plus-snack": "13"
+          }
+        },
+        "pt-BR": {
+          "expectedValues": {
+            "few-price": "18",
+            "plus-drink": "25",
+            "plus-snack": "29"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Bolsa de 6 mandarinas por 24 monedas. ¿Cuánto pagas por 3 mandarinas, un jugo de 8 monedas y un pan de 5?",
+          "help": [
+            "Primero: ¿cuánto cuesta una mandarina? Divide 24 entre 6.",
+            "Luego multiplica por las 3 que compras. Después suma el jugo y el pan."
+          ],
+          "feedback": {
+            "met": "Calculaste el precio de uno, multiplicaste y fuiste sumando el total.",
+            "not_yet": "Todavía no. Revisa cómo Liruf sumó su compra: precio de uno, multiplicar, sumar."
+          },
+          "steps": [
+            {
+              "expression": "24 ÷ 6",
+              "result": "4",
+              "spokenText": "Veinticuatro entre 6 es 4: una mandarina cuesta 4 monedas"
+            },
+            {
+              "expression": "4 × 3",
+              "result": "12",
+              "spokenText": "Cuatro por 3 es 12: tres mandarinas cuestan 12 monedas"
+            },
+            {
+              "expression": "12 + 8",
+              "result": "20",
+              "spokenText": "Doce más 8 es 20: llevas 20 monedas"
+            },
+            {
+              "expression": "Total + pan",
+              "result": "25",
+              "spokenText": "Veinte más 5 es 25: pagas 25 monedas"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "6 apples cost 12 coins. How much for 4 apples, a 3-coin juice and a 2-coin pretzel?",
+          "help": [
+            "First, what does one apple cost? Divide 12 by 6.",
+            "Then multiply by the 4 you buy. After that, add the juice and the pretzel."
+          ],
+          "feedback": {
+            "met": "You found the price of one, multiplied, and kept a running total.",
+            "not_yet": "Not yet. Recheck: price of one, multiply, then add."
+          },
+          "steps": [
+            {
+              "expression": "12 ÷ 6",
+              "result": "2",
+              "spokenText": "Twelve divided by 6 is 2: one apple costs 2 coins"
+            },
+            {
+              "expression": "2 × 4",
+              "result": "8",
+              "spokenText": "Two times 4 is 8: four apples cost 8 coins"
+            },
+            {
+              "expression": "8 + 3",
+              "result": "11",
+              "spokenText": "Eight plus 3 is 11: that is 11 coins so far"
+            },
+            {
+              "expression": "Total + pretzel",
+              "result": "13",
+              "spokenText": "Eleven plus 2 is 13: you pay 13 coins"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um saco com 5 pêssegos custa 30 moedas. Quanto você paga por 3 pêssegos, um suco de 7 moedas e um pão de 4?",
+          "help": [
+            "Primeiro: quanto custa um pêssego? Divida 30 por 5.",
+            "Depois multiplique pelos 3 que você compra. Por fim, some o suco e o pão."
+          ],
+          "feedback": {
+            "met": "Você achou o preço de um, multiplicou e foi somando o total.",
+            "not_yet": "Ainda não. Reveja os passos do Liruf: preço de um, multiplicar, somar."
+          },
+          "steps": [
+            {
+              "expression": "30 ÷ 5",
+              "result": "6",
+              "spokenText": "Trinta dividido por 5 é 6: um pêssego custa 6 moedas"
+            },
+            {
+              "expression": "6 × 3",
+              "result": "18",
+              "spokenText": "Seis vezes 3 é 18: três pêssegos custam 18 moedas"
+            },
+            {
+              "expression": "18 + 7",
+              "result": "25",
+              "spokenText": "Dezoito mais 7 é 25: até agora são 25 moedas"
+            },
+            {
+              "expression": "Total + pão",
+              "result": "29",
+              "spokenText": "Vinte e cinco mais 4 é 29: você paga 29 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "coins",
+        "offers": [
+          {
+            "id": "box-2",
+            "quantity": 2,
+            "price_minor": 7
+          },
+          {
+            "id": "box-4",
+            "quantity": 4,
+            "price_minor": 12
+          },
+          {
+            "id": "box-6",
+            "quantity": 6,
+            "price_minor": 27
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "box-2": "3.5",
+          "box-4": "3",
+          "box-6": "4.5"
+        },
+        "better_id": "box-4"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Conchas en la tiendita: bolsas de 2, de 4 y de 6. ¿Cuál concha cuesta menos?",
+          "help": [
+            "Divide el precio de cada bolsa entre sus conchas, como hizo Liruf.",
+            "Si no sale exacto, usa decimales: 5 entre 2 es 2.5."
+          ],
+          "feedback": {
+            "met": "Comparaste el precio de una concha en las tres bolsas.",
+            "not_yet": "Todavía no. Divide cada precio entre sus conchas; usa decimales si hace falta."
+          },
+          "unitLabel": "concha",
+          "offers": [
+            {
+              "label": "Bolsa de 2"
+            },
+            {
+              "label": "Bolsa de 4"
+            },
+            {
+              "label": "Bolsa de 6"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Markers at the corner store: packs of 2, 4 and 6. Which marker costs least?",
+          "help": [
+            "Divide each pack's price by its markers, like Liruf did.",
+            "If it is not exact, use decimals: 5 divided by 2 is 2.5."
+          ],
+          "feedback": {
+            "met": "You compared the price of one marker across all three packs.",
+            "not_yet": "Not yet. Divide each price by its markers; use decimals if needed."
+          },
+          "unitLabel": "marker",
+          "offers": [
+            {
+              "label": "Pack of 2"
+            },
+            {
+              "label": "Pack of 4"
+            },
+            {
+              "label": "Pack of 6"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Coxinhas na padaria: caixas com 2, 4 e 6. Qual coxinha custa menos?",
+          "help": [
+            "Divida o preço de cada caixa pelas suas coxinhas, como o Liruf fez.",
+            "Se não der exato, use decimais: 5 dividido por 2 é 2,5."
+          ],
+          "feedback": {
+            "met": "Você comparou o preço de uma coxinha nas três caixas.",
+            "not_yet": "Ainda não. Divida cada preço pelas coxinhas; use decimais se precisar."
+          },
+          "unitLabel": "coxinha",
+          "offers": [
+            {
+              "label": "Caixa com 2"
+            },
+            {
+              "label": "Caixa com 4"
+            },
+            {
+              "label": "Caixa com 6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "choices": [
+          {
+            "id": "buy-small"
+          },
+          {
+            "id": "buy-big"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-need"
+          },
+          {
+            "id": "reason-unit"
+          },
+          {
+            "id": "reason-bigger"
+          }
+        ]
+      },
+      "rubric_by_locale": {
+        "es-MX": {
+          "acceptableChoiceIds": [
+            "buy-small"
+          ],
+          "reasonQuality": {
+            "reason-need": "sound",
+            "reason-unit": "partial",
+            "reason-bigger": "unsupported"
+          }
+        },
+        "en-US": {
+          "acceptableChoiceIds": [
+            "buy-big"
+          ],
+          "reasonQuality": {
+            "reason-need": "sound",
+            "reason-unit": "partial",
+            "reason-bigger": "unsupported"
+          }
+        },
+        "pt-BR": {
+          "acceptableChoiceIds": [
+            "buy-small"
+          ],
+          "reasonQuality": {
+            "reason-need": "sound",
+            "reason-unit": "partial",
+            "reason-bigger": "unsupported"
+          }
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tiendita: 4 bolillos por 12 monedas, o 10 por 25. Hoy cenan 4 y mañana el pan ya está duro.",
+          "help": [
+            "Recuerda a Liruf con sus plátanos: ¿qué pasa con lo que sobra?"
+          ],
+          "feedback": {
+            "met": "Elegiste la cantidad que se ajusta a lo que van a usar.",
+            "not_yet": "Todavía no. Piensa cuántos van a usar antes de comparar precios."
+          },
+          "choices": [
+            {
+              "label": "Comprar 4 bolillos"
+            },
+            {
+              "label": "Comprar 10 bolillos"
+            }
+          ],
+          "reasonPrompt": "¿Cuál razón pesa más?",
+          "reasons": [
+            {
+              "label": "Con 4 alcanza"
+            },
+            {
+              "label": "Cada bolillo sale más barato"
+            },
+            {
+              "label": "Mientras más grande, mejor"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Corner store: notebooks, 4 for 12 coins or 10 for 25. You use 10 a year, and they keep.",
+          "help": [
+            "Remember Liruf's yogurts: what happens to the extras?"
+          ],
+          "feedback": {
+            "met": "You chose the pack that fits what you will use.",
+            "not_yet": "Not yet. Think about how many you will use before comparing prices."
+          },
+          "choices": [
+            {
+              "label": "Buy the pack of 4"
+            },
+            {
+              "label": "Buy the pack of 10"
+            }
+          ],
+          "reasonPrompt": "Which reason matters most?",
+          "reasons": [
+            {
+              "label": "None would go to waste"
+            },
+            {
+              "label": "Each notebook costs less"
+            },
+            {
+              "label": "Bigger is always better"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Padaria: pão de hot dog, 4 por 8 moedas ou 10 por 18. Hoje comem 4 e amanhã o pão já endureceu.",
+          "help": [
+            "Lembre do Liruf com as bananas: o que acontece com o que sobra?"
+          ],
+          "feedback": {
+            "met": "Você escolheu a quantidade que combina com o que vão usar.",
+            "not_yet": "Ainda não. Pense em quantos vão usar antes de comparar preços."
+          },
+          "choices": [
+            {
+              "label": "Levar o pacote de 4"
+            },
+            {
+              "label": "Levar o pacote de 10"
+            }
+          ],
+          "reasonPrompt": "Qual motivo pesa mais?",
+          "reasons": [
+            {
+              "label": "Com 4 já basta"
+            },
+            {
+              "label": "Cada pão sai mais barato"
+            },
+            {
+              "label": "Quanto maior, melhor"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.unit-price",
+      "payload": {
+        "currency": "coins",
+        "offers": [
+          {
+            "id": "pack-5",
+            "quantity": 5,
+            "price_minor": 20
+          },
+          {
+            "id": "box-12",
+            "quantity": 12,
+            "price_minor": 54
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "pack-5": "4",
+          "box-12": "4.5"
+        },
+        "better_id": "pack-5"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Estampas en la tiendita: sobre de 5 o caja de 12. Calcula el precio de una y elige la mejor compra.",
+          "feedback": {
+            "met": "Dividiste cada precio entre sus estampas y elegiste por el precio de una.",
+            "not_yet": "Todavía no. Recuerda lo de Liruf: divide cada precio entre sus estampas."
+          },
+          "unitLabel": "estampa",
+          "offers": [
+            {
+              "label": "Sobre de 5"
+            },
+            {
+              "label": "Caja de 12"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Trading cards, pack of 5 or box of 12. Price of one: which is the better buy?",
+          "feedback": {
+            "met": "You compared the price of one card by dividing each price.",
+            "not_yet": "Not yet. Remember Liruf: divide each price by its cards, then compare."
+          },
+          "unitLabel": "card",
+          "offers": [
+            {
+              "label": "Pack of 5"
+            },
+            {
+              "label": "Box of 12"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Figurinhas: envelope com 5 ou caixa com 12. Ache o preço de uma e escolha a melhor compra.",
+          "feedback": {
+            "met": "Você dividiu cada preço pelas figurinhas e comparou o preço de uma.",
+            "not_yet": "Ainda não. Lembre do Liruf: divida cada preço pelas figurinhas e compare."
+          },
+          "unitLabel": "figurinha",
+          "offers": [
+            {
+              "label": "Envelope com 5"
+            },
+            {
+              "label": "Caixa com 12"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

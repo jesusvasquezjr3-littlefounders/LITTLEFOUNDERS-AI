@@ -1,0 +1,898 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-first-version",
+  "lesson_id": "ent-1012-05-pick-the-best-idea",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.solution-ideas",
+    "biz.real-problems"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho enseña con ejemplos a elegir la mejor idea para la fila larga del almuerzo: primero revisa que la idea acorte la fila, luego que quepa en las 40 monedas del equipo y al final compara los minutos que ahorra. Después el estudiante recorre un árbol de preguntas, compara dos ideas y decide con razones en una fila nueva.",
+  "title": {
+    "es-MX": "Elige la mejor idea",
+    "en-US": "Pick the best idea",
+    "pt-BR": "Escolha a melhor ideia"
+  },
+  "new_concepts": [
+    "biz.solution-ideas"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Rho espera en la fila larga del almuerzo. En el pizarrón hay tres ideas.",
+          "line": "Papelitos de pedido, una segunda fila de servicio o bolsas para llevar. Observemos cada idea."
+        },
+        "en-US": {
+          "prompt": "Rho's team waits in the long lunch line. Three ideas are on the board.",
+          "line": "Pre-order slips, a second serving line, or grab-and-go bags. Let's look at each one."
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Rho espera na fila comprida do almoço. Há três ideias no quadro.",
+          "line": "Bilhetes de pedido, uma segunda fila de servir ou sacolas para levar. Vamos observar cada ideia."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-second-line"
+          },
+          {
+            "id": "opt-bags"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-second-line",
+          "opt-bags"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Rho puede probar una idea. ¿Cuál eliges?",
+          "feedback": {
+            "met": "Así veo cómo piensas. Ahora las comparamos juntos.",
+            "not_yet": "Así veo cómo piensas. Ahora las comparamos juntos."
+          },
+          "options": [
+            {
+              "label": "Una segunda fila de servicio"
+            },
+            {
+              "label": "Bolsas para llevar"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's team can try one idea. Which would you pick?",
+          "feedback": {
+            "met": "That shows how you think. Now we compare them together.",
+            "not_yet": "That shows how you think. Now we compare them together."
+          },
+          "options": [
+            {
+              "label": "A second serving line"
+            },
+            {
+              "label": "Grab-and-go bags"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Rho pode testar uma ideia. Qual você escolhe?",
+          "feedback": {
+            "met": "Assim vejo como você pensa. Agora vamos comparar as ideias juntos.",
+            "not_yet": "Assim vejo como você pensa. Agora vamos comparar as ideias juntos."
+          },
+          "options": [
+            {
+              "label": "Uma segunda fila de servir"
+            },
+            {
+              "label": "Sacolas para levar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-problem-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: el problema real es la fila larga. Una idea debe acortarla.",
+          "line": "La pintura nueva sale barata, pero la fila sigue larga: queda fuera. Las otras ideas sí ayudan."
+        },
+        "en-US": {
+          "prompt": "Step 1: the real problem is the long line. An idea must shorten it.",
+          "line": "Fresh paint is cheap, but the line stays long, so it is out. The other ideas help."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o problema real é a fila comprida. Uma ideia precisa encurtá-la.",
+          "line": "Pintura nova é barata, mas a fila continua comprida: fica de fora. As outras ideias ajudam."
+        }
+      }
+    },
+    {
+      "id": "step-money-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: el equipo tiene 40 monedas. La segunda fila cuesta 90 y ahorra 8 minutos.",
+          "line": "Primero el dinero: 90 es más que nuestras 40. La segunda fila queda fuera, aunque ahorre 8 minutos."
+        },
+        "en-US": {
+          "prompt": "Step 2: the team has 40 coins. The second line costs 90 and saves 8 minutes.",
+          "line": "Money first: 90 is over our 40. The second line is out, even at 8 minutes saved."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a equipe tem 40 moedas. A segunda fila custa 90 e economiza 8 minutos.",
+          "line": "Primeiro o dinheiro: 90 passa das nossas 40. A segunda fila fica de fora, mesmo economizando 8 minutos."
+        }
+      }
+    },
+    {
+      "id": "step-minutes-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: los papelitos cuestan 20 y ahorran 4 minutos. Las bolsas cuestan 7 y ahorran 6.",
+          "line": "Las dos caben en 40, así que deciden los minutos. Las bolsas ahorran 6 y los papelitos 4: ganan las bolsas."
+        },
+        "en-US": {
+          "prompt": "Step 3: slips cost 20 and save 4 minutes. Bags cost 7 and save 6.",
+          "line": "Both fit in 40, so minutes decide. Bags save 6 and slips save 4: bags win."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: os bilhetes custam 20 e economizam 4 minutos. As sacolas custam 7 e economizam 6.",
+          "line": "As duas cabem em 40, então decidem os minutos. As sacolas economizam 6 e os bilhetes 4: vencem as sacolas."
+        }
+      }
+    },
+    {
+      "id": "guided-tree-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "start": "q-solve",
+        "nodes": [
+          {
+            "id": "q-solve",
+            "kind": "question",
+            "yes": "q-fit",
+            "no": "out-drop-line"
+          },
+          {
+            "id": "q-fit",
+            "kind": "question",
+            "yes": "q-more",
+            "no": "out-drop-cost"
+          },
+          {
+            "id": "q-more",
+            "kind": "question",
+            "yes": "out-pick",
+            "no": "out-keep"
+          },
+          {
+            "id": "out-drop-line",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-drop-cost",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-pick",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-keep",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-cards"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-cards": [
+            "q-solve",
+            "q-fit",
+            "q-more",
+            "out-keep"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la fila del almuerzo de Rho, lleva las tarjetas de almuerzo por las preguntas. Las bolsas son la idea a superar.",
+          "feedback": {
+            "met": "Revisaste la fila, el dinero y luego los minutos.",
+            "not_yet": "Sigue el orden de Rho: la fila, el dinero y luego los minutos."
+          },
+          "help": [
+            "Rho revisó tres cosas: la fila, el dinero y los minutos.",
+            "Si las dos caben, deciden los minutos."
+          ],
+          "nodes": [
+            {
+              "label": "¿Acorta la fila larga?"
+            },
+            {
+              "label": "¿Cuesta 40 monedas o menos?"
+            },
+            {
+              "label": "¿Ahorra más de 6 minutos?"
+            },
+            {
+              "label": "Descartarla: la fila sigue larga"
+            },
+            {
+              "label": "Descartarla: pasa de 40 monedas"
+            },
+            {
+              "label": "Elegirla en vez de las bolsas"
+            },
+            {
+              "label": "Quedarnos con las bolsas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Tarjetas de almuerzo: 10 monedas, ahorran 3 minutos"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In Rho's lunch line, walk the lunch cards through the questions. Bags are the idea to beat.",
+          "feedback": {
+            "met": "You checked the line, the money, then the minutes.",
+            "not_yet": "Follow Rho's order: the line, the money, then minutes."
+          },
+          "help": [
+            "Rho checked three things: the line, the money, the minutes.",
+            "When both fit, the minutes decide."
+          ],
+          "nodes": [
+            {
+              "label": "Does it shorten the long line?"
+            },
+            {
+              "label": "Does it cost 40 coins or less?"
+            },
+            {
+              "label": "Does it save more than 6 minutes?"
+            },
+            {
+              "label": "Drop it: the line stays long"
+            },
+            {
+              "label": "Drop it: over 40 coins"
+            },
+            {
+              "label": "Pick it over bags"
+            },
+            {
+              "label": "Keep bags"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Lunch cards: 10 coins, saves 3 minutes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na fila do almoço do Rho, leve os cartões de almoço pelas perguntas. As sacolas são a ideia a superar.",
+          "feedback": {
+            "met": "Você conferiu a fila, o dinheiro e depois os minutos.",
+            "not_yet": "Siga a ordem do Rho: a fila, o dinheiro e depois os minutos."
+          },
+          "help": [
+            "O Rho conferiu três coisas: a fila, o dinheiro e os minutos.",
+            "Se as duas cabem, decidem os minutos."
+          ],
+          "nodes": [
+            {
+              "label": "Encurta a fila comprida?"
+            },
+            {
+              "label": "Custa 40 moedas ou menos?"
+            },
+            {
+              "label": "Economiza mais de 6 minutos?"
+            },
+            {
+              "label": "Descartar: a fila continua comprida"
+            },
+            {
+              "label": "Descartar: passa de 40 moedas"
+            },
+            {
+              "label": "Escolher no lugar das sacolas"
+            },
+            {
+              "label": "Ficar com as sacolas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Cartões de almoço: 10 moedas, economizam 3 minutos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "step-why-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: Rho elige las bolsas y explica por qué, con los dos números.",
+          "line": "Las bolsas caben en nuestras 40 monedas y ahorran 6 minutos, más que las otras que caben."
+        },
+        "en-US": {
+          "prompt": "Step 4: Rho picks bags and says why, using both numbers.",
+          "line": "Bags fit our 40 coins and save 6 minutes, the most of what fits."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: o Rho escolhe as sacolas e explica por quê, com os dois números.",
+          "line": "As sacolas cabem nas nossas 40 moedas e economizam 6 minutos, o máximo entre as que cabem."
+        }
+      }
+    },
+    {
+      "id": "practice-tree-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.real-problems",
+      "payload": {
+        "start": "q-solve",
+        "nodes": [
+          {
+            "id": "q-solve",
+            "kind": "question",
+            "yes": "q-fit",
+            "no": "out-drop-line"
+          },
+          {
+            "id": "q-fit",
+            "kind": "question",
+            "yes": "q-more",
+            "no": "out-drop-cost"
+          },
+          {
+            "id": "q-more",
+            "kind": "question",
+            "yes": "out-pick",
+            "no": "out-keep"
+          },
+          {
+            "id": "out-drop-line",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-drop-cost",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-pick",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-keep",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "case-trays"
+          },
+          {
+            "id": "case-screen"
+          },
+          {
+            "id": "case-robot"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "case-trays": [
+            "q-solve",
+            "out-drop-line"
+          ],
+          "case-screen": [
+            "q-solve",
+            "q-fit",
+            "q-more",
+            "out-pick"
+          ],
+          "case-robot": [
+            "q-solve",
+            "q-fit",
+            "out-drop-cost"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la fila del almuerzo de Rho, lleva cada idea por las preguntas. Las bolsas son la idea a superar.",
+          "feedback": {
+            "met": "Revisaste cada idea en orden: fila, dinero, minutos.",
+            "not_yet": "Mira otra vez los datos de cada idea: ¿qué pregunta la descarta?"
+          },
+          "help": [
+            "Compara los datos de cada tarjeta con las preguntas.",
+            "La regla de Rho: primero el límite de dinero, luego los minutos."
+          ],
+          "nodes": [
+            {
+              "label": "¿Acorta la fila larga?"
+            },
+            {
+              "label": "¿Cuesta 40 monedas o menos?"
+            },
+            {
+              "label": "¿Ahorra más de 6 minutos?"
+            },
+            {
+              "label": "Descartarla: la fila sigue larga"
+            },
+            {
+              "label": "Descartarla: pasa de 40 monedas"
+            },
+            {
+              "label": "Elegirla en vez de las bolsas"
+            },
+            {
+              "label": "Quedarnos con las bolsas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Charolas más grandes: 10 monedas, fila igual de larga"
+            },
+            {
+              "label": "Pantalla de menú: 15 monedas, ahorra 7 minutos"
+            },
+            {
+              "label": "Robot de almuerzo: 120 monedas, ahorra 9 minutos"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In Rho's lunch line, walk each idea through the questions. Bags are the one to beat.",
+          "feedback": {
+            "met": "You checked each idea in order: line, money, minutes.",
+            "not_yet": "Look again at each idea's facts: which question stops it?"
+          },
+          "help": [
+            "Check the facts on each card against the questions.",
+            "Rho's rule: money limit first, then minutes."
+          ],
+          "nodes": [
+            {
+              "label": "Does it shorten the long line?"
+            },
+            {
+              "label": "Does it cost 40 coins or less?"
+            },
+            {
+              "label": "Does it save more than 6 minutes?"
+            },
+            {
+              "label": "Drop it: the line stays long"
+            },
+            {
+              "label": "Drop it: over 40 coins"
+            },
+            {
+              "label": "Pick it over bags"
+            },
+            {
+              "label": "Keep bags"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Bigger trays: 10 coins, line stays long"
+            },
+            {
+              "label": "Menu screen: 15 coins, saves 7 minutes"
+            },
+            {
+              "label": "Lunch robot: 120 coins, saves 9 minutes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na fila do almoço do Rho, leve cada ideia pelas perguntas. As sacolas são a ideia a superar.",
+          "feedback": {
+            "met": "Você conferiu cada ideia em ordem: fila, dinheiro, minutos.",
+            "not_yet": "Olhe de novo os dados de cada ideia: qual pergunta a descarta?"
+          },
+          "help": [
+            "Compare os dados de cada cartão com as perguntas.",
+            "A regra do Rho: primeiro o limite de dinheiro, depois os minutos."
+          ],
+          "nodes": [
+            {
+              "label": "Encurta a fila comprida?"
+            },
+            {
+              "label": "Custa 40 moedas ou menos?"
+            },
+            {
+              "label": "Economiza mais de 6 minutos?"
+            },
+            {
+              "label": "Descartar: a fila continua comprida"
+            },
+            {
+              "label": "Descartar: passa de 40 moedas"
+            },
+            {
+              "label": "Escolher no lugar das sacolas"
+            },
+            {
+              "label": "Ficar com as sacolas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Bandejas maiores: 10 moedas, fila continua comprida"
+            },
+            {
+              "label": "Tela de cardápio: 15 moedas, economiza 7 minutos"
+            },
+            {
+              "label": "Robô de almoço: 120 moedas, economiza 9 minutos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-rather-01",
+      "type": "story.would-you-rather.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "would-you-rather"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "options": [
+          {
+            "id": "opt-menu-board"
+          },
+          {
+            "id": "opt-tray-cart"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-menu-board"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En la fila del almuerzo de Rho, con 40 monedas, ¿qué idea ayuda más?",
+          "feedback": {
+            "met": "Revisaste que las dos caben y luego comparaste los minutos.",
+            "not_yet": "Compara los dos precios con 40. Luego compara los minutos."
+          },
+          "help": [
+            "Recuerda el Paso 3: si las dos caben, deciden los minutos."
+          ],
+          "options": [
+            {
+              "label": "Pizarrón de menú: 30 monedas, ahorra 9 minutos"
+            },
+            {
+              "label": "Carrito de charolas: 12 monedas, ahorra 5 minutos"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "In Rho's lunch line with 40 coins, which idea helps more?",
+          "feedback": {
+            "met": "You checked that both fit, then compared the minutes.",
+            "not_yet": "Check both prices against 40. Then compare the minutes."
+          },
+          "help": [
+            "Remember Step 3: when both fit, minutes decide."
+          ],
+          "options": [
+            {
+              "label": "Menu board: 30 coins, saves 9 minutes"
+            },
+            {
+              "label": "Tray cart: 12 coins, saves 5 minutes"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na fila do almoço do Rho, com 40 moedas, qual ideia ajuda mais?",
+          "feedback": {
+            "met": "Você conferiu que as duas cabem e depois comparou os minutos.",
+            "not_yet": "Compare os dois preços com 40. Depois compare os minutos."
+          },
+          "help": [
+            "Lembre do Passo 3: se as duas cabem, decidem os minutos."
+          ],
+          "options": [
+            {
+              "label": "Painel de cardápio: 30 moedas, economiza 9 minutos"
+            },
+            {
+              "label": "Carrinho de bandejas: 12 moedas, economiza 5 minutos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.solution-ideas",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-door"
+          },
+          {
+            "id": "choice-lanes"
+          },
+          {
+            "id": "choice-tags"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-cheapest"
+          },
+          {
+            "id": "reason-most"
+          },
+          {
+            "id": "reason-fit-most"
+          },
+          {
+            "id": "reason-name"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-tags"
+        ],
+        "reasonQuality": {
+          "reason-fit-most": "sound",
+          "reason-most": "partial",
+          "reason-cheapest": "unsupported",
+          "reason-name": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El equipo de Rho ahora estudia la fila del autobús. Con 40 monedas, ¿qué idea ayuda más?",
+          "feedback": {
+            "met": "Revisaste primero las 40 monedas y luego comparaste los minutos.",
+            "not_yet": "¿Qué ideas caben en 40 monedas? Compara los minutos entre ellas."
+          },
+          "help": [
+            "Primero el dinero, luego los minutos, como en los Pasos 2 y 3 de Rho."
+          ],
+          "choices": [
+            {
+              "label": "Puerta extra: 100 monedas, ahorra 9 minutos"
+            },
+            {
+              "label": "Carriles pintados: 10 monedas, ahorran 2 minutos"
+            },
+            {
+              "label": "Etiquetas de color: 25 monedas, ahorran 6 minutos"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "La idea más barata siempre gana"
+            },
+            {
+              "label": "Es la que más minutos ahorra de todas"
+            },
+            {
+              "label": "Cabe en 40 monedas y ahorra más minutos"
+            },
+            {
+              "label": "Me gusta su nombre"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's team now studies the bus line. With 40 coins, which idea helps most?",
+          "feedback": {
+            "met": "You checked the 40 coins first, then compared minutes.",
+            "not_yet": "Which ideas fit 40 coins? Compare minutes among those."
+          },
+          "help": [
+            "Money first, then minutes, like Rho's Step 2 and Step 3."
+          ],
+          "choices": [
+            {
+              "label": "Extra door: 100 coins, saves 9 minutes"
+            },
+            {
+              "label": "Painted lanes: 10 coins, saves 2 minutes"
+            },
+            {
+              "label": "Color tags: 25 coins, saves 6 minutes"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "The cheapest idea always wins"
+            },
+            {
+              "label": "It saves the most minutes of all"
+            },
+            {
+              "label": "Fits 40 coins, saves most minutes"
+            },
+            {
+              "label": "I like how it sounds"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A equipe do Rho agora estuda a fila do ônibus. Com 40 moedas, qual ideia ajuda mais?",
+          "feedback": {
+            "met": "Você conferiu primeiro as 40 moedas e depois comparou os minutos.",
+            "not_yet": "Quais ideias cabem em 40 moedas? Compare os minutos entre elas."
+          },
+          "help": [
+            "Primeiro o dinheiro, depois os minutos, como nos Passos 2 e 3 do Rho."
+          ],
+          "choices": [
+            {
+              "label": "Porta extra: 100 moedas, economiza 9 minutos"
+            },
+            {
+              "label": "Faixas pintadas: 10 moedas, economizam 2 minutos"
+            },
+            {
+              "label": "Etiquetas coloridas: 25 moedas, economizam 6 minutos"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor escolha?",
+          "reasons": [
+            {
+              "label": "A ideia mais barata sempre vence"
+            },
+            {
+              "label": "É a que mais economiza minutos de todas"
+            },
+            {
+              "label": "Cabe em 40 moedas e economiza mais minutos"
+            },
+            {
+              "label": "Gosto do nome dela"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

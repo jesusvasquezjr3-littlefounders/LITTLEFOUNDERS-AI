@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-class-garden",
+  "lesson_id": "fe-1012-15-plan-the-project",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.community-projects",
+    "life.review-and-adjust-plan",
+    "life.goal-planning"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina muestra al salón cómo planear una colecta: 150 monedas en 5 semanas son 30 por semana, con las tareas repartidas entre 10 alumnos. En la semana 3 el frasco tiene 60 y no 90; Dina cambia solo la cantidad semanal a 45, agradece al vecino que prestó las herramientas y revisa lo que logró el grupo. Después practica y decide qué cambiar en un plan nuevo.",
+  "title": {
+    "es-MX": "Planear el proyecto",
+    "en-US": "Plan the project",
+    "pt-BR": "Planejar o projeto"
+  },
+  "new_concepts": [
+    "life.community-projects",
+    "life.review-and-adjust-plan"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El salón de Dina mira un terreno vacío y un frasco de monedas.",
+          "line": "Quieren 6 jardineras: 150 monedas en 5 semanas. Seguiremos el plan, paso a paso."
+        },
+        "en-US": {
+          "prompt": "Dina's class looks at an empty patch of ground and a jar of coins.",
+          "line": "They want 6 garden beds: 150 coins in 5 weeks. We'll follow the plan, step by step."
+        },
+        "pt-BR": {
+          "prompt": "A turma da Dina olha um terreno vazio e um pote de moedas.",
+          "line": "Querem 6 canteiros: 150 moedas em 5 semanas. Vamos seguir o plano, passo a passo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-hope"
+          },
+          {
+            "id": "choice-stop"
+          },
+          {
+            "id": "choice-compare"
+          },
+          {
+            "id": "choice-ask"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-hard"
+          },
+          {
+            "id": "reason-see"
+          },
+          {
+            "id": "reason-fixed"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-compare"
+        ],
+        "reasonQuality": {
+          "reason-hard": "partial",
+          "reason-see": "sound",
+          "reason-fixed": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Semana 3: el frasco tiene menos de lo que dice el plan. ¿Qué debería hacer el salón de Dina?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora vamos paso a paso.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora vamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Seguir y esperar que se compense"
+            },
+            {
+              "label": "Dejar las jardineras y parar"
+            },
+            {
+              "label": "Comparar el frasco con el plan"
+            },
+            {
+              "label": "Pedir más monedas a cada alumno"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "El salón ya trabaja duro"
+            },
+            {
+              "label": "Hay que ver dónde estamos de verdad"
+            },
+            {
+              "label": "Un plan no cambia una vez que empieza"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Week 3: the jar holds less than the plan says. What should Dina's class do?",
+          "feedback": {
+            "met": "Thanks, I see how you think. Now, step by step.",
+            "not_yet": "Thanks, I see how you think. Now, step by step."
+          },
+          "choices": [
+            {
+              "label": "Keep going and hope it catches up"
+            },
+            {
+              "label": "Drop the beds and stop"
+            },
+            {
+              "label": "Compare the jar with the plan"
+            },
+            {
+              "label": "Ask each student for extra coins"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "The class is already working hard"
+            },
+            {
+              "label": "We should see where we really are"
+            },
+            {
+              "label": "A plan can't change once it starts"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Semana 3: o pote tem menos do que o plano diz. O que a turma da Dina deve fazer?",
+          "feedback": {
+            "met": "Certo, já vejo como você pensa. Agora, passo a passo.",
+            "not_yet": "Certo, já vejo como você pensa. Agora, passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Seguir e esperar que se compense"
+            },
+            {
+              "label": "Largar os canteiros e parar"
+            },
+            {
+              "label": "Comparar o pote com o plano"
+            },
+            {
+              "label": "Pedir mais moedas a cada aluno"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "A turma já está se esforçando muito"
+            },
+            {
+              "label": "Precisamos ver onde estamos de verdade"
+            },
+            {
+              "label": "Um plano não muda depois que começa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: Dina escribe el plan. 150 monedas en 5 semanas.",
+          "line": "150 ÷ 5 = 30: el frasco debe crecer 30 monedas cada semana. Ese es nuestro plan."
+        },
+        "en-US": {
+          "prompt": "Step 1: Dina writes the plan. 150 coins over 5 weeks.",
+          "line": "150 ÷ 5 = 30: the jar should grow 30 coins every week. That is our plan."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: a Dina escreve o plano. 150 moedas em 5 semanas.",
+          "line": "150 ÷ 5 = 30: o pote deve crescer 30 moedas por semana. Esse é o nosso plano."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: Dina reparte las tareas y marca el frasco cada semana.",
+          "line": "10 alumnos ÷ 5 tareas = 2 por tarea. Las marcas: 30, 60 y 90 hasta la semana 3."
+        },
+        "en-US": {
+          "prompt": "Step 2: Dina splits the tasks and marks the jar each week.",
+          "line": "10 students ÷ 5 tasks = 2 per task. The marks: 30, 60 and 90 by week 3."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a Dina divide as tarefas e marca o pote a cada semana.",
+          "line": "10 alunos ÷ 5 tarefas = 2 por tarefa. As marcas: 30, 60 e 90 até a semana 3."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.goal-planning",
+      "payload": {
+        "minimum": 0,
+        "maximum": 180,
+        "target": 150,
+        "step": 30,
+        "initial": 30,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 120
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El plan de Dina es 30 por semana. Mueve la barra al menos hasta la marca de la semana 4.",
+          "feedback": {
+            "met": "Tu barra llega a la marca de la semana 4 o más.",
+            "not_yet": "Todavía no. Mira cómo crecieron las marcas de Dina."
+          },
+          "help": [
+            "Las semanas que van, por 30, dan la marca."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's plan is 30 a week. Move the bar to at least week 4's mark.",
+          "feedback": {
+            "met": "Your bar is at or past week 4's mark.",
+            "not_yet": "Not yet. See how Dina's marks grew each week."
+          },
+          "help": [
+            "Weeks so far, times 30, gives the mark."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O plano da Dina é 30 por semana. Leve a barra pelo menos até a marca da semana 4.",
+          "feedback": {
+            "met": "Sua barra chega à marca da semana 4 ou mais.",
+            "not_yet": "Ainda não. Veja como as marcas da Dina cresceram."
+          },
+          "help": [
+            "As semanas que passaram, vezes 30, dão a marca."
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "money.running-ledger.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 0,
+        "sale": 20,
+        "cost": 10,
+        "maxEntries": 6
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: las semanas 1 a 3 juntaron 20 cada una. Toca Venta tres veces y mira el frasco."
+        },
+        "en-US": {
+          "prompt": "Step 3: weeks 1 to 3 raised 20 each. Tap Sale three times and watch the jar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: as semanas 1 a 3 juntaram 20 cada uma. Toque em Venda três vezes e veja o pote."
+        }
+      },
+      "knowledge_component_id": "life.review-and-adjust-plan"
+    },
+    {
+      "id": "example-04",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bullet"
+      },
+      "payload": {
+        "minimum": 0,
+        "maximum": 180,
+        "target": 150,
+        "step": 30,
+        "initial": 30,
+        "currency": "coins"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4: mueve la barra a 60. La marca era 90: van 30 abajo y faltan 90 en total."
+        },
+        "en-US": {
+          "prompt": "Step 4: move the bar to 60. The mark was 90: 30 behind, 90 to go."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: leve a barra até 60. A marca era 90: faltam 30 até ela e 90 no total."
+        }
+      },
+      "knowledge_component_id": "life.review-and-adjust-plan"
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5: Dina cambia solo la cantidad semanal. 150 − 60 = 90 por juntar.",
+          "line": "90 ÷ 2 semanas = 45 por semana. Revisión: 60 + 45 + 45 = 150."
+        },
+        "en-US": {
+          "prompt": "Step 5: Dina changes only the weekly amount. 150 − 60 = 90 left.",
+          "line": "90 ÷ 2 weeks = 45 a week. Check: 60 + 45 + 45 = 150."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: a Dina muda só o valor semanal. 150 − 60 = 90 a juntar.",
+          "line": "90 ÷ 2 semanas = 45 por semana. Conferência: 60 + 45 + 45 = 150."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "initial": 60,
+        "sale": 40,
+        "cost": 10,
+        "maxEntries": 4
+      },
+      "rubric": {
+        "target_balance": 140
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El frasco de Dina tiene 60. Si las semanas 4 y 5 juntan 40 cada una, toca Venta dos veces y escribe el total.",
+          "feedback": {
+            "met": "Anotaste las dos semanas y las sumaste a los 60.",
+            "not_yet": "Todavía no. Cada Venta suma las monedas de una semana al frasco."
+          }
+        },
+        "en-US": {
+          "prompt": "Dina's jar holds 60. If weeks 4 and 5 bring 40 each, tap Sale twice and type the total.",
+          "feedback": {
+            "met": "You posted both weeks and added them to the 60.",
+            "not_yet": "Not yet. Each Sale adds one week's coins to the jar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O pote da Dina tem 60. Se as semanas 4 e 5 juntarem 40 cada uma, toque em Venda duas vezes e digite o total.",
+          "feedback": {
+            "met": "Você anotou as duas semanas e somou aos 60.",
+            "not_yet": "Ainda não. Cada Venda soma as moedas de uma semana ao pote."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-06",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 6: el salón de Dina agradece al vecino Tomás, que prestó las herramientas.",
+          "line": "Le mostramos las 6 jardineras. Nuestra revisión: las tareas funcionaron; solo cambió la cantidad semanal."
+        },
+        "en-US": {
+          "prompt": "Step 6: Dina's class thanks neighbor Tom, who lent the tools.",
+          "line": "We show him the 6 beds. Our review: tasks worked; only the weekly amount changed."
+        },
+        "pt-BR": {
+          "prompt": "Passo 6: a turma da Dina agradece ao vizinho Tomás, que emprestou as ferramentas.",
+          "line": "Mostramos a ele os 6 canteiros. Nossa revisão: as tarefas funcionaram; só o valor semanal mudou."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.community-projects",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-thank"
+          },
+          {
+            "id": "choice-return"
+          },
+          {
+            "id": "choice-keep"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-back"
+          },
+          {
+            "id": "reason-help"
+          },
+          {
+            "id": "reason-ask"
+          },
+          {
+            "id": "reason-matter"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-thank"
+        ],
+        "reasonQuality": {
+          "reason-back": "partial",
+          "reason-help": "sound",
+          "reason-ask": "unsupported",
+          "reason-matter": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las jardineras están listas. ¿Cómo debe cerrar el salón de Dina el proyecto con el vecino Tomás?",
+          "feedback": {
+            "met": "Elegiste agradecerle y mostrarle lo que construyó su ayuda.",
+            "not_yet": "Todavía no. Piensa en quién prestó las herramientas y qué se construyó."
+          },
+          "choices": [
+            {
+              "label": "Agradecerle y mostrarle las jardineras"
+            },
+            {
+              "label": "Devolver las herramientas sin decir nada"
+            },
+            {
+              "label": "Quedarse las herramientas para otra vez"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Las herramientas siempre se devuelven"
+            },
+            {
+              "label": "Su ayuda hizo posibles las jardineras"
+            },
+            {
+              "label": "Agradecer solo cuenta si él lo pide"
+            },
+            {
+              "label": "Agradecer muestra que su ayuda importó"
+            }
+          ],
+          "help": [
+            "Piensa en lo que dio Tomás y en lo que se volvió."
+          ]
+        },
+        "en-US": {
+          "prompt": "The beds are done. How should Dina's class close the project with neighbor Tom?",
+          "feedback": {
+            "met": "You chose to thank him and show what his help built.",
+            "not_yet": "Not yet. Think about who lent the tools, and what they built."
+          },
+          "choices": [
+            {
+              "label": "Thank him and show him the beds"
+            },
+            {
+              "label": "Return the tools and say nothing"
+            },
+            {
+              "label": "Keep the tools for next time"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Tools should always go back"
+            },
+            {
+              "label": "His help made the beds possible"
+            },
+            {
+              "label": "A thank-you only counts if he asks"
+            },
+            {
+              "label": "A thank-you shows his help mattered"
+            }
+          ],
+          "help": [
+            "Think about what Tom gave and what it became."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Os canteiros estão prontos. Como a turma da Dina deve encerrar o projeto com o vizinho Tomás?",
+          "feedback": {
+            "met": "Você escolheu agradecer e mostrar o que a ajuda dele construiu.",
+            "not_yet": "Ainda não. Pense em quem emprestou as ferramentas e no que se construiu."
+          },
+          "choices": [
+            {
+              "label": "Agradecer e mostrar os canteiros a ele"
+            },
+            {
+              "label": "Devolver as ferramentas sem dizer nada"
+            },
+            {
+              "label": "Ficar com as ferramentas para a próxima"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Ferramentas sempre se devolvem"
+            },
+            {
+              "label": "A ajuda dele tornou os canteiros possíveis"
+            },
+            {
+              "label": "Agradecer só vale se ele pedir"
+            },
+            {
+              "label": "Agradecer mostra que a ajuda dele importou"
+            }
+          ],
+          "help": [
+            "Pense no que o Tomás deu e no que isso virou."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-keep"
+          },
+          {
+            "id": "choice-four"
+          },
+          {
+            "id": "choice-two"
+          },
+          {
+            "id": "choice-drop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-hard"
+          },
+          {
+            "id": "reason-left"
+          },
+          {
+            "id": "reason-restart"
+          },
+          {
+            "id": "reason-check"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-four"
+        ],
+        "reasonQuality": {
+          "reason-hard": "partial",
+          "reason-left": "sound",
+          "reason-restart": "unsupported",
+          "reason-check": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El salón de Dina planea pintar 12 macetas en 4 días; después del día 2 solo hay 4 pintadas. ¿Qué cambia?",
+          "feedback": {
+            "met": "Comparaste lo hecho con el plan y cambiaste el ritmo.",
+            "not_yet": "Todavía no. Recuerda a Dina: lo que falta, entre los días que quedan."
+          },
+          "choices": [
+            {
+              "label": "Seguir con 3 macetas al día"
+            },
+            {
+              "label": "Pintar 4 al día, 2 días más"
+            },
+            {
+              "label": "Pintar 2 al día"
+            },
+            {
+              "label": "Abandonar las macetas"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Los alumnos trabajan mucho"
+            },
+            {
+              "label": "Lo que falta, repartido en los días que quedan"
+            },
+            {
+              "label": "Empezar de nuevo siempre es más rápido"
+            },
+            {
+              "label": "Comparamos el plan con lo que ya se hizo"
+            }
+          ],
+          "help": [
+            "Encuentra lo que falta y repártelo entre los días que quedan."
+          ]
+        },
+        "en-US": {
+          "prompt": "Dina's class plans to paint 12 pots in 4 days; after day 2, only 4 are done. What changes?",
+          "feedback": {
+            "met": "You compared the work done with the plan, then changed the pace.",
+            "not_yet": "Not yet. Recall Dina's way: what's left, over the days left."
+          },
+          "choices": [
+            {
+              "label": "Keep 3 pots a day"
+            },
+            {
+              "label": "Paint 4 a day for 2 more days"
+            },
+            {
+              "label": "Paint 2 a day instead"
+            },
+            {
+              "label": "Give up on the pots"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "The students are working hard"
+            },
+            {
+              "label": "What's left, shared over the days left"
+            },
+            {
+              "label": "Starting over is always faster"
+            },
+            {
+              "label": "We checked the plan against the work done"
+            }
+          ],
+          "help": [
+            "Find what is left, then share it over the days left."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A turma da Dina planeja pintar 12 vasos em 4 dias; depois do dia 2, só 4 estão prontos. O que muda?",
+          "feedback": {
+            "met": "Você comparou o feito com o plano e mudou o ritmo.",
+            "not_yet": "Ainda não. Lembre da Dina: o que falta, pelos dias que restam."
+          },
+          "choices": [
+            {
+              "label": "Seguir com 3 vasos por dia"
+            },
+            {
+              "label": "Pintar 4 por dia, mais 2 dias"
+            },
+            {
+              "label": "Pintar 2 por dia"
+            },
+            {
+              "label": "Desistir dos vasos"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Os alunos estão se esforçando muito"
+            },
+            {
+              "label": "O que falta, dividido pelos dias que restam"
+            },
+            {
+              "label": "Recomeçar é sempre mais rápido"
+            },
+            {
+              "label": "Comparamos o plano com o que já foi feito"
+            }
+          ],
+          "help": [
+            "Ache o que falta e divida pelos dias que restam."
+          ]
+        }
+      }
+    }
+  ]
+}

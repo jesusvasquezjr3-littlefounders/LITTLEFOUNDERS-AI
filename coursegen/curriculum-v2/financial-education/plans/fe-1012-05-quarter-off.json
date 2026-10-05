@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-sale-season",
+  "lesson_id": "fe-1012-05-quarter-off",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.fraction-of-amount",
+    "money.equal-sharing",
+    "money.subtract-money"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara pone un letrero de “un cuarto de descuento” a su chamarra de 80 monedas y muestra cómo dividir el precio en 4 partes iguales, quitar una parte y revisar juntando las partes otra vez. Después la mitad y el tercio salen del mismo movimiento: la fracción dice cuántas partes iguales hacer y cuántas quitar.",
+  "title": {
+    "en-US": "A quarter off",
+    "es-MX": "Un cuarto de descuento",
+    "pt-BR": "Um quarto de desconto"
+  },
+  "new_concepts": [
+    "money.fraction-of-amount"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara’s sale sign.",
+          "line": "I put a sign on my 80-coin jacket: “A quarter off.” Let’s see the new price."
+        },
+        "es-MX": {
+          "prompt": "El letrero de rebajas de Zara.",
+          "line": "Puse un letrero en mi chamarra de 80 monedas: “Un cuarto de descuento”. Veamos el precio nuevo."
+        },
+        "pt-BR": {
+          "prompt": "A placa de promoção da Zara.",
+          "line": "Coloquei uma placa na minha jaqueta de 80 moedas: “Um quarto de desconto”. Vamos ver o preço novo."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.fraction-of-amount",
+      "payload": {
+        "steps": [
+          {
+            "id": "scarf-price"
+          },
+          {
+            "id": "amount-off"
+          },
+          {
+            "id": "sale-price"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "amount-off",
+          "sale-price"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "amount-off": "10",
+          "sale-price": "30"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara’s 40-coin scarf is a quarter off. Find the amount off and the new price.",
+          "feedback": {
+            "met": "That shows where you start. Now it’s Zara’s turn.",
+            "not_yet": "That shows where you start. Now it’s Zara’s turn."
+          },
+          "help": [
+            "Give it a try. Zara shows it next."
+          ],
+          "steps": [
+            {
+              "expression": "Scarf price",
+              "result": "40",
+              "spokenText": "The scarf costs 40 coins"
+            },
+            {
+              "expression": "Amount the sale takes off",
+              "result": "10",
+              "spokenText": "The sale takes off 10 coins"
+            },
+            {
+              "expression": "Price after the sale",
+              "result": "30",
+              "spokenText": "The scarf now costs 30 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La bufanda de Zara, de 40 monedas, tiene un cuarto de descuento. Encuentra el descuento y el precio nuevo.",
+          "feedback": {
+            "met": "Eso muestra de dónde partes. Ahora le toca a Zara.",
+            "not_yet": "Eso muestra de dónde partes. Ahora le toca a Zara."
+          },
+          "help": [
+            "Inténtalo. Zara lo muestra enseguida."
+          ],
+          "steps": [
+            {
+              "expression": "Precio de la bufanda",
+              "result": "40",
+              "spokenText": "La bufanda cuesta 40 monedas"
+            },
+            {
+              "expression": "Lo que quita el descuento",
+              "result": "10",
+              "spokenText": "El descuento quita 10 monedas"
+            },
+            {
+              "expression": "Precio con el descuento",
+              "result": "30",
+              "spokenText": "La bufanda queda en 30 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O cachecol da Zara, de 40 moedas, tem um quarto de desconto. Ache o desconto e o preço novo.",
+          "feedback": {
+            "met": "Isso mostra de onde você parte. Agora é a vez da Zara.",
+            "not_yet": "Isso mostra de onde você parte. Agora é a vez da Zara."
+          },
+          "help": [
+            "Tente. A Zara mostra em seguida."
+          ],
+          "steps": [
+            {
+              "expression": "Preço do cachecol",
+              "result": "40",
+              "spokenText": "O cachecol custa 40 moedas"
+            },
+            {
+              "expression": "Quanto o desconto tira",
+              "result": "10",
+              "spokenText": "O desconto tira 10 moedas"
+            },
+            {
+              "expression": "Preço com o desconto",
+              "result": "30",
+              "spokenText": "O cachecol fica em 30 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-split-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a quarter is 1 of 4 equal parts.",
+          "line": "Hmm, let me try this: split 80 into 4 equal parts. 80 ÷ 4 = 20 each."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un cuarto es 1 de 4 partes iguales.",
+          "line": "Hmm, probemos esto: divido 80 en 4 partes iguales. 80 ÷ 4 = 20 cada una."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: um quarto é 1 de 4 partes iguais.",
+          "line": "Hmm, vou tentar isto: divido 80 em 4 partes iguais. 80 ÷ 4 = 20 cada."
+        }
+      }
+    },
+    {
+      "id": "example-off-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: one part comes off the price.",
+          "line": "I take off 1 part: 20 coins. So 80 − 20 leaves 60 to pay."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: una parte se quita del precio.",
+          "line": "Quito 1 parte: 20 monedas. Entonces 80 − 20 deja 60 por pagar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: uma parte sai do preço.",
+          "line": "Tiro 1 parte: 20 moedas. Então 80 − 20 deixa 60 para pagar."
+        }
+      }
+    },
+    {
+      "id": "example-check-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: put the parts back to check.",
+          "line": "Check it: 3 parts of 20 are 60, and the 20 off makes 80 again."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: junta las partes para revisar.",
+          "line": "Reviso: 3 partes de 20 son 60, y las 20 que quité vuelven a dar 80."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: junte as partes para conferir.",
+          "line": "Confiro: 3 partes de 20 são 60, e as 20 que tirei voltam a dar 80."
+        }
+      }
+    },
+    {
+      "id": "guided-quarter-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.fraction-of-amount",
+      "payload": {
+        "steps": [
+          {
+            "id": "one-part"
+          },
+          {
+            "id": "sale-price"
+          },
+          {
+            "id": "check"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "sale-price",
+          "check"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "sale-price": "45",
+          "check": "60"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara’s 60-coin backpack is a quarter off. Take one part off, then check.",
+          "feedback": {
+            "met": "You took one part off, then added it back to check.",
+            "not_yet": "Look at Zara’s second step: one part comes off."
+          },
+          "help": [
+            "Do what Zara did: subtract one part, then add it back."
+          ],
+          "steps": [
+            {
+              "expression": "60 ÷ 4",
+              "result": "15",
+              "spokenText": "Sixty divided by 4 is 15, one part"
+            },
+            {
+              "expression": "60 − 15",
+              "result": "45",
+              "spokenText": "Sixty minus 15 leaves 45 to pay"
+            },
+            {
+              "expression": "Sale price + the part off",
+              "result": "60",
+              "spokenText": "Forty-five plus 15 is 60 again"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La mochila de Zara cuesta 60 monedas y tiene un cuarto de descuento. Quita una parte y revisa.",
+          "feedback": {
+            "met": "Quitaste una parte del precio y la sumaste de nuevo para revisar.",
+            "not_yet": "Mira el segundo paso de Zara: una parte se quita."
+          },
+          "help": [
+            "Haz lo que hizo Zara: resta una parte y luego súmala."
+          ],
+          "steps": [
+            {
+              "expression": "60 ÷ 4",
+              "result": "15",
+              "spokenText": "Sesenta entre 4 son 15, una parte"
+            },
+            {
+              "expression": "60 − 15",
+              "result": "45",
+              "spokenText": "Sesenta menos 15 deja 45 por pagar"
+            },
+            {
+              "expression": "Precio rebajado + la parte quitada",
+              "result": "60",
+              "spokenText": "Cuarenta y cinco más 15 son 60 otra vez"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A mochila da Zara custa 60 moedas e tem um quarto de desconto. Tire uma parte e confira.",
+          "feedback": {
+            "met": "Você tirou uma parte do preço e somou de volta para conferir.",
+            "not_yet": "Veja o segundo passo da Zara: uma parte sai do preço."
+          },
+          "help": [
+            "Faça como a Zara: subtraia uma parte e depois some de volta."
+          ],
+          "steps": [
+            {
+              "expression": "60 ÷ 4",
+              "result": "15",
+              "spokenText": "Sessenta dividido por 4 é 15, uma parte"
+            },
+            {
+              "expression": "60 − 15",
+              "result": "45",
+              "spokenText": "Sessenta menos 15 deixa 45 para pagar"
+            },
+            {
+              "expression": "Preço com desconto + a parte tirada",
+              "result": "60",
+              "spokenText": "Quarenta e cinco mais 15 é 60 de novo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-half-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: half takes 2 of the 4 parts.",
+          "line": "Half off the 80-coin jacket takes 2 of the 4 parts: 20 + 20 = 40 coins."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: la mitad quita 2 de las 4 partes.",
+          "line": "La mitad de descuento quita 2 de las 4 partes de la chamarra: 20 + 20 = 40 monedas."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: a metade tira 2 das 4 partes.",
+          "line": "A metade de desconto tira 2 das 4 partes da jaqueta: 20 + 20 = 40 moedas."
+        }
+      }
+    },
+    {
+      "id": "example-parts-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: each fraction names its equal parts.",
+          "line": "Half splits into 2 equal parts, a third into 3, a quarter into 4."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: cada fracción dice cuántas partes iguales.",
+          "line": "La mitad se parte en 2 partes iguales, un tercio en 3 y un cuarto en 4."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: cada fração diz quantas partes iguais.",
+          "line": "A metade se divide em 2 partes iguais, um terço em 3 e um quarto em 4."
+        }
+      }
+    },
+    {
+      "id": "practice-wall-01",
+      "type": "math.fraction-wall.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "fraction-wall"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.fraction-of-amount",
+      "payload": {
+        "op": "equivalent",
+        "fraction": [
+          1,
+          2
+        ],
+        "denominator": 8
+      },
+      "rubric": {
+        "n": 4,
+        "d": 8
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A price is split into 8 equal parts. Half comes off: shade those eighths.",
+          "feedback": {
+            "met": "You shaded eighths that match one half of the whole.",
+            "not_yet": "Zara’s half took half of the parts. Shade the same share."
+          },
+          "help": [
+            "Shade eighths until half of the whole bar is covered."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mitad de descuento en un precio de 8 partes iguales: sombrea los octavos que se quitan.",
+          "feedback": {
+            "met": "Sombreaste octavos que igualan la mitad del total.",
+            "not_yet": "La mitad de Zara quitó la mitad de las partes. Sombrea igual."
+          },
+          "help": [
+            "Sombrea octavos hasta cubrir la mitad de la barra."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Metade de desconto num preço de 8 partes iguais: pinte os oitavos que saem.",
+          "feedback": {
+            "met": "Você pintou oitavos que igualam a metade do todo.",
+            "not_yet": "A metade da Zara tirou metade das partes. Pinte a mesma parcela."
+          },
+          "help": [
+            "Pinte oitavos até cobrir metade da barra."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-save-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.fraction-of-amount",
+      "payload": {
+        "total": 48,
+        "step": 4,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara’s stall earns 48 coins. Save at least a quarter of them.",
+          "feedback": {
+            "met": "You saved at least a quarter of the coins.",
+            "not_yet": "Like the jacket: a quarter is one of four equal parts."
+          },
+          "help": [
+            "Split 48 into 4 equal parts. Save at least one part."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El puesto de Zara gana 48 monedas. Guarda al menos un cuarto de ellas.",
+          "feedback": {
+            "met": "Guardaste al menos un cuarto de las monedas.",
+            "not_yet": "Como en la chamarra: un cuarto es una de cuatro partes iguales."
+          },
+          "help": [
+            "Divide 48 en 4 partes iguales. Guarda al menos una parte."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A barraca da Zara ganha 48 moedas. Guarde pelo menos um quarto delas.",
+          "feedback": {
+            "met": "Você guardou pelo menos um quarto das moedas.",
+            "not_yet": "Como na jaqueta: um quarto é uma de quatro partes iguais."
+          },
+          "help": [
+            "Divida 48 em 4 partes iguais. Guarde pelo menos uma parte."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-cap-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.fraction-of-amount",
+      "payload": {
+        "steps": [
+          {
+            "id": "cap-price"
+          },
+          {
+            "id": "amount-off"
+          },
+          {
+            "id": "price-to-pay"
+          },
+          {
+            "id": "check"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "amount-off",
+          "price-to-pay",
+          "check"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "amount-off": "18",
+          "price-to-pay": "18",
+          "check": "36"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara’s 36-coin cap is half off. Find the amount off, the price to pay, and check.",
+          "feedback": {
+            "met": "You found half, subtracted it and checked.",
+            "not_yet": "Look back at Zara’s steps: split, take off, check."
+          },
+          "help": [
+            "Half is 1 of 2 equal parts; take it off."
+          ],
+          "steps": [
+            {
+              "expression": "Cap price",
+              "result": "36",
+              "spokenText": "The cap costs 36 coins"
+            },
+            {
+              "expression": "Amount the half takes off",
+              "result": "18",
+              "spokenText": "Half of 36 is 18"
+            },
+            {
+              "expression": "Price to pay",
+              "result": "18",
+              "spokenText": "Thirty-six minus 18 leaves 18 to pay"
+            },
+            {
+              "expression": "Price to pay + amount off",
+              "result": "36",
+              "spokenText": "Eighteen plus 18 is 36 again"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La gorra de Zara cuesta 36 monedas y tiene mitad de descuento. Encuentra el descuento, el precio a pagar y revisa.",
+          "feedback": {
+            "met": "Encontraste la mitad, la restaste y revisaste.",
+            "not_yet": "Mira los pasos de Zara: dividir, quitar y revisar."
+          },
+          "help": [
+            "La mitad es 1 de 2 partes iguales; quítala del precio."
+          ],
+          "steps": [
+            {
+              "expression": "Precio de la gorra",
+              "result": "36",
+              "spokenText": "La gorra cuesta 36 monedas"
+            },
+            {
+              "expression": "Lo que quita la mitad",
+              "result": "18",
+              "spokenText": "La mitad de 36 es 18"
+            },
+            {
+              "expression": "Precio a pagar",
+              "result": "18",
+              "spokenText": "Treinta y seis menos 18 deja 18 por pagar"
+            },
+            {
+              "expression": "Precio a pagar + descuento",
+              "result": "36",
+              "spokenText": "Dieciocho más 18 son 36 otra vez"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O boné da Zara custa 36 moedas e tem metade de desconto. Ache o desconto, o preço a pagar e confira.",
+          "feedback": {
+            "met": "Você achou a metade, subtraiu e conferiu.",
+            "not_yet": "Veja os passos da Zara: dividir, tirar e conferir."
+          },
+          "help": [
+            "A metade é 1 de 2 partes iguais; tire do preço."
+          ],
+          "steps": [
+            {
+              "expression": "Preço do boné",
+              "result": "36",
+              "spokenText": "O boné custa 36 moedas"
+            },
+            {
+              "expression": "Quanto a metade tira",
+              "result": "18",
+              "spokenText": "A metade de 36 é 18"
+            },
+            {
+              "expression": "Preço a pagar",
+              "result": "18",
+              "spokenText": "Trinta e seis menos 18 deixa 18 para pagar"
+            },
+            {
+              "expression": "Preço a pagar + desconto",
+              "result": "36",
+              "spokenText": "Dezoito mais 18 é 36 de novo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-fair-01",
+      "type": "money.allocation.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "stacked-bar"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.fraction-of-amount",
+      "payload": {
+        "total": 72,
+        "step": 6,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimumSave": 24
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At the school fair, Zara’s class earns 72 coins. Save at least a third.",
+          "feedback": {
+            "met": "You saved at least a third of the coins.",
+            "not_yet": "Like the jacket: split into equal parts, then take one."
+          },
+          "help": [
+            "A third is 1 of 3 equal parts of the coins."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En la feria de la escuela, el grupo de Zara gana 72 monedas. Guarda al menos un tercio.",
+          "feedback": {
+            "met": "Guardaste al menos un tercio de las monedas.",
+            "not_yet": "Como en la chamarra: divide en partes iguales y toma una."
+          },
+          "help": [
+            "Un tercio es 1 de 3 partes iguales de las monedas."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na feira da escola, a turma da Zara ganha 72 moedas. Guarde pelo menos um terço.",
+          "feedback": {
+            "met": "Você guardou pelo menos um terço das moedas.",
+            "not_yet": "Como na jaqueta: divida em partes iguais e pegue uma."
+          },
+          "help": [
+            "Um terço é 1 de 3 partes iguais das moedas."
+          ]
+        }
+      }
+    }
+  ]
+}

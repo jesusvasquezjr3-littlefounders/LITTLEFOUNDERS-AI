@@ -1,0 +1,1106 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-10-12",
+  "chapter_id": "ent-1012-pitch-price-budget",
+  "lesson_id": "ent-1012-12-spend-what-you-have",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "biz.budget-decisions",
+    "money.simple-budget",
+    "biz.profit"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho muestra cómo el equipo reparte 48 monedas entre cuatro necesidades, qué pasa cuando se paga primero lo que luce y cómo ordenar por lo que el negocio necesita. Luego practica con una clasificación, un árbol de decisión y un cálculo de ventas, y al final decide el presupuesto del puesto de galletas de Zoe.",
+  "title": {
+    "en-US": "Spend what you have",
+    "es-MX": "Gasta lo que tienes",
+    "pt-BR": "Gaste o que você tem"
+  },
+  "new_concepts": [
+    "biz.budget-decisions"
+  ],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "Rho spends the banner and treat coins first because they look good, then cannot afford to restock the bags.",
+    "recovery": "Rho sees that without bags there is nothing to sell, and commits to rank the needs before spending next time."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Four things to buy, 48 coins.",
+          "line": "Observe: restock bags 30, sturdier handles 12, banner 15, team treat 10. Together they cost more than 48."
+        },
+        "es-MX": {
+          "prompt": "Cuatro compras, 48 monedas.",
+          "line": "Observa: reponer bolsas 30, asas más firmes 12, pancarta 15, golosina del equipo 10. Juntos cuestan más de 48."
+        },
+        "pt-BR": {
+          "prompt": "Quatro compras, 48 moedas.",
+          "line": "Observe: repor sacolas 30, alças mais firmes 12, faixa 15, guloseima da equipe 10. Juntos custam mais de 48."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.budget-decisions",
+      "payload": {
+        "choices": [
+          {
+            "id": "lemons"
+          },
+          {
+            "id": "flag"
+          },
+          {
+            "id": "treat"
+          },
+          {
+            "id": "each"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-big"
+          },
+          {
+            "id": "reason-need"
+          },
+          {
+            "id": "reason-fun"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "lemons"
+        ],
+        "reasonQuality": {
+          "reason-need": "sound",
+          "reason-big": "partial",
+          "reason-fun": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo has 30 coins for his stall: flag 8, lemons 20, treat 7. What should he fund first?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "The lemons"
+            },
+            {
+              "label": "The flag"
+            },
+            {
+              "label": "The treat"
+            },
+            {
+              "label": "A little of each"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Lemons are the biggest cost"
+            },
+            {
+              "label": "Without lemons there is nothing to sell"
+            },
+            {
+              "label": "It sounds like the most fun"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo tiene 30 monedas para su puesto: bandera 8, limones 20, golosina 7. ¿Qué debería pagar primero?",
+          "feedback": {
+            "met": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así tenemos de dónde partir. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Los limones"
+            },
+            {
+              "label": "La bandera"
+            },
+            {
+              "label": "La golosina"
+            },
+            {
+              "label": "Un poco de cada uno"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Los limones son el mayor gasto"
+            },
+            {
+              "label": "Sin limones no hay nada que vender"
+            },
+            {
+              "label": "Suena a lo más divertido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Leo tem 30 moedas para a barraca dele: bandeira 8, limões 20, guloseima 7. O que ele deve pagar primeiro?",
+          "feedback": {
+            "met": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo.",
+            "not_yet": "Obrigado, assim sabemos de onde partir. Agora vamos conferir passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Os limões"
+            },
+            {
+              "label": "A bandeira"
+            },
+            {
+              "label": "A guloseima"
+            },
+            {
+              "label": "Um pouco de cada"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Os limões são o maior gasto"
+            },
+            {
+              "label": "Sem limões não há o que vender"
+            },
+            {
+              "label": "Parece o mais divertido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Rho's first plan for the team's coins.",
+          "setup": "The team had 48 coins. The banner looked great and the treat looked fun.",
+          "misjudgment": "I funded both first: 15 and 10. Then 23 coins were left, and the bags cost 30.",
+          "recovery": "Without bags there is nothing to sell. Next time I rank the needs before I spend a coin."
+        },
+        "es-MX": {
+          "prompt": "El primer plan de Rho para las monedas del equipo.",
+          "setup": "El equipo tenía 48 monedas. La pancarta se veía muy bien y la golosina parecía divertida.",
+          "misjudgment": "Pagué las dos primero: 15 y 10. Luego quedaron 23 monedas, y las bolsas costaban 30.",
+          "recovery": "Sin bolsas no hay nada que vender. La próxima vez ordeno las necesidades antes de gastar una moneda."
+        },
+        "pt-BR": {
+          "prompt": "O primeiro plano do Rho para as moedas da equipe.",
+          "setup": "A equipe tinha 48 moedas. A faixa parecia ótima e a guloseima parecia divertida.",
+          "misjudgment": "Paguei as duas primeiro: 15 e 10. Depois sobraram 23 moedas, e as sacolas custavam 30.",
+          "recovery": "Sem sacolas não há o que vender. Da próxima vez ordeno as necessidades antes de gastar uma moeda."
+        }
+      }
+    },
+    {
+      "id": "example-rank-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: we rank by what the business needs.",
+          "line": "Bags let us sell and handles keep them whole, so they rank first. The banner and treat rank last."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: ordenamos según lo que el negocio necesita.",
+          "line": "Las bolsas permiten vender y las asas evitan que se rompan, así que van primero. La pancarta y la golosina van al final."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: ordenamos pelo que o negócio precisa.",
+          "line": "As sacolas permitem vender e as alças evitam que rasguem, então vêm primeiro. A faixa e a guloseima vêm por último."
+        }
+      }
+    },
+    {
+      "id": "example-fund-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: we fund in order, noting the coins left.",
+          "line": "Bags 30 leave 18; handles 12 leave 6. Banner 15 and treat 10 do not fit, so they wait."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: pagamos en orden y anotamos las monedas que quedan.",
+          "line": "Bolsas 30 dejan 18; asas 12 dejan 6. Pancarta 15 y golosina 10 no caben, así que esperan."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: pagamos em ordem e anotamos as moedas que sobram.",
+          "line": "Sacolas 30 deixam 18; alças 12 deixam 6. Faixa 15 e guloseima 10 não cabem, então esperam."
+        }
+      }
+    },
+    {
+      "id": "guided-fund-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.simple-budget",
+      "payload": {
+        "steps": [
+          {
+            "id": "first-need"
+          },
+          {
+            "id": "after-bags"
+          },
+          {
+            "id": "after-handles"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "after-bags",
+          "after-handles"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "after-bags": "15",
+          "after-handles": "3"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Next week: 40 coins, bags 25, handles 12, banner 18. Fund bags then handles; find what is left.",
+          "feedback": {
+            "met": "You funded the needs in order and tracked what was left.",
+            "not_yet": "Start from 40: take away the bags, then the handles."
+          },
+          "help": [
+            "Subtract the bags from 40, then the handles from the result."
+          ],
+          "steps": [
+            {
+              "expression": "Bags rank first",
+              "result": "25",
+              "spokenText": "Bags rank first and cost 25 coins"
+            },
+            {
+              "expression": "40 − 25",
+              "result": "15",
+              "spokenText": "Forty minus 25 leaves 15 coins"
+            },
+            {
+              "expression": "Coins left − handles",
+              "result": "3",
+              "spokenText": "Fifteen minus 12 leaves 3 coins"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Próxima semana: 40 monedas, bolsas 25, asas 12, pancarta 18. Paga bolsas y luego asas; encuentra lo que queda.",
+          "feedback": {
+            "met": "Pagaste las necesidades en orden y llevaste la cuenta de lo que quedó.",
+            "not_yet": "Parte de 40: quita las bolsas y luego las asas."
+          },
+          "help": [
+            "Resta las bolsas de 40 y luego las asas del resultado."
+          ],
+          "steps": [
+            {
+              "expression": "Las bolsas van primero",
+              "result": "25",
+              "spokenText": "Las bolsas van primero y cuestan 25 monedas"
+            },
+            {
+              "expression": "40 − 25",
+              "result": "15",
+              "spokenText": "Cuarenta menos 25 deja 15 monedas"
+            },
+            {
+              "expression": "Monedas que quedan − asas",
+              "result": "3",
+              "spokenText": "Quince menos 12 deja 3 monedas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Semana que vem: 40 moedas, sacolas 25, alças 12, faixa 18. Pague sacolas e depois alças; ache o que sobra.",
+          "feedback": {
+            "met": "Você pagou as necessidades em ordem e acompanhou o que sobrou.",
+            "not_yet": "Parta de 40: tire as sacolas e depois as alças."
+          },
+          "help": [
+            "Subtraia as sacolas de 40 e depois as alças do resultado."
+          ],
+          "steps": [
+            {
+              "expression": "As sacolas vêm primeiro",
+              "result": "25",
+              "spokenText": "As sacolas vêm primeiro e custam 25 moedas"
+            },
+            {
+              "expression": "40 − 25",
+              "result": "15",
+              "spokenText": "Quarenta menos 25 deixa 15 moedas"
+            },
+            {
+              "expression": "Moedas que sobram − alças",
+              "result": "3",
+              "spokenText": "Quinze menos 12 deixa 3 moedas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-profit-gap-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Back to our team: the banner is 9 coins short.",
+          "line": "Each bag sold earns 3 profit, so 3 more sales cover the 9. Waiting items get funded from later profit."
+        },
+        "es-MX": {
+          "prompt": "De vuelta con el equipo: a la pancarta le faltan 9 monedas.",
+          "line": "Cada bolsa vendida deja 3 de ganancia, así que 3 ventas más cubren las 9. Lo que espera se paga con ganancias futuras."
+        },
+        "pt-BR": {
+          "prompt": "De volta à equipe: faltam 9 moedas para a faixa.",
+          "line": "Cada sacola vendida rende 3 de lucro, então mais 3 vendas cobrem as 9. O que espera é pago com lucros futuros."
+        }
+      }
+    },
+    {
+      "id": "practice-sort-01",
+      "type": "logic.sort-by-rule.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "sort-bins"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.budget-decisions",
+      "payload": {
+        "bins": [
+          {
+            "id": "bin-now"
+          },
+          {
+            "id": "bin-wait"
+          }
+        ],
+        "items": [
+          {
+            "id": "item-beads"
+          },
+          {
+            "id": "item-sign"
+          },
+          {
+            "id": "item-string"
+          },
+          {
+            "id": "item-snack"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-need"
+          },
+          {
+            "id": "reason-extra"
+          }
+        ]
+      },
+      "rubric": {
+        "accepted": {
+          "item-beads": [
+            {
+              "bin": "bin-now",
+              "reason": "reason-need"
+            }
+          ],
+          "item-sign": [
+            {
+              "bin": "bin-wait",
+              "reason": "reason-extra"
+            }
+          ],
+          "item-string": [
+            {
+              "bin": "bin-now",
+              "reason": "reason-need"
+            }
+          ],
+          "item-snack": [
+            {
+              "bin": "bin-wait",
+              "reason": "reason-extra"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia has 40 coins for her bracelet stall. Sort each item: fund now or wait?",
+          "feedback": {
+            "met": "You sorted by what the business needs, with a reason for each.",
+            "not_yet": "Ask of each item: does the stall need it to sell?"
+          },
+          "bins": [
+            {
+              "label": "Fund now"
+            },
+            {
+              "label": "Wait"
+            }
+          ],
+          "items": [
+            {
+              "label": "Beads 22"
+            },
+            {
+              "label": "Sign 14"
+            },
+            {
+              "label": "String 10"
+            },
+            {
+              "label": "Snack 9"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "It keeps the stall selling"
+            },
+            {
+              "label": "It is only a nice extra"
+            }
+          ],
+          "rule": "Fund what the business needs first; extras wait."
+        },
+        "es-MX": {
+          "prompt": "Mia tiene 40 monedas para su puesto de pulseras. Clasifica cada artículo: ¿pagar ahora o esperar?",
+          "feedback": {
+            "met": "Clasificaste según lo que el negocio necesita, con una razón en cada uno.",
+            "not_yet": "Pregunta por cada artículo: ¿el puesto lo necesita para vender?"
+          },
+          "bins": [
+            {
+              "label": "Pagar ahora"
+            },
+            {
+              "label": "Esperar"
+            }
+          ],
+          "items": [
+            {
+              "label": "Cuentas 22"
+            },
+            {
+              "label": "Letrero 14"
+            },
+            {
+              "label": "Hilo 10"
+            },
+            {
+              "label": "Botana 9"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Mantiene el puesto vendiendo"
+            },
+            {
+              "label": "Es solo un extra bonito"
+            }
+          ],
+          "rule": "Primero se paga lo que el negocio necesita; los extras esperan."
+        },
+        "pt-BR": {
+          "prompt": "Mia tem 40 moedas para a barraca de pulseiras dela. Classifique cada item: pagar agora ou esperar?",
+          "feedback": {
+            "met": "Você classificou pelo que o negócio precisa, com um motivo para cada item.",
+            "not_yet": "Pergunte de cada item: a barraca precisa dele para vender?"
+          },
+          "bins": [
+            {
+              "label": "Pagar agora"
+            },
+            {
+              "label": "Esperar"
+            }
+          ],
+          "items": [
+            {
+              "label": "Miçangas 22"
+            },
+            {
+              "label": "Placa 14"
+            },
+            {
+              "label": "Fio 10"
+            },
+            {
+              "label": "Lanche 9"
+            }
+          ],
+          "reasons": [
+            {
+              "label": "Mantém a barraca vendendo"
+            },
+            {
+              "label": "É só um extra bonito"
+            }
+          ],
+          "rule": "Primeiro se paga o que o negócio precisa; os extras esperam."
+        }
+      }
+    },
+    {
+      "id": "practice-tree-01",
+      "type": "money.spend-decision.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.budget-decisions",
+      "payload": {
+        "start": "q-need",
+        "nodes": [
+          {
+            "id": "q-need",
+            "kind": "question",
+            "yes": "q-fit",
+            "no": "out-last"
+          },
+          {
+            "id": "q-fit",
+            "kind": "question",
+            "yes": "out-now",
+            "no": "out-wait"
+          },
+          {
+            "id": "out-now",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-wait",
+            "kind": "outcome"
+          },
+          {
+            "id": "out-last",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "sc-wax"
+          },
+          {
+            "id": "sc-banner"
+          },
+          {
+            "id": "sc-jars"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "sc-wax": [
+            "q-need",
+            "q-fit",
+            "out-now"
+          ],
+          "sc-banner": [
+            "q-need",
+            "out-last"
+          ],
+          "sc-jars": [
+            "q-need",
+            "q-fit",
+            "out-wait"
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ben has 20 coins left. Follow each item through the questions to its outcome.",
+          "feedback": {
+            "met": "You followed each item through the questions to its outcome.",
+            "not_yet": "Start each item with the first question: is it a need?"
+          },
+          "nodes": [
+            {
+              "label": "Is it needed to make or sell?"
+            },
+            {
+              "label": "Does it fit the coins left?"
+            },
+            {
+              "label": "Fund it now"
+            },
+            {
+              "label": "Wait for more sales"
+            },
+            {
+              "label": "Fund it last, if coins remain"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Wax 14: needed to make candles"
+            },
+            {
+              "label": "Banner 5: only a nice extra"
+            },
+            {
+              "label": "Jars 25: needed to make candles"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A Ben le quedan 20 monedas. Sigue cada artículo por las preguntas hasta su resultado.",
+          "feedback": {
+            "met": "Seguiste cada artículo por las preguntas hasta su resultado.",
+            "not_yet": "Empieza cada artículo con la primera pregunta: ¿es una necesidad?"
+          },
+          "nodes": [
+            {
+              "label": "¿Es necesario para hacer o vender?"
+            },
+            {
+              "label": "¿Cabe en las monedas que quedan?"
+            },
+            {
+              "label": "Pagarlo ahora"
+            },
+            {
+              "label": "Esperar más ventas"
+            },
+            {
+              "label": "Pagarlo al final, si sobran monedas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Cera 14: necesaria para hacer velas"
+            },
+            {
+              "label": "Pancarta 5: solo un extra bonito"
+            },
+            {
+              "label": "Frascos 25: necesarios para hacer velas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ben ainda tem 20 moedas. Siga cada item pelas perguntas até o resultado.",
+          "feedback": {
+            "met": "Você levou cada item pelas perguntas até o resultado.",
+            "not_yet": "Comece cada item pela primeira pergunta: é uma necessidade?"
+          },
+          "nodes": [
+            {
+              "label": "É necessário para fazer ou vender?"
+            },
+            {
+              "label": "Cabe nas moedas que sobram?"
+            },
+            {
+              "label": "Pagar agora"
+            },
+            {
+              "label": "Esperar mais vendas"
+            },
+            {
+              "label": "Pagar por último, se sobrarem moedas"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Cera 14: necessária para fazer velas"
+            },
+            {
+              "label": "Faixa 5: só um extra bonito"
+            },
+            {
+              "label": "Potes 25: necessários para fazer velas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-gap-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "steps": [
+          {
+            "id": "needs-total"
+          },
+          {
+            "id": "coins-left"
+          },
+          {
+            "id": "banner-short"
+          },
+          {
+            "id": "sales-needed"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "coins-left",
+          "banner-short",
+          "sales-needed"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "coins-left": "8",
+          "banner-short": "12",
+          "sales-needed": "3"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam funds paper 28 and ink 14 from 50 coins. How many sales earning 4 cover a 20-coin banner?",
+          "feedback": {
+            "met": "You worked out the shortfall and the sales that cover it.",
+            "not_yet": "Compare the banner's cost with the coins left after the needs."
+          },
+          "help": [
+            "Subtract the needs from the budget, then divide the shortfall by 4."
+          ],
+          "steps": [
+            {
+              "expression": "Paper + ink",
+              "result": "42",
+              "spokenText": "Paper 28 plus ink 14 is 42 coins"
+            },
+            {
+              "expression": "Budget − needs",
+              "result": "8",
+              "spokenText": "Fifty minus 42 leaves 8 coins"
+            },
+            {
+              "expression": "Banner − coins left",
+              "result": "12",
+              "spokenText": "Twenty minus 8 leaves the banner 12 short"
+            },
+            {
+              "expression": "Short ÷ profit per sale",
+              "result": "3",
+              "spokenText": "Twelve divided by 4 is 3 sales"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sam paga papel 28 y tinta 14 con 50 monedas. ¿Cuántas ventas con ganancia de 4 cubren una pancarta de 20?",
+          "feedback": {
+            "met": "Calculaste lo que faltaba y las ventas que lo cubren.",
+            "not_yet": "Compara el costo de la pancarta con las monedas que quedan tras las necesidades."
+          },
+          "help": [
+            "Resta las necesidades del presupuesto y divide lo que falta entre 4."
+          ],
+          "steps": [
+            {
+              "expression": "Papel + tinta",
+              "result": "42",
+              "spokenText": "Papel 28 más tinta 14 son 42 monedas"
+            },
+            {
+              "expression": "Presupuesto − necesidades",
+              "result": "8",
+              "spokenText": "Cincuenta menos 42 deja 8 monedas"
+            },
+            {
+              "expression": "Pancarta − monedas que quedan",
+              "result": "12",
+              "spokenText": "Veinte menos 8: a la pancarta le faltan 12"
+            },
+            {
+              "expression": "Faltante ÷ ganancia por venta",
+              "result": "3",
+              "spokenText": "Doce entre 4 son 3 ventas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Sam paga papel 28 e tinta 14 com 50 moedas. Quantas vendas com lucro de 4 cobrem uma faixa de 20?",
+          "feedback": {
+            "met": "Você calculou o que faltava e as vendas que o cobrem.",
+            "not_yet": "Compare o custo da faixa com as moedas que sobram depois das necessidades."
+          },
+          "help": [
+            "Subtraia as necessidades do orçamento e divida o que falta por 4."
+          ],
+          "steps": [
+            {
+              "expression": "Papel + tinta",
+              "result": "42",
+              "spokenText": "Papel 28 mais tinta 14 são 42 moedas"
+            },
+            {
+              "expression": "Orçamento − necessidades",
+              "result": "8",
+              "spokenText": "Cinquenta menos 42 deixa 8 moedas"
+            },
+            {
+              "expression": "Faixa − moedas que sobram",
+              "result": "12",
+              "spokenText": "Vinte menos 8: faltam 12 para a faixa"
+            },
+            {
+              "expression": "Falta ÷ lucro por venda",
+              "result": "3",
+              "spokenText": "Doze dividido por 4 são 3 vendas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-cookies-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.budget-decisions",
+      "payload": {
+        "choices": [
+          {
+            "id": "tray-sign"
+          },
+          {
+            "id": "ing-tray"
+          },
+          {
+            "id": "ing-sign"
+          },
+          {
+            "id": "all-three"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-needs-fit"
+          },
+          {
+            "id": "reason-most"
+          },
+          {
+            "id": "reason-sign"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "ing-tray"
+        ],
+        "reasonQuality": {
+          "reason-needs-fit": "sound",
+          "reason-most": "partial",
+          "reason-sign": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zoe's cookie stall has 36 coins: ingredients 24, tray 10, sign 14. What should she fund first?",
+          "feedback": {
+            "met": "You funded the needs first and checked they fit the coins.",
+            "not_yet": "Check each pair's total against the coins, and which items are needs."
+          },
+          "choices": [
+            {
+              "label": "Tray and sign"
+            },
+            {
+              "label": "Ingredients and tray"
+            },
+            {
+              "label": "Ingredients and sign"
+            },
+            {
+              "label": "All three"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "Needs come first, and together they fit"
+            },
+            {
+              "label": "They use most of the coins"
+            },
+            {
+              "label": "A sign draws the most buyers"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El puesto de galletas de Zoe tiene 36 monedas: ingredientes 24, charola 10, letrero 14. ¿Qué debería pagar primero?",
+          "feedback": {
+            "met": "Pagaste primero las necesidades y revisaste que cupieran.",
+            "not_yet": "Compara el total de cada par con las monedas, y cuáles son necesidades."
+          },
+          "choices": [
+            {
+              "label": "Charola y letrero"
+            },
+            {
+              "label": "Ingredientes y charola"
+            },
+            {
+              "label": "Ingredientes y letrero"
+            },
+            {
+              "label": "Las tres cosas"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Primero las necesidades, y juntas caben"
+            },
+            {
+              "label": "Usan casi todas las monedas"
+            },
+            {
+              "label": "Un letrero atrae más compradores"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A barraca de biscoitos da Zoe tem 36 moedas: ingredientes 24, assadeira 10, placa 14. O que ela deve pagar primeiro?",
+          "feedback": {
+            "met": "Você pagou as necessidades primeiro e conferiu se cabiam.",
+            "not_yet": "Compare o total de cada par com as moedas e veja quais são necessidades."
+          },
+          "choices": [
+            {
+              "label": "Assadeira e placa"
+            },
+            {
+              "label": "Ingredientes e assadeira"
+            },
+            {
+              "label": "Ingredientes e placa"
+            },
+            {
+              "label": "Os três"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Primeiro as necessidades, e juntas cabem"
+            },
+            {
+              "label": "Usam quase todas as moedas"
+            },
+            {
+              "label": "Uma placa atrai mais compradores"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

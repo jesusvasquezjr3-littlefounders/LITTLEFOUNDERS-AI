@@ -1,0 +1,806 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-real-business",
+  "lesson_id": "ent-adult-03-the-price-you-can-defend",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.pricing-strategy",
+    "biz.margin",
+    "biz.profit"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "dina",
+    "scene": "diorama-a"
+  },
+  "brief": "Dina te acompaña a elegir el precio de tu servicio móvil con evidencia. Ves cómo un recargo sobre el costo difiere del margen, lees qué pasa con las ventas cuando sube el precio y comparas tres precios probados por lo que deja cada uno en total. Al final calculas cuánto volumen exige un descuento de 10% y defiendes un precio con números, no con intuición.",
+  "title": {
+    "es-MX": "El precio que puedes defender",
+    "en-US": "The price you can defend",
+    "pt-BR": "O preço que você consegue defender"
+  },
+  "new_concepts": [
+    "biz.pricing-strategy"
+  ],
+  "mentor_misjudgment": {
+    "character": "dina",
+    "misjudgment": "Dina priced her first repairs at $25 to win clients and saw the margin vanish once parts and fixed costs were paid.",
+    "recovery": "Dina says she will test three prices before committing to one."
+  },
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México un taller móvil de bicis puede cobrar una tarifa fija por visita, por hora o por paquete, y las refacciones se suman al costo. Los montos son ilustrativos y no son asesoría de negocio.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "refacciones",
+          "tarifa fija"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil uma bicicletaria móvel pode cobrar preço fixo por visita, por hora ou por pacote, com as peças somadas ao custo. Os valores são ilustrativos e não são conselho de negócio.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "peças",
+          "preço fixo"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US a mobile bike shop may charge a flat fee per visit, an hourly rate or a package, with parts added to the cost. The amounts are illustrations, not business advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "parts",
+          "flat fee"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un precio sin prueba es una suposición. El tuyo debe sostenerse ante clientes y números.",
+          "line": "Hoy probamos precios y miramos lo que deja cada uno."
+        },
+        "en-US": {
+          "prompt": "A price without a test is a guess. Yours must hold up with customers and numbers.",
+          "line": "Today we test prices and read what each one leaves."
+        },
+        "pt-BR": {
+          "prompt": "Um preço sem teste é um palpite. O seu precisa se sustentar diante de clientes e números.",
+          "line": "Hoje testamos preços e vemos o que cada um deixa."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-undercut"
+          },
+          {
+            "id": "choice-match"
+          },
+          {
+            "id": "choice-test"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-test"
+          },
+          {
+            "id": "reason-rival"
+          },
+          {
+            "id": "reason-lowest"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-test"
+        ],
+        "reasonQuality": {
+          "reason-test": "sound",
+          "reason-rival": "partial",
+          "reason-lowest": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un competidor cobra $46 por reparación y tus refacciones cuestan $20. ¿Cómo fijas tu precio?",
+          "feedback": {
+            "met": "Ahora lo vemos con números.",
+            "not_yet": "Ahora lo vemos con números."
+          },
+          "help": [
+            "Piensa: ¿qué te dice cuánto pagarán de verdad los clientes?"
+          ],
+          "choices": [
+            {
+              "label": "Cobrar $38 para quitarle clientes"
+            },
+            {
+              "label": "Igualar al competidor en $46"
+            },
+            {
+              "label": "Probar varios precios y comparar ventas"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Las ventas a cada precio muestran qué conviene"
+            },
+            {
+              "label": "El precio del competidor es una buena referencia"
+            },
+            {
+              "label": "El precio más bajo siempre gana clientes"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A rival charges $46 a repair and your parts cost $20. How do you set your price?",
+          "feedback": {
+            "met": "Now we look at it with numbers.",
+            "not_yet": "Now we look at it with numbers."
+          },
+          "help": [
+            "Think: what tells you what customers will really pay?"
+          ],
+          "choices": [
+            {
+              "label": "Undercut at $38 to win clients"
+            },
+            {
+              "label": "Match the rival at $46"
+            },
+            {
+              "label": "Test a few prices and compare sales"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Sales at each price show what pays"
+            },
+            {
+              "label": "A rival price is a useful reference"
+            },
+            {
+              "label": "The lowest price always wins clients"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um concorrente cobra R$ 46 por conserto e suas peças custam R$ 20. Como você define seu preço?",
+          "feedback": {
+            "met": "Agora vemos com números.",
+            "not_yet": "Agora vemos com números."
+          },
+          "help": [
+            "Pense: o que diz quanto os clientes realmente vão pagar?"
+          ],
+          "choices": [
+            {
+              "label": "Cobrar R$ 38 para ganhar clientes"
+            },
+            {
+              "label": "Igualar ao concorrente em R$ 46"
+            },
+            {
+              "label": "Testar vários preços e comparar vendas"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "As vendas a cada preço mostram o que compensa"
+            },
+            {
+              "label": "O preço do concorrente é uma boa referência"
+            },
+            {
+              "label": "O menor preço sempre conquista clientes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "es-MX": {
+          "prompt": "Dina recuerda su primer precio.",
+          "setup": "Abrí con $25 por reparación para ganar mis primeros clientes.",
+          "misjudgment": "Tras $20 de refacciones quedaban $5 por reparación, y los $600 de costos fijos seguían.",
+          "recovery": "Lo vi tarde. Ahora pruebo tres precios antes de decidir: $44, $50 y $58."
+        },
+        "en-US": {
+          "prompt": "Dina remembers her first price.",
+          "setup": "I opened at $25 a repair to win my first clients.",
+          "misjudgment": "After $20 of parts, only $5 a repair was left, and the $600 of fixed costs stayed.",
+          "recovery": "I saw it too late. Now I test three prices before committing: $44, $50 and $58."
+        },
+        "pt-BR": {
+          "prompt": "A Dina lembra do primeiro preço.",
+          "setup": "Abri com R$ 25 por conserto para ganhar meus primeiros clientes.",
+          "misjudgment": "Depois de R$ 20 de peças sobravam R$ 5 por conserto, e os R$ 600 de custos fixos continuavam.",
+          "recovery": "Percebi tarde. Agora testo três preços antes de decidir: R$ 44, R$ 50 e R$ 58."
+        }
+      }
+    },
+    {
+      "id": "ex-markup",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, el recargo y el margen usan bases distintas.",
+          "line": "Una refacción de $20 vendida en $40: el recargo es 100% del costo y el margen es 50% del precio."
+        },
+        "en-US": {
+          "prompt": "Step 1, markup and margin use different bases.",
+          "line": "A $20 part sold at $40: markup is 100% of cost, margin is 50% of price."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, o acréscimo e a margem usam bases diferentes.",
+          "line": "Uma peça de R$ 20 vendida por R$ 40: o acréscimo é 100% do custo e a margem é 50% do preço."
+        }
+      }
+    },
+    {
+      "id": "guided-markup",
+      "type": "fin.margin-markup.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "margin-markup"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.margin",
+      "payload": {
+        "cost": 20,
+        "basis": "markup",
+        "percent": 50,
+        "maxPrice": 60,
+        "start": 20
+      },
+      "rubric": {
+        "target": 30
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Una cadena que revendes cuesta $20. Fija el precio con un recargo del 50% sobre el costo.",
+          "feedback": {
+            "met": "Aplicaste el porcentaje al costo.",
+            "not_yet": "El recargo es un porcentaje del costo, no del precio."
+          }
+        },
+        "en-US": {
+          "prompt": "A chain you resell costs $20. Set the price with a markup of 50% on the cost.",
+          "feedback": {
+            "met": "You applied the percent to the cost.",
+            "not_yet": "Markup is a percent of the cost, not of the price."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma corrente que você revende custa R$ 20. Defina o preço com um acréscimo de 50% sobre o custo.",
+          "feedback": {
+            "met": "Você aplicou o percentual ao custo.",
+            "not_yet": "O acréscimo é um percentual do custo, não do preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-contrib",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, la contribución es lo que dejan las ventas tras las refacciones.",
+          "line": "Como ilustración, una prueba a $32 vendió 50 reparaciones. Cada una deja $12, así que la contribución es $600."
+        },
+        "en-US": {
+          "prompt": "Step 2, contribution is what sales keep after parts.",
+          "line": "As an illustration, a test at $32 sold 50 repairs. Each keeps $12, so the contribution is $600."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, a contribuição é o que as vendas deixam após as peças.",
+          "line": "Como ilustração, um teste a R$ 32 vendeu 50 consertos. Cada um deixa R$ 12, então a contribuição é R$ 600."
+        }
+      }
+    },
+    {
+      "id": "ex-elastic",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, la elasticidad es el cambio en ventas dividido entre el cambio en precio.",
+          "line": "De $32 a $40 el precio sube 25% y las ventas bajan 10%. 10 ÷ 25 = 0.4, menos de 1: la subida rindió."
+        },
+        "en-US": {
+          "prompt": "Step 3, elasticity is the sales change divided by the price change.",
+          "line": "From $32 to $40 price rises 25%, sales fall 10%. 10 ÷ 25 = 0.4, under 1, so the rise paid."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, a elasticidade é a variação das vendas dividida pela variação do preço.",
+          "line": "De R$ 32 a R$ 40 o preço sobe 25% e as vendas caem 10%. 10 ÷ 25 = 0,4, menos de 1: o aumento compensou."
+        }
+      }
+    },
+    {
+      "id": "practice-elastic",
+      "type": "econ.elasticity.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "elasticity"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "pMax": 60,
+        "demand": {
+          "a": 74,
+          "b": 1
+        },
+        "goal": {
+          "num": 1,
+          "den": 1
+        },
+        "start": 20
+      },
+      "rubric": {
+        "target": 37
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las ventas de kits de lubricante bajan al subir el precio. Desliza el precio hasta que la elasticidad de la demanda sea 1.",
+          "feedback": {
+            "met": "Encontraste el precio donde subir deja de sumar ingresos.",
+            "not_yet": "Bajo 1, subir el precio suma ingresos; sobre 1, resta ingresos."
+          }
+        },
+        "en-US": {
+          "prompt": "Lube kit sales fall as the price rises. Slide the price until the elasticity of demand is 1.",
+          "feedback": {
+            "met": "You found the price where a rise stops adding revenue.",
+            "not_yet": "Under 1 a price rise adds revenue; over 1 it loses revenue."
+          }
+        },
+        "pt-BR": {
+          "prompt": "As vendas de kits de lubrificante caem quando o preço sobe. Deslize o preço até a elasticidade da demanda ser 1.",
+          "feedback": {
+            "met": "Você achou o preço em que subir deixa de somar receita.",
+            "not_yet": "Abaixo de 1, subir o preço soma receita; acima de 1, tira receita."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-test",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.profit",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-44"
+          },
+          {
+            "id": "choice-50"
+          },
+          {
+            "id": "choice-58"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-total"
+          },
+          {
+            "id": "reason-volume"
+          },
+          {
+            "id": "reason-each"
+          },
+          {
+            "id": "reason-middle"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-50"
+        ],
+        "reasonQuality": {
+          "reason-total": "sound",
+          "reason-volume": "partial",
+          "reason-each": "partial",
+          "reason-middle": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cada precio corrió un mes; las refacciones cuestan $20 por reparación. ¿Qué precio conservas?",
+          "feedback": {
+            "met": "Mantuviste el precio que deja más en total tras las refacciones.",
+            "not_yet": "Todavía no. Compara el total de cada precio, no un solo dato."
+          },
+          "help": [
+            "Multiplica lo que deja una reparación por las vendidas, en cada precio."
+          ],
+          "choices": [
+            {
+              "label": "$44: 30 reparaciones vendidas"
+            },
+            {
+              "label": "$50: 26 reparaciones vendidas"
+            },
+            {
+              "label": "$58: 17 reparaciones vendidas"
+            }
+          ],
+          "reasonPrompt": "¿Por qué se sostiene ese precio?",
+          "reasons": [
+            {
+              "label": "Deja el mayor total tras las refacciones"
+            },
+            {
+              "label": "Es el que vende más reparaciones"
+            },
+            {
+              "label": "Es el que deja más por reparación"
+            },
+            {
+              "label": "El precio medio siempre es el más seguro"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Each price ran one month; parts cost $20 per repair. Which price do you keep?",
+          "feedback": {
+            "met": "You kept the price that leaves the most in total.",
+            "not_yet": "Not yet. Compare each price total, not one number."
+          },
+          "help": [
+            "Multiply what one repair keeps by repairs sold, for each price."
+          ],
+          "choices": [
+            {
+              "label": "$44: 30 repairs sold"
+            },
+            {
+              "label": "$50: 26 repairs sold"
+            },
+            {
+              "label": "$58: 17 repairs sold"
+            }
+          ],
+          "reasonPrompt": "Why does that price hold up?",
+          "reasons": [
+            {
+              "label": "It leaves the largest total after parts"
+            },
+            {
+              "label": "It sells the most repairs"
+            },
+            {
+              "label": "It keeps the most per repair"
+            },
+            {
+              "label": "The middle price is always safest"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cada preço rodou um mês; as peças custam R$ 20 por conserto. Qual preço você mantém?",
+          "feedback": {
+            "met": "Você manteve o preço que deixa mais no total após as peças.",
+            "not_yet": "Ainda não. Compare o total de cada preço, não um só número."
+          },
+          "help": [
+            "Multiplique o que um conserto deixa pelos vendidos, em cada preço."
+          ],
+          "choices": [
+            {
+              "label": "R$ 44: 30 consertos vendidos"
+            },
+            {
+              "label": "R$ 50: 26 consertos vendidos"
+            },
+            {
+              "label": "R$ 58: 17 consertos vendidos"
+            }
+          ],
+          "reasonPrompt": "Por que esse preço se sustenta?",
+          "reasons": [
+            {
+              "label": "Deixa o maior total após as peças"
+            },
+            {
+              "label": "É o que vende mais consertos"
+            },
+            {
+              "label": "É o que deixa mais por conserto"
+            },
+            {
+              "label": "O preço do meio é sempre o mais seguro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-discount",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, un descuento de 10% quita más de 10% al margen.",
+          "line": "$50 menos 10% son $45; el margen baja de $30 a $25. Igualar los $780 exige 32 reparaciones, no 26."
+        },
+        "en-US": {
+          "prompt": "Step 4, a 10% discount takes more than 10% of the margin.",
+          "line": "$50 less 10% is $45; the margin falls from $30 to $25. Matching $780 takes 32 repairs, not 26."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, um desconto de 10% tira mais de 10% da margem.",
+          "line": "R$ 50 menos 10% são R$ 45; a margem cai para R$ 25. Igualar R$ 780 exige 32 consertos, não 26."
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-yes"
+          },
+          {
+            "id": "choice-no"
+          },
+          {
+            "id": "choice-third"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-margin"
+          },
+          {
+            "id": "reason-buyers"
+          },
+          {
+            "id": "reason-volume"
+          },
+          {
+            "id": "reason-lower"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-third"
+        ],
+        "reasonQuality": {
+          "reason-volume": "sound",
+          "reason-margin": "partial",
+          "reason-buyers": "partial",
+          "reason-lower": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un casco de $400 te cuesta $240; un descuento de 10% baja su margen a $120. ¿Lo ofreces?",
+          "feedback": {
+            "met": "Ataste el descuento al volumen que exige.",
+            "not_yet": "Todavía no. ¿Qué necesita un margen de $120 para igualar uno de $160?"
+          },
+          "help": [
+            "Piensa: ¿qué volumen extra repone los $40 que pierdes por venta?"
+          ],
+          "choices": [
+            {
+              "label": "Sí, un precio menor atrae más compradores"
+            },
+            {
+              "label": "No, nunca vendas bajo el precio habitual"
+            },
+            {
+              "label": "Solo si las ventas suben cerca de un tercio"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "El margen baja de $160 a $120"
+            },
+            {
+              "label": "Un descuento puede traer compradores nuevos"
+            },
+            {
+              "label": "Las ventas deben subir un tercio para mantener la ganancia"
+            },
+            {
+              "label": "Un precio menor siempre gana clientes"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A $100 helmet costs you $60; a 10% discount cuts its margin to $30. Do you offer it?",
+          "feedback": {
+            "met": "You tied the discount to the volume it needs.",
+            "not_yet": "Not yet. What does a $30 margin need to match $40?"
+          },
+          "help": [
+            "Think: what extra volume replaces the $10 lost per sale?"
+          ],
+          "choices": [
+            {
+              "label": "Yes, a lower price brings more buyers"
+            },
+            {
+              "label": "No, never sell below the usual price"
+            },
+            {
+              "label": "Only if sales rise about a third"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "The margin falls from $40 to $30"
+            },
+            {
+              "label": "A discount can bring in new buyers"
+            },
+            {
+              "label": "Sales must rise a third to keep profit"
+            },
+            {
+              "label": "A lower price always wins customers"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um capacete de R$ 100 custa R$ 60 para você; um desconto de 10% reduz a margem a R$ 30. Você oferece?",
+          "feedback": {
+            "met": "Você ligou o desconto ao volume que ele exige.",
+            "not_yet": "Ainda não. O que uma margem de R$ 30 precisa para igualar R$ 40?"
+          },
+          "help": [
+            "Pense: que volume extra repõe os R$ 10 perdidos por venda?"
+          ],
+          "choices": [
+            {
+              "label": "Sim, um preço menor atrai mais compradores"
+            },
+            {
+              "label": "Não, nunca venda abaixo do preço habitual"
+            },
+            {
+              "label": "Só se as vendas subirem cerca de um terço"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "A margem cai de R$ 40 para R$ 30"
+            },
+            {
+              "label": "Um desconto pode trazer novos compradores"
+            },
+            {
+              "label": "As vendas precisam subir um terço para manter o lucro"
+            },
+            {
+              "label": "Um preço menor sempre conquista clientes"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

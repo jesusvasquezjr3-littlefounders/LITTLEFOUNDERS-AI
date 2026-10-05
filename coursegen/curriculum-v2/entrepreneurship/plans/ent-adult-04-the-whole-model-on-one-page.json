@@ -1,0 +1,1060 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-real-business",
+  "lesson_id": "ent-adult-04-the-whole-model-on-one-page",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.business-model",
+    "biz.pricing-strategy",
+    "biz.mvp"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho te guía a unir problema, cliente, producto, precio, canal y equipo de tu servicio móvil en una sola página. Colocas cada pieza en un lienzo de negocio, recorres cuatro preguntas para hallar el eslabón más débil y eliges qué cambio probar en pequeño. Al final aplicas el método a un negocio distinto.",
+  "title": {
+    "es-MX": "El modelo completo en una página",
+    "en-US": "The whole model on one page",
+    "pt-BR": "O modelo completo em uma página"
+  },
+  "new_concepts": [
+    "biz.business-model"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México los pedidos de un taller móvil de bicis suelen llegar por un grupo de mensajes, y un volante en la estación anuncia el servicio a quienes viajan a diario. Los montos son ilustrativos y no son asesoría de negocio.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "grupo de mensajes",
+          "volante"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil uma bicicletaria móvel costuma receber reservas por um grupo de mensagens, e um panfleto na estação alcança quem viaja todo dia. Os valores são ilustrativos e não são conselho de negócio.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "grupo de mensagens",
+          "panfleto"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US a mobile bike shop often takes bookings through a messaging group, and a station flyer reaches the people who commute every day. The amounts are illustrations, not business advice.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "messaging group",
+          "station flyer"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un negocio no es una idea sola. Son partes que deben encajar.",
+          "line": "Hoy unimos las partes en una página y buscamos la que cede primero."
+        },
+        "en-US": {
+          "prompt": "A business is not one idea. It is parts that have to fit together.",
+          "line": "Today we join the parts on one page and find the one that gives first."
+        },
+        "pt-BR": {
+          "prompt": "Um negócio não é uma ideia só. São partes que precisam se encaixar.",
+          "line": "Hoje juntamos as partes em uma página e buscamos a que cede primeiro."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.business-model",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-time"
+          },
+          {
+            "id": "choice-route"
+          },
+          {
+            "id": "choice-half"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-route"
+          },
+          {
+            "id": "reason-price"
+          },
+          {
+            "id": "reason-finds"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-route"
+        ],
+        "reasonQuality": {
+          "reason-route": "sound",
+          "reason-price": "partial",
+          "reason-finds": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Un servicio de reparación es rápido y de precio justo, pero nadie lo reserva. ¿Qué revisas primero?",
+          "feedback": {
+            "met": "Ahora vemos cómo encajan las partes.",
+            "not_yet": "Ahora vemos cómo encajan las partes."
+          },
+          "help": [
+            "Piensa: ¿qué hay entre el servicio y las personas?"
+          ],
+          "choices": [
+            {
+              "label": "Acortar aún más el tiempo de reparación"
+            },
+            {
+              "label": "Cómo se enteran los clientes del servicio"
+            },
+            {
+              "label": "Bajar el precio a la mitad"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Una buena oferta aún debe llegar a los compradores"
+            },
+            {
+              "label": "El precio es lo primero que miran los compradores"
+            },
+            {
+              "label": "Un buen servicio siempre encuentra a sus clientes"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "A repair service is quick and fairly priced, yet nobody books it. What do you check first?",
+          "feedback": {
+            "met": "Now we see how the parts fit.",
+            "not_yet": "Now we see how the parts fit."
+          },
+          "help": [
+            "Think: what sits between the service and the people?"
+          ],
+          "choices": [
+            {
+              "label": "Shorten the repair time further"
+            },
+            {
+              "label": "How customers hear about it"
+            },
+            {
+              "label": "Cut the price in half"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A good offer still has to reach buyers"
+            },
+            {
+              "label": "Price is the first thing buyers look at"
+            },
+            {
+              "label": "A good service always finds its customers"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um serviço de conserto é rápido e de preço justo, mas ninguém reserva. O que você verifica primeiro?",
+          "feedback": {
+            "met": "Agora vemos como as partes se encaixam.",
+            "not_yet": "Agora vemos como as partes se encaixam."
+          },
+          "help": [
+            "Pense: o que existe entre o serviço e as pessoas?"
+          ],
+          "choices": [
+            {
+              "label": "Encurtar ainda mais o tempo de conserto"
+            },
+            {
+              "label": "Como os clientes ficam sabendo do serviço"
+            },
+            {
+              "label": "Reduzir o preço pela metade"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Uma boa oferta ainda precisa chegar aos compradores"
+            },
+            {
+              "label": "O preço é a primeira coisa que os compradores veem"
+            },
+            {
+              "label": "Um bom serviço sempre encontra seus clientes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-parts",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, seis partes: problema, cliente, producto, precio, canal y equipo.",
+          "line": "Si una falla, las demás no la compensan. Un producto fuerte no rescata un canal débil."
+        },
+        "en-US": {
+          "prompt": "Step 1, six parts: problem, customer, product, price, channel, team.",
+          "line": "If one fails, the rest cannot cover for it. A strong product does not rescue a weak channel."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, seis partes: problema, cliente, produto, preço, canal e equipe.",
+          "line": "Se uma falha, as outras não a compensam. Um produto forte não salva um canal fraco."
+        }
+      }
+    },
+    {
+      "id": "ex-case",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, problema: una espera de 5 días; cliente: viajeros diarios de dos estaciones; producto: una reparación en sitio de 45 minutos.",
+          "line": "Precio: $50; canal: un grupo de mensajes y un volante en la estación; equipo: un ayudante. Seis partes encadenadas."
+        },
+        "en-US": {
+          "prompt": "Step 2, problem: a 5-day wait; customer: commuters at two stations; product: a 45-minute on-site repair.",
+          "line": "Price: $50; channel: a messaging group and a station flyer; team: one helper. Six linked parts."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, problema: uma espera de 5 dias; cliente: passageiros diários de duas estações; produto: um conserto no local de 45 minutos.",
+          "line": "Preço: R$ 50; canal: um grupo de mensagens e um panfleto na estação; equipe: um ajudante. Seis partes encadeadas."
+        }
+      }
+    },
+    {
+      "id": "ex-canvas",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, el lienzo de negocio tiene nueve bloques, y cada parte cae en uno.",
+          "line": "Cliente, Segmentos; problema y producto, Propuesta de valor; canal, Canales; precio, Ingresos; equipo, Recursos. Faltan actividades, socios, relación, costos."
+        },
+        "en-US": {
+          "prompt": "Step 3, the business canvas has nine blocks, and each part lands in one.",
+          "line": "Customer, Segments; problem and product, Value proposition; channel, Channels; price, Revenue; team, Resources. Add activities, partners, relationships, costs."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, o canvas de negócio tem nove blocos, e cada parte cai em um.",
+          "line": "Cliente, Segmentos; problema e produto, Proposta de valor; canal, Canais; preço, Receita; equipe, Recursos. Faltam atividades, parceiros, relação e custos."
+        }
+      }
+    },
+    {
+      "id": "guided-canvas",
+      "type": "reasoning.decision-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "business-canvas"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.business-model",
+      "payload": {
+        "pieces": [
+          "p-segment",
+          "p-value",
+          "p-group",
+          "p-flyer",
+          "p-revenue",
+          "p-costs",
+          "p-helper",
+          "p-activity",
+          "p-follow",
+          "p-partner"
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "partners": [
+              "p-partner"
+            ],
+            "activities": [
+              "p-activity"
+            ],
+            "resources": [
+              "p-helper"
+            ],
+            "value": [
+              "p-value"
+            ],
+            "relationships": [
+              "p-follow"
+            ],
+            "channels": [
+              "p-group",
+              "p-flyer"
+            ],
+            "segments": [
+              "p-segment"
+            ],
+            "costs": [
+              "p-costs"
+            ],
+            "revenue": [
+              "p-revenue"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Coloca cada nota en su bloque del lienzo de negocio.",
+          "feedback": {
+            "met": "Cada nota quedó en su bloque.",
+            "not_yet": "Todavía no. Cada bloque responde una pregunta distinta del negocio."
+          },
+          "labels": {
+            "p-segment": "Viajeros diarios de dos estaciones",
+            "p-value": "De vuelta en la calle en 45 minutos",
+            "p-group": "Grupo de mensajes",
+            "p-flyer": "Volante en la estación",
+            "p-revenue": "$50 por reparación",
+            "p-costs": "Refacciones de cada reparación",
+            "p-helper": "Un ayudante",
+            "p-activity": "Reparar bicis en la estación",
+            "p-follow": "Mensaje de seguimiento tras cada reparación",
+            "p-partner": "Proveedor de refacciones"
+          }
+        },
+        "en-US": {
+          "prompt": "Place each note in its block of the business canvas.",
+          "feedback": {
+            "met": "Every note sits in its block.",
+            "not_yet": "Not yet. Each block answers a different business question."
+          },
+          "labels": {
+            "p-segment": "Commuters at two stations",
+            "p-value": "Back on the road in 45 minutes",
+            "p-group": "Messaging group",
+            "p-flyer": "Station flyer",
+            "p-revenue": "$50 per repair",
+            "p-costs": "Parts for each repair",
+            "p-helper": "One helper",
+            "p-activity": "Repair bikes at the station",
+            "p-follow": "Follow-up message after each repair",
+            "p-partner": "Parts supplier"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Coloque cada nota no seu bloco do canvas de negócio.",
+          "feedback": {
+            "met": "Cada nota ficou no seu bloco.",
+            "not_yet": "Ainda não. Cada bloco responde a uma pergunta diferente do negócio."
+          },
+          "labels": {
+            "p-segment": "Passageiros diários de duas estações",
+            "p-value": "De volta à rua em 45 minutos",
+            "p-group": "Grupo de mensagens",
+            "p-flyer": "Panfleto na estação",
+            "p-revenue": "R$ 50 por conserto",
+            "p-costs": "Peças de cada conserto",
+            "p-helper": "Um ajudante",
+            "p-activity": "Consertar bikes na estação",
+            "p-follow": "Mensagem de acompanhamento após cada conserto",
+            "p-partner": "Fornecedor de peças"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-weak",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, haz cuatro preguntas de sí o no, en orden: producto, precio, canal, equipo.",
+          "line": "El primer no es el eslabón más débil. Ilustración: tres partes pasan y luego 60 reservas semanales saturan a un ayudante."
+        },
+        "en-US": {
+          "prompt": "Step 4, ask four yes or no questions, in order: product, price, channel, team.",
+          "line": "The first no is the weakest link. Illustration: three parts pass, then 60 weekly bookings overload one helper."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, faça quatro perguntas de sim ou não, em ordem: produto, preço, canal, equipe.",
+          "line": "A primeira resposta negativa é o elo mais fraco. Ilustração: três partes passam e depois 60 reservas semanais sobrecarregam um ajudante."
+        }
+      }
+    },
+    {
+      "id": "practice-flow",
+      "type": "logic.flowchart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "flowchart"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.business-model",
+      "payload": {
+        "start": "q-problem",
+        "nodes": [
+          {
+            "id": "q-problem",
+            "kind": "question",
+            "yes": "q-price",
+            "no": "o-product"
+          },
+          {
+            "id": "q-price",
+            "kind": "question",
+            "yes": "q-channel",
+            "no": "o-price"
+          },
+          {
+            "id": "q-channel",
+            "kind": "question",
+            "yes": "q-team",
+            "no": "o-channel"
+          },
+          {
+            "id": "q-team",
+            "kind": "question",
+            "yes": "o-holds",
+            "no": "o-team"
+          },
+          {
+            "id": "o-product",
+            "kind": "outcome"
+          },
+          {
+            "id": "o-price",
+            "kind": "outcome"
+          },
+          {
+            "id": "o-channel",
+            "kind": "outcome"
+          },
+          {
+            "id": "o-team",
+            "kind": "outcome"
+          },
+          {
+            "id": "o-holds",
+            "kind": "outcome"
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "sc-fail"
+          },
+          {
+            "id": "sc-unknown"
+          },
+          {
+            "id": "sc-fine"
+          }
+        ]
+      },
+      "rubric": {
+        "paths": {
+          "sc-fail": [
+            "q-problem",
+            "o-product"
+          ],
+          "sc-unknown": [
+            "q-problem",
+            "q-price",
+            "q-channel",
+            "o-channel"
+          ],
+          "sc-fine": [
+            "q-problem",
+            "q-price",
+            "q-channel",
+            "q-team",
+            "o-holds"
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Recorre cada caso por las cuatro preguntas y encuentra dónde se rompe primero el modelo.",
+          "feedback": {
+            "met": "Seguiste el orden y nombraste el primer no.",
+            "not_yet": "Todavía no. Recorre las preguntas en orden y detente en el primer no."
+          },
+          "nodes": [
+            {
+              "label": "¿La reparación resuelve el problema del cliente?"
+            },
+            {
+              "label": "¿El precio deja margen?"
+            },
+            {
+              "label": "¿Los clientes encuentran la oferta?"
+            },
+            {
+              "label": "¿El equipo cubre el volumen?"
+            },
+            {
+              "label": "El producto es el eslabón más débil"
+            },
+            {
+              "label": "El precio es el eslabón más débil"
+            },
+            {
+              "label": "El canal es el eslabón más débil"
+            },
+            {
+              "label": "El equipo es el eslabón más débil"
+            },
+            {
+              "label": "El modelo se sostiene"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "La mitad de las bicis reparadas falla en una semana"
+            },
+            {
+              "label": "Reparaciones firmes, margen $30, alcance del 10%"
+            },
+            {
+              "label": "Reparaciones firmes, margen $30, alcance del 80%, ayudante libre"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Walk each case through the four questions to find where the model breaks first.",
+          "feedback": {
+            "met": "You kept the order and named the first no.",
+            "not_yet": "Not yet. Go in order and stop at the first no."
+          },
+          "nodes": [
+            {
+              "label": "Does the repair solve the customer's problem?"
+            },
+            {
+              "label": "Does the price leave a margin?"
+            },
+            {
+              "label": "Do customers find the offer?"
+            },
+            {
+              "label": "Can the team cover the volume?"
+            },
+            {
+              "label": "Product is the weakest link"
+            },
+            {
+              "label": "Price is the weakest link"
+            },
+            {
+              "label": "Channel is the weakest link"
+            },
+            {
+              "label": "Team is the weakest link"
+            },
+            {
+              "label": "The model holds"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Half the repaired bikes fail within a week"
+            },
+            {
+              "label": "Repairs hold, $30 margin, 10% reached"
+            },
+            {
+              "label": "Repairs hold, $30 margin, 80% reached, helper free"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Percorra cada caso pelas quatro perguntas e ache onde o modelo quebra primeiro.",
+          "feedback": {
+            "met": "Você seguiu a ordem e nomeou a primeira resposta negativa.",
+            "not_yet": "Ainda não. Siga a ordem e pare na primeira resposta negativa."
+          },
+          "nodes": [
+            {
+              "label": "O conserto resolve o problema do cliente?"
+            },
+            {
+              "label": "O preço deixa margem?"
+            },
+            {
+              "label": "Os clientes encontram a oferta?"
+            },
+            {
+              "label": "A equipe dá conta do volume?"
+            },
+            {
+              "label": "O produto é o elo mais fraco"
+            },
+            {
+              "label": "O preço é o elo mais fraco"
+            },
+            {
+              "label": "O canal é o elo mais fraco"
+            },
+            {
+              "label": "A equipe é o elo mais fraco"
+            },
+            {
+              "label": "O modelo se sustenta"
+            }
+          ],
+          "scenarios": [
+            {
+              "label": "Metade das bikes consertadas falha em uma semana"
+            },
+            {
+              "label": "Consertos firmes, margem R$ 30, alcance de 10%"
+            },
+            {
+              "label": "Consertos firmes, margem R$ 30, alcance de 80%, ajudante livre"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-mvp",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, cambia una parte a la vez y pruébala en pequeño.",
+          "line": "Ilustración: un volante en una estación durante una semana muestra su efecto antes de imprimir para ambas."
+        },
+        "en-US": {
+          "prompt": "Step 5, change one part at a time and test it small.",
+          "line": "Illustration: a flyer at one station for a week shows its pull before you print for both."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, mude uma parte por vez e teste em pequena escala.",
+          "line": "Ilustração: um panfleto em uma estação por uma semana mostra o efeito antes de imprimir para as duas."
+        }
+      }
+    },
+    {
+      "id": "practice-price",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.pricing-strategy",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-cut"
+          },
+          {
+            "id": "choice-station"
+          },
+          {
+            "id": "choice-raise"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-each"
+          },
+          {
+            "id": "reason-small"
+          },
+          {
+            "id": "reason-stations"
+          },
+          {
+            "id": "reason-lower"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-raise"
+        ],
+        "reasonQuality": {
+          "reason-small": "sound",
+          "reason-each": "partial",
+          "reason-stations": "unsupported",
+          "reason-lower": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cada reparación de $50 deja $4 tras refacciones y pago del ayudante. ¿Qué cambio pruebas primero?",
+          "feedback": {
+            "met": "Probaste en pequeño la parte que falla.",
+            "not_yet": "Todavía no. Nombra la parte que falla y revisa el riesgo de cada cambio."
+          },
+          "help": [
+            "Piensa: ¿qué parte deja solo $4 y qué prueba cuesta menos?"
+          ],
+          "choices": [
+            {
+              "label": "Bajar el precio a $40"
+            },
+            {
+              "label": "Abrir una tercera estación"
+            },
+            {
+              "label": "Probar $56 con las próximas 20 reservas"
+            }
+          ],
+          "reasonPrompt": "¿Por qué ese cambio va primero?",
+          "reasons": [
+            {
+              "label": "Subir el precio aumenta lo que deja cada reparación"
+            },
+            {
+              "label": "Una prueba pequeña muestra el efecto con poco riesgo"
+            },
+            {
+              "label": "Más estaciones compensan un margen delgado"
+            },
+            {
+              "label": "Un precio menor siempre trae más reservas"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Each $50 repair leaves $4 after parts and helper pay. Which change do you test first?",
+          "feedback": {
+            "met": "You tested the failing part at small scale.",
+            "not_yet": "Not yet. Name the failing part, then weigh each change's risk."
+          },
+          "help": [
+            "Think: which part leaves only $4, and which test costs least?"
+          ],
+          "choices": [
+            {
+              "label": "Cut the price to $40"
+            },
+            {
+              "label": "Open a third station"
+            },
+            {
+              "label": "Try $56 on the next 20 bookings"
+            }
+          ],
+          "reasonPrompt": "Why does that change go first?",
+          "reasons": [
+            {
+              "label": "A higher price raises what each repair leaves"
+            },
+            {
+              "label": "A small test shows the effect cheaply"
+            },
+            {
+              "label": "More stations make up for a thin margin"
+            },
+            {
+              "label": "A lower price always brings more bookings"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cada conserto de R$ 50 deixa R$ 4 após peças e pagamento do ajudante. Qual mudança você testa primeiro?",
+          "feedback": {
+            "met": "Você testou em pequena escala a parte que falha.",
+            "not_yet": "Ainda não. Nomeie a parte que falha e avalie o risco de cada mudança."
+          },
+          "help": [
+            "Pense: que parte deixa só R$ 4 e que teste custa menos?"
+          ],
+          "choices": [
+            {
+              "label": "Reduzir o preço para R$ 40"
+            },
+            {
+              "label": "Abrir uma terceira estação"
+            },
+            {
+              "label": "Testar R$ 56 nas próximas 20 reservas"
+            }
+          ],
+          "reasonPrompt": "Por que essa mudança vem primeiro?",
+          "reasons": [
+            {
+              "label": "Subir o preço aumenta o que cada conserto deixa"
+            },
+            {
+              "label": "Um teste pequeno mostra o efeito com pouco risco"
+            },
+            {
+              "label": "Mais estações compensam uma margem fina"
+            },
+            {
+              "label": "Um preço menor sempre traz mais reservas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.business-model",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-fix"
+          },
+          {
+            "id": "choice-discount"
+          },
+          {
+            "id": "choice-post"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-refund"
+          },
+          {
+            "id": "reason-first"
+          },
+          {
+            "id": "reason-aware"
+          },
+          {
+            "id": "reason-price"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-fix"
+        ],
+        "reasonQuality": {
+          "reason-first": "sound",
+          "reason-refund": "partial",
+          "reason-aware": "unsupported",
+          "reason-price": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Las comidas de oficina a $90 dejan $30 cada una; 300 personas las conocen y 4 de cada 10 llegan frías. ¿Qué cambia primero?",
+          "feedback": {
+            "met": "Arreglaste primero el eslabón roto.",
+            "not_yet": "Todavía no. Haz las preguntas en orden y encuentra el primer no."
+          },
+          "help": [
+            "Piensa: ¿qué parte falla antes de que importe el precio?"
+          ],
+          "choices": [
+            {
+              "label": "Resolver cómo viajan las comidas"
+            },
+            {
+              "label": "Dar un descuento en cada comida"
+            },
+            {
+              "label": "Publicar más en grupos de oficina"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor opción?",
+          "reasons": [
+            {
+              "label": "Las comidas frías generan quejas y reembolsos"
+            },
+            {
+              "label": "Un eslabón roto debilita todas las demás partes"
+            },
+            {
+              "label": "Más difusión siempre trae más pedidos"
+            },
+            {
+              "label": "Un precio menor arregla cualquier queja"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "$12 office lunches leave $4 each; 300 workers know them, 4 in 10 arrive cold. What changes first?",
+          "feedback": {
+            "met": "You fixed the broken link first.",
+            "not_yet": "Not yet. Ask the questions in order; find the first no."
+          },
+          "help": [
+            "Think: which part fails before price even matters?"
+          ],
+          "choices": [
+            {
+              "label": "Fix how the lunches travel"
+            },
+            {
+              "label": "Offer a discount on every lunch"
+            },
+            {
+              "label": "Post more in office groups"
+            }
+          ],
+          "reasonPrompt": "Why is it the best choice?",
+          "reasons": [
+            {
+              "label": "Cold lunches bring complaints and refunds"
+            },
+            {
+              "label": "A broken link undermines every other part"
+            },
+            {
+              "label": "More awareness always brings more orders"
+            },
+            {
+              "label": "A lower price fixes any complaint"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Almoços de escritório a R$ 18 deixam R$ 6 cada; 300 pessoas os conhecem e 4 em 10 chegam frios. O que muda primeiro?",
+          "feedback": {
+            "met": "Você resolveu primeiro o elo quebrado.",
+            "not_yet": "Ainda não. Faça as perguntas em ordem e ache a primeira resposta negativa."
+          },
+          "help": [
+            "Pense: qual parte falha antes de o preço importar?"
+          ],
+          "choices": [
+            {
+              "label": "Resolver como os almoços são transportados"
+            },
+            {
+              "label": "Dar um desconto em cada almoço"
+            },
+            {
+              "label": "Postar mais em grupos de escritório"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor opção?",
+          "reasons": [
+            {
+              "label": "Almoços frios geram reclamações e reembolsos"
+            },
+            {
+              "label": "Um elo quebrado enfraquece todas as outras partes"
+            },
+            {
+              "label": "Mais divulgação sempre traz mais pedidos"
+            },
+            {
+              "label": "Um preço menor resolve qualquer reclamação"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

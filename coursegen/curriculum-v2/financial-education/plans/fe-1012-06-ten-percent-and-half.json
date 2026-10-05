@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-sale-season",
+  "lesson_id": "fe-1012-06-ten-percent-and-half",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "money.percent-intro",
+    "money.fraction-of-amount"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rho cuelga dos letreros de “10% de descuento” y “50% de descuento” sobre unos tenis de 60 monedas y mide cada uno: 10% es una décima parte, 50% es la mitad, y 20% se arma con dos bloques de 10%. Al final se comparan monedas, no números: 20% quita menos que un cuarto, y un tercio quita más que 30%.",
+  "title": {
+    "en-US": "Ten percent and half",
+    "es-MX": "Diez por ciento y la mitad",
+    "pt-BR": "Dez por cento e a metade"
+  },
+  "new_concepts": [
+    "money.percent-intro"
+  ],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s shoe stall.",
+          "line": "Rho hangs two banners over a 60-coin sneaker: “10% off” and “50% off”. Let’s measure."
+        },
+        "es-MX": {
+          "prompt": "El puesto de tenis de Rho.",
+          "line": "Rho cuelga dos letreros sobre unos tenis de 60 monedas: “10% de descuento” y “50% de descuento”. Midamos."
+        },
+        "pt-BR": {
+          "prompt": "A barraca de tênis do Rho.",
+          "line": "Rho pendura duas placas sobre um tênis de 60 moedas: “10% de desconto” e “50% de desconto”. Vamos medir."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "choices": [
+          {
+            "id": "coins-15"
+          },
+          {
+            "id": "coins-3"
+          },
+          {
+            "id": "coins-27"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-tenth"
+          },
+          {
+            "id": "reason-small"
+          },
+          {
+            "id": "reason-guess"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "coins-3"
+        ],
+        "reasonQuality": {
+          "reason-tenth": "sound",
+          "reason-small": "partial",
+          "reason-guess": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s 30-coin scarf has a “10% off” banner. How many coins come off?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now Rho measures it.",
+            "not_yet": "Thanks, that shows where you start. Now Rho measures it."
+          },
+          "choices": [
+            {
+              "label": "15 coins"
+            },
+            {
+              "label": "3 coins"
+            },
+            {
+              "label": "27 coins"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "A tenth of the price comes off"
+            },
+            {
+              "label": "A small percent is a small cut"
+            },
+            {
+              "label": "It just looked right"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La bufanda de 30 monedas de Rho tiene un letrero de “10% de descuento”. ¿Cuántas monedas se quitan?",
+          "feedback": {
+            "met": "Gracias, así sabemos de dónde partes. Ahora Rho lo mide.",
+            "not_yet": "Gracias, así sabemos de dónde partes. Ahora Rho lo mide."
+          },
+          "choices": [
+            {
+              "label": "15 monedas"
+            },
+            {
+              "label": "3 monedas"
+            },
+            {
+              "label": "27 monedas"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Se quita una décima parte del precio"
+            },
+            {
+              "label": "Un porcentaje chico es un descuento chico"
+            },
+            {
+              "label": "Solo me pareció bien"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O cachecol de 30 moedas do Rho tem uma placa de “10% de desconto”. Quantas moedas saem?",
+          "feedback": {
+            "met": "Entendi, isso mostra de onde você parte. Agora o Rho mede.",
+            "not_yet": "Entendi, isso mostra de onde você parte. Agora o Rho mede."
+          },
+          "choices": [
+            {
+              "label": "15 moedas"
+            },
+            {
+              "label": "3 moedas"
+            },
+            {
+              "label": "27 moedas"
+            }
+          ],
+          "reasonPrompt": "Qual é o seu motivo?",
+          "reasons": [
+            {
+              "label": "Sai um décimo do preço"
+            },
+            {
+              "label": "Percentual pequeno é desconto pequeno"
+            },
+            {
+              "label": "Só me pareceu certo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-ten-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: 10% is one tenth.",
+          "line": "Measure: 10% is 10 of every 100, so a tenth. 60 ÷ 10 = 6 coins off."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: 10% es una décima parte.",
+          "line": "Midamos: 10% es 10 de cada 100, o sea una décima parte. 60 ÷ 10 = 6 monedas menos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: 10% é um décimo.",
+          "line": "Vamos medir: 10% é 10 de cada 100, ou seja, um décimo. 60 ÷ 10 = 6 moedas a menos."
+        }
+      }
+    },
+    {
+      "id": "example-half-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: 50% is one half.",
+          "line": "Measure the second banner: 50% is 50 of every 100, so half. 60 ÷ 2 = 30 coins off."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: 50% es la mitad.",
+          "line": "Midamos el segundo letrero: 50% es 50 de cada 100, o sea la mitad. 60 ÷ 2 = 30 monedas menos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: 50% é a metade.",
+          "line": "Vamos medir a segunda placa: 50% é 50 de cada 100, ou seja, a metade. 60 ÷ 2 = 30 moedas a menos."
+        }
+      }
+    },
+    {
+      "id": "example-grid-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 60,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s 60-coin sneaker. Move to 10%, then 50%, and read the coins off."
+        },
+        "es-MX": {
+          "prompt": "Los tenis de Rho cuestan 60 monedas. Mueve a 10% y luego a 50%, y lee cuánto se quita."
+        },
+        "pt-BR": {
+          "prompt": "O tênis do Rho custa 60 moedas. Mova para 10% e depois 50%, e leia quanto sai."
+        }
+      }
+    },
+    {
+      "id": "guided-grid-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "baseUnits": 80,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "rubric": {
+        "target_percent": 10
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s 80-coin jacket has a “10% off” banner. Set the percent, then type the discount.",
+          "feedback": {
+            "met": "You set 10% and took a tenth of the price.",
+            "not_yet": "Look at Rho’s first step: a tenth of the price."
+          },
+          "help": [
+            "10% is one tenth. Divide the price by 10."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el puesto de Rho, la chamarra de 80 monedas tiene “10% de descuento”. Ajusta el porcentaje y escribe el descuento.",
+          "feedback": {
+            "met": "Ajustaste 10% y tomaste una décima parte del precio.",
+            "not_yet": "Mira el primer paso de Rho: una décima parte del precio."
+          },
+          "help": [
+            "10% es una décima parte. Divide el precio entre 10."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na barraca do Rho, a jaqueta de 80 moedas tem “10% de desconto”. Ajuste o percentual e digite o desconto.",
+          "feedback": {
+            "met": "Você ajustou 10% e tirou um décimo do preço.",
+            "not_yet": "Veja o primeiro passo do Rho: um décimo do preço."
+          },
+          "help": [
+            "10% é um décimo. Divida o preço por 10."
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-blocks-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: build 20% from 10% blocks.",
+          "line": "Measure again. 20% is two 10% blocks of 6 coins: 2 × 6 = 12 off. 60 − 12 = 48 to pay."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: arma 20% con bloques de 10%.",
+          "line": "Midamos otra vez. 20% son dos bloques de 10% de 6 monedas: 2 × 6 = 12 menos. Y 60 − 12 = 48 por pagar."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: monte 20% com blocos de 10%.",
+          "line": "Vamos medir de novo. 20% são dois blocos de 10% de 6 moedas: 2 × 6 = 12 a menos. E 60 − 12 = 48 para pagar."
+        }
+      }
+    },
+    {
+      "id": "example-compare-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: compare 20% with a quarter.",
+          "line": "Compare the coins off. A quarter is 60 ÷ 4 = 15; 20% is 12, so the quarter takes more."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: compara 20% con un cuarto.",
+          "line": "Compara las monedas que se quitan. Un cuarto es 60 ÷ 4 = 15; 20% es 12, así que el cuarto quita más."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: compare 20% com um quarto.",
+          "line": "Compare as moedas que saem. Um quarto é 60 ÷ 4 = 15; 20% é 12, então o quarto tira mais."
+        }
+      }
+    },
+    {
+      "id": "practice-grid-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "baseUnits": 40,
+        "step": 10,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "coins"
+      },
+      "rubric": {
+        "target_percent": 50
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s 40-coin cap has a “50% off” banner. Set the percent, then type the discount.",
+          "feedback": {
+            "met": "You set 50% and took half of the price.",
+            "not_yet": "Look at Rho’s second step: half of the price."
+          },
+          "help": [
+            "50% is one half. Divide the price by 2."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el puesto de Rho, la gorra de 40 monedas tiene “50% de descuento”. Ajusta el porcentaje y escribe el descuento.",
+          "feedback": {
+            "met": "Ajustaste 50% y tomaste la mitad del precio.",
+            "not_yet": "Mira el segundo paso de Rho: la mitad del precio."
+          },
+          "help": [
+            "50% es la mitad. Divide el precio entre 2."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na barraca do Rho, o boné de 40 moedas tem “50% de desconto”. Ajuste o percentual e digite o desconto.",
+          "feedback": {
+            "met": "Você ajustou 50% e tirou a metade do preço.",
+            "not_yet": "Veja o segundo passo do Rho: a metade do preço."
+          },
+          "help": [
+            "50% é a metade. Divida o preço por 2."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-blocks-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "steps": [
+          {
+            "id": "one-block"
+          },
+          {
+            "id": "discount"
+          },
+          {
+            "id": "new-price"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "discount",
+          "new-price"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "discount": "20",
+          "new-price": "30"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho’s 50-coin gloves have a “40% off” banner. Find the discount and the new price.",
+          "feedback": {
+            "met": "You built 40% from blocks of 10%, then subtracted.",
+            "not_yet": "Look at Rho’s third step: count the 10% blocks."
+          },
+          "help": [
+            "Count the 10% blocks in 40%. Then subtract."
+          ],
+          "steps": [
+            {
+              "expression": "50 ÷ 10",
+              "result": "5",
+              "spokenText": "Fifty divided by 10 is 5, one block"
+            },
+            {
+              "expression": "Discount for 40%",
+              "result": "20",
+              "spokenText": "Four blocks of 5 make 20 coins off"
+            },
+            {
+              "expression": "New price",
+              "result": "30",
+              "spokenText": "Fifty minus 20 leaves 30 to pay"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Los guantes de Rho cuestan 50 monedas y tienen “40% de descuento”. Encuentra el descuento y el precio nuevo.",
+          "feedback": {
+            "met": "Armaste 40% con bloques de 10% y luego restaste.",
+            "not_yet": "Mira el tercer paso de Rho: cuenta los bloques de 10%."
+          },
+          "help": [
+            "Cuenta los bloques de 10% que hay en 40%. Luego resta."
+          ],
+          "steps": [
+            {
+              "expression": "50 ÷ 10",
+              "result": "5",
+              "spokenText": "Cincuenta entre 10 son 5, un bloque"
+            },
+            {
+              "expression": "Descuento de 40%",
+              "result": "20",
+              "spokenText": "Cuatro bloques de 5 son 20 monedas menos"
+            },
+            {
+              "expression": "Precio nuevo",
+              "result": "30",
+              "spokenText": "Cincuenta menos 20 deja 30 por pagar"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "As luvas do Rho custam 50 moedas e têm “40% de desconto”. Ache o desconto e o preço novo.",
+          "feedback": {
+            "met": "Você montou 40% com blocos de 10% e depois subtraiu.",
+            "not_yet": "Veja o terceiro passo do Rho: conte os blocos de 10%."
+          },
+          "help": [
+            "Conte os blocos de 10% que cabem em 40%. Depois subtraia."
+          ],
+          "steps": [
+            {
+              "expression": "50 ÷ 10",
+              "result": "5",
+              "spokenText": "Cinquenta dividido por 10 é 5, um bloco"
+            },
+            {
+              "expression": "Desconto de 40%",
+              "result": "20",
+              "spokenText": "Quatro blocos de 5 são 20 moedas a menos"
+            },
+            {
+              "expression": "Preço novo",
+              "result": "30",
+              "spokenText": "Cinquenta menos 20 deixa 30 para pagar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-boots-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "money.percent-intro",
+      "payload": {
+        "choices": [
+          {
+            "id": "thirty-percent"
+          },
+          {
+            "id": "same-amount"
+          },
+          {
+            "id": "a-third"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-coins"
+          },
+          {
+            "id": "reason-close"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "a-third"
+        ],
+        "reasonQuality": {
+          "reason-coins": "sound",
+          "reason-close": "partial",
+          "reason-bigger": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho compares two stalls selling the same 90-coin boots: “30% off” and “a third off”. Which takes more?",
+          "feedback": {
+            "met": "The coins off decide it, not the size of the numbers.",
+            "not_yet": "Like Rho’s comparison: find the coins off for each."
+          },
+          "choices": [
+            {
+              "label": "30% off"
+            },
+            {
+              "label": "They take the same"
+            },
+            {
+              "label": "A third off"
+            }
+          ],
+          "reasonPrompt": "Why did you choose that?",
+          "reasons": [
+            {
+              "label": "A bigger number must be better"
+            },
+            {
+              "label": "I found the coins off for each"
+            },
+            {
+              "label": "A third is about 30%"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho compara dos puestos con las mismas botas de 90 monedas: uno dice “30% de descuento”, el otro “un tercio”. ¿Cuál quita más?",
+          "feedback": {
+            "met": "Deciden las monedas que se quitan, no el tamaño de los números.",
+            "not_yet": "Como en la comparación de Rho: encuentra las monedas que se quitan."
+          },
+          "choices": [
+            {
+              "label": "30% de descuento"
+            },
+            {
+              "label": "Quitan lo mismo"
+            },
+            {
+              "label": "Un tercio de descuento"
+            }
+          ],
+          "reasonPrompt": "¿Por qué elegiste eso?",
+          "reasons": [
+            {
+              "label": "Un número más grande debe ser mejor"
+            },
+            {
+              "label": "Encontré las monedas que quita cada uno"
+            },
+            {
+              "label": "Un tercio es casi 30%"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho compara duas barracas com as mesmas botas de 90 moedas: uma diz “30% de desconto”, a outra “um terço”. Qual tira mais?",
+          "feedback": {
+            "met": "Decidem as moedas que saem, não o tamanho dos números.",
+            "not_yet": "Como na comparação do Rho: ache as moedas que saem."
+          },
+          "choices": [
+            {
+              "label": "30% de desconto"
+            },
+            {
+              "label": "Tiram o mesmo"
+            },
+            {
+              "label": "Um terço de desconto"
+            }
+          ],
+          "reasonPrompt": "Por que você escolheu isso?",
+          "reasons": [
+            {
+              "label": "Um número maior deve ser melhor"
+            },
+            {
+              "label": "Achei as moedas que cada um tira"
+            },
+            {
+              "label": "Um terço é quase 30%"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

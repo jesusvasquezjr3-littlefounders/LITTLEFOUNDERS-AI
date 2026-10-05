@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-10-12",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 11,
+    "maximum_age": 12
+  },
+  "chapter_id": "inv-1012-luck-risk-and-the-simulator",
+  "lesson_id": "inv-1012-05-one-win-proves-nothing",
+  "knowledge_component_ids": [
+    "invest.expected-value",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho cuenta primero cómo ganó dos veces, lo llamó prueba y perdió la tercera con una apuesta mayor. Con el puesto de la feria (boleto de 2 monedas, premio de 8 una vez de cada cinco), el niño corre el simulador con pocos y con muchos giros, lee el promedio por boleto y entiende por qué una sola victoria no prueba nada, hasta decidir en una rueda nueva si conviene revisar el promedio antes de comprar más.",
+  "title": {
+    "en-US": "One win proves nothing",
+    "es-MX": "Una victoria no prueba nada",
+    "pt-BR": "Uma vitória não prova nada"
+  },
+  "new_concepts": [
+    "invest.expected-value"
+  ],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "Rho wins a coin game twice, calls it proof that the game pays, then bets 10 coins on round three and loses them all.",
+    "recovery": "Rho admits two wins are too few to prove anything and says next time he will check the average over many rounds before betting."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho and Nia stand at a carnival booth with a five-section spinner.",
+          "line": "One section pays 8 coins; a ticket costs 2. Let's measure what the booth really pays."
+        },
+        "es-MX": {
+          "prompt": "Rho y Nia están en un puesto de feria con una ruleta de cinco secciones.",
+          "line": "Una sección paga 8 monedas y el boleto cuesta 2. Midamos qué paga de verdad el puesto."
+        },
+        "pt-BR": {
+          "prompt": "Rho e Nia estão numa barraca de feira com uma roleta de cinco partes.",
+          "line": "Uma parte paga 8 moedas e o bilhete custa 2. Vamos medir o que a barraca paga de verdade."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-buy"
+          },
+          {
+            "id": "choice-watch"
+          },
+          {
+            "id": "choice-quit"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-luck"
+          },
+          {
+            "id": "reason-paid"
+          },
+          {
+            "id": "reason-count"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-watch"
+        ],
+        "reasonQuality": {
+          "reason-luck": "sound",
+          "reason-paid": "unsupported",
+          "reason-count": "sound"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia's first ticket at Rho's booth won 8 coins. What should Nia do next?",
+          "feedback": {
+            "met": "Thanks, that shows where you start. Now let's check step by step.",
+            "not_yet": "Thanks, that shows where you start. Now let's check step by step."
+          },
+          "choices": [
+            {
+              "label": "Buy ten more tickets, it pays"
+            },
+            {
+              "label": "Watch many spins before deciding"
+            },
+            {
+              "label": "Never play the booth again"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "One win can be pure luck"
+            },
+            {
+              "label": "It paid, so it will again"
+            },
+            {
+              "label": "I need many spins to know"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "El primer boleto de Nia en el puesto de Rho ganó 8 monedas. ¿Qué debería hacer Nia ahora?",
+          "feedback": {
+            "met": "Gracias, así vemos de dónde partes. Ahora lo revisamos paso a paso.",
+            "not_yet": "Gracias, así vemos de dónde partes. Ahora lo revisamos paso a paso."
+          },
+          "choices": [
+            {
+              "label": "Comprar diez boletos más, sí paga"
+            },
+            {
+              "label": "Ver muchos giros antes de decidir"
+            },
+            {
+              "label": "No volver a jugar nunca"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Una victoria puede ser pura suerte"
+            },
+            {
+              "label": "Pagó, así que volverá a pagar"
+            },
+            {
+              "label": "Necesito muchos giros para saber"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O primeiro bilhete da Nia na barraca do Rho ganhou 8 moedas. O que a Nia deve fazer agora?",
+          "feedback": {
+            "met": "Certo, isso mostra de onde você parte. Agora vamos ver passo a passo.",
+            "not_yet": "Certo, isso mostra de onde você parte. Agora vamos ver passo a passo."
+          },
+          "choices": [
+            {
+              "label": "Comprar mais dez bilhetes, paga mesmo"
+            },
+            {
+              "label": "Ver muitos giros antes de decidir"
+            },
+            {
+              "label": "Nunca mais jogar na barraca"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Uma vitória pode ser pura sorte"
+            },
+            {
+              "label": "Pagou, então vai pagar de novo"
+            },
+            {
+              "label": "Preciso de muitos giros para saber"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "See what happened to Rho.",
+          "setup": "I won my coin game twice and said: that's proof it pays.",
+          "misjudgment": "Then I bet 10 coins on round three and lost them all.",
+          "recovery": "Two wins were too few to prove anything. Next time I check the average over many rounds first."
+        },
+        "es-MX": {
+          "prompt": "Mira lo que le pasó a Rho.",
+          "setup": "Gané mi juego de la moneda dos veces y dije: ya está probado, sí paga.",
+          "misjudgment": "Luego aposté 10 monedas en la tercera ronda y las perdí todas.",
+          "recovery": "Dos victorias son muy pocas para probar algo. La próxima vez reviso el promedio de muchas rondas antes de apostar."
+        },
+        "pt-BR": {
+          "prompt": "Veja o que aconteceu com o Rho.",
+          "setup": "Ganhei meu jogo da moeda duas vezes e disse: está provado, ele paga.",
+          "misjudgment": "Aí apostei 10 moedas na terceira rodada e perdi todas.",
+          "recovery": "Duas vitórias são poucas para provar qualquer coisa. Da próxima vez, confiro a média de muitas rodadas antes de apostar."
+        }
+      }
+    },
+    {
+      "id": "booth-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: a ticket costs 2 coins, and one spin in five pays 8 coins.",
+          "line": "Five tickets cost 10 coins. One win pays back 8: that is 1.6 coins per ticket."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: un boleto cuesta 2 monedas y uno de cada cinco giros paga 8.",
+          "line": "Cinco boletos cuestan 10 monedas. Una victoria devuelve 8: son 1.6 monedas por boleto."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: um bilhete custa 2 moedas e um giro em cada cinco paga 8.",
+          "line": "Cinco bilhetes custam 10 moedas. Uma vitória devolve 8: são 1,6 moeda por bilhete."
+        }
+      }
+    },
+    {
+      "id": "average-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: 100 tickets cost 200 coins. About 20 win, so about 160 come back.",
+          "line": "Still 1.6 per ticket, 0.4 under the price. Five tickets can show 0 or 2 wins; 100 settle."
+        },
+        "es-MX": {
+          "prompt": "Paso 2: 100 boletos cuestan 200 monedas. Ganan unos 20 y vuelven unas 160.",
+          "line": "Sigue siendo 1.6 por boleto, 0.4 menos que el precio. Cinco boletos pueden dar 0 o 2 victorias; con 100 se estabiliza."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: 100 bilhetes custam 200 moedas. Cerca de 20 ganham e voltam cerca de 160.",
+          "line": "Continua 1,6 por bilhete, 0,4 abaixo do preço. Cinco bilhetes podem dar 0 ou 2 vitórias; com 100 estabiliza."
+        }
+      }
+    },
+    {
+      "id": "sim-01",
+      "type": "math.chance-sim.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "chance-sim"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "machine": {
+          "kind": "spinner",
+          "weights": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        "event": [
+          0
+        ],
+        "stops": [
+          5,
+          25,
+          100,
+          500,
+          1000
+        ],
+        "tolerance": 7,
+        "minTrials": 100
+      },
+      "rubric": {
+        "target": {
+          "num": 1,
+          "den": 5
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At Rho's booth, section 1 pays. Run at least 100 spins and stop within 7 points of its chance.",
+          "feedback": {
+            "met": "You ran enough spins for the share to settle.",
+            "not_yet": "Not yet. Run more spins and watch the share steady."
+          }
+        },
+        "es-MX": {
+          "prompt": "En el puesto de Rho, la sección 1 paga. Haz al menos 100 giros y detente a 7 puntos o menos de su probabilidad.",
+          "feedback": {
+            "met": "Hiciste suficientes giros para que la proporción se asentara.",
+            "not_yet": "Aún no. Haz más giros y mira cómo se estabiliza la proporción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na barraca do Rho, a parte 1 paga. Faça pelo menos 100 giros e pare a até 7 pontos da chance dela.",
+          "feedback": {
+            "met": "Você fez giros suficientes para a proporção se estabilizar.",
+            "not_yet": "Ainda não. Faça mais giros e veja a proporção se firmar."
+          }
+        }
+      }
+    },
+    {
+      "id": "read-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho writes in his notebook: chance × prize = average coins back per ticket.",
+          "line": "One in five times 8 is 1.6. Compare that with the 2-coin ticket before you decide."
+        },
+        "es-MX": {
+          "prompt": "Rho anota en su cuaderno: probabilidad × premio = promedio de monedas que vuelven por boleto.",
+          "line": "Uno de cinco por 8 da 1.6. Compáralo con el boleto de 2 monedas antes de decidir."
+        },
+        "pt-BR": {
+          "prompt": "Rho anota no caderno: chance × prêmio = média de moedas que voltam por bilhete.",
+          "line": "Um em cinco vezes 8 dá 1,6. Compare com o bilhete de 2 moedas antes de decidir."
+        }
+      }
+    },
+    {
+      "id": "chart-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "column"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "run-a"
+            },
+            {
+              "id": "run-b"
+            },
+            {
+              "id": "run-c"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-back",
+              "values": [
+                3.2,
+                0,
+                1.68
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "ans-a"
+            },
+            {
+              "id": "ans-b"
+            },
+            {
+              "id": "ans-c"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "ans-c"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho's Friday notebook shows coins back per ticket for three runs.",
+          "feedback": {
+            "met": "You trusted the longest run, not a lucky or empty one.",
+            "not_yet": "Not yet. Which bar comes from the most tickets?"
+          },
+          "title": "Coins back per ticket, Friday",
+          "data": {
+            "categories": [
+              {
+                "label": "Run A: 5 tickets"
+              },
+              {
+                "label": "Run B: 5 tickets"
+              },
+              {
+                "label": "Run C: 100 tickets"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins back per ticket"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which run is the best guide to what the booth pays?",
+            "options": [
+              {
+                "label": "Run A"
+              },
+              {
+                "label": "Run B"
+              },
+              {
+                "label": "Run C"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "El cuaderno de Rho del viernes muestra las monedas que vuelven por boleto en tres series.",
+          "feedback": {
+            "met": "Confiaste en la serie más larga, no en una con suerte o vacía.",
+            "not_yet": "Aún no. ¿Qué barra viene de más boletos?"
+          },
+          "title": "Monedas que vuelven por boleto, viernes",
+          "data": {
+            "categories": [
+              {
+                "label": "Serie A: 5 boletos"
+              },
+              {
+                "label": "Serie B: 5 boletos"
+              },
+              {
+                "label": "Serie C: 100 boletos"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas por boleto"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué serie es la mejor guía de lo que paga el puesto?",
+            "options": [
+              {
+                "label": "Serie A"
+              },
+              {
+                "label": "Serie B"
+              },
+              {
+                "label": "Serie C"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O caderno do Rho de sexta mostra as moedas que voltam por bilhete em três séries.",
+          "feedback": {
+            "met": "Você confiou na série mais longa, não em uma de sorte ou vazia.",
+            "not_yet": "Ainda não. Qual barra vem de mais bilhetes?"
+          },
+          "title": "Moedas que voltam por bilhete, sexta",
+          "data": {
+            "categories": [
+              {
+                "label": "Série A: 5 bilhetes"
+              },
+              {
+                "label": "Série B: 5 bilhetes"
+              },
+              {
+                "label": "Série C: 100 bilhetes"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas por bilhete"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual série é o melhor guia do que a barraca paga?",
+            "options": [
+              {
+                "label": "Série A"
+              },
+              {
+                "label": "Série B"
+              },
+              {
+                "label": "Série C"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "reply-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.risk-and-reward",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-hundred"
+          },
+          {
+            "id": "reply-pays"
+          },
+          {
+            "id": "reply-loss"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-hundred"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "At Rho's booth, Nia shows her wins. How do you answer her?",
+          "feedback": {
+            "met": "You asked for more spins before calling it proof.",
+            "not_yet": "Not yet. Two wins came from only five tickets."
+          },
+          "speaker": "Nia",
+          "line": "I won twice in five tickets. That proves the booth pays, right?",
+          "replies": [
+            {
+              "label": "Let's run 100 spins and compare"
+            },
+            {
+              "label": "Yes, it clearly pays"
+            },
+            {
+              "label": "Only a loss would prove it"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "En el puesto de Rho, Nia muestra sus victorias. ¿Cómo le contestas?",
+          "feedback": {
+            "met": "Pediste más giros antes de llamarlo prueba.",
+            "not_yet": "Aún no. Las dos victorias salieron de solo cinco boletos."
+          },
+          "speaker": "Nia",
+          "line": "Gané dos veces en cinco boletos. Eso prueba que el puesto paga, ¿no?",
+          "replies": [
+            {
+              "label": "Hagamos 100 giros y comparemos"
+            },
+            {
+              "label": "Sí, claramente paga"
+            },
+            {
+              "label": "Solo una pérdida lo probaría"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Na barraca do Rho, a Nia mostra suas vitórias. Como você responde?",
+          "feedback": {
+            "met": "Você pediu mais giros antes de chamar de prova.",
+            "not_yet": "Ainda não. As duas vitórias vieram de só cinco bilhetes."
+          },
+          "speaker": "Nia",
+          "line": "Ganhei duas vezes em cinco bilhetes. Isso prova que a barraca paga, né?",
+          "replies": [
+            {
+              "label": "Vamos fazer 100 giros e comparar"
+            },
+            {
+              "label": "Sim, claramente paga"
+            },
+            {
+              "label": "Só uma perda provaria isso"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-buy"
+          },
+          {
+            "id": "choice-average"
+          },
+          {
+            "id": "choice-quit"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-average"
+          },
+          {
+            "id": "reason-luck"
+          },
+          {
+            "id": "reason-bigger"
+          },
+          {
+            "id": "reason-won"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-average"
+        ],
+        "reasonQuality": {
+          "reason-average": "sound",
+          "reason-luck": "sound",
+          "reason-bigger": "partial",
+          "reason-won": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Nia's school-fair wheel costs 2 coins and pays 10 one time in ten; she won once. What now?",
+          "feedback": {
+            "met": "You chose to check the average before buying more.",
+            "not_yet": "Not yet. What did Rho check after his two wins?"
+          },
+          "help": [
+            "Think: chance times prize, then compare with the ticket."
+          ],
+          "choices": [
+            {
+              "label": "Buy ten more tickets now"
+            },
+            {
+              "label": "Work out the average per ticket"
+            },
+            {
+              "label": "Stop playing wheels for good"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "The average over many tries tells more"
+            },
+            {
+              "label": "One win can be luck"
+            },
+            {
+              "label": "Ten coins is more than two"
+            },
+            {
+              "label": "She won, so the wheel pays"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La rueda de la feria de Nia cuesta 2 monedas y paga 10 una de cada diez veces; ganó una vez. ¿Qué hace?",
+          "feedback": {
+            "met": "Elegiste revisar el promedio antes de comprar más.",
+            "not_yet": "Aún no. ¿Qué revisó Rho después de sus dos victorias?"
+          },
+          "help": [
+            "Piensa: probabilidad por premio, y compáralo con el boleto."
+          ],
+          "choices": [
+            {
+              "label": "Comprar diez boletos más ya"
+            },
+            {
+              "label": "Calcular el promedio por boleto"
+            },
+            {
+              "label": "Dejar las ruedas para siempre"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "El promedio de muchos intentos dice más"
+            },
+            {
+              "label": "Una victoria puede ser suerte"
+            },
+            {
+              "label": "Diez monedas son más que dos"
+            },
+            {
+              "label": "Ganó, así que la rueda paga"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A roda da feira da Nia custa 2 moedas e paga 10 uma vez em dez; ela ganhou uma vez. O que ela faz?",
+          "feedback": {
+            "met": "Você escolheu conferir a média antes de comprar mais.",
+            "not_yet": "Ainda não. O que o Rho conferiu depois das duas vitórias?"
+          },
+          "help": [
+            "Pense: chance vezes prêmio, e compare com o bilhete."
+          ],
+          "choices": [
+            {
+              "label": "Comprar mais dez bilhetes agora"
+            },
+            {
+              "label": "Calcular a média por bilhete"
+            },
+            {
+              "label": "Parar de jogar em rodas de vez"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "A média de muitas tentativas diz mais"
+            },
+            {
+              "label": "Uma vitória pode ser sorte"
+            },
+            {
+              "label": "Dez moedas é mais que duas"
+            },
+            {
+              "label": "Ela ganhou, então a roda paga"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

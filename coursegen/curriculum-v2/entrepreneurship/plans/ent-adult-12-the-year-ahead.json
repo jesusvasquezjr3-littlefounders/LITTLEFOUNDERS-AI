@@ -1,0 +1,1117 @@
+{
+  "plan_version": 1,
+  "course_id": "entrepreneurship",
+  "pathway_id": "entrepreneurship-adult",
+  "chapter_id": "ent-adult-lead-and-last",
+  "lesson_id": "ent-adult-12-the-year-ahead",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "biz.long-term-vision",
+    "biz.business-model"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho te acompaña a armar el plan de un año para tu taller de bicicletas, una medición a la vez: una meta con número y mes, una cosa que dejas de hacer, una reserva de tres meses de costos fijos y medidas de éxito que no son dinero. Ordenas los hitos del año, clasificas el estado de cuenta del taller y decides ante una oferta que rompe tu plan.",
+  "title": {
+    "es-MX": "El año por delante",
+    "en-US": "The year ahead",
+    "pt-BR": "O ano pela frente"
+  },
+  "new_concepts": [
+    "biz.long-term-vision"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "El caso ocurre en México: un taller de bicicletas que se llena en vacaciones de verano. Los montos son ilustrativos, en pesos, y el año es una ilustración del ritmo de trabajo, no un pronóstico.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "vacaciones de verano"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "O caso acontece no Brasil: uma oficina de bicicletas que enche nas férias de julho. Os valores são ilustrativos, em reais, e o ano é uma ilustração do ritmo de trabalho, não uma previsão.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "férias de julho"
+        ]
+      },
+      "en-US": {
+        "scenario": "The case is set in the US: a bike repair shop that is busiest in spring tune-up season. Amounts are illustrative, in dollars, and the year is an illustration of the work rhythm, not a forecast.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "spring tune-up season"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Tu taller está más lleno en vacaciones de verano, y el año por delante está en blanco.",
+          "line": "Veamos el dato. Una medición a la vez, empezando por las reparaciones de hoy."
+        },
+        "en-US": {
+          "prompt": "Your repair shop is busiest in spring tune-up season, and the year ahead is blank.",
+          "line": "Look at the figure. One measurement at a time, starting with today's repairs."
+        },
+        "pt-BR": {
+          "prompt": "Sua oficina fica mais cheia nas férias de julho, e o ano pela frente está em branco.",
+          "line": "Veja o dado. Uma medição de cada vez, começando pelos reparos de hoje."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.long-term-vision",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-grow"
+          },
+          {
+            "id": "choice-number"
+          },
+          {
+            "id": "choice-best"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-check"
+          },
+          {
+            "id": "reason-motivates"
+          },
+          {
+            "id": "reason-vague"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-number"
+        ],
+        "reasonQuality": {
+          "reason-check": "sound",
+          "reason-motivates": "partial",
+          "reason-vague": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Para tu taller, ¿qué meta escribes para el año?",
+          "feedback": {
+            "met": "Anotado. Ahora lo vemos paso a paso.",
+            "not_yet": "Anotado. Ahora lo vemos paso a paso."
+          },
+          "help": [
+            "Elige la meta que podrías comprobar dentro de un año."
+          ],
+          "choices": [
+            {
+              "label": "Crecer y tener más trabajo este año"
+            },
+            {
+              "label": "Llegar a 60 reparaciones al mes en el mes 12"
+            },
+            {
+              "label": "Ser el mejor taller de la ciudad"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Puedo comprobar un número y un mes"
+            },
+            {
+              "label": "Una meta clara motiva a la gente"
+            },
+            {
+              "label": "Una meta vaga no se puede fallar"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "For your repair shop, which goal do you write for the year?",
+          "feedback": {
+            "met": "Noted. Now we look at it step by step.",
+            "not_yet": "Noted. Now we look at it step by step."
+          },
+          "help": [
+            "Pick the goal you could check a year from now."
+          ],
+          "choices": [
+            {
+              "label": "Grow and be busier this year"
+            },
+            {
+              "label": "Reach 60 repairs a month by month 12"
+            },
+            {
+              "label": "Be known as the best shop in town"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "I can check a number and a month"
+            },
+            {
+              "label": "A clear goal motivates people"
+            },
+            {
+              "label": "A vague goal cannot be missed"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Para sua oficina, qual meta você escreve para o ano?",
+          "feedback": {
+            "met": "Anotado. Agora vemos isso passo a passo.",
+            "not_yet": "Anotado. Agora vemos isso passo a passo."
+          },
+          "help": [
+            "Escolha a meta que você poderia conferir daqui a um ano."
+          ],
+          "choices": [
+            {
+              "label": "Crescer e ter mais trabalho este ano"
+            },
+            {
+              "label": "Chegar a 60 reparos por mês até o mês 12"
+            },
+            {
+              "label": "Ser a melhor oficina da cidade"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Posso conferir um número e um mês"
+            },
+            {
+              "label": "Uma meta clara motiva as pessoas"
+            },
+            {
+              "label": "Uma meta vaga não tem como falhar"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-goal-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1, una meta con número y mes. Hoy: 40 reparaciones al mes.",
+          "line": "Leo dos datos: hoy 40, meta 60 para el mes 12. La brecha es de 20 reparaciones al mes."
+        },
+        "en-US": {
+          "prompt": "Step 1, a goal with a number and a month. Today: 40 repairs a month.",
+          "line": "I read two figures: today 40, goal 60 by month 12. The gap is 20 repairs a month."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1, uma meta com número e mês. Hoje: 40 reparos por mês.",
+          "line": "Leio dois dados: hoje 40, meta 60 até o mês 12. A diferença é de 20 reparos por mês."
+        }
+      }
+    },
+    {
+      "id": "ex-stop-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2, una cosa que dejo de hacer, porque cada sí ocupa un lugar en la agenda.",
+          "line": "En mis registros, los clientes de solo descuento vinieron una vez y casi nunca volvieron. Eso es lo que dejo."
+        },
+        "en-US": {
+          "prompt": "Step 2, one thing to stop, because every yes fills a slot on the calendar.",
+          "line": "In my records, discount-only clients came once and rarely returned. That is what I stop."
+        },
+        "pt-BR": {
+          "prompt": "Passo 2, uma coisa que eu paro de fazer, porque cada sim ocupa uma vaga na agenda.",
+          "line": "Nos meus registros, os clientes só de desconto vieram uma vez e quase nunca voltaram. É isso que eu paro."
+        }
+      }
+    },
+    {
+      "id": "ex-order-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3, ordena el año. Cada hito espera lo que necesita.",
+          "line": "Una reparación tiene orden: primero alineo la rueda y luego pruebo la bici. Pregunto qué debe ir primero."
+        },
+        "en-US": {
+          "prompt": "Step 3, order the year. Each milestone waits for what it needs.",
+          "line": "A repair has an order: true the wheel, then test-ride it. I ask what must come first."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3, ordene o ano. Cada marco espera o que precisa.",
+          "line": "Um reparo tem ordem: primeiro alinho a roda, depois testo a bike. Pergunto o que deve vir antes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "plan.schedule-board.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "timeline"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.long-term-vision",
+      "payload": {
+        "tasks": [
+          {
+            "id": "numbers",
+            "after": []
+          },
+          {
+            "id": "stop",
+            "after": [
+              "numbers"
+            ]
+          },
+          {
+            "id": "reserve-1",
+            "after": [
+              "numbers"
+            ]
+          },
+          {
+            "id": "reserve-3",
+            "after": [
+              "reserve-1"
+            ]
+          },
+          {
+            "id": "cover",
+            "after": []
+          },
+          {
+            "id": "weekend",
+            "after": [
+              "cover"
+            ]
+          },
+          {
+            "id": "goal",
+            "after": [
+              "numbers"
+            ]
+          },
+          {
+            "id": "review",
+            "after": [
+              "goal",
+              "weekend",
+              "reserve-3"
+            ]
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "step-1": [
+              "numbers"
+            ],
+            "step-2": [
+              "stop"
+            ],
+            "step-3": [
+              "reserve-1"
+            ],
+            "step-4": [
+              "reserve-3"
+            ],
+            "step-5": [
+              "cover"
+            ],
+            "step-6": [
+              "weekend"
+            ],
+            "step-7": [
+              "goal"
+            ],
+            "step-8": [
+              "review"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En tu taller, coloca los ocho hitos del año en orden: cada uno después de lo que necesita.",
+          "feedback": {
+            "met": "Pusiste cada hito después de lo que necesita.",
+            "not_yet": "Aún no. Pregunta qué necesita cada hito antes de empezar."
+          },
+          "labels": {
+            "numbers": "Contar reparaciones, costos y clientes de solo descuento",
+            "stop": "Dejar de ofrecer ofertas solo de descuento",
+            "reserve-1": "Ahorrar un mes de costos fijos",
+            "reserve-3": "Completar la reserva de tres meses",
+            "cover": "Capacitar a Dani para abrir el taller sin ayuda",
+            "weekend": "Terminar el trabajo de fines de semana",
+            "goal": "Llegar a 60 reparaciones al mes",
+            "review": "Comparar cada medida con su meta"
+          }
+        },
+        "en-US": {
+          "prompt": "In your shop, place the eight milestones in order, each after what it needs.",
+          "feedback": {
+            "met": "You placed each milestone after what it needs.",
+            "not_yet": "Not yet. Ask what each milestone needs before it can start."
+          },
+          "labels": {
+            "numbers": "Count repairs, costs and discount-only clients",
+            "stop": "Stop offering discount-only deals",
+            "reserve-1": "Save one month of fixed costs",
+            "reserve-3": "Complete the three-month reserve",
+            "cover": "Train Dani to open the shop alone",
+            "weekend": "End weekend work",
+            "goal": "Reach 60 repairs a month",
+            "review": "Compare each measure with its goal"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na sua oficina, coloque os oito marcos do ano em ordem, cada um depois do que precisa.",
+          "feedback": {
+            "met": "Você colocou cada marco depois do que ele precisa.",
+            "not_yet": "Ainda não. Pergunte o que cada marco precisa antes de começar."
+          },
+          "labels": {
+            "numbers": "Contar reparos, custos e clientes só de desconto",
+            "stop": "Parar de oferecer ofertas só de desconto",
+            "reserve-1": "Guardar um mês de custos fixos",
+            "reserve-3": "Completar a reserva de três meses",
+            "cover": "Treinar Dani para abrir a oficina sem ajuda",
+            "weekend": "Encerrar o trabalho de fim de semana",
+            "goal": "Chegar a 60 reparos por mês",
+            "review": "Comparar cada medida com a sua meta"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-reserve-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 4, una reserva para los meses flojos. Los costos fijos se repiten, haya o no reparaciones.",
+          "line": "Los costos fijos son $3,600 al mes. Tres meses: 3 × $3,600 = $10,800, mi reserva."
+        },
+        "en-US": {
+          "prompt": "Step 4, a reserve for slow months. Fixed costs repeat whether repairs come or not.",
+          "line": "Fixed costs are $3,600 a month. Three months: 3 × $3,600 = $10,800, my reserve."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4, uma reserva para os meses fracos. Os custos fixos se repetem, haja reparos ou não.",
+          "line": "Os custos fixos são R$ 3.600 por mês. Três meses: 3 × R$ 3.600 = R$ 10.800, minha reserva."
+        }
+      }
+    },
+    {
+      "id": "ex-lines-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 5, ordena cada línea. El ingreso pasivo llega sin hacer una reparación; la meta es que supere los gastos.",
+          "line": "Las reparaciones cobradas son ingreso por trabajo, el seguro es un gasto, una camioneta es un activo y su préstamo, un pasivo."
+        },
+        "en-US": {
+          "prompt": "Step 5, sort each line. Passive income arrives without a repair; the goal is met when it exceeds expenses.",
+          "line": "Repair fees are earned, insurance is an expense, a van is an asset, its loan a liability."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5, organize cada linha. A renda passiva chega sem um reparo; a meta é que ela supere as despesas.",
+          "line": "Os reparos cobrados são renda do trabalho, o seguro é uma despesa, uma van é um ativo e seu empréstimo, um passivo."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.cash-flow.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "statement-board"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.business-model",
+      "payload": {
+        "items": [
+          {
+            "id": "tune-ups",
+            "amount": 5200
+          },
+          {
+            "id": "bench-rent",
+            "amount": 250
+          },
+          {
+            "id": "guide-sales",
+            "amount": 150
+          },
+          {
+            "id": "rent",
+            "amount": 1700
+          },
+          {
+            "id": "loan-pay",
+            "amount": 900
+          },
+          {
+            "id": "utilities",
+            "amount": 600
+          },
+          {
+            "id": "phone",
+            "amount": 400
+          },
+          {
+            "id": "tools",
+            "amount": 6000
+          },
+          {
+            "id": "cash",
+            "amount": 4500
+          },
+          {
+            "id": "loan-balance",
+            "amount": 5400
+          }
+        ]
+      },
+      "rubric": {
+        "solutions": [
+          {
+            "earned": [
+              "tune-ups"
+            ],
+            "passive": [
+              "bench-rent",
+              "guide-sales"
+            ],
+            "expenses": [
+              "rent",
+              "loan-pay",
+              "utilities",
+              "phone"
+            ],
+            "assets": [
+              "tools",
+              "cash"
+            ],
+            "liabilities": [
+              "loan-balance"
+            ],
+            "goal": [
+              "goal-short"
+            ]
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En tu taller, coloca cada línea y revisa si el ingreso pasivo supera los gastos.",
+          "feedback": {
+            "met": "Ordenaste cada línea y nombraste la revisión de la meta.",
+            "not_yet": "Aún no. Pregunta qué hace cada línea y compara los totales."
+          },
+          "labels": {
+            "tune-ups": "Pagos de clientes por afinaciones",
+            "bench-rent": "Banco de trabajo rentado a otro taller",
+            "guide-sales": "Venta de una guía impresa de reparación",
+            "rent": "Renta del taller",
+            "loan-pay": "Pago mensual del préstamo de herramientas",
+            "utilities": "Luz y agua",
+            "phone": "Teléfono y app de citas",
+            "tools": "Herramientas y bancos de trabajo",
+            "cash": "Efectivo guardado para la reserva",
+            "loan-balance": "Saldo del préstamo de herramientas"
+          }
+        },
+        "en-US": {
+          "prompt": "In your shop, sort each line, then check passive income against expenses.",
+          "feedback": {
+            "met": "You sorted every line and named the goal check.",
+            "not_yet": "Not yet. Ask what each line does, then compare the totals."
+          },
+          "labels": {
+            "tune-ups": "Tune-up payments from clients",
+            "bench-rent": "Spare workbench rented to another shop",
+            "guide-sales": "Sales of a printed repair guide",
+            "rent": "Workshop rent",
+            "loan-pay": "Monthly tool loan payment",
+            "utilities": "Electricity and water",
+            "phone": "Phone and booking app",
+            "tools": "Tools and workbenches",
+            "cash": "Cash set aside for the reserve",
+            "loan-balance": "Tool loan balance"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na sua oficina, coloque cada linha e confira se a renda passiva supera as despesas.",
+          "feedback": {
+            "met": "Você organizou cada linha e nomeou a checagem da meta.",
+            "not_yet": "Ainda não. Pergunte o que cada linha faz e compare os totais."
+          },
+          "labels": {
+            "tune-ups": "Pagamentos de clientes por revisões",
+            "bench-rent": "Bancada reserva alugada a outra oficina",
+            "guide-sales": "Venda de um guia impresso de reparo",
+            "rent": "Aluguel da oficina",
+            "loan-pay": "Parcela mensal do empréstimo das ferramentas",
+            "utilities": "Luz e água",
+            "phone": "Telefone e app de agendamento",
+            "tools": "Ferramentas e bancadas",
+            "cash": "Dinheiro guardado para a reserva",
+            "loan-balance": "Saldo do empréstimo das ferramentas"
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-measure-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "grouped-bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "categories": [
+            {
+              "id": "cat-repeat"
+            },
+            {
+              "id": "cat-weekend"
+            }
+          ],
+          "series": [
+            {
+              "id": "ser-today",
+              "values": [
+                35,
+                75
+              ]
+            },
+            {
+              "id": "ser-goal",
+              "values": [
+                60,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 6, medidas más allá del dinero. Clientes que repiten: de 35 a 60 es una brecha de 25 puntos.",
+          "title": "Hoy frente a la meta del mes 12",
+          "data": {
+            "categories": [
+              {
+                "label": "Clientes que repiten"
+              },
+              {
+                "label": "Porcentaje de fines de semana trabajados"
+              }
+            ],
+            "series": [
+              {
+                "label": "Hoy"
+              },
+              {
+                "label": "Meta del mes 12"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 6, measures beyond money. Repeat customers: 35 to 60 is a gap of 25 points.",
+          "title": "Today against the month 12 goal",
+          "data": {
+            "categories": [
+              {
+                "label": "Repeat customers"
+              },
+              {
+                "label": "Share of weekends worked"
+              }
+            ],
+            "series": [
+              {
+                "label": "Today"
+              },
+              {
+                "label": "Month 12 goal"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 6, medidas além do dinheiro. Clientes que voltam: de 35 a 60 é uma diferença de 25 pontos.",
+          "title": "Hoje frente à meta do mês 12",
+          "data": {
+            "categories": [
+              {
+                "label": "Clientes que voltam"
+              },
+              {
+                "label": "Percentual de fins de semana trabalhados"
+              }
+            ],
+            "series": [
+              {
+                "label": "Hoje"
+              },
+              {
+                "label": "Meta do mês 12"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "grouped-bar"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.long-term-vision",
+      "payload": {
+        "data": {
+          "unit": "percent",
+          "categories": [
+            {
+              "id": "cat-repeat"
+            },
+            {
+              "id": "cat-weekend"
+            }
+          ],
+          "series": [
+            {
+              "id": "ser-month6",
+              "values": [
+                46,
+                10
+              ]
+            },
+            {
+              "id": "ser-goal",
+              "values": [
+                60,
+                0
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-weekend"
+            },
+            {
+              "id": "opt-same"
+            },
+            {
+              "id": "opt-repeat"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-repeat"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Revisión del mes 6 en tu taller. Lee las dos medidas más allá del dinero.",
+          "feedback": {
+            "met": "Comparaste la distancia de cada medida con su meta.",
+            "not_yet": "Aún no. Mide la distancia del mes 6 a la meta."
+          },
+          "title": "Mes 6 frente a la meta del mes 12",
+          "data": {
+            "categories": [
+              {
+                "label": "Clientes que repiten"
+              },
+              {
+                "label": "Porcentaje de fines de semana trabajados"
+              }
+            ],
+            "series": [
+              {
+                "label": "Mes 6"
+              },
+              {
+                "label": "Meta del mes 12"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué medida está más lejos de su meta del mes 12, en puntos?",
+            "options": [
+              {
+                "label": "Fines de semana trabajados"
+              },
+              {
+                "label": "Las dos están igual de lejos"
+              },
+              {
+                "label": "Clientes que repiten"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Month 6 check at your repair shop. Read the two measures beyond money.",
+          "feedback": {
+            "met": "You compared each measure's distance to its goal.",
+            "not_yet": "Not yet. Measure the distance from month 6 to the goal."
+          },
+          "title": "Month 6 against the month 12 goal",
+          "data": {
+            "categories": [
+              {
+                "label": "Repeat customers"
+              },
+              {
+                "label": "Share of weekends worked"
+              }
+            ],
+            "series": [
+              {
+                "label": "Month 6"
+              },
+              {
+                "label": "Month 12 goal"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which measure is further from its month 12 goal, in points?",
+            "options": [
+              {
+                "label": "Weekends worked"
+              },
+              {
+                "label": "Both are the same distance"
+              },
+              {
+                "label": "Repeat customers"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Revisão do mês 6 na sua oficina. Leia as duas medidas além do dinheiro.",
+          "feedback": {
+            "met": "Você comparou a distância de cada medida até a meta.",
+            "not_yet": "Ainda não. Meça a distância do mês 6 até a meta."
+          },
+          "title": "Mês 6 frente à meta do mês 12",
+          "data": {
+            "categories": [
+              {
+                "label": "Clientes que voltam"
+              },
+              {
+                "label": "Percentual de fins de semana trabalhados"
+              }
+            ],
+            "series": [
+              {
+                "label": "Mês 6"
+              },
+              {
+                "label": "Meta do mês 12"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual medida está mais longe da meta do mês 12, em pontos?",
+            "options": [
+              {
+                "label": "Fins de semana trabalhados"
+              },
+              {
+                "label": "As duas estão à mesma distância"
+              },
+              {
+                "label": "Clientes que voltam"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.long-term-vision",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-decline"
+          },
+          {
+            "id": "choice-accept"
+          },
+          {
+            "id": "choice-drop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-stop"
+          },
+          {
+            "id": "reason-weekend"
+          },
+          {
+            "id": "reason-tired"
+          },
+          {
+            "id": "reason-bigger"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-decline"
+        ],
+        "reasonQuality": {
+          "reason-stop": "sound",
+          "reason-weekend": "sound",
+          "reason-tired": "partial",
+          "reason-bigger": "unsupported"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Mes 4, tu taller recibe una oferta: 80 reparaciones al mes solo con descuento, con sábados incluidos. ¿Qué haces?",
+          "feedback": {
+            "met": "Comparaste la oferta con tu propio plan.",
+            "not_yet": "Aún no. Compara la oferta con lo que dejas y tus medidas."
+          },
+          "help": [
+            "Compara la oferta con lo que dejas y la medida de fines de semana."
+          ],
+          "choices": [
+            {
+              "label": "Rechazarla; rompe lo que dejo y mis fines de semana"
+            },
+            {
+              "label": "Aceptarla; 80 reparaciones superan la meta"
+            },
+            {
+              "label": "Aceptarla y quitar la medida de fines de semana"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es la mejor respuesta?",
+          "reasons": [
+            {
+              "label": "Rompe lo único que dejo de hacer"
+            },
+            {
+              "label": "Cuesta la medida de fines de semana"
+            },
+            {
+              "label": "El trabajo extra podría cansar a todos"
+            },
+            {
+              "label": "Un número mayor siempre es mejor"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Month 4, your repair shop gets an offer: 80 discount-only repairs a month, Saturdays included. Your move?",
+          "feedback": {
+            "met": "You checked the offer against your own plan.",
+            "not_yet": "Not yet. Compare the offer with your stop and your measures."
+          },
+          "help": [
+            "Check the offer against your stop and your weekend measure."
+          ],
+          "choices": [
+            {
+              "label": "Decline; it undoes my stop and my weekends"
+            },
+            {
+              "label": "Accept; 80 repairs beats the goal"
+            },
+            {
+              "label": "Accept and drop the weekend measure"
+            }
+          ],
+          "reasonPrompt": "Why is that the best answer?",
+          "reasons": [
+            {
+              "label": "It breaks the one thing I stop"
+            },
+            {
+              "label": "It costs the weekend measure I set"
+            },
+            {
+              "label": "The extra work might tire everyone"
+            },
+            {
+              "label": "A bigger number is always better"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mês 4: sua oficina recebe uma oferta de 80 reparos por mês, só com desconto, incluindo sábados. O que você faz?",
+          "feedback": {
+            "met": "Você comparou a oferta com o seu próprio plano.",
+            "not_yet": "Ainda não. Compare a oferta com o que você para e suas medidas."
+          },
+          "help": [
+            "Compare a oferta com o que você para e a medida de fim de semana."
+          ],
+          "choices": [
+            {
+              "label": "Recusar; desfaz o que paro e meus fins de semana"
+            },
+            {
+              "label": "Aceitar; 80 reparos superam a meta"
+            },
+            {
+              "label": "Aceitar e tirar a medida de fins de semana"
+            }
+          ],
+          "reasonPrompt": "Por que é a melhor resposta?",
+          "reasons": [
+            {
+              "label": "Quebra a única coisa que eu paro"
+            },
+            {
+              "label": "Custa a medida de fins de semana"
+            },
+            {
+              "label": "O trabalho extra pode cansar todo mundo"
+            },
+            {
+              "label": "Um número maior é sempre melhor"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

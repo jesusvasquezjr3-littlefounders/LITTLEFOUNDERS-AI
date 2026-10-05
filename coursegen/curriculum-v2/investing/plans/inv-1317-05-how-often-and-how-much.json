@@ -1,0 +1,1156 @@
+{
+  "plan_version": 1,
+  "course_id": "investing",
+  "pathway_id": "investing-13-17",
+  "chapter_id": "inv-1317-risk-and-baskets",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "lesson_id": "inv-1317-05-how-often-and-how-much",
+  "knowledge_component_ids": [
+    "invest.expected-value",
+    "invest.no-free-lunch",
+    "biz.risk-and-reward"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara se topa con un panel booster de la simulación que promete algo grande, seguro y rápido: se apuestan 100 monedas y una vez de cada seis paga 500. Con ella la persona lo mide en lugar de creerle al letrero: lista los resultados de una jugada, calcula cuánto vuelve por cada 100 apostadas (unas 83), lee un histograma de 60 rondas simuladas y concluye que lo grande, seguro y rápido lo paga otro. Cierra decidiendo ante una oferta nueva, en otro contexto, que promete duplicar las monedas.",
+  "title": {
+    "en-US": "How often, and how much",
+    "es-MX": "Cada cuánto paga y cuánto",
+    "pt-BR": "Com que frequência, e quanto"
+  },
+  "new_concepts": [
+    "invest.expected-value",
+    "invest.no-free-lunch"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara sees the booster pay twice in a row, calls it safe and fast, and stakes 100 coins again without asking how often it pays.",
+    "recovery": "She loses the 100, stops, and says next time she will ask how often it pays and how much before she stakes anything."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only, in a pretend sandbox; no market amounts, places or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara faces a sandbox booster, like a loot box: stake 100 coins, and one time in six it pays 500.",
+          "line": "This board fooled me last week. Today I measure it first."
+        },
+        "es-MX": {
+          "prompt": "Zara está frente a un booster de simulación, como una loot box: se apuestan 100 monedas y una vez de cada seis paga 500.",
+          "line": "Este panel me engañó la semana pasada. Hoy primero lo mido."
+        },
+        "pt-BR": {
+          "prompt": "A Zara está diante de um booster da simulação, como uma loot box: aposta de 100 moedas, e uma vez em seis paga 500.",
+          "line": "Esse painel me enganou semana passada. Hoje eu meço primeiro."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-go"
+          },
+          {
+            "id": "reply-ask"
+          },
+          {
+            "id": "reply-wait"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-ask"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Kai wants to join. What do you say?",
+          "speaker": "Kai",
+          "line": "The banner says big, safe and fast. Should we stake 200 coins?",
+          "replies": [
+            {
+              "label": "Go ahead: the banner says it's safe."
+            },
+            {
+              "label": "Ask first how it can pay so much."
+            },
+            {
+              "label": "Wait until it pays twice in a row."
+            }
+          ],
+          "feedback": {
+            "met": "Noted. Now we build it step by step.",
+            "not_yet": "Noted. Now we build it step by step."
+          }
+        },
+        "es-MX": {
+          "prompt": "Kai quiere entrar. ¿Qué le dices?",
+          "speaker": "Kai",
+          "line": "El letrero dice grande, seguro y rápido. ¿Apostamos 200 monedas?",
+          "replies": [
+            {
+              "label": "Adelante: el letrero dice que es seguro."
+            },
+            {
+              "label": "Primero pregunto cómo puede pagar tanto."
+            },
+            {
+              "label": "Esperemos a que pague dos veces seguidas."
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Ahora lo armamos paso a paso.",
+            "not_yet": "Anotado. Ahora lo armamos paso a paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O Kai quer entrar. O que você diz?",
+          "speaker": "Kai",
+          "line": "O letreiro diz grande, seguro e rápido. Vamos apostar 200 moedas?",
+          "replies": [
+            {
+              "label": "Vai: o letreiro diz que é seguro."
+            },
+            {
+              "label": "Primeiro pergunto como ele paga tanto."
+            },
+            {
+              "label": "Vamos esperar ele pagar duas vezes seguidas."
+            }
+          ],
+          "feedback": {
+            "met": "Anotado. Agora vamos montar isso passo a passo.",
+            "not_yet": "Anotado. Agora vamos montar isso passo a passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "tree-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "decision-tree"
+      },
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "nodes": [
+            {
+              "id": "node-stake",
+              "kind": "start"
+            },
+            {
+              "id": "node-win",
+              "kind": "outcome"
+            },
+            {
+              "id": "node-lose",
+              "kind": "outcome"
+            }
+          ],
+          "links": [
+            {
+              "from": "node-stake",
+              "to": "node-win"
+            },
+            {
+              "from": "node-stake",
+              "to": "node-lose"
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: list every result of one play, and how often each comes.",
+          "title": "One play of the booster",
+          "data": {
+            "nodes": [
+              {
+                "label": "Stake 100"
+              },
+              {
+                "label": "Wins: pays 500"
+              },
+              {
+                "label": "No win: pays 0"
+              }
+            ],
+            "links": [
+              {
+                "label": "1 time in 6"
+              },
+              {
+                "label": "5 times in 6"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 1: lista cada resultado de una jugada y cada cuánto sale.",
+          "title": "Una jugada del booster",
+          "data": {
+            "nodes": [
+              {
+                "label": "Apuesta 100"
+              },
+              {
+                "label": "Gana: paga 500"
+              },
+              {
+                "label": "Sin premio: paga 0"
+              }
+            ],
+            "links": [
+              {
+                "label": "1 vez de 6"
+              },
+              {
+                "label": "5 veces de 6"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: liste cada resultado de uma jogada e com que frequência sai.",
+          "title": "Uma jogada do booster",
+          "data": {
+            "nodes": [
+              {
+                "label": "Aposta 100"
+              },
+              {
+                "label": "Ganha: paga 500"
+              },
+              {
+                "label": "Sem prêmio: paga 0"
+              }
+            ],
+            "links": [
+              {
+                "label": "1 vez em 6"
+              },
+              {
+                "label": "5 vezes em 6"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "plays-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara plays the booster six times at 100 each.",
+          "line": "Step 2: six plays put in 600 coins. One win in six brings back 500."
+        },
+        "es-MX": {
+          "prompt": "Zara juega seis veces en el booster, 100 monedas cada vez.",
+          "line": "Paso 2: seis jugadas ponen 600 monedas. Una victoria de cada seis devuelve 500."
+        },
+        "pt-BR": {
+          "prompt": "A Zara joga seis vezes no booster, 100 moedas cada uma.",
+          "line": "Passo 2: seis jogadas colocam 600 moedas. Uma vitória em seis devolve 500."
+        }
+      }
+    },
+    {
+      "id": "verdict-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara compares what went in with what came back.",
+          "line": "Step 3: 500 back for 600 in is about 83 per 100, a loss of about 17 on average."
+        },
+        "es-MX": {
+          "prompt": "Zara compara lo que puso con lo que recuperó.",
+          "line": "Paso 3: 500 de vuelta por 600 puestos son unas 83 por cada 100, una pérdida media de unas 17."
+        },
+        "pt-BR": {
+          "prompt": "A Zara compara o que colocou com o que voltou.",
+          "line": "Passo 3: 500 de volta por 600 colocados são cerca de 83 por 100, uma perda média de cerca de 17."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "steps": [
+          {
+            "id": "staked"
+          },
+          {
+            "id": "wins"
+          },
+          {
+            "id": "coins-back"
+          },
+          {
+            "id": "per-hundred"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "wins",
+          "coins-back",
+          "per-hundred"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "wins": "2",
+          "coins-back": "600",
+          "per-hundred": "75"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara tries booster B: 100 stake, pays 300 one time in four. Follow her over eight plays.",
+          "feedback": {
+            "met": "You turned plays into wins, then wins into coins back.",
+            "not_yet": "Not yet. Follow Zara's first booster: coins in, wins, coins back."
+          },
+          "help": [
+            "Plays ÷ the 'one in' number gives the wins.",
+            "Compare the coins back with the coins put in, per 100."
+          ],
+          "steps": [
+            {
+              "expression": "8 plays × 100",
+              "result": "800",
+              "spokenText": "Eight plays at 100 each put in 800"
+            },
+            {
+              "expression": "8 ÷ 4",
+              "result": "2",
+              "spokenText": "Eight plays, one win in four, gives 2 wins"
+            },
+            {
+              "expression": "Wins × coins per win",
+              "result": "600",
+              "spokenText": "Two wins at 300 each bring back 600"
+            },
+            {
+              "expression": "Back per 100 put in",
+              "result": "75",
+              "spokenText": "600 back for 800 in is 75 per 100"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara prueba el booster B: apuesta 100, paga 300 una vez de cada cuatro. Síguela en ocho jugadas.",
+          "feedback": {
+            "met": "Convertiste jugadas en victorias y luego victorias en monedas devueltas.",
+            "not_yet": "Todavía no. Sigue el primer booster de Zara: monedas puestas, victorias, monedas devueltas."
+          },
+          "help": [
+            "Las jugadas ÷ el número de «una de cada» dan las victorias.",
+            "Compara lo devuelto con lo puesto, por cada 100."
+          ],
+          "steps": [
+            {
+              "expression": "8 jugadas × 100",
+              "result": "800",
+              "spokenText": "Ocho jugadas de 100 ponen 800"
+            },
+            {
+              "expression": "8 ÷ 4",
+              "result": "2",
+              "spokenText": "Ocho jugadas, una victoria de cada cuatro, dan 2 victorias"
+            },
+            {
+              "expression": "Victorias × monedas por victoria",
+              "result": "600",
+              "spokenText": "Dos victorias de 300 devuelven 600"
+            },
+            {
+              "expression": "Devuelto por cada 100 puestos",
+              "result": "75",
+              "spokenText": "600 de vuelta por 800 puestos son 75 por cada 100"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A Zara testa o booster B: aposta de 100, paga 300 uma vez em quatro. Acompanhe em oito jogadas.",
+          "feedback": {
+            "met": "Você transformou jogadas em vitórias e depois vitórias em moedas devolvidas.",
+            "not_yet": "Ainda não. Siga o primeiro booster da Zara: moedas colocadas, vitórias, moedas devolvidas."
+          },
+          "help": [
+            "Jogadas ÷ o número do “uma em” dá as vitórias.",
+            "Compare o devolvido com o colocado, por 100."
+          ],
+          "steps": [
+            {
+              "expression": "8 jogadas × 100",
+              "result": "800",
+              "spokenText": "Oito jogadas de 100 colocam 800"
+            },
+            {
+              "expression": "8 ÷ 4",
+              "result": "2",
+              "spokenText": "Oito jogadas, uma vitória em quatro, dão 2 vitórias"
+            },
+            {
+              "expression": "Vitórias × moedas por vitória",
+              "result": "600",
+              "spokenText": "Duas vitórias de 300 devolvem 600"
+            },
+            {
+              "expression": "Devolvido por 100 colocadas",
+              "result": "75",
+              "spokenText": "600 de volta por 800 colocados são 75 por 100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Zara tells what happened at the booster last week.",
+          "setup": "Last week the booster paid twice in a row. I called it safe and fast.",
+          "misjudgment": "So I staked 100 again. The third play paid nothing, and the 100 was gone.",
+          "recovery": "Two wins don't show how often it pays. Next time I ask first: how often, and how much?"
+        },
+        "es-MX": {
+          "prompt": "Zara cuenta qué pasó en el booster la semana pasada.",
+          "setup": "La semana pasada el booster pagó dos veces seguidas. Lo llamé seguro y rápido.",
+          "misjudgment": "Así que aposté 100 otra vez. La tercera jugada no pagó nada y se fueron los 100.",
+          "recovery": "Dos victorias no muestran cada cuánto paga. La próxima vez pregunto primero: ¿cada cuánto y cuánto?"
+        },
+        "pt-BR": {
+          "prompt": "A Zara conta o que aconteceu no booster semana passada.",
+          "setup": "Semana passada o booster pagou duas vezes seguidas. Chamei de seguro e rápido.",
+          "misjudgment": "Então apostei 100 de novo. A terceira jogada não pagou nada e os 100 sumiram.",
+          "recovery": "Duas vitórias não mostram com que frequência ele paga. Da próxima vez pergunto primeiro: com que frequência e quanto?"
+        }
+      }
+    },
+    {
+      "id": "runs-turn-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara runs the booster 60 times, six plays each.",
+          "line": "Step 4: she counts wins per run. One win brings back 500 for 600 in, so that run ends behind."
+        },
+        "es-MX": {
+          "prompt": "Zara repite el booster en 60 rondas de seis jugadas.",
+          "line": "Paso 4: cuenta las victorias de cada ronda. Una victoria devuelve 500 por 600 puestos, así que esa ronda termina en pérdida."
+        },
+        "pt-BR": {
+          "prompt": "A Zara repete o booster em 60 rodadas de seis jogadas.",
+          "line": "Passo 4: ela conta as vitórias de cada rodada. Uma vitória devolve 500 por 600 colocadas, então essa rodada termina no prejuízo."
+        }
+      }
+    },
+    {
+      "id": "runs-hist-01",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "histogram"
+      },
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "wins-0"
+            },
+            {
+              "id": "wins-1"
+            },
+            {
+              "id": "wins-2"
+            },
+            {
+              "id": "wins-3"
+            },
+            {
+              "id": "wins-4"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-runs",
+              "values": [
+                20,
+                24,
+                12,
+                3,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: add the bars for 0 and 1 win. 44 of the 60 runs end behind.",
+          "title": "Wins in 60 runs of six plays",
+          "data": {
+            "categories": [
+              {
+                "label": "0 wins"
+              },
+              {
+                "label": "1 win"
+              },
+              {
+                "label": "2 wins"
+              },
+              {
+                "label": "3 wins"
+              },
+              {
+                "label": "4 wins"
+              }
+            ],
+            "series": [
+              {
+                "label": "Runs"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 5: suma las barras de 0 y 1 victoria. 44 de las 60 rondas terminan en pérdida.",
+          "title": "Victorias en 60 rondas de seis jugadas",
+          "data": {
+            "categories": [
+              {
+                "label": "0 victorias"
+              },
+              {
+                "label": "1 victoria"
+              },
+              {
+                "label": "2 victorias"
+              },
+              {
+                "label": "3 victorias"
+              },
+              {
+                "label": "4 victorias"
+              }
+            ],
+            "series": [
+              {
+                "label": "Rondas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: some as barras de 0 e 1 vitória. 44 das 60 rodadas terminam no prejuízo.",
+          "title": "Vitórias em 60 rodadas de seis jogadas",
+          "data": {
+            "categories": [
+              {
+                "label": "0 vitórias"
+              },
+              {
+                "label": "1 vitória"
+              },
+              {
+                "label": "2 vitórias"
+              },
+              {
+                "label": "3 vitórias"
+              },
+              {
+                "label": "4 vitórias"
+              }
+            ],
+            "series": [
+              {
+                "label": "Rodadas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hist-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "histogram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "data": {
+          "unit": "count",
+          "categories": [
+            {
+              "id": "wins-0"
+            },
+            {
+              "id": "wins-1"
+            },
+            {
+              "id": "wins-2"
+            },
+            {
+              "id": "wins-3-plus"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-runs",
+              "values": [
+                17,
+                26,
+                14,
+                3
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-a"
+            },
+            {
+              "id": "opt-c"
+            },
+            {
+              "id": "opt-b"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-a"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Booster B: 60 runs of four plays. 400 goes in each run, and one win pays 300.",
+          "title": "Booster B: wins in 60 runs",
+          "feedback": {
+            "met": "You added every bar that ends behind, not just the tallest.",
+            "not_yet": "Not yet. Which bars bring back less than what went in?"
+          },
+          "help": [
+            "One win pays 300, and 400 went in each run.",
+            "Add the bars for the runs that end behind."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "0 wins"
+              },
+              {
+                "label": "1 win"
+              },
+              {
+                "label": "2 wins"
+              },
+              {
+                "label": "3 or more"
+              }
+            ],
+            "series": [
+              {
+                "label": "Runs"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "In how many of the 60 runs did the player end behind?",
+            "options": [
+              {
+                "label": "43 of 60"
+              },
+              {
+                "label": "17 of 60"
+              },
+              {
+                "label": "26 of 60"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Booster B: 60 rondas de cuatro jugadas. Entran 400 por ronda y una victoria paga 300.",
+          "title": "Booster B: victorias en 60 rondas",
+          "feedback": {
+            "met": "Sumaste todas las barras que terminan en pérdida, no solo la más alta.",
+            "not_yet": "Todavía no. ¿Qué barras devuelven menos de lo que entró?"
+          },
+          "help": [
+            "Una victoria paga 300 y entraron 400 en cada ronda.",
+            "Suma las barras de las rondas que terminan en pérdida."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "0 victorias"
+              },
+              {
+                "label": "1 victoria"
+              },
+              {
+                "label": "2 victorias"
+              },
+              {
+                "label": "3 o más"
+              }
+            ],
+            "series": [
+              {
+                "label": "Rondas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿En cuántas de las 60 rondas terminó el jugador en pérdida?",
+            "options": [
+              {
+                "label": "43 de 60"
+              },
+              {
+                "label": "17 de 60"
+              },
+              {
+                "label": "26 de 60"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Booster B: 60 rodadas de quatro jogadas. Entram 400 por rodada e uma vitória paga 300.",
+          "title": "Booster B: vitórias em 60 rodadas",
+          "feedback": {
+            "met": "Você somou todas as barras que terminam no prejuízo, não só a mais alta.",
+            "not_yet": "Ainda não. Quais barras devolvem menos do que entrou?"
+          },
+          "help": [
+            "Uma vitória paga 300 e entraram 400 em cada rodada.",
+            "Some as barras das rodadas que terminam no prejuízo."
+          ],
+          "data": {
+            "categories": [
+              {
+                "label": "0 vitórias"
+              },
+              {
+                "label": "1 vitória"
+              },
+              {
+                "label": "2 vitórias"
+              },
+              {
+                "label": "3 ou mais"
+              }
+            ],
+            "series": [
+              {
+                "label": "Rodadas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Em quantas das 60 rodadas o jogador terminou no prejuízo?",
+            "options": [
+              {
+                "label": "43 de 60"
+              },
+              {
+                "label": "17 de 60"
+              },
+              {
+                "label": "26 de 60"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "claim-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "invest.expected-value",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-prize"
+          },
+          {
+            "id": "reply-flip"
+          },
+          {
+            "id": "reply-average"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-average"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What comes back, on average, for every 100 staked?",
+          "speaker": "Kai",
+          "line": "I checked booster C: stake 100, and it pays 400 one time in five.",
+          "replies": [
+            {
+              "label": "About 400 back per 100 staked"
+            },
+            {
+              "label": "About 125 back per 100 staked"
+            },
+            {
+              "label": "About 80 back per 100 staked"
+            }
+          ],
+          "feedback": {
+            "met": "You weighed the prize by how often it pays.",
+            "not_yet": "Not yet. Compare coins staked and coins back over five plays."
+          },
+          "help": [
+            "Five plays stake 500. Count what comes back in those plays."
+          ]
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto vuelve en promedio por cada 100 apostadas?",
+          "speaker": "Kai",
+          "line": "Revisé el booster C: apuesta 100 y paga 400 una vez de cada cinco.",
+          "replies": [
+            {
+              "label": "Unas 400 de vuelta por cada 100"
+            },
+            {
+              "label": "Unas 125 de vuelta por cada 100"
+            },
+            {
+              "label": "Unas 80 de vuelta por cada 100"
+            }
+          ],
+          "feedback": {
+            "met": "Ponderaste el premio según cada cuánto paga.",
+            "not_yet": "Todavía no. Compara lo apostado con lo devuelto en cinco jugadas."
+          },
+          "help": [
+            "Cinco jugadas apuestan 500. Cuenta lo que vuelve en esas jugadas."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Quanto volta, em média, para cada 100 apostadas?",
+          "speaker": "Kai",
+          "line": "Conferi o booster C: aposta de 100, e paga 400 uma vez em cinco.",
+          "replies": [
+            {
+              "label": "Cerca de 400 de volta por 100"
+            },
+            {
+              "label": "Cerca de 125 de volta por 100"
+            },
+            {
+              "label": "Cerca de 80 de volta por 100"
+            }
+          ],
+          "feedback": {
+            "met": "Você pesou o prêmio pela frequência com que ele paga.",
+            "not_yet": "Ainda não. Compare o apostado com o devolvido em cinco jogadas."
+          },
+          "help": [
+            "Cinco jogadas apostam 500. Conte o que volta nessas jogadas."
+          ]
+        }
+      }
+    },
+    {
+      "id": "who-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Over six plays the board took in 600 and paid out 500.",
+          "line": "Step 6: it keeps 100; players carry the risk. A big, safe, fast promise means someone else carries it."
+        },
+        "es-MX": {
+          "prompt": "En seis jugadas el tablero recibió 600 y pagó 500.",
+          "line": "Paso 6: se queda con 100; los jugadores cargan el riesgo. Una promesa grande, segura y rápida significa que otro lo carga."
+        },
+        "pt-BR": {
+          "prompt": "Em seis jogadas o painel recebeu 600 e pagou 500.",
+          "line": "Passo 6: ele fica com 100; os jogadores carregam o risco. Uma promessa grande, segura e rápida significa que outro carrega."
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "invest.no-free-lunch",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-all"
+          },
+          {
+            "id": "choice-half"
+          },
+          {
+            "id": "choice-ask"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-guarantee"
+          },
+          {
+            "id": "reason-half"
+          },
+          {
+            "id": "reason-risk"
+          },
+          {
+            "id": "reason-prize"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-ask"
+        ],
+        "reasonQuality": {
+          "reason-guarantee": "unsupported",
+          "reason-half": "partial",
+          "reason-risk": "sound",
+          "reason-prize": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A sandbox club promises to double your coins in a month, guaranteed. What do you do?",
+          "choices": [
+            {
+              "label": "Join with all my coins"
+            },
+            {
+              "label": "Join with half and watch"
+            },
+            {
+              "label": "Ask who carries the risk first"
+            }
+          ],
+          "reasonPrompt": "Why is that the better choice?",
+          "reasons": [
+            {
+              "label": "A guarantee means it cannot lose"
+            },
+            {
+              "label": "Half the coins is half the risk"
+            },
+            {
+              "label": "Someone else must be carrying the risk"
+            },
+            {
+              "label": "Doubling in a month is a big prize"
+            }
+          ],
+          "feedback": {
+            "met": "You asked who carries the risk before joining.",
+            "not_yet": "Not yet. Where would a guaranteed doubling come from?"
+          },
+          "help": [
+            "At the booster, players carried the risk and the board kept 100."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un club de simulación promete duplicar tus monedas en un mes, garantizado. ¿Qué haces?",
+          "choices": [
+            {
+              "label": "Entro con todas mis monedas"
+            },
+            {
+              "label": "Entro con la mitad y observo"
+            },
+            {
+              "label": "Pregunto primero quién carga el riesgo"
+            }
+          ],
+          "reasonPrompt": "¿Por qué es mejor esa opción?",
+          "reasons": [
+            {
+              "label": "Una garantía significa que no puede perder"
+            },
+            {
+              "label": "La mitad de las monedas es la mitad del riesgo"
+            },
+            {
+              "label": "Alguien más debe estar cargando el riesgo"
+            },
+            {
+              "label": "Duplicar en un mes es un gran premio"
+            }
+          ],
+          "feedback": {
+            "met": "Preguntaste quién carga el riesgo antes de entrar.",
+            "not_yet": "Todavía no. ¿De dónde saldría una duplicación garantizada?"
+          },
+          "help": [
+            "En el booster, los jugadores cargaban el riesgo y el tablero se quedaba con 100."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um clube da simulação promete dobrar suas moedas em um mês, garantido. O que você faz?",
+          "choices": [
+            {
+              "label": "Entro com todas as minhas moedas"
+            },
+            {
+              "label": "Entro com metade e observo"
+            },
+            {
+              "label": "Pergunto antes quem carrega o risco"
+            }
+          ],
+          "reasonPrompt": "Por que essa é a melhor opção?",
+          "reasons": [
+            {
+              "label": "Garantia quer dizer que não pode perder"
+            },
+            {
+              "label": "Metade das moedas é metade do risco"
+            },
+            {
+              "label": "Alguém precisa estar carregando o risco"
+            },
+            {
+              "label": "Dobrar em um mês é um grande prêmio"
+            }
+          ],
+          "feedback": {
+            "met": "Você perguntou quem carrega o risco antes de entrar.",
+            "not_yet": "Ainda não. De onde viria uma dobra garantida?"
+          },
+          "help": [
+            "No booster, os jogadores carregavam o risco e o painel ficava com 100."
+          ]
+        }
+      }
+    }
+  ]
+}

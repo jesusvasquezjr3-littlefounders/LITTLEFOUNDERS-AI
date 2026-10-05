@@ -1,0 +1,967 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-class-garden",
+  "lesson_id": "fe-1012-14-many-small-shares",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.common-good",
+    "life.shared-resources",
+    "money.equal-sharing"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-b"
+  },
+  "brief": "Rho enseña con ejemplos cómo una parte pequeña de muchas familias paga lo que todos usan. Suma 40 familias que dan 5 monedas, reparte las 200 en un círculo entre alumbrado, parque y agua, y resta cada parte para comprobar que no sobra nada. Después practica con otras cuentas y decide en el patio de un edificio.",
+  "title": {
+    "es-MX": "Muchas partes pequeñas",
+    "en-US": "Many small shares",
+    "pt-BR": "Muitas partes pequenas"
+  },
+  "new_concepts": [
+    "life.common-good"
+  ],
+  "regional": {
+    "scenarios": {
+      "es-MX": {
+        "scenario": "En México, los vecinos de una colonia hacen una cooperación para el alumbrado, el parque y el agua que todos usan. Se practica sumar pocas monedas de muchas familias y repartirlas en un círculo entre servicios públicos conocidos.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "cooperación"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "No Brasil, as famílias de uma rua fazem uma vaquinha para a luz da rua, a praça e o bebedouro que todos usam. Contas simples com muitas partes pequenas e a divisão em um círculo, com serviços públicos conhecidos.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "vaquinha"
+        ]
+      },
+      "en-US": {
+        "scenario": "In the US, towns pay for street lamps, parks and the public library with small shares from many households. Learners add many small gifts and split them on a donut among services every town knows.",
+        "problem_refs": [
+          "us-parent-silence"
+        ],
+        "anchors": [
+          "public library"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho está en la plaza del pueblo. Una lámpara de la calle brilla y el parque está abierto.",
+          "line": "¿Quién paga lo que todos usamos? Vamos a averiguarlo."
+        },
+        "en-US": {
+          "prompt": "Rho stands in the town square. A lamp glows, and the park is open.",
+          "line": "Who pays for what everyone uses? Let's find out."
+        },
+        "pt-BR": {
+          "prompt": "O Rho está no centro da cidade. A luz da rua acende e a praça está cheia de gente.",
+          "line": "Quem paga o que todos usamos? Vamos descobrir."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "story.dialogue-choice.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "dialogue"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.common-good",
+      "payload": {
+        "replies": [
+          {
+            "id": "reply-free"
+          },
+          {
+            "id": "reply-rich"
+          },
+          {
+            "id": "reply-many"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "reply-many"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "El pueblo de Rho tiene lámparas y parque. ¿Quién crees que los paga?",
+          "feedback": {
+            "met": "Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso, juntos.",
+            "not_yet": "Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso, juntos."
+          },
+          "speaker": "Mina",
+          "line": "Las lámparas, el parque, todo funciona. ¿Quién lo paga?",
+          "replies": [
+            {
+              "label": "Nadie, todo es gratis."
+            },
+            {
+              "label": "Una familia rica lo paga todo."
+            },
+            {
+              "label": "Muchas familias dan un poco."
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's town has street lamps and a park. Who do you think pays for them?",
+          "feedback": {
+            "met": "Thanks. Now we'll look at it step by step, together.",
+            "not_yet": "Thanks. Now we'll look at it step by step, together."
+          },
+          "speaker": "Mina",
+          "line": "Lamps, park, everything works. Who pays for it?",
+          "replies": [
+            {
+              "label": "Nobody, it is all free."
+            },
+            {
+              "label": "One rich family pays it all."
+            },
+            {
+              "label": "Many families each give a little."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A cidade do Rho tem luz na rua e praça. Quem você acha que paga?",
+          "feedback": {
+            "met": "Certo, já vejo como você pensa. Agora vamos ver passo a passo, juntos.",
+            "not_yet": "Certo, já vejo como você pensa. Agora vamos ver passo a passo, juntos."
+          },
+          "speaker": "Mina",
+          "line": "A luz, a praça, tudo funciona. Quem paga?",
+          "replies": [
+            {
+              "label": "Ninguém, tudo é de graça."
+            },
+            {
+              "label": "Uma família rica paga tudo."
+            },
+            {
+              "label": "Muitas famílias dão um pouco."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 1: en el pueblo de Rho, 40 familias dan su cooperación: 5 monedas al mes.",
+          "line": "Observa. Una parte es pequeña, pero 40 × 5 = 200 monedas en total."
+        },
+        "en-US": {
+          "prompt": "Step 1: in Rho's town, 40 families each give 5 coins a month.",
+          "line": "Observe. One share is small, but 40 × 5 = 200 coins in all."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: na cidade do Rho, 40 famílias entram na vaquinha com 5 moedas por mês.",
+          "line": "Observe. Cada parte é pequena, mas 40 × 5 = 200 moedas no total."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "donut"
+      },
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-lamps"
+            },
+            {
+              "id": "cat-park"
+            },
+            {
+              "id": "cat-third"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-coins",
+              "values": [
+                100,
+                60,
+                40
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 2: el pueblo reparte las 200 monedas: alumbrado 100, parque 60, toma de agua 40.",
+          "title": "A dónde van las 200 monedas",
+          "data": {
+            "categories": [
+              {
+                "label": "Alumbrado de la calle"
+              },
+              {
+                "label": "Parque"
+              },
+              {
+                "label": "Toma de agua"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "Step 2: the town splits the 200 coins: lamps 100, park 60, library 40.",
+          "title": "Where the 200 coins go",
+          "data": {
+            "categories": [
+              {
+                "label": "Street lamps"
+              },
+              {
+                "label": "Park"
+              },
+              {
+                "label": "Public library"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: a cidade divide as 200 moedas: luz da rua 100, praça 60, bebedouro 40.",
+          "title": "Para onde vão as 200 moedas",
+          "data": {
+            "categories": [
+              {
+                "label": "Luz da rua"
+              },
+              {
+                "label": "Praça"
+              },
+              {
+                "label": "Bebedouro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Paso 3: Rho quita cada parte de las 200 para ver que no sobra nada.",
+          "line": "El alumbrado se lleva 100 y quedan 100. El parque toma 60 y quedan 40 para la toma de agua."
+        },
+        "en-US": {
+          "prompt": "Step 3: Rho takes each share out of the 200 to check nothing is left over.",
+          "line": "Lamps take 100, leaving 100. The park takes 60, leaving 40 for the public library."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: o Rho tira cada parte das 200 para ver que nada sobra.",
+          "line": "A luz da rua leva 100 e sobram 100. A praça leva 60 e sobram 40 para o bebedouro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-total"
+          },
+          {
+            "id": "step-left"
+          },
+          {
+            "id": "step-third"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-left",
+          "step-third"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-left": "100",
+          "step-third": "45"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Pueblo de Rho: 30 familias dan 6 monedas cada una; el alumbrado lleva 80 y el parque 55. ¿Cuánto queda para la toma de agua?",
+          "feedback": {
+            "met": "Quitaste el alumbrado del total y luego el parque.",
+            "not_yet": "Todavía no. Mira cómo Rho quitó cada parte, una por una."
+          },
+          "help": [
+            "Haz como Rho: resta el alumbrado del total y luego el parque."
+          ],
+          "steps": [
+            {
+              "expression": "30 × 6",
+              "result": "180",
+              "spokenText": "Treinta por seis es 180"
+            },
+            {
+              "expression": "180 − 80",
+              "result": "100",
+              "spokenText": "180 menos 80 quedan 100"
+            },
+            {
+              "expression": "Resto − parque",
+              "result": "45",
+              "spokenText": "100 menos 55 quedan 45"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's town: 30 families give 6 coins each; lamps take 80, the park 55. What's left for the library?",
+          "feedback": {
+            "met": "You took the lamps out of the total, then the park.",
+            "not_yet": "Not yet. Look at how Rho took each share out, in turn."
+          },
+          "help": [
+            "Take lamps from the total first, then the park."
+          ],
+          "steps": [
+            {
+              "expression": "30 × 6",
+              "result": "180",
+              "spokenText": "Thirty times six is 180"
+            },
+            {
+              "expression": "180 − 80",
+              "result": "100",
+              "spokenText": "180 minus 80 leaves 100"
+            },
+            {
+              "expression": "Left − park",
+              "result": "45",
+              "spokenText": "100 minus 55 leaves 45"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cidade do Rho: 30 famílias dão 6 moedas cada; a luz da rua leva 80 e a praça 55. Quanto sobra para o bebedouro?",
+          "feedback": {
+            "met": "Você tirou a luz da rua do total e depois a praça.",
+            "not_yet": "Ainda não. Veja como o Rho tirou cada parte, uma por uma."
+          },
+          "help": [
+            "Faça como o Rho: subtraia a luz da rua do total e depois a praça."
+          ],
+          "steps": [
+            {
+              "expression": "30 × 6",
+              "result": "180",
+              "spokenText": "Trinta vezes seis é 180"
+            },
+            {
+              "expression": "180 − 80",
+              "result": "100",
+              "spokenText": "180 menos 80 sobram 100"
+            },
+            {
+              "expression": "Resto − praça",
+              "result": "45",
+              "spokenText": "100 menos 55 sobram 45"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rho anota el resultado: cada familia dio solo 5 monedas.",
+          "line": "Una parte pequeña de muchos paga lo que todos usan. Eso es el bien común."
+        },
+        "en-US": {
+          "prompt": "Rho notes the result: each family gave only 5 coins.",
+          "line": "A small share from many pays for what everyone uses. We call it the common good."
+        },
+        "pt-BR": {
+          "prompt": "O Rho anota o resultado: cada família deu só 5 moedas.",
+          "line": "Uma parte pequena de muitos paga o que todos usam. Isso é o bem comum."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "worked-example"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.equal-sharing",
+      "payload": {
+        "steps": [
+          {
+            "id": "step-total"
+          },
+          {
+            "id": "step-left"
+          },
+          {
+            "id": "step-third"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "step-left",
+          "step-third"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-left": "80",
+          "step-third": "30"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Pueblo de Rho: 25 familias dan 6 monedas cada una; el alumbrado lleva 70 y el parque 50. ¿Cuánto queda para la toma de agua?",
+          "feedback": {
+            "met": "Sumaste lo de todas las familias y quitaste cada parte.",
+            "not_yet": "Todavía no. Haz como Rho: del total quita el alumbrado y luego el parque."
+          },
+          "help": [
+            "Primero calcula el total: familias por monedas de cada una."
+          ],
+          "steps": [
+            {
+              "expression": "25 × 6",
+              "result": "150",
+              "spokenText": "Veinticinco por seis es 150"
+            },
+            {
+              "expression": "150 − 70",
+              "result": "80",
+              "spokenText": "150 menos 70 quedan 80"
+            },
+            {
+              "expression": "Resto − parque",
+              "result": "30",
+              "spokenText": "80 menos 50 quedan 30"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rho's town: 25 families give 6 coins each; lamps take 70, the park 50. What's left for the library?",
+          "feedback": {
+            "met": "You added what all the families gave and took out each share.",
+            "not_yet": "Not yet. Do as Rho did: lamps first, then the park."
+          },
+          "help": [
+            "Start with the total: families times each family's coins."
+          ],
+          "steps": [
+            {
+              "expression": "25 × 6",
+              "result": "150",
+              "spokenText": "Twenty-five times six is 150"
+            },
+            {
+              "expression": "150 − 70",
+              "result": "80",
+              "spokenText": "150 minus 70 leaves 80"
+            },
+            {
+              "expression": "Left − park",
+              "result": "30",
+              "spokenText": "80 minus 50 leaves 30"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cidade do Rho: 25 famílias dão 6 moedas cada; a luz da rua leva 70 e a praça 50. Quanto sobra para o bebedouro?",
+          "feedback": {
+            "met": "Você somou o que todas as famílias deram e tirou cada parte.",
+            "not_yet": "Ainda não. Faça como o Rho: tire cada parte do total, uma por uma."
+          },
+          "help": [
+            "Comece pelo total: famílias vezes as moedas de cada uma."
+          ],
+          "steps": [
+            {
+              "expression": "25 × 6",
+              "result": "150",
+              "spokenText": "Vinte e cinco vezes seis é 150"
+            },
+            {
+              "expression": "150 − 70",
+              "result": "80",
+              "spokenText": "150 menos 70 sobram 80"
+            },
+            {
+              "expression": "Resto − praça",
+              "result": "30",
+              "spokenText": "80 menos 50 sobram 30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.shared-resources",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-lamps"
+            },
+            {
+              "id": "cat-park"
+            },
+            {
+              "id": "cat-third"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-coins",
+              "values": [
+                50,
+                40,
+                30
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-70"
+            },
+            {
+              "id": "opt-90"
+            },
+            {
+              "id": "opt-120"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-70"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En primavera el pueblo de Rho junta 120 monedas. Usa el círculo, o Ver tabla, para responder.",
+          "feedback": {
+            "met": "Hallaste lo que toman juntos el parque y la toma de agua.",
+            "not_yet": "Todavía no. Usa el modo de Rho: quita una parte del total."
+          },
+          "title": "Primavera en el pueblo",
+          "data": {
+            "categories": [
+              {
+                "label": "Alumbrado de la calle"
+              },
+              {
+                "label": "Parque"
+              },
+              {
+                "label": "Toma de agua"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántas monedas toman juntos el parque y la toma de agua?",
+            "options": [
+              {
+                "label": "70 monedas"
+              },
+              {
+                "label": "90 monedas"
+              },
+              {
+                "label": "120 monedas"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "In spring Rho's town collects 120 coins. Use the donut, or Show as table, to answer.",
+          "feedback": {
+            "met": "You found what the park and the library take together.",
+            "not_yet": "Not yet. Use Rho's way: take one share out of the total."
+          },
+          "title": "Spring in the town",
+          "data": {
+            "categories": [
+              {
+                "label": "Street lamps"
+              },
+              {
+                "label": "Park"
+              },
+              {
+                "label": "Public library"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many coins do the park and the library take together?",
+            "options": [
+              {
+                "label": "70 coins"
+              },
+              {
+                "label": "90 coins"
+              },
+              {
+                "label": "120 coins"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Na primavera a cidade do Rho junta 120 moedas. Use o círculo, ou Ver tabela, para responder.",
+          "feedback": {
+            "met": "Você achou o que a praça e o bebedouro levam juntos.",
+            "not_yet": "Ainda não. Use o jeito do Rho: tire uma parte do total."
+          },
+          "title": "Primavera na cidade",
+          "data": {
+            "categories": [
+              {
+                "label": "Luz da rua"
+              },
+              {
+                "label": "Praça"
+              },
+              {
+                "label": "Bebedouro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantas moedas a praça e o bebedouro levam juntos?",
+            "options": [
+              {
+                "label": "70 moedas"
+              },
+              {
+                "label": "90 moedas"
+              },
+              {
+                "label": "120 moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "donut"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.common-good",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "cat-paint"
+            },
+            {
+              "id": "cat-plants"
+            },
+            {
+              "id": "cat-bench"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-coins",
+              "values": [
+                30,
+                20,
+                10
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-23"
+            },
+            {
+              "id": "opt-60"
+            },
+            {
+              "id": "opt-30"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-60"
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "En el edificio de Rho, 20 familias dan 3 monedas cada una para el patio.",
+          "feedback": {
+            "met": "20 partes pequeñas de 3 suman 60.",
+            "not_yet": "Todavía no. Recuerda el paso 1 de Rho: muchas partes pequeñas se suman."
+          },
+          "title": "El fondo del patio",
+          "data": {
+            "categories": [
+              {
+                "label": "Pintura"
+              },
+              {
+                "label": "Plantas"
+              },
+              {
+                "label": "Banca"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuántas monedas dieron las familias en total?",
+            "options": [
+              {
+                "label": "23 monedas"
+              },
+              {
+                "label": "60 monedas"
+              },
+              {
+                "label": "30 monedas"
+              }
+            ]
+          }
+        },
+        "en-US": {
+          "prompt": "In Rho's building, 20 families each give 3 coins for the courtyard.",
+          "feedback": {
+            "met": "20 small shares of 3 add up to 60.",
+            "not_yet": "Not yet. Remember Rho's step 1: many small shares add up."
+          },
+          "title": "The courtyard fund",
+          "data": {
+            "categories": [
+              {
+                "label": "Paint"
+              },
+              {
+                "label": "Plants"
+              },
+              {
+                "label": "Bench"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How many coins did the families give in all?",
+            "options": [
+              {
+                "label": "23 coins"
+              },
+              {
+                "label": "60 coins"
+              },
+              {
+                "label": "30 coins"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "No prédio do Rho, 20 famílias dão 3 moedas cada uma para o pátio.",
+          "feedback": {
+            "met": "20 partes pequenas de 3 somam 60.",
+            "not_yet": "Ainda não. Lembre do passo 1 do Rho: muitas partes pequenas se somam."
+          },
+          "title": "O fundo do pátio",
+          "data": {
+            "categories": [
+              {
+                "label": "Tinta"
+              },
+              {
+                "label": "Plantas"
+              },
+              {
+                "label": "Banco"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quantas moedas as famílias deram no total?",
+            "options": [
+              {
+                "label": "23 moedas"
+              },
+              {
+                "label": "60 moedas"
+              },
+              {
+                "label": "30 moedas"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

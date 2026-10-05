@@ -1,0 +1,700 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-eyes-open",
+  "lesson_id": "fe-1317-08-wait-and-cushion",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.patience-and-waiting",
+    "biz.saving-goal",
+    "life.saving-for-later"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-b"
+  },
+  "brief": "Zara cuenta cuánto tarda Jon en juntar una consola de 60 apartando 10 al mes, y cómo un colchón de 30 para imprevistos alarga la espera a nueve meses. Quien aprende calcula cuánto tarda una meta, convierte el ahorro mensual en una regla y decide qué meta va primero y por qué, sabiendo que el orden cambia qué llega antes y no cuándo termina todo.",
+  "title": {
+    "es-MX": "Espera y colchón",
+    "en-US": "Wait and cushion",
+    "pt-BR": "Espera e reserva"
+  },
+  "new_concepts": [
+    "life.patience-and-waiting",
+    "biz.saving-goal"
+  ],
+  "regional": {
+    "universal": "The lesson uses plain amounts with no currency, shop, brand or custom of any market, so no market changes it."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Jon quiere una consola que cuesta 60 y aparta 10 al mes.",
+          "line": "Son seis meses, lo conté dos veces. Ahora me pregunto qué pasa si algo falla en el mes cuatro."
+        },
+        "en-US": {
+          "prompt": "Jon wants a console that costs 60 and sets aside 10 a month.",
+          "line": "Six months, I counted twice. Now I wonder what happens if something breaks in month four."
+        },
+        "pt-BR": {
+          "prompt": "Jon quer um console que custa 60 e guarda 10 por mês.",
+          "line": "São seis meses, conferi duas vezes. Agora me pergunto o que acontece se algo quebrar no mês quatro."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "target": 60,
+        "step": 10,
+        "initial": 20,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 50
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Ana tiene 20 ahorrados y suma 10 al mes. Mueve la barra a sus ahorros después de 3 meses.",
+          "feedback": {
+            "met": "Gracias. Ahora Zara muestra cuánto tarda una meta.",
+            "not_yet": "Gracias. Ahora Zara muestra cuánto tarda una meta."
+          }
+        },
+        "en-US": {
+          "prompt": "Ana has 20 saved and adds 10 a month. Move the bar to her savings after 3 months.",
+          "feedback": {
+            "met": "Thanks. Now Zara shows how long a goal takes.",
+            "not_yet": "Thanks. Now Zara shows how long a goal takes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ana tem 20 guardados e soma 10 por mês. Mova a barra até o que ela terá depois de 3 meses.",
+          "feedback": {
+            "met": "Certo. Agora a Zara mostra quanto tempo uma meta leva.",
+            "not_yet": "Certo. Agora a Zara mostra quanto tempo uma meta leva."
+          }
+        }
+      }
+    },
+    {
+      "id": "ex-wait-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "La consola de Jon cuesta 60. Él aparta 10 al mes.",
+          "line": "Precio entre ahorro mensual: 60 entre 10 son seis meses. La espera es una división."
+        },
+        "en-US": {
+          "prompt": "Jon’s console costs 60. He saves 10 a month.",
+          "line": "Price divided by monthly saving: 60 divided by 10 is six months. The wait is a division."
+        },
+        "pt-BR": {
+          "prompt": "O console do Jon custa 60. Ele guarda 10 por mês.",
+          "line": "Preço dividido pelo que se guarda por mês: 60 dividido por 10 dá seis meses. A espera é uma divisão."
+        }
+      }
+    },
+    {
+      "id": "ex-bar-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bullet"
+      },
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "target": 60,
+        "step": 10,
+        "initial": 0,
+        "currency": "coins"
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Jon aparta 10 al mes. Mueve la barra al mes 6 y mira dónde queda."
+        },
+        "en-US": {
+          "prompt": "Jon saves 10 a month. Move the bar to month 6 and see where it lands."
+        },
+        "pt-BR": {
+          "prompt": "Jon guarda 10 por mês. Mova a barra até o mês 6 e veja onde ela para."
+        }
+      }
+    },
+    {
+      "id": "ex-cushion-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Jon suma un colchón de 30 para imprevistos. Su meta ahora es 90.",
+          "line": "Mismos 10 al mes: nueve meses para 90. El colchón cuesta tres meses más."
+        },
+        "en-US": {
+          "prompt": "Jon adds a 30 cushion for surprises. His goal is now 90.",
+          "line": "Same 10 a month: nine months for 90. The cushion costs three extra months."
+        },
+        "pt-BR": {
+          "prompt": "Jon acrescenta uma reserva de 30 para imprevistos. A meta agora é 90.",
+          "line": "Mesmos 10 por mês: nove meses para 90. A reserva custa três meses a mais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.goal-bullet.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "bullet"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "minimum": 0,
+        "maximum": 100,
+        "target": 50,
+        "step": 10,
+        "initial": 0,
+        "currency": "coins"
+      },
+      "rubric": {
+        "minimum_value": 70
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Lia quiere una tableta de 50 y un colchón de 20. Mueve la barra hasta cubrir las dos cosas.",
+          "feedback": {
+            "met": "Llevaste la barra más allá de la tableta para cubrir el colchón.",
+            "not_yet": "Todavía no. La barra debe cubrir el precio más el colchón."
+          },
+          "help": [
+            "Suma primero el colchón al precio. La barra debe llegar a esa suma."
+          ]
+        },
+        "en-US": {
+          "prompt": "Lia wants a 50 tablet and a 20 cushion. Move the bar far enough to cover both.",
+          "feedback": {
+            "met": "You moved the bar past the tablet to cover the cushion.",
+            "not_yet": "Not yet. The bar must cover the price plus the cushion."
+          },
+          "help": [
+            "Add the cushion to the price first. The bar must reach that sum."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Lia quer um tablet de 50 e uma reserva de 20. Mova a barra até cobrir as duas coisas.",
+          "feedback": {
+            "met": "Você levou a barra além do tablet para cobrir a reserva.",
+            "not_yet": "Ainda não. A barra deve cobrir o preço mais a reserva."
+          },
+          "help": [
+            "Some primeiro a reserva ao preço. A barra deve chegar a essa soma."
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-rule-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Jon aparta 10 el día que le llega su dinero, antes de gastar.",
+          "line": "Eso es una regla, no una esperanza: primero se ahorra, y se gasta lo que queda."
+        },
+        "en-US": {
+          "prompt": "Jon moves 10 aside the day his money arrives, before spending.",
+          "line": "That is a rule, not a hope: the saving happens first, spending takes what is left."
+        },
+        "pt-BR": {
+          "prompt": "Jon separa 10 no dia em que o dinheiro chega, antes de gastar.",
+          "line": "Isso é uma regra, não uma esperança: primeiro se guarda, depois se gasta o que sobrou."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "logic.savings-rule.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "rule-diagram"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "goal": 10,
+        "shortfall": 4
+      },
+      "rubric": {
+        "comparator": ">=",
+        "threshold": 10,
+        "link": "none",
+        "held_out": [
+          {
+            "saved": 6,
+            "goal_day": true
+          },
+          {
+            "saved": 10,
+            "goal_day": false
+          },
+          {
+            "saved": 9,
+            "goal_day": true
+          },
+          {
+            "saved": 14,
+            "goal_day": false
+          }
+        ]
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Jon cuenta un mes como ahorrado cuando aparta al menos 10. Arma su regla.",
+          "feedback": {
+            "met": "Tu regla cuenta el mes como ahorrado desde 10.",
+            "not_yet": "Todavía no. Revisa la cantidad, la comparación y el nexo."
+          },
+          "help": [
+            "Prueba tu regla con un mes de exactamente 10. ¿Cuenta?"
+          ]
+        },
+        "en-US": {
+          "prompt": "Jon counts a month as saved when he sets aside at least 10. Build his rule.",
+          "feedback": {
+            "met": "Your rule counts a month as saved from 10 up.",
+            "not_yet": "Not yet. Check the amount, the comparison and the link."
+          },
+          "help": [
+            "Test your rule on a month with exactly 10. Does it count?"
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Jon conta um mês como poupado quando separa pelo menos 10. Monte a regra dele.",
+          "feedback": {
+            "met": "Sua regra conta o mês como poupado a partir de 10.",
+            "not_yet": "Ainda não. Revise o valor, a comparação e a ligação."
+          },
+          "help": [
+            "Teste sua regra com um mês de exatamente 10. Ele conta?"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ex-trade-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Cualquier orden termina en el mes nueve. Con el colchón primero, una reparación de 20 en el mes cuatro queda cubierta.",
+          "line": "El orden solo decide qué llega antes. Esperar tres meses por la consola compra esa cobertura."
+        },
+        "en-US": {
+          "prompt": "Either order ends in month nine. Cushion first covers a 20 repair in month four.",
+          "line": "Order only decides what arrives first. Waiting three months for the console buys that cover."
+        },
+        "pt-BR": {
+          "prompt": "Qualquer ordem termina no mês nove. Com a reserva primeiro, um conserto de 20 no mês quatro fica coberto.",
+          "line": "A ordem só decide o que chega antes. Esperar três meses pelo console compra essa cobertura."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.patience-and-waiting",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-cushion"
+          },
+          {
+            "id": "choice-jacket"
+          },
+          {
+            "id": "choice-split"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-cover"
+          },
+          {
+            "id": "reason-fair"
+          },
+          {
+            "id": "reason-end"
+          },
+          {
+            "id": "reason-bigger"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-cushion"
+        ],
+        "reasonQuality": {
+          "reason-fair": "unsupported",
+          "reason-cover": "sound",
+          "reason-bigger": "unsupported",
+          "reason-end": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Rin ahorra 10 al mes para una chamarra de 30 y un colchón de 20. ¿Qué orden protege antes a Rin de los imprevistos?",
+          "feedback": {
+            "met": "Pusiste el colchón primero sin perder tiempo en total.",
+            "not_yet": "Todavía no. Compara cuándo llega el colchón en cada orden."
+          },
+          "help": [
+            "Las dos metas suman 50: con 10 al mes, cualquier orden termina en el mes cinco."
+          ],
+          "choices": [
+            {
+              "label": "Primero el colchón, luego la chamarra"
+            },
+            {
+              "label": "Primero la chamarra, luego el colchón"
+            },
+            {
+              "label": "Repartir cada mes entre las dos"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón explica mejor tu elección?",
+          "reasons": [
+            {
+              "label": "Un imprevisto podría gastar el dinero de la chamarra"
+            },
+            {
+              "label": "Repartir es más justo para las dos metas"
+            },
+            {
+              "label": "El final es el mes cinco en cualquier orden"
+            },
+            {
+              "label": "La meta más grande siempre va primero"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Rin saves 10 a month for a 30 jacket and a 20 cushion. Which order protects Rin from surprises sooner?",
+          "feedback": {
+            "met": "You put the cushion first, at no cost in time.",
+            "not_yet": "Not yet. Compare when the cushion arrives in each order."
+          },
+          "help": [
+            "Both goals total 50, so at 10 a month every order ends in month five."
+          ],
+          "choices": [
+            {
+              "label": "Cushion first, then the jacket"
+            },
+            {
+              "label": "Jacket first, then the cushion"
+            },
+            {
+              "label": "Split each month between both"
+            }
+          ],
+          "reasonPrompt": "Which reason fits your choice best?",
+          "reasons": [
+            {
+              "label": "A surprise could drain the jacket money"
+            },
+            {
+              "label": "Splitting is fairer to both goals"
+            },
+            {
+              "label": "The finish is month five in any order"
+            },
+            {
+              "label": "The bigger goal always goes first"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rin guarda 10 por mês para uma jaqueta de 30 e uma reserva de 20. Qual ordem protege Rin dos imprevistos mais cedo?",
+          "feedback": {
+            "met": "Você pôs a reserva primeiro sem perder tempo no total.",
+            "not_yet": "Ainda não. Compare quando a reserva chega em cada ordem."
+          },
+          "help": [
+            "As duas metas somam 50: com 10 por mês, qualquer ordem termina no mês cinco."
+          ],
+          "choices": [
+            {
+              "label": "Primeiro a reserva, depois a jaqueta"
+            },
+            {
+              "label": "Primeiro a jaqueta, depois a reserva"
+            },
+            {
+              "label": "Dividir cada mês entre as duas"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina melhor com sua escolha?",
+          "reasons": [
+            {
+              "label": "Um imprevisto poderia gastar o dinheiro da jaqueta"
+            },
+            {
+              "label": "Dividir é mais justo para as duas metas"
+            },
+            {
+              "label": "O fim é o mês cinco em qualquer ordem"
+            },
+            {
+              "label": "A meta maior sempre vem primeiro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "biz.saving-goal",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-headphones"
+          },
+          {
+            "id": "choice-split"
+          },
+          {
+            "id": "choice-fee"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-big"
+          },
+          {
+            "id": "reason-date"
+          },
+          {
+            "id": "reason-fun"
+          },
+          {
+            "id": "reason-late"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-fee"
+        ],
+        "reasonQuality": {
+          "reason-big": "unsupported",
+          "reason-date": "sound",
+          "reason-fun": "unsupported",
+          "reason-late": "sound"
+        }
+      },
+      "copy": {
+        "es-MX": {
+          "prompt": "Nora ahorra 10 al mes: audífonos de 40 y una cuota de 20 que vence en 2 meses. ¿Cuál va primero?",
+          "feedback": {
+            "met": "Pusiste primero la cuota con fecha; los audífonos siguen.",
+            "not_yet": "Todavía no. Revisa cuál meta tiene fecha."
+          },
+          "help": [
+            "Las dos metas suman 60: con 10 al mes, cualquier orden termina en el mes seis."
+          ],
+          "choices": [
+            {
+              "label": "Primero los audífonos, luego la cuota"
+            },
+            {
+              "label": "Repartir cada mes entre los dos"
+            },
+            {
+              "label": "Primero la cuota, luego los audífonos"
+            }
+          ],
+          "reasonPrompt": "¿Qué razón explica mejor tu elección?",
+          "reasons": [
+            {
+              "label": "La meta más grande siempre va primero"
+            },
+            {
+              "label": "La cuota tiene fecha y los audífonos no"
+            },
+            {
+              "label": "Los audífonos son lo que más quiero"
+            },
+            {
+              "label": "Perder la fecha cuesta más que esperar"
+            }
+          ]
+        },
+        "en-US": {
+          "prompt": "Nora saves 10 a month: 40 headphones, plus a 20 club fee due in 2 months. Which first?",
+          "feedback": {
+            "met": "You put the dated fee first; the headphones follow.",
+            "not_yet": "Not yet. Check which goal has a date."
+          },
+          "help": [
+            "Both goals total 60, so at 10 a month every order ends in month six."
+          ],
+          "choices": [
+            {
+              "label": "Headphones first, then the fee"
+            },
+            {
+              "label": "Split each month between both"
+            },
+            {
+              "label": "Fee first, then the headphones"
+            }
+          ],
+          "reasonPrompt": "Which reason fits your choice best?",
+          "reasons": [
+            {
+              "label": "The bigger goal should always go first"
+            },
+            {
+              "label": "Only the fee has a due date"
+            },
+            {
+              "label": "Headphones are the goal I like most"
+            },
+            {
+              "label": "Missing the date costs more than waiting"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Nora guarda 10 por mês: fones de 40 e uma taxa de 20 que vence em 2 meses. Qual vem primeiro?",
+          "feedback": {
+            "met": "Você pôs primeiro a taxa com data; os fones vêm depois.",
+            "not_yet": "Ainda não. Veja qual meta tem data."
+          },
+          "help": [
+            "As duas metas somam 60: com 10 por mês, qualquer ordem termina no mês seis."
+          ],
+          "choices": [
+            {
+              "label": "Primeiro os fones, depois a taxa"
+            },
+            {
+              "label": "Dividir cada mês entre os dois"
+            },
+            {
+              "label": "Primeiro a taxa, depois os fones"
+            }
+          ],
+          "reasonPrompt": "Qual razão combina melhor com sua escolha?",
+          "reasons": [
+            {
+              "label": "A meta maior sempre vem primeiro"
+            },
+            {
+              "label": "A taxa tem data e os fones não"
+            },
+            {
+              "label": "Os fones são o que mais quero"
+            },
+            {
+              "label": "Perder a data custa mais que esperar"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

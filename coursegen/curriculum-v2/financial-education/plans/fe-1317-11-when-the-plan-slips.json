@@ -1,0 +1,1082 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-plans-that-grow",
+  "lesson_id": "fe-1317-11-when-the-plan-slips",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.review-and-adjust-plan",
+    "life.goal-planning",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Zara cuenta cómo soltó un plan por un gasto inesperado y luego lo comparó con lo que pasó. Con Sam, que lleva 240 en vez de los 300 planeados, se ve el plan junto al registro, la diferencia de 60 y los tres ajustes posibles (tiempo, monto o meta), cambiando solo uno. Primero se ve cada caso resuelto y el final lo aplica a un plan nuevo.",
+  "title": {
+    "en-US": "When the plan slips",
+    "es-MX": "Cuando el plan se atrasa",
+    "pt-BR": "Quando o plano atrasa"
+  },
+  "new_concepts": [
+    "life.review-and-adjust-plan"
+  ],
+  "mentor_misjudgment": {
+    "character": "zara",
+    "misjudgment": "Zara's savings plan falls 40 coins behind after a repair, and she decides the whole plan is ruined and puts it away for a week.",
+    "recovery": "Zara sets the plan beside her ledger, sees the gap is only 40, adds one month to the plan, and says that next time she checks the gap first."
+  },
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "hook",
+      "copy": {
+        "en-US": {
+          "prompt": "After three months, Sam's plan says 300 coins. His account says 240.",
+          "line": "A 60-coin repair got in the way. Zara puts the plan next to what happened."
+        },
+        "es-MX": {
+          "prompt": "A los tres meses, el plan de Sam dice 300 monedas. Su cuenta dice 240.",
+          "line": "Una reparación de 60 monedas se cruzó. Zara pone el plan junto a lo que pasó."
+        },
+        "pt-BR": {
+          "prompt": "Depois de três meses, o plano do Sam diz 300 moedas. A conta dele diz 240.",
+          "line": "Um conserto de 60 moedas atrapalhou. A Zara coloca o plano ao lado do que aconteceu."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "teaching_role": "pre",
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "choice-keep"
+          },
+          {
+            "id": "choice-change"
+          },
+          {
+            "id": "choice-drop"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "reason-gap"
+          },
+          {
+            "id": "reason-mostly"
+          },
+          {
+            "id": "reason-failed"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "choice-change"
+        ],
+        "reasonQuality": {
+          "reason-gap": "sound",
+          "reason-mostly": "partial",
+          "reason-failed": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Sam is behind his savings plan after a repair. What would you do?",
+          "feedback": {
+            "met": "Noted. Now Zara shows what a slipped plan can look like.",
+            "not_yet": "Noted. Now Zara shows what a slipped plan can look like."
+          },
+          "choices": [
+            {
+              "label": "Keep the plan exactly as it is"
+            },
+            {
+              "label": "Change one part of the plan"
+            },
+            {
+              "label": "Drop the plan and start over"
+            }
+          ],
+          "reasonPrompt": "What is your reason?",
+          "reasons": [
+            {
+              "label": "Check how far behind he is first"
+            },
+            {
+              "label": "The plan was mostly on track"
+            },
+            {
+              "label": "A plan that slips has failed"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sam va atrasado en su plan de ahorro por una reparación. ¿Qué harías?",
+          "feedback": {
+            "met": "Anotado. Ahora Zara muestra cómo se ve un plan que se atrasa.",
+            "not_yet": "Anotado. Ahora Zara muestra cómo se ve un plan que se atrasa."
+          },
+          "choices": [
+            {
+              "label": "Mantener el plan tal como está"
+            },
+            {
+              "label": "Cambiar una parte del plan"
+            },
+            {
+              "label": "Dejar el plan y empezar de cero"
+            }
+          ],
+          "reasonPrompt": "¿Cuál es tu razón?",
+          "reasons": [
+            {
+              "label": "Primero vería cuánto se atrasó"
+            },
+            {
+              "label": "El plan iba bastante bien"
+            },
+            {
+              "label": "Un plan que se atrasa ya falló"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O Sam está atrasado no plano de poupança por causa de um conserto. O que você faria?",
+          "feedback": {
+            "met": "Anotado. Agora a Zara mostra como é um plano que atrasa.",
+            "not_yet": "Anotado. Agora a Zara mostra como é um plano que atrasa."
+          },
+          "choices": [
+            {
+              "label": "Manter o plano como está"
+            },
+            {
+              "label": "Mudar uma parte do plano"
+            },
+            {
+              "label": "Largar o plano e recomeçar"
+            }
+          ],
+          "reasonPrompt": "Qual é a sua razão?",
+          "reasons": [
+            {
+              "label": "Primeiro veria quanto ele atrasou"
+            },
+            {
+              "label": "O plano ia bem até ali"
+            },
+            {
+              "label": "Um plano que atrasa já falhou"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "episode-01",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Zara tells what happened to one of her plans.",
+          "setup": "I planned 50 coins a month toward 200. After two months I had 60, not 100: a repair took 40.",
+          "misjudgment": "I decided the plan was ruined and put it away for a week.",
+          "recovery": "Beside my ledger the gap was only 40, so I added a month. Next time I check the gap first."
+        },
+        "es-MX": {
+          "prompt": "Zara cuenta qué pasó con uno de sus planes.",
+          "setup": "Planeé 50 monedas al mes para llegar a 200. A los dos meses tenía 60 en vez de 100: una reparación se llevó 40.",
+          "misjudgment": "Decidí que el plan estaba arruinado y lo guardé una semana.",
+          "recovery": "Junto a mi registro, la diferencia era solo de 40, así que sumé un mes. La próxima vez reviso la diferencia primero."
+        },
+        "pt-BR": {
+          "prompt": "A Zara conta o que houve com um dos planos dela.",
+          "setup": "Planejei 50 moedas por mês para chegar a 200. Com dois meses eu tinha 60 em vez de 100: um conserto levou 40.",
+          "misjudgment": "Decidi que o plano estava arruinado e o guardei por uma semana.",
+          "recovery": "Ao lado do meu registro, a diferença era só de 40, então somei um mês. Da próxima vez confiro a diferença primeiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 1: the plan in numbers, six months to 360.",
+          "line": "Sam has 240 and saves 20 a month toward 360. After three months the plan says 240 + 60 = 300."
+        },
+        "es-MX": {
+          "prompt": "Paso 1: el plan en números, seis meses hasta 360.",
+          "line": "Sam tiene 240 y ahorra 20 al mes para llegar a 360. A los tres meses el plan dice 240 + 60 = 300."
+        },
+        "pt-BR": {
+          "prompt": "Passo 1: o plano em números, seis meses até 360.",
+          "line": "Sam tem 240 e poupa 20 por mês para chegar a 360. Em três meses o plano diz 240 + 60 = 300."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "visual": {
+        "type": "waterfall"
+      },
+      "knowledge_component_id": "life.goal-planning",
+      "teaching_role": "example",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "month-1"
+            },
+            {
+              "id": "month-2"
+            },
+            {
+              "id": "month-3"
+            },
+            {
+              "id": "repair"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-ledger",
+              "values": [
+                240,
+                20,
+                20,
+                20,
+                -60
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Step 2: the ledger of what happened ends at 240, not 300. Sam is 300 − 240 = 60 behind.",
+          "title": "What happened to the plan",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Month 1"
+              },
+              {
+                "label": "Month 2"
+              },
+              {
+                "label": "Month 3"
+              },
+              {
+                "label": "Repair"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Paso 2: el registro de lo que pasó termina en 240, no en 300. Sam va atrasado: 300 − 240 = 60.",
+          "title": "Lo que pasó con el plan",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Mes 1"
+              },
+              {
+                "label": "Mes 2"
+              },
+              {
+                "label": "Mes 3"
+              },
+              {
+                "label": "Reparación"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Passo 2: o registro do que aconteceu termina em 240, não em 300. Sam está atrasado: 300 − 240 = 60.",
+          "title": "O que aconteceu com o plano",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Mês 1"
+              },
+              {
+                "label": "Mês 2"
+              },
+              {
+                "label": "Mês 3"
+              },
+              {
+                "label": "Conserto"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "planned"
+          },
+          {
+            "id": "actual"
+          },
+          {
+            "id": "gap"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "actual",
+          "gap"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "actual": "120",
+          "gap": "30"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "teaching_role": "guided",
+      "copy": {
+        "en-US": {
+          "prompt": "Ana saves 50 a month from zero, and a 30-coin cost hits in month three. Finish the steps.",
+          "help": [
+            "Plan first, then what happened, then the plan minus what happened."
+          ],
+          "feedback": {
+            "met": "You set what she has against the plan and found the gap.",
+            "not_yet": "Not yet. Look back at Sam's ledger and plan, then try again."
+          },
+          "steps": [
+            {
+              "expression": "Plan after three months",
+              "result": "150",
+              "spokenText": "Three months at 50 is 150."
+            },
+            {
+              "expression": "What she has after the cost",
+              "result": "120",
+              "spokenText": "150 − 30 = 120."
+            },
+            {
+              "expression": "Gap to the plan",
+              "result": "30",
+              "spokenText": "150 − 120 = 30 behind."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ana ahorra 50 al mes desde cero, y en el mes tres paga un gasto de 30. Completa los pasos.",
+          "help": [
+            "Primero el plan, luego lo que pasó, y al final el plan menos lo que pasó."
+          ],
+          "feedback": {
+            "met": "Pusiste lo que tiene frente al plan y hallaste la diferencia.",
+            "not_yet": "Aún no. Repasa el registro y el plan de Sam y prueba otra vez."
+          },
+          "steps": [
+            {
+              "expression": "Plan a los tres meses",
+              "result": "150",
+              "spokenText": "Tres meses de 50 son 150."
+            },
+            {
+              "expression": "Lo que tiene tras el gasto",
+              "result": "120",
+              "spokenText": "150 − 30 = 120."
+            },
+            {
+              "expression": "Diferencia con el plan",
+              "result": "30",
+              "spokenText": "150 − 120 = 30 de atraso."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ana poupa 50 por mês desde zero, e no mês três paga um gasto de 30. Complete as etapas.",
+          "help": [
+            "Primeiro o plano, depois o que aconteceu, e por fim o plano menos o que aconteceu."
+          ],
+          "feedback": {
+            "met": "Você pôs o que ela tem diante do plano e achou a diferença.",
+            "not_yet": "Ainda não. Reveja o registro e o plano do Sam e tente de novo."
+          },
+          "steps": [
+            {
+              "expression": "Plano após três meses",
+              "result": "150",
+              "spokenText": "Três meses de 50 são 150."
+            },
+            {
+              "expression": "O que ela tem após o gasto",
+              "result": "120",
+              "spokenText": "150 − 30 = 120."
+            },
+            {
+              "expression": "Diferença para o plano",
+              "result": "30",
+              "spokenText": "150 − 120 = 30 de atraso."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 3: change one part, time, and hold the rest.",
+          "line": "The gap is 60. At 20 a month, 60 ÷ 20 = 3 more months: nine in all, goal and amount held."
+        },
+        "es-MX": {
+          "prompt": "Paso 3: cambia una parte, el tiempo, y mantén lo demás.",
+          "line": "La diferencia es 60. A 20 al mes, 60 ÷ 20 = 3 meses más: nueve en total, con meta y monto fijos."
+        },
+        "pt-BR": {
+          "prompt": "Passo 3: mude uma parte, o tempo, e mantenha o resto.",
+          "line": "A diferença é 60. A 20 por mês, 60 ÷ 20 = 3 meses a mais: nove no total, com meta e valor fixos."
+        }
+      }
+    },
+    {
+      "id": "example-04",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 4: change the amount and hold time and goal.",
+          "line": "Three months remain. Spread the 60 over them: 60 ÷ 3 = 20 more, so 40 a month and still month six."
+        },
+        "es-MX": {
+          "prompt": "Paso 4: cambia el monto y mantén el tiempo y la meta.",
+          "line": "Quedan tres meses. Reparte los 60 entre ellos: 60 ÷ 3 = 20 más, así que 40 al mes y se llega al mes seis."
+        },
+        "pt-BR": {
+          "prompt": "Passo 4: mude o valor e mantenha o tempo e a meta.",
+          "line": "Faltam três meses. Divida os 60 entre eles: 60 ÷ 3 = 20 a mais, então 40 por mês e ainda no mês seis."
+        }
+      }
+    },
+    {
+      "id": "example-05",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "teaching_role": "example",
+      "copy": {
+        "en-US": {
+          "prompt": "Step 5: change the goal and hold time and amount.",
+          "line": "Saving 20 a month, Sam has 240 + 3 × 20 = 300 in month six. The goal becomes 300, still on time."
+        },
+        "es-MX": {
+          "prompt": "Paso 5: cambia la meta y mantén el tiempo y el monto.",
+          "line": "Ahorrando 20 al mes, Sam tiene 240 + 3 × 20 = 300 en el mes seis. La meta pasa a 300, y llega a tiempo."
+        },
+        "pt-BR": {
+          "prompt": "Passo 5: mude a meta e mantenha o tempo e o valor.",
+          "line": "Poupando 20 por mês, Sam tem 240 + 3 × 20 = 300 no mês seis. A meta passa a 300, e chega no prazo."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "planned"
+          },
+          {
+            "id": "gap"
+          },
+          {
+            "id": "extra"
+          },
+          {
+            "id": "total"
+          }
+        ],
+        "fade_count": 2,
+        "response_step_ids": [
+          "gap",
+          "extra",
+          "total"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "gap": "30",
+          "extra": "1",
+          "total": "7"
+        }
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "money.savings-plan-math",
+      "teaching_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Leo saves 30 a month toward 180 in six months. After month two he has 30; adjust only the time.",
+          "help": [
+            "Plan minus what he has is the gap; the gap divided by 30 gives the extra months."
+          ],
+          "feedback": {
+            "met": "You found the gap, then the extra months, holding amount and goal.",
+            "not_yet": "Not yet. Revisit Sam's time step: gap divided by monthly amount."
+          },
+          "steps": [
+            {
+              "expression": "Plan after two months",
+              "result": "60",
+              "spokenText": "Two months at 30 is 60."
+            },
+            {
+              "expression": "Gap to the plan",
+              "result": "30",
+              "spokenText": "60 − 30 = 30 behind."
+            },
+            {
+              "expression": "Extra months at 30 a month",
+              "result": "1",
+              "spokenText": "30 ÷ 30 = 1 extra month."
+            },
+            {
+              "expression": "Months in all",
+              "result": "7",
+              "spokenText": "Six planned plus 1 extra is 7."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo ahorra 30 al mes para llegar a 180 en seis meses. Tras el mes dos tiene 30; ajusta solo el tiempo.",
+          "help": [
+            "Plan menos lo que tiene es la diferencia; divídela entre 30 para los meses extra."
+          ],
+          "feedback": {
+            "met": "Hallaste la diferencia y luego los meses extra, sin mover monto ni meta.",
+            "not_yet": "Aún no. Repasa el paso del tiempo de Sam: diferencia entre el monto mensual."
+          },
+          "steps": [
+            {
+              "expression": "Plan a los dos meses",
+              "result": "60",
+              "spokenText": "Dos meses de 30 son 60."
+            },
+            {
+              "expression": "Diferencia con el plan",
+              "result": "30",
+              "spokenText": "60 − 30 = 30 de atraso."
+            },
+            {
+              "expression": "Meses extra a 30 al mes",
+              "result": "1",
+              "spokenText": "30 ÷ 30 = 1 mes extra."
+            },
+            {
+              "expression": "Meses en total",
+              "result": "7",
+              "spokenText": "Seis planeados más 1 extra son 7."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Leo poupa 30 por mês para chegar a 180 em seis meses. Depois do mês dois ele tem 30; ajuste só o tempo.",
+          "help": [
+            "Plano menos o que ele tem é a diferença; divida-a por 30 para os meses extras."
+          ],
+          "feedback": {
+            "met": "Você achou a diferença e depois os meses extras, sem mexer em valor e meta.",
+            "not_yet": "Ainda não. Reveja o passo do tempo do Sam: diferença dividida pelo valor mensal."
+          },
+          "steps": [
+            {
+              "expression": "Plano após dois meses",
+              "result": "60",
+              "spokenText": "Dois meses de 30 são 60."
+            },
+            {
+              "expression": "Diferença para o plano",
+              "result": "30",
+              "spokenText": "60 − 30 = 30 de atraso."
+            },
+            {
+              "expression": "Meses extras a 30 por mês",
+              "result": "1",
+              "spokenText": "30 ÷ 30 = 1 mês extra."
+            },
+            {
+              "expression": "Meses no total",
+              "result": "7",
+              "spokenText": "Seis planejados mais 1 extra são 7."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "visual": {
+        "type": "waterfall"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "teaching_role": "practice",
+      "payload": {
+        "data": {
+          "unit": "coins",
+          "categories": [
+            {
+              "id": "start"
+            },
+            {
+              "id": "month-1"
+            },
+            {
+              "id": "month-2"
+            },
+            {
+              "id": "month-3"
+            },
+            {
+              "id": "repair"
+            }
+          ],
+          "series": [
+            {
+              "id": "series-ledger",
+              "values": [
+                100,
+                25,
+                25,
+                10,
+                -15
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "opt-30"
+            },
+            {
+              "id": "opt-15"
+            },
+            {
+              "id": "opt-145"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "opt-30"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia's plan says 175 after month three. Read her ledger.",
+          "feedback": {
+            "met": "You read where the ledger ends and set it against the plan.",
+            "not_yet": "Not yet. Find where the last bar ends and compare."
+          },
+          "title": "Mia's ledger",
+          "data": {
+            "categories": [
+              {
+                "label": "Start"
+              },
+              {
+                "label": "Month 1"
+              },
+              {
+                "label": "Month 2"
+              },
+              {
+                "label": "Month 3"
+              },
+              {
+                "label": "Repair"
+              }
+            ],
+            "series": [
+              {
+                "label": "Coins"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How far behind her plan is Mia?",
+            "options": [
+              {
+                "label": "30 coins"
+              },
+              {
+                "label": "15 coins"
+              },
+              {
+                "label": "145 coins"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "El plan de Mia dice 175 después del mes tres. Lee su registro.",
+          "feedback": {
+            "met": "Leíste dónde termina el registro y lo comparaste con el plan.",
+            "not_yet": "Aún no. Busca dónde termina la última barra y compara."
+          },
+          "title": "El registro de Mia",
+          "data": {
+            "categories": [
+              {
+                "label": "Inicio"
+              },
+              {
+                "label": "Mes 1"
+              },
+              {
+                "label": "Mes 2"
+              },
+              {
+                "label": "Mes 3"
+              },
+              {
+                "label": "Reparación"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuánto va atrasada Mia respecto a su plan?",
+            "options": [
+              {
+                "label": "30 monedas"
+              },
+              {
+                "label": "15 monedas"
+              },
+              {
+                "label": "145 monedas"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "O plano da Mia diz 175 depois do mês três. Leia o registro dela.",
+          "feedback": {
+            "met": "Você leu onde o registro termina e o comparou com o plano.",
+            "not_yet": "Ainda não. Ache onde a última barra termina e compare."
+          },
+          "title": "O registro da Mia",
+          "data": {
+            "categories": [
+              {
+                "label": "Início"
+              },
+              {
+                "label": "Mês 1"
+              },
+              {
+                "label": "Mês 2"
+              },
+              {
+                "label": "Mês 3"
+              },
+              {
+                "label": "Conserto"
+              }
+            ],
+            "series": [
+              {
+                "label": "Moedas"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quanto a Mia está atrasada em relação ao plano?",
+            "options": [
+              {
+                "label": "30 moedas"
+              },
+              {
+                "label": "15 moedas"
+              },
+              {
+                "label": "145 moedas"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "planned"
+          },
+          {
+            "id": "gap"
+          },
+          {
+            "id": "extra"
+          },
+          {
+            "id": "monthly"
+          }
+        ],
+        "fade_count": 3,
+        "response_step_ids": [
+          "gap",
+          "extra",
+          "monthly"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "gap": "30",
+          "extra": "10",
+          "monthly": "50"
+        }
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "teaching_role": "transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "Lena's five-month trip plan: 40 a month toward 200. After month two she has 50; keep the date and goal.",
+          "help": [
+            "Find the gap, split it over the months left, then add it to 40."
+          ],
+          "feedback": {
+            "met": "You found the gap and spread it over the months left.",
+            "not_yet": "Not yet. Revisit Sam's amount step and spread the gap."
+          },
+          "steps": [
+            {
+              "expression": "Plan after two months",
+              "result": "80",
+              "spokenText": "Two months at 40 is 80."
+            },
+            {
+              "expression": "Gap to the plan",
+              "result": "30",
+              "spokenText": "80 − 50 = 30 behind."
+            },
+            {
+              "expression": "Extra a month to catch up",
+              "result": "10",
+              "spokenText": "30 ÷ 3 = 10 more a month."
+            },
+            {
+              "expression": "New monthly amount",
+              "result": "50",
+              "spokenText": "40 + 10 = 50 a month."
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Lena ahorra 40 al mes para un viaje de 200 monedas en cinco meses. Tras el mes dos tiene 50; mantén fecha y meta.",
+          "help": [
+            "Encuentra la diferencia, repártela entre los meses que quedan y súmala a 40."
+          ],
+          "feedback": {
+            "met": "Hallaste la diferencia y la repartiste entre los meses que quedan.",
+            "not_yet": "Aún no. Repasa el paso del monto de Sam y reparte la diferencia."
+          },
+          "steps": [
+            {
+              "expression": "Plan a los dos meses",
+              "result": "80",
+              "spokenText": "Dos meses de 40 son 80."
+            },
+            {
+              "expression": "Diferencia con el plan",
+              "result": "30",
+              "spokenText": "80 − 50 = 30 de atraso."
+            },
+            {
+              "expression": "Extra al mes para ponerse al día",
+              "result": "10",
+              "spokenText": "30 ÷ 3 = 10 más al mes."
+            },
+            {
+              "expression": "Monto mensual nuevo",
+              "result": "50",
+              "spokenText": "40 + 10 = 50 al mes."
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Lena poupa 40 por mês para uma viagem de 200 moedas em cinco meses. Após o mês dois ela tem 50; mantenha data e meta.",
+          "help": [
+            "Ache a diferença, divida-a pelos meses que faltam e some-a a 40."
+          ],
+          "feedback": {
+            "met": "Você achou a diferença e a dividiu pelos meses que faltam.",
+            "not_yet": "Ainda não. Reveja o passo do valor do Sam e divida a diferença."
+          },
+          "steps": [
+            {
+              "expression": "Plano após dois meses",
+              "result": "80",
+              "spokenText": "Dois meses de 40 são 80."
+            },
+            {
+              "expression": "Diferença para o plano",
+              "result": "30",
+              "spokenText": "80 − 50 = 30 de atraso."
+            },
+            {
+              "expression": "Extra por mês para recuperar o atraso",
+              "result": "10",
+              "spokenText": "30 ÷ 3 = 10 a mais por mês."
+            },
+            {
+              "expression": "Novo valor mensal",
+              "result": "50",
+              "spokenText": "40 + 10 = 50 por mês."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
