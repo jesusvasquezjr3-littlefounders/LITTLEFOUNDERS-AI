@@ -54,3 +54,23 @@ The chain stops at the first failing stage:
 - **The scheduled run.** `.github/workflows/content-retro-checks.yml` runs `npm --prefix coursegen run content:retro-checks` every Monday at 05:00 UTC (and on demand), so every bypass is verified within 7 days, leaving at least three more runs inside the 30-day window. It reads `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the Core service's Railway variables with the `RAILWAY_TOKEN` secret, like the other Vault-reading workflows. A failed verification, an open check with no course or an unreadable Vault fails the run and comments on the `ops-watchdog` issue with the command's output. Zero spend: `verify:course` makes no model call. `agent/tools/content-retro-checks-workflow.test.mjs` pins the schedule, the command and the notification.
 
 After a publication the course watermark moves, so run `verify:course` again before the next course release.
+
+## 3. The whole catalog (OD-24)
+
+The v2 catalog is four courses under `coursegen/curriculum-v2/<course>/`: `structure.yaml` (what each lesson teaches), `plans/` (one plan per lesson, authoritative where it disagrees with the structure) and `hierarchy/` (generated). It was authored agentically (zero spend); the method, checks and open limits are in `docs/rebuild/sprints/S05-V2-CATALOG.md`.
+
+```bash
+cd coursegen
+# Writing skills for one lesson, and the segment types its age may use (Core's own age scopes, via backend/scripts/v2-open-types.ts).
+npm run v2:brief -- --age-band 13-17 --min-age 13 --max-age 17 --mentor rho
+npm run v2:brief -- --types --age-band 13-17 --min-age 13 --max-age 17
+# Whole-catalog coverage: every knowledge component taught, prerequisites ordered. Run it over all four courses (G3 needs all four).
+npm run v2:catalog
+# Per course: hierarchy rows and a reviewable seed that ends in ROLLBACK. Always pass --course (the default is the pilot structure).
+npm run v2:hierarchy -- --course entrepreneurship
+npm run v2:hierarchy -- --course entrepreneurship --check
+# Per course: dry run, then the real publish (owner-run, needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY).
+npm run v2:publish -- --plans curriculum-v2/entrepreneurship/plans --course entrepreneurship --run-id <run-id> --out <dir> --core-has-horizonte --lesson-ids curriculum-v2/entrepreneurship/hierarchy/ids.json --require-lesson-design --dry-run
+```
+
+Production order for a course: confirm Core's deploy carries the Horizonte types, apply the course's hierarchy seed (after reviewing it and switching `ROLLBACK` to `COMMIT`; adventure positions append after a live course's existing adventures and the course row is only created when absent), `v2:publish` per market, activate the knowledge components the plans use and run `seed:kc` (the B.6 order in `docs/rebuild/sprints/S05-B6-PATHWAY-POLICY.md` §7 applies to the pathway engine), then staff release each lesson. Learners see a lesson only after that staff release; emergency activation is not part of this path.
