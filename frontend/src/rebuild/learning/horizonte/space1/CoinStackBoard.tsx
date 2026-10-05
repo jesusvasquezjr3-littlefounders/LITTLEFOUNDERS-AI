@@ -63,11 +63,11 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
   const mm = tenths / 10;
   const thickMm = THICKNESS_TENTHS[piece] / 10;
   const pieces = piecesName(t, piece);
-  const worth = money(stackCents(payload, count), locale, true);
+  const worth = money(stackCents(payload, count), locale);
   const status = fill(t.coinStatus, { n: new Intl.NumberFormat(locale).format(count), pieces, amount: worth, height: lengthText(mm, locale) });
   const spoken = `${t.coinStackLabel}. ${fill(t.coinStatus, { n: new Intl.NumberFormat(locale).format(count), pieces, amount: spokenMoney(stackCents(payload, count), locale), height: spokenLength(mm, locale) })}`;
   const goalLine = goal.kind === 'amount'
-    ? fill(t.coinGoalAmount, { amount: money(goal.total, locale, true) })
+    ? fill(t.coinGoalAmount, { amount: money(goal.total, locale) })
     : fill(t.coinGoalHeight, { height: lengthText(goal.mm, locale) });
 
   const maxMm = Math.max(stackTenths(piece, payload.max) / 10, goal.kind === 'height' ? goal.mm : 0);
@@ -86,7 +86,7 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
       named={{ met: t.metCoin, hint: t.hintCoin }} onCheck={() => grading.check({ value: String(count) })} />}>
     <section className="lf-learning-board lf-coin" aria-label={t.coinHeading}>
       <p className="lf-coin-goal-line" data-copy-role="data">{goalLine}</p>
-      <p data-copy-role="data">{fill(t.coinEach, { piece: pieceName(t, piece), amount: money(payload.value, locale, true), thick: lengthText(thickMm, locale) })}</p>
+      <p data-copy-role="data">{fill(t.coinEach, { piece: pieceName(t, piece), amount: money(payload.value, locale), thick: lengthText(thickMm, locale) })}</p>
       <LabelledDrawing className="lf-coin-drawing">
         <svg className="lf-coin-scene" viewBox={`0 0 ${SCENE.width} ${SCENE.height}`} role="img" aria-label={spoken} focusable="false" data-copy-role="data">
           <line className="lf-coin-base" x1="8" y1={SCENE.base} x2={SCENE.width - 8} y2={SCENE.base} />
@@ -116,7 +116,7 @@ function CoinStack({ document, segment, payload, onBack, sequence, onGrade }: Om
           </tr></thead>
           <tbody>{positions.map((at) => <tr key={at} aria-current={at === count ? 'true' : undefined}>
             <th scope="row" data-copy-role="data">{new Intl.NumberFormat(locale).format(at)}</th>
-            <td data-copy-role="data">{money(stackCents(payload, at), locale, true)}</td><td data-copy-role="data">{lengthText(stackTenths(piece, at) / 10, locale)}</td>
+            <td data-copy-role="data">{money(stackCents(payload, at), locale)}</td><td data-copy-role="data">{lengthText(stackTenths(piece, at) / 10, locale)}</td>
           </tr>)}</tbody>
         </table></TableScroll>
         <TableScroll label={t.coinRefCaption}><table className="lf-hz-table" data-hz-table="">

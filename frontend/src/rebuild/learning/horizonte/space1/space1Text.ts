@@ -1,6 +1,6 @@
 import type { Locale } from '../../../design/copyBudget';
 import { copyText } from '../copyText';
-import { fill, money, spokenMoney } from '../fin1/format';
+import { fill, localMoney, spokenLocalMoney } from '../fin1/format';
 import { PITCH_NAMES, type SolidView } from '../solids/projection.generated';
 import { SPACE1_COPY } from './copy';
 import type { CoinPiece, ReferenceId } from './coins.generated';
@@ -12,7 +12,8 @@ export type Space1Text = { readonly [K in keyof typeof SPACE1_COPY]: string };
 
 export const space1Text = (locale: Locale): Space1Text => copyText(SPACE1_COPY, locale);
 
-export { fill, money, spokenMoney };
+/** The stall and the stack write money in the learner's market currency; the fin1 boards keep the generic sign. */
+export { fill, localMoney as money, spokenLocalMoney as spokenMoney };
 
 const number = (locale: Locale, maximum: number) => new Intl.NumberFormat(locale, { maximumFractionDigits: maximum });
 
