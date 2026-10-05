@@ -1,0 +1,573 @@
+{
+  "$comment": "Curated activity packs (C.6, tutor-pack.v1). Hand-authored at zero spend for an active knowledge component with no published teaching topic. Loaded as review by the tutor-pack seed; staff release remains required.",
+  "contract": "tutor-pack.v1",
+  "kc_key": "biz.profit",
+  "demand_pattern": "kc_without_catalog_content",
+  "source": "hand_authored",
+  "packs": [
+    {
+      "tier": 2,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-profit-t2-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "A stand receives 30 coins and spends 18. What is its profit?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Profit is revenue minus costs: 30 − 18 = 12.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "30 coins",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "48 coins",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-profit-t2-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "False. If costs equal or exceed revenue, there is no profit.",
+          "payload": {
+            "statement_md": "A sale always creates profit."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-profit-t2-en-3",
+          "type": "number_input",
+          "prompt_md": "Revenue is 45 coins and costs are 29. What is profit?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Subtract all costs from revenue: 45 − 29 = 16.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 16,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-profit-t2-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Which formula finds profit?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Profit is what remains after costs are paid.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Revenue minus costs"
+              },
+              {
+                "id": "b",
+                "text_md": "Revenue plus costs",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "Costs minus revenue",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-profit-t2-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Un puesto recibe 30 monedas y gasta 18. ¿Cuál es su ganancia?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "La ganancia es ingreso menos costos: 30 − 18 = 12.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "30 monedas",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "48 monedas",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-profit-t2-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. Si los costos igualan o superan el ingreso, no hay ganancia.",
+          "payload": {
+            "statement_md": "Una venta siempre produce ganancia."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-profit-t2-es-3",
+          "type": "number_input",
+          "prompt_md": "El ingreso es 45 monedas y los costos son 29. ¿Cuál es la ganancia?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Resta todos los costos al ingreso: 45 − 29 = 16.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 16,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-profit-t2-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Qué fórmula calcula la ganancia?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "La ganancia es lo que queda después de pagar los costos.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Ingreso menos costos"
+              },
+              {
+                "id": "b",
+                "text_md": "Ingreso más costos",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "Costos menos ingreso",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-profit-t2-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Uma barraca recebe 30 moedas e gasta 18. Qual é o lucro?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Lucro é receita menos custos: 30 − 18 = 12.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "30 moedas",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "48 moedas",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-profit-t2-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. Se os custos igualam ou superam a receita, não há lucro.",
+          "payload": {
+            "statement_md": "Uma venda sempre gera lucro."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-profit-t2-pt-3",
+          "type": "number_input",
+          "prompt_md": "A receita é 45 moedas e os custos são 29. Qual é o lucro?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Subtraia todos os custos da receita: 45 − 29 = 16.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 16,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-profit-t2-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Qual fórmula calcula o lucro?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Lucro é o que sobra depois de pagar os custos.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Receita menos custos"
+              },
+              {
+                "id": "b",
+                "text_md": "Receita mais custos",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "Custos menos receita",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-profit-t3-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "A stand receives 30 coins and spends 18. What is its profit?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Profit is revenue minus costs: 30 − 18 = 12.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "30 coins",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "48 coins",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-profit-t3-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "False. If costs equal or exceed revenue, there is no profit.",
+          "payload": {
+            "statement_md": "A sale always creates profit."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-profit-t3-en-3",
+          "type": "number_input",
+          "prompt_md": "Revenue is 45 coins and costs are 29. What is profit?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Subtract all costs from revenue: 45 − 29 = 16.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 16,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-profit-t3-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Which formula finds profit?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Profit is what remains after costs are paid.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Revenue minus costs"
+              },
+              {
+                "id": "b",
+                "text_md": "Revenue plus costs",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "Costs minus revenue",
+                "rationale_md": "Profit is revenue minus costs: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-profit-t3-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Un puesto recibe 30 monedas y gasta 18. ¿Cuál es su ganancia?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "La ganancia es ingreso menos costos: 30 − 18 = 12.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "30 monedas",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "48 monedas",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-profit-t3-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. Si los costos igualan o superan el ingreso, no hay ganancia.",
+          "payload": {
+            "statement_md": "Una venta siempre produce ganancia."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-profit-t3-es-3",
+          "type": "number_input",
+          "prompt_md": "El ingreso es 45 monedas y los costos son 29. ¿Cuál es la ganancia?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Resta todos los costos al ingreso: 45 − 29 = 16.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 16,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-profit-t3-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "¿Qué fórmula calcula la ganancia?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "La ganancia es lo que queda después de pagar los costos.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Ingreso menos costos"
+              },
+              {
+                "id": "b",
+                "text_md": "Ingreso más costos",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "Costos menos ingreso",
+                "rationale_md": "La ganancia es ingreso menos costos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-profit-t3-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Uma barraca recebe 30 moedas e gasta 18. Qual é o lucro?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Lucro é receita menos custos: 30 − 18 = 12.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "12 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "30 moedas",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "48 moedas",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-profit-t3-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. Se os custos igualam ou superam a receita, não há lucro.",
+          "payload": {
+            "statement_md": "Uma venda sempre gera lucro."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-profit-t3-pt-3",
+          "type": "number_input",
+          "prompt_md": "A receita é 45 moedas e os custos são 29. Qual é o lucro?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Subtraia todos os custos da receita: 45 − 29 = 16.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 16,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-profit-t3-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Qual fórmula calcula o lucro?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Lucro é o que sobra depois de pagar os custos.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "Receita menos custos"
+              },
+              {
+                "id": "b",
+                "text_md": "Receita mais custos",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              },
+              {
+                "id": "c",
+                "text_md": "Custos menos receita",
+                "rationale_md": "Lucro é receita menos custos: 30 − 18 = 12."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -85,13 +85,23 @@ const pack = (segments: unknown[], over: Partial<AuthoredPack> = {}): AuthoredPa
 const GOOD = pack([MCQ, NUM, TF, SORT]);
 
 describe('C.6 the seed packs (hand-authored, zero spend)', () => {
-  it('every seed pack meets tutor-pack.v1: 21 packs, 84 segments, 4 knowledge components with no published topic', () => {
+  it('every seed pack meets tutor-pack.v1: 48 packs, 192 segments, 9 knowledge components with no published topic', () => {
     const { plan, failures } = planPacks();
     expect(failures).toEqual([]);
-    expect(plan).toHaveLength(21);
-    expect(plan.reduce((n, p) => n + p.segments, 0)).toBe(84);
+    expect(plan).toHaveLength(48);
+    expect(plan.reduce((n, p) => n + p.segments, 0)).toBe(192);
     expect(new Set(plan.map((p) => p.kcKey))).toEqual(
-      new Set(['biz.goods-vs-services', 'money.fraction-of-amount', 'money.percent-intro', 'biz.risk-and-reward']),
+      new Set([
+        'biz.budget-decisions',
+        'biz.cost-vs-price',
+        'biz.goods-vs-services',
+        'biz.pricing-strategy',
+        'biz.profit',
+        'biz.revenue',
+        'biz.risk-and-reward',
+        'money.fraction-of-amount',
+        'money.percent-intro',
+      ]),
     );
     // Every target has all three locales for every tier it covers.
     const targets = new Map<string, Set<string>>();

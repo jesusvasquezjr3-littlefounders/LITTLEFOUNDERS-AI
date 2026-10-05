@@ -196,6 +196,11 @@ export function validateKcTopicMap(map: KcTopicMap, graph: readonly GraphKcLite[
   for (const kc of graph) {
     if (!kc.skill_key) continue;
     const [courseSlug, topicSlug] = kc.skill_key.split('/');
+    // Financial Education V2 replaced the legacy three-level catalog whose
+    // paths this B.6 map describes. Its canonical lesson ids are verified
+    // against hierarchy.rows.json by seedKcGraph.test.ts; do not reject those
+    // current bridges merely because the retired V1 map cannot resolve them.
+    if (courseSlug === 'financial-education' && /^fe-(?:69|1012|1317|adult)-/.test(topicSlug ?? '')) continue;
     const course = map.courses.find((c) => c.course === courseSlug);
     const matches = course?.topics.filter((t) => t.path.split('/')[2] === topicSlug) ?? [];
     if (matches.length !== 1) {

@@ -1,0 +1,573 @@
+{
+  "$comment": "Curated activity packs (C.6, tutor-pack.v1). Hand-authored at zero spend for an active knowledge component with no published teaching topic. Loaded as review by the tutor-pack seed; staff release remains required.",
+  "contract": "tutor-pack.v1",
+  "kc_key": "biz.cost-vs-price",
+  "demand_pattern": "kc_without_catalog_content",
+  "source": "hand_authored",
+  "packs": [
+    {
+      "tier": 2,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-cost-price-t2-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "It costs 6 coins to make a bracelet. It sells for 10. Which number is the cost?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Cost is what the maker spends. Price is what the buyer pays.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "6 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "10 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              },
+              {
+                "id": "c",
+                "text_md": "16 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "False. A price can be above, equal to, or below the cost.",
+          "payload": {
+            "statement_md": "The selling price is always the same as the cost."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-en-3",
+          "type": "number_input",
+          "prompt_md": "A snack costs 7 coins to make and its price is 12. How many coins separate price from cost?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Subtract cost from price: 12 − 7 = 5.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "A card costs 4 coins to make. Which price covers the cost?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "A price of 5 covers the 4-coin cost and leaves 1 coin.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "5 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "3 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              },
+              {
+                "id": "c",
+                "text_md": "2 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-cost-price-t2-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Hacer una pulsera cuesta 6 monedas. Se vende en 10. ¿Cuál número es el costo?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "6 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "10 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              },
+              {
+                "id": "c",
+                "text_md": "16 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. El precio puede ser mayor, igual o menor que el costo.",
+          "payload": {
+            "statement_md": "El precio de venta siempre es igual al costo."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-es-3",
+          "type": "number_input",
+          "prompt_md": "Hacer un bocadillo cuesta 7 monedas y su precio es 12. ¿Cuántas monedas separan el precio del costo?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Resta el costo al precio: 12 − 7 = 5.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Hacer una tarjeta cuesta 4 monedas. ¿Qué precio cubre el costo?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Un precio de 5 cubre el costo de 4 y deja 1 moneda.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "5 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "3 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              },
+              {
+                "id": "c",
+                "text_md": "2 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-cost-price-t2-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Fazer uma pulseira custa 6 moedas. Ela é vendida por 10. Qual número é o custo?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "6 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "10 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              },
+              {
+                "id": "c",
+                "text_md": "16 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 2,
+          "xp": 10,
+          "explanation_md": "Falso. O preço pode ser maior, igual ou menor que o custo.",
+          "payload": {
+            "statement_md": "O preço de venda é sempre igual ao custo."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-pt-3",
+          "type": "number_input",
+          "prompt_md": "Fazer um lanche custa 7 moedas e seu preço é 12. Quantas moedas separam o preço do custo?",
+          "difficulty": 2,
+          "xp": 15,
+          "explanation_md": "Subtraia o custo do preço: 12 − 7 = 5.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-cost-price-t2-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Fazer um cartão custa 4 moedas. Qual preço cobre o custo?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "O preço de 5 cobre o custo de 4 e deixa 1 moeda.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "5 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "3 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              },
+              {
+                "id": "c",
+                "text_md": "2 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "en-US",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-cost-price-t3-en-1",
+          "type": "quiz_mcq",
+          "prompt_md": "It costs 6 coins to make a bracelet. It sells for 10. Which number is the cost?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Cost is what the maker spends. Price is what the buyer pays.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "6 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "10 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              },
+              {
+                "id": "c",
+                "text_md": "16 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-en-2",
+          "type": "true_false",
+          "prompt_md": "True or false?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "False. A price can be above, equal to, or below the cost.",
+          "payload": {
+            "statement_md": "The selling price is always the same as the cost."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-en-3",
+          "type": "number_input",
+          "prompt_md": "A snack costs 7 coins to make and its price is 12. How many coins separate price from cost?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Subtract cost from price: 12 − 7 = 5.",
+          "payload": {
+            "unit": "coins"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-en-4",
+          "type": "quiz_mcq",
+          "prompt_md": "A card costs 4 coins to make. Which price covers the cost?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "A price of 5 covers the 4-coin cost and leaves 1 coin.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "5 coins"
+              },
+              {
+                "id": "b",
+                "text_md": "3 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              },
+              {
+                "id": "c",
+                "text_md": "2 coins",
+                "rationale_md": "Cost is what the maker spends. Price is what the buyer pays."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "es-MX",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-cost-price-t3-es-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Hacer una pulsera cuesta 6 monedas. Se vende en 10. ¿Cuál número es el costo?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "6 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "10 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              },
+              {
+                "id": "c",
+                "text_md": "16 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-es-2",
+          "type": "true_false",
+          "prompt_md": "¿Verdadero o falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. El precio puede ser mayor, igual o menor que el costo.",
+          "payload": {
+            "statement_md": "El precio de venta siempre es igual al costo."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-es-3",
+          "type": "number_input",
+          "prompt_md": "Hacer un bocadillo cuesta 7 monedas y su precio es 12. ¿Cuántas monedas separan el precio del costo?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Resta el costo al precio: 12 − 7 = 5.",
+          "payload": {
+            "unit": "monedas"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-es-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Hacer una tarjeta cuesta 4 monedas. ¿Qué precio cubre el costo?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "Un precio de 5 cubre el costo de 4 y deja 1 moneda.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "5 monedas"
+              },
+              {
+                "id": "b",
+                "text_md": "3 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              },
+              {
+                "id": "c",
+                "text_md": "2 monedas",
+                "rationale_md": "El costo es lo que gasta quien la hace. El precio es lo que paga el comprador."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "locale": "pt-BR",
+      "risk_category": "standard",
+      "segments": [
+        {
+          "id": "pack-cost-price-t3-pt-1",
+          "type": "quiz_mcq",
+          "prompt_md": "Fazer uma pulseira custa 6 moedas. Ela é vendida por 10. Qual número é o custo?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "6 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "10 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              },
+              {
+                "id": "c",
+                "text_md": "16 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-pt-2",
+          "type": "true_false",
+          "prompt_md": "Verdadeiro ou falso?",
+          "difficulty": 3,
+          "xp": 10,
+          "explanation_md": "Falso. O preço pode ser maior, igual ou menor que o custo.",
+          "payload": {
+            "statement_md": "O preço de venda é sempre igual ao custo."
+          },
+          "answer": {
+            "is_true": false
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-pt-3",
+          "type": "number_input",
+          "prompt_md": "Fazer um lanche custa 7 moedas e seu preço é 12. Quantas moedas separam o preço do custo?",
+          "difficulty": 3,
+          "xp": 15,
+          "explanation_md": "Subtraia o custo do preço: 12 − 7 = 5.",
+          "payload": {
+            "unit": "moedas"
+          },
+          "answer": {
+            "value": 5,
+            "tolerance": 0
+          }
+        },
+        {
+          "id": "pack-cost-price-t3-pt-4",
+          "type": "quiz_mcq",
+          "prompt_md": "Fazer um cartão custa 4 moedas. Qual preço cobre o custo?",
+          "difficulty": 4,
+          "xp": 15,
+          "explanation_md": "O preço de 5 cobre o custo de 4 e deixa 1 moeda.",
+          "payload": {
+            "options": [
+              {
+                "id": "a",
+                "text_md": "5 moedas"
+              },
+              {
+                "id": "b",
+                "text_md": "3 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              },
+              {
+                "id": "c",
+                "text_md": "2 moedas",
+                "rationale_md": "Custo é o que o produtor gasta. Preço é o que o comprador paga."
+              }
+            ]
+          },
+          "answer": {
+            "correct_option_id": "a"
+          }
+        }
+      ]
+    }
+  ]
+}
