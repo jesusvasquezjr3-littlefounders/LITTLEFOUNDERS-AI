@@ -38,6 +38,8 @@ import {
 import { formatReport, runContentGates } from './runner.js';
 import { loadCourseCatalog } from '../catalog/loader.js';
 import { buildCoursePolicy, type CoursePolicy } from './policyGates.js';
+import { emitV2Lesson } from '../v2/emit.js';
+import { loadV2Plans } from '../v2/plan.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, '../..');
@@ -98,6 +100,59 @@ function loadDocuments(target: string): { documents: SourcedDocument[]; strings:
   return { documents: loadJsonDocuments(resolved), strings: [] };
 }
 
+/**
+ * A canonical v2 course has no v1 blueprint to scan. Its plans and emitted
+ * documents already run the same numbered content gates through the v2 gate
+ * adapter, so report that evidence directly instead of falling back to a
+ * similarly named legacy catalog.
+ */
+function runCanonicalV2(options: Options, courseDir: string): void {
+  const loaded = loadV2Plans(path.join(courseDir, 'plans'));
+  const setup = loaded.flatMap((entry) => entry.errors.map((error) => `${entry.file}: ${error}`));
+  const blocking: Array<{ lesson: string; gate: number; locale?: string; message: string }> = [];
+  const review: Array<{ lesson: string; gate: number; locale?: string; message: string }> = [];
+  let documentCount = 0;
+  for (const entry of loaded) {
+    if (!entry.plan) continue;
+    const emitted = emitV2Lesson(entry.plan, { versionId: 'content-gates-v2', requireLessonDesign: true });
+    documentCount += emitted.documents.length;
+    blocking.push(...emitted.problems.map((finding) => ({ lesson: entry.plan!.lesson_id, gate: finding.gate, ...(finding.locale ? { locale: finding.locale } : {}), message: finding.message })));
+    review.push(...emitted.review.map((finding) => ({ lesson: entry.plan!.lesson_id, gate: finding.gate, ...(finding.locale ? { locale: finding.locale } : {}), message: finding.message })));
+  }
+
+  const ui = options.ui ? loadUiJson(path.join(REPO_ROOT, 'frontend', 'src', 'i18n')) : [];
+  const uiLiterals = options.ui ? loadUiSourceLiterals(path.join(REPO_ROOT, 'frontend', 'src', 'rebuild')) : [];
+  const uiReport = runContentGates({ documents: [], catalog: [], ui, uiLiterals, register: options.register });
+  const ok = setup.length === 0 && loaded.length > 0 && documentCount === loaded.length * 3 && blocking.length === 0 && uiReport.summary.blocking.uiTone === 0;
+  const generatedAt = new Date().toISOString();
+  const report = {
+    generatedAt,
+    pipeline: 'v2',
+    course: options.course,
+    sources: [`curriculum-v2/${options.course}`, ...(options.ui ? ['frontend/src/i18n', 'frontend/src/rebuild'] : [])],
+    plans: loaded.length,
+    documents: documentCount,
+    setup,
+    blocking,
+    review,
+    ui: uiReport.ui,
+    summary: { ok, expectedDocuments: loaded.length * 3, uiBlocking: uiReport.summary.blocking.uiTone },
+  };
+  const jsonPath = options.json
+    ? path.resolve(process.cwd(), options.json)
+    : path.join(PACKAGE_ROOT, 'runs', 'content-gates', `${options.course}-${generatedAt.replace(/[:.]/g, '-')}.json`);
+  mkdirSync(path.dirname(jsonPath), { recursive: true });
+  writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
+  console.log(`sources: ${report.sources.join(', ')}`);
+  console.log('== Forge V2 content gates (carried gates 2–19, including B.18, B.14, OD-13, B.17, B.11 and B.16) ==');
+  console.log(`plans: ${loaded.length}   documents: ${documentCount}/${loaded.length * 3}   UI strings: ${uiReport.ui.strings}`);
+  console.log(`blocking: ${blocking.length}   Stage 3 review flags: ${review.length}   UI tone blocks: ${uiReport.summary.blocking.uiTone}`);
+  for (const finding of [...setup, ...blocking.slice(0, 15).map((item) => `${item.lesson}${item.locale ? ` [${item.locale}]` : ''} gate ${item.gate}: ${item.message}`)]) console.log(`  ✗ ${typeof finding === 'string' ? finding : JSON.stringify(finding)}`);
+  console.log(`\n${ok ? 'content:gates OK — canonical V2 plans and emitted documents have no blocking finding' : 'content:gates FAILED — fix the blocking findings above'}`);
+  console.log(`\nfull report: ${path.relative(process.cwd(), jsonPath).replace(/\\/g, '/')}`);
+  if (!ok) process.exit(1);
+}
+
 function main(): void {
   let options: Options;
   try {
@@ -105,6 +160,17 @@ function main(): void {
   } catch (error) {
     console.error(`content:gates: ${(error as Error).message}`);
     process.exit(2);
+  }
+
+  if (options.course) {
+    const v2Dir = path.join(PACKAGE_ROOT, 'curriculum-v2', options.course);
+    if (existsSync(path.join(v2Dir, 'structure.yaml'))) {
+      try { runCanonicalV2(options, v2Dir); } catch (error) {
+        console.error(`content:gates: ${(error as Error).message}`);
+        process.exit(2);
+      }
+      return;
+    }
   }
 
   const documents: SourcedDocument[] = [];

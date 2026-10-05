@@ -42,12 +42,13 @@ const repoRoot = path.resolve(here, '../../..');
  * The Forge gates a v2 document runs (the manifest ids Vault requires, rows of
  * public.forge_v2_manifest_gates): gate 1 (contract, by Core), gates 11-16,
  * the v2 content gate and (GAP-FIX-R2, Appendix C Stage 2) the carried-over
- * age-vocabulary (2), currency-fact (3), arithmetic (4), reward-mechanic (17)
- * and wellbeing-language (18) gates. check-forge-release-gate-parity keeps
+ * legacy document gates 2-9, plus reward-mechanic (17), wellbeing-language
+ * (18) and age-register (19). check-forge-release-gate-parity keeps
  * this list equal to the migration rows.
  */
 export const V2_MANIFEST_GATES = RELEASE_CHECK_IDS
   .filter((id) => ['forge.gate.01.contract', 'forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic',
+    'forge.gate.05.rationale-canon', 'forge.gate.06.anti-genericity', 'forge.gate.07.generation-quality', 'forge.gate.08.clarity', 'forge.gate.09.readability',
     'forge.gate.11.redundancy', 'forge.gate.12.tone', 'forge.gate.13.copy-budget', 'forge.gate.14.concept-cap', 'forge.gate.15.mentor-misjudgment',
     'forge.gate.16.regional-adaptation', 'forge.gate.17.reward-mechanics', 'forge.gate.18.wellbeing-language', 'forge.gate.19.age-register', 'forge.release.v2-content'].includes(id));
 
@@ -164,6 +165,8 @@ export function publicationManifest(row: EmittedV2Document, runId: string): Reco
  */
 export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   runId: string; outDir: string; courseSlug: string; dryRun: boolean; deps?: V2ReleaseDeps;
+  /** Draft/review course: write invisible current pointers first, then attest that exact final corpus. */
+  initialCourse?: boolean;
   /** Echo's audio manifest (audio_ref -> asset) the narration check reads; empty when no audio was generated. */
   audioManifest?: Readonly<Record<string, unknown>>;
   /** Refuse (instead of flag) a differentiated narration channel without its audio. */
@@ -212,15 +215,25 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     return { ok: false, stage: 'core-check', documents, calls, problems: [`${horizonte.join(', ')}: the local Core check cannot tell whether the deployed Core serves these Horizonte types, and an older Core answers 422 UNSUPPORTED_LESSON for a version that holds one. Deploy Core first, then pass --core-has-horizonte`] };
   }
 
-  const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
-  if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };
+  // A live course needs a fresh attestation before Vault will accept a pending
+  // version. A first release is the inverse: its review lessons are invisible,
+  // so all current pointers must exist before verify:course can attest the
+  // complete authored corpus and its final watermark.
+  if (!options.initialCourse) {
+    const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
+    if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };
+  }
   if (!options.deps?.rpc) return { ok: false, stage: 'publish', documents, calls, problems: ['no Vault RPC configured for the publish stage'] };
   const pendingApproval: NonNullable<V2ReleaseResult['pendingApproval']> = [];
   for (const call of calls) {
     const reply = await options.deps.rpc('publish_v2_lesson_version', call.body);
     if (!reply.ok) return { ok: false, stage: 'publish', documents, calls, problems: [`${call.lessonId} ${call.locale}: Vault refused the publication (${reply.status}) ${JSON.stringify(reply.body)}`], pendingApproval };
     const body = reply.body as { activation?: unknown } | null;
-    if (body && typeof body === 'object' && body.activation === 'pending_staff_approval') {
+    const activation = body && typeof body === 'object' ? body.activation : undefined;
+    if (activation !== 'activated' && activation !== 'pending_staff_approval') {
+      return { ok: false, stage: 'publish', documents, calls, problems: [`${call.lessonId} ${call.locale}: Vault returned non-releasable activation ${JSON.stringify(activation)}; expected activated or pending_staff_approval`], pendingApproval };
+    }
+    if (activation === 'pending_staff_approval') {
       pendingApproval.push({ lessonId: call.lessonId, locale: call.locale, versionId: call.versionId });
     }
     const record = stage3.find((entry) => entry.lessonId === call.lessonId && entry.locale === call.locale);
@@ -233,6 +246,10 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
           problems: [`${call.lessonId} ${call.locale}: Vault did not record the ${record.items.length} Stage 3 review flag(s) (${stored.status}) ${JSON.stringify(stored.body)}; the version cannot be released until they are recorded and reviewed`] };
       }
     }
+  }
+  if (options.initialCourse) {
+    const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
+    if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'], pendingApproval, stage3, ...flagged };
   }
   return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval, stage3, ...flagged };
 }

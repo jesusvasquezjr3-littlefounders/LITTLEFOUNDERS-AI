@@ -1,0 +1,645 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-costs-over-time",
+  "lesson_id": "fe-1012-23-build-a-cushion",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.saving-for-later",
+    "life.patience-and-waiting",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Crea un colchón. Reserve part of a plan for a small unexpected cost. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Build a cushion",
+    "es-MX": "Crea un colchón",
+    "pt-BR": "Crie uma reserva"
+  },
+  "new_concepts": [
+    "life.saving-for-later",
+    "life.patience-and-waiting"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A plan has 20 coins and an uncertain cost.",
+          "line": "Which choice creates a cushion?"
+        },
+        "es-MX": {
+          "prompt": "Un plan tiene 20 monedas y un costo incierto.",
+          "line": "¿Qué opción crea un colchón?"
+        },
+        "pt-BR": {
+          "prompt": "Um plano tem 20 moedas e um custo incerto.",
+          "line": "Qual opção cria uma reserva?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Cushion goal 30; has 12; adds 6 weekly. Weeks needed?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Need 18; 18 ÷ 6 = 3 weeks"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Meta de reserva 30; tiene 12; suma 6 por semana. ¿Semanas?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Faltan 18; 18 ÷ 6 = 3 semanas"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Meta de reserva 30; tem 12; soma 6 por semana. Semanas?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Faltam 18; 18 ÷ 6 = 3 semanas"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Worked case: cushion goal 30, saved 12, adding 6 weekly needs (30 − 12) ÷ 6 = 3 weeks."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caso resuelto: meta de colchón 30, ahorro 12 y 6 semanales necesita (30 − 12) ÷ 6 = 3 semanas."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caso resolvido: meta de reserva 30, guardado 12 e 6 semanais precisa (30 − 12) ÷ 6 = 3 semanas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Cushion goal 40; has 16; adds 8 weekly. Weeks needed?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Need 24; 24 ÷ 8 = 3 weeks"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Meta de reserva 40; tiene 16; suma 8 por semana. ¿Semanas?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Faltan 24; 24 ÷ 8 = 3 semanas"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Meta de reserva 40; tem 16; soma 8 por semana. Semanas?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Faltam 24; 24 ÷ 8 = 3 semanas"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Cushion goal 50; has 20; adds 5 weekly. Weeks needed?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Need 30; 30 ÷ 5 = 6 weeks"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Meta de reserva 50; tiene 20; suma 5 por semana. ¿Semanas?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Faltan 30; 30 ÷ 5 = 6 semanas"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Meta de reserva 50; tem 20; soma 5 por semana. Semanas?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Faltam 30; 30 ÷ 5 = 6 semanas"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Cushion goal 36; has 12; adds 4 weekly. Weeks needed?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Need 24; 24 ÷ 4 = 6 weeks"
+            },
+            {
+              "label": "It uses only one number"
+            },
+            {
+              "label": "It is the biggest option"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Meta de reserva 36; tiene 12; suma 4 por semana. ¿Semanas?",
+          "feedback": {
+            "met": "Sí. La suma da eso.",
+            "not_yet": "Haz la suma otra vez."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Faltan 24; 24 ÷ 4 = 6 semanas"
+            },
+            {
+              "label": "Usa sólo un número"
+            },
+            {
+              "label": "Es la opción mayor"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Meta de reserva 36; tem 12; soma 4 por semana. Semanas?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Faltam 24; 24 ÷ 4 = 6 semanas"
+            },
+            {
+              "label": "Usa só um número"
+            },
+            {
+              "label": "É a maior opção"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

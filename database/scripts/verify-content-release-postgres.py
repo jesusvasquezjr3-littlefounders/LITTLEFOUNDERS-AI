@@ -140,10 +140,10 @@ try:
     gate_ids = run("SELECT gate_id FROM forge_release_gates WHERE gate_id IN (SELECT gate_id FROM forge_v2_manifest_gates) ORDER BY gate_id").splitlines()
     gates = ', '.join('{"gate": "%s", "ok": true}' % gate for gate in gate_ids)
 
-    def publish(version_id):
-        doc = f'{{"schema_version": 2, "lesson_id": "{I["lesson"]}", "locale": "es-MX", "version_id": "{version_id}", "segments": []}}'
+    def publish(version_id, segments='[]', answer_keys='{}'):
+        doc = f'{{"schema_version": 2, "lesson_id": "{I["lesson"]}", "locale": "es-MX", "version_id": "{version_id}", "segments": {segments}}}'
         manifest = f'{{"lesson_id": "{I["lesson"]}", "locale": "es-MX", "version_id": "{version_id}", "core_contract": true, "interactive_behaviour": true, "run_id": "r2", "checks": [{gates}]}}'
-        return service(f"SELECT publish_v2_lesson_version('{I['lesson']}', 'es-MX', '{version_id}', '{doc}'::jsonb, '{{}}'::jsonb, '{manifest}'::jsonb)::text")
+        return service(f"SELECT publish_v2_lesson_version('{I['lesson']}', 'es-MX', '{version_id}', '{doc}'::jsonb, '{answer_keys}'::jsonb, '{manifest}'::jsonb)::text")
 
     current = lambda: run(f"SELECT v.version_id FROM lesson_document_version_current c JOIN lesson_document_versions v ON v.id = c.document_version_id WHERE c.lesson_id = '{I['lesson']}' AND c.locale = 'es-MX'")
     version_of = lambda vid: run(f"SELECT id FROM lesson_document_versions WHERE version_id = '{vid}'")
@@ -151,6 +151,22 @@ try:
     # ── G.2: the service role alone cannot activate a live lesson's new version ──
     assert '"activation": "pending_staff_approval"' in publish('new-rev-001')
     new = version_of('new-rev-001')
+    retry = publish('new-rev-001')
+    assert '"activation": "pending_staff_approval"' in retry and '"idempotent": true' in retry, retry
+    assert run(f"SELECT count(*) FROM lesson_document_versions WHERE lesson_id = '{I['lesson']}' AND locale = 'es-MX' AND version_id = 'new-rev-001'") == '1'
+    assert run(f"SELECT count(*) FROM lesson_version_activation_requests WHERE document_version_id = '{new}'") == '1'
+    assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'forge.v2_lesson_version_submitted' AND detail ->> 'document_version_id' = '{new}'") == '1'
+    rejected("SET ROLE service_role; " +
+             f"SELECT publish_v2_lesson_version('{I['lesson']}', 'es-MX', 'new-rev-001', " +
+             f"'{{\"schema_version\": 2, \"lesson_id\": \"{I['lesson']}\", \"locale\": \"es-MX\", \"version_id\": \"new-rev-001\", \"segments\": [{{\"id\": \"changed\"}}]}}'::jsonb, " +
+             f"'{{}}'::jsonb, '{{\"lesson_id\": \"{I['lesson']}\", \"locale\": \"es-MX\", \"version_id\": \"new-rev-001\", \"core_contract\": true, \"interactive_behaviour\": true, \"checks\": [{gates}]}}'::jsonb)",
+             'different content digests')
+    try:
+        publish('new-rev-001', answer_keys='{"changed": "key"}')
+    except RuntimeError as error:
+        assert 'different content digests' in str(error), str(error)
+    else:
+        raise AssertionError('reusing a v2 identity with different answer keys succeeded')
     assert current() == 'old-rev-001'
     rejected(f"SET ROLE service_role; UPDATE lesson_document_version_current SET document_version_id = '{new}' WHERE lesson_id = '{I['lesson']}'", 'reviewed publication transaction')
     rejected(f"SET ROLE service_role; SELECT activate_lesson_version_request(gen_random_uuid(), NULL)", 'permission denied')
@@ -158,7 +174,7 @@ try:
     assert refused == 'FORBIDDEN', refused
     assert service(f"SELECT code FROM release_lesson_version('{I['analyst']}', '{I['lesson']}', '{new}')") == 'FORBIDDEN'
     assert current() == 'old-rev-001'
-    check('G.2: publish_v2_lesson_version on a live lesson stores a pending request and moves no pointer; the service role cannot move the pointer, call the internal activation, or release without an actor holding manage_content')
+    check('G.2: publish_v2_lesson_version on a live lesson stores one pending request and moves no pointer; an identical retry is idempotent, a digest conflict is refused, and the service role cannot move the pointer, call the internal activation, or release without an actor holding manage_content')
 
     # ── The staff release re-runs the course verification ──
     run(f"BEGIN; SET LOCAL lf.bypass_justification = 'Correcting a price typo while the release is queued'; UPDATE lesson_documents SET document = '{{\"segments\": [{{\"id\": \"s1\", \"prompt\": \"Hola!\"}}]}}' WHERE lesson_id = '{I['lesson']}'; COMMIT;")
@@ -168,6 +184,8 @@ try:
     stage3_pass(new)
     assert service(f"SELECT code FROM release_lesson_version('{I['editor']}', '{I['lesson']}', '{new}')") == 'RELEASED'
     assert current() == 'new-rev-001'
+    activated_retry = publish('new-rev-001')
+    assert '"activation": "activated"' in activated_retry and '"idempotent": true' in activated_retry, activated_retry
     assert run(f"SELECT activated_by FROM lesson_document_version_current WHERE lesson_id = '{I['lesson']}' AND locale = 'es-MX'") == I['editor']
     assert run(f"SELECT actor_id FROM audit_logs WHERE action = 'content.v2_version_released' AND subject = '{I['lesson']}'") == I['editor']
     assert service(f"SELECT code FROM release_lesson_version('{I['editor']}', '{I['lesson']}', '{new}')") == 'NOT_PENDING'

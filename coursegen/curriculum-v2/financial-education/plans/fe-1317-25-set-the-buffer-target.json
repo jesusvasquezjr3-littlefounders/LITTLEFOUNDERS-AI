@@ -1,0 +1,642 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-resilient-plans",
+  "lesson_id": "fe-1317-25-set-the-buffer-target",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.saving-for-later",
+    "life.goal-planning",
+    "money.savings-plan-math"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "zara",
+    "scene": "diorama-a"
+  },
+  "brief": "Define el colchón. Meta del colchón menos lo guardado da la brecha; divídela entre cada aporte. El sondeo, la práctica guiada, la práctica independiente y la transferencia usan cuatro casos distintos y evidencian life.saving-for-later.",
+  "title": {
+    "en-US": "Set the buffer target",
+    "es-MX": "Define el colchón",
+    "pt-BR": "Defina a reserva"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Uses LittleFounders coins only; no market amounts, places, prices or customs."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara sets a small buffer target before flexible spending.",
+          "line": "Buffer target minus current buffer gives the gap; divide by each contribution."
+        },
+        "es-MX": {
+          "prompt": "Zara fija una meta de colchón antes del gasto flexible.",
+          "line": "Meta del colchón menos lo guardado da la brecha; divídela entre cada aporte."
+        },
+        "pt-BR": {
+          "prompt": "Zara define uma meta de reserva antes do gasto flexível.",
+          "line": "Meta da reserva menos o valor atual dá a diferença; divida por cada aporte."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Buffer target is 120; 30 is saved and each contribution is 15. How many more contributions?",
+          "feedback": {
+            "met": "You connected the buffer target to repeated contributions.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "6 contributions"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Find gap; divide by each contribution"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La meta es 120; hay 30 y cada aporte es 15. ¿Cuántos aportes faltan?",
+          "feedback": {
+            "met": "Conectaste la meta del colchón con aportes repetidos.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "6 aportes"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Halla brecha; divide entre cada aporte"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A meta é 120; há 30 e cada contribuição é 15. Quantas faltam?",
+          "feedback": {
+            "met": "Você ligou a meta da reserva às contribuições repetidas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "6 contribuições"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ache a diferença; divida por cada aporte"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Watch the rule on a new case.",
+          "line": "A 100 target with 40 saved leaves 60; at 20 each, 60 ÷ 20 = 3 contributions."
+        },
+        "es-MX": {
+          "prompt": "Mira la regla en un caso nuevo.",
+          "line": "Meta 100 con 40 guardados deja 60; con aportes de 20, 60 ÷ 20 = 3."
+        },
+        "pt-BR": {
+          "prompt": "Veja a regra em um caso novo.",
+          "line": "Meta 100 com 40 guardados deixa 60; com aportes de 20, 60 ÷ 20 = 3."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Buffer target is 200; 80 is saved and each contribution is 20. How many more contributions?",
+          "feedback": {
+            "met": "You connected the buffer target to repeated contributions.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "6 contributions"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Find gap; divide by each contribution"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La meta es 200; hay 80 y cada aporte es 20. ¿Cuántos aportes faltan?",
+          "feedback": {
+            "met": "Conectaste la meta del colchón con aportes repetidos.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "6 aportes"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Halla brecha; divide entre cada aporte"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A meta é 200; há 80 e cada contribuição é 20. Quantas faltam?",
+          "feedback": {
+            "met": "Você ligou a meta da reserva às contribuições repetidas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "6 contribuições"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ache a diferença; divida por cada aporte"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Buffer target is 150; 60 is saved and each contribution is 30. How many more contributions?",
+          "feedback": {
+            "met": "You connected the buffer target to repeated contributions.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "3 contributions"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Find gap; divide by each contribution"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La meta es 150; hay 60 y cada aporte es 30. ¿Cuántos aportes faltan?",
+          "feedback": {
+            "met": "Conectaste la meta del colchón con aportes repetidos.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "3 aportes"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Halla brecha; divide entre cada aporte"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A meta é 150; há 60 e cada contribuição é 30. Quantas faltam?",
+          "feedback": {
+            "met": "Você ligou a meta da reserva às contribuições repetidas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "3 contribuições"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ache a diferença; divida por cada aporte"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.saving-for-later",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Buffer target is 240; 120 is saved and each contribution is 24. How many more contributions?",
+          "feedback": {
+            "met": "You connected the buffer target to repeated contributions.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "5 contributions"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Find gap; divide by each contribution"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "La meta es 240; hay 120 y cada aporte es 24. ¿Cuántos aportes faltan?",
+          "feedback": {
+            "met": "Conectaste la meta del colchón con aportes repetidos.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "5 aportes"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Halla brecha; divide entre cada aporte"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A meta é 240; há 120 e cada contribuição é 24. Quantas faltam?",
+          "feedback": {
+            "met": "Você ligou a meta da reserva às contribuições repetidas.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "5 contribuições"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Ache a diferença; divida por cada aporte"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

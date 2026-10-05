@@ -1,0 +1,673 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-13-17",
+  "chapter_id": "fe-1317-real-cost",
+  "lesson_id": "fe-1317-19-keep-your-options",
+  "age_band": "13-17",
+  "eligibility": {
+    "minimum_age": 13,
+    "maximum_age": 17
+  },
+  "knowledge_component_ids": [
+    "life.opportunity-cost",
+    "life.think-before-buying",
+    "life.recurring-costs"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Conserva tus opciones. El costo de oportunidad es la mejor opción que dejas al elegir. El sondeo, la práctica guiada, la práctica independiente y la transferencia usan cuatro casos distintos y evidencian life.opportunity-cost.",
+  "title": {
+    "en-US": "Keep your options",
+    "es-MX": "Conserva tus opciones",
+    "pt-BR": "Preserve suas opções"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Dina compares two phone plans. In the US a monthly plan often has a data cap, and a prepaid plan is the alternative. Amounts are illustrative coin values, not real prices or wages.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "data cap",
+          "prepaid"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Dina compara dos planes de celular. En México se puede pagar un plan de renta cada mes o comprar una recarga de saldo, y el plan trae un límite de datos. Las cantidades son monedas ilustrativas, no precios ni sueldos reales.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "plan de renta",
+          "recarga"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Dina compara dois planos de celular. No Brasil existem o plano pré-pago e o plano controle, com valor mensal fixo e pacote de dados. Os valores são moedas ilustrativas, não preços nem salários reais.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "plano controle",
+          "pré-pago"
+        ]
+      }
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho names the next-best option before spending. (data cap)",
+          "line": "Opportunity cost is the best option given up by the choice."
+        },
+        "es-MX": {
+          "prompt": "Rho nombra la segunda mejor opción antes de gastar. (plan de renta)",
+          "line": "El costo de oportunidad es la mejor opción que dejas al elegir."
+        },
+        "pt-BR": {
+          "prompt": "Rho nomeia a segunda melhor opção antes de gastar. (plano controle)",
+          "line": "Custo de oportunidade é a melhor opção deixada pela escolha."
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mia can buy a 40-coin game or keep 40 for a bicycle goal. If she buys, what is forgone?",
+          "feedback": {
+            "met": "You named the real option the purchase would displace.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "The 40 coins toward the bicycle"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Name the best option given up"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mia puede comprar un juego de 40 o guardar 40 para una bici. Si compra, ¿qué deja?",
+          "feedback": {
+            "met": "Nombraste la opción real que la compra desplaza.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "Las 40 monedas para la bici"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Nombra la mejor opción descartada"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mia pode comprar um jogo de 40 ou guardar 40 para uma bicicleta. Se comprar, o que deixa?",
+          "feedback": {
+            "met": "Você nomeou a opção real que a compra substitui.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "As 40 moedas para a bicicleta"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Nomeie a melhor opção deixada"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Watch the rule on a new case.",
+          "line": "Choosing a 30-coin event instead of saving 30 makes the saving option the opportunity cost."
+        },
+        "es-MX": {
+          "prompt": "Mira la regla en un caso nuevo.",
+          "line": "Elegir un evento de 30 en vez de ahorrar 30 convierte el ahorro en costo de oportunidad."
+        },
+        "pt-BR": {
+          "prompt": "Veja a regra em um caso novo.",
+          "line": "Escolher um evento de 30 em vez de guardar 30 torna a reserva o custo de oportunidade."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Leo chooses paid work over a free Saturday tournament. What is the opportunity cost?",
+          "feedback": {
+            "met": "You named the real option the purchase would displace.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "The tournament time"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Name the best option given up"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Leo elige trabajo pagado en vez del torneo gratuito del sábado. ¿Cuál es el costo?",
+          "feedback": {
+            "met": "Nombraste la opción real que la compra desplaza.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "El tiempo del torneo"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Nombra la mejor opción descartada"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Leo escolhe trabalho pago em vez do torneio grátis de sábado. Qual é o custo?",
+          "feedback": {
+            "met": "Você nomeou a opção real que a compra substitui.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "O tempo do torneio"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Nomeie a melhor opção deixada"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A monthly app costs 8; the same 8 could fund transit. If Zara subscribes, what is displaced?",
+          "feedback": {
+            "met": "You named the real option the purchase would displace.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "The 8-coin transit option"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Name the best option given up"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una app cuesta 8 al mes; esos 8 podían pagar transporte. Si Zara se suscribe, ¿qué desplaza?",
+          "feedback": {
+            "met": "Nombraste la opción real que la compra desplaza.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "La opción de transporte de 8"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Nombra la mejor opción descartada"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um app custa 8 por mês; os mesmos 8 pagariam transporte. Se Zara assina, o que substitui?",
+          "feedback": {
+            "met": "Você nomeou a opção real que a compra substitui.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "A opção de transporte de 8"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Nomeie a melhor opção deixada"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.opportunity-cost",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "fact"
+          },
+          {
+            "id": "one-fact"
+          },
+          {
+            "id": "ignore"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "fact": "sound",
+          "one-fact": "partial",
+          "ignore": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho chooses a 25-coin concert over saving 25 for tools. Name the opportunity cost.",
+          "feedback": {
+            "met": "You named the real option the purchase would displace.",
+            "not_yet": "Not yet. Use every shown fact, then choose again."
+          },
+          "choices": [
+            {
+              "label": "The tools saving option"
+            },
+            {
+              "label": "Use only the largest number"
+            },
+            {
+              "label": "Decide without checking the record"
+            }
+          ],
+          "reasonPrompt": "Which evidence supports the choice?",
+          "reasons": [
+            {
+              "label": "Name the best option given up"
+            },
+            {
+              "label": "It uses only one fact"
+            },
+            {
+              "label": "It ignores the record"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho elige un concierto de 25 en vez de guardar 25 para herramientas. Nombra el costo.",
+          "feedback": {
+            "met": "Nombraste la opción real que la compra desplaza.",
+            "not_yet": "Todavía no. Usa todos los datos y vuelve a elegir."
+          },
+          "choices": [
+            {
+              "label": "La opción de ahorrar para herramientas"
+            },
+            {
+              "label": "Usar sólo el número mayor"
+            },
+            {
+              "label": "Decidir sin revisar el registro"
+            }
+          ],
+          "reasonPrompt": "¿Qué evidencia apoya la elección?",
+          "reasons": [
+            {
+              "label": "Nombra la mejor opción descartada"
+            },
+            {
+              "label": "Usa sólo un dato"
+            },
+            {
+              "label": "Ignora el registro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho escolhe um show de 25 em vez de guardar 25 para ferramentas. Nomeie o custo.",
+          "feedback": {
+            "met": "Você nomeou a opção real que a compra substitui.",
+            "not_yet": "Ainda não. Use todos os dados e escolha novamente."
+          },
+          "choices": [
+            {
+              "label": "A opção de guardar para ferramentas"
+            },
+            {
+              "label": "Usar apenas o maior número"
+            },
+            {
+              "label": "Decidir sem conferir o registro"
+            }
+          ],
+          "reasonPrompt": "Qual evidência apoia a escolha?",
+          "reasons": [
+            {
+              "label": "Nomeie a melhor opção deixada"
+            },
+            {
+              "label": "Usa apenas um dado"
+            },
+            {
+              "label": "Ignora o registro"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

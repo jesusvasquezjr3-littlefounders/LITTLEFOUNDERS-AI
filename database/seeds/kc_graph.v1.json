@@ -581,7 +581,7 @@
         "pt-BR": "Nomear coisas que você quer e explicar por que não dá para ter tudo de uma vez, então você escolhe."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.barter",
@@ -602,7 +602,7 @@
         "pt-BR": "Trocar algo que você tem por algo que quer e perceber quando a troca trava porque a outra pessoa quer outra coisa."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.what-money-is",
@@ -623,7 +623,7 @@
         "pt-BR": "Explicar que o dinheiro é algo que todos aceitam em troca e que funciona porque as pessoas confiam nele."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.effort-and-work",
@@ -644,7 +644,7 @@
         "pt-BR": "Reconhecer que conseguir algo exige esforço, que ajudar em casa é trabalho e que terminar uma tarefa importa."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.track-earnings",
@@ -665,7 +665,7 @@
         "pt-BR": "Manter um registro simples do que você ganha e perceber que pode mudar de um dia para o outro."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.jobs-help-others",
@@ -686,7 +686,7 @@
         "pt-BR": "Explicar que um ofício quase sempre ajuda alguém a conseguir algo de que precisa e nomear ofícios diferentes."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.saving-for-later",
@@ -707,7 +707,7 @@
         "pt-BR": "Guardar algumas moedas em vez de gastar tudo hoje e explicar como cada moeda guardada aproxima uma meta."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.patience-and-waiting",
@@ -728,7 +728,7 @@
         "pt-BR": "Comparar algo pequeno que você poderia ter agora com algo maior que poderia ter depois, e esperar quando vale a pena."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.safe-keeping",
@@ -749,7 +749,7 @@
         "pt-BR": "Escolher um lugar seguro para as economias, cuidar dele e continuar guardando mesmo depois de uma pequena perda."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.save-spend-share",
@@ -770,7 +770,7 @@
         "pt-BR": "Dividir as moedas que você recebe entre poupar, gastar e compartilhar, e explicar a escolha."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.smart-shopping",
@@ -791,7 +791,7 @@
         "pt-BR": "Verificar e comparar preços e qualidade em lugares diferentes antes de escolher o que comprar."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.think-before-buying",
@@ -812,7 +812,7 @@
         "pt-BR": "Parar antes de uma compra, perguntar se ela pode esperar e pedir ajuda a um adulto de confiança quando a escolha é difícil."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.advertising-literacy",
@@ -833,7 +833,7 @@
         "pt-BR": "Reconhecer um anúncio, distinguir uma descrição real de um exagero e notar ofertas \"grátis\" falsas, pressa e recomendações pagas."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.scam-awareness",
@@ -854,7 +854,7 @@
         "pt-BR": "Notar os sinais de uma mensagem suspeita ou de um perfil falso, parar e contar a um adulto de confiança."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.data-privacy",
@@ -875,7 +875,7 @@
         "pt-BR": "Proteger informações pessoais, senhas e fotos, e compartilhá-las só com permissão de um adulto de confiança."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.banks-and-accounts",
@@ -896,7 +896,7 @@
         "pt-BR": "Explicar para que servem um banco e uma conta poupança, como o dinheiro é retirado e como os cartões se ligam ao dinheiro guardado."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.giving",
@@ -917,7 +917,7 @@
         "pt-BR": "Doar tempo, coisas ou dinheiro para ajudar sem esperar retorno, guardar uma parte para você e verificar para onde vai a ajuda."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.shared-resources",
@@ -938,7 +938,7 @@
         "pt-BR": "Cuidar das coisas que um grupo compartilha, revezar com justiça e fazer a sua parte para o trabalho não cair nos outros."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.common-good",
@@ -959,7 +959,7 @@
         "pt-BR": "Explicar como pequenas contribuições de muitas famílias pagam ruas, parques e serviços públicos que todos usam."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.community-projects",
@@ -980,7 +980,7 @@
         "pt-BR": "Planejar um projeto compartilhado: dividir as tarefas, agradecer a quem ajudou e revisar o que o grupo conseguiu."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.goal-planning",
@@ -1001,7 +1001,7 @@
         "pt-BR": "Transformar um desejo em uma meta com tamanho e data, dividi-la em passos e pensar antes nos obstáculos."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.review-and-adjust-plan",
@@ -1022,7 +1022,7 @@
         "pt-BR": "Comparar um plano com o que realmente aconteceu e ajustar uma parte, como o valor, o prazo ou a meta, para seguir em frente."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.reflect-on-learning",
@@ -1043,7 +1043,7 @@
         "pt-BR": "Explicar com suas palavras as ideias mais importantes que você aprendeu e ensinar uma delas a outra pessoa."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.opportunity-cost",
@@ -1064,7 +1064,7 @@
         "pt-BR": "Nomear o que você deixa de lado ao escolher uma opção, inclusive o tempo, e pesar isso antes de decidir."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "life.recurring-costs",
@@ -1085,7 +1085,7 @@
         "pt-BR": "Calcular quanto soma em um ano uma cobrança recorrente pequena ou uma taxa de plataforma, e decidir se vale manter."
       },
       "skill_key": null,
-      "status": "draft"
+      "status": "active"
     },
     {
       "key": "money.linear-vs-accelerating-growth",

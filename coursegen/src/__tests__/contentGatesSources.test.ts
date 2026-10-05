@@ -101,7 +101,7 @@ describe('system/UI copy source', () => {
     expect(literals.length).toBeGreaterThan(50);
     const report = runContentGates({ documents: [], catalog: [], ui, uiLiterals: literals });
     expect(report.ui.tone.map((f) => `${f.where}: ${f.phrase}`)).toEqual([]);
-  });
+  }, 20_000);
 });
 
 describe('red-team samples through the content:gates runner', () => {

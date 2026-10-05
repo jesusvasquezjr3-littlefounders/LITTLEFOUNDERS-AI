@@ -139,7 +139,7 @@ describe('v2 write and publish', () => {
     const plan = planOf('v2-goal-bullet');
     expect((await releaseV2Lessons([plan], { runId: 'r1', outDir: tmp(), courseSlug: 'money', dryRun: false,
       deps: { coreCheck: () => ({ ok: false, output: 'FAIL: behaviour' }) } })).stage).toBe('core-check');
-    const rpc = vi.fn(async () => ({ ok: true, status: 200, body: {} }));
+    const rpc = vi.fn(async () => ({ ok: true, status: 200, body: { activation: 'activated' } }));
     expect((await releaseV2Lessons([plan], { runId: 'r1', outDir: tmp(), courseSlug: 'money', dryRun: false,
       deps: { coreCheck: () => ({ ok: true, output: '' }), verifyCourse: () => ({ ok: false, output: 'stale' }), rpc } })).stage).toBe('verify');
     expect(rpc).not.toHaveBeenCalled();
@@ -154,9 +154,24 @@ describe('v2 write and publish', () => {
     expect(done.pendingApproval).toEqual([]);
   });
 
+  it('attests a first course only after every invisible review pointer exists', async () => {
+    const events: string[] = [];
+    const result = await releaseV2Lessons([planOf('v2-goal-bullet')], {
+      runId: 'initial-r1', outDir: tmp(), courseSlug: 'money', dryRun: false, initialCourse: true,
+      deps: {
+        coreCheck: () => ({ ok: true, output: '' }),
+        verifyCourse: () => { events.push('verify'); return { ok: true, output: '' }; },
+        rpc: async (fn) => { events.push(fn); return { ok: true, status: 200, body: { activation: 'activated' } }; },
+      },
+    });
+    expect(result.stage).toBe('done');
+    expect(events.filter((event) => event === 'publish_v2_lesson_version')).toHaveLength(3);
+    expect(events.at(-1)).toBe('verify');
+  });
+
   it('refuses a Vault write of a Horizonte type until the owner confirms Core serves it, and never blocks a dry run or an older type', async () => {
     const horizonte = structuredClone(loadV2Plans(FIXTURE_PLANS_HORIZONTE).find((entry) => entry.plan?.lesson_id === 'v2-hz-golden-6-9-6-9')!.plan!) as V2LessonPlan;
-    const rpc = vi.fn(async () => ({ ok: true, status: 200, body: {} }));
+    const rpc = vi.fn(async () => ({ ok: true, status: 200, body: { activation: 'activated' } }));
     const verifyCourse = vi.fn(() => ({ ok: true, output: '' }));
     const deps = { coreCheck: () => ({ ok: true, output: '' }), verifyCourse, rpc };
     const refused = await releaseV2Lessons([horizonte], { runId: 'r1', outDir: tmp(), courseSlug: 'math', dryRun: false, deps });
@@ -180,6 +195,20 @@ describe('v2 write and publish', () => {
       deps: { coreCheck: () => ({ ok: true, output: '' }), verifyCourse: () => ({ ok: true, output: '' }), rpc } });
     expect(done.stage).toBe('done');
     expect(done.pendingApproval?.map((p) => p.locale).sort()).toEqual(['en-US', 'es-MX', 'pt-BR']);
+  });
+
+  it('fails closed when an idempotent retry names a rejected, superseded or untracked activation', async () => {
+    for (const activation of ['rejected', 'superseded', 'stored', undefined]) {
+      const stopped = await releaseV2Lessons([planOf('v2-goal-bullet')], {
+        runId: 'retry-r1', outDir: tmp(), courseSlug: 'money', dryRun: false,
+        deps: {
+          coreCheck: () => ({ ok: true, output: '' }), verifyCourse: () => ({ ok: true, output: '' }),
+          rpc: async () => ({ ok: true, status: 200, body: activation === undefined ? {} : { activation } }),
+        },
+      });
+      expect(stopped).toMatchObject({ ok: false, stage: 'publish' });
+      expect(stopped.problems[0]).toMatch(/non-releasable activation/);
+    }
   });
 
   it('writes each market its own answer keys when the plan gives a rubric per market (B.16)', () => {
@@ -242,7 +271,7 @@ describe('Appendix C Stage 3 review flags at release (GAP-FIX-R6)', () => {
     // The plan declares itself market-neutral (gate 16): a plan-level flag each market's version carries.
     expect(flagged.map((entry) => entry.locale).sort()).toEqual(['en-US', 'es-MX', 'pt-BR']);
     expect(flagged[0]!.items[0]).toMatchObject({ gate: 16 });
-    const rpc = vi.fn<(fn: string, body: Record<string, unknown>) => Promise<{ ok: boolean; status: number; body: unknown }>>(async () => ({ ok: true, status: 200, body: 1 }));
+    const rpc = vi.fn<(fn: string, body: Record<string, unknown>) => Promise<{ ok: boolean; status: number; body: unknown }>>(async (fn) => ({ ok: true, status: 200, body: fn === 'publish_v2_lesson_version' ? { activation: 'activated' } : 1 }));
     const done = await releaseV2Lessons([plan], { runId: 'r6', outDir: tmp(), courseSlug: 'money', dryRun: false, deps: { coreCheck, verifyCourse, rpc } });
     expect(done.stage).toBe('done');
     const recorded = rpc.mock.calls.filter(([fn]) => fn === 'record_forge_stage3_items');
@@ -254,7 +283,7 @@ describe('Appendix C Stage 3 review flags at release (GAP-FIX-R6)', () => {
       expect(publishIndex).toBeLessThan(rpc.mock.calls.findIndex(([, b]) => b === body));
     }
     {
-      const failing = vi.fn(async (fn: string) => (fn === 'record_forge_stage3_items' ? { ok: false, status: 500, body: null } : { ok: true, status: 200, body: {} }));
+      const failing = vi.fn(async (fn: string) => (fn === 'record_forge_stage3_items' ? { ok: false, status: 500, body: null } : { ok: true, status: 200, body: { activation: 'activated' } }));
       const stopped = await releaseV2Lessons([plan], { runId: 'r6', outDir: tmp(), courseSlug: 'money', dryRun: false, deps: { coreCheck, verifyCourse, rpc: failing } });
       expect(stopped).toMatchObject({ ok: false, stage: 'publish' });
       expect(stopped.problems[0]).toMatch(/Stage 3 review flag/);

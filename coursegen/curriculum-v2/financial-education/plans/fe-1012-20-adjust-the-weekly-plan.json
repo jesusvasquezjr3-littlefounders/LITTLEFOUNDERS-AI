@@ -1,0 +1,642 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-10-12",
+  "chapter_id": "fe-1012-earn-track-plan",
+  "lesson_id": "fe-1012-20-adjust-the-weekly-plan",
+  "age_band": "10-12",
+  "eligibility": {
+    "minimum_age": 10,
+    "maximum_age": 12
+  },
+  "knowledge_component_ids": [
+    "life.review-and-adjust-plan",
+    "life.goal-planning",
+    "money.simple-budget"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Ajusta el plan semanal. Revise a plan when actual earnings differ from the estimate. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Adjust the weekly plan",
+    "es-MX": "Ajusta el plan semanal",
+    "pt-BR": "Ajuste o plano semanal"
+  },
+  "new_concepts": [],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A plan expected 5 coins, but only 3 arrived.",
+          "line": "What keeps the goal alive?"
+        },
+        "es-MX": {
+          "prompt": "El plan esperaba 5 monedas, pero llegaron 3.",
+          "line": "¿Qué mantiene viva la meta?"
+        },
+        "pt-BR": {
+          "prompt": "O plano esperava 5 moedas, mas chegaram 3.",
+          "line": "O que mantém a meta viva?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Has 30; plan costs 18 + 15. Which change makes it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 15 to 12"
+            },
+            {
+              "label": "Raise 18 to 20"
+            },
+            {
+              "label": "Add a 4 cost"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "18 + 12 = 30"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Tiene 30; el plan cuesta 18 + 15. ¿Qué cambio hace que alcance?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 15 a 12"
+            },
+            {
+              "label": "Subir 18 a 20"
+            },
+            {
+              "label": "Agregar un costo de 4"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "18 + 12 = 30"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Tem 30; o plano custa 18 + 15. Qual mudança faz caber?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 15 para 12"
+            },
+            {
+              "label": "Aumentar 18 para 20"
+            },
+            {
+              "label": "Adicionar custo 4"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "18 + 12 = 30"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Worked case: 30 available and costs 18 + 15 = 33; lowering 15 to 12 balances the week."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "Caso resuelto: 30 disponibles y costos 18 + 15 = 33; bajar 15 a 12 equilibra la semana."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Caso resolvido: 30 disponíveis e custos 18 + 15 = 33; reduzir 15 para 12 equilibra a semana."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Has 40; plan costs 25 + 19. Which change makes it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 19 to 15"
+            },
+            {
+              "label": "Raise 25 to 28"
+            },
+            {
+              "label": "Add a 5 cost"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "25 + 15 = 40"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Tiene 40; el plan cuesta 25 + 19. ¿Qué cambio hace que alcance?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 19 a 15"
+            },
+            {
+              "label": "Subir 25 a 28"
+            },
+            {
+              "label": "Agregar un costo de 5"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "25 + 15 = 40"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Tem 40; o plano custa 25 + 19. Qual mudança faz caber?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 19 para 15"
+            },
+            {
+              "label": "Aumentar 25 para 28"
+            },
+            {
+              "label": "Adicionar custo 5"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "25 + 15 = 40"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: Has 50; plan costs 32 + 22. Which change makes it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 22 to 18"
+            },
+            {
+              "label": "Raise 32 to 35"
+            },
+            {
+              "label": "Add a 6 cost"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "32 + 18 = 50"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Tiene 50; el plan cuesta 32 + 22. ¿Qué cambio hace que alcance?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 22 a 18"
+            },
+            {
+              "label": "Subir 32 a 35"
+            },
+            {
+              "label": "Agregar un costo de 6"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "32 + 18 = 50"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Tem 50; o plano custa 32 + 22. Qual mudança faz caber?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 22 para 18"
+            },
+            {
+              "label": "Aumentar 32 para 35"
+            },
+            {
+              "label": "Adicionar custo 6"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "32 + 18 = 50"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.review-and-adjust-plan",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: Has 24; plan costs 16 + 11. Which change makes it fit?",
+          "feedback": {
+            "met": "Yes. The shown facts support it.",
+            "not_yet": "Check all shown facts. Try again."
+          },
+          "choices": [
+            {
+              "label": "Lower 11 to 8"
+            },
+            {
+              "label": "Raise 16 to 19"
+            },
+            {
+              "label": "Add a 3 cost"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "16 + 8 = 24"
+            },
+            {
+              "label": "Keep every cost unchanged"
+            },
+            {
+              "label": "Ignore the total"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Tiene 24; el plan cuesta 16 + 11. ¿Qué cambio hace que alcance?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Bajar 11 a 8"
+            },
+            {
+              "label": "Subir 16 a 19"
+            },
+            {
+              "label": "Agregar un costo de 3"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "16 + 8 = 24"
+            },
+            {
+              "label": "Dejar todos los costos iguales"
+            },
+            {
+              "label": "Ignorar el total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Tem 24; o plano custa 16 + 11. Qual mudança faz caber?",
+          "feedback": {
+            "met": "Sim. Os dados apoiam.",
+            "not_yet": "Veja os dados. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Reduzir 11 para 8"
+            },
+            {
+              "label": "Aumentar 16 para 19"
+            },
+            {
+              "label": "Adicionar custo 3"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "16 + 8 = 24"
+            },
+            {
+              "label": "Manter todos os custos iguais"
+            },
+            {
+              "label": "Ignorar o total"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

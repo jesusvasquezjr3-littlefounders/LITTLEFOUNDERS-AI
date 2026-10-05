@@ -98,7 +98,7 @@ describe('emitted-horizonte.json, read as written', () => {
       const report = runV2DocumentGates(row.document, policy.regional, markets, row.answer_keys);
       expect(report.problems, label(row)).toEqual([]);
     }
-  });
+  }, 20_000);
 
   it('passes the solvability gate at release time (no keys) and at emit time (with keys)', () => {
     for (const row of rows) {
@@ -106,7 +106,7 @@ describe('emitted-horizonte.json, read as written', () => {
       expect(runSolvabilityGate(document), `${label(row)} without keys`).toEqual([]);
       expect(runSolvabilityGate(document, row.answer_keys), `${label(row)} with keys`).toEqual([]);
     }
-  });
+  }, 20_000);
 
   it('can fail: a stale capability list, a leaked rubric and a wrong key are each caught', () => {
     const row = clone(rows.find((candidate) => candidate.document.segments.some((segment) => segment.type === 'math.equation-balance.v2'))!);

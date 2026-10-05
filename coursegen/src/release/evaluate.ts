@@ -43,6 +43,7 @@ export interface ReleaseV2DocumentRow {
   lesson_id: string;
   locale: string;
   document: unknown;
+  answer_keys: Record<string, unknown> | null;
 }
 
 export interface ReleaseTopicRow {
@@ -337,7 +338,7 @@ export function evaluateRelease(input: ReleaseInput): ReleaseEvaluation {
     const problems =
       !document || typeof document !== 'object' || document.schema_version !== 2 || !Array.isArray(document.segments) || document.locale !== row.locale
         ? ['release context: the activated version is not a readable v2 document for this locale']
-        : runV2DocumentGates(document as Record<string, unknown>).problems.map((p) => `gate ${p.gate}: ${p.message}`);
+        : runV2DocumentGates(document as Record<string, unknown>, undefined, undefined, row.answer_keys ?? undefined).problems.map((p) => `gate ${p.gate}: ${p.message}`);
     if (problems.length > 0) {
       gateFailures.set(`${slug} [${row.locale}] (v2)`, problems);
       v2Failures.push(`${slug} [${row.locale}]`);

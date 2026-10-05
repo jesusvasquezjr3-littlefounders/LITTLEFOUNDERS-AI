@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { KC_STRANDS, SeedSchema, assertAcyclic, assertDraftsDoNotGateActive, assertTierOrder } from '../scripts/seed-kc-graph.js';
+import { ActivationSchema, KC_STRANDS, SeedSchema, assertAcyclic, assertDraftsDoNotGateActive, assertTierOrder } from '../scripts/seed-kc-graph.js';
 
 /*
  * Found by adversarial review, round 52 (2026-08-30, HIGH): the real seed
@@ -21,7 +21,13 @@ import { KC_STRANDS, SeedSchema, assertAcyclic, assertDraftsDoNotGateActive, ass
 describe('the real seed file has no tier inversion and no cycle', () => {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const seedPath = path.resolve(here, '../../../database/seeds/kc_graph.v1.json');
+  const activationPath = path.resolve(here, '../../../database/seeds/kc_activation.od22.json');
+  const hierarchyPath = path.resolve(here, '../../../coursegen/curriculum-v2/financial-education/hierarchy/hierarchy.rows.json');
   const seed = SeedSchema.parse(JSON.parse(readFileSync(seedPath, 'utf8')));
+  const activation = ActivationSchema.parse(JSON.parse(readFileSync(activationPath, 'utf8')));
+  const hierarchy = JSON.parse(readFileSync(hierarchyPath, 'utf8')) as {
+    tables: { topics: Array<{ id: string; slug: string }>; topic_knowledge_components: Array<{ topic_id: string; kc_key: string; role: string }> };
+  };
   const keys = new Set(seed.kcs.map((k) => k.key));
 
   it('is acyclic', () => {
@@ -38,7 +44,35 @@ describe('the real seed file has no tier inversion and no cycle', () => {
 
   it('uses only the four declared strands, and the original 28 KCs keep their 0052 strands', () => {
     for (const kc of seed.kcs) expect(KC_STRANDS).toContain(kc.strand);
-    for (const kc of seed.kcs.filter((k) => k.status === 'active')) expect(['money_math', 'entrepreneurship']).toContain(kc.strand);
+    for (const kc of seed.kcs.slice(0, 28)) expect(['money_math', 'entrepreneurship']).toContain(kc.strand);
+  });
+
+  it('approves only the 25 Financial Education KCs with a real teaching bridge', () => {
+    expect(seed.kcs).toHaveLength(100);
+    expect(seed.kcs.filter((kc) => kc.status === 'active')).toHaveLength(53);
+    expect(seed.kcs.filter((kc) => kc.status === 'draft')).toHaveLength(47);
+    expect(activation.required_courses).toEqual(['financial-education']);
+    expect(activation.activations).toHaveLength(25);
+    expect(new Set(activation.activations.map((item) => item.key)).size).toBe(25);
+    const approved = new Set(activation.activations.map((item) => item.key));
+    for (const item of activation.activations) {
+      expect(item.skill_key.startsWith('financial-education/'), item.key).toBe(true);
+      expect(seed.kcs.find((kc) => kc.key === item.key)?.status, item.key).toBe('active');
+    }
+    for (const kc of seed.kcs.slice(28)) expect(kc.status === 'active', kc.key).toBe(approved.has(kc.key));
+  });
+
+  it('maps every approved KC to a real Financial Education topic that teaches it', () => {
+    const topicBySlug = new Map(hierarchy.tables.topics.map((topic) => [topic.slug, topic.id]));
+    const teachingLinks = new Set(hierarchy.tables.topic_knowledge_components
+      .filter((link) => link.role === 'teaches')
+      .map((link) => `${link.topic_id}:${link.kc_key}`));
+    for (const item of activation.activations) {
+      const [, topicSlug] = item.skill_key.split('/');
+      const topicId = topicBySlug.get(topicSlug!);
+      expect(topicId, item.skill_key).toBeDefined();
+      expect(teachingLinks.has(`${topicId}:${item.key}`), `${item.key} -> ${item.skill_key}`).toBe(true);
+    }
   });
 
   it('every edge references a real KC in both directions', () => {

@@ -1,0 +1,644 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-6-9",
+  "chapter_id": "fe-69-money-safe",
+  "lesson_id": "fe-69-20-stop-check-ask",
+  "age_band": "6-9",
+  "eligibility": {
+    "minimum_age": 6,
+    "maximum_age": 9
+  },
+  "knowledge_component_ids": [
+    "life.scam-awareness",
+    "life.data-privacy",
+    "life.think-before-buying"
+  ],
+  "adventure_scene_id": "diorama-b",
+  "mentor_stage": {
+    "character": "liruf",
+    "scene": "diorama-b"
+  },
+  "brief": "Para, revisa y pregunta. Use stop-check-ask when a message requests money or secrets. Un caso numérico o de decisión muestra el criterio antes de práctica guiada, práctica independiente y transferencia.",
+  "title": {
+    "en-US": "Stop, check, ask",
+    "es-MX": "Para, revisa y pregunta",
+    "pt-BR": "Pare, confira e pergunte"
+  },
+  "new_concepts": [
+    "life.scam-awareness"
+  ],
+  "regional": {
+    "universal": "Fictional people, neutral coins and invented accounts; no market fact, currency, product or law."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A prize message demands action now.",
+          "line": "What is the safest next move?"
+        },
+        "es-MX": {
+          "prompt": "Un premio exige actuar ahora.",
+          "line": "¿Cuál es el paso más seguro?"
+        },
+        "pt-BR": {
+          "prompt": "Um prêmio exige ação imediata.",
+          "line": "Qual é o próximo passo seguro?"
+        }
+      }
+    },
+    {
+      "id": "pre-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "pre",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "item_phase": "pre",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: An urgent prize asks for a code. What now?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Stop, check, ask"
+            },
+            {
+              "label": "Send it now"
+            },
+            {
+              "label": "Forward it to friends"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Urgent secret request warns you"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Un premio urgente pide un código. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Detenerse, revisar, preguntar"
+            },
+            {
+              "label": "Enviarlo ya"
+            },
+            {
+              "label": "Reenviarlo a amigos"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Urgencia más secreto es una alerta"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Um prêmio urgente pede código. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Parar, conferir, perguntar"
+            },
+            {
+              "label": "Enviar agora"
+            },
+            {
+              "label": "Encaminhar a amigos"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Urgência mais segredo é um alerta"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Worked example",
+          "line": "Urgent code request? Stop, check, and ask."
+        },
+        "es-MX": {
+          "prompt": "Ejemplo resuelto",
+          "line": "¿Piden un código urgente? Detente, revisa y pregunta."
+        },
+        "pt-BR": {
+          "prompt": "Exemplo resolvido",
+          "line": "Pedido urgente de código? Pare, confira e pergunte."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: A pop-up says “pay now or lose all.” What now?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Close it; ask an adult"
+            },
+            {
+              "label": "Pay immediately"
+            },
+            {
+              "label": "Enter every account detail"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Threats and rush are warnings"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Una ventana dice “paga ya o pierde todo”. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Cerrar y preguntar a un adulto"
+            },
+            {
+              "label": "Pagar de inmediato"
+            },
+            {
+              "label": "Poner todos los datos"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Amenazas y presión son alertas"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Uma tela diz “pague já ou perca tudo”. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Fechar e perguntar a um adulto"
+            },
+            {
+              "label": "Pagar imediatamente"
+            },
+            {
+              "label": "Inserir todos os dados"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Ameaças e pressão são alertas"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rho: A stranger offers coins for a password. What now?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Block it; tell an adult"
+            },
+            {
+              "label": "Trade the password"
+            },
+            {
+              "label": "Reply with another secret"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Unknown sender asks for password"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Rho: Un extraño ofrece monedas por una clave. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "Ignorar, bloquear y avisar"
+            },
+            {
+              "label": "Cambiar la contraseña por monedas"
+            },
+            {
+              "label": "Responder con otro secreto"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Desconocido más contraseña es inseguro"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Rho: Um estranho oferece moedas por uma senha. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Ignorar, bloquear e avisar"
+            },
+            {
+              "label": "Trocar a senha por moedas"
+            },
+            {
+              "label": "Responder com outro segredo"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Desconhecido mais senha é inseguro"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "reasoning.decide-justify.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "decision-reasons"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "life.scam-awareness",
+      "payload": {
+        "choices": [
+          {
+            "id": "correct"
+          },
+          {
+            "id": "wrong-a"
+          },
+          {
+            "id": "wrong-b"
+          }
+        ],
+        "reasons": [
+          {
+            "id": "kc-proof"
+          },
+          {
+            "id": "incomplete"
+          },
+          {
+            "id": "irrelevant"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptableChoiceIds": [
+          "correct"
+        ],
+        "reasonQuality": {
+          "kc-proof": "sound",
+          "incomplete": "partial",
+          "irrelevant": "unsupported"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Zara: A strange link asks for account access. What now?",
+          "feedback": {
+            "met": "Yes. The facts prove it.",
+            "not_yet": "Check each fact. Try again."
+          },
+          "choices": [
+            {
+              "label": "Do not open; check elsewhere"
+            },
+            {
+              "label": "Open and sign in"
+            },
+            {
+              "label": "Share the link"
+            }
+          ],
+          "reasonPrompt": "What proves it?",
+          "reasons": [
+            {
+              "label": "Strange link needs a check"
+            },
+            {
+              "label": "The request sounds friendly"
+            },
+            {
+              "label": "Sharing is faster"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Zara: Un enlace raro pide acceso a la cuenta. ¿Qué haces?",
+          "feedback": {
+            "met": "Sí. Esa regla cuida bien.",
+            "not_yet": "Mira el riesgo y la regla."
+          },
+          "choices": [
+            {
+              "label": "No abrirlo; verificar por separado"
+            },
+            {
+              "label": "Abrir e iniciar sesión"
+            },
+            {
+              "label": "Compartir el enlace"
+            }
+          ],
+          "reasonPrompt": "¿Qué lo prueba?",
+          "reasons": [
+            {
+              "label": "Enlace extraño y acceso requieren verificación"
+            },
+            {
+              "label": "La solicitud suena amable"
+            },
+            {
+              "label": "Compartir es más rápido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Zara: Um link estranho pede acesso à conta. O que fazer?",
+          "feedback": {
+            "met": "Sim. Os dados provam.",
+            "not_yet": "Veja cada dado. Tente de novo."
+          },
+          "choices": [
+            {
+              "label": "Não abrir; verificar separadamente"
+            },
+            {
+              "label": "Abrir e entrar"
+            },
+            {
+              "label": "Compartilhar o link"
+            }
+          ],
+          "reasonPrompt": "O que prova?",
+          "reasons": [
+            {
+              "label": "Link estranho e acesso exigem verificação"
+            },
+            {
+              "label": "O pedido parece amigável"
+            },
+            {
+              "label": "Compartilhar é mais rápido"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

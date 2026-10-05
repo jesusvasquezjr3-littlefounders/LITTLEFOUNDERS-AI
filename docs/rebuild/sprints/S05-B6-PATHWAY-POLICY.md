@@ -1,6 +1,6 @@
 # S05: B.6 age-pathway policy on the shared knowledge graph
 
-**Status: engineering proposal awaiting owner review (OD-22).** Engineering drafted this policy and implemented its data layer on the Mentor's knowledge-component graph. It is not an accepted release policy. The owner reviews the policy and its evidence before the new catalog is released. S05.3a added the policy and its data layer. S05.3b wired the learner routes to the policy behind one release switch, `COURSE_PATHWAY_ENGINE` (default `linear`). Until an operator sets it to `pathway`, after the owner accepts the policy and the B.6 migrations are applied, a learner sees the legacy linear course. The 72 new knowledge components stay `draft`, so the Mentor's view does not change either.
+**Status: OD-22 content activation accepted on 4 October 2026, limited by usable evidence.** S05.3a added the policy and data layer; S05.3b wired learner routes behind `COURSE_PATHWAY_ENGINE` (default `linear`). The owner approved components that can actually be used. The audit therefore approved the 25 `money_life` components taught by the Financial Education v2 catalog, while 47 investing and entrepreneurship additions without a live Financial Education bridge remain `draft`. Approved rows also remain operationally draft until the course is released: one post-release transaction proves each published teaching bridge before activating it. The pathway release switch remains an explicit operator step.
 
 **Authority:** Product `10` B.6 (with the OD-16 amendment), B.1, B.2 and B.9; OD-9 (no loss of learning evidence), OD-16 (one course, age-appropriate pathways), OD-22 (draft, then build, then owner review) and OD-23 (no paid spend); Appendix C (Stage 3 pedagogical review). Frontend Bible registers set the stage ages. Where this document and the SPEC disagree, the SPEC wins.
 
@@ -117,12 +117,12 @@ Each numbered rule is implemented in `backend/src/services/pathway/pathwayPolicy
 - **G2.** Review topics get their links from what they review: every teaching topic of a cited saga, or a cited topic, following cited review topics. A review quest can also list components that its own lessons were checked (at the lesson level) to teach as new material.
 - **G3.** Every knowledge component is taught by at least one topic or is listed as a content gap with a reason. A listed gap can never be taught.
 - **G4.** The Mentor's bridge (`kc.skill_key`) must point at a topic that the course map links to the same component. This stops the two systems from disagreeing about where a component is taught.
-- **G5.** New components stay `draft` until the owner accepts this policy. A draft component can never be a prerequisite of an active one, so activating the drafts can never re-lock an active component that learners are already working on. Activation is done by editing the seed file and re-running the seed, never by a manual SQL update.
+- **G5.** An owner-approved component is activated only when its canonical topic and at least one lesson are published and the topic has a `teaches` link to that same component. `kc_activation.od22.json` records the reviewed subset and bridge. The release operator runs the idempotent, locked transaction after the course release; the normal seed deliberately preserves those operational fields. A draft component can never be a prerequisite of an active one, so activation cannot re-lock material already on a learner's frontier.
 - **G6.** The YAML owns each topic's kind, `review_of` and hard prerequisites. The map repeats them, and `npm run kc:map` fails if the two ever differ.
 
 ## 5. The knowledge-component map (S05.3a)
 
-- **Graph.** 100 components (28 active plus 72 draft), 122 edges and 32 misconceptions. The 72 new components add two strands: `money_life` (25) covers everyday money habits, safety, banking, giving and planning, and `investing` (18) covers the investing course. `entrepreneurship` gains 28 and `money_math` gains 1.
+- **Graph.** 100 components (53 owner-approved plus 47 draft), 122 edges and 32 misconceptions. The original 28 remain approved. All 25 `money_life` additions are approved because Financial Education teaches them and their prerequisite closure adds no uncovered component. The 18 `investing`, 28 `entrepreneurship` and one `money_math` additions remain draft until their own released content supplies equivalent evidence.
 
   A component is a concept that is taught at different depths in different stages, not one per topic. For example, `biz.make-and-test` is taught in the 6–7 inventors' workshop and again in the teen garage prototype; this is the "one graph, age-appropriate chapters" model of OD-16. Mentor tiers follow each component's first audience (tier 1 or 2 for financial education, tier 3 for teen content). The new components use the default BKT parameters and have not been calibrated (`audit:bkt-calibration` applies after activation).
 - **Map.** Every topic of the 4 courses is mapped: 882 topics and 1,631 links (755 *teaches*, 876 *reviews*). Each knowledge component is taught by 1 to 24 teaching links (median 7). 25 components are taught in two or more courses.
@@ -173,8 +173,8 @@ When the Forge phase replaces a legacy topic with a new one, credit moves only t
 4. Run `npm run seed:kc`.
 5. Regenerate `database/types`.
 6. Deploy Core with the S05.3b routes. `COURSE_PATHWAY_ENGINE` stays `linear`, so this deploy changes nothing a learner sees.
-7. Flip the 72 drafts to active in the seed and seed again.
-8. Set `COURSE_PATHWAY_ENGINE=pathway` on Core. Setting it back to `linear` is the rollback: every row the pathway engine writes (stage placements, stored badges, credits) is also valid under the linear engine, and the B.1 course placement row is kept.
+7. Release Financial Education through the normal staff gate, then run `bash agent/tools/release-v2-catalog.sh --apply --activate-kcs`. The transaction refuses activation unless all 25 reviewed mappings resolve to exactly one published topic, a published lesson and a `teaches` link. It updates status and bridge together, under table locks, and is safe to repeat. The other 47 additions stay draft.
+8. Run the content-bridge audit (the activation command does this automatically), then set `COURSE_PATHWAY_ENGINE=pathway` on Core. Setting it back to `linear` is the rollback: every row the pathway engine writes (stage placements, stored badges, credits) is also valid under the linear engine, and the B.1 course placement row is kept.
 
 Before the legacy platform is switched off, OD-9 §4.5 still requires row counts and per-family spot checks.
 

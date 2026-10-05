@@ -108,8 +108,9 @@ export async function publish(args: Args): Promise<number> {
   const loaded = loadV2Plans(path.resolve(args.plans));
   const broken = loaded.filter((entry) => entry.errors.length);
   if (broken.length) { for (const entry of broken) console.error(`v2:publish: ${entry.file}: ${entry.errors.join('; ')}`); return 1; }
+  const config = dryRun ? undefined : getConfig();
   const rpc = dryRun ? undefined : async (fn: string, body: Record<string, unknown>) => {
-    const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+    const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = config!;
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
       method: 'POST', headers: { apikey: SUPABASE_SERVICE_ROLE_KEY!, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -117,6 +118,16 @@ export async function publish(args: Args): Promise<number> {
     const text = await res.text();
     return { ok: res.ok, status: res.status, body: text ? JSON.parse(text) as unknown : null };
   };
+  let initialCourse = false;
+  if (config) {
+    const response = await fetch(`${config.SUPABASE_URL}/rest/v1/courses?select=status&slug=eq.${encodeURIComponent(args.course)}`, {
+      headers: { apikey: config.SUPABASE_SERVICE_ROLE_KEY!, Authorization: `Bearer ${config.SUPABASE_SERVICE_ROLE_KEY}` },
+    });
+    if (!response.ok) { console.error(`v2:publish: could not read course status (${response.status})`); return 1; }
+    const rows = await response.json() as Array<{ status?: unknown }>;
+    if (rows.length !== 1 || typeof rows[0]?.status !== 'string') { console.error(`v2:publish: course ${args.course} is not uniquely present in Vault`); return 1; }
+    initialCourse = rows[0].status !== 'published';
+  }
   // B.18 (GAP-FIX-R3): `--audio-manifest <file>` (audio_ref -> asset) checks differentiated narration; `--require-narration-audio` blocks on a gap.
   const audioManifest = typeof args['audio-manifest'] === 'string' ? JSON.parse(readFileSync(path.resolve(args['audio-manifest']), 'utf8')) as Record<string, unknown> : {};
   // `--lesson-ids <ids.json>` (from v2:hierarchy): rewrite each plan's slug lesson_id to its public.lessons uuid, so document.lesson_id equals p_lesson_id (0221).
@@ -133,7 +144,7 @@ export async function publish(args: Args): Promise<number> {
     }
   }
   const result = await releaseV2Lessons(plans, {
-    runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun, deps: rpc ? { rpc } : {},
+    runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun, deps: rpc ? { rpc } : {}, initialCourse,
     audioManifest, requireNarrationAudio: args['require-narration-audio'] === true,
     coreServesHorizonte: args['core-has-horizonte'] === true,
     requireLessonDesign: args['require-lesson-design'] === true,

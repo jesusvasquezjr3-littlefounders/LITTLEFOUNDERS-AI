@@ -148,14 +148,14 @@ describe('the release evaluation fails closed', () => {
   });
 
   it.skipIf(!input)('checks every activated v2 document, and refuses an unreadable or mislabelled activation', () => {
-    const emitted = JSON.parse(readFileSync(FIXTURE_EMITTED, 'utf8')) as Array<{ lesson_id: string; locale: string; document: Record<string, unknown> }>;
-    const clean = emitted.slice(0, 6).map((row) => ({ lesson_id: row.lesson_id, locale: row.locale, document: row.document }));
+    const emitted = JSON.parse(readFileSync(FIXTURE_EMITTED, 'utf8')) as Array<{ lesson_id: string; locale: string; document: Record<string, unknown>; answer_keys: Record<string, unknown> }>;
+    const clean = emitted.slice(0, 6).map((row) => ({ lesson_id: row.lesson_id, locale: row.locale, document: row.document, answer_keys: row.answer_keys }));
     const pass = new Map(evaluateRelease({ ...input!, v2Documents: clean }).checks.map((c) => [c.gate, c]));
     expect(pass.get('forge.release.v2-content')).toMatchObject({ ok: true, passed: 6, total: 6 });
 
     const hype = structuredClone(clean[1]!);
     (hype.document.segments as Array<{ prompt: string }>)[0]!.prompt = 'Hazte rico rápido: reparte 12 monedas.';
-    const unreadable = { lesson_id: 'lost', locale: 'es-MX', document: {} };
+    const unreadable = { lesson_id: 'lost', locale: 'es-MX', document: {}, answer_keys: null };
     const mislabelled = { ...structuredClone(clean[0]!), locale: 'pt-BR' };
     const result = evaluateRelease({ ...input!, v2Documents: [clean[0]!, hype, unreadable, mislabelled] });
     const check = result.checks.find((c) => c.gate === 'forge.release.v2-content')!;

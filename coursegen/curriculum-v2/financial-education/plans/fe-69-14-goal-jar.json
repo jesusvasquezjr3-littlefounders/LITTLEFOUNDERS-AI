@@ -444,7 +444,7 @@
       },
       "copy": {
         "en-US": {
-          "prompt": "Zara has 6 saved. Fill the frame to the kite goal.",
+      "prompt": "Zara saved 6 of 10 coins for a kite. Fill the frame.",
           "feedback": {
             "met": "You filled the frame all the way to the goal.",
             "not_yet": "Not yet. Fill until the whole frame is full."
@@ -455,7 +455,7 @@
           ]
         },
         "es-MX": {
-          "prompt": "Zara tiene 6 guardadas. Llena el marco hasta la meta del papalote.",
+      "prompt": "Zara guardó 6 de 10 monedas para un papalote. Llena el marco.",
           "feedback": {
             "met": "Llenaste el marco hasta la meta.",
             "not_yet": "Todavía no. Llena hasta que el marco esté lleno."
@@ -466,7 +466,7 @@
           ]
         },
         "pt-BR": {
-          "prompt": "A Zara tem 6 guardadas. Encha o quadro até a meta da pipa.",
+      "prompt": "Zara guardou 6 de 10 moedas para uma pipa. Encha o quadro.",
           "feedback": {
             "met": "Você encheu o quadro até a meta.",
             "not_yet": "Ainda não. Encha até o quadro ficar cheio."

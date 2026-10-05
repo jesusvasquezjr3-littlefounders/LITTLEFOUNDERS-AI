@@ -1,5 +1,19 @@
 # Requirement migration ledger
 
+## Financial Education V2 production checkpoint, 5 October 2026
+
+[Checkpoint](sprints/S05-FINANCIAL-EDUCATION-PRODUCTION.md): the owner selected Financial Education V2 as canonical and authorized its complete production release without generated voice or narration audio. These synchronized deltas do not fabricate a named pedagogical or native-language reviewer; production release evidence is recorded separately after it exists.
+
+| Requirement | Implementation delta | Local verification | Acceptance/release |
+|---|---|---|---|
+| B.6 | OD-22 activation is bounded to 25 Financial Education KCs with live `teaches` evidence; 47 uncovered KCs remain draft. Activation is atomic, locked, audited and post-release only. | PostgreSQL 17 learning gate 12/12 and staff gate 9/9. | Owner policy approval recorded; production activation pending. |
+| B.11 | The 112-plan course carries the required Mentor-misjudgment coverage and Stage 3 flags. | 112/112 plans emit in three locales. | Owner production authorization recorded; named Stage 3 human review remains a follow-up. |
+| B.14 | `content:gates --course financial-education` now selects the canonical V2 corpus instead of the stale V1 blueprint. | 112 plans, 336 documents and family-facing UI tone: zero blocking findings. | Production pending. |
+| B.16 | Every plan carries the three-market contract and private market rubric. | 336 localized documents pass Forge V2 and Core. | Native es-MX and pt-BR human review remains a follow-up. |
+| B.17 | The expansion follows the examples-first arc and age-based concept ceilings. | Catalog covers 100/100 KCs with zero errors; 38 prerequisite/pure-practice warnings are nonblocking. | Production pending. |
+| B.18 | The text-only fallback is the release scope; generated narration/audio is excluded. | Carried redundancy gates pass all 336 documents; narration parity passes. | Audio remains out of scope. |
+| G.2 | V2 release verification compares exact authored/current documents and answer keys, preserves semantic version identity, attests all 34 checks against a pre-read watermark and fails closed on non-releasable retry states. | 19 focused release tests; PostgreSQL content/course release proofs included in the 12/12 and 9/9 gates. | Production publication and audited release pending. |
+
 ## Local application artwork and composition, 2 October 2026
 
 [Application checkpoint](sprints/APPLICATION-ART-AND-COMPOSITION.md): original supporting AI artwork, readable application layouts, natural embedded-panel heights and the full flexible Mentor stage. Implementation complete; local verification passed using the 136-state matrix and final four-state delta; owner visual acceptance pending; release not requested. Existing product acceptance remains separate.

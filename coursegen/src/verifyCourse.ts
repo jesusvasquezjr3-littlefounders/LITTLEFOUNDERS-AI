@@ -14,7 +14,7 @@
  * the local publish command, Product G.2) refuses a release unless every
  * required id passed. A report is also written under runs/verify-course/.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCourseCatalog } from './catalog/loader.js';
@@ -101,6 +101,14 @@ async function attestCourseRelease(courseId: string, checks: readonly ReleaseChe
 }
 
 (async () => {
+  // A v2 structure is an explicit declaration that v2 is the authored source
+  // of truth. Never verify that course against the similarly named legacy
+  // blueprint or fabricate v1 lesson_documents to satisfy old checks.
+  const v2Structure = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'curriculum-v2', COURSE, 'structure.yaml');
+  if (existsSync(v2Structure)) {
+    const { verifyV2Course } = await import('./v2/verifyCourse.js');
+    process.exit(await verifyV2Course(COURSE));
+  }
   const load = loadCourseCatalog(`curriculum/${COURSE}`);
 
   // ---- Vault: hierarchy + every release-ready document ------------------------
@@ -162,8 +170,8 @@ async function attestCourseRelease(courseId: string, checks: readonly ReleaseChe
       )
     : [];
   const versions = pointers.length
-    ? await qChunked<{ id: string; lesson_id: string; locale: string; document: unknown }>(
-        (batch) => `lesson_document_versions?select=id,lesson_id,locale,document&id=in.(${batch.join(',')})`,
+    ? await qChunked<{ id: string; lesson_id: string; locale: string; document: unknown; answer_keys: Record<string, unknown> | null }>(
+        (batch) => `lesson_document_versions?select=id,lesson_id,locale,document,answer_keys&id=in.(${batch.join(',')})`,
         pointers.map((p) => p.document_version_id),
       )
     : [];
@@ -174,6 +182,7 @@ async function attestCourseRelease(courseId: string, checks: readonly ReleaseChe
     // A pointer whose version cannot be read is checked as an empty document,
     // which fails: an unreadable activation is never attested.
     document: versionById.get(pointer.document_version_id)?.document ?? {},
+    answer_keys: versionById.get(pointer.document_version_id)?.answer_keys ?? null,
   }));
 
   /*

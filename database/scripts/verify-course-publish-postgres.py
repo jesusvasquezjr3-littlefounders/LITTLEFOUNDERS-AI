@@ -110,7 +110,8 @@ try:
             raise RuntimeError(f'{migration.name} failed to apply: {error}') from error
     check(f'all {len(migrations)} migrations apply in order on PostgreSQL {run("SHOW server_version")}')
 
-    I = {k: str(uuid.uuid4()) for k in ('course', 'adv', 'saga', 'topic', 'lesson', 'lesson2', 'boss', 'editor', 'analyst')}
+    I = {k: str(uuid.uuid4()) for k in ('course', 'adv', 'saga', 'topic', 'lesson', 'lesson2',
+                                        'lesson_version', 'lesson2_version', 'boss', 'editor', 'analyst')}
     slug = "quoted'course"
     run(f"""
     INSERT INTO auth.users (id, email) VALUES ('{I['boss']}', 'boss@littlefounders.ai'), ('{I['editor']}', 'editor@littlefounders.ai'), ('{I['analyst']}', 'analyst@littlefounders.ai');
@@ -147,15 +148,21 @@ try:
     assert status('courses', 'course') == 'draft' and status('lessons', 'lesson') == 'review'
     check('a course whose lesson lacks a locale is refused and nothing is published')
 
-    for locale in ('en-US', 'es-MX', 'pt-BR'):
-        run(f"INSERT INTO lesson_documents (lesson_id, locale, document) VALUES ('{I['lesson']}', '{locale}', '{{\"segments\": []}}');")
+    run(f"""INSERT INTO lesson_document_versions (id, lesson_id, locale, version_id, schema_version, document, answer_keys)
+        VALUES ('{I['lesson_version']}', '{I['lesson']}', 'en-US', 'course-v2-en-001', 2, '{{}}', '{{}}');
+        INSERT INTO lesson_document_version_current (lesson_id, locale, document_version_id)
+        VALUES ('{I['lesson']}', 'en-US', '{I['lesson_version']}');
+        INSERT INTO lesson_documents (lesson_id, locale, document)
+        SELECT '{I['lesson']}', locale, '{{"segments": []}}'::jsonb
+        FROM unnest(ARRAY['es-MX', 'pt-BR']) AS locale;""")
+    assert run(f"SELECT lesson_effective_locale_count('{I['lesson']}')") == '3'
     assert release()[1] == 'VERIFICATION_REQUIRED'
     assert status('lessons', 'lesson') == 'review'
     run(f"INSERT INTO course_release_verifications (course_id, checks, content_watermark) VALUES ('{I['course']}', '[]'::jsonb, forge_release_content_watermark('{I['course']}'));")
     incomplete = release()
     assert incomplete[0] == 'f' and incomplete[1].startswith('VERIFICATION'), incomplete
     assert status('courses', 'course') == 'draft'
-    check('without a Forge verification, or with an incomplete one, the release is refused and nothing moves')
+    check('one current v2 locale plus two v1 fallbacks satisfies locale coverage; without a Forge verification, or with an incomplete one, the release is refused and nothing moves')
 
     # An attestation that names every required Forge gate but one cannot unlock a release.
     partial = run("SELECT string_agg(format('{\"gate\": \"%s\", \"ok\": true}', gate_id), ',') FROM forge_release_gates WHERE gate_id <> 'forge.gate.13.copy-budget'")
@@ -214,14 +221,19 @@ try:
 
     # A content change after the verification makes it stale (the watermark moves).
     run(f"BEGIN; SET LOCAL lf.bypass_justification = 'Fixing a typo in the published lesson copy'; "
-        f"UPDATE lesson_documents SET document = '{{\"segments\": [{{\"id\": \"s1\"}}]}}' WHERE lesson_id = '{I['lesson']}' AND locale = 'en-US'; COMMIT;")
+        f"UPDATE lesson_documents SET document = '{{\"segments\": [{{\"id\": \"s1\"}}]}}' WHERE lesson_id = '{I['lesson']}' AND locale = 'es-MX'; COMMIT;")
     stale = release()
     assert stale[0:2] == ['f', 'VERIFICATION_REQUIRED'], stale
     check('a verification made stale by a later content change is refused')
 
     # GAP-FIX-R5: every other decision is audited with its actor.
     run(f"""INSERT INTO lessons (id, topic_id, position, slug, status) VALUES ('{I['lesson2']}', '{I['topic']}', 2, 'pub-lesson-2', 'review');
-        INSERT INTO lesson_documents (lesson_id, locale, document) SELECT '{I['lesson2']}', l, '{{"segments": []}}' FROM unnest(ARRAY['en-US', 'es-MX', 'pt-BR']) AS l;""")
+        INSERT INTO lesson_document_versions (id, lesson_id, locale, version_id, schema_version, document, answer_keys)
+        VALUES ('{I['lesson2_version']}', '{I['lesson2']}', 'pt-BR', 'lesson-v2-pt-001', 2, '{{}}', '{{}}');
+        INSERT INTO lesson_document_version_current (lesson_id, locale, document_version_id)
+        VALUES ('{I['lesson2']}', 'pt-BR', '{I['lesson2_version']}');
+        INSERT INTO lesson_documents (lesson_id, locale, document) SELECT '{I['lesson2']}', l, '{{"segments": []}}'
+        FROM unnest(ARRAY['en-US', 'es-MX']) AS l;""")
     verify()
     stage3_pass('lesson2')
     assert service(f"SELECT code FROM release_lesson('{I['analyst']}', '{I['lesson2']}')") == 'FORBIDDEN'

@@ -88,12 +88,13 @@ if (retireGames) {
 const releaseDefinitions = files.filter((f) => /create or replace function public\.release_course\(/i.test(readFileSync(join(dir, f), 'utf8')));
 for (const releaseGate of releaseDefinitions) {
   const sql = readFileSync(join(dir, releaseGate), 'utf8');
-  if (!/update public\.lessons l[\s\S]*?l\.status = 'review'/.test(sql)) {
+  if (!/update public\.lessons l[\s\S]*?l\.status = 'review'/i.test(sql)) {
     fail(`${releaseGate}: the lesson publish UPDATE must carry the review-ready predicate, not a blanket status filter`);
   }
-  const localePredicate = sql.split("filter (where d.locale in ('en-US', 'es-MX', 'pt-BR'))").length - 1;
-  if (localePredicate < 2) {
-    fail(`${releaseGate}: the locale-complete predicate must guard the publish UPDATE as well as the preflight`);
+  const legacyLocalePredicate = sql.split("filter (where d.locale in ('en-US', 'es-MX', 'pt-BR'))").length - 1;
+  const effectiveLocalePredicate = (sql.match(/public\.lesson_effective_locale_count\(l\.id\)/g) ?? []).length;
+  if (legacyLocalePredicate < 2 && effectiveLocalePredicate < 2) {
+    fail(`${releaseGate}: the v1 or effective-locale completeness predicate must guard the publish UPDATE as well as the preflight`);
   }
   if (!sql.includes('concurrent content change detected')) {
     fail(`${releaseGate}: release_course must recount against the preflight totals and raise on mismatch`);
@@ -110,7 +111,7 @@ const functionBody = (f, fn) => {
 const latestRelease = releaseDefinitions.at(-1);
 if (latestRelease && !latestRelease.startsWith('0031_')) {
   // S05.4c: the verification half of the preflight is one shared function.
-  if (!/from public\.forge_release_verification_refusal\(p_course_id\)/.test(functionBody(latestRelease, 'release_course'))) {
+  if (!/from public\.forge_release_verification_refusal\(p_course_id\)/i.test(functionBody(latestRelease, 'release_course'))) {
     fail(`${latestRelease}: the latest release_course must refuse through forge_release_verification_refusal`);
   }
   const verification = latestDefinition('forge_release_verification_refusal');
@@ -136,8 +137,39 @@ if (latestRelease && !latestRelease.startsWith('0031_')) {
 // S05.4c lane review (G.2): a single lesson is released only through the same
 // preflight, and no API role can publish by writing a status.
 const lessonRelease = latestDefinition('release_lesson');
-if (lessonRelease && !/from public\.forge_release_verification_refusal\(v_course_id\)/.test(functionBody(lessonRelease, 'release_lesson'))) {
+if (lessonRelease && !/from public\.forge_release_verification_refusal\(v_course_id\)/i.test(functionBody(lessonRelease, 'release_lesson'))) {
   fail(`${lessonRelease}: release_lesson must refuse through forge_release_verification_refusal`);
+}
+
+// The canonical v2 release accepts a current pointer for each locale and only
+// falls back to v1 where that locale has no pointer. The latest publication
+// function is retry-safe only for the same immutable content digests.
+const effectiveLocaleRelease = latestDefinition('lesson_effective_locale_count');
+if (effectiveLocaleRelease) {
+  const sql = readFileSync(join(dir, effectiveLocaleRelease), 'utf8');
+  const body = functionBody(effectiveLocaleRelease, 'lesson_effective_locale_count');
+  if (!/VALUES \('en-US'::text\), \('es-MX'::text\), \('pt-BR'::text\)/i.test(body)
+      || !/lesson_document_version_current[\s\S]*?NOT EXISTS[\s\S]*?lesson_documents/i.test(body)) {
+    fail(`${effectiveLocaleRelease}: effective locales must prefer each current v2 pointer and fall back to v1 only when absent`);
+  }
+  if (!/lesson_effective_locale_count\(l\.id\) <> 3/.test(functionBody(latestRelease, 'release_course'))
+      || !/lesson_effective_locale_count\(p_lesson_id\)/.test(functionBody(lessonRelease, 'release_lesson'))) {
+    fail(`${latestRelease}: course and lesson release must both require three effective locales`);
+  }
+  for (const gate of ['05.rationale-canon', '06.anti-genericity', '07.generation-quality', '08.clarity', '09.readability']) {
+    if (!sql.includes(`('forge.gate.${gate}')`)) {
+      fail(`${effectiveLocaleRelease}: canonical v2 publication must require forge.gate.${gate}`);
+    }
+  }
+}
+const v2Publication = latestDefinition('publish_v2_lesson_version');
+if (v2Publication) {
+  const body = functionBody(v2Publication, 'publish_v2_lesson_version');
+  if (!/v_existing_document_digest IS DISTINCT FROM v_document_digest[\s\S]*?v_existing_keys_digest IS DISTINCT FROM v_keys_digest/i.test(body)
+      || !/USING ERRCODE = '23505'/.test(body)
+      || !/'idempotent', true/.test(body)) {
+    fail(`${v2Publication}: a repeated v2 identity must be idempotent only for matching document and answer-key digests`);
+  }
 }
 if (lessonRelease) {
   const sql = readFileSync(join(dir, lessonRelease), 'utf8');
