@@ -105,8 +105,8 @@ test('the shipped registry and change record are green (static checks)', () => {
   assert.equal(tierOf(['oracle/src/safety/moderation.ts'], reg).tier, 'tier_1');
   assert.equal(tierOf(['oracle/src/tutor/prompt.ts'], reg).tier, 'tier_2');
   assert.equal(tierOf(['oracle/src/content/generate.ts'], reg).tier, 'live_content_judging');
-  // The release audit is red until both leads sign (the designed starting state).
-  assert.ok(checkLedger(reg, ledger, { release: true }).length > 0);
+  // The release audit is green once both leads have signed every governed entry.
+  assert.deepEqual(checkLedger(reg, ledger, { release: true }), []);
 });
 
 test('globs: ** spans directories, * stays inside one', () => {

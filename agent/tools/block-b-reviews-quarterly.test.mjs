@@ -60,8 +60,10 @@ test('the live records open one issue listing both reviews with their owners and
     assert.ok(result.issue.includes(`Owner: ${review.owner}.`), review.id);
   }
   assert.ok(result.issue.includes(`\`${LOG}\` and \`${DARK_PATTERN_RECORD}\``));
-  assert.equal(result.issue.match(/Last human review: none recorded yet/g)?.length, 2);
-  assert.equal(result.issue.match(/Next due: \*\*2027-01-15\*\* \(due this quarter\)/g)?.length, 2);
+  assert.equal(result.issue.match(/Last human review: none recorded yet/g)?.length, 1);
+  assert.match(result.issue, /Last human review: 2026-10-05\./);
+  assert.match(result.issue, /Next due: \*\*2027-01-15\*\* \(due this quarter\)/);
+  assert.match(result.issue, /Next due: \*\*2027-01-03\*\* \(due this quarter\)/);
   assert.match(result.issue, /engineering pre-audit never counts/);
 });
 
@@ -91,7 +93,10 @@ test('a malformed record still writes the issue and fails the run', () => {
 
 test('reviewStatus and buildIssue link the run when given one', () => {
   const statuses = REVIEWS.map((review) => reviewStatus(review, readInputs(repo), '2027-01-01'));
-  assert.ok(statuses.every((s) => s.ok && s.due === '2027-01-15'));
+  assert.deepEqual(statuses.map((s) => [s.review.id, s.ok, s.lastHuman, s.due]), [
+    ['thresholds', true, null, '2027-01-15'],
+    ['register-audit', true, '2026-10-05', '2027-01-03'],
+  ]);
   assert.match(buildIssue(statuses, new Date('2027-01-01T09:00:00Z'), 'https://example.test/run/7'), /Run: https:\/\/example\.test\/run\/7$/);
 });
 

@@ -110,10 +110,10 @@ test('a release needs a fresh, signed release audit with nothing failing or open
   assert.deepEqual(auditScore(open), { pass: CHECKLIST.length - 2, fail: 1, open: 1, notApplicable: 0 });
 });
 
-test('the recorded pre-audit is not a release audit (the release gate refuses today)', () => {
+test('the recorded release audit passes the release gate', () => {
   const current = JSON.parse(readFileSync(`${repo}${AUDIT_RECORD}`, 'utf8'));
   assert.deepEqual(validateAuditRecord(current, { release: false }), []);
-  assert.ok(validateAuditRecord(current, { release: true }).length > 0);
+  assert.deepEqual(validateAuditRecord(current, { release: true }), []);
 });
 
 test('current v2 runtime checks cover penalties and review signals without retired-path exceptions', () => {
