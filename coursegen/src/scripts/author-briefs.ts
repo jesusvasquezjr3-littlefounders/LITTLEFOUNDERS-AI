@@ -31,7 +31,7 @@ import { resolveRegister } from '../pipeline/register.js';
 import { resolveAllowedTypes, renderPalette } from '../pipeline/prompts/palette.js';
 import { MIX_RULES, renderCompetencyBlockForPrompt, renderReviewSourcesBlock, type PlanContext } from '../pipeline/plan.js';
 import { BASE_HARD_RULES, renderFactsBlock, buildLessonDirectives } from '../pipeline/write.js';
-import { CONTENT_PLAYBOOK, tierReasoningGuidance } from '../pipeline/contentPlaybook.js';
+import { CONTENT_PLAYBOOK, FOLLOWABILITY_RULES, tierReasoningGuidance } from '../pipeline/contentPlaybook.js';
 import { ICON_PALETTE } from '../pipeline/generationQuality.js';
 import { TYPE_TO_SCHEMA } from '../contract/registry.js';
 import { shapeExample } from '../pipeline/shapeExample.js';
@@ -204,10 +204,7 @@ function renderContract(tier: string, allowedTypes: readonly string[], generalRu
      */
     '## AUTHORING DISCIPLINE — followability (read this twice; it is what most lessons get wrong)',
     '',
-    '1. **ONE SITUATION, CARRIED THROUGH. At most TWO per lesson.** The opening segment establishes a concrete situation — a named character, a place, a stake — and the graded segments STAY IN IT. Do not invent a new scenario per segment. A learner who has to re-orient at every segment cannot follow the lesson, however good each segment is on its own. A REVIEW lesson interleaves TOPICS, not SCENARIOS: run the several skills being consolidated through the SAME running case.',
-    '2. **EVERY GRADED SEGMENT RE-ANCHORS ITSELF IN ITS OWN `prompt_md`.** Open with a short clause naming who and where — "En el puesto de Rho, ¿cuál…?", "Zara revisa sus notas del tianguis: ¿qué…?" — so a learner who lost the thread can re-enter without scrolling back. **The anchor is a CLAUSE INSIDE the instruction sentence, never an extra sentence of its own.** The cap is unchanged and enforced: 160 characters AND at most 3 sentences. Adding a whole sentence of scene-setting to satisfy this rule fails the gate — that already happened once. If the anchor will not fit, shorten the instruction, not the cap.',
-    '3. **SAME SITUATION, FRESH INSTANCE.** Rule 1 is about the WORLD; this is about the ANSWER. Never grade a case whose answer was already stated in an earlier segment — a worked example that then tests the same instance teaches recognition, not reasoning. Keep the characters and the setting; change the data, the week, the item, the customer. If you catch yourself writing an exercise whose answer a learner could copy from two segments up, change the instance, never delete the teaching.',
-    '4. **BE PUNCTUAL, NOT ATMOSPHERIC.** State the deciding facts plainly and in the order the learner needs them. Cut scene-setting that carries no fact the exercise uses. If a number matters, it belongs in `prompt_md`, not in a hint. Precision is kindness here: vagueness reads as difficulty.',
+    ...FOLLOWABILITY_RULES,
     '',
     '## HARD RULES (general — these govern EVERY lesson, whatever types you pick)',
     '',

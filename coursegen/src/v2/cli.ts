@@ -2,6 +2,7 @@
 //
 //   npm run v2:emit                                  fixture plans → runs/v2-emit/<run>/
 //   npm run v2:emit -- --plans <dir> --out <dir> --run-id <id>
+//   npm run v2:emit -- --require-lesson-design       a plan with no teaching_role blocks (gate 14, lessonDesign.ts)
 //   npm run v2:emit -- --write-fixture               refresh src/v2/fixtures/emitted.json
 //   npm run v2:emit -- --horizonte [--write-fixture] the Horizonte plans and their own emitted-horizonte.json
 //
@@ -38,7 +39,7 @@ export interface V2EmitRun {
   ok: boolean;
 }
 
-export function runV2Emit(plansDir: string, runId: string): V2EmitRun {
+export function runV2Emit(plansDir: string, runId: string, options: { requireLessonDesign?: boolean } = {}): V2EmitRun {
   const versionId = forgeVersionId(runId);
   const loaded = loadV2Plans(plansDir);
   const planErrors = loaded.filter((entry) => entry.errors.length > 0).map((entry) => ({ file: entry.file, errors: entry.errors }));
@@ -51,18 +52,19 @@ export function runV2Emit(plansDir: string, runId: string): V2EmitRun {
       continue;
     }
     seen.add(entry.plan.lesson_id);
-    results.push(emitV2Lesson(entry.plan, { versionId }));
+    results.push(emitV2Lesson(entry.plan, { versionId, ...(options.requireLessonDesign ? { requireLessonDesign: true } : {}) }));
   }
   const documents = results.flatMap((result) => result.documents);
   return { runId, versionId, planErrors, results, documents, ok: planErrors.length === 0 && loaded.length > 0 && results.every((result) => result.ok) };
 }
 
-function parseArgs(argv: string[]): { plans: string; out?: string; runId: string; writeFixture: boolean; fixtureFile: string } {
+function parseArgs(argv: string[]): { plans: string; out?: string; runId: string; writeFixture: boolean; fixtureFile: string; requireLessonDesign: boolean } {
   let plans = FIXTURE_PLANS;
   let fixtureFile = FIXTURE_EMITTED;
   let out: string | undefined;
   let runId = `v2-emit-${new Date().toISOString().replace(/[:.]/g, '-').toLowerCase()}`;
   let writeFixture = false;
+  let requireLessonDesign = false;
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
     const value = () => {
@@ -74,19 +76,20 @@ function parseArgs(argv: string[]): { plans: string; out?: string; runId: string
     else if (flag === '--out') out = path.resolve(value());
     else if (flag === '--run-id') runId = value();
     else if (flag === '--write-fixture') writeFixture = true;
+    else if (flag === '--require-lesson-design') requireLessonDesign = true;
     else if (flag === '--horizonte') {
       plans = FIXTURE_PLANS_HORIZONTE;
       fixtureFile = FIXTURE_EMITTED_HORIZONTE;
     } else throw new Error(`v2:emit: unknown flag "${flag}"`);
   }
   if (writeFixture) runId = FIXTURE_RUN_ID;
-  return { plans, runId, writeFixture, fixtureFile, ...(out ? { out } : {}) };
+  return { plans, runId, writeFixture, fixtureFile, requireLessonDesign, ...(out ? { out } : {}) };
 }
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) {
   const args = parseArgs(process.argv.slice(2));
-  const run = runV2Emit(args.plans, args.runId);
+  const run = runV2Emit(args.plans, args.runId, { requireLessonDesign: args.requireLessonDesign });
 
   const report = {
     runId: run.runId,

@@ -170,13 +170,15 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   requireNarrationAudio?: boolean;
   /** The owner confirms the deployed Core already serves the Horizonte segment types; a Vault write refuses them otherwise. */
   coreServesHorizonte?: boolean;
+  /** Block a plan that names no teaching_role at all (gate 14, lessonDesign.ts). */
+  requireLessonDesign?: boolean;
 }): Promise<V2ReleaseResult> {
   const versionId = forgeVersionId(options.runId);
   const documents: EmittedV2Document[] = [];
   const problems: string[] = [];
   const reviewByLesson = new Map<string, V2EmitResult['review']>();
   for (const plan of plans) {
-    const result = emitV2Lesson(plan, { versionId });
+    const result = emitV2Lesson(plan, { versionId, ...(options.requireLessonDesign ? { requireLessonDesign: true } : {}) });
     if (!result.ok) problems.push(...result.problems.map((p) => `${plan.lesson_id}: [gate ${p.gate}] ${p.locale ?? ''} ${p.message}`.trim()));
     documents.push(...result.documents);
     reviewByLesson.set(plan.lesson_id, [...(reviewByLesson.get(plan.lesson_id) ?? []), ...result.review]);

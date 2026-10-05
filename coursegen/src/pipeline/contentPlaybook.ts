@@ -16,10 +16,10 @@
 // Kept deliberately tight: it ships in every write/review prompt, so every line
 // must earn its tokens by changing what the model produces.
 
-/** The author-facing playbook. Injected into the WRITE prompt as its creative brief. */
-export const CONTENT_PLAYBOOK = [
-  'CONTENT PLAYBOOK — what makes an exercise GREAT (design every premise to this bar, not just to the rules):',
-  '',
+export const PLAYBOOK_HEADER = 'CONTENT PLAYBOOK — what makes an exercise GREAT (design every premise to this bar, not just to the rules):';
+
+/** The thirteen numbered rules, one string each, so another format (v2) can import a rule verbatim instead of paraphrasing it. */
+export const PLAYBOOK_RULES: readonly string[] = [
   '1. START FROM A CONCRETE MICRO-SITUATION a kid actually lives: an allowance, saving for a NAMED toy with a real price, a lemonade-stand decision, splitting a snack, a trade with a friend. Name the thing, the price, the character, the stakes. "Zara tiene $8 y la patineta cuesta $10" beats "¿cuál número es mayor?".',
   '2. MAKE IT A REAL DECISION WITH A STAKE, not a fact to recall. The kid has AGENCY — they DECIDE for a character ("¿qué haces tú?"), and something is won or lost. Open a CURIOSITY GAP: a concrete stake whose answer is not yet obvious ("Dos puestos venden la misma limonada a precios distintos — ¿cuál gana MÁS dinero de verdad?"), close enough that the kid wants the resolution.',
   '3. TEST APPLICATION, NEVER DEFINITION-RECALL. Never ask "¿qué es el ahorro?"; make the kid DO saving inside a scenario. Reconstructing the answer from a concrete case IS the learning (the testing effect). If the answer is a vocabulary word\'s definition, redesign it into a situation where the concept is USED.',
@@ -33,8 +33,11 @@ export const CONTENT_PLAYBOOK = [
   '11. TEXT DISCIPLINE (prompt_md is the on-screen INSTRUCTION, not the story): keep prompt_md to <=140 characters and at most 2 sentences — one situation line (only if the picture cannot show it) + one imperative/question. ALL backstory, character dialogue, and prior-lesson recaps go into the NARRATION (story beats, or a differentiated narration script), which is NOT exempt: story turns have their own word budget and a narrated block on screen must stay caption-length (see COPY BUDGET and NARRATION VS SCREEN). BUT terseness means cutting STORY, never cutting a fact the answer NEEDS: any price, quantity, or rule required to solve (e.g. "cada vaso cuesta 5 pesos") MUST stay visible in prompt_md or the payload/picture — never demoted to a hint or the narration. Exactly ONE question per prompt. Never restate what an option/card/scene already shows. Every number in the prompt must be load-bearing for the answer (drop decorative numbers). No cross-lesson callbacks in prompt_md.',
   '12. POSITIVE STAKES ONLY. The stake is something GOOD to gain or a smart choice to make — never a social punishment for a wrong answer. Never "si te equivocas la clienta se enojará / los niños se reirán / se quedará sin pasaje". A wrong answer is a gentle teaching beat, never a threat.',
   '13. SELF-CONTAINED & FAIR: every fact the answer depends on must be visible in the prompt, the payload, or the picture BEFORE answering — never only in a hint or the after-the-fact explanation. The prompt/hints must never contain the correct answer itself. For a NON-GRADED content segment (story_scene, key_ideas, concept_reveal, checkpoint, story_dialogue) never pose a direct question it cannot answer, and never congratulate ("¡Exacto!") an answer the child never gave.',
-  '',
-  'FORBIDDEN (hallmarks of a boring, low-value exercise — a lesson with any of them is a FAIL):',
+];
+
+export const PLAYBOOK_FORBIDDEN_HEADER = 'FORBIDDEN (hallmarks of a boring, low-value exercise — a lesson with any of them is a FAIL):';
+
+export const PLAYBOOK_FORBIDDEN: readonly string[] = [
   '- Generic phrasing with no specific number, named object, or situation ("elige la respuesta correcta sobre el dinero").',
   '- Recall-of-a-definition questions instead of applying the concept in a decision.',
   '- Stakes-free trivia ("¿cuál es mayor, 8 o 10?") when a real decision was possible — nothing won/lost, nothing chosen.',
@@ -46,7 +49,23 @@ export const CONTENT_PLAYBOOK = [
   '- prompt_md over 140 chars / more than 2 sentences / carrying story that belongs in narration.',
   '- A fact needed to answer that appears only in a hint or the explanation, not on screen before answering.',
   '- The correct answer visible in the prompt or a hint; or a negative/punishing stake for a wrong answer.',
-].join('\n');
+];
+
+/** The author-facing playbook. Injected into the WRITE prompt as its creative brief. */
+export const CONTENT_PLAYBOOK = [PLAYBOOK_HEADER, '', ...PLAYBOOK_RULES, '', PLAYBOOK_FORBIDDEN_HEADER, ...PLAYBOOK_FORBIDDEN].join('\n');
+
+/**
+ * Followability (owner feedback 2026-08-17, "es complicado seguir el contexto
+ * de la lección"): four authoring rules, shared by the v1 brief generator and
+ * the v2 authoring prompt. Rule 2 is stated against the v1 `prompt_md` cap; v2
+ * restates it against the Copy Budget.
+ */
+export const FOLLOWABILITY_RULES: readonly string[] = [
+  '1. **ONE SITUATION, CARRIED THROUGH. At most TWO per lesson.** The opening segment establishes a concrete situation — a named character, a place, a stake — and the graded segments STAY IN IT. Do not invent a new scenario per segment. A learner who has to re-orient at every segment cannot follow the lesson, however good each segment is on its own. A REVIEW lesson interleaves TOPICS, not SCENARIOS: run the several skills being consolidated through the SAME running case.',
+  '2. **EVERY GRADED SEGMENT RE-ANCHORS ITSELF IN ITS OWN `prompt_md`.** Open with a short clause naming who and where — "En el puesto de Rho, ¿cuál…?", "Zara revisa sus notas del tianguis: ¿qué…?" — so a learner who lost the thread can re-enter without scrolling back. **The anchor is a CLAUSE INSIDE the instruction sentence, never an extra sentence of its own.** The cap is unchanged and enforced: 160 characters AND at most 3 sentences. Adding a whole sentence of scene-setting to satisfy this rule fails the gate — that already happened once. If the anchor will not fit, shorten the instruction, not the cap.',
+  '3. **SAME SITUATION, FRESH INSTANCE.** Rule 1 is about the WORLD; this is about the ANSWER. Never grade a case whose answer was already stated in an earlier segment — a worked example that then tests the same instance teaches recognition, not reasoning. Keep the characters and the setting; change the data, the week, the item, the customer. If you catch yourself writing an exercise whose answer a learner could copy from two segments up, change the instance, never delete the teaching.',
+  '4. **BE PUNCTUAL, NOT ATMOSPHERIC.** State the deciding facts plainly and in the order the learner needs them. Cut scene-setting that carries no fact the exercise uses. If a number matters, it belongs in `prompt_md`, not in a hint. Precision is kindness here: vagueness reads as difficulty.',
+];
 
 /**
  * Age-tier reasoning ceiling/floor (Piaget-mapped). The forbidden-vocabulary

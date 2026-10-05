@@ -47,7 +47,7 @@ const SPACE1_GUIDANCE: readonly ForgeGuidance[] = [
   {
     type: STALL,
     lines: [
-      `${STALL}: ages 7-12 only. payload { items, goal }: two to five items, each { id, price, stock } with id from apple, bread, juice, toy, book, pen, cap, kite, shell, stamp (no words in the payload), price in whole cents of a generic currency from 1 to 2000 and stock from 1 to 9, each id once. The goal is { kind: "exact", total }, { kind: "change", paid, change } (the basket must cost paid minus change) or { kind: "most", budget }, with totals up to 10000 cents.`,
+      `${STALL}: ages 7-12 only. payload { items, goal }: two to five items, each { id, price, stock } with id from apple, bread, juice, toy, book, pen, cap, kite, shell, stamp (no words in the payload), price in whole cents (the board prints each market's own currency: pesos, reais, dollars) from 1 to 2000 and stock from 1 to 9, each id once. The goal is { kind: "exact", total }, { kind: "change", paid, change } (the basket must cost paid minus change) or { kind: "most", budget }, with totals up to 10000 cents.`,
       `${STALL}: an exact or change goal must be reachable by some basket within the stock. A most goal must buy at least the cheapest item and must not cover the whole stall; the right basket is the one with the most items, which is the cheapest items first, so give at least two prices that differ. Many baskets can be right, so the key is { solutions } with one to eight baskets as { item id: ["item", ...] } slot maps, each one a basket that meets the rule within the stock.`,
       `${STALL}: ages 7-9 use whole-dollar-friendly prices and an exact goal; ages 10-12 may use change or most. The prompt is at most two imperative sentences, names the total or the budget as the question asks, and never names a basket.`,
     ],
@@ -55,7 +55,7 @@ const SPACE1_GUIDANCE: readonly ForgeGuidance[] = [
   {
     type: COIN,
     lines: [
-      `${COIN}: ages 7-17 and adults. payload { piece, value, goal, step, max }: piece is coin (2 mm thick) or bill (0.1 mm thick), value is what one piece is worth in whole cents of a generic currency, goal is { kind: "amount", total } in cents or { kind: "height", mm } in whole millimetres, step is the count the handle moves by, and max is the largest count (a whole number of steps, at most 40 resting places).`,
+      `${COIN}: ages 7-17 and adults. payload { piece, value, goal, step, max }: piece is coin (2 mm thick) or bill (0.1 mm thick), value is what one piece is worth in whole cents (printed in the market's own currency), goal is { kind: "amount", total } in cents or { kind: "height", mm } in whole millimetres, step is the count the handle moves by, and max is the largest count (a whole number of steps, at most 40 resting places).`,
       `${COIN}: the goal must fall on a whole number of pieces: the total must be a multiple of the value, or the height 10 x mm must be a multiple of the piece thickness in tenths (20 for a coin, 1 for a bill). That count must be a multiple of the step and between one step and the maximum, so the handle can rest on it. The key is { target } with the count as digits in a string.`,
       `${COIN}: the board prints the other quantity live (the worth when the question is a height, the height when it is a worth) beside a phone (8 mm), a book (30 mm), a desk (750 mm) and a door (2000 mm). Use a height goal for ages 7-9, an amount for ages 10-12, and a very large amount in bills for ages 13-17. The prompt is at most two imperative sentences and never names the count.`,
     ],

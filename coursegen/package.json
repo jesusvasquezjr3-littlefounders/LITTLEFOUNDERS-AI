@@ -33,6 +33,10 @@
     "v2:emit": "tsx src/v2/cli.ts",
     "v2:author": "tsx --env-file-if-exists=.env src/v2/releaseCli.ts author",
     "v2:publish": "tsx --env-file-if-exists=.env src/v2/releaseCli.ts publish",
+    "v2:hierarchy": "tsx src/v2/hierarchyCli.ts",
+    "v2:round-report": "tsx src/v2/roundReport.ts",
+    "v2:catalog": "tsx src/v2/catalogCheck.ts",
+    "v2:brief": "tsx src/v2/briefCli.ts",
     "verify:course": "tsx --env-file-if-exists=.env src/verifyCourse.ts",
     "content:retro-checks": "tsx --env-file-if-exists=.env src/retroChecks.ts",
     "graph:backfill": "tsx --env-file-if-exists=.env.production src/scripts/backfill-graph.ts"

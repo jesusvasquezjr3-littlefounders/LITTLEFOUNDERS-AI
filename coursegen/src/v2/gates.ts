@@ -49,6 +49,7 @@ import { SCRIPT_REPEAT_THRESHOLD, REDUNDANCY_THRESHOLD, verbatimCoverage } from 
 import { countWords, tokens } from '../contentGates/text.js';
 import { hasNeutralPayload, isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
+import { checkLessonDesign, type LessonDesignOptions } from './lessonDesign.js';
 import { runV2CarriedGates } from './carriedGates.js';
 import { horizontePieceGates } from './horizonte/index.js';
 import './solvabilityPacks.js';
@@ -276,7 +277,7 @@ export interface V2PlanPolicy {
 }
 
 /** Plan-level lesson-policy gates 14-16, decided before any document is built. */
-export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loadMarketInventory()): V2PlanPolicy {
+export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loadMarketInventory(), design: LessonDesignOptions = {}): V2PlanPolicy {
   const findings: V2Finding[] = [];
 
   // Gate 14 — B.17.
@@ -289,6 +290,9 @@ export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loa
   } else if (count > target) {
     findings.push({ gate: 14, severity: 'review', message: `introduces ${count} new concepts, above the ${band} target of ${target}: Stage 3 checks they are chunked onto prior knowledge` });
   }
+
+  // Gate 14 also carries the examples-first lesson-design checks (lessonDesign.ts).
+  findings.push(...checkLessonDesign(plan, design));
 
   // Gate 15 — B.11: a flagged episode is staged by a Mentor-voiced episode segment.
   if (plan.mentor_misjudgment && !plan.segments.some((segment) => segment.type === 'voice.mentor-episode.v2')) {

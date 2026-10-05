@@ -19,6 +19,21 @@ import { marketScenarioSchema } from '../catalog/schema.js';
 import { hasNeutralPayload, V2_AGE_BANDS, V2_ID, V2_SEGMENT_TYPES, type V2SegmentType } from './contract.js';
 
 const id = z.string().regex(V2_ID);
+
+/**
+ * Examples-first lesson design (pilot round 2): what a segment does in the
+ * lesson's arc. A plan-only annotation, checked by `lessonDesign.ts` and never
+ * emitted into the public document.
+ *   hook      the Mentor opens the situation (ungraded)
+ *   pre       one low-stakes item before any teaching, `item_phase: pre` (graded)
+ *   example   a demonstration: the Mentor does one step aloud (ungraded)
+ *   guided    the learner finishes a worked step with support left in (graded)
+ *   practice  independent reaffirmation of what was just shown (graded)
+ *   transfer  a fresh instance of the skill, `item_phase: post` (graded)
+ */
+export const V2_TEACHING_ROLES = ['hook', 'pre', 'example', 'guided', 'practice', 'transfer'] as const;
+export type V2TeachingRole = (typeof V2_TEACHING_ROLES)[number];
+
 const localized = <T extends z.ZodType>(value: T) =>
   z.object({ 'en-US': value, 'es-MX': value, 'pt-BR': value }).strict();
 
@@ -62,6 +77,8 @@ export const v2PlanSegmentSchema = z
     item_phase: z.enum(['pre', 'post']).optional(),
     variant: z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/).optional(),
     knowledge_component_id: id.optional(),
+    /** Lesson design (see V2_TEACHING_ROLES): the segment's place in the examples-first arc. Not emitted. */
+    teaching_role: z.enum(V2_TEACHING_ROLES).optional(),
     copy: localized(segmentCopySchema),
   })
   .strict()
