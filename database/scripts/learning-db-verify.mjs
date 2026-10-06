@@ -40,6 +40,8 @@ export const LEARNING = [
   'verify-decision-journal-coverage-postgres.py',
   // Gap-fix round 7: Appendix C 1.3 / Stage 6, every defect escape opens an owned gate-effectiveness review.
   'verify-gate-effectiveness-reviews-postgres.py',
+  // Games in /learn (docs/games): learner-local daily cap, run idempotency, save compare-and-set, guardian limits, RLS and erasure cascade.
+  'verify-game-records-postgres.py',
 ];
 
 /**
