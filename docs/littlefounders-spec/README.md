@@ -2,7 +2,7 @@
 
 This folder is the **final output of the September 2026 product and frontend work**: the binding owner decisions, the product requirements, the Frontend Bible, the reference mockup, and the audit tools. It is written in English because it feeds the AI frontend agent (Codex) and the engineering team.
 
-**Everything here is binding.** "Non-negotiable" means that a finding or rule must be satisfied. Where a requirement leaves a detail open, the document names who decides and when.
+**This package records the owner's intent.** It is a reference for the product and frontend, not an absolute authority: the running product, direct user feedback and the owner's latest direction outrank it. Where a requirement leaves a detail open, the document names who decides and when.
 
 ---
 
