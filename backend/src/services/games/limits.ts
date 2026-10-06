@@ -20,8 +20,13 @@ export const SOFT_LEAD_MINUTES = 5;
 export const IDLE_MS = 10 * 60_000;
 /** A heartbeat credits at most this much elapsed time, so a long gap is never billed as play. */
 export const MAX_CREDIT_SECONDS = 90;
-/** Wall-clock life of a session: a tab left open all afternoon cannot report runs forever. */
-export const SESSION_TTL_MS = 2 * 60 * 60_000;
+/** A session's wall-clock life is its active minutes plus this slack, so a tab left open all afternoon cannot keep reporting. */
+export const SESSION_SLACK_MINUTES = 10;
+
+/** How long a new session lives on the wall clock, whatever the active clock says (database: reopening never exceeds the same bound). */
+export function sessionLifeMs(maxSessionMinutes: number): number {
+  return (capsFor(maxSessionMinutes).hardMs / 60_000 + SESSION_SLACK_MINUTES) * 60_000;
+}
 
 export interface PlayLimits {
   maxSessionsPerDay: number;

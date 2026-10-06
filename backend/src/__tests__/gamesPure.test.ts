@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { DriftReleases, DRIFT_FIELDS, Lens, LENS_FIELDS, LENS_KEYS, RunReport, RUN_REPORT_FIELDS, TRACK_IDS } from '../games/runReport.js';
-import { normalizeLocale, startOfLocalDayIso } from '../lib/localDay.js';
+import { earliestLocalDayStartIso, normalizeLocale, startOfLocalDayIso } from '../lib/localDay.js';
 import { selectLens, metricsOf } from '../services/games/lens.js';
 import { capsFor, dailySessionCap, sessionState } from '../services/games/limits.js';
 import { FINISH_SUM_TOLERANCE_MS, implausibleReason, MIN_LAP_MS } from '../services/games/plausibility.js';
@@ -142,6 +142,34 @@ describe('the learner-local day (shared with the Mentor\'s cap)', () => {
     expect(startOfLocalDayIso('es-MX', new Date('2026-10-06T07:00:00.000Z'))).toBe('2026-10-06T06:00:00.000Z');
     expect(startOfLocalDayIso('es-MX', new Date('2026-10-06T07:00:00.000Z'), 1)).toBe('2026-10-07T06:00:00.000Z');
   });
+  it.each([
+    ['mid-afternoon UTC', '2026-10-06T18:00:00.000Z'],
+    ['just before Mexico City midnight', '2026-10-06T05:59:00.000Z'],
+    ['just after Mexico City midnight', '2026-10-06T06:01:00.000Z'],
+    ['between the zones\' midnights (Sao Paulo already tomorrow, New York not yet)', '2026-10-06T03:30:00.000Z'],
+    ['the small hours in New York', '2026-10-06T07:30:00.000Z'],
+    ['a month end', '2026-10-31T23:30:00.000Z'],
+  ])('the earliest window start is the minimum of the three zones (%s)', (_label, iso) => {
+    const now = new Date(iso);
+    const locales = ['en-US', 'es-MX', 'pt-BR'] as const;
+    const starts = locales.map((l) => startOfLocalDayIso(l, now));
+    expect(earliestLocalDayStartIso(now)).toBe([...starts].sort()[0]);
+    const next = locales.map((l) => startOfLocalDayIso(l, now, 1));
+    expect(earliestLocalDayStartIso(now, 1)).toBe([...next].sort()[0]);
+    // The window opens no later than any single locale's day, and the reset instant is after the window start.
+    for (const start of starts) expect(earliestLocalDayStartIso(now) <= start).toBe(true);
+    expect(earliestLocalDayStartIso(now, 1) > earliestLocalDayStartIso(now)).toBe(true);
+  });
+
+  it('a locale switch near a boundary cannot move the window later', () => {
+    // 04:30Z: in Mexico City it is still 22:30 of the 5th; in Sao Paulo already 01:30 of the 6th.
+    const now = new Date('2026-10-06T04:30:00.000Z');
+    expect(startOfLocalDayIso('es-MX', now)).toBe('2026-10-05T06:00:00.000Z');
+    expect(startOfLocalDayIso('pt-BR', now)).toBe('2026-10-06T03:00:00.000Z');
+    expect(earliestLocalDayStartIso(now) <= startOfLocalDayIso('es-MX', now)).toBe(true);
+    expect(earliestLocalDayStartIso(now) <= startOfLocalDayIso('pt-BR', now)).toBe(true);
+  });
+
   it('maps a profile locale, defaulting to the platform default', () => {
     expect(normalizeLocale('en-US')).toBe('en-US');
     expect(normalizeLocale('pt-BR')).toBe('pt-BR');

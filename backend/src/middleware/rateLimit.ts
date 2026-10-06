@@ -65,11 +65,14 @@ export const eventsRateLimiter = rateLimit({
 
 // Games in /learn: one heartbeat every 30-60 s per playing child, plus a handful of
 // run, save and session calls. Sized for several children behind one household or
-// classroom NAT (about 40 calls per child per 25-minute session), and fail-open like
+// classroom NAT. A child costs about 35 calls per 15 minutes (a heartbeat every 30-60 s plus
+// a few run, save and session calls), so a class of 17 behind one address is ~600 and a
+// 600 limit would have cut the whole room off; 3000 keeps headroom for ~85 children and
+// still bounds a runaway client. Fail-open like
 // the others: a limiter outage must never stop a lesson or a race.
 export const gamesRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 600,
+  max: 3000,
   standardHeaders: true,
   legacyHeaders: false,
   passOnStoreError: true,

@@ -132,13 +132,14 @@ DROP POLICY IF EXISTS game_progress_select_own ON public.game_progress;
 CREATE POLICY game_progress_select_own ON public.game_progress
     FOR SELECT USING (user_id = auth.uid() OR public.is_verified_guardian_of(user_id));
 
--- The game's own save, compare-and-set on revision. 64 KB; ghosts stay on the device.
+-- The game's own save, compare-and-set on revision. 64 KB of compact JSON (checked in Core),
+-- 96,000 bytes of jsonb text here, which spaces out; ghosts stay on the device.
 CREATE TABLE IF NOT EXISTS public.game_saves (
     user_id        uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
     game_id        text NOT NULL REFERENCES public.game_catalog (game_id),
     schema_version smallint NOT NULL DEFAULT 1 CHECK (schema_version >= 1),
     revision       integer NOT NULL DEFAULT 1 CHECK (revision >= 1),
-    save           jsonb NOT NULL CHECK (jsonb_typeof(save) = 'object' AND octet_length(save::text) <= 65536),
+    save           jsonb NOT NULL CHECK (jsonb_typeof(save) = 'object' AND octet_length(save::text) <= 96000),
     updated_at     timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, game_id)
 );

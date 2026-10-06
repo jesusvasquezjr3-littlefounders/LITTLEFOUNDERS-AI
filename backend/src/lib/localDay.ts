@@ -96,3 +96,19 @@ export type PlatformLocale = 'en-US' | 'es-MX' | 'pt-BR';
 export function normalizeLocale(raw: string | null | undefined): PlatformLocale {
   return raw === 'en-US' || raw === 'pt-BR' ? raw : 'es-MX';
 }
+
+const PLATFORM_LOCALES: readonly PlatformLocale[] = ['en-US', 'es-MX', 'pt-BR'];
+
+/**
+ * The earliest of the three platform zones' day boundaries, for daily caps a
+ * learner could otherwise reset by changing their own profile locale (the day
+ * boundary comes from the locale, and a child can change it). Using the
+ * earliest start makes the window the longest one any locale would see, so
+ * switching to a "later" zone near midnight can never open a fresh day, and
+ * `daysAhead: 1` (the reset instant shown to the child) is the earliest next
+ * start, matching the window the count actually uses. The Mentor's own cap
+ * keeps `startOfLocalDayIso` as it was.
+ */
+export function earliestLocalDayStartIso(now: Date = new Date(), daysAhead = 0): string {
+  return PLATFORM_LOCALES.map((locale) => startOfLocalDayIso(locale, now, daysAhead)).sort()[0]!;
+}

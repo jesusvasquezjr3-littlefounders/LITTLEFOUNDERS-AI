@@ -18,6 +18,8 @@ export const GAME_IDS = ['kartrush'] as const;
 export const MENTORS = ['rho', 'zara', 'liruf', 'dina'] as const;
 /** Verified against KartRush's REAL_TRACK_IDS (src/data/tracks/index.ts), 2026-10-06. */
 export const TRACK_IDS = ['jungleNeck', 'boulevard', 'fossilFire', 'factory', 'saltBay', 'glacier'] as const;
+/** Verified against KartRush's KART_BODIES (src/data/karts.ts), 2026-10-06. The SPA keeps kartBody a plain string; only Core is closed. */
+export const KART_BODIES = ['fossilRunner', 'stoneHauler', 'brassCoupe', 'sparkplug', 'driftFrame', 'circuitCrown'] as const;
 export const SPEED_CLASSES = ['100cc', '150cc', '200cc'] as const;
 /** A practice lap is never reported (it is not a result), so it is not a value here. */
 export const RUN_MODES = ['single', 'timeTrial'] as const;
@@ -61,7 +63,7 @@ export const RunReport = z.object({
   mode: z.enum(RUN_MODES),
   trackId: z.enum(TRACK_IDS),
   character: z.enum(MENTORS),
-  kartBody: z.string().regex(/^[A-Za-z][A-Za-z0-9]{0,23}$/),
+  kartBody: z.enum(KART_BODIES),
   speedClass: z.enum(SPEED_CLASSES),
   finished: z.literal(true),
   finishMs: Ms,

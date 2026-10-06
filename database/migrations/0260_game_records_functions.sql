@@ -17,11 +17,13 @@
 --    same id, not a new session, allowed even at the cap) when it is still open
 --    or was closed as 'left', its last heartbeat is under 10 minutes old, it
 --    has active time left (under the guardian's current minutes, which may only
---    be lower) and it has not expired beyond a 10-minute grace. Closed as
---    'soft', 'hard' or 'idle' it is never reopened: those ended the play on
---    purpose. Reopening gives it the remaining active budget plus 60 seconds of
---    slack as its new wall-clock life and starts the heartbeat clock afresh, so
---    the time away is not credited as play.
+--    be lower) and its wall-clock life (started_at + its minutes + 10) has not
+--    passed. Closed as 'soft', 'hard' or 'idle' it is never reopened: those
+--    ended the play on purpose. Reopening gives it the remaining active budget
+--    plus 60 seconds of slack as its new expiry, never beyond that same
+--    wall-clock life, and starts the heartbeat clock afresh so the time away is
+--    not credited as play. It is NOT activity: last_active_at keeps its value,
+--    so refreshing cannot reset the idle clock.
 -- 2. OTHERWISE a new session, if fewer than p_cap were started since p_since;
 --    an empty result means the cap was reached and nothing was inserted. Any
 --    earlier session still open (a stale one, past the 10 minutes) is closed.
@@ -43,12 +45,14 @@ BEGIN
         IF (v_last.ended_at IS NULL OR v_last.close_reason = 'left')
            AND v_last.last_heartbeat_at > now() - interval '10 minutes'
            AND v_last.active_seconds < v_max * 60
-           AND v_last.expires_at > now() - interval '10 minutes' THEN
+           AND v_last.expires_at > now()
+           AND v_last.started_at + make_interval(mins => v_max + 10) > now() THEN
             RETURN QUERY
             UPDATE public.game_sessions
                SET ended_at = NULL, close_reason = NULL, max_minutes = v_max,
-                   expires_at = now() + make_interval(secs => v_max * 60 - v_last.active_seconds + 60),
-                   last_heartbeat_at = now(), last_active_at = now(), session_ref = p_session_ref,
+                   expires_at = LEAST(now() + make_interval(secs => v_max * 60 - v_last.active_seconds + 60),
+                                      v_last.started_at + make_interval(mins => v_max + 10)),
+                   last_heartbeat_at = now(), session_ref = p_session_ref,
                    mentor = p_mentor, locale = p_locale, band = p_band, client_build = p_client_build
              WHERE id = v_last.id
             RETURNING *;
@@ -133,6 +137,10 @@ BEGIN
     IF NOT FOUND THEN RAISE EXCEPTION 'GAME_SESSION_NOT_FOUND' USING ERRCODE = 'P0001'; END IF;
     IF s.ended_at IS NOT NULL THEN RAISE EXCEPTION 'GAME_SESSION_CLOSED' USING ERRCODE = 'P0001'; END IF;
     IF s.expires_at <= now() THEN RAISE EXCEPTION 'GAME_SESSION_EXPIRED' USING ERRCODE = 'P0001'; END IF;
+    -- A session is a bounded stretch of play (about 25 minutes of races): 40 runs is far beyond any real one.
+    IF (SELECT count(*) FROM public.game_runs WHERE session_id = p_session_id) >= 40 THEN
+        RAISE EXCEPTION 'GAME_RUN_LIMIT' USING ERRCODE = 'P0001';
+    END IF;
 
     SELECT * INTO v_best FROM public.game_progress
      WHERE user_id = p_user_id AND game_id = p_game_id AND track_id = p_track_id AND character = p_character AND speed_class = p_speed_class
@@ -157,13 +165,16 @@ END;
 $$;
 
 -- Compare-and-set save. The caller names the revision it last saw (0 = none);
--- success stores the next revision, a mismatch returns the current one.
+-- success stores the next revision, a mismatch returns the current one. Core caps
+-- the compact JSON at 64 KB; jsonb's text form adds spaces after every colon and
+-- comma, so this measures it with an allowance (96,000 bytes) and a legal save
+-- near the cap is never refused.
 CREATE OR REPLACE FUNCTION public.save_game_snapshot(p_user_id uuid, p_game_id text, p_revision int, p_data jsonb)
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE
     v_current int;
 BEGIN
-    IF p_revision IS NULL OR p_revision < 0 OR jsonb_typeof(p_data) IS DISTINCT FROM 'object' OR octet_length(p_data::text) > 65536 THEN
+    IF p_revision IS NULL OR p_revision < 0 OR jsonb_typeof(p_data) IS DISTINCT FROM 'object' OR octet_length(p_data::text) > 96000 THEN
         RAISE EXCEPTION 'GAME_INVALID' USING ERRCODE = 'P0001';
     END IF;
     PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text || ':' || p_game_id, 67));

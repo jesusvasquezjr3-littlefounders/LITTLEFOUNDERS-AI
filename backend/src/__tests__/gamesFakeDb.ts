@@ -125,10 +125,13 @@ function rpcAnswer(w: GamesWorld, fn: string, a: Record<string, unknown>): Respo
         if ((last.ended_at === null || last.close_reason === 'left')
           && Date.parse(String(last.last_heartbeat_at)) > now - 600_000
           && Number(last.active_seconds) < max * 60
-          && Date.parse(String(last.expires_at)) > now - 600_000) {
+          && Date.parse(String(last.expires_at)) > now
+          && Date.parse(String(last.started_at)) + (max + 10) * 60_000 > now) {
+          // Not activity: last_active_at keeps its value. The expiry never passes started_at + (minutes + 10).
           Object.assign(last, {
-            ended_at: null, close_reason: null, max_minutes: max, expires_at: iso(now + (max * 60 - Number(last.active_seconds) + 60) * 1000),
-            last_heartbeat_at: iso(now), last_active_at: iso(now), session_ref: a.p_session_ref,
+            ended_at: null, close_reason: null, max_minutes: max,
+            expires_at: iso(Math.min(now + (max * 60 - Number(last.active_seconds) + 60) * 1000, Date.parse(String(last.started_at)) + (max + 10) * 60_000)),
+            last_heartbeat_at: iso(now), session_ref: a.p_session_ref,
             mentor: a.p_mentor, locale: a.p_locale, band: a.p_band, client_build: a.p_client_build,
           });
           return json([last]);
@@ -173,6 +176,7 @@ function rpcAnswer(w: GamesWorld, fn: string, a: Record<string, unknown>): Respo
       if (!s) return refusal('GAME_SESSION_NOT_FOUND');
       if (s.ended_at !== null) return refusal('GAME_SESSION_CLOSED');
       if (Date.parse(String(s.expires_at)) <= now) return refusal('GAME_SESSION_EXPIRED');
+      if (w.runs.filter((r) => r.session_id === a.p_session_id).length >= 40) return refusal('GAME_RUN_LIMIT');
       const best = w.progress.find((p) => p.user_id === a.p_user_id && p.game_id === a.p_game_id && p.track_id === a.p_track_id
         && p.character === a.p_character && p.speed_class === a.p_speed_class);
       const newBest = !best || Number(a.p_finish_ms) < Number(best.best_finish_ms);
@@ -195,7 +199,7 @@ function rpcAnswer(w: GamesWorld, fn: string, a: Record<string, unknown>): Respo
     }
     case 'save_game_snapshot': {
       const save = w.saves.find((s) => s.user_id === a.p_user_id && s.game_id === a.p_game_id);
-      if (JSON.stringify(a.p_data).length > 65_536) return refusal('GAME_INVALID');
+      if (JSON.stringify(a.p_data).length > 96_000) return refusal('GAME_INVALID');
       if (!save) {
         if (a.p_revision !== 0) return json({ ok: false, revision: 0 });
         w.saves.push({ user_id: a.p_user_id, game_id: a.p_game_id, revision: 1, save: a.p_data });

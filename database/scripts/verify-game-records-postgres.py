@@ -139,11 +139,11 @@ try:
             raise RuntimeError(f'{migration.name} failed to apply: {error}') from error
     check(f'all {len(migrations)} migrations apply in order on PostgreSQL {run("SHOW server_version")}')
 
-    K, OTHER, G, STRANGER, ADULT, G2, MIGRATED, CAPPED, REOPEN, REOPEN2 = (str(uuid.uuid4()) for _ in range(10))
+    K, OTHER, G, STRANGER, ADULT, G2, MIGRATED, CAPPED, REOPEN, REOPEN2, REOPEN3 = (str(uuid.uuid4()) for _ in range(11))
     run(f"""
     INSERT INTO auth.users (id, email) VALUES ('{K}', 'k@kids.invalid'), ('{OTHER}', 'o@kids.invalid'), ('{G}', 'g@example.com'),
         ('{STRANGER}', 's@example.com'), ('{ADULT}', 'a@example.com'), ('{G2}', 'g2@example.com'), ('{MIGRATED}', 'm@kids.invalid'),
-        ('{CAPPED}', 'c@kids.invalid'), ('{REOPEN}', 'r@kids.invalid'), ('{REOPEN2}', 'r2@kids.invalid');
+        ('{CAPPED}', 'c@kids.invalid'), ('{REOPEN}', 'r@kids.invalid'), ('{REOPEN2}', 'r2@kids.invalid'), ('{REOPEN3}', 'r3@kids.invalid');
     INSERT INTO user_roles (user_id, role, granted_by) VALUES ('{G}', 'parent', NULL), ('{G2}', 'parent', NULL);
     INSERT INTO guardian_links (parent_user_id, kid_user_id, verification_status, verified_at) VALUES
         ('{G}', '{K}', 'verified', now()), ('{G2}', '{K}', 'pending', NULL);
@@ -225,7 +225,9 @@ try:
 
     for label, change in (('a heartbeat past 10 minutes', "last_heartbeat_at = now() - interval '10 minutes 5 seconds'"),
                           ('no active time left', 'active_seconds = max_minutes * 60'),
-                          ('an expiry long past', "expires_at = now() - interval '11 minutes'")):
+                          ('an expiry long past', "expires_at = now() - interval '11 minutes'"),
+                          ('a wall-clock life that ended a second ago', "expires_at = now() - interval '1 second'"),
+                          ('a row older than its minutes plus 10', "started_at = now() - interval '36 minutes'")):
         stale = start(REOPEN2, 99)
         run(f"UPDATE game_sessions SET {change} WHERE id = '{stale}'")
         fresh = start(REOPEN2, 99)
@@ -236,6 +238,21 @@ try:
     keep = start(REOPEN2, 99, minutes=10)
     assert row(keep, 'max_minutes') == '6', 'a lowered limit is never raised back on a reopen'
     check('a stale heartbeat, an exhausted budget, a long-expired session and a lowered limit already used up each start a new session and close the stale one as left; a lowered limit carries over')
+
+    # A reopen is not activity, and the row's wall-clock life (started_at + minutes + 10) is a hard bound.
+    w1 = start(REOPEN3, 99)
+    run(f"UPDATE game_sessions SET started_at = now() - interval '30 minutes', last_active_at = now() - interval '5 minutes', "
+        f"last_heartbeat_at = now() - interval '1 minute', active_seconds = 60 WHERE id = '{w1}'")
+    stamp = row(w1, 'last_active_at')
+    assert start(REOPEN3, 99) == w1
+    assert row(w1, 'last_active_at') == stamp, 'a reopen must not refresh the idle clock'
+    assert row(w1, 'last_heartbeat_at > now() - interval \'5 seconds\'') == 't'
+    to_end = int(row(w1, 'round(extract(epoch FROM (started_at + interval \'35 minutes\') - expires_at))::int'))
+    assert to_end == 0, to_end
+    assert int(row(w1, 'round(extract(epoch FROM expires_at - now()))::int')) <= 5 * 60 + 1
+    run(f"UPDATE game_sessions SET started_at = now() - interval '36 minutes', expires_at = now() + interval '1 minute' WHERE id = '{w1}'")
+    assert start(REOPEN3, 99) != w1
+    check('a reopen keeps the idle clock (it is not activity), refreshes the heartbeat clock, and its expiry never passes started_at + minutes + 10; a row past that life is not reopened')
 
     # ── 3. Heartbeat time ───────────────────────────────────────────────────
     S = second
@@ -292,6 +309,15 @@ try:
     rejected(f"SET ROLE service_role; {run_args(S, K, 'run-closed01')}", 'GAME_SESSION_CLOSED')
     dup_closed = json.loads(service(run_args(S, K, 'run-000001')))
     assert dup_closed['duplicate'] is True and dup_closed['run_id'] == r1['run_id']
+    lim = start(REOPEN3, 99)
+    made = run(f"SELECT count(record_game_run('{lim}', '{REOPEN3}', 'kartrush', 'run-lim-' || lpad(i::text, 4, '0'), 'single', 'jungleNeck', 'rho', "
+               f"'fossilRunner', '150cc', 90000, 30000, ARRAY[30000, 30000, 30000], 3, 'neutral', '{{}}'::jsonb)) FROM generate_series(1, 40) i")
+    assert made == '40', made
+    rejected(f"SET ROLE service_role; {run_args(lim, REOPEN3, 'run-lim-0041')}", 'GAME_RUN_LIMIT')
+    again_run = json.loads(service(run_args(lim, REOPEN3, 'run-lim-0001')))
+    assert again_run['duplicate'] is True
+    assert run(f"SELECT count(*) FROM game_runs WHERE session_id = '{lim}'") == '40'
+    check('a session records at most 40 runs (the 41st is refused), while a repeat of a stored run key still answers')
     expired = start(STRANGER, 2, expires="now() - interval '1 minute'")
     assert expired
     rejected(f"SET ROLE service_role; {run_args(expired, STRANGER, 'run-expired1')}", 'GAME_SESSION_EXPIRED')
@@ -306,7 +332,7 @@ try:
     assert json.loads(service(f"SELECT save_game_snapshot('{K}', 'kartrush', 1, '{{\"hints\": [3]}}'::jsonb)")) == {'ok': True, 'revision': 2}
     assert json.loads(service(f"SELECT save_game_snapshot('{OTHER}', 'kartrush', 5, '{{}}'::jsonb)")) == {'ok': False, 'revision': 0}
     assert run(f"SELECT save->'hints'->>0 FROM game_saves WHERE user_id = '{K}'") == '3'
-    big = "x" * 70000
+    big = "x" * 100000
     rejected(f"SET ROLE service_role; SELECT save_game_snapshot('{K}', 'kartrush', 2, jsonb_build_object('a', '{big}'))", 'GAME_INVALID')
     rejected(f"SET ROLE service_role; SELECT save_game_snapshot('{K}', 'kartrush', 2, '[1]'::jsonb)", 'GAME_INVALID')
     rejected(f"INSERT INTO game_saves (user_id, game_id, save) VALUES ('{OTHER}', 'kartrush', jsonb_build_object('a', '{big}'))", 'game_saves_save_check')
@@ -314,7 +340,11 @@ try:
         raced = list(pool.map(lambda _: json.loads(service(f"SELECT save_game_snapshot('{K}', 'kartrush', 2, '{{\"n\": 1}}'::jsonb)")), range(4)))
     assert sum(1 for r in raced if r['ok']) == 1, raced
     assert run(f"SELECT revision FROM game_saves WHERE user_id = '{K}'") == '3'
-    check('the save is compare-and-set: a stale revision is refused with the current one, four concurrent writers at one revision yield one winner, and 64 KB is the cap')
+    # A legal save: compact JSON under 64 KB whose jsonb text form (spaces after every colon and comma) is wider than that.
+    wide = "(SELECT jsonb_object_agg('k' || i, i) FROM generate_series(1, 5000) i)"
+    assert run(f"SELECT length(replace(replace({wide}::text, ': ', ':'), ', ', ',')) <= 65536 AND octet_length({wide}::text) > 65536") == 't'
+    assert json.loads(service(f"SELECT save_game_snapshot('{K}', 'kartrush', 3, {wide})")) == {'ok': True, 'revision': 4}
+    check('a legal save near the 64 KB cap is kept even though its stored text is wider; the save is compare-and-set: a stale revision is refused with the current one, four concurrent writers at one revision yield one winner, and the database refuses a save over 96,000 bytes of stored text')
 
     # ── 6. AI debrief cap ───────────────────────────────────────────────────
     open_session = start(G, 2)
@@ -402,7 +432,7 @@ try:
     run(f"DELETE FROM auth.users WHERE id = '{G}'")
     assert run(f"SELECT set_by IS NULL FROM learner_play_limits WHERE user_id = '{K}'") == 't'
     check('a guardian who leaves keeps the child\'s limit in place (set_by is cleared, the row stays)')
-    for user in (K, OTHER, ADULT, STRANGER, CAPPED, REOPEN, REOPEN2):
+    for user in (K, OTHER, ADULT, STRANGER, CAPPED, REOPEN, REOPEN2, REOPEN3):
         run(f"DELETE FROM auth.users WHERE id = '{user}'")
     left = run("SELECT (SELECT count(*) FROM game_sessions) + (SELECT count(*) FROM game_runs) + (SELECT count(*) FROM game_progress) "
                "+ (SELECT count(*) FROM game_saves) + (SELECT count(*) FROM learner_play_limits)")

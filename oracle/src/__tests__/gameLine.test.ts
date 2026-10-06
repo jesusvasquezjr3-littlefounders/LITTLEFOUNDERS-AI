@@ -190,6 +190,20 @@ describe('runGameLine', () => {
     expect(spendGuard.snapshot().spentUsd).toBeGreaterThan(before);
   });
 
+  it('makes no model call once the platform spend ceiling is hit, like the Mentor path', async () => {
+    modelReturns(reply('A calm drift.'));
+    spendGuard.record(spendGuard.snapshot().ceilingUsd + 1);
+    try {
+      expect(spendGuard.check().admitting).toBe(false);
+      expect(await runGameLine(INPUT)).toBeNull();
+      expect(complete).not.toHaveBeenCalled();
+      expect(moderateTutorOutput).not.toHaveBeenCalled();
+    } finally {
+      spendGuard.reset();
+    }
+    expect(await runGameLine(INPUT)).not.toBeNull();
+  });
+
   it('refuses an input that is not sealed before it can reach the model', async () => {
     await expect(runGameLine({ ...INPUT, nickname: 'Sofi' })).rejects.toThrow(/refusing to send/);
     expect(complete).not.toHaveBeenCalled();

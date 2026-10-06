@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { resetConfigForTests } from '../config.js';
-import { startOfLocalDayIso } from '../lib/localDay.js';
+import { earliestLocalDayStartIso } from '../lib/localDay.js';
 import { mintToken } from './helpers.js';
 import { installFakeFetch, newWorld, type GamesWorld } from './gamesFakeDb.js';
 
@@ -180,10 +180,10 @@ describe('POST /learn/games/:gameId/sessions', () => {
     expect(third.status).toBe(429);
     expect(third.body.error.code).toBe('GAME_DAILY_LIMIT');
     expect(new Date(third.body.error.resetsAt).getTime()).toBeGreaterThan(Date.now());
-    expect(third.body.error.resetsAt).toBe(startOfLocalDayIso('es-MX', new Date(), 1));
+    expect(third.body.error.resetsAt).toBe(earliestLocalDayStartIso(new Date(), 1));
     expect(w.sessions).toHaveLength(2);
     const since = w.calls.filter((c) => c.url.includes('/rpc/start_game_session_checked')).at(-1)!.body!.p_since;
-    expect(since).toBe(startOfLocalDayIso('es-MX'));
+    expect(since).toBe(earliestLocalDayStartIso());
     expect(w.calls.filter((c) => c.url.includes('/rpc/start_game_session_checked')).at(-1)!.body!.p_cap).toBe(2);
   });
 
@@ -329,6 +329,7 @@ describe('a refresh or a quick trip away reopens the session instead of using a 
     ['a heartbeat more than 10 minutes old', { last_heartbeat_at: ago(10 * 60_000 + 5_000) }],
     ['a session out of active time', { active_seconds: 1500 }],
     ['a session long expired', { expires_at: ago(11 * 60_000) }],
+    ['a session whose wall-clock life ended a moment ago', { expires_at: ago(1000) }],
   ])('%s is not reopened: a new session starts and the stale one is closed as left', async (_label, change) => {
     const first = (await start()).body.data.sessionId as string;
     Object.assign(w.sessions[0]!, change);
@@ -347,6 +348,91 @@ describe('a refresh or a quick trip away reopens the session instead of using a 
     expect(again.body.data.caps.hardMs).toBe(10 * 60_000);
     w.limits.set(KID, { sessions: 2, minutes: 5 });
     expect((await start()).body.data.sessionId).not.toBe(first);
+  });
+});
+
+describe('wall-clock life, the daily window, run limits and failed closes', () => {
+  const start = () => call('post', KID, '/learn/games/kartrush/sessions', {});
+  const ago = (ms: number) => new Date(Date.now() - ms).toISOString();
+  const expiresIn = (sessionId: string) => Date.parse(String(w.sessions.find((x) => x.id === sessionId)!.expires_at)) - Date.now();
+
+  it('a new session lives for its minutes plus 10, not hours', async () => {
+    const { sessionId } = await open();
+    expect(expiresIn(sessionId)).toBeGreaterThan((35 * 60 - 5) * 1000);
+    expect(expiresIn(sessionId)).toBeLessThanOrEqual(35 * 60 * 1000);
+    w.limits.set(OTHER_KID, { sessions: 2, minutes: 10 });
+    const lowered = (await open(OTHER_KID)).sessionId;
+    expect(expiresIn(lowered)).toBeLessThanOrEqual(20 * 60 * 1000);
+    expect(expiresIn(lowered)).toBeGreaterThan((20 * 60 - 5) * 1000);
+  });
+
+  it('a reopen is not activity (the idle clock keeps its value) and never stretches the session past its wall-clock life', async () => {
+    const first = (await start()).body.data.sessionId as string;
+    const stamp = ago(5 * 60_000);
+    Object.assign(w.sessions[0]!, { started_at: ago(30 * 60_000), last_active_at: stamp, last_heartbeat_at: ago(60_000), active_seconds: 60 });
+    const again = await start();
+    expect(again.body.data.sessionId).toBe(first);
+    expect(w.sessions[0]!.last_active_at).toBe(stamp);
+    // 25 min of budget would run to 24 min from now; the row's life ends at started_at + 35 min, 5 min from now.
+    expect(expiresIn(first)).toBeLessThanOrEqual(5 * 60_000 + 1000);
+    expect(expiresIn(first)).toBeGreaterThan(4 * 60_000);
+    // Past its life, it is not reopened at all: a new session instead.
+    Object.assign(w.sessions[0]!, { started_at: ago(36 * 60_000), expires_at: new Date(Date.now() + 60_000).toISOString() });
+    expect((await start()).body.data.sessionId).not.toBe(first);
+  });
+
+  it('the daily window is the same for every profile locale, so changing the locale cannot reset the cap', async () => {
+    await finish((await open()).sessionId);
+    await finish((await open()).sessionId);
+    for (const locale of ['en-US', 'pt-BR', 'es-MX']) {
+      w.locale = locale;
+      const res = await start();
+      expect(res.status, locale).toBe(429);
+      expect(res.body.error.resetsAt).toBe(earliestLocalDayStartIso(new Date(), 1));
+    }
+    const sinces = new Set(w.calls.filter((c) => c.url.includes('/rpc/start_game_session_checked')).map((c) => c.body!.p_since));
+    expect(sinces.size).toBe(1);
+  });
+
+  it('a heartbeat that ends a session as idle but cannot close it is not reported as closed', async () => {
+    const { sessionId } = await open();
+    w.sessions[0]!.last_active_at = ago(11 * 60_000);
+    w.broken.add('rpc:end_game_session');
+    const res = await call('post', KID, `${base(sessionId)}/heartbeat`, { visible: false, focused: false });
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+    expect(w.sessions[0]!.ended_at).toBeNull();
+  });
+
+  it('a session records at most 40 runs (429 RUN_LIMIT), and a repeat of a stored run still answers', async () => {
+    const { sessionId } = await open();
+    for (let i = 0; i < 40; i += 1) {
+      const res = await call('post', KID, `${base(sessionId)}/runs`, report({ runKey: `run-limit-${String(i).padStart(3, '0')}` }));
+      expect(res.status, String(i)).toBe(201);
+    }
+    const over = await call('post', KID, `${base(sessionId)}/runs`, report({ runKey: 'run-limit-040' }));
+    expect(over.status).toBe(429);
+    expect(over.body.error.code).toBe('RUN_LIMIT');
+    expect(w.runs).toHaveLength(40);
+    expect((await call('post', KID, `${base(sessionId)}/runs`, report({ runKey: 'run-limit-000' }))).status).toBe(200);
+  });
+
+  it.each(['fossilRunner', 'stoneHauler', 'brassCoupe', 'sparkplug', 'driftFrame', 'circuitCrown'])('accepts the game\'s kart %s', async (kartBody) => {
+    const { sessionId } = await open();
+    expect((await call('post', KID, `${base(sessionId)}/runs`, report({ kartBody }))).status).toBe(201);
+  });
+
+  it('refuses a kart the game does not have, even a well-formed id', async () => {
+    const { sessionId } = await open();
+    expect((await call('post', KID, `${base(sessionId)}/runs`, report({ kartBody: 'turboToaster' }))).status).toBe(400);
+    expect(w.runs).toHaveLength(0);
+  });
+
+  it('keeps a legal 64 KB save: the compact cap is Core\'s, the database measures its own wider text with an allowance', async () => {
+    const { sessionId } = await open();
+    const data = { blob: 'x'.repeat(65_000) };
+    expect((await call('put', KID, `${base(sessionId)}/save`, { revision: 0, data })).status).toBe(200);
+    expect((await call('put', KID, `${base(sessionId)}/save`, { revision: 1, data: { blob: 'x'.repeat(66_000) } })).status).toBe(413);
   });
 });
 
@@ -411,12 +497,14 @@ describe('POST .../heartbeat', () => {
     expect(session(sessionId).ended_at).toBeNull();
   });
 
-  it('an expired session answers 410, another learner\'s session is not found and credits nothing', async () => {
+  it('a session whose wall-clock life is over answers hard and is closed; another learner\'s session is not found and credits nothing', async () => {
     const { sessionId } = await open();
     session(sessionId).expires_at = ago(1000);
     const gone = await beat(sessionId);
-    expect(gone.status).toBe(410);
-    expect(gone.body.error.code).toBe('SESSION_EXPIRED');
+    expect(gone.status).toBe(200);
+    expect(gone.body.data.state).toBe('hard');
+    expect(session(sessionId)).toMatchObject({ close_reason: 'hard' });
+    expect((await beat(sessionId)).status).toBe(409);
     const { sessionId: mine } = await open();
     const foreign = await call('post', OTHER_KID, `${base(mine)}/heartbeat`, { visible: true, focused: true });
     expect(foreign.status).toBe(404);
@@ -680,7 +768,8 @@ describe('PUT .../save', () => {
     const stale = await put(sessionId, { revision: 0, data: { hints: [2] } });
     expect(stale.status).toBe(409);
     expect(stale.body.error.code).toBe('SAVE_CONFLICT');
-    expect(stale.body.data).toEqual({ revision: 1 });
+    // `data` is null on purpose: the SPA's shared client only surfaces an error when it is.
+    expect(stale.body.data).toBeNull();
     expect(stale.body.error.revision).toBe(1);
     expect((await put(sessionId, { revision: 1, data: { hints: [3] } })).body.data).toEqual({ revision: 2 });
     expect(w.saves[0]!.save).toEqual({ hints: [3] });

@@ -133,6 +133,10 @@ export interface GameLineResult {
 export async function runGameLine(candidate: unknown): Promise<GameLineResult | null> {
   const input = sealGameLine(candidate);
 
+  // The platform-wide ceiling (session/spend-guard.ts) applies here as it does to the Mentor: at the ceiling
+  // nothing more is spent on a nicety, and the authored line stays.
+  if (!spendGuard.check().admitting) return null;
+
   let raw: string;
   let costUsd = 0;
   try {

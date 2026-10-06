@@ -98,7 +98,7 @@ anything while a race is running except `kr.runStarted` and, if needed, `kr.paus
 
 Errors (`error.code`): `VALIDATION_ERROR` 400, `GAME_UNKNOWN` 404, `GAME_DISABLED` 403 (guardian set 0),
 `GAME_DAILY_LIMIT` 429 (`resetsAt` ISO), `SESSION_CLOSED` 409, `SESSION_EXPIRED` 410, `SAVE_CONFLICT` 409
-(`data: { revision }`), `RUN_IMPLAUSIBLE` 422, `RUN_DUPLICATE` returns the original run with 200.
+(`data: null`, the current revision in `error.revision`), `RUN_IMPLAUSIBLE` 422, `RUN_DUPLICATE` returns the original run with 200.
 
 Limits (platform ceiling; a guardian may only lower): soft 15 min, hard 25 min, idle 10 min of active
 time, 2 sessions per learner-local day. `soft = max(1, min(15, hardMinutes - 5))` minutes.
@@ -160,15 +160,22 @@ What the first release does where the sections above left room. These facts are 
 Core, the SPA and the game.
 
 - **Save revision.** `PUT /save` takes the revision the client last saw; the server stores that plus one and
-  returns it. A mismatch is `409 SAVE_CONFLICT` with the current revision in `data.revision` (and
-  `error.revision`). The game's own `kr.save.revision` counter is not the server revision: the SPA ignores
+  returns it. A mismatch is `409 { data: null, error: { code: 'SAVE_CONFLICT', revision } }`: `data` is null (the SPA's shared
+  client only surfaces an error when it is) and the current revision is `error.revision`. The game's own `kr.save.revision` counter is not the server revision: the SPA ignores
   it, keeps its own `serverRevision` (from the session response and every PUT answer) and retries once on a
   conflict.
 - **Sessions are reused, not counted twice.** A session start reopens the learner's latest session (same
   `sessionId`, no new daily slot, allowed even at the cap) when it is still open or was closed as `left`, its
   last heartbeat is under 10 minutes old, it has active time left and it has not been expired for more than
   10 minutes. Sessions closed as `soft`, `hard` or `idle` are never reopened. A reopened session takes the
-  lower of its old minutes and the guardian's current limit and gets the remaining active budget plus 60 s.
+  lower of its old minutes and the guardian's current limit and gets the remaining active budget plus 60 s,
+  never beyond `max_minutes + 10 min` from the row's `started_at`. Reopening does not count as activity: the idle
+  clock keeps the last visible, focused heartbeat. A session's wall-clock life is `max_minutes + 10 min`, not hours;
+  once it has passed, the session is not reopenable and its heartbeat answers `hard`.
+- **Daily window.** The learner-local day is the earliest start among the three platform zones, so changing
+  the profile locale cannot reset the cap; `resetsAt` is the earliest next-day start of the three.
+- **Run limits.** At most 40 runs per session (`429 RUN_LIMIT`); `kartBody` must be one of the game's six kart
+  ids in Core.
 - **Status codes.** A new session or run answers 201; a repeated `runKey` answers 200 with the stored run.
   A migrated child without the Tutor's consent to `game_play_records` gets `GAME_DISABLED`.
 - **Leaving.** The SPA sends `end {reason: 'left'}` on unmount, Exit, `kr.exitRequested` and "Ask {Mentor}";

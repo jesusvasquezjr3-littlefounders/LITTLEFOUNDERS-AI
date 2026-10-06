@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { BANDS, RunReport, type Band, type Mentor } from '../games/runReport.js';
 import { fail, ok } from '../lib/http.js';
-import { normalizeLocale, startOfLocalDayIso, type PlatformLocale } from '../lib/localDay.js';
+import { earliestLocalDayStartIso, normalizeLocale, type PlatformLocale } from '../lib/localDay.js';
 import { authedUser, requireAuth, requireRole, type AuthedUser } from '../middleware/auth.js';
 import type { AgeScreenState } from '../services/ageScreen.js';
 import { readDataPracticeApplies } from '../services/dataPractices.js';
@@ -16,7 +16,7 @@ import {
 } from '../services/games/data.js';
 import { selectLens } from '../services/games/lens.js';
 import {
-  capsFor, dailySessionCap, MAX_CREDIT_SECONDS, SESSION_TTL_MS, sessionState, type PlayLimits,
+  capsFor, dailySessionCap, MAX_CREDIT_SECONDS, sessionLifeMs, sessionState, type PlayLimits,
 } from '../services/games/limits.js';
 import { implausibleReason } from '../services/games/plausibility.js';
 import { getRolesForGate } from '../services/insights.js';
@@ -78,6 +78,7 @@ function refuse(res: Response, failure: GameFailure) {
     case 'GAME_SESSION_NOT_FOUND': case 'GAME_GUARDIAN_NOT_LINKED': return fail(res, 404, 'NOT_FOUND', 'Not found');
     case 'GAME_SESSION_CLOSED': return fail(res, 409, 'SESSION_CLOSED', 'This session has ended');
     case 'GAME_SESSION_EXPIRED': return fail(res, 410, 'SESSION_EXPIRED', 'This session has expired');
+    case 'GAME_RUN_LIMIT': return fail(res, 429, 'RUN_LIMIT', 'This session has recorded all the races it can');
     case 'GAME_INVALID': return fail(res, 400, 'VALIDATION_ERROR', 'The request does not match the contract');
     default: return unavailable(res);
   }
@@ -106,10 +107,10 @@ async function learnerContext(user: AuthedUser, ageScreen: AgeScreenState): Prom
 }
 
 /** Everything that decides whether this learner may play right now, read before anything is written. */
-async function playState(user: AuthedUser, gameId: string, ctx: LearnerContext) {
+async function playState(user: AuthedUser, gameId: string) {
   const [limits, used, practice] = await Promise.all([
     readPlayLimits(user.id),
-    countSessionsSince(user.id, gameId, startOfLocalDayIso(ctx.locale)),
+    countSessionsSince(user.id, gameId, earliestLocalDayStartIso()),
     readDataPracticeApplies(user.id, PLAY_PRACTICE),
   ]);
   // A practice answer that cannot be read is neither yes nor no: the caller says so (502), never "not available".
@@ -129,7 +130,7 @@ export function gamesRouter(): Router {
     if (!catalog || !ctx) return unavailable(res);
     const games = [];
     for (const entry of catalog.filter((g) => g.status === 'live')) {
-      const state = await playState(user, entry.gameId, ctx);
+      const state = await playState(user, entry.gameId);
       if (!state) return unavailable(res);
       const bandFits = BAND_ORDER.indexOf(ctx.band) >= BAND_ORDER.indexOf(entry.minBand);
       games.push({
@@ -154,7 +155,7 @@ export function gamesRouter(): Router {
 
     const ctx = await learnerContext(user, res.locals.ageScreen as AgeScreenState);
     if (!ctx) return unavailable(res);
-    const state = await playState(user, entry.gameId, ctx);
+    const state = await playState(user, entry.gameId);
     if (!state) return unavailable(res);
     // Not allowed to play at all: a younger band than the game's, a guardian who set zero sessions, or a
     // migrated child whose Tutor has not yet said yes to game records (OD-9 4.2). One answer for all three.
@@ -169,7 +170,7 @@ export function gamesRouter(): Router {
     const created = await startSessionChecked({
       userId: user.id,
       gameId: entry.gameId,
-      sinceIso: startOfLocalDayIso(ctx.locale),
+      sinceIso: earliestLocalDayStartIso(),
       cap: state.cap,
       sessionRef: randomBytes(24).toString('base64url'),
       mentor: ctx.mentor,
@@ -177,19 +178,19 @@ export function gamesRouter(): Router {
       band: ctx.band,
       clientBuild: config.KARTRUSH_BUILD,
       maxMinutes: state.limits.maxSessionMinutes,
-      expiresAtIso: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
+      expiresAtIso: new Date(Date.now() + sessionLifeMs(state.limits.maxSessionMinutes)).toISOString(),
     });
     if (!created) return unavailable(res);
     if (created.status === 'cap_reached') {
       // The reset instant, not a vague "tomorrow": the learner's next local midnight.
       return fail(res, 429, 'GAME_DAILY_LIMIT', 'You have played all of today\'s sessions', {
-        resetsAt: startOfLocalDayIso(ctx.locale, new Date(), 1),
+        resetsAt: earliestLocalDayStartIso(new Date(), 1),
       });
     }
     const { session } = created;
     // A refresh or a quick trip away reopens the learner's latest session (same id) and costs no slot, so the
     // count is read again rather than assumed to have grown; if that read fails, assume a new session.
-    const usedNow = await countSessionsSince(user.id, entry.gameId, startOfLocalDayIso(ctx.locale));
+    const usedNow = await countSessionsSince(user.id, entry.gameId, earliestLocalDayStartIso());
     return ok(res, {
       sessionId: session.id,
       sessionRef: session.session_ref,
@@ -225,17 +226,19 @@ export function gamesRouter(): Router {
     const row = credited.value;
     if (row.ended_at !== null) return fail(res, 409, 'SESSION_CLOSED', 'This session has ended');
     const now = new Date(row.now).getTime();
-    if (new Date(row.expires_at).getTime() <= now) {
-      await endSession(sid.data, user.id, 'hard');
-      return fail(res, 410, 'SESSION_EXPIRED', 'This session has expired');
-    }
-    const state = sessionState({
+    // The session's wall-clock life (its minutes + 10) is over: out of time, whatever the active clock says.
+    const lifeOver = new Date(row.expires_at).getTime() <= now;
+    const state = lifeOver ? 'hard' : sessionState({
       activeSeconds: row.active_seconds,
       maxSessionMinutes: row.max_minutes,
       idleGapMs: now - new Date(row.prev_active_at).getTime(),
     });
     // Out of time or away too long: the session ends here, so a later run report for it is refused (409).
-    if (state === 'hard' || state === 'idle') await endSession(sid.data, user.id, state);
+    if (state === 'hard' || state === 'idle') {
+      // Never report a close the database did not make: the same refusal as any failed close.
+      const closed = await endSession(sid.data, user.id, state);
+      if (!closed.ok) return refuse(res, closed.failure);
+    }
     return ok(res, { activeSeconds: row.active_seconds, state });
   });
 
@@ -285,7 +288,7 @@ export function gamesRouter(): Router {
     if (!aiDebriefEnabled() || !await hasPracticeConsent(user.id, AI_PRACTICE)) return authored();
     const session = await readOwnSession(user.id, gameId.data, sid.data);
     if (session === null || session === 'none' || session.mentor === null) return authored();
-    const claimed = await claimAiLine(user.id, run.id, startOfLocalDayIso(session.locale), getConfig().GAME_AI_DAILY_LINES);
+    const claimed = await claimAiLine(user.id, run.id, earliestLocalDayStartIso(), getConfig().GAME_AI_DAILY_LINES);
     if (!claimed.ok || !claimed.value) return authored();
     const line = await requestGameLine({ mentor: session.mentor, locale: session.locale, band: session.band, lens: run.lens });
     if (!line) return authored();
@@ -311,11 +314,8 @@ export function gamesRouter(): Router {
         : refuse(res, saved.failure);
     }
     if (!saved.value.ok) {
-      // Both places carry the current revision: the contract names `data`, the error object is where clients read the rest.
-      return res.status(409).json({
-        data: { revision: saved.value.revision },
-        error: { code: 'SAVE_CONFLICT', message: 'The save changed elsewhere', revision: saved.value.revision },
-      });
+      // `data` stays null: the SPA's shared client only surfaces an error when it is. The current revision rides on the error.
+      return fail(res, 409, 'SAVE_CONFLICT', 'The save changed elsewhere', { revision: saved.value.revision });
     }
     return ok(res, { revision: saved.value.revision });
   });
