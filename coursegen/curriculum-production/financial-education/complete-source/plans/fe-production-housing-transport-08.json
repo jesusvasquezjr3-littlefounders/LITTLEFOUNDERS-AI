@@ -1,0 +1,833 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-2",
+  "lesson_id": "fe-production-housing-transport-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a vehicle’s total ownership cost including maintenance, insurance and depreciation assumptions.",
+  "title": {
+    "en-US": "Vehicle Costs",
+    "es-MX": "El costo de un vehículo",
+    "pt-BR": "O custo de um veículo"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Vehicle Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El costo de un vehículo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O custo de um veículo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.08",
+      "observable_action": "Calculate a vehicle’s total ownership cost including maintenance, insurance and depreciation assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.06",
+      "prod.insurance-risk.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A low vehicle price can hide high running costs; compare fictional dollars for the whole ownership period.",
+    "misconception": "Vehicle cost equals sticker price or fuel alone, and value lost at resale does not count.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-example-01",
+        "supports_from": [],
+        "reasoning": "Compare purchase minus resale value, plus stated running and financing costs. Do not count the purchase price twice."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Value lost equals purchase price minus resale value."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Operating the vehicle involves more than fuel."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Add value lost to all stated costs of use."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Net value loss already accounts for purchase and resale."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Unknown repairs can change the ownership cost comparison."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Fuel savings alone do not establish the lower total cost."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A low vehicle price can hide high running costs; compare fictional dollars for the whole ownership period."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un precio bajo puede ocultar costos altos de uso; compara pesos ficticios durante todo el periodo de propiedad."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um preço baixo pode esconder custos altos de uso; compare reais fictícios por todo o período de posse."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Include use and value lost",
+          "line": "Compare purchase minus resale value, plus stated running and financing costs. Do not count the purchase price twice."
+        },
+        "es-MX": {
+          "prompt": "Incluye uso y valor perdido",
+          "line": "Compara compra menos reventa, más uso y financiamiento indicados. No cuentes el precio de compra dos veces."
+        },
+        "pt-BR": {
+          "prompt": "Inclua uso e valor perdido",
+          "line": "Compare compra menos revenda, mais uso e financiamento dados. Não conte o preço de compra duas vezes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What value was lost?",
+          "scene": "Purchase price: 10000; Resale value: 7000; Compare only the value change.",
+          "options": [
+            {
+              "label": "7000"
+            },
+            {
+              "label": "3000"
+            },
+            {
+              "label": "17000"
+            }
+          ],
+          "help": [
+            "Subtract resale value from the original purchase price."
+          ],
+          "feedback": {
+            "met": "Value lost equals purchase price minus resale value.",
+            "not_yet": "Subtract resale value from the original purchase price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué valor se perdió?",
+          "scene": "Precio de compra: 10000; Valor de reventa: 7000; Compara solo cambio de valor.",
+          "options": [
+            {
+              "label": "7000"
+            },
+            {
+              "label": "3000"
+            },
+            {
+              "label": "17000"
+            }
+          ],
+          "help": [
+            "Resta reventa al precio original de compra."
+          ],
+          "feedback": {
+            "met": "Valor perdido es precio de compra menos reventa.",
+            "not_yet": "Resta reventa al precio original de compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto valor foi perdido?",
+          "scene": "Preço de compra: 10000; Valor de revenda: 7000; Compare só a mudança de valor.",
+          "options": [
+            {
+              "label": "7000"
+            },
+            {
+              "label": "3000"
+            },
+            {
+              "label": "17000"
+            }
+          ],
+          "help": [
+            "Subtraia revenda do preço original de compra."
+          ],
+          "feedback": {
+            "met": "Valor perdido é preço de compra menos revenda.",
+            "not_yet": "Subtraia revenda do preço original de compra."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10000,
+          7000
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which belongs in running costs?",
+          "scene": "Two vehicles need different fuel, insurance and maintenance spending.",
+          "options": [
+            {
+              "label": "Fuel alone"
+            },
+            {
+              "label": "All three stated costs"
+            },
+            {
+              "label": "The initial purchase price"
+            }
+          ],
+          "help": [
+            "Include every stated recurring cost needed to use it."
+          ],
+          "feedback": {
+            "met": "Operating the vehicle involves more than fuel.",
+            "not_yet": "Include every stated recurring cost needed to use it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entra en costos de uso?",
+          "scene": "Dos vehículos requieren distintos gastos de combustible, seguro y mantenimiento.",
+          "options": [
+            {
+              "label": "Solo combustible"
+            },
+            {
+              "label": "Los tres costos indicados"
+            },
+            {
+              "label": "El precio de compra inicial"
+            }
+          ],
+          "help": [
+            "Incluye cada costo recurrente necesario indicado."
+          ],
+          "feedback": {
+            "met": "Usar el vehículo implica más que combustible.",
+            "not_yet": "Incluye cada costo recurrente necesario indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que entra nos custos de uso?",
+          "scene": "Dois veículos exigem gastos distintos de combustível, seguro e manutenção.",
+          "options": [
+            {
+              "label": "Só combustível"
+            },
+            {
+              "label": "Os três custos dados"
+            },
+            {
+              "label": "O preço inicial de compra"
+            }
+          ],
+          "help": [
+            "Inclua cada custo contínuo necessário dado."
+          ],
+          "feedback": {
+            "met": "Usar o veículo envolve mais que combustível.",
+            "not_yet": "Inclua cada custo contínuo necessário dado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is this period’s total cost?",
+          "scene": "Value lost: 2000; Fuel: 900; Insurance: 600; Repairs: 500; No financing or other costs.",
+          "options": [
+            {
+              "label": "3500"
+            },
+            {
+              "label": "2000"
+            },
+            {
+              "label": "4000"
+            }
+          ],
+          "help": [
+            "Each listed cost belongs to this same period."
+          ],
+          "feedback": {
+            "met": "Add value lost to all stated costs of use.",
+            "not_yet": "Each listed cost belongs to this same period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es costo total del periodo?",
+          "scene": "Valor perdido: 2000; Combustible: 900; Seguro: 600; Reparaciones: 500; Sin otros costos ni financiamiento.",
+          "options": [
+            {
+              "label": "3500"
+            },
+            {
+              "label": "2000"
+            },
+            {
+              "label": "4000"
+            }
+          ],
+          "help": [
+            "Cada costo listado pertenece al mismo periodo."
+          ],
+          "feedback": {
+            "met": "Suma valor perdido y todos los costos de uso indicados.",
+            "not_yet": "Cada costo listado pertenece al mismo periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o custo total do período?",
+          "scene": "Valor perdido: 2000; Combustível: 900; Seguro: 600; Consertos: 500; Sem outros custos ou financiamento.",
+          "options": [
+            {
+              "label": "3500"
+            },
+            {
+              "label": "2000"
+            },
+            {
+              "label": "4000"
+            }
+          ],
+          "help": [
+            "Cada custo listado pertence ao mesmo período."
+          ],
+          "feedback": {
+            "met": "Some valor perdido e todos os custos de uso dados.",
+            "not_yet": "Cada custo listado pertence ao mesmo período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2000,
+          900,
+          600,
+          500
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 3
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which method avoids counting twice?",
+          "scene": "A cost model already includes purchase price minus resale value.",
+          "options": [
+            {
+              "label": "Add full purchase price again"
+            },
+            {
+              "label": "Add resale value as another expense"
+            },
+            {
+              "label": "Add running costs only"
+            }
+          ],
+          "help": [
+            "Do not add the full purchase price a second time."
+          ],
+          "feedback": {
+            "met": "Net value loss already accounts for purchase and resale.",
+            "not_yet": "Do not add the full purchase price a second time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué método evita contar dos veces?",
+          "scene": "Modelo ya incluye precio de compra menos valor de reventa.",
+          "options": [
+            {
+              "label": "Agregar otra vez precio completo"
+            },
+            {
+              "label": "Agregar reventa como gasto"
+            },
+            {
+              "label": "Agregar solo costos de uso"
+            }
+          ],
+          "help": [
+            "No sumes por segunda vez todo el precio de compra."
+          ],
+          "feedback": {
+            "met": "La pérdida neta ya incorpora compra y reventa.",
+            "not_yet": "No sumes por segunda vez todo el precio de compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual método evita contar duas vezes?",
+          "scene": "Modelo já inclui preço de compra menos valor de revenda.",
+          "options": [
+            {
+              "label": "Somar preço completo de novo"
+            },
+            {
+              "label": "Somar revenda como gasto"
+            },
+            {
+              "label": "Somar só custos de uso"
+            }
+          ],
+          "help": [
+            "Não some todo o preço de compra uma segunda vez."
+          ],
+          "feedback": {
+            "met": "A perda líquida já inclui compra e revenda.",
+            "not_yet": "Não some todo o preço de compra uma segunda vez."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Can sticker price settle this choice?",
+          "scene": "Cheaper vehicle has unknown repair needs; another has a documented inspection.",
+          "options": [
+            {
+              "label": "Yes, cheapest price always wins"
+            },
+            {
+              "label": "No, investigate repair needs"
+            },
+            {
+              "label": "Yes, repairs cost nothing"
+            }
+          ],
+          "help": [
+            "Gather relevant condition and repair information."
+          ],
+          "feedback": {
+            "met": "Unknown repairs can change the ownership cost comparison.",
+            "not_yet": "Gather relevant condition and repair information."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El precio resuelve esta elección?",
+          "scene": "Vehículo barato tiene reparaciones desconocidas; otro tiene inspección documentada.",
+          "options": [
+            {
+              "label": "Sí, menor precio siempre gana"
+            },
+            {
+              "label": "No, investigar reparaciones necesarias"
+            },
+            {
+              "label": "Sí, reparar no cuesta"
+            }
+          ],
+          "help": [
+            "Reúne información pertinente sobre estado y reparaciones."
+          ],
+          "feedback": {
+            "met": "Reparaciones desconocidas pueden cambiar la comparación de costos.",
+            "not_yet": "Reúne información pertinente sobre estado y reparaciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O preço resolve esta escolha?",
+          "scene": "Veículo barato tem consertos desconhecidos; outro tem inspeção documentada.",
+          "options": [
+            {
+              "label": "Sim, menor preço sempre vence"
+            },
+            {
+              "label": "Não, investigar consertos necessários"
+            },
+            {
+              "label": "Sim, consertar não custa"
+            }
+          ],
+          "help": [
+            "Reúna dados relevantes sobre estado e consertos."
+          ],
+          "feedback": {
+            "met": "Consertos desconhecidos podem mudar a comparação de custos.",
+            "not_yet": "Reúna dados relevantes sobre estado e consertos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison is complete?",
+          "scene": "An ad compares fuel spending but omits insurance, upkeep and resale changes.",
+          "options": [
+            {
+              "label": "Choose using fuel alone"
+            },
+            {
+              "label": "Compare total ownership costs"
+            },
+            {
+              "label": "Assume omitted costs match"
+            }
+          ],
+          "help": [
+            "Include all relevant costs over the same use period."
+          ],
+          "feedback": {
+            "met": "Fuel savings alone do not establish the lower total cost.",
+            "not_yet": "Include all relevant costs over the same use period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación está completa?",
+          "scene": "Anuncio compara combustible pero omite seguro, cuidado y cambios de reventa.",
+          "options": [
+            {
+              "label": "Elegir solo por combustible"
+            },
+            {
+              "label": "Comparar costos totales de propiedad"
+            },
+            {
+              "label": "Suponer iguales costos omitidos"
+            }
+          ],
+          "help": [
+            "Incluye costos pertinentes durante el mismo periodo de uso."
+          ],
+          "feedback": {
+            "met": "Ahorrar combustible solo no establece el menor costo total.",
+            "not_yet": "Incluye costos pertinentes durante el mismo periodo de uso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que comparação está completa?",
+          "scene": "Anúncio compara combustível mas omite seguro, cuidados e mudanças na revenda.",
+          "options": [
+            {
+              "label": "Escolher só pelo combustível"
+            },
+            {
+              "label": "Comparar custos totais de posse"
+            },
+            {
+              "label": "Supor iguais custos omitidos"
+            }
+          ],
+          "help": [
+            "Inclua custos relevantes no mesmo período de uso."
+          ],
+          "feedback": {
+            "met": "Poupar combustível não define sozinho o menor custo total.",
+            "not_yet": "Inclua custos relevantes no mesmo período de uso."
+          }
+        }
+      }
+    }
+  ]
+}

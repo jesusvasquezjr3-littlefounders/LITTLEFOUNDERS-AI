@@ -1,0 +1,906 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-2",
+  "lesson_id": "fe-production-income-work-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.received",
+    "finance.prod.income-work.01",
+    "finance.prod.income-work.02",
+    "finance.prod.income-work.03",
+    "finance.prod.income-work.04",
+    "finance.prod.income-work.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Shift decisions",
+    "es-MX": "Antes de aceptar el turno",
+    "pt-BR": "Antes de aceitar o turno"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Before taking the shift\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Antes de aceptar el turno\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Antes de aceitar o turno\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.received",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction"
+    ],
+    "retrieval_skills": [
+      "prod.income-work.01",
+      "prod.income-work.02",
+      "prod.income-work.03",
+      "prod.income-work.04",
+      "prod.income-work.05",
+      "cash.received"
+    ],
+    "relevance": "Read the terms and costs of a new shift before using its promised pay.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "A single agreed shift does not establish recurring work."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The stated deduction reduces gross pay."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.03",
+        "context_id": "fe-production-income-work-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "All paid hours contribute at the stated rate."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Required travel reduces what remains for other needs."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "An amount calculation does not establish payment timing."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "cash.received",
+        "context_id": "fe-production-income-work-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Approval and actual receipt are separate states."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.received",
+        "context_id": "fe-production-income-work-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "A future reimbursement does not become available by being promised."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.received",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read the terms and costs of a new shift before using its promised pay."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Lee condiciones y costos de un turno antes de usar el pago prometido."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Leia condições e custos de um turno antes de usar o pagamento prometido."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How should its pay enter future estimates?",
+          "scene": "An event offers one setup shift with no promise of future work.",
+          "options": [
+            {
+              "label": "As a one-time receipt"
+            },
+            {
+              "label": "As money already held"
+            },
+            {
+              "label": "As permanent weekly income"
+            }
+          ],
+          "help": [
+            "Use the offer’s stated frequency."
+          ],
+          "feedback": {
+            "met": "A single agreed shift does not establish recurring work.",
+            "not_yet": "Use the offer’s stated frequency."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo incluir su pago en estimaciones futuras?",
+          "scene": "Un evento ofrece un turno de montaje sin prometer trabajo futuro.",
+          "options": [
+            {
+              "label": "Como entrada de una sola vez"
+            },
+            {
+              "label": "Como dinero ya disponible"
+            },
+            {
+              "label": "Como ingreso semanal permanente"
+            }
+          ],
+          "help": [
+            "Usa la frecuencia indicada en la oferta."
+          ],
+          "feedback": {
+            "met": "Un turno acordado no establece trabajo recurrente.",
+            "not_yet": "Usa la frecuencia indicada en la oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como incluir seu pagamento em estimativas futuras?",
+          "scene": "Um evento oferece um turno de montagem sem prometer trabalho futuro.",
+          "options": [
+            {
+              "label": "Como entrada única"
+            },
+            {
+              "label": "Como dinheiro já disponível"
+            },
+            {
+              "label": "Como renda semanal permanente"
+            }
+          ],
+          "help": [
+            "Use a frequência informada na oferta."
+          ],
+          "feedback": {
+            "met": "Um turno combinado não estabelece trabalho recorrente.",
+            "not_yet": "Use a frequência informada na oferta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Expected net?",
+          "scene": "Gross pay is 180 dollars; the stated deduction is 25.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "205"
+            },
+            {
+              "label": "155"
+            }
+          ],
+          "help": [
+            "Subtract the deduction once."
+          ],
+          "feedback": {
+            "met": "The stated deduction reduces gross pay.",
+            "not_yet": "Subtract the deduction once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Neto esperado?",
+          "scene": "Pago bruto 180 pesos; descuento indicado 25.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "205"
+            },
+            {
+              "label": "155"
+            }
+          ],
+          "help": [
+            "Resta el descuento una vez."
+          ],
+          "feedback": {
+            "met": "El descuento indicado reduce el pago bruto.",
+            "not_yet": "Resta el descuento una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Líquido esperado?",
+          "scene": "Pagamento bruto 180 reais; desconto informado 25.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "205"
+            },
+            {
+              "label": "155"
+            }
+          ],
+          "help": [
+            "Subtraia o desconto uma vez."
+          ],
+          "feedback": {
+            "met": "O desconto informado reduz o pagamento bruto.",
+            "not_yet": "Subtraia o desconto uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Gross earnings?",
+          "scene": "The shift pays 14 for each of 6 paid hours.",
+          "options": [
+            {
+              "label": "14"
+            },
+            {
+              "label": "84"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Multiply paid hours by hourly pay."
+          ],
+          "feedback": {
+            "met": "All paid hours contribute at the stated rate.",
+            "not_yet": "Multiply paid hours by hourly pay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ganancia bruta?",
+          "scene": "El turno paga 14 por cada una de 6 horas pagadas.",
+          "options": [
+            {
+              "label": "14"
+            },
+            {
+              "label": "84"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Multiplica horas pagadas por pago por hora."
+          ],
+          "feedback": {
+            "met": "Todas las horas pagadas aportan la tarifa indicada.",
+            "not_yet": "Multiplica horas pagadas por pago por hora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ganho bruto?",
+          "scene": "O turno paga 14 por cada uma de 6 horas pagas.",
+          "options": [
+            {
+              "label": "14"
+            },
+            {
+              "label": "84"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Multiplique horas pagas pelo valor por hora."
+          ],
+          "feedback": {
+            "met": "Todas as horas pagas contribuem pelo valor informado.",
+            "not_yet": "Multiplique horas pagas pelo valor por hora."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          14,
+          6
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Left after work travel?",
+          "scene": "Received shift pay is 95; necessary travel costs 18.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "113"
+            },
+            {
+              "label": "77"
+            }
+          ],
+          "help": [
+            "Use received pay before removing this separate cost."
+          ],
+          "feedback": {
+            "met": "Required travel reduces what remains for other needs.",
+            "not_yet": "Use received pay before removing this separate cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras el viaje laboral?",
+          "scene": "Pago recibido del turno 95; viaje necesario 18.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "113"
+            },
+            {
+              "label": "77"
+            }
+          ],
+          "help": [
+            "Usa pago recibido antes de retirar este costo aparte."
+          ],
+          "feedback": {
+            "met": "El viaje necesario reduce lo restante para otras necesidades.",
+            "not_yet": "Usa pago recibido antes de retirar este costo aparte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sobra após a viagem de trabalho?",
+          "scene": "Pagamento recebido do turno 95; viagem necessária 18.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "113"
+            },
+            {
+              "label": "77"
+            }
+          ],
+          "help": [
+            "Use pagamento recebido antes de retirar esse custo separado."
+          ],
+          "feedback": {
+            "met": "A viagem necessária reduz o restante para outras necessidades.",
+            "not_yet": "Use pagamento recebido antes de retirar esse custo separado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          95,
+          18
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which detail needs clarification?",
+          "scene": "An offer names paid hours and rate but gives no payment deadline.",
+          "options": [
+            {
+              "label": "When payment is due"
+            },
+            {
+              "label": "The computable gross total"
+            },
+            {
+              "label": "The stated paid hours again"
+            }
+          ],
+          "help": [
+            "Check date separately from amount."
+          ],
+          "feedback": {
+            "met": "An amount calculation does not establish payment timing.",
+            "not_yet": "Check date separately from amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato necesita aclaración?",
+          "scene": "Una oferta indica horas y tarifa, pero no fecha de pago.",
+          "options": [
+            {
+              "label": "Cuándo debe pagarse"
+            },
+            {
+              "label": "El total bruto calculable"
+            },
+            {
+              "label": "Otra vez las horas indicadas"
+            }
+          ],
+          "help": [
+            "Revisa fecha aparte del monto."
+          ],
+          "feedback": {
+            "met": "Calcular monto no establece cuándo se paga.",
+            "not_yet": "Revisa fecha aparte del monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado precisa esclarecer?",
+          "scene": "Uma oferta informa horas e valor, mas não prazo de pagamento.",
+          "options": [
+            {
+              "label": "Quando o pagamento vence"
+            },
+            {
+              "label": "O total bruto calculável"
+            },
+            {
+              "label": "As horas informadas de novo"
+            }
+          ],
+          "help": [
+            "Confira data separada do valor."
+          ],
+          "feedback": {
+            "met": "Calcular valor não estabelece quando se paga.",
+            "not_yet": "Confira data separada do valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Can that money be spent now?",
+          "scene": "The employer approved payment but no money has arrived.",
+          "options": [
+            {
+              "label": "Not as money already received"
+            },
+            {
+              "label": "Yes, if the bill is urgent"
+            },
+            {
+              "label": "Yes, approval equals cash"
+            }
+          ],
+          "help": [
+            "Check actual receipt before counting available money."
+          ],
+          "feedback": {
+            "met": "Approval and actual receipt are separate states.",
+            "not_yet": "Check actual receipt before counting available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede gastarse ese dinero ahora?",
+          "scene": "El empleador aprobó pago, pero el dinero no ha llegado.",
+          "options": [
+            {
+              "label": "No como dinero ya recibido"
+            },
+            {
+              "label": "Sí, si la cuenta urge"
+            },
+            {
+              "label": "Sí, aprobación equivale a efectivo"
+            }
+          ],
+          "help": [
+            "Revisa recepción real antes de contar dinero disponible."
+          ],
+          "feedback": {
+            "met": "Aprobación y recepción real son estados distintos.",
+            "not_yet": "Revisa recepción real antes de contar dinero disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode gastar esse dinheiro agora?",
+          "scene": "O empregador aprovou pagamento, mas o dinheiro não chegou.",
+          "options": [
+            {
+              "label": "Não como dinheiro já recebido"
+            },
+            {
+              "label": "Sim, se a conta urge"
+            },
+            {
+              "label": "Sim, aprovação equivale a dinheiro"
+            }
+          ],
+          "help": [
+            "Confira recebimento real antes de contar dinheiro disponível."
+          ],
+          "feedback": {
+            "met": "Aprovação e recebimento real são estados diferentes.",
+            "not_yet": "Confira recebimento real antes de contar dinheiro disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Which status belongs today?",
+          "scene": "A travel reimbursement is promised for next week; today’s account shows none of it.",
+          "options": [
+            {
+              "label": "Promised, not yet received"
+            },
+            {
+              "label": "Received in full"
+            },
+            {
+              "label": "A new payment already made"
+            }
+          ],
+          "help": [
+            "Keep present balance separate from future receipts."
+          ],
+          "feedback": {
+            "met": "A future reimbursement does not become available by being promised.",
+            "not_yet": "Keep present balance separate from future receipts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué estado corresponde al dinero disponible de hoy?",
+          "scene": "Se promete reembolso de viaje la próxima semana; hoy la cuenta no lo muestra.",
+          "options": [
+            {
+              "label": "Prometido, aún no recibido"
+            },
+            {
+              "label": "Recibido completo"
+            },
+            {
+              "label": "Un pago nuevo ya realizado"
+            }
+          ],
+          "help": [
+            "Separa saldo actual y entradas futuras."
+          ],
+          "feedback": {
+            "met": "Un reembolso futuro no está disponible solo por prometerse.",
+            "not_yet": "Separa saldo actual y entradas futuras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual estado cabe no dinheiro disponível de hoje?",
+          "scene": "Prometem reembolso de viagem na próxima semana; hoje a conta não o mostra.",
+          "options": [
+            {
+              "label": "Prometido, ainda não recebido"
+            },
+            {
+              "label": "Recebido integralmente"
+            },
+            {
+              "label": "Um novo pagamento já feito"
+            }
+          ],
+          "help": [
+            "Separe saldo atual e entradas futuras."
+          ],
+          "feedback": {
+            "met": "Um reembolso futuro não fica disponível só por ser prometido.",
+            "not_yet": "Separe saldo atual e entradas futuras."
+          }
+        }
+      }
+    }
+  ]
+}

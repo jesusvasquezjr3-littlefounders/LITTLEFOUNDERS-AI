@@ -1,0 +1,851 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-1",
+  "lesson_id": "fe-production-income-work-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Estimate usable income after stated work-related costs.",
+  "title": {
+    "en-US": "Work costs",
+    "es-MX": "Lo que deja el trabajo",
+    "pt-BR": "O que sobra do trabalho"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"What work leaves you\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lo que deja el trabajo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que sobra do trabalho\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.04",
+      "observable_action": "Estimate usable income after stated work-related costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.02",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Account for necessary work costs before calling earnings usable.",
+    "misconception": "Compare work arrangements by received pay while ignoring required costs.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-example-01",
+        "supports_from": [],
+        "reasoning": "A task pays 80 dollars received; required travel costs 15. That leaves 65 before other household needs."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Required travel reduces the amount left from this work."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The scene makes transport a condition of doing the work."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Both necessary costs reduce the usable work receipt."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-practice-02",
+        "supports_from": [],
+        "reasoning": "An amount already net of a cost includes that reduction."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-practice-03",
+        "supports_from": [],
+        "reasoning": "An unknown necessary cost leaves the estimate incomplete."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.04",
+        "context_id": "fe-production-income-work-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Remove both stated work costs from received pay."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Account for necessary work costs before calling earnings usable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Considera costos necesarios del trabajo antes de llamar utilizable a la ganancia."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Considere custos necessários do trabalho antes de chamar o ganho de utilizável."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Remove required costs",
+          "line": "A task pays 80 dollars received; required travel costs 15. That leaves 65 before other household needs."
+        },
+        "es-MX": {
+          "prompt": "Retira costos necesarios",
+          "line": "Una tarea paga 80 pesos recibidos; el viaje necesario cuesta 15. Quedan 65 antes de otras necesidades del hogar."
+        },
+        "pt-BR": {
+          "prompt": "Retire custos necessários",
+          "line": "Uma tarefa paga 80 reais recebidos; a viagem necessária custa 15. Sobram 65 antes de outras necessidades da casa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Left after travel?",
+          "scene": "Received pay is 70; required travel costs 12. Subtract the cost.",
+          "options": [
+            {
+              "label": "58"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "82"
+            }
+          ],
+          "help": [
+            "Do not add a cost to income."
+          ],
+          "feedback": {
+            "met": "Required travel reduces the amount left from this work.",
+            "not_yet": "Do not add a cost to income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras viajar?",
+          "scene": "Pago recibido 70; viaje necesario 12. Resta el costo.",
+          "options": [
+            {
+              "label": "58"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "82"
+            }
+          ],
+          "help": [
+            "No sumes un costo al ingreso."
+          ],
+          "feedback": {
+            "met": "El viaje necesario reduce lo que deja este trabajo.",
+            "not_yet": "No sumes un costo al ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sobra após viajar?",
+          "scene": "Pagamento recebido 70; viagem necessária 12. Subtraia o custo.",
+          "options": [
+            {
+              "label": "58"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "82"
+            }
+          ],
+          "help": [
+            "Não some custo à renda."
+          ],
+          "feedback": {
+            "met": "A viagem necessária reduz o que sobra desse trabalho.",
+            "not_yet": "Não some custo à renda."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          70,
+          12
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost is necessary to do this work?",
+          "scene": "An assignment requires paid transport; an optional snack is your choice.",
+          "options": [
+            {
+              "label": "Neither cost can matter"
+            },
+            {
+              "label": "Required transport"
+            },
+            {
+              "label": "The optional snack"
+            }
+          ],
+          "help": [
+            "Use the stated requirement, not a general assumption."
+          ],
+          "feedback": {
+            "met": "The scene makes transport a condition of doing the work.",
+            "not_yet": "Use the stated requirement, not a general assumption."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo es necesario para ese trabajo?",
+          "scene": "Un trabajo requiere transporte pagado; un bocadillo opcional es tu elección.",
+          "options": [
+            {
+              "label": "Ningún costo importa"
+            },
+            {
+              "label": "El transporte requerido"
+            },
+            {
+              "label": "El bocadillo opcional"
+            }
+          ],
+          "help": [
+            "Usa el requisito indicado, no una suposición general."
+          ],
+          "feedback": {
+            "met": "La escena hace del transporte una condición del trabajo.",
+            "not_yet": "Usa el requisito indicado, no una suposición general."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo é necessário para esse trabalho?",
+          "scene": "Um trabalho exige transporte pago; um lanche opcional é sua escolha.",
+          "options": [
+            {
+              "label": "Nenhum custo importa"
+            },
+            {
+              "label": "O transporte exigido"
+            },
+            {
+              "label": "O lanche opcional"
+            }
+          ],
+          "help": [
+            "Use o requisito informado, não uma suposição geral."
+          ],
+          "feedback": {
+            "met": "A cena faz do transporte uma condição do trabalho.",
+            "not_yet": "Use o requisito informado, não uma suposição geral."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Left after these costs?",
+          "scene": "Received pay is 120; required supplies cost 18 and travel costs 22.",
+          "options": [
+            {
+              "label": "102"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "160"
+            }
+          ],
+          "help": [
+            "Include every stated necessary cost once."
+          ],
+          "feedback": {
+            "met": "Both necessary costs reduce the usable work receipt.",
+            "not_yet": "Include every stated necessary cost once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras esos costos?",
+          "scene": "Pago recibido 120; insumos necesarios 18 y viaje 22.",
+          "options": [
+            {
+              "label": "102"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "160"
+            }
+          ],
+          "help": [
+            "Incluye cada costo necesario indicado una vez."
+          ],
+          "feedback": {
+            "met": "Ambos costos necesarios reducen la entrada utilizable del trabajo.",
+            "not_yet": "Incluye cada costo necesario indicado una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sobra após esses custos?",
+          "scene": "Pagamento recebido 120; materiais necessários 18 e viagem 22.",
+          "options": [
+            {
+              "label": "102"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "160"
+            }
+          ],
+          "help": [
+            "Inclua cada custo necessário informado uma vez."
+          ],
+          "feedback": {
+            "met": "Os dois custos necessários reduzem a entrada utilizável do trabalho.",
+            "not_yet": "Inclua cada custo necessário informado uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          18,
+          22
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Subtract transport costs again?",
+          "scene": "Pay is already stated after transport reimbursement and its matching cost.",
+          "options": [
+            {
+              "label": "Avoid counting it twice"
+            },
+            {
+              "label": "Every mention is a new cost"
+            },
+            {
+              "label": "Always subtract costs twice"
+            }
+          ],
+          "help": [
+            "Check what the starting amount already includes."
+          ],
+          "feedback": {
+            "met": "An amount already net of a cost includes that reduction.",
+            "not_yet": "Check what the starting amount already includes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debes restar otra vez ese transporte?",
+          "scene": "El pago ya se indica después del reembolso de transporte y su costo correspondiente.",
+          "options": [
+            {
+              "label": "No, evita contarlo dos veces"
+            },
+            {
+              "label": "Sí, cada mención es otro costo"
+            },
+            {
+              "label": "Sí, siempre resta costos dos veces"
+            }
+          ],
+          "help": [
+            "Revisa qué incluye ya el monto inicial."
+          ],
+          "feedback": {
+            "met": "Un monto ya neto de un costo incluye esa reducción.",
+            "not_yet": "Revisa qué incluye ya el monto inicial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve subtrair esse transporte novamente?",
+          "scene": "O pagamento já é informado após o reembolso de transporte e seu custo correspondente.",
+          "options": [
+            {
+              "label": "Não, evite contar duas vezes"
+            },
+            {
+              "label": "Sim, cada menção é outro custo"
+            },
+            {
+              "label": "Sim, sempre subtraia custos duas vezes"
+            }
+          ],
+          "help": [
+            "Confira o que o valor inicial já inclui."
+          ],
+          "feedback": {
+            "met": "Um valor já líquido de um custo inclui essa redução.",
+            "not_yet": "Confira o que o valor inicial já inclui."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Can exact usable income be calculated?",
+          "scene": "Travel is necessary, but its cost is not known yet.",
+          "options": [
+            {
+              "label": "Use gross pay unchanged"
+            },
+            {
+              "label": "Not until the cost is checked"
+            },
+            {
+              "label": "Assume travel is free"
+            }
+          ],
+          "help": [
+            "Resolve missing costs before comparing exact totals."
+          ],
+          "feedback": {
+            "met": "An unknown necessary cost leaves the estimate incomplete.",
+            "not_yet": "Resolve missing costs before comparing exact totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede calcularse el ingreso utilizable exacto?",
+          "scene": "Viajar es necesario, pero aún no se sabe su costo.",
+          "options": [
+            {
+              "label": "Sí, usa bruto sin cambios"
+            },
+            {
+              "label": "No hasta revisar el costo"
+            },
+            {
+              "label": "Sí, supone viaje gratis"
+            }
+          ],
+          "help": [
+            "Resuelve costos faltantes antes de comparar totales exactos."
+          ],
+          "feedback": {
+            "met": "Un costo necesario desconocido deja incompleta la estimación.",
+            "not_yet": "Resuelve costos faltantes antes de comparar totales exactos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode calcular a renda utilizável exata?",
+          "scene": "Viajar é necessário, mas seu custo ainda é desconhecido.",
+          "options": [
+            {
+              "label": "Sim, use bruto sem mudanças"
+            },
+            {
+              "label": "Não até conferir o custo"
+            },
+            {
+              "label": "Sim, suponha viagem grátis"
+            }
+          ],
+          "help": [
+            "Resolva custos faltantes antes de comparar totais exatos."
+          ],
+          "feedback": {
+            "met": "Um custo necessário desconhecido deixa a estimativa incompleta.",
+            "not_yet": "Resolva custos faltantes antes de comparar totais exatos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Left before other household costs?",
+          "scene": "A delivery shift pays 160 received. Required fuel is 35 and equipment rental is 25.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Received pay is not all available for household use."
+          ],
+          "feedback": {
+            "met": "Remove both stated work costs from received pay.",
+            "not_yet": "Received pay is not all available for household use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda antes de otros gastos del hogar?",
+          "scene": "Un turno de reparto paga 160 recibidos. Combustible necesario 35 y renta de equipo 25.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "No todo el pago recibido queda para el hogar."
+          ],
+          "feedback": {
+            "met": "Retira ambos costos laborales indicados del pago recibido.",
+            "not_yet": "No todo el pago recibido queda para el hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sobra antes de outros gastos da casa?",
+          "scene": "Um turno de entregas paga 160 recebidos. Combustível necessário 35 e aluguel de equipamento 25.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Nem todo pagamento recebido fica para a casa."
+          ],
+          "feedback": {
+            "met": "Retire os dois custos de trabalho informados do pagamento recebido.",
+            "not_yet": "Nem todo pagamento recebido fica para a casa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          160,
+          35,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

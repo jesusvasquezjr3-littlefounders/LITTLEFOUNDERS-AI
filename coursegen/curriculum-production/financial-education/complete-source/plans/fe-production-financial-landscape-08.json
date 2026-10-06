@@ -1,0 +1,854 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-2",
+  "lesson_id": "fe-production-financial-landscape-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a currency-conversion markup when the reference comparison rate is supplied.",
+  "title": {
+    "en-US": "Exchange Spread",
+    "es-MX": "Ubica la diferencia cambiaria",
+    "pt-BR": "Ache a diferença no câmbio"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Exchange Spread\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ubica la diferencia cambiaria\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ache a diferença no câmbio\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.08",
+      "observable_action": "Identify a currency-conversion markup when the reference comparison rate is supplied.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-landscape.06",
+      "price.percent"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A conversion quote can hide cost in its rate; compare it with the supplied fictional reference using the same direction.",
+    "misconception": "No separate fee means no conversion cost, or any larger-looking rate is better regardless of direction.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-example-01",
+        "supports_from": [],
+        "reasoning": "In recipient units per sending unit, lower rates deliver less. Compare the supplied reference before assuming conversion is free."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The offered rate delivers less than the supplied reference."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A less favorable rate can reduce the amount received."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-practice-01",
+        "supports_from": [],
+        "reasoning": "The rate gap applies to the entire stated sending amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Opposite directions cannot be compared as ordinary larger numbers."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A supplied reference helps comparison without promising an available offer."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.08",
+        "context_id": "financial-landscape-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "The lower offered rate reduces this recipient amount."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A conversion quote can hide cost in its rate; compare it with the supplied fictional reference using the same direction."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cotización puede ocultar costo en su tipo; compárala con referencia ficticia dada usando misma dirección."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma cotação pode esconder custo no câmbio; compare com referência fictícia dada usando mesma direção."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare matching units",
+          "line": "In recipient units per sending unit, lower rates deliver less. Compare the supplied reference before assuming conversion is free."
+        },
+        "es-MX": {
+          "prompt": "Compara unidades iguales",
+          "line": "Con unidades recibidas por enviada, un tipo menor entrega menos. Compara con referencia dada antes de suponer conversión gratis."
+        },
+        "pt-BR": {
+          "prompt": "Compare unidades iguais",
+          "line": "Com unidades recebidas por enviada, câmbio menor entrega menos. Compare com referência dada antes de supor conversão grátis."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "190",
+          "step-3": "10"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Send 100; reference rate 2, offered rate 1.9 recipient units per sending unit. No separate fees.",
+          "feedback": {
+            "met": "The offered rate delivers less than the supplied reference.",
+            "not_yet": "Compare both recipient amounts using the same sending amount."
+          },
+          "help": [
+            "Compare both recipient amounts using the same sending amount."
+          ],
+          "steps": [
+            {
+              "expression": "100 * 2",
+              "result": "200",
+              "spokenText": "Reference amount"
+            },
+            {
+              "expression": "100 * 1.9",
+              "result": "190",
+              "spokenText": "Offered amount"
+            },
+            {
+              "expression": "200 - 190",
+              "result": "10",
+              "spokenText": "Difference"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Envía 100; referencia 2, oferta 1.9 unidades recibidas por enviada. Sin comisiones separadas.",
+          "feedback": {
+            "met": "Tipo ofrecido entrega menos que referencia dada.",
+            "not_yet": "Compara montos recibidos usando mismo monto de envío."
+          },
+          "help": [
+            "Compara montos recibidos usando mismo monto de envío."
+          ],
+          "steps": [
+            {
+              "expression": "100 * 2",
+              "result": "200",
+              "spokenText": "Monto de referencia"
+            },
+            {
+              "expression": "100 * 1.9",
+              "result": "190",
+              "spokenText": "Monto ofrecido"
+            },
+            {
+              "expression": "200 - 190",
+              "result": "10",
+              "spokenText": "Diferencia"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Envie 100; referência 2, oferta 1,9 unidades recebidas por enviada. Sem taxas separadas.",
+          "feedback": {
+            "met": "Câmbio oferecido entrega menos que referência dada.",
+            "not_yet": "Compare valores recebidos usando mesmo valor de envio."
+          },
+          "help": [
+            "Compare valores recebidos usando mesmo valor de envio."
+          ],
+          "steps": [
+            {
+              "expression": "100 * 2",
+              "result": "200",
+              "spokenText": "Valor de referência"
+            },
+            {
+              "expression": "100 * 1,9",
+              "result": "190",
+              "spokenText": "Valor oferecido"
+            },
+            {
+              "expression": "200 - 190",
+              "result": "10",
+              "spokenText": "Diferença"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Where can costs appear?",
+          "scene": "An offer has no separate fee but a worse rate than the supplied reference.",
+          "options": [
+            {
+              "label": "Nowhere because fee is zero"
+            },
+            {
+              "label": "Only in unrelated purchases"
+            },
+            {
+              "label": "Inside the exchange rate"
+            }
+          ],
+          "help": [
+            "Compare the rate as well as visible fees."
+          ],
+          "feedback": {
+            "met": "A less favorable rate can reduce the amount received.",
+            "not_yet": "Compare the rate as well as visible fees."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde puede aparecer costo cambiario?",
+          "scene": "Oferta no cobra comisión separada pero usa tipo peor que referencia dada.",
+          "options": [
+            {
+              "label": "En ningún lado porque comisión cero"
+            },
+            {
+              "label": "Solo en compras ajenas"
+            },
+            {
+              "label": "Dentro del tipo de cambio"
+            }
+          ],
+          "help": [
+            "Compara tipo además de comisiones visibles."
+          ],
+          "feedback": {
+            "met": "Un tipo menos favorable puede reducir monto recibido.",
+            "not_yet": "Compara tipo además de comisiones visibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde pode aparecer custo do câmbio?",
+          "scene": "Oferta não cobra taxa separada mas usa câmbio pior que referência dada.",
+          "options": [
+            {
+              "label": "Em lugar nenhum pois taxa zero"
+            },
+            {
+              "label": "Só em compras alheias"
+            },
+            {
+              "label": "Dentro do câmbio"
+            }
+          ],
+          "help": [
+            "Compare câmbio além das taxas visíveis."
+          ],
+          "feedback": {
+            "met": "Um câmbio menos favorável pode reduzir valor recebido.",
+            "not_yet": "Compare câmbio além das taxas visíveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "copy": {
+        "en-US": {
+          "prompt": "How many fewer recipient units?",
+          "scene": "Send: 100; Reference rate: 3; Offered rate: 2; Rates are recipient units per sending unit; no fees.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Subtract rates, then multiply by the sending amount."
+          ],
+          "feedback": {
+            "met": "The rate gap applies to the entire stated sending amount.",
+            "not_yet": "Subtract rates, then multiply by the sending amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas unidades menos se reciben?",
+          "scene": "Envía: 100; Referencia: 3; Oferta: 2; Tipos son unidades recibidas por enviada; sin comisiones.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Resta tipos y multiplica por monto enviado."
+          ],
+          "feedback": {
+            "met": "La diferencia de tipos aplica a todo el envío indicado.",
+            "not_yet": "Resta tipos y multiplica por monto enviado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas unidades a menos recebe?",
+          "scene": "Envie: 100; Referência: 3; Oferta: 2; Câmbios são unidades recebidas por enviada; sem taxas.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Subtraia câmbios e multiplique pelo valor enviado."
+          ],
+          "feedback": {
+            "met": "A diferença de câmbios vale para todo o envio dado.",
+            "not_yet": "Subtraia câmbios e multiplique pelo valor enviado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          3,
+          2
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What must match before comparing rates?",
+          "scene": "One rate quotes recipient units per sending unit; another reverses the units.",
+          "options": [
+            {
+              "label": "Only provider name"
+            },
+            {
+              "label": "Rate direction"
+            },
+            {
+              "label": "Only the amount sent"
+            }
+          ],
+          "help": [
+            "Align the quoted units before deciding which rate is favorable."
+          ],
+          "feedback": {
+            "met": "Opposite directions cannot be compared as ordinary larger numbers.",
+            "not_yet": "Align the quoted units before deciding which rate is favorable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué igualar antes de comparar tipos?",
+          "scene": "Uno cotiza unidades recibidas por enviada; otro invierte unidades.",
+          "options": [
+            {
+              "label": "Solo nombre del proveedor"
+            },
+            {
+              "label": "Dirección del tipo"
+            },
+            {
+              "label": "Solo el monto enviado"
+            }
+          ],
+          "help": [
+            "Iguala unidades cotizadas antes de decidir qué tipo conviene."
+          ],
+          "feedback": {
+            "met": "Direcciones opuestas no se comparan como números mayores comunes.",
+            "not_yet": "Iguala unidades cotizadas antes de decidir qué tipo conviene."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que igualar antes de comparar câmbios?",
+          "scene": "Um cota unidades recebidas por enviada; outro inverte unidades.",
+          "options": [
+            {
+              "label": "Só nome do provedor"
+            },
+            {
+              "label": "Direção do câmbio"
+            },
+            {
+              "label": "Só o valor enviado"
+            }
+          ],
+          "help": [
+            "Iguale unidades cotadas antes de decidir qual câmbio favorece."
+          ],
+          "feedback": {
+            "met": "Direções opostas não se comparam como números maiores comuns.",
+            "not_yet": "Iguale unidades cotadas antes de decidir qual câmbio favorece."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this guarantee availability?",
+          "scene": "A lesson supplies a comparison rate, but no provider offers it.",
+          "options": [
+            {
+              "label": "No, it is a comparison benchmark"
+            },
+            {
+              "label": "Yes, anyone must offer it"
+            },
+            {
+              "label": "Yes, every transfer is free"
+            }
+          ],
+          "help": [
+            "Distinguish a benchmark from an executable provider quote."
+          ],
+          "feedback": {
+            "met": "A supplied reference helps comparison without promising an available offer.",
+            "not_yet": "Distinguish a benchmark from an executable provider quote."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Referencia garantiza disponibilidad?",
+          "scene": "Lección da tipo de comparación, pero ningún proveedor lo ofrece.",
+          "options": [
+            {
+              "label": "No, es referencia para comparar"
+            },
+            {
+              "label": "Sí, todos deben ofrecerlo"
+            },
+            {
+              "label": "Sí, todo envío es gratis"
+            }
+          ],
+          "help": [
+            "Distingue referencia de cotización real contratable."
+          ],
+          "feedback": {
+            "met": "Referencia dada ayuda a comparar sin prometer oferta disponible.",
+            "not_yet": "Distingue referencia de cotización real contratable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Referência garante disponibilidade?",
+          "scene": "Lição dá câmbio de comparação, mas nenhum provedor o oferece.",
+          "options": [
+            {
+              "label": "Não, é referência para comparar"
+            },
+            {
+              "label": "Sim, todos devem oferecer"
+            },
+            {
+              "label": "Sim, todo envio é grátis"
+            }
+          ],
+          "help": [
+            "Separe referência de cotação real que pode contratar."
+          ],
+          "feedback": {
+            "met": "Referência dada ajuda a comparar sem prometer oferta disponível.",
+            "not_yet": "Separe referência de cotação real que pode contratar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the recipient-value difference?",
+          "scene": "Send: 40; Reference rate: 5; Offered rate: 4; Rates are recipient units per sending unit; no fees.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "160"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compare both conversions or multiply the rate gap by sending amount."
+          ],
+          "feedback": {
+            "met": "The lower offered rate reduces this recipient amount.",
+            "not_yet": "Compare both conversions or multiply the rate gap by sending amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es la diferencia recibida?",
+          "scene": "Envía: 40; Referencia: 5; Oferta: 4; Tipos son unidades recibidas por enviada; sin comisiones.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "160"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compara conversiones o multiplica diferencia de tipos por envío."
+          ],
+          "feedback": {
+            "met": "El tipo ofrecido menor reduce este monto recibido.",
+            "not_yet": "Compara conversiones o multiplica diferencia de tipos por envío."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a diferença recebida?",
+          "scene": "Envie: 40; Referência: 5; Oferta: 4; Câmbios são unidades recebidas por enviada; sem taxas.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "160"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compare conversões ou multiplique diferença de câmbios pelo envio."
+          ],
+          "feedback": {
+            "met": "O câmbio oferecido menor reduz este valor recebido.",
+            "not_yet": "Compare conversões ou multiplique diferença de câmbios pelo envio."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          5,
+          4
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

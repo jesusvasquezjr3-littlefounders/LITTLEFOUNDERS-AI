@@ -1,0 +1,872 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-1",
+  "lesson_id": "fe-production-financial-landscape-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate how much a recipient receives after a remittance fee and a stated exchange rate.",
+  "title": {
+    "en-US": "Exchange Proceeds",
+    "es-MX": "¿Qué llega tras el cambio?",
+    "pt-BR": "O que chega após o câmbio?"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Exchange Proceeds\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Qué llega tras el cambio?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que chega após o câmbio?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.06",
+      "observable_action": "Calculate how much a recipient receives after a remittance fee and a stated exchange rate.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.05",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A transfer fee and exchange rate both affect what arrives; follow a fictional quote with its fee order stated.",
+    "misconception": "The full send budget converts even when a fee is deducted first, or exchange-rate direction can be reversed freely.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-example-01",
+        "supports_from": [],
+        "reasoning": "When the quote deducts a sending fee first, subtract it before multiplying by recipient units per sending unit."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Only the post-fee amount is converted."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The quote defines the order of deduction and conversion."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-practice-01",
+        "supports_from": [],
+        "reasoning": "Convert the budget remaining after the sending fee."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-practice-02",
+        "supports_from": [],
+        "reasoning": "The units determine which operation produces the recipient amount."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-practice-03",
+        "supports_from": [],
+        "reasoning": "A recipient-side deduction reduces the converted amount."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.06",
+        "context_id": "financial-landscape-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "The receiving amount reflects both the fee and conversion."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A transfer fee and exchange rate both affect what arrives; follow a fictional quote with its fee order stated."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Comisión y tipo de cambio afectan lo recibido; sigue cotización ficticia con orden de comisión indicado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Taxa e câmbio afetam o que chega; siga cotação fictícia com ordem da taxa indicada."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fee first, then conversion",
+          "line": "When the quote deducts a sending fee first, subtract it before multiplying by recipient units per sending unit."
+        },
+        "es-MX": {
+          "prompt": "Primero comisión, después conversión",
+          "line": "Si cotización descuenta comisión de envío primero, réstala antes de multiplicar por unidades recibidas por unidad enviada."
+        },
+        "pt-BR": {
+          "prompt": "Primeiro taxa, depois conversão",
+          "line": "Se cotação desconta taxa de envio primeiro, subtraia antes de multiplicar por unidades recebidas por unidade enviada."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "95",
+          "step-3": "190"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional sending budget 100; fee 5 deducted first; each sending unit buys 2 recipient units. No other fees.",
+          "feedback": {
+            "met": "Only the post-fee amount is converted.",
+            "not_yet": "Subtract the sending fee before applying the stated rate."
+          },
+          "help": [
+            "Subtract the sending fee before applying the stated rate."
+          ],
+          "steps": [
+            {
+              "expression": "100",
+              "result": "100",
+              "spokenText": "Sending budget"
+            },
+            {
+              "expression": "100 - 5",
+              "result": "95",
+              "spokenText": "After fee"
+            },
+            {
+              "expression": "95 * 2",
+              "result": "190",
+              "spokenText": "Recipient units"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Presupuesto ficticio de envío 100; comisión 5 descontada primero; cada unidad enviada compra 2 recibidas. Sin otros cargos.",
+          "feedback": {
+            "met": "Solo se convierte el monto tras comisión.",
+            "not_yet": "Resta comisión de envío antes de aplicar tipo indicado."
+          },
+          "help": [
+            "Resta comisión de envío antes de aplicar tipo indicado."
+          ],
+          "steps": [
+            {
+              "expression": "100",
+              "result": "100",
+              "spokenText": "Presupuesto de envío"
+            },
+            {
+              "expression": "100 - 5",
+              "result": "95",
+              "spokenText": "Tras comisión"
+            },
+            {
+              "expression": "95 * 2",
+              "result": "190",
+              "spokenText": "Unidades recibidas"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Orçamento fictício de envio 100; taxa 5 descontada antes; cada unidade enviada compra 2 recebidas. Sem outras taxas.",
+          "feedback": {
+            "met": "Só se converte o valor após a taxa.",
+            "not_yet": "Subtraia taxa de envio antes de aplicar câmbio dado."
+          },
+          "help": [
+            "Subtraia taxa de envio antes de aplicar câmbio dado."
+          ],
+          "steps": [
+            {
+              "expression": "100",
+              "result": "100",
+              "spokenText": "Orçamento de envio"
+            },
+            {
+              "expression": "100 - 5",
+              "result": "95",
+              "spokenText": "Após taxa"
+            },
+            {
+              "expression": "95 * 2",
+              "result": "190",
+              "spokenText": "Unidades recebidas"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount gets converted?",
+          "scene": "The quote explicitly deducts its fee from the sending budget before exchange.",
+          "options": [
+            {
+              "label": "Budget minus sending fee"
+            },
+            {
+              "label": "The untouched whole budget"
+            },
+            {
+              "label": "Only the fee"
+            }
+          ],
+          "help": [
+            "Follow the stated fee order rather than assuming."
+          ],
+          "feedback": {
+            "met": "The quote defines the order of deduction and conversion.",
+            "not_yet": "Follow the stated fee order rather than assuming."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto se convierte?",
+          "scene": "Cotización descuenta comisión del presupuesto de envío antes del cambio.",
+          "options": [
+            {
+              "label": "Presupuesto menos comisión de envío"
+            },
+            {
+              "label": "Presupuesto entero sin tocar"
+            },
+            {
+              "label": "Solo comisión"
+            }
+          ],
+          "help": [
+            "Sigue orden indicado sin suponer."
+          ],
+          "feedback": {
+            "met": "La cotización define orden de descuento y conversión.",
+            "not_yet": "Sigue orden indicado sin suponer."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que valor é convertido?",
+          "scene": "Cotação desconta taxa do orçamento de envio antes do câmbio.",
+          "options": [
+            {
+              "label": "Orçamento menos taxa de envio"
+            },
+            {
+              "label": "Orçamento inteiro sem desconto"
+            },
+            {
+              "label": "Só taxa"
+            }
+          ],
+          "help": [
+            "Siga ordem dada sem supor."
+          ],
+          "feedback": {
+            "met": "A cotação define ordem de desconto e conversão.",
+            "not_yet": "Siga ordem dada sem supor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How many recipient units arrive?",
+          "scene": "Budget: 200; Fee deducted first: 10; Recipient units per sending unit: 3; No other fees.",
+          "options": [
+            {
+              "label": "570"
+            },
+            {
+              "label": "190"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Subtract the fee, then multiply by the stated rate."
+          ],
+          "feedback": {
+            "met": "Convert the budget remaining after the sending fee.",
+            "not_yet": "Subtract the fee, then multiply by the stated rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas unidades llegan?",
+          "scene": "Presupuesto: 200; Comisión descontada antes: 10; Unidades recibidas por enviada: 3; Sin otros cargos.",
+          "options": [
+            {
+              "label": "570"
+            },
+            {
+              "label": "190"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Resta comisión y multiplica por tipo indicado."
+          ],
+          "feedback": {
+            "met": "Convierte presupuesto restante tras comisión de envío.",
+            "not_yet": "Resta comisión y multiplica por tipo indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas unidades chegam?",
+          "scene": "Orçamento: 200; Taxa descontada antes: 10; Unidades recebidas por enviada: 3; Sem outras taxas.",
+          "options": [
+            {
+              "label": "570"
+            },
+            {
+              "label": "190"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Subtraia taxa e multiplique pelo câmbio dado."
+          ],
+          "feedback": {
+            "met": "Converta orçamento restante após taxa de envio.",
+            "not_yet": "Subtraia taxa e multiplique pelo câmbio dado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          10,
+          3
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Why must the rate direction be read?",
+          "scene": "One quote states recipient units per sending unit; another states the reverse.",
+          "options": [
+            {
+              "label": "Both always give identical numbers"
+            },
+            {
+              "label": "Rate direction never matters"
+            },
+            {
+              "label": "Multiplication direction changes"
+            }
+          ],
+          "help": [
+            "Read what each unit in the quoted rate means."
+          ],
+          "feedback": {
+            "met": "The units determine which operation produces the recipient amount.",
+            "not_yet": "Read what each unit in the quoted rate means."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué leer dirección del tipo?",
+          "scene": "Cotización da unidades recibidas por enviada; otra da el inverso.",
+          "options": [
+            {
+              "label": "Ambas siempre dan números idénticos"
+            },
+            {
+              "label": "Dirección nunca importa"
+            },
+            {
+              "label": "Cambia dirección de multiplicación"
+            }
+          ],
+          "help": [
+            "Lee qué significa cada unidad del tipo cotizado."
+          ],
+          "feedback": {
+            "met": "Las unidades determinan operación que produce monto recibido.",
+            "not_yet": "Lee qué significa cada unidad del tipo cotizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que ler direção do câmbio?",
+          "scene": "Cotação dá unidades recebidas por enviada; outra dá o inverso.",
+          "options": [
+            {
+              "label": "Ambas sempre dão números iguais"
+            },
+            {
+              "label": "Direção nunca importa"
+            },
+            {
+              "label": "Muda direção da multiplicação"
+            }
+          ],
+          "help": [
+            "Leia o que significa cada unidade do câmbio cotado."
+          ],
+          "feedback": {
+            "met": "As unidades definem operação que produz valor recebido.",
+            "not_yet": "Leia o que significa cada unidade do câmbio cotado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What finally arrives?",
+          "scene": "Converted recipient amount: 480; Additional recipient-side fee: 15; No other deductions.",
+          "options": [
+            {
+              "label": "465"
+            },
+            {
+              "label": "495"
+            },
+            {
+              "label": "480"
+            }
+          ],
+          "help": [
+            "Subtract this fee in the recipient’s units."
+          ],
+          "feedback": {
+            "met": "A recipient-side deduction reduces the converted amount.",
+            "not_yet": "Subtract this fee in the recipient’s units."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué llega finalmente?",
+          "scene": "Monto convertido recibido: 480; Comisión adicional al recibir: 15; Sin otros descuentos.",
+          "options": [
+            {
+              "label": "465"
+            },
+            {
+              "label": "495"
+            },
+            {
+              "label": "480"
+            }
+          ],
+          "help": [
+            "Resta esta comisión en unidades de quien recibe."
+          ],
+          "feedback": {
+            "met": "Una comisión al recibir reduce monto convertido.",
+            "not_yet": "Resta esta comisión en unidades de quien recibe."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que chega no fim?",
+          "scene": "Valor convertido recebido: 480; Taxa extra ao receber: 15; Sem outros descontos.",
+          "options": [
+            {
+              "label": "465"
+            },
+            {
+              "label": "495"
+            },
+            {
+              "label": "480"
+            }
+          ],
+          "help": [
+            "Subtraia essa taxa nas unidades de quem recebe."
+          ],
+          "feedback": {
+            "met": "Uma taxa ao receber reduz valor convertido.",
+            "not_yet": "Subtraia essa taxa nas unidades de quem recebe."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          480,
+          15
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How many recipient units arrive?",
+          "scene": "Budget: 120; Fee deducted first: 4; Recipient units per sending unit: 5; No other fees.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "580"
+            },
+            {
+              "label": "116"
+            }
+          ],
+          "help": [
+            "Subtract the sending fee before multiplying by the rate."
+          ],
+          "feedback": {
+            "met": "The receiving amount reflects both the fee and conversion.",
+            "not_yet": "Subtract the sending fee before multiplying by the rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas unidades llegan?",
+          "scene": "Presupuesto: 120; Comisión descontada antes: 4; Unidades recibidas por enviada: 5; Sin otros cargos.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "580"
+            },
+            {
+              "label": "116"
+            }
+          ],
+          "help": [
+            "Resta comisión de envío antes de multiplicar por tipo."
+          ],
+          "feedback": {
+            "met": "El monto recibido refleja comisión y conversión.",
+            "not_yet": "Resta comisión de envío antes de multiplicar por tipo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas unidades chegam?",
+          "scene": "Orçamento: 120; Taxa descontada antes: 4; Unidades recebidas por enviada: 5; Sem outras taxas.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "580"
+            },
+            {
+              "label": "116"
+            }
+          ],
+          "help": [
+            "Subtraia taxa de envio antes de multiplicar pelo câmbio."
+          ],
+          "feedback": {
+            "met": "O valor recebido reflete taxa e conversão.",
+            "not_yet": "Subtraia taxa de envio antes de multiplicar pelo câmbio."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          4,
+          5
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

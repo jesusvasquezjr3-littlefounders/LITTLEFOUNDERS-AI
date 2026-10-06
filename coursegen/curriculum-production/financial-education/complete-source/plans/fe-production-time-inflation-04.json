@@ -1,0 +1,963 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-1",
+  "lesson_id": "fe-production-time-inflation-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare simple and compound growth under the same stated assumptions.",
+  "title": {
+    "en-US": "Growth comparisons",
+    "es-MX": "Compara supuestos de crecimiento iguales",
+    "pt-BR": "Compare hipóteses iguais de crescimento"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Compare equal growth assumptions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara supuestos de crecimiento iguales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare hipóteses iguais de crescimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.04",
+      "observable_action": "Compare simple and compound growth under the same stated assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.01",
+      "time.compound"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Simple and compound models differ only meaningfully when their other assumptions match.",
+    "misconception": "Comparing model labels without aligning principal, rate, duration and treatment of retained gains.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-example-01",
+        "supports_from": [],
+        "reasoning": "At equal positive rates, retained interest can earn interest in later periods. Simple interest keeps using the original principal."
+      },
+      {
+        "segment_id": "example-growth",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-example-growth",
+        "supports_from": [],
+        "reasoning": "Toy model: 100 dollars, no fees or deposits. Change time or rate; compare both growth lines."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-guided-01",
+        "supports_from": [
+          "example-growth"
+        ],
+        "reasoning": "Different durations change the result independently of compounding."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "100 + (100 × 10% × 2) = 120."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-practice-03",
+        "supports_from": [],
+        "reasoning": "The second period includes growth on the first period’s retained interest."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-practice-04",
+        "supports_from": [],
+        "reasoning": "484 − 480 = 4 additional modeled units."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-practice-05",
+        "supports_from": [],
+        "reasoning": "Compounding changes the interest base as retained gains accumulate."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-04-transfer-06",
+        "supports_from": [],
+        "reasoning": "Changing two assumptions prevents attributing the result to only one."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Simple and compound models differ only meaningfully when their other assumptions match."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Modelos simple y compuesto se comparan cuando coinciden sus otros supuestos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Modelos simples e composto se comparam quando suas outras hipóteses coincidem."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "At equal positive rates, retained interest can earn interest in later periods. Simple interest keeps using the original principal."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Con tasas positivas iguales, el interés conservado puede generar interés después. El interés simple sigue usando capital original."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Com taxas positivas iguais, juros mantidos podem render juros depois. Juros simples continuam usando o principal original."
+        }
+      }
+    },
+    {
+      "id": "example-growth",
+      "type": "visual.growth-comparison.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "multi-line"
+      },
+      "payload": {
+        "principalMinor": 10000,
+        "minimumRateBps": 500,
+        "maximumRateBps": 1000,
+        "rateStepBps": 500,
+        "initialRateBps": 1000,
+        "minimumYears": 1,
+        "maximumYears": 5,
+        "yearStep": 1,
+        "initialYears": 2,
+        "predictionStepMinor": 100,
+        "predictionMaximumMinor": 30000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Toy model: 100 dollars, no fees or deposits. Change time or rate; compare both growth lines."
+        },
+        "es-MX": {
+          "prompt": "Modelo ficticio: 100 pesos, sin cargos ni depósitos. Cambia tiempo o tasa; compara ambas líneas de crecimiento."
+        },
+        "pt-BR": {
+          "prompt": "Modelo fictício: 100 reais, sem tarifas nem depósitos. Mude tempo ou taxa; compare ambas as linhas de crescimento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Fair comparison?",
+          "scene": "Both models start at 100; one runs a year, the other five.",
+          "options": [
+            {
+              "label": "No, align the duration"
+            },
+            {
+              "label": "Yes, all growth models are interchangeable"
+            },
+            {
+              "label": "Yes, starting amounts match"
+            }
+          ],
+          "help": [
+            "Match time as well as the starting amount."
+          ],
+          "feedback": {
+            "met": "Different durations change the result independently of compounding.",
+            "not_yet": "Match time as well as the starting amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Comparación justa?",
+          "scene": "Ambos modelos inician en 100; uno dura un año y otro cinco.",
+          "options": [
+            {
+              "label": "No, iguala la duración"
+            },
+            {
+              "label": "Sí, todos los modelos son equivalentes"
+            },
+            {
+              "label": "Sí, coinciden montos iniciales"
+            }
+          ],
+          "help": [
+            "Iguala tiempo además del monto inicial."
+          ],
+          "feedback": {
+            "met": "Duraciones distintas cambian el resultado aparte de la capitalización.",
+            "not_yet": "Iguala tiempo además del monto inicial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Comparação justa?",
+          "scene": "Ambos começam com 100; um dura um ano e outro cinco.",
+          "options": [
+            {
+              "label": "Não, iguale o prazo"
+            },
+            {
+              "label": "Sim, todos os modelos são equivalentes"
+            },
+            {
+              "label": "Sim, valores iniciais coincidem"
+            }
+          ],
+          "help": [
+            "Iguale tempo além do valor inicial."
+          ],
+          "feedback": {
+            "met": "Prazos diferentes mudam o resultado além da capitalização.",
+            "not_yet": "Iguale tempo além do valor inicial."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Simple-model ending balance?",
+          "scene": "Start 100; yearly rate 10%; duration 2 years; simple interest; no other changes.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "121"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Each year uses the original principal."
+          ],
+          "feedback": {
+            "met": "100 + (100 × 10% × 2) = 120.",
+            "not_yet": "Each year uses the original principal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo final del modelo simple?",
+          "scene": "Inicio 100; tasa anual 10%; duración 2 años; interés simple; sin otros cambios.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "121"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Cada año usa el capital original."
+          ],
+          "feedback": {
+            "met": "100 + (100 × 10% × 2) = 120.",
+            "not_yet": "Cada año usa el capital original."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo final do modelo simples?",
+          "scene": "Início 100; taxa anual 10%; prazo 2 anos; juros simples; sem outras mudanças.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "121"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Cada ano usa o principal original."
+          ],
+          "feedback": {
+            "met": "100 + (100 × 10% × 2) = 120.",
+            "not_yet": "Cada ano usa o principal original."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10,
+          2
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Compound-model ending balance?",
+          "scene": "Start 200; first rate 10%; second rate 10%; compound; no deposits or withdrawals.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "242"
+            }
+          ],
+          "help": [
+            "Use the updated base for the second calculation."
+          ],
+          "feedback": {
+            "met": "The second period includes growth on the first period’s retained interest.",
+            "not_yet": "Use the updated base for the second calculation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo final del modelo compuesto?",
+          "scene": "Inicio 200; primera tasa 10%; segunda tasa 10%; compuesto; sin depósitos ni retiros.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "242"
+            }
+          ],
+          "help": [
+            "Usa la base actualizada en el segundo cálculo."
+          ],
+          "feedback": {
+            "met": "El segundo periodo crece también sobre el interés previo conservado.",
+            "not_yet": "Usa la base actualizada en el segundo cálculo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo final do modelo composto?",
+          "scene": "Início 200; primeira taxa 10%; segunda taxa 10%; composto; sem depósitos nem saques.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "242"
+            }
+          ],
+          "help": [
+            "Use a base atualizada no segundo cálculo."
+          ],
+          "feedback": {
+            "met": "O segundo período cresce também sobre os juros anteriores mantidos.",
+            "not_yet": "Use a base atualizada no segundo cálculo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          10,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "op": "divide",
+                          "args": [
+                            {
+                              "op": "multiply",
+                              "args": [
+                                {
+                                  "input": 0
+                                },
+                                {
+                                  "input": 1
+                                }
+                              ]
+                            },
+                            {
+                              "constant": 100
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Difference between ending balances?",
+          "scene": "Matched models: compound ending balance 484; simple ending balance 480.",
+          "options": [
+            {
+              "label": "484"
+            },
+            {
+              "label": "964"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Compare the two completed balances."
+          ],
+          "feedback": {
+            "met": "484 − 480 = 4 additional modeled units.",
+            "not_yet": "Compare the two completed balances."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Diferencia entre saldos finales?",
+          "scene": "Modelos comparables: saldo final compuesto 484; saldo final simple 480.",
+          "options": [
+            {
+              "label": "484"
+            },
+            {
+              "label": "964"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Compara los dos saldos finales."
+          ],
+          "feedback": {
+            "met": "484 − 480 = 4 unidades adicionales modeladas.",
+            "not_yet": "Compara los dos saldos finales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Diferença entre saldos finais?",
+          "scene": "Modelos comparáveis: saldo final composto 484; saldo final simples 480.",
+          "options": [
+            {
+              "label": "484"
+            },
+            {
+              "label": "964"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Compare os dois saldos finais."
+          ],
+          "feedback": {
+            "met": "484 − 480 = 4 unidades adicionais modeladas.",
+            "not_yet": "Compare os dois saldos finais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          484,
+          480
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Why can the lines differ later?",
+          "scene": "Same principal, positive rate and duration; compound gains remain.",
+          "options": [
+            {
+              "label": "The compound account receives secret deposits"
+            },
+            {
+              "label": "The original principal disappears"
+            },
+            {
+              "label": "Earlier gains enter later interest calculations"
+            }
+          ],
+          "help": [
+            "Trace the base rather than inventing extra money."
+          ],
+          "feedback": {
+            "met": "Compounding changes the interest base as retained gains accumulate.",
+            "not_yet": "Trace the base rather than inventing extra money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué pueden diferir las líneas después?",
+          "scene": "Mismo capital, tasa positiva y duración; ganancias compuestas permanecen.",
+          "options": [
+            {
+              "label": "La cuenta compuesta recibe depósitos secretos"
+            },
+            {
+              "label": "Desaparece el capital original"
+            },
+            {
+              "label": "Ganancias previas integran el cálculo posterior"
+            }
+          ],
+          "help": [
+            "Sigue la base sin inventar dinero adicional."
+          ],
+          "feedback": {
+            "met": "Capitalizar cambia la base al acumular ganancias conservadas.",
+            "not_yet": "Sigue la base sin inventar dinero adicional."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que as linhas podem diferir depois?",
+          "scene": "Mesmo principal, taxa positiva e prazo; ganhos compostos ficam.",
+          "options": [
+            {
+              "label": "A conta composta recebe depósitos secretos"
+            },
+            {
+              "label": "O principal original desaparece"
+            },
+            {
+              "label": "Ganhos anteriores entram no cálculo seguinte"
+            }
+          ],
+          "help": [
+            "Siga a base sem inventar dinheiro extra."
+          ],
+          "feedback": {
+            "met": "Capitalizar muda a base ao acumular ganhos mantidos.",
+            "not_yet": "Siga a base sem inventar dinheiro extra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Can compounding alone explain the difference?",
+          "scene": "A comparison changes both the rate and whether interest compounds.",
+          "options": [
+            {
+              "label": "Ignore the rate difference"
+            },
+            {
+              "label": "The larger balance proves it"
+            },
+            {
+              "label": "Isolate the changed assumptions"
+            }
+          ],
+          "help": [
+            "Keep other assumptions equal when comparing one effect."
+          ],
+          "feedback": {
+            "met": "Changing two assumptions prevents attributing the result to only one.",
+            "not_yet": "Keep other assumptions equal when comparing one effect."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Capitalizar explica por sí solo la diferencia?",
+          "scene": "Una comparación cambia tasa y forma de capitalizar.",
+          "options": [
+            {
+              "label": "Sí, ignora la diferencia de tasa"
+            },
+            {
+              "label": "Sí, el saldo mayor lo prueba"
+            },
+            {
+              "label": "No, separa los supuestos cambiados"
+            }
+          ],
+          "help": [
+            "Iguala otros supuestos al comparar un efecto."
+          ],
+          "feedback": {
+            "met": "Cambiar dos supuestos impide atribuir el resultado solo a uno.",
+            "not_yet": "Iguala otros supuestos al comparar un efecto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Capitalizar explica sozinho a diferença?",
+          "scene": "Uma comparação muda taxa e forma de capitalizar.",
+          "options": [
+            {
+              "label": "Sim, ignore a diferença de taxa"
+            },
+            {
+              "label": "Sim, o saldo maior prova isso"
+            },
+            {
+              "label": "Não, separe as hipóteses alteradas"
+            }
+          ],
+          "help": [
+            "Iguale outras hipóteses ao comparar um efeito."
+          ],
+          "feedback": {
+            "met": "Mudar duas hipóteses impede atribuir o resultado só a uma.",
+            "not_yet": "Iguale outras hipóteses ao comparar um efeito."
+          }
+        }
+      }
+    }
+  ]
+}

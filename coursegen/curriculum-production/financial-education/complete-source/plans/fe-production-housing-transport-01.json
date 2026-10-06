@@ -1,0 +1,842 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-1",
+  "lesson_id": "fe-production-housing-transport-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate move-in costs separately from recurring housing costs.",
+  "title": {
+    "en-US": "Moving Costs",
+    "es-MX": "Dinero necesario para mudarte",
+    "pt-BR": "Dinheiro necessário para mudar"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Moving Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Dinero necesario para mudarte\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dinheiro necessário para mudar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.01",
+      "observable_action": "Calculate move-in costs separately from recurring housing costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02",
+      "prod.cashflow-budget.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Moving can require cash before the usual monthly payments begin; use fictional dollars to separate both needs.",
+    "misconception": "The monthly rent alone equals all cash needed to move in, or a refundable deposit is already available to spend.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-example-01",
+        "supports_from": [],
+        "reasoning": "Rent repeats monthly; a deposit and moving charge are needed upfront here. A refundable deposit still requires cash now."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The move-in total includes rent, deposit and moving charge."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Only the rent is stated as recurring monthly."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-practice-01",
+        "supports_from": [],
+        "reasoning": "All three upfront requirements need funding."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-practice-02",
+        "supports_from": [],
+        "reasoning": "A possible later refund does not fund today’s required deposit."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Moving in does not remove later recurring payments."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Prepayment, deposit and connection all require money at entry."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Moving can require cash before the usual monthly payments begin; use fictional dollars to separate both needs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Mudarte puede requerir efectivo antes de los pagos mensuales habituales; separa ambas necesidades con pesos ficticios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Mudar pode exigir dinheiro antes dos pagamentos mensais comuns; separe ambas as necessidades com reais fictícios."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate arrival from repetition",
+          "line": "Rent repeats monthly; a deposit and moving charge are needed upfront here. A refundable deposit still requires cash now."
+        },
+        "es-MX": {
+          "prompt": "Separa llegada y repetición",
+          "line": "Aquí la renta se repite mensualmente; depósito y mudanza se pagan al entrar. Un depósito reembolsable aún requiere efectivo ahora."
+        },
+        "pt-BR": {
+          "prompt": "Separe chegada e repetição",
+          "line": "Aqui o aluguel se repete mensalmente; depósito e mudança são pagos ao entrar. Um depósito reembolsável ainda exige dinheiro agora."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "2000",
+          "step-3": "2200"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move-in cash: first rent 1000 dollars, deposit 1000, moving charge 200. Add all required upfront amounts.",
+          "feedback": {
+            "met": "The move-in total includes rent, deposit and moving charge.",
+            "not_yet": "Count every upfront requirement, even a refundable deposit."
+          },
+          "help": [
+            "Count every upfront requirement, even a refundable deposit."
+          ],
+          "steps": [
+            {
+              "expression": "1000",
+              "result": "1000",
+              "spokenText": "First rent"
+            },
+            {
+              "expression": "1000 + 1000",
+              "result": "2000",
+              "spokenText": "Add the deposit"
+            },
+            {
+              "expression": "2000 + 200",
+              "result": "2200",
+              "spokenText": "Add the moving charge"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Efectivo de entrada: primera renta 1000 pesos, depósito 1000, mudanza 200. Suma todos los montos iniciales requeridos.",
+          "feedback": {
+            "met": "El total inicial incluye renta, depósito y mudanza.",
+            "not_yet": "Cuenta todo requisito inicial, incluso depósito reembolsable."
+          },
+          "help": [
+            "Cuenta todo requisito inicial, incluso depósito reembolsable."
+          ],
+          "steps": [
+            {
+              "expression": "1000",
+              "result": "1000",
+              "spokenText": "Primera renta"
+            },
+            {
+              "expression": "1000 + 1000",
+              "result": "2000",
+              "spokenText": "Agrega el depósito"
+            },
+            {
+              "expression": "2000 + 200",
+              "result": "2200",
+              "spokenText": "Agrega la mudanza"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro de entrada: primeiro aluguel 1000 reais, depósito 1000, mudança 200. Some todos os valores iniciais exigidos.",
+          "feedback": {
+            "met": "O total inicial inclui aluguel, depósito e mudança.",
+            "not_yet": "Conte todo requisito inicial, mesmo depósito reembolsável."
+          },
+          "help": [
+            "Conte todo requisito inicial, mesmo depósito reembolsável."
+          ],
+          "steps": [
+            {
+              "expression": "1000",
+              "result": "1000",
+              "spokenText": "Primeiro aluguel"
+            },
+            {
+              "expression": "1000 + 1000",
+              "result": "2000",
+              "spokenText": "Some o depósito"
+            },
+            {
+              "expression": "2000 + 200",
+              "result": "2200",
+              "spokenText": "Some a mudança"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount repeats here?",
+          "scene": "The contract requires monthly rent, a one-time move-in charge and a deposit paid once.",
+          "options": [
+            {
+              "label": "Monthly rent"
+            },
+            {
+              "label": "Every upfront payment monthly"
+            },
+            {
+              "label": "The deposit every week"
+            }
+          ],
+          "help": [
+            "Use the frequency given for each payment."
+          ],
+          "feedback": {
+            "met": "Only the rent is stated as recurring monthly.",
+            "not_yet": "Use the frequency given for each payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto se repite aquí?",
+          "scene": "El contrato exige renta mensual, cargo único de entrada y depósito pagado una vez.",
+          "options": [
+            {
+              "label": "La renta mensual"
+            },
+            {
+              "label": "Todo pago inicial cada mes"
+            },
+            {
+              "label": "El depósito cada semana"
+            }
+          ],
+          "help": [
+            "Usa la frecuencia dada de cada pago."
+          ],
+          "feedback": {
+            "met": "Solo la renta se indica como recurrente mensual.",
+            "not_yet": "Usa la frecuencia dada de cada pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor se repete aqui?",
+          "scene": "O contrato exige aluguel mensal, cobrança única de entrada e depósito pago uma vez.",
+          "options": [
+            {
+              "label": "O aluguel mensal"
+            },
+            {
+              "label": "Todo pagamento inicial todo mês"
+            },
+            {
+              "label": "O depósito toda semana"
+            }
+          ],
+          "help": [
+            "Use a frequência dada de cada pagamento."
+          ],
+          "feedback": {
+            "met": "Só o aluguel é dado como recorrente mensal.",
+            "not_yet": "Use a frequência dada de cada pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How much upfront cash?",
+          "scene": "First rent 800; deposit 800; moving 150. All are required before entering.",
+          "options": [
+            {
+              "label": "1600"
+            },
+            {
+              "label": "1750"
+            },
+            {
+              "label": "950"
+            }
+          ],
+          "help": [
+            "Add rent, deposit and moving payment."
+          ],
+          "feedback": {
+            "met": "All three upfront requirements need funding.",
+            "not_yet": "Add rent, deposit and moving payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto efectivo inicial?",
+          "scene": "Primera renta 800; depósito 800; mudanza 150. Todo se exige antes de entrar.",
+          "options": [
+            {
+              "label": "1600"
+            },
+            {
+              "label": "1750"
+            },
+            {
+              "label": "950"
+            }
+          ],
+          "help": [
+            "Suma renta, depósito y mudanza."
+          ],
+          "feedback": {
+            "met": "Los tres requisitos iniciales necesitan fondos.",
+            "not_yet": "Suma renta, depósito y mudanza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto dinheiro inicial?",
+          "scene": "Primeiro aluguel 800; depósito 800; mudança 150. Tudo é exigido antes de entrar.",
+          "options": [
+            {
+              "label": "1600"
+            },
+            {
+              "label": "1750"
+            },
+            {
+              "label": "950"
+            }
+          ],
+          "help": [
+            "Some aluguel, depósito e mudança."
+          ],
+          "feedback": {
+            "met": "Os três requisitos iniciais precisam de recursos.",
+            "not_yet": "Some aluguel, depósito e mudança."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          800,
+          800,
+          150
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does refundable mean free today?",
+          "scene": "Pay the deposit now; return depends on stated conditions after the tenancy.",
+          "options": [
+            {
+              "label": "Yes, exclude it from move-in cash"
+            },
+            {
+              "label": "No, cash is needed now"
+            }
+          ],
+          "help": [
+            "Separate upfront funding from eventual return."
+          ],
+          "feedback": {
+            "met": "A possible later refund does not fund today’s required deposit.",
+            "not_yet": "Separate upfront funding from eventual return."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reembolsable significa gratis hoy?",
+          "scene": "Debes pagar depósito ahora y quizá se devuelva al terminar el alquiler según condiciones.",
+          "options": [
+            {
+              "label": "Sí, ignóralo en el efectivo inicial"
+            },
+            {
+              "label": "No, aún necesitas efectivo hoy"
+            }
+          ],
+          "help": [
+            "Distingue fondos iniciales de devolución futura."
+          ],
+          "feedback": {
+            "met": "Una posible devolución posterior no financia el depósito actual.",
+            "not_yet": "Distingue fondos iniciales de devolución futura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Reembolsável significa grátis hoje?",
+          "scene": "Deve pagar depósito agora e talvez recebê-lo após a locação conforme as regras.",
+          "options": [
+            {
+              "label": "Sim, ignore no dinheiro inicial"
+            },
+            {
+              "label": "Não, ainda precisa de dinheiro hoje"
+            }
+          ],
+          "help": [
+            "Separe recursos iniciais de devolução futura."
+          ],
+          "feedback": {
+            "met": "Uma possível devolução futura não financia o depósito atual.",
+            "not_yet": "Separe recursos iniciais de devolução futura."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from this plan?",
+          "scene": "A budget covers moving day but omits rent due in later months.",
+          "options": [
+            {
+              "label": "Only the moving cost"
+            },
+            {
+              "label": "The recurring housing plan"
+            },
+            {
+              "label": "Nothing after entering matters"
+            }
+          ],
+          "help": [
+            "Plan arrival cash and ongoing costs separately."
+          ],
+          "feedback": {
+            "met": "Moving in does not remove later recurring payments.",
+            "not_yet": "Plan arrival cash and ongoing costs separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en este plan?",
+          "scene": "El presupuesto cubre la mudanza, pero omite rentas de meses posteriores.",
+          "options": [
+            {
+              "label": "Solo el costo de mudanza"
+            },
+            {
+              "label": "El plan recurrente de vivienda"
+            },
+            {
+              "label": "Nada importa después de entrar"
+            }
+          ],
+          "help": [
+            "Planea efectivo inicial y costos continuos por separado."
+          ],
+          "feedback": {
+            "met": "Mudarse no elimina pagos recurrentes posteriores.",
+            "not_yet": "Planea efectivo inicial y costos continuos por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta nesse plano?",
+          "scene": "O orçamento cobre a mudança, mas omite aluguéis dos meses seguintes.",
+          "options": [
+            {
+              "label": "Só o custo da mudança"
+            },
+            {
+              "label": "O plano recorrente de moradia"
+            },
+            {
+              "label": "Nada importa depois de entrar"
+            }
+          ],
+          "help": [
+            "Planeje dinheiro inicial e custos contínuos à parte."
+          ],
+          "feedback": {
+            "met": "Mudar não elimina pagamentos recorrentes depois.",
+            "not_yet": "Planeje dinheiro inicial e custos contínuos à parte."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What cash enables this move?",
+          "scene": "A new agreement requires prepaid rent 1200, security deposit 600 and connection charge 100 at entry.",
+          "options": [
+            {
+              "label": "1900"
+            },
+            {
+              "label": "1800"
+            },
+            {
+              "label": "1300"
+            }
+          ],
+          "help": [
+            "Use the new agreement’s upfront requirements."
+          ],
+          "feedback": {
+            "met": "Prepayment, deposit and connection all require money at entry.",
+            "not_yet": "Use the new agreement’s upfront requirements."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué efectivo permite esta mudanza?",
+          "scene": "Un acuerdo nuevo exige renta anticipada 1200, depósito 600 y conexión 100 al entrar.",
+          "options": [
+            {
+              "label": "1900"
+            },
+            {
+              "label": "1800"
+            },
+            {
+              "label": "1300"
+            }
+          ],
+          "help": [
+            "Usa los requisitos iniciales del nuevo acuerdo."
+          ],
+          "feedback": {
+            "met": "Anticipo, depósito y conexión requieren dinero al entrar.",
+            "not_yet": "Usa los requisitos iniciales del nuevo acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dinheiro permite esta mudança?",
+          "scene": "Um novo acordo exige aluguel antecipado 1200, depósito 600 e ligação 100 ao entrar.",
+          "options": [
+            {
+              "label": "1900"
+            },
+            {
+              "label": "1800"
+            },
+            {
+              "label": "1300"
+            }
+          ],
+          "help": [
+            "Use os requisitos iniciais do novo acordo."
+          ],
+          "feedback": {
+            "met": "Adiantamento, depósito e ligação exigem dinheiro ao entrar.",
+            "not_yet": "Use os requisitos iniciais do novo acordo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1200,
+          600,
+          100
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

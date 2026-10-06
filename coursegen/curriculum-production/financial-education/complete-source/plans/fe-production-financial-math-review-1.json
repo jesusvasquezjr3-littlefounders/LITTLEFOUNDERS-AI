@@ -1,0 +1,1138 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-3",
+  "lesson_id": "fe-production-financial-math-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.balance",
+    "finance.prod.financial-math.01",
+    "finance.prod.financial-math.02",
+    "finance.prod.financial-math.03",
+    "finance.prod.financial-math.04",
+    "finance.prod.financial-math.05",
+    "finance.prod.financial-math.06",
+    "finance.prod.financial-math.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Trip estimates",
+    "es-MX": "Prepara el viaje compartido",
+    "pt-BR": "Prepare a viagem compartilhada"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Prepare the shared trip\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepara el viaje compartido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare a viagem compartilhada\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.balance",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction",
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "prod.financial-math.01",
+      "prod.financial-math.02",
+      "prod.financial-math.03",
+      "prod.financial-math.04",
+      "prod.financial-math.05",
+      "prod.financial-math.06",
+      "prod.financial-math.07",
+      "cash.balance"
+    ],
+    "relevance": "Check a trip’s records, shared costs and available money.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The zero fixes nine in the cents position."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Only the unused payment returns."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Matching references identify the same payment event."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The uncovered portion is the shortfall."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Every ticket contributes the same unit price."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.financial-math.06",
+        "context_id": "fe-production-financial-math-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Equal shares must recombine to the booking total."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-review-1-practice-07",
+        "supports_from": [],
+        "reasoning": "The selected percentage represents the stated share."
+      },
+      {
+        "segment_id": "practice-08",
+        "skill_id": "cash.balance",
+        "context_id": "fe-production-financial-math-review-1-practice-08",
+        "supports_from": [],
+        "reasoning": "A completed payment reduces the starting cash."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.balance",
+        "context_id": "fe-production-financial-math-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Include the receipt and completed payment once each."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.balance",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check a trip’s records, shared costs and available money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa registros, costos compartidos y dinero disponible para un viaje."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira registros, custos compartilhados e dinheiro disponível para uma viagem."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Read the fee.",
+          "scene": "A baggage fee reads 2.09 dollars.",
+          "options": [
+            {
+              "label": "Two units, ninety cents"
+            },
+            {
+              "label": "Two units, nine cents"
+            },
+            {
+              "label": "Twenty-nine units"
+            }
+          ],
+          "help": [
+            "Read the whole and fractional parts separately."
+          ],
+          "feedback": {
+            "met": "The zero fixes nine in the cents position.",
+            "not_yet": "Read the whole and fractional parts separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "Lee el cargo.",
+          "scene": "Un cargo por equipaje dice 2.09 pesos.",
+          "options": [
+            {
+              "label": "Dos unidades, noventa centavos"
+            },
+            {
+              "label": "Dos unidades, nueve centavos"
+            },
+            {
+              "label": "Veintinueve unidades"
+            }
+          ],
+          "help": [
+            "Lee por separado partes entera y fraccionaria."
+          ],
+          "feedback": {
+            "met": "El cero coloca el nueve en los centavos.",
+            "not_yet": "Lee por separado partes entera y fraccionaria."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Leia a tarifa.",
+          "scene": "Uma tarifa de bagagem diz 2,09 reais.",
+          "options": [
+            {
+              "label": "Duas unidades, noventa centavos"
+            },
+            {
+              "label": "Duas unidades, nove centavos"
+            },
+            {
+              "label": "Vinte e nove unidades"
+            }
+          ],
+          "help": [
+            "Leia separadamente partes inteira e fracionária."
+          ],
+          "feedback": {
+            "met": "O zero coloca o nove nos centavos.",
+            "not_yet": "Leia separadamente partes inteira e fracionária."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Change due?",
+          "scene": "Pay 50 for a fare of 37.",
+          "options": [
+            {
+              "label": "37"
+            },
+            {
+              "label": "87"
+            },
+            {
+              "label": "13"
+            }
+          ],
+          "help": [
+            "Subtract the fare from the payment."
+          ],
+          "feedback": {
+            "met": "Only the unused payment returns.",
+            "not_yet": "Subtract the fare from the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambio debido?",
+          "scene": "Pagas con 50 un pasaje de 37.",
+          "options": [
+            {
+              "label": "37"
+            },
+            {
+              "label": "87"
+            },
+            {
+              "label": "13"
+            }
+          ],
+          "help": [
+            "Resta el pasaje del pago."
+          ],
+          "feedback": {
+            "met": "Solo vuelve la parte del pago no usada.",
+            "not_yet": "Resta el pasaje del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Troco devido?",
+          "scene": "Paga com 50 uma passagem de 37.",
+          "options": [
+            {
+              "label": "37"
+            },
+            {
+              "label": "87"
+            },
+            {
+              "label": "13"
+            }
+          ],
+          "help": [
+            "Subtraia a passagem do pagamento."
+          ],
+          "feedback": {
+            "met": "Só retorna a parte do pagamento não usada.",
+            "not_yet": "Subtraia a passagem do pagamento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          37
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "How many receipts occurred?",
+          "scene": "A trip refund appears in both your email and bank record with the same reference.",
+          "options": [
+            {
+              "label": "No receipt"
+            },
+            {
+              "label": "One receipt"
+            },
+            {
+              "label": "Two receipts"
+            }
+          ],
+          "help": [
+            "Count events, not copies of evidence."
+          ],
+          "feedback": {
+            "met": "Matching references identify the same payment event.",
+            "not_yet": "Count events, not copies of evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas entradas ocurrieron?",
+          "scene": "Una devolución del viaje aparece en correo y banco con la misma referencia.",
+          "options": [
+            {
+              "label": "Ninguna entrada"
+            },
+            {
+              "label": "Una entrada"
+            },
+            {
+              "label": "Dos entradas"
+            }
+          ],
+          "help": [
+            "Cuenta eventos, no copias de comprobantes."
+          ],
+          "feedback": {
+            "met": "Las referencias iguales identifican el mismo pago.",
+            "not_yet": "Cuenta eventos, no copias de comprobantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas entradas ocorreram?",
+          "scene": "Um reembolso da viagem aparece no e-mail e banco com a mesma referência.",
+          "options": [
+            {
+              "label": "Nenhuma entrada"
+            },
+            {
+              "label": "Uma entrada"
+            },
+            {
+              "label": "Duas entradas"
+            }
+          ],
+          "help": [
+            "Conte eventos, não cópias de comprovantes."
+          ],
+          "feedback": {
+            "met": "Referências iguais identificam o mesmo pagamento.",
+            "not_yet": "Conte eventos, não cópias de comprovantes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Shortfall?",
+          "scene": "A required trip payment is 95; only 68 is available.",
+          "options": [
+            {
+              "label": "68"
+            },
+            {
+              "label": "163"
+            },
+            {
+              "label": "27"
+            }
+          ],
+          "help": [
+            "Subtract available money from the obligation."
+          ],
+          "feedback": {
+            "met": "The uncovered portion is the shortfall.",
+            "not_yet": "Subtract available money from the obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante?",
+          "scene": "Un pago necesario del viaje es 95; solo hay 68 disponibles.",
+          "options": [
+            {
+              "label": "68"
+            },
+            {
+              "label": "163"
+            },
+            {
+              "label": "27"
+            }
+          ],
+          "help": [
+            "Resta lo disponible de la obligación."
+          ],
+          "feedback": {
+            "met": "La parte no cubierta es el faltante.",
+            "not_yet": "Resta lo disponible de la obligación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta?",
+          "scene": "Um pagamento necessário da viagem é 95; só há 68 disponíveis.",
+          "options": [
+            {
+              "label": "68"
+            },
+            {
+              "label": "163"
+            },
+            {
+              "label": "27"
+            }
+          ],
+          "help": [
+            "Subtraia o disponível da obrigação."
+          ],
+          "feedback": {
+            "met": "A parte não coberta é a falta.",
+            "not_yet": "Subtraia o disponível da obrigação."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          95,
+          68
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Ticket total?",
+          "scene": "A group buys 7 identical tickets at 11 each.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "77"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Multiply the repeated price by quantity."
+          ],
+          "feedback": {
+            "met": "Every ticket contributes the same unit price.",
+            "not_yet": "Multiply the repeated price by quantity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de boletos?",
+          "scene": "Un grupo compra 7 boletos iguales de 11 cada uno.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "77"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Multiplica el precio repetido por la cantidad."
+          ],
+          "feedback": {
+            "met": "Cada boleto aporta el mismo precio unitario.",
+            "not_yet": "Multiplica el precio repetido por la cantidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total dos ingressos?",
+          "scene": "Um grupo compra 7 ingressos iguais de 11 cada.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "77"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Multiplique o preço repetido pela quantidade."
+          ],
+          "feedback": {
+            "met": "Cada ingresso contribui com o mesmo preço unitário.",
+            "not_yet": "Multiplique o preço repetido pela quantidade."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          7,
+          11
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Each contribution?",
+          "scene": "A shared booking costs 96 for 4 equal contributors.",
+          "options": [
+            {
+              "label": "92"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Divide the total across all contributors."
+          ],
+          "feedback": {
+            "met": "Equal shares must recombine to the booking total.",
+            "not_yet": "Divide the total across all contributors."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aportación individual?",
+          "scene": "Una reserva compartida cuesta 96 para 4 aportantes iguales.",
+          "options": [
+            {
+              "label": "92"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Divide el total entre todos los aportantes."
+          ],
+          "feedback": {
+            "met": "Las partes iguales deben reunir el total de la reserva.",
+            "not_yet": "Divide el total entre todos los aportantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Contribuição individual?",
+          "scene": "Uma reserva compartilhada custa 96 para 4 contribuintes iguais.",
+          "options": [
+            {
+              "label": "92"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Divida o total entre todos os contribuintes."
+          ],
+          "feedback": {
+            "met": "As partes iguais devem reunir o total da reserva.",
+            "not_yet": "Divida o total entre todos os contribuintes."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          96,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 60
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "The trip fund uses three fifths of its money. Show that share.",
+          "feedback": {
+            "met": "The selected percentage represents the stated share.",
+            "not_yet": "The whole grid represents one hundred equal parts."
+          },
+          "help": [
+            "The whole grid represents one hundred equal parts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "El fondo del viaje usa tres quintos de su dinero. Representa esa parte.",
+          "feedback": {
+            "met": "El porcentaje elegido representa la parte indicada.",
+            "not_yet": "La cuadrícula completa representa cien partes iguales."
+          },
+          "help": [
+            "La cuadrícula completa representa cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "O fundo da viagem usa três quintos do dinheiro. Represente essa parte.",
+          "feedback": {
+            "met": "A porcentagem escolhida representa a parte informada.",
+            "not_yet": "A grade inteira representa cem partes iguais."
+          },
+          "help": [
+            "A grade inteira representa cem partes iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-08",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Cash remaining?",
+          "scene": "Travel cash starts at 80; a completed fare payment is 17.",
+          "options": [
+            {
+              "label": "97"
+            },
+            {
+              "label": "63"
+            },
+            {
+              "label": "17"
+            }
+          ],
+          "help": [
+            "Subtract the completed outgoing payment."
+          ],
+          "feedback": {
+            "met": "A completed payment reduces the starting cash.",
+            "not_yet": "Subtract the completed outgoing payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Efectivo restante?",
+          "scene": "El efectivo del viaje inicia en 80; un pago de pasaje realizado es 17.",
+          "options": [
+            {
+              "label": "97"
+            },
+            {
+              "label": "63"
+            },
+            {
+              "label": "17"
+            }
+          ],
+          "help": [
+            "Resta el pago de salida realizado."
+          ],
+          "feedback": {
+            "met": "Un pago realizado reduce el efectivo inicial.",
+            "not_yet": "Resta el pago de salida realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro restante?",
+          "scene": "O dinheiro da viagem começa em 80; um pagamento de passagem concluído é 17.",
+          "options": [
+            {
+              "label": "97"
+            },
+            {
+              "label": "63"
+            },
+            {
+              "label": "17"
+            }
+          ],
+          "help": [
+            "Subtraia o pagamento de saída concluído."
+          ],
+          "feedback": {
+            "met": "Um pagamento concluído reduz o dinheiro inicial.",
+            "not_yet": "Subtraia o pagamento de saída concluído."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          17
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Final balance?",
+          "scene": "The trip wallet starts at 70, receives 25, then pays 40.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "55"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Add incoming money and subtract outgoing money."
+          ],
+          "feedback": {
+            "met": "Include the receipt and completed payment once each.",
+            "not_yet": "Add incoming money and subtract outgoing money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo final?",
+          "scene": "La cartera del viaje inicia con 70, recibe 25 y paga 40.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "55"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Suma lo que entra y resta lo que sale."
+          ],
+          "feedback": {
+            "met": "Incluye la entrada y el pago realizado una vez cada uno.",
+            "not_yet": "Suma lo que entra y resta lo que sale."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo final?",
+          "scene": "A carteira da viagem começa com 70, recebe 25 e paga 40.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "55"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Some o que entra e subtraia o que sai."
+          ],
+          "feedback": {
+            "met": "Inclua a entrada e o pagamento concluído uma vez cada.",
+            "not_yet": "Some o que entra e subtraia o que sai."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          70,
+          25,
+          40
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

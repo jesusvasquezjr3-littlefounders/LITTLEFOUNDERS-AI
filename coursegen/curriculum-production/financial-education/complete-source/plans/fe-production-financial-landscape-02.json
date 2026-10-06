@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-1",
+  "lesson_id": "fe-production-financial-landscape-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish provider regulation from protection against every possible loss.",
+  "title": {
+    "en-US": "Regulation Limits",
+    "es-MX": "Regulado no significa sin pérdidas",
+    "pt-BR": "Regulado não significa sem perdas"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Regulation Limits\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Regulado no significa sin pérdidas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Regulado não significa sem perdas\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.02",
+      "observable_action": "Distinguish provider regulation from protection against every possible loss.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-landscape.01",
+      "prod.investing-foundations.12"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Provider oversight and protection against a specific loss are different; inspect what each claim actually covers.",
+    "misconception": "A regulated provider makes every investment safe from price falls, fraud, access delays and other losses.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-example-01",
+        "supports_from": [],
+        "reasoning": "Regulation concerns provider rules and oversight. Protection covers stated events under conditions; neither proves every product cannot lose value."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Permission is not a promise about investment results."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Provider oversight does not remove market price risk."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Protection is meaningful only with its scope and conditions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-practice-02",
+        "supports_from": [],
+        "reasoning": "A provider license does not give blanket loss coverage."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Verified identity does not establish coverage for every event."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The stated market risk remains despite provider authorization."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Provider oversight and protection against a specific loss are different; inspect what each claim actually covers."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Control del proveedor y protección contra pérdida específica son distintas; revisa qué cubre realmente cada afirmación."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Supervisão do provedor e proteção contra perda específica são distintas; confira o que cada alegação de fato cobre."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate status from protection",
+          "line": "Regulation concerns provider rules and oversight. Protection covers stated events under conditions; neither proves every product cannot lose value."
+        },
+        "es-MX": {
+          "prompt": "Separa estatus de protección",
+          "line": "Regulación trata reglas y control del proveedor. Protección cubre eventos indicados bajo condiciones; ninguna prueba que todo producto conserva valor."
+        },
+        "pt-BR": {
+          "prompt": "Separe situação de proteção",
+          "line": "Regulação trata regras e supervisão do provedor. Proteção cobre eventos dados sob condições; nenhuma prova que todo produto mantém valor."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What does registration alone establish?",
+          "scene": "A firm is officially permitted to offer a stated service.",
+          "options": [
+            {
+              "label": "Every investment will gain"
+            },
+            {
+              "label": "All losses will be reimbursed"
+            },
+            {
+              "label": "That stated permission"
+            }
+          ],
+          "help": [
+            "Separate legal operating status from product outcomes."
+          ],
+          "feedback": {
+            "met": "Permission is not a promise about investment results.",
+            "not_yet": "Separate legal operating status from product outcomes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué establece solo el registro?",
+          "scene": "Empresa tiene permiso oficial para ofrecer servicio indicado.",
+          "options": [
+            {
+              "label": "Toda inversión ganará"
+            },
+            {
+              "label": "Toda pérdida será devuelta"
+            },
+            {
+              "label": "Ese permiso indicado"
+            }
+          ],
+          "help": [
+            "Separa estatus legal de operación de resultados del producto."
+          ],
+          "feedback": {
+            "met": "Permiso no promete resultados de inversión.",
+            "not_yet": "Separa estatus legal de operación de resultados del producto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que só o registro define?",
+          "scene": "Empresa tem permissão oficial para oferecer serviço dado.",
+          "options": [
+            {
+              "label": "Todo investimento ganhará"
+            },
+            {
+              "label": "Toda perda será devolvida"
+            },
+            {
+              "label": "Essa permissão dada"
+            }
+          ],
+          "help": [
+            "Separe situação legal de operação dos resultados do produto."
+          ],
+          "feedback": {
+            "met": "Permissão não promete resultados de investimento.",
+            "not_yet": "Separe situação legal de operação dos resultados do produto."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Does oversight prevent this price fall?",
+          "scene": "A regulated firm sells an investment whose market value can decline.",
+          "options": [
+            {
+              "label": "No, market loss remains possible"
+            },
+            {
+              "label": "Yes, oversight guarantees profit"
+            },
+            {
+              "label": "Yes, all prices are fixed"
+            }
+          ],
+          "help": [
+            "Examine the product’s risks separately from provider status."
+          ],
+          "feedback": {
+            "met": "Provider oversight does not remove market price risk.",
+            "not_yet": "Examine the product’s risks separately from provider status."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Control evita esta caída de precio?",
+          "scene": "Empresa regulada vende inversión cuyo valor de mercado puede bajar.",
+          "options": [
+            {
+              "label": "No, pérdida de mercado sigue posible"
+            },
+            {
+              "label": "Sí, control asegura utilidad"
+            },
+            {
+              "label": "Sí, todos los precios son fijos"
+            }
+          ],
+          "help": [
+            "Examina riesgos del producto aparte del estatus del proveedor."
+          ],
+          "feedback": {
+            "met": "Control no elimina riesgo de precio de mercado.",
+            "not_yet": "Examina riesgos del producto aparte del estatus del proveedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Supervisão evita esta queda de preço?",
+          "scene": "Empresa regulada vende aplicação cujo valor de mercado pode cair.",
+          "options": [
+            {
+              "label": "Não, perda de mercado segue possível"
+            },
+            {
+              "label": "Sim, supervisão assegura lucro"
+            },
+            {
+              "label": "Sim, todos os preços são fixos"
+            }
+          ],
+          "help": [
+            "Examine riscos do produto além da situação do provedor."
+          ],
+          "feedback": {
+            "met": "Supervisão não elimina risco de preço de mercado.",
+            "not_yet": "Examine riscos do produto além da situação do provedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must a protection claim specify?",
+          "scene": "An ad says “protected” without naming events or conditions.",
+          "options": [
+            {
+              "label": "Only the advertised return"
+            },
+            {
+              "label": "Only the provider’s size"
+            },
+            {
+              "label": "Scope and eligibility conditions"
+            }
+          ],
+          "help": [
+            "Check exactly which event and product the claim covers."
+          ],
+          "feedback": {
+            "met": "Protection is meaningful only with its scope and conditions.",
+            "not_yet": "Check exactly which event and product the claim covers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe indicar una protección?",
+          "scene": "Anuncio dice «protegido» sin nombrar eventos ni condiciones.",
+          "options": [
+            {
+              "label": "Solo el rendimiento anunciado"
+            },
+            {
+              "label": "Solo tamaño del proveedor"
+            },
+            {
+              "label": "Alcance y reglas de cobertura"
+            }
+          ],
+          "help": [
+            "Revisa exactamente qué evento y producto cubre la afirmación."
+          ],
+          "feedback": {
+            "met": "Protección tiene sentido con alcance y condiciones.",
+            "not_yet": "Revisa exactamente qué evento y producto cubre la afirmación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que uma proteção deve informar?",
+          "scene": "Anúncio diz “protegido” sem nomear eventos ou condições.",
+          "options": [
+            {
+              "label": "Só o retorno anunciado"
+            },
+            {
+              "label": "Só tamanho do fornecedor"
+            },
+            {
+              "label": "Alcance e condições para cobertura"
+            }
+          ],
+          "help": [
+            "Confira qual evento e produto a alegação cobre."
+          ],
+          "feedback": {
+            "met": "Proteção faz sentido com alcance e condições.",
+            "not_yet": "Confira qual evento e produto a alegação cobre."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which inference is unsupported?",
+          "scene": "A licensed provider offers several products with different risks.",
+          "options": [
+            {
+              "label": "Provider has a stated license"
+            },
+            {
+              "label": "Every product covers every loss"
+            },
+            {
+              "label": "Products can have different risks"
+            }
+          ],
+          "help": [
+            "Read each product’s terms and protection separately."
+          ],
+          "feedback": {
+            "met": "A provider license does not give blanket loss coverage.",
+            "not_yet": "Read each product’s terms and protection separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué deducción carece de respaldo?",
+          "scene": "Proveedor autorizado ofrece varios productos con riesgos distintos.",
+          "options": [
+            {
+              "label": "Proveedor tiene permiso indicado"
+            },
+            {
+              "label": "Todo producto cubre toda pérdida"
+            },
+            {
+              "label": "Productos pueden tener riesgos distintos"
+            }
+          ],
+          "help": [
+            "Lee términos y protección de cada producto por separado."
+          ],
+          "feedback": {
+            "met": "Un permiso no otorga cobertura total de pérdidas.",
+            "not_yet": "Lee términos y protección de cada producto por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que conclusão não tem apoio?",
+          "scene": "Provedor autorizado oferece vários produtos com riscos distintos.",
+          "options": [
+            {
+              "label": "Provedor tem permissão dada"
+            },
+            {
+              "label": "Todo produto cobre toda perda"
+            },
+            {
+              "label": "Produtos podem ter riscos distintos"
+            }
+          ],
+          "help": [
+            "Leia termos e proteção de cada produto em separado."
+          ],
+          "feedback": {
+            "met": "Uma permissão não dá cobertura total de perdas.",
+            "not_yet": "Leia termos e proteção de cada produto em separado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this coverage be inferred?",
+          "scene": "Official listing verifies the firm, but not reimbursement after password theft.",
+          "options": [
+            {
+              "label": "No, check that event separately"
+            },
+            {
+              "label": "Yes, listing replaces security"
+            },
+            {
+              "label": "Yes, every incident is covered"
+            }
+          ],
+          "help": [
+            "Check applicable protection and security responsibilities."
+          ],
+          "feedback": {
+            "met": "Verified identity does not establish coverage for every event.",
+            "not_yet": "Check applicable protection and security responsibilities."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede deducirse esta garantía?",
+          "scene": "Registro verifica empresa, pero no dice nada sobre devolución por contraseña robada.",
+          "options": [
+            {
+              "label": "No, revisar ese evento aparte"
+            },
+            {
+              "label": "Sí, registro sustituye seguridad"
+            },
+            {
+              "label": "Sí, todo incidente está cubierto"
+            }
+          ],
+          "help": [
+            "Revisa protección aplicable y responsabilidades de seguridad."
+          ],
+          "feedback": {
+            "met": "Identidad verificada no establece cobertura para todo evento.",
+            "not_yet": "Revisa protección aplicable y responsabilidades de seguridad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode deduzir esta garantia?",
+          "scene": "Registro verifica empresa, mas nada diz sobre devolución por senha roubada.",
+          "options": [
+            {
+              "label": "Não, conferir esse evento à parte"
+            },
+            {
+              "label": "Sim, registro substitui segurança"
+            },
+            {
+              "label": "Sim, todo incidente é coberto"
+            }
+          ],
+          "help": [
+            "Confira proteção aplicável e deveres de segurança."
+          ],
+          "feedback": {
+            "met": "Identidade verificada não define cobertura para todo evento.",
+            "not_yet": "Confira proteção aplicável e deveres de segurança."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows from this?",
+          "scene": "An authorized provider offers a fund explicitly exposed to market losses.",
+          "options": [
+            {
+              "label": "Any loss must be fully refunded"
+            },
+            {
+              "label": "Authorization does not remove those losses"
+            },
+            {
+              "label": "The fund cannot lose"
+            }
+          ],
+          "help": [
+            "Keep provider status and product risk as separate checks."
+          ],
+          "feedback": {
+            "met": "The stated market risk remains despite provider authorization.",
+            "not_yet": "Keep provider status and product risk as separate checks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué se deduce de esta información?",
+          "scene": "Proveedor autorizado ofrece fondo expresamente expuesto a pérdidas de mercado.",
+          "options": [
+            {
+              "label": "Toda pérdida debe reembolsarse completa"
+            },
+            {
+              "label": "Autorización no elimina esas pérdidas"
+            },
+            {
+              "label": "Fondo no puede perder"
+            }
+          ],
+          "help": [
+            "Mantén separados estatus del proveedor y riesgo del producto."
+          ],
+          "feedback": {
+            "met": "El riesgo indicado sigue pese a autorización del proveedor.",
+            "not_yet": "Mantén separados estatus del proveedor y riesgo del producto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que decorre desta informação?",
+          "scene": "Provedor autorizado oferece fundo exposto a perdas de mercado.",
+          "options": [
+            {
+              "label": "Toda perda deve ser devolvida inteira"
+            },
+            {
+              "label": "Autorização não elimina essas perdas"
+            },
+            {
+              "label": "Fundo não pode perder"
+            }
+          ],
+          "help": [
+            "Mantenha separados situação do provedor e risco do produto."
+          ],
+          "feedback": {
+            "met": "O risco dado segue apesar da autorização do provedor.",
+            "not_yet": "Mantenha separados situação do provedor e risco do produto."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1104 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-3",
+  "lesson_id": "fe-production-housing-transport-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.01",
+    "finance.prod.housing-transport.02",
+    "finance.prod.housing-transport.03",
+    "finance.prod.housing-transport.04",
+    "finance.prod.housing-transport.05",
+    "finance.prod.housing-transport.06",
+    "finance.prod.purchase-decisions.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate housing costs, read stated obligations and test affordability under changed conditions.",
+  "title": {
+    "en-US": "Housing Planning",
+    "es-MX": "Revisa todo el plan de vivienda",
+    "pt-BR": "Confira todo o plano de moradia"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Housing Planning\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa todo el plan de vivienda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira todo o plano de moradia\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.housing-transport.01",
+      "observable_action": "Separate housing costs, read stated obligations and test affordability under changed conditions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02",
+      "prod.cashflow-budget.01"
+    ],
+    "retrieval_skills": [
+      "prod.housing-transport.01",
+      "prod.housing-transport.02",
+      "prod.housing-transport.03",
+      "prod.housing-transport.04",
+      "prod.housing-transport.05",
+      "prod.housing-transport.06",
+      "prod.purchase-decisions.02"
+    ],
+    "relevance": "Retrieve cash, contract and affordability checks before choosing housing.",
+    "misconception": "An affordable advertised price or upfront payment proves the entire housing arrangement is affordable.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "Every stated upfront amount needs funding before entry."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "B costs less once services and travel are included."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Reporting initiates the stated repair process."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Maintenance continues after the purchase transaction ends."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Lower borrowing does not fund the unfunded repair need."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "The stressed costs exceed reduced income."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "housing-transport-review-1-practice-07",
+        "supports_from": [],
+        "reasoning": "Every mandatory charge belongs in the final price."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "housing-transport-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Refundability does not remove the initial cash requirement."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve cash, contract and affordability checks before choosing housing."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera revisiones de efectivo, contrato y capacidad de pago antes de elegir vivienda."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome cuidados com dinheiro, contrato e capacidade de pagar antes de escolher moradia."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What cash is needed to enter?",
+          "scene": "First rent: 750; Deposit: 500; Moving: 120; All due before entry.",
+          "options": [
+            {
+              "label": "750"
+            },
+            {
+              "label": "1370"
+            },
+            {
+              "label": "1250"
+            }
+          ],
+          "help": [
+            "Add rent, deposit and moving costs."
+          ],
+          "feedback": {
+            "met": "Every stated upfront amount needs funding before entry.",
+            "not_yet": "Add rent, deposit and moving costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué efectivo necesitas para entrar?",
+          "scene": "Primera renta: 750; Depósito: 500; Mudanza: 120; Todo vence antes de entrar.",
+          "options": [
+            {
+              "label": "750"
+            },
+            {
+              "label": "1370"
+            },
+            {
+              "label": "1250"
+            }
+          ],
+          "help": [
+            "Suma renta, depósito y mudanza."
+          ],
+          "feedback": {
+            "met": "Todo monto inicial indicado necesita fondos antes de entrar.",
+            "not_yet": "Suma renta, depósito y mudanza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto dinheiro precisa para entrar?",
+          "scene": "Primeiro aluguel: 750; Depósito: 500; Mudança: 120; Tudo vence antes de entrar.",
+          "options": [
+            {
+              "label": "750"
+            },
+            {
+              "label": "1370"
+            },
+            {
+              "label": "1250"
+            }
+          ],
+          "help": [
+            "Some aluguel, depósito e mudança."
+          ],
+          "feedback": {
+            "met": "Todo valor inicial dado precisa de dinheiro antes de entrar.",
+            "not_yet": "Some aluguel, depósito e mudança."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          750,
+          500,
+          120
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                720,
+                660
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Monthly: A rent 500, utilities 120, travel 100; B rent 570, utilities 60, travel 30.",
+          "title": "Full monthly cost",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which costs less?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B costs less once services and travel are included.",
+            "not_yet": "Include the same cost categories in both options."
+          },
+          "help": [
+            "Include the same cost categories in both options."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mensual: A renta 500, servicios 120, viaje 100; B renta 570, servicios 60, viaje 30.",
+          "title": "Costo mensual completo",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué cuesta menos?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B cuesta menos al incluir servicios y viaje.",
+            "not_yet": "Incluye las mismas categorías de costos en ambas opciones."
+          },
+          "help": [
+            "Incluye las mismas categorías de costos en ambas opciones."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mensal: A aluguel 500, serviços 120, viagem 100; B aluguel 570, serviços 60, viagem 30.",
+          "title": "Custo mensal completo",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual custa menos?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B custa menos ao incluir serviços e viagem.",
+            "not_yet": "Inclua as mesmas categorias de custos nas duas opções."
+          },
+          "help": [
+            "Inclua as mesmas categorias de custos nas duas opções."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows this fictional clause?",
+          "scene": "Tenant must report leaks; owner arranges repairs. A pipe starts leaking.",
+          "options": [
+            {
+              "label": "Replace all plumbing without notice"
+            },
+            {
+              "label": "Report the leak"
+            },
+            {
+              "label": "Assume deposit cancels rent"
+            }
+          ],
+          "help": [
+            "Use the responsibilities assigned by this contract."
+          ],
+          "feedback": {
+            "met": "Reporting initiates the stated repair process.",
+            "not_yet": "Use the responsibilities assigned by this contract."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue esta cláusula ficticia?",
+          "scene": "Inquilino debe reportar fugas; propietario organiza arreglos. Una tubería fuga.",
+          "options": [
+            {
+              "label": "Cambiar tuberías sin aviso"
+            },
+            {
+              "label": "Reportar la fuga"
+            },
+            {
+              "label": "Suponer depósito cancela renta"
+            }
+          ],
+          "help": [
+            "Usa las responsabilidades asignadas por este contrato."
+          ],
+          "feedback": {
+            "met": "Reportar inicia el proceso de arreglo indicado.",
+            "not_yet": "Usa las responsabilidades asignadas por este contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que segue esta cláusula fictícia?",
+          "scene": "Morador deve avisar vazamentos; dono organiza consertos. Um cano vaza.",
+          "options": [
+            {
+              "label": "Trocar canos sem aviso"
+            },
+            {
+              "label": "Avisar o vazamento"
+            },
+            {
+              "label": "Supor depósito cancela aluguel"
+            }
+          ],
+          "help": [
+            "Use os deveres atribuídos por este contrato."
+          ],
+          "feedback": {
+            "met": "Avisar inicia o processo de conserto dado.",
+            "not_yet": "Use os deveres atribuídos por este contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost is ongoing ownership?",
+          "scene": "After closing, the owner regularly pays for upkeep.",
+          "options": [
+            {
+              "label": "Only the sale price"
+            },
+            {
+              "label": "Only the registration charge"
+            },
+            {
+              "label": "Maintenance"
+            }
+          ],
+          "help": [
+            "Distinguish running costs from purchase and closing costs."
+          ],
+          "feedback": {
+            "met": "Maintenance continues after the purchase transaction ends.",
+            "not_yet": "Distinguish running costs from purchase and closing costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo continúa al ser dueño?",
+          "scene": "Tras cerrar compra, dueño paga cuidado habitual.",
+          "options": [
+            {
+              "label": "Solo precio de venta"
+            },
+            {
+              "label": "Solo cargo de registro"
+            },
+            {
+              "label": "Mantenimiento"
+            }
+          ],
+          "help": [
+            "Distingue costos de uso de compra y cierre."
+          ],
+          "feedback": {
+            "met": "El mantenimiento sigue después de terminar la compra.",
+            "not_yet": "Distingue costos de uso de compra y cierre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo segue ao ser dono?",
+          "scene": "Após fechar compra, dono paga cuidados regulares.",
+          "options": [
+            {
+              "label": "Só preço de venda"
+            },
+            {
+              "label": "Só cobrança de registro"
+            },
+            {
+              "label": "Manutenção"
+            }
+          ],
+          "help": [
+            "Separe custos de uso dos de compra e fechamento."
+          ],
+          "feedback": {
+            "met": "A manutenção segue depois do fim da compra.",
+            "not_yet": "Separe custos de uso dos de compra e fechamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unresolved?",
+          "scene": "A bigger down payment lowers borrowing but leaves no cash for stated urgent repairs.",
+          "options": [
+            {
+              "label": "Whether borrowing fell"
+            },
+            {
+              "label": "Whether the price exists"
+            },
+            {
+              "label": "Cash for repairs"
+            }
+          ],
+          "help": [
+            "Check remaining cash alongside the reduced debt."
+          ],
+          "feedback": {
+            "met": "Lower borrowing does not fund the unfunded repair need.",
+            "not_yet": "Check remaining cash alongside the reduced debt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue sin resolver?",
+          "scene": "Enganche mayor reduce préstamo pero no deja efectivo para arreglos urgentes indicados.",
+          "options": [
+            {
+              "label": "Si bajó el préstamo"
+            },
+            {
+              "label": "Si existe el precio"
+            },
+            {
+              "label": "Efectivo para arreglos"
+            }
+          ],
+          "help": [
+            "Revisa efectivo restante junto con deuda reducida."
+          ],
+          "feedback": {
+            "met": "Menor préstamo no financia los arreglos sin fondos.",
+            "not_yet": "Revisa efectivo restante junto con deuda reducida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que segue sem solução?",
+          "scene": "Entrada maior reduz dívida mas não deixa dinheiro para consertos urgentes dados.",
+          "options": [
+            {
+              "label": "Se a dívida caiu"
+            },
+            {
+              "label": "Se existe o preço"
+            },
+            {
+              "label": "Dinheiro para consertos"
+            }
+          ],
+          "help": [
+            "Confira dinheiro restante junto com dívida reduzida."
+          ],
+          "feedback": {
+            "met": "Menor dívida não financia consertos sem verba.",
+            "not_yet": "Confira dinheiro restante junto com dívida reduzida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains in this setback?",
+          "scene": "Reduced income: 1700; New housing payment: 1000; Other essentials: 800.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "700"
+            },
+            {
+              "label": "-100"
+            }
+          ],
+          "help": [
+            "Use all changed amounts in the same budget."
+          ],
+          "feedback": {
+            "met": "The stressed costs exceed reduced income.",
+            "not_yet": "Use all changed amounts in the same budget."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda en este contratiempo?",
+          "scene": "Ingreso reducido: 1700; Nuevo pago de vivienda: 1000; Otros esenciales: 800.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "700"
+            },
+            {
+              "label": "-100"
+            }
+          ],
+          "help": [
+            "Usa todos los montos cambiados en el mismo presupuesto."
+          ],
+          "feedback": {
+            "met": "Los costos adversos superan el ingreso reducido.",
+            "not_yet": "Usa todos los montos cambiados en el mismo presupuesto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra neste revés?",
+          "scene": "Renda reduzida: 1700; Nova prestação: 1000; Outros essenciais: 800.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "700"
+            },
+            {
+              "label": "-100"
+            }
+          ],
+          "help": [
+            "Use todos os valores mudados no mesmo orçamento."
+          ],
+          "feedback": {
+            "met": "Os custos adversos superam a renda reduzida.",
+            "not_yet": "Use todos os valores mudados no mesmo orçamento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1700,
+          1000,
+          800
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the complete price?",
+          "scene": "Product: 300; Mandatory delivery: 25; Mandatory installation: 40; No other charges.",
+          "options": [
+            {
+              "label": "325"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "365"
+            }
+          ],
+          "help": [
+            "Add product, delivery and installation."
+          ],
+          "feedback": {
+            "met": "Every mandatory charge belongs in the final price.",
+            "not_yet": "Add product, delivery and installation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el precio completo?",
+          "scene": "Producto: 300; Entrega obligatoria: 25; Instalación obligatoria: 40; Sin otros cargos.",
+          "options": [
+            {
+              "label": "325"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "365"
+            }
+          ],
+          "help": [
+            "Suma producto, entrega e instalación."
+          ],
+          "feedback": {
+            "met": "Todo cargo obligatorio pertenece al precio final.",
+            "not_yet": "Suma producto, entrega e instalación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o preço completo?",
+          "scene": "Produto: 300; Entrega obrigatória: 25; Instalação obrigatória: 40; Sem outros custos.",
+          "options": [
+            {
+              "label": "325"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "365"
+            }
+          ],
+          "help": [
+            "Some produto, entrega e instalação."
+          ],
+          "feedback": {
+            "met": "Todo custo obrigatório pertence ao preço final.",
+            "not_yet": "Some produto, entrega e instalação."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          25,
+          40
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount belongs upfront?",
+          "scene": "A new lease requires a refundable key deposit before entry, besides recurring rent.",
+          "options": [
+            {
+              "label": "The key deposit"
+            },
+            {
+              "label": "No deposit because refundable"
+            },
+            {
+              "label": "Only next year’s utilities"
+            }
+          ],
+          "help": [
+            "Separate money needed now from possible later refunds."
+          ],
+          "feedback": {
+            "met": "Refundability does not remove the initial cash requirement.",
+            "not_yet": "Separate money needed now from possible later refunds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto corresponde al inicio?",
+          "scene": "Nueva renta exige depósito reembolsable de llaves antes de entrar, además de renta recurrente.",
+          "options": [
+            {
+              "label": "El depósito de llaves"
+            },
+            {
+              "label": "Ningún depósito porque se devuelve"
+            },
+            {
+              "label": "Solo servicios del próximo año"
+            }
+          ],
+          "help": [
+            "Separa dinero requerido ahora de posibles devoluciones posteriores."
+          ],
+          "feedback": {
+            "met": "Ser reembolsable no elimina la necesidad inicial de efectivo.",
+            "not_yet": "Separa dinero requerido ahora de posibles devoluciones posteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor é inicial?",
+          "scene": "Novo aluguel exige depósito reembolsável de chaves antes de entrar, além do aluguel regular.",
+          "options": [
+            {
+              "label": "O depósito das chaves"
+            },
+            {
+              "label": "Nenhum depósito pois será devolvido"
+            },
+            {
+              "label": "Só serviços do próximo ano"
+            }
+          ],
+          "help": [
+            "Separe dinheiro exigido agora de possíveis devoluções futuras."
+          ],
+          "feedback": {
+            "met": "Ser reembolsável não elimina a necessidade inicial de dinheiro.",
+            "not_yet": "Separe dinheiro exigido agora de possíveis devoluções futuras."
+          }
+        }
+      }
+    }
+  ]
+}

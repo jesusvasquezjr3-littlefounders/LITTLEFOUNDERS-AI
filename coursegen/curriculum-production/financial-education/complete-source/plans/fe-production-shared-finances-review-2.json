@@ -1,0 +1,792 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-2",
+  "lesson_id": "fe-production-shared-finances-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.05",
+    "finance.prod.shared-finances.06",
+    "finance.prod.shared-finances.07",
+    "finance.prod.shared-finances.08",
+    "finance.prod.financial-math.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise care-period resources and identify transfer expectations, records and local authority questions.",
+  "title": {
+    "en-US": "Household Changes",
+    "es-MX": "Planea cambios del hogar",
+    "pt-BR": "Planeje mudanças da família"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Household Changes\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea cambios del hogar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje mudanças da família\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.shared-finances.05",
+      "observable_action": "Revise care-period resources and identify transfer expectations, records and local authority questions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.04",
+      "prod.cashflow-budget.09"
+    ],
+    "retrieval_skills": [
+      "prod.shared-finances.05",
+      "prod.shared-finances.06",
+      "prod.shared-finances.07",
+      "prod.shared-finances.08",
+      "prod.financial-math.06"
+    ],
+    "relevance": "Retrieve care-period budgets, family transfers and records for major transitions.",
+    "misconception": "Old income, family promises and account credentials alone establish a workable budget or legal authority.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "The added supplies exceed the apparent remaining income."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Different expectations need resolution before money changes hands."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Active financial arrangements need records and verified updates."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Working credentials do not establish legal decision authority."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.financial-math.06",
+        "context_id": "shared-finances-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Divide the shared cost among the equal contributors."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "Longer care extends the period needing reduced-income funding."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve care-period budgets, family transfers and records for major transitions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera presupuestos de cuidados, transferencias familiares y registros para grandes cambios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome orçamentos de cuidados, transferências familiares e registros para grandes mudanças."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains during caregiving?",
+          "scene": "Reduced paid income: 1900; Essentials: 1500; Added care supplies: 500.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Include both reduced income and added care costs."
+          ],
+          "feedback": {
+            "met": "The added supplies exceed the apparent remaining income.",
+            "not_yet": "Include both reduced income and added care costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda durante cuidados?",
+          "scene": "Ingreso pagado reducido: 1900; Esenciales: 1500; Materiales nuevos de cuidado: 500.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Incluye ingreso reducido y costos nuevos de cuidado."
+          ],
+          "feedback": {
+            "met": "Los materiales nuevos superan el ingreso restante aparente.",
+            "not_yet": "Incluye ingreso reducido y costos nuevos de cuidado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra durante cuidados?",
+          "scene": "Renda paga reduzida: 1900; Essenciais: 1500; Novos materiais de cuidado: 500.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Inclua renda reduzida e novos custos de cuidado."
+          ],
+          "feedback": {
+            "met": "Os materiais novos superam a renda restante aparente.",
+            "not_yet": "Inclua renda reduzida e novos custos de cuidado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1900,
+          1500,
+          500
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs clarification before transferring?",
+          "scene": "One relative expects repayment; the recipient believes it is a gift.",
+          "options": [
+            {
+              "label": "Only the family surname"
+            },
+            {
+              "label": "Gift or loan and repayment terms"
+            },
+            {
+              "label": "Only the transfer button"
+            }
+          ],
+          "help": [
+            "Agree whether repayment is required and when."
+          ],
+          "feedback": {
+            "met": "Different expectations need resolution before money changes hands.",
+            "not_yet": "Agree whether repayment is required and when."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aclarar antes de transferir?",
+          "scene": "Familiar espera devolución; quien recibe cree que es regalo.",
+          "options": [
+            {
+              "label": "Solo apellido familiar"
+            },
+            {
+              "label": "Regalo o préstamo y condiciones"
+            },
+            {
+              "label": "Solo botón de transferencia"
+            }
+          ],
+          "help": [
+            "Acuerden si debe devolverse y cuándo."
+          ],
+          "feedback": {
+            "met": "Expectativas distintas deben aclararse antes de entregar dinero.",
+            "not_yet": "Acuerden si debe devolverse y cuándo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer antes de transferir?",
+          "scene": "Parente espera devolução; quem recebe pensa que é presente.",
+          "options": [
+            {
+              "label": "Só sobrenome familiar"
+            },
+            {
+              "label": "Presente ou empréstimo e termos"
+            },
+            {
+              "label": "Só botão da transferência"
+            }
+          ],
+          "help": [
+            "Combinem se deve devolver e quando."
+          ],
+          "feedback": {
+            "met": "Expectativas distintas devem ser esclarecidas antes de entregar dinheiro.",
+            "not_yet": "Combinem se deve devolver e quando."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What records matter after separating?",
+          "scene": "Shared borrowing, recurring bills and account access remain active.",
+          "options": [
+            {
+              "label": "Only furniture receipts"
+            },
+            {
+              "label": "Only the new housing budget"
+            },
+            {
+              "label": "Contracts, balances, dates and permissions"
+            }
+          ],
+          "help": [
+            "Map obligations and access instead of assuming they disappeared."
+          ],
+          "feedback": {
+            "met": "Active financial arrangements need records and verified updates.",
+            "not_yet": "Map obligations and access instead of assuming they disappeared."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registros importan al separarse?",
+          "scene": "Préstamo compartido, pagos recurrentes y acceso a cuentas siguen activos.",
+          "options": [
+            {
+              "label": "Solo recibos de muebles"
+            },
+            {
+              "label": "Solo el nuevo presupuesto de vivienda"
+            },
+            {
+              "label": "Contratos, saldos, fechas y permisos"
+            }
+          ],
+          "help": [
+            "Ubica deudas y acceso sin suponer que desaparecieron."
+          ],
+          "feedback": {
+            "met": "Acuerdos activos necesitan registros y cambios verificados.",
+            "not_yet": "Ubica deudas y acceso sin suponer que desaparecieron."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registros importam ao separar?",
+          "scene": "Empréstimo conjunto, contas regulares e acesso a contas seguem ativos.",
+          "options": [
+            {
+              "label": "Só recibos de móveis"
+            },
+            {
+              "label": "Só o novo orçamento de moradia"
+            },
+            {
+              "label": "Contratos, saldos, datas e acessos"
+            }
+          ],
+          "help": [
+            "Mapeie dívidas e acesso sem supor que sumiram."
+          ],
+          "feedback": {
+            "met": "Acordos ativos precisam de registros e mudanças conferidas.",
+            "not_yet": "Mapeie dívidas e acesso sem supor que sumiram."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs qualified local verification?",
+          "scene": "After incapacity, someone knows the login but wants to make decisions for the owner.",
+          "options": [
+            {
+              "label": "Only whether the login works"
+            },
+            {
+              "label": "Only family closeness"
+            },
+            {
+              "label": "Recognized decision authority"
+            }
+          ],
+          "help": [
+            "Check the applicable documents and local rules."
+          ],
+          "feedback": {
+            "met": "Working credentials do not establish legal decision authority.",
+            "not_yet": "Check the applicable documents and local rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué requiere verificación local experta?",
+          "scene": "Tras perder capacidad, alguien conoce acceso y quiere decidir por titular.",
+          "options": [
+            {
+              "label": "Solo si funciona acceso"
+            },
+            {
+              "label": "Solo cercanía familiar"
+            },
+            {
+              "label": "Poder reconocido para decidir"
+            }
+          ],
+          "help": [
+            "Revisa documentos y reglas locales del caso."
+          ],
+          "feedback": {
+            "met": "Datos de acceso no establecen poder legal de decisión.",
+            "not_yet": "Revisa documentos y reglas locales del caso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que exige verificação local perita?",
+          "scene": "Após perda de capacidade, alguém sabe o acesso e quer decidir pelo titular.",
+          "options": [
+            {
+              "label": "Só se funciona o acesso"
+            },
+            {
+              "label": "Só proximidade familiar"
+            },
+            {
+              "label": "Poder reconhecido para decidir"
+            }
+          ],
+          "help": [
+            "Confira documentos e regras locais do caso."
+          ],
+          "feedback": {
+            "met": "Dados de acesso não definem poder legal de decisão.",
+            "not_yet": "Confira documentos e regras locais do caso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What is each agreed share?",
+          "scene": "Shared care transport cost: 360; Equal contributors: 3.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "180"
+            },
+            {
+              "label": "360"
+            }
+          ],
+          "help": [
+            "Apply the stated equal-sharing rule."
+          ],
+          "feedback": {
+            "met": "Divide the shared cost among the equal contributors.",
+            "not_yet": "Apply the stated equal-sharing rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es cada parte acordada?",
+          "scene": "Transporte compartido de cuidados: 360; Aportes iguales entre: 3 personas.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "180"
+            },
+            {
+              "label": "360"
+            }
+          ],
+          "help": [
+            "Aplica la regla indicada de división igual."
+          ],
+          "feedback": {
+            "met": "Divide costo compartido entre quienes aportan igual.",
+            "not_yet": "Aplica la regla indicada de división igual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é cada parte combinada?",
+          "scene": "Transporte conjunto de cuidados: 360; Aportes iguais entre: 3 pessoas.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "180"
+            },
+            {
+              "label": "360"
+            }
+          ],
+          "help": [
+            "Aplique a regra dada de divisão igual."
+          ],
+          "feedback": {
+            "met": "Divida custo conjunto entre quem paga igual.",
+            "not_yet": "Aplique a regra dada de divisão igual."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          360,
+          3
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision is needed?",
+          "scene": "Care lasts longer; paid hours stay reduced and supplies remain necessary.",
+          "options": [
+            {
+              "label": "Keep only the original end date"
+            },
+            {
+              "label": "Assume supplies become free"
+            },
+            {
+              "label": "Extend the budget and recalculate funding"
+            }
+          ],
+          "help": [
+            "Update duration, costs and confirmed resources together."
+          ],
+          "feedback": {
+            "met": "Longer care extends the period needing reduced-income funding.",
+            "not_yet": "Update duration, costs and confirmed resources together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión se necesita?",
+          "scene": "Cuidados duran más; horas pagadas siguen reducidas y materiales siguen necesarios.",
+          "options": [
+            {
+              "label": "Conservar solo fecha final original"
+            },
+            {
+              "label": "Suponer materiales se vuelven gratis"
+            },
+            {
+              "label": "Extender presupuesto y recalcular fondos"
+            }
+          ],
+          "help": [
+            "Actualiza juntos duración, costos y recursos confirmados."
+          ],
+          "feedback": {
+            "met": "Más cuidados extienden el periodo con menos ingreso pagado.",
+            "not_yet": "Actualiza juntos duración, costos y recursos confirmados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que revisão é necessária?",
+          "scene": "Cuidados duram mais; horas pagas seguem reduzidas e materiais seguem necessários.",
+          "options": [
+            {
+              "label": "Manter só data final antiga"
+            },
+            {
+              "label": "Supor materiais ficam grátis"
+            },
+            {
+              "label": "Estender orçamento e recalcular verba"
+            }
+          ],
+          "help": [
+            "Atualize juntos duração, custos e recursos confirmados."
+          ],
+          "feedback": {
+            "met": "Mais cuidados estendem o período com menos renda paga.",
+            "not_yet": "Atualize juntos duração, custos e recursos confirmados."
+          }
+        }
+      }
+    }
+  ]
+}

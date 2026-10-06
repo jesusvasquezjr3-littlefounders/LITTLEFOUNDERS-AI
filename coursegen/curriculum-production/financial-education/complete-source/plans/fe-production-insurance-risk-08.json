@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-2",
+  "lesson_id": "fe-production-insurance-risk-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check whether a waiting period leaves a stated near-term event uncovered.",
+  "title": {
+    "en-US": "Coverage Timing",
+    "es-MX": "Revisa cuándo inicia cobertura",
+    "pt-BR": "Veja quando começa cobertura"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Coverage Timing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa cuándo inicia cobertura\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Veja quando começa cobertura\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.08",
+      "observable_action": "Check whether a waiting period leaves a stated near-term event uncovered.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Purchase and coverage dates may differ; read the waiting rule before relying on protection.",
+    "misconception": "Paying today means every event today qualifies, or a later claim date fixes an event that occurred during a waiting period.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-example-01",
+        "supports_from": [],
+        "reasoning": "Compare the event date with the stated coverage start. A later claim date does not change when the event occurred."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The event occurs before the stated coverage start."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated start includes the event day."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-practice-01",
+        "supports_from": [],
+        "reasoning": "The event date remains before the stated eligibility date."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-practice-02",
+        "supports_from": [],
+        "reasoning": "The illness event follows its own stated waiting rule."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-practice-03",
+        "supports_from": [],
+        "reasoning": "The missing timing terms prevent confirming near-term protection."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "The timing condition fails despite the other conditions being met."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Purchase and coverage dates may differ; read the waiting rule before relying on protection."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Fecha de compra puede diferir de fecha elegible para evento; lee regla exacta de espera antes de contar con protección."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Data de compra pode diferir da data elegível para evento; leia regra exata de carência antes de contar com proteção."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use the event date",
+          "line": "Compare the event date with the stated coverage start. A later claim date does not change when the event occurred."
+        },
+        "es-MX": {
+          "prompt": "Usa fecha del evento",
+          "line": "Compara fecha del evento con inicio indicado de cobertura. Reclamar después no cambia cuándo ocurrió evento."
+        },
+        "pt-BR": {
+          "prompt": "Use data do evento",
+          "line": "Compare data do evento com início dado da cobertura. Pedir depois não muda quando ocorreu evento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this event eligible?",
+          "scene": "Fictional terms cover events from day 11; the event occurs on day 5.",
+          "options": [
+            {
+              "label": "Yes, if reported later"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, premium was paid"
+            }
+          ],
+          "help": [
+            "Compare the event day with the first eligible day."
+          ],
+          "feedback": {
+            "met": "The event occurs before the stated coverage start.",
+            "not_yet": "Compare the event day with the first eligible day."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Evento cumple estos términos?",
+          "scene": "Términos ficticios cubren eventos desde día 11; evento ocurre día 5.",
+          "options": [
+            {
+              "label": "Sí, si se reporta después"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, se pagó prima"
+            }
+          ],
+          "help": [
+            "Compara día del evento con primer día elegible."
+          ],
+          "feedback": {
+            "met": "Evento ocurre antes del inicio indicado de cobertura.",
+            "not_yet": "Compara día del evento con primer día elegible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Evento atende estes termos?",
+          "scene": "Termos fictícios cobrem eventos desde dia 11; evento ocorre dia 5.",
+          "options": [
+            {
+              "label": "Sim, se informado depois"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, prêmio foi pago"
+            }
+          ],
+          "help": [
+            "Compare dia do evento com primeiro dia elegível."
+          ],
+          "feedback": {
+            "met": "Evento ocorre antes do início dado da cobertura.",
+            "not_yet": "Compare dia do evento com primeiro dia elegível."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this event pass waiting?",
+          "scene": "Fictional terms cover events from day 11 inclusive; event occurs day 11; other conditions met.",
+          "options": [
+            {
+              "label": "No, one more day always required"
+            },
+            {
+              "label": "No event can qualify"
+            },
+            {
+              "label": "Yes"
+            }
+          ],
+          "help": [
+            "Read whether the boundary date is included."
+          ],
+          "feedback": {
+            "met": "The stated start includes the event day.",
+            "not_yet": "Read whether the boundary date is included."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Evento supera regla de espera?",
+          "scene": "Términos ficticios cubren eventos desde día 11 inclusive; evento ocurre día 11; cumple otras condiciones.",
+          "options": [
+            {
+              "label": "No, siempre falta otro día"
+            },
+            {
+              "label": "Ningún evento cumple"
+            },
+            {
+              "label": "Sí"
+            }
+          ],
+          "help": [
+            "Lee si fecha límite está incluida."
+          ],
+          "feedback": {
+            "met": "Inicio indicado incluye día del evento.",
+            "not_yet": "Lee si fecha límite está incluida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Evento passa regra de carência?",
+          "scene": "Termos fictícios cobrem eventos desde dia 11 inclusive; evento ocorre dia 11; atende outras condições.",
+          "options": [
+            {
+              "label": "Não, sempre falta outro dia"
+            },
+            {
+              "label": "Nenhum evento atende"
+            },
+            {
+              "label": "Sim"
+            }
+          ],
+          "help": [
+            "Leia se data limite está incluída."
+          ],
+          "feedback": {
+            "met": "Início dado inclui dia do evento.",
+            "not_yet": "Leia se data limite está incluída."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does reporting later change eligibility?",
+          "scene": "Fictional policy excludes events before June 10; event occurs June 8 and is reported June 12.",
+          "options": [
+            {
+              "label": "Yes, use report date"
+            },
+            {
+              "label": "Yes, choose either date"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Do not replace the event date with the report date."
+          ],
+          "feedback": {
+            "met": "The event date remains before the stated eligibility date.",
+            "not_yet": "Do not replace the event date with the report date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reportar después cambia elegibilidad?",
+          "scene": "Póliza ficticia excluye eventos antes del 10 de junio; evento ocurre 8 y se reporta 12 de junio.",
+          "options": [
+            {
+              "label": "Sí, usar fecha de reporte"
+            },
+            {
+              "label": "Sí, elegir cualquier fecha"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "No sustituyas fecha del evento por fecha de reporte."
+          ],
+          "feedback": {
+            "met": "Fecha del evento sigue antes de fecha elegible indicada.",
+            "not_yet": "No sustituyas fecha del evento por fecha de reporte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Informar depois muda elegibilidade?",
+          "scene": "Apólice fictícia exclui eventos antes de 10 de junho; evento ocorre dia 8 e é informado dia 12.",
+          "options": [
+            {
+              "label": "Sim, usar data do aviso"
+            },
+            {
+              "label": "Sim, escolher qualquer data"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Não troque data do evento pela data do aviso."
+          ],
+          "feedback": {
+            "met": "Data do evento segue antes da data elegível dada.",
+            "not_yet": "Não troque data do evento pela data do aviso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does one period apply?",
+          "scene": "Fictional policy starts accident coverage today but illness coverage later; tomorrow’s event is illness.",
+          "options": [
+            {
+              "label": "Yes, earliest date covers all"
+            },
+            {
+              "label": "Yes, premium date decides"
+            },
+            {
+              "label": "No, use illness start"
+            }
+          ],
+          "help": [
+            "Match the event type to its coverage start."
+          ],
+          "feedback": {
+            "met": "The illness event follows its own stated waiting rule.",
+            "not_yet": "Match the event type to its coverage start."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Una espera responde por ambos?",
+          "scene": "Póliza ficticia inicia cobertura de accidente hoy y enfermedad después; evento de mañana es enfermedad.",
+          "options": [
+            {
+              "label": "Sí, primera fecha cubre todo"
+            },
+            {
+              "label": "Sí, decide fecha de prima"
+            },
+            {
+              "label": "No, usar inicio de enfermedad"
+            }
+          ],
+          "help": [
+            "Relaciona tipo de evento con inicio de cobertura."
+          ],
+          "feedback": {
+            "met": "Enfermedad sigue su propia regla indicada de espera.",
+            "not_yet": "Relaciona tipo de evento con inicio de cobertura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma carência responde por ambos?",
+          "scene": "Apólice fictícia inicia cobertura de acidente hoje e doença depois; evento de amanhã é doença.",
+          "options": [
+            {
+              "label": "Sim, primeira data cobre tudo"
+            },
+            {
+              "label": "Sim, decide data do prêmio"
+            },
+            {
+              "label": "Não, usar início de doença"
+            }
+          ],
+          "help": [
+            "Ligue tipo de evento ao início de cobertura."
+          ],
+          "feedback": {
+            "met": "Doença segue sua própria regra dada de carência.",
+            "not_yet": "Ligue tipo de evento ao início de cobertura."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be clarified?",
+          "scene": "A quote says coverage has a waiting period but gives no start date or counting rule.",
+          "options": [
+            {
+              "label": "Assume immediate coverage"
+            },
+            {
+              "label": "Exact eligibility start and rule"
+            },
+            {
+              "label": "The premium amount"
+            }
+          ],
+          "help": [
+            "Request the precise rule before relying on a start date."
+          ],
+          "feedback": {
+            "met": "The missing timing terms prevent confirming near-term protection.",
+            "not_yet": "Request the precise rule before relying on a start date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe aclararse?",
+          "scene": "Cotización dice que hay periodo de espera pero no da inicio ni regla de conteo.",
+          "options": [
+            {
+              "label": "Suponer cobertura inmediata"
+            },
+            {
+              "label": "Inicio elegible y regla exactos"
+            },
+            {
+              "label": "El monto de prima"
+            }
+          ],
+          "help": [
+            "Solicita regla precisa antes de contar con fecha de inicio."
+          ],
+          "feedback": {
+            "met": "Términos de tiempo faltantes impiden confirmar protección próxima.",
+            "not_yet": "Solicita regla precisa antes de contar con fecha de inicio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser esclarecido?",
+          "scene": "Cotação diz que há carência mas não dá início nem regra de contagem.",
+          "options": [
+            {
+              "label": "Supor cobertura imediata"
+            },
+            {
+              "label": "Início elegível e regra exatos"
+            },
+            {
+              "label": "O valor do prêmio"
+            }
+          ],
+          "help": [
+            "Peça regra precisa antes de contar com data de início."
+          ],
+          "feedback": {
+            "met": "Termos de prazo faltantes impedem confirmar proteção próxima.",
+            "not_yet": "Peça regra precisa antes de contar com data de início."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this qualify?",
+          "scene": "Fictional benefit covers events from October 20 inclusive; event is October 18; other conditions hold.",
+          "options": [
+            {
+              "label": "No, before the start"
+            },
+            {
+              "label": "Yes, other conditions suffice"
+            },
+            {
+              "label": "Yes, file after October 20"
+            }
+          ],
+          "help": [
+            "Check every stated condition, including the event date."
+          ],
+          "feedback": {
+            "met": "The timing condition fails despite the other conditions being met.",
+            "not_yet": "Check every stated condition, including the event date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Evento próximo cumple?",
+          "scene": "Beneficio ficticio cubre eventos elegibles desde 20 de octubre inclusive; evento es 18 de octubre; cumple demás condiciones.",
+          "options": [
+            {
+              "label": "No, antes del inicio"
+            },
+            {
+              "label": "Sí, demás condiciones bastan"
+            },
+            {
+              "label": "Sí, reclamar tras 20 de octubre"
+            }
+          ],
+          "help": [
+            "Revisa cada condición indicada, incluida fecha del evento."
+          ],
+          "feedback": {
+            "met": "Condición de tiempo falla aunque se cumplan las demás.",
+            "not_yet": "Revisa cada condición indicada, incluida fecha del evento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Evento próximo atende?",
+          "scene": "Benefício fictício cobre eventos elegíveis desde 20 de outubro inclusive; evento é 18 de outubro; atende demais condições.",
+          "options": [
+            {
+              "label": "Não, antes do início"
+            },
+            {
+              "label": "Sim, demais condições bastam"
+            },
+            {
+              "label": "Sim, pedir após 20 de outubro"
+            }
+          ],
+          "help": [
+            "Veja cada condição dada, inclusive data do evento."
+          ],
+          "feedback": {
+            "met": "Condição de prazo falha mesmo atendendo as demais.",
+            "not_yet": "Veja cada condição dada, inclusive data do evento."
+          }
+        }
+      }
+    }
+  ]
+}

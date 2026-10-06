@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-2",
+  "lesson_id": "fe-production-shared-finances-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify account, contract and access records needed when a household separates.",
+  "title": {
+    "en-US": "Separation Records",
+    "es-MX": "Registros al separarse un hogar",
+    "pt-BR": "Registros ao separar uma família"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Separation Records\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Registros al separarse un hogar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Registros ao separar uma família\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.07",
+      "observable_action": "Identify account, contract and access records needed when a household separates.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.shared-finances.02",
+      "prod.shared-finances.03",
+      "prod.accounts-records.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Separate households need clear records of accounts, obligations and access; a personal agreement may not change a provider’s contract.",
+    "misconception": "Moving out automatically cancels shared contracts, or possessing account credentials proves authority to transfer all funds.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-example-01",
+        "supports_from": [],
+        "reasoning": "List accounts, contracts, balances and access. Verify changes locally with providers and qualified advisers; moving does not settle obligations."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Contracts and statements reveal named parties and current obligations."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Physical departure does not establish a changed contract."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Active permissions show who may still transact."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-practice-02",
+        "supports_from": [],
+        "reasoning": "A secure copy preserves evidence without exposing private information."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Ownership and liability require the relevant contractual and legal facts."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.07",
+        "context_id": "shared-finances-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "The financial transition includes contracts, payments and permissions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Separate households need clear records of accounts, obligations and access; a personal agreement may not change a provider’s contract."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Hogares separados necesitan registros claros de cuentas, deudas, pagos y acceso; un acuerdo personal puede no cambiar contratos externos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Famílias separadas precisam de registros claros de contas, deveres e acesso. Um acordo entre pessoas pode não mudar contratos com empresas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Map obligations before changes",
+          "line": "List accounts, contracts, balances and access. Verify changes locally with providers and qualified advisers; moving does not settle obligations."
+        },
+        "es-MX": {
+          "prompt": "Ubica deudas y pagos antes de cambios",
+          "line": "Lista cuentas, contratos, saldos y roles de acceso. Verifica cambios con proveedores y orientación local experta; mudarte no resuelve deudas y pagos."
+        },
+        "pt-BR": {
+          "prompt": "Mapeie deveres antes de mudanças",
+          "line": "Liste contas, contratos, saldos e funções de acesso. Peça ajuda local para conferir mudanças nos contratos; mudar de casa não quita dívidas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which records identify continuing obligations?",
+          "scene": "The household shares utilities and borrowing contracts.",
+          "options": [
+            {
+              "label": "Current contracts and statements"
+            },
+            {
+              "label": "Only individual spending logs"
+            },
+            {
+              "label": "Only the moving budget"
+            }
+          ],
+          "help": [
+            "Gather the records tied to ongoing accounts and debts."
+          ],
+          "feedback": {
+            "met": "Contracts and statements reveal named parties and current obligations.",
+            "not_yet": "Gather the records tied to ongoing accounts and debts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registros identifican deudas y pagos que siguen?",
+          "scene": "Hogar comparte servicios y contratos de préstamo.",
+          "options": [
+            {
+              "label": "Contratos y estados de hoy"
+            },
+            {
+              "label": "Solo registros de gastos personales"
+            },
+            {
+              "label": "Solo presupuesto de mudanza"
+            }
+          ],
+          "help": [
+            "Reúne registros ligados a cuentas y deudas vigentes."
+          ],
+          "feedback": {
+            "met": "Contratos y estados muestran nombres, deudas y pagos de hoy.",
+            "not_yet": "Reúne registros ligados a cuentas y deudas vigentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registros identificam deveres contínuos?",
+          "scene": "Família compartilha serviços e contratos de empréstimo.",
+          "options": [
+            {
+              "label": "Contratos e extratos atuais"
+            },
+            {
+              "label": "Só registros de gastos pessoais"
+            },
+            {
+              "label": "Só orçamento da mudança"
+            }
+          ],
+          "help": [
+            "Reúna registros ligados a contas e dívidas vigentes."
+          ],
+          "feedback": {
+            "met": "Contratos e extratos mostram nomes e deveres de hoje.",
+            "not_yet": "Reúna registros ligados a contas e dívidas vigentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked after moving?",
+          "scene": "A person leaves the home but remains named on a service agreement.",
+          "options": [
+            {
+              "label": "Assume moving cancels the contract"
+            },
+            {
+              "label": "Delete every statement"
+            },
+            {
+              "label": "Whether the provider changed responsibility"
+            }
+          ],
+          "help": [
+            "Verify the provider’s process and documented account status."
+          ],
+          "feedback": {
+            "met": "Physical departure does not establish a changed contract.",
+            "not_yet": "Verify the provider’s process and documented account status."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar después de mudarse?",
+          "scene": "Persona sale del hogar pero sigue nombrada en contrato de servicio.",
+          "options": [
+            {
+              "label": "Suponer mudanza cancela contrato"
+            },
+            {
+              "label": "Borrar todos los estados"
+            },
+            {
+              "label": "Si proveedor cambió deber"
+            }
+          ],
+          "help": [
+            "Verifica proceso del proveedor y estado por escrito de cuenta."
+          ],
+          "feedback": {
+            "met": "Salir físicamente no establece un contrato cambiado.",
+            "not_yet": "Verifica proceso del proveedor y estado por escrito de cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir após mudar?",
+          "scene": "Pessoa sai da casa mas segue nomeada no contrato de serviço.",
+          "options": [
+            {
+              "label": "Supor mudança cancela contrato"
+            },
+            {
+              "label": "Apagar todos os extratos"
+            },
+            {
+              "label": "Se a empresa mudou os deveres"
+            }
+          ],
+          "help": [
+            "Confira as regras da empresa e o estado da conta por escrito."
+          ],
+          "feedback": {
+            "met": "Sair da casa não muda por si só o contrato.",
+            "not_yet": "Confira as regras da empresa e o estado da conta por escrito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which access record matters?",
+          "scene": "Both people previously had authorized payment access.",
+          "options": [
+            {
+              "label": "Only the account balance"
+            },
+            {
+              "label": "Who still has active permissions"
+            },
+            {
+              "label": "Only who moved first"
+            }
+          ],
+          "help": [
+            "Review access roles through the provider’s authorized process."
+          ],
+          "feedback": {
+            "met": "Active permissions show who may still transact.",
+            "not_yet": "Review access roles through the provider’s authorized process."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro de acceso importa?",
+          "scene": "Ambas personas tenían acceso con permiso para pagos.",
+          "options": [
+            {
+              "label": "Solo el saldo de cuenta"
+            },
+            {
+              "label": "Quién conserva accesos activos"
+            },
+            {
+              "label": "Solo quién se mudó primero"
+            }
+          ],
+          "help": [
+            "Revisa roles mediante proceso con permiso del proveedor."
+          ],
+          "feedback": {
+            "met": "Permisos activos muestran quién aún puede operar.",
+            "not_yet": "Revisa roles mediante proceso con permiso del proveedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registro de acesso importa?",
+          "scene": "Ambas as pessoas tinham acesso permitido a pagamentos.",
+          "options": [
+            {
+              "label": "Só o saldo da conta"
+            },
+            {
+              "label": "Quem mantém acessos ativos"
+            },
+            {
+              "label": "Só quem mudou primeiro"
+            }
+          ],
+          "help": [
+            "Reveja funções pelo processo permitido do provedor."
+          ],
+          "feedback": {
+            "met": "Permissões ativas mostram quem ainda pode operar.",
+            "not_yet": "Reveja funções pelo processo permitido do provedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action preserves useful evidence?",
+          "scene": "A disputed shared payment appears on a statement.",
+          "options": [
+            {
+              "label": "Destroy every record"
+            },
+            {
+              "label": "Keep a secure authorized copy"
+            },
+            {
+              "label": "Publish private account details"
+            }
+          ],
+          "help": [
+            "Keep relevant records through safe authorized access."
+          ],
+          "feedback": {
+            "met": "A secure copy preserves evidence without exposing private information.",
+            "not_yet": "Keep relevant records through safe authorized access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción conserva evidencia útil?",
+          "scene": "Un pago compartido disputado aparece en un estado.",
+          "options": [
+            {
+              "label": "Destruir todo registro"
+            },
+            {
+              "label": "Guardar copia segura con permiso"
+            },
+            {
+              "label": "Publicar datos privados de cuenta"
+            }
+          ],
+          "help": [
+            "Guarda registros pertinentes con acceso seguro y permitido."
+          ],
+          "feedback": {
+            "met": "Una copia segura conserva evidencia sin exponer datos privados.",
+            "not_yet": "Guarda registros pertinentes con acceso seguro y permitido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ação preserva prova útil?",
+          "scene": "Pagamento conjunto contestado aparece num extrato.",
+          "options": [
+            {
+              "label": "Destruir todo registro"
+            },
+            {
+              "label": "Guardar cópia segura permitida"
+            },
+            {
+              "label": "Publicar dados privados da conta"
+            }
+          ],
+          "help": [
+            "Guarde registros úteis por acesso seguro e permitido."
+          ],
+          "feedback": {
+            "met": "Uma cópia segura preserva prova sem expor dados privados.",
+            "not_yet": "Guarde registros úteis por acesso seguro e permitido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs local verification?",
+          "scene": "Former partners disagree about ownership and debt responsibility.",
+          "options": [
+            {
+              "label": "Who has more followers"
+            },
+            {
+              "label": "Contracts and applicable legal obligations"
+            },
+            {
+              "label": "Who kept the password"
+            }
+          ],
+          "help": [
+            "Seek qualified local guidance for the disputed obligations."
+          ],
+          "feedback": {
+            "met": "Ownership and liability require the relevant contractual and legal facts.",
+            "not_yet": "Seek qualified local guidance for the disputed obligations."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué requiere verificación local?",
+          "scene": "Exparejas discrepan sobre propiedad y deber de deuda.",
+          "options": [
+            {
+              "label": "Quién tiene más seguidores"
+            },
+            {
+              "label": "Contratos y deberes legales del caso"
+            },
+            {
+              "label": "Quién conservó contraseña"
+            }
+          ],
+          "help": [
+            "Busca orientación local experta sobre deudas y pagos en disputa."
+          ],
+          "feedback": {
+            "met": "Propiedad y deuda requieren datos del contrato y de la ley.",
+            "not_yet": "Busca orientación local experta sobre deudas y pagos en disputa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que exige verificação local?",
+          "scene": "Ex-parceiros discordam sobre posse e dever de pagar dívida.",
+          "options": [
+            {
+              "label": "Quem tem mais seguidores"
+            },
+            {
+              "label": "Contratos e deveres legais do caso"
+            },
+            {
+              "label": "Quem guardou a senha"
+            }
+          ],
+          "help": [
+            "Busque orientação local perita sobre deveres contestados."
+          ],
+          "feedback": {
+            "met": "Posse e dívida exigem fatos contratuais e legais úteis.",
+            "not_yet": "Busque orientação local perita sobre deveres contestados."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which checklist fits this separation?",
+          "scene": "A shared loan, automatic bills and account permissions remain active.",
+          "options": [
+            {
+              "label": "Record obligations, due dates and access"
+            },
+            {
+              "label": "Only divide furniture"
+            },
+            {
+              "label": "Assume all accounts close automatically"
+            }
+          ],
+          "help": [
+            "Map each active arrangement and verify required changes."
+          ],
+          "feedback": {
+            "met": "The financial transition includes contracts, payments and permissions.",
+            "not_yet": "Map each active arrangement and verify required changes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué lista corresponde a esta mudanza?",
+          "scene": "Siguen activos préstamo compartido, pagos automáticos y accesos de cuenta.",
+          "options": [
+            {
+              "label": "Registrar deudas y pagos, fechas y acceso"
+            },
+            {
+              "label": "Solo dividir muebles"
+            },
+            {
+              "label": "Suponer cierre automático de cuentas"
+            }
+          ],
+          "help": [
+            "Ubica cada acuerdo activo y verifica cambios necesarios."
+          ],
+          "feedback": {
+            "met": "La transición financiera incluye contratos, pagos y accesos.",
+            "not_yet": "Ubica cada acuerdo activo y verifica cambios necesarios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que lista cabe nesta separação?",
+          "scene": "Seguem ativos empréstimo conjunto, pagamentos automáticos e acessos da conta.",
+          "options": [
+            {
+              "label": "Registrar deveres, datas e acesso"
+            },
+            {
+              "label": "Só dividir móveis"
+            },
+            {
+              "label": "Supor fechamento automático de contas"
+            }
+          ],
+          "help": [
+            "Mapeie cada acordo ativo e verifique mudanças necessárias."
+          ],
+          "feedback": {
+            "met": "A transição financeira inclui contratos, pagamentos e acessos.",
+            "not_yet": "Mapeie cada acordo ativo e verifique mudanças necessárias."
+          }
+        }
+      }
+    }
+  ]
+}

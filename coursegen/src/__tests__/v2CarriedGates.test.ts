@@ -17,6 +17,17 @@ const allocation = (prompt: string) => ({ id: 'allocate-01', type: 'money.alloca
   payload: { total: 12, step: 1, currency: 'coins' } });
 
 describe('v2 carried gates', () => {
+  it('recomputes equalities in teaching narration while allowing an explicitly staged mistake', () => {
+    const turn = (line: string) => ({ id: 'example', type: 'voice.mentor-turn.v2', payload: { line } });
+    expect(v2ArithmeticGate(document([turn('Start with 20: 20 + 10 = 35.')]), undefined)).toEqual([expect.objectContaining({ gate: 4, segmentId: 'example' })]);
+    expect(v2ArithmeticGate(document([turn('Then 30 − 5 = 25.')]), undefined)).toEqual([]);
+    expect(v2ArithmeticGate(document([turn('Some 1,50 + 2,25 = 3,75.')], { locale: 'pt-BR' }), undefined)).toEqual([]);
+    expect(v2ArithmeticGate(document([turn('10% × 200 = 20.')]), undefined)).toEqual([]);
+    expect(v2ArithmeticGate(document([turn('1 ÷ 0 = 3.')]), undefined)).toHaveLength(1);
+    expect(v2ArithmeticGate(document([{ id: 'episode', type: 'voice.mentor-episode.v2', payload: {
+      misjudgment: 'I thought 20 + 10 = 35.', recovery: 'I recalculated: 20 + 10 = 30.',
+    } }]), undefined)).toEqual([]);
+  });
   it('gate 17 blocks a randomized reward on a v2 segment and reviews mystery-prize copy', () => {
     const findings = v2RewardAndWellbeingGates(document([{ ...allocation('Split 12 coins.'), xp: [5, 10] }]));
     expect(findings.some((item) => item.gate === 17 && item.severity === 'block')).toBe(true);

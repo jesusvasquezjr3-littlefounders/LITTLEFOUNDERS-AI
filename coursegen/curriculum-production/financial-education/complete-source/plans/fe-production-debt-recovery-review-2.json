@@ -1,0 +1,839 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-2",
+  "lesson_id": "fe-production-debt-recovery-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.06",
+    "finance.prod.debt-recovery.05",
+    "finance.prod.debt-recovery.07",
+    "finance.prod.debt-recovery.08",
+    "finance.prod.credit-products.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply previously taught debt records, consequences and feasible-payment comparisons in a new household situation.",
+  "title": {
+    "en-US": "Recovery proposals",
+    "es-MX": "Revisa la propuesta completa de recuperación",
+    "pt-BR": "Confira a proposta completa de recuperação"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check the complete recovery proposal\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa la propuesta completa de recuperación\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a proposta completa de recuperação\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.debt-recovery.06",
+      "observable_action": "Apply previously taught debt records, consequences and feasible-payment comparisons in a new household situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.05"
+    ],
+    "retrieval_skills": [
+      "prod.debt-recovery.05",
+      "prod.debt-recovery.06",
+      "prod.debt-recovery.07",
+      "prod.debt-recovery.08",
+      "prod.credit-products.01"
+    ],
+    "relevance": "Compare full costs and real capacity while checking the people offering help.",
+    "misconception": "Choose an attractive payment headline without verifying the actual obligation, cost, date and feasibility.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "10 × 32 + 20 = 340."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "660 − 600 = 60 more, despite any smaller installment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "A promised result does not replace checkable authority and terms."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "An infeasible plan requires realistic options, not invented capacity."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "fe-production-debt-recovery-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The balance field is 520, distinct from minimum and deadline."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-review-2-transfer-06",
+        "supports_from": [],
+        "reasoning": "The replacement fits monthly capacity but increases total remaining repayment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare full costs and real capacity while checking the people offering help."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara costos completos y capacidad real verificando a quienes ofrecen ayuda."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare custos completos e capacidade real conferindo quem oferece ajuda."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Replacement total from today?",
+          "scene": "Fictional revision: 10 payments of 32 plus separate fee 20; no other costs.",
+          "options": [
+            {
+              "label": "320"
+            },
+            {
+              "label": "52"
+            },
+            {
+              "label": "340"
+            }
+          ],
+          "help": [
+            "Include all payments and the separate fee."
+          ],
+          "feedback": {
+            "met": "10 × 32 + 20 = 340.",
+            "not_yet": "Include all payments and the separate fee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total del reemplazo desde hoy?",
+          "scene": "Revisión ficticia: 10 pagos de 32 más comisión aparte 20; sin otros costos.",
+          "options": [
+            {
+              "label": "320"
+            },
+            {
+              "label": "52"
+            },
+            {
+              "label": "340"
+            }
+          ],
+          "help": [
+            "Incluye todos los pagos y comisión separada."
+          ],
+          "feedback": {
+            "met": "10 × 32 + 20 = 340.",
+            "not_yet": "Incluye todos los pagos y comisión separada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total da troca a partir de hoje?",
+          "scene": "Revisão fictícia: 10 parcelas de 32 mais tarifa separada 20; sem outros custos.",
+          "options": [
+            {
+              "label": "320"
+            },
+            {
+              "label": "52"
+            },
+            {
+              "label": "340"
+            }
+          ],
+          "help": [
+            "Inclua todas as parcelas e tarifa separada."
+          ],
+          "feedback": {
+            "met": "10 × 32 + 20 = 340.",
+            "not_yet": "Inclua todas as parcelas e tarifa separada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          32,
+          20
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Extra total cost of consolidation?",
+          "scene": "Remaining existing total 600; consolidation total 660; same date and all charges included.",
+          "options": [
+            {
+              "label": "1260"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "660"
+            }
+          ],
+          "help": [
+            "Compare totals from the same decision date."
+          ],
+          "feedback": {
+            "met": "660 − 600 = 60 more, despite any smaller installment.",
+            "not_yet": "Compare totals from the same decision date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo total adicional de consolidar?",
+          "scene": "Total pendiente actual 600; total consolidado 660; misma fecha y todos los cargos incluidos.",
+          "options": [
+            {
+              "label": "1260"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "660"
+            }
+          ],
+          "help": [
+            "Compara totales desde la misma fecha de decisión."
+          ],
+          "feedback": {
+            "met": "660 − 600 = 60 más, aunque la cuota sea menor.",
+            "not_yet": "Compara totales desde la misma fecha de decisión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo total extra de consolidar?",
+          "scene": "Total restante atual 600; total consolidado 660; mesma data e todas as tarifas incluídas.",
+          "options": [
+            {
+              "label": "1260"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "660"
+            }
+          ],
+          "help": [
+            "Compare totais a partir da mesma data de decisão."
+          ],
+          "feedback": {
+            "met": "660 − 600 = 60 a mais, mesmo com parcela menor.",
+            "not_yet": "Compare totais a partir da mesma data de decisão."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          660
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must precede payment?",
+          "scene": "A caller guarantees debt erasure, demanding advance payment without verifiable terms.",
+          "options": [
+            {
+              "label": "Sharing access to speed recovery"
+            },
+            {
+              "label": "A test payment trusting the guarantee"
+            },
+            {
+              "label": "Independent verification and written terms"
+            }
+          ],
+          "help": [
+            "Do not let pressure substitute for verification."
+          ],
+          "feedback": {
+            "met": "A promised result does not replace checkable authority and terms.",
+            "not_yet": "Do not let pressure substitute for verification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe preceder a cualquier pago?",
+          "scene": "Alguien garantiza borrar deuda, exige anticipo y rechaza condiciones verificables.",
+          "options": [
+            {
+              "label": "Compartir código para acelerar recuperación"
+            },
+            {
+              "label": "Pagar prueba porque la garantía suena cierta"
+            },
+            {
+              "label": "Verificación independiente y condiciones escritas"
+            }
+          ],
+          "help": [
+            "No dejes que presión sustituya verificación."
+          ],
+          "feedback": {
+            "met": "Prometer resultado no reemplaza autoridad y condiciones verificables.",
+            "not_yet": "No dejes que presión sustituya verificación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve vir antes de qualquer pagamento?",
+          "scene": "Alguém garante apagar dívida, exige adiantamento e recusa regras que possa conferir.",
+          "options": [
+            {
+              "label": "Compartilhar código para acelerar recuperação"
+            },
+            {
+              "label": "Pagar teste porque a garantia parece certa"
+            },
+            {
+              "label": "Conferência independente e regras por escrito"
+            }
+          ],
+          "help": [
+            "Não deixe pressão substituir conferência."
+          ],
+          "feedback": {
+            "met": "Prometer resultado não substitui poder e regras que possa conferir.",
+            "not_yet": "Não deixe pressão substituir conferência."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Viable next step?",
+          "scene": "Essentials and required payments exceed income; optional costs are zero.",
+          "options": [
+            {
+              "label": "Seek qualified help using actual records"
+            },
+            {
+              "label": "Assume every shortfall is overspending"
+            },
+            {
+              "label": "Invent spare income to complete the plan"
+            }
+          ],
+          "help": [
+            "Bring the debt inventory and essential-cost evidence."
+          ],
+          "feedback": {
+            "met": "An infeasible plan requires realistic options, not invented capacity.",
+            "not_yet": "Bring the debt inventory and essential-cost evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo sería un siguiente paso viable?",
+          "scene": "Esenciales y pagos exigidos superan ingreso aun sin ningún gasto opcional.",
+          "options": [
+            {
+              "label": "Buscar ayuda local calificada con registros reales"
+            },
+            {
+              "label": "Suponer que todo faltante es derroche"
+            },
+            {
+              "label": "Inventar ingreso sobrante para completar plan"
+            }
+          ],
+          "help": [
+            "Lleva inventario de deuda y evidencia de costos esenciales."
+          ],
+          "feedback": {
+            "met": "Un plan inviable exige opciones reales, no capacidad inventada.",
+            "not_yet": "Lleva inventario de deuda y evidencia de costos esenciales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como seria um próximo passo viável?",
+          "scene": "Essenciais e pagamentos exigidos superam renda mesmo sem gasto opcional algum.",
+          "options": [
+            {
+              "label": "Buscar ajuda local qualificada com registros reais"
+            },
+            {
+              "label": "Supor que toda falta é desperdício"
+            },
+            {
+              "label": "Inventar renda sobrando para completar plano"
+            }
+          ],
+          "help": [
+            "Leve lista de dívidas e provas dos custos essenciais."
+          ],
+          "feedback": {
+            "met": "Um plano inviável exige opções reais, não capacidade inventada.",
+            "not_yet": "Leve lista de dívidas e provas dos custos essenciais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Full statement balance?",
+          "scene": "Fictional statement: balance 520; minimum 30; deadline day 18.",
+          "options": [
+            {
+              "label": "520"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Find the total balance field."
+          ],
+          "feedback": {
+            "met": "The balance field is 520, distinct from minimum and deadline.",
+            "not_yet": "Find the total balance field."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo total del estado?",
+          "scene": "Estado ficticio: saldo 520; mínimo 30; vence día 18.",
+          "options": [
+            {
+              "label": "520"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Busca el campo saldo total."
+          ],
+          "feedback": {
+            "met": "El campo saldo es 520, distinto de mínimo y vencimiento.",
+            "not_yet": "Busca el campo saldo total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo total do extrato?",
+          "scene": "Extrato fictício: saldo 520; mínimo 30; vence dia 18.",
+          "options": [
+            {
+              "label": "520"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Busque o campo saldo total."
+          ],
+          "feedback": {
+            "met": "O campo saldo é 520, diferente de mínimo e vencimento.",
+            "not_yet": "Busque o campo saldo total."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          520,
+          30,
+          18
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Feasible plan costs how much more?",
+          "scene": "Monthly capacity after essentials: 25. Remaining monthly schedules, fees included: old 5 payments of 30; replacement 8 of 20.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Choose the affordable monthly payment, then compare complete totals."
+          ],
+          "feedback": {
+            "met": "The replacement fits monthly capacity but increases total remaining repayment.",
+            "not_yet": "Choose the affordable monthly payment, then compare complete totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto más cuesta el plan viable?",
+          "scene": "Capacidad mensual tras esenciales: 25. Calendarios mensuales pendientes, cargos incluidos: anterior 5 pagos de 30; reemplazo 8 de 20.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Identifica la mensualidad viable; después compara los totales completos."
+          ],
+          "feedback": {
+            "met": "El reemplazo cabe mensualmente, pero aumenta el total pendiente de pago.",
+            "not_yet": "Identifica la mensualidad viable; después compara los totales completos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto mais custa o plano viável?",
+          "scene": "Capacidade mensal após essenciais: 25. Calendários mensais restantes, tarifas incluídas: anterior 5 parcelas de 30; troca 8 de 20.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Identifique a parcela viável; depois compare os totais completos."
+          ],
+          "feedback": {
+            "met": "A troca cabe mensalmente, mas aumenta o total restante a pagar.",
+            "not_yet": "Identifique a parcela viável; depois compare os totais completos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          5,
+          30,
+          8,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 3
+                },
+                {
+                  "input": 4
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

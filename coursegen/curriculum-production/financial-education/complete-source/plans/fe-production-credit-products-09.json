@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-2",
+  "lesson_id": "fe-production-credit-products-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a guarantor’s obligation from a plainly stated guarantee agreement.",
+  "title": {
+    "en-US": "Guarantee Obligations",
+    "es-MX": "Lee promesa de quien garantiza",
+    "pt-BR": "Leia promessa de quem garante"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Guarantee Obligations\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee promesa de quien garantiza\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia promessa de quem garante\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.09",
+      "observable_action": "Identify a guarantor’s obligation from a plainly stated guarantee agreement.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01",
+      "prod.credit-mechanics.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Guarantees can create payment duties for another person’s borrowing; read the trigger, scope and end conditions.",
+    "misconception": "A guarantor only provides a reference and never has to pay, or any private promise releases a signed guarantee.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-example-01",
+        "supports_from": [],
+        "reasoning": "Identify what triggers the guarantee, what debt it covers, and how it ends. A signature may create real payment duties."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated trigger creates a payment duty for the guarantor."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The written scope limits this guarantee to loan A."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-practice-01",
+        "supports_from": [],
+        "reasoning": "The stated release condition has not been met."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Missing scope terms leave the possible payment obligation unclear."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Trust does not remove the written payment obligation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The stated missed-rent trigger activates the defined guarantee."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Guarantees can create payment duties for another person’s borrowing; read the trigger, scope and end conditions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Garantía puede crear deber de pagar préstamo ajeno; lee cuándo aplica, alcance y fin antes de suponer."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Garantia pode criar dever de pagar empréstimo alheio; leia quando vale, alcance e fim antes de supor."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Trigger, scope and end",
+          "line": "Identify what triggers the guarantee, what debt it covers, and how it ends. A signature may create real payment duties."
+        },
+        "es-MX": {
+          "prompt": "Inicio, alcance y fin",
+          "line": "Identifica qué activa garantía, qué deuda cubre y cómo termina. Firma puede crear deberes reales de pago."
+        },
+        "pt-BR": {
+          "prompt": "Início, alcance e fim",
+          "line": "Identifique o que aciona garantia, que dívida cobre e como termina. Assinatura pode criar deveres reais de pagar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this agreement demand?",
+          "scene": "Fictional guarantee: if borrower misses payment, guarantor must pay that covered amount.",
+          "options": [
+            {
+              "label": "Borrower’s friend always pays"
+            },
+            {
+              "label": "Guarantor only gives a reference"
+            },
+            {
+              "label": "Guarantor pays when trigger occurs"
+            }
+          ],
+          "help": [
+            "Read the obligation written in the agreement."
+          ],
+          "feedback": {
+            "met": "The stated trigger creates a payment duty for the guarantor.",
+            "not_yet": "Read the obligation written in the agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué exige este acuerdo?",
+          "scene": "Garantía ficticia: si prestatario omite pago indicado, garante debe pagar ese monto cubierto.",
+          "options": [
+            {
+              "label": "Amigo del prestatario siempre paga"
+            },
+            {
+              "label": "Garante solo da referencia"
+            },
+            {
+              "label": "Garante paga al ocurrir condición"
+            }
+          ],
+          "help": [
+            "Lee obligación escrita en acuerdo."
+          ],
+          "feedback": {
+            "met": "Condición indicada crea deber de pago para garante.",
+            "not_yet": "Lee obligación escrita en acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que exige este acordo?",
+          "scene": "Garantia fictícia: se devedor omite pagamento dado, fiador deve pagar esse valor coberto.",
+          "options": [
+            {
+              "label": "Amigo do devedor sempre paga"
+            },
+            {
+              "label": "Fiador só dá referência"
+            },
+            {
+              "label": "Fiador paga ao ocorrer condição"
+            }
+          ],
+          "help": [
+            "Leia obrigação escrita no acordo."
+          ],
+          "feedback": {
+            "met": "Condição dada cria dever de pagamento para fiador.",
+            "not_yet": "Leia obrigação escrita no acordo."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which debt does this guarantee cover?",
+          "scene": "Fictional guarantee covers only loan A; later loan B is explicitly excluded.",
+          "options": [
+            {
+              "label": "Loan A"
+            },
+            {
+              "label": "Only loan B"
+            },
+            {
+              "label": "Every future loan"
+            }
+          ],
+          "help": [
+            "Use the actual scope, not an assumed unlimited promise."
+          ],
+          "feedback": {
+            "met": "The written scope limits this guarantee to loan A.",
+            "not_yet": "Use the actual scope, not an assumed unlimited promise."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué deuda cubre esta garantía?",
+          "scene": "Acuerdo ficticio cubre solo préstamo A; excluye expresamente préstamo B posterior.",
+          "options": [
+            {
+              "label": "Préstamo A"
+            },
+            {
+              "label": "Solo préstamo B"
+            },
+            {
+              "label": "Todo préstamo futuro"
+            }
+          ],
+          "help": [
+            "Usa alcance real, no promesa ilimitada supuesta."
+          ],
+          "feedback": {
+            "met": "Alcance escrito limita garantía al préstamo A.",
+            "not_yet": "Usa alcance real, no promesa ilimitada supuesta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dívida cobre esta garantia?",
+          "scene": "Acordo fictício cobre só empréstimo A; exclui de modo claro empréstimo B posterior.",
+          "options": [
+            {
+              "label": "Empréstimo A"
+            },
+            {
+              "label": "Só empréstimo B"
+            },
+            {
+              "label": "Todo empréstimo futuro"
+            }
+          ],
+          "help": [
+            "Use alcance real, não promessa ilimitada suposta."
+          ],
+          "feedback": {
+            "met": "Alcance escrito limita garantia ao empréstimo A.",
+            "not_yet": "Use alcance real, não promessa ilimitada suposta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this private promise end the stated guarantee?",
+          "scene": "Agreement requires lender’s written release; borrower privately says the guarantor is released.",
+          "options": [
+            {
+              "label": "Yes, friendship cancels terms"
+            },
+            {
+              "label": "Yes, borrower’s words suffice"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Check who can release the guarantee and how."
+          ],
+          "feedback": {
+            "met": "The stated release condition has not been met.",
+            "not_yet": "Check who can release the guarantee and how."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Promesa privada termina garantía indicada?",
+          "scene": "Acuerdo exige liberación escrita del acreedor; prestatario dice en privado que garante queda libre.",
+          "options": [
+            {
+              "label": "Sí, amistad cancela términos"
+            },
+            {
+              "label": "Sí, palabras del prestatario bastan"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Revisa quién puede liberar garantía y cómo."
+          ],
+          "feedback": {
+            "met": "Condición indicada de liberación no se cumplió.",
+            "not_yet": "Revisa quién puede liberar garantía y cómo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Promessa privada encerra garantia dada?",
+          "scene": "Acordo exige liberação escrita do credor; devedor diz em privado que fiador está livre.",
+          "options": [
+            {
+              "label": "Sim, amizade cancela termos"
+            },
+            {
+              "label": "Sim, palavras do devedor bastam"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Veja quem pode liberar garantia e como."
+          ],
+          "feedback": {
+            "met": "Condição dada de liberação não foi cumprida.",
+            "not_yet": "Veja quem pode liberar garantia e como."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking before signing?",
+          "scene": "Guarantee summary omits whether fees and interest are included in the covered obligation.",
+          "options": [
+            {
+              "label": "The original loan amount"
+            },
+            {
+              "label": "Assume principal alone"
+            },
+            {
+              "label": "The full covered amount and terms"
+            }
+          ],
+          "help": [
+            "Verify covered principal, costs and applicable limits."
+          ],
+          "feedback": {
+            "met": "Missing scope terms leave the possible payment obligation unclear.",
+            "not_yet": "Verify covered principal, costs and applicable limits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de firmar?",
+          "scene": "Resumen omite si cargos e intereses entran en obligación garantizada.",
+          "options": [
+            {
+              "label": "El préstamo inicial"
+            },
+            {
+              "label": "Suponer solo capital"
+            },
+            {
+              "label": "Monto completo cubierto y términos"
+            }
+          ],
+          "help": [
+            "Verifica capital cubierto, costos y límites aplicables."
+          ],
+          "feedback": {
+            "met": "Alcance faltante deja poco claro posible deber de pago.",
+            "not_yet": "Verifica capital cubierto, costos y límites aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de assinar?",
+          "scene": "Resumo omite se taxas e juros entram na obrigação garantida.",
+          "options": [
+            {
+              "label": "O empréstimo inicial"
+            },
+            {
+              "label": "Supor só principal"
+            },
+            {
+              "label": "Valor completo coberto e termos"
+            }
+          ],
+          "help": [
+            "Verifique principal coberto, custos e limites aplicáveis."
+          ],
+          "feedback": {
+            "met": "Alcance faltante deixa pouco claro possível dever de pagar.",
+            "not_yet": "Verifique principal coberto, custos e limites aplicáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does confidence remove this obligation?",
+          "scene": "Guarantor trusts the borrower, but the signed agreement still requires payment after the stated default.",
+          "options": [
+            {
+              "label": "Yes, trust overrides terms"
+            },
+            {
+              "label": "Yes, guarantors never need funds"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Assess the stated duty even when relationships feel reliable."
+          ],
+          "feedback": {
+            "met": "Trust does not remove the written payment obligation.",
+            "not_yet": "Assess the stated duty even when relationships feel reliable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Confianza quita esta obligación?",
+          "scene": "Garante confía en prestatario, pero acuerdo firmado exige pago tras incumplimiento indicado.",
+          "options": [
+            {
+              "label": "Sí, confianza anula términos"
+            },
+            {
+              "label": "Sí, garantes nunca necesitan fondos"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Evalúa deber indicado aunque relación parezca confiable."
+          ],
+          "feedback": {
+            "met": "Confianza no elimina deber escrito de pago.",
+            "not_yet": "Evalúa deber indicado aunque relación parezca confiable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Confiança tira esta obrigação?",
+          "scene": "Fiador confia no devedor, mas acordo assinado exige pagamento após falta dada.",
+          "options": [
+            {
+              "label": "Sim, confiança anula termos"
+            },
+            {
+              "label": "Sim, fiadores nunca precisam de verba"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Avalie dever dado mesmo quando relação parece confiável."
+          ],
+          "feedback": {
+            "met": "Confiança não elimina dever escrito de pagar.",
+            "not_yet": "Avalie dever dado mesmo quando relação parece confiável."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows here?",
+          "scene": "Fictional guarantee covers missed rent during this lease; tenant misses covered rent.",
+          "options": [
+            {
+              "label": "All unrelated debts become covered"
+            },
+            {
+              "label": "Signature was only a reference"
+            },
+            {
+              "label": "Guarantor has the stated payment duty"
+            }
+          ],
+          "help": [
+            "Apply the written trigger and scope without expanding either."
+          ],
+          "feedback": {
+            "met": "The stated missed-rent trigger activates the defined guarantee.",
+            "not_yet": "Apply the written trigger and scope without expanding either."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue de estos términos expresos?",
+          "scene": "Garantía ficticia cubre rentas omitidas durante este contrato; inquilino omite renta cubierta.",
+          "options": [
+            {
+              "label": "Toda deuda ajena queda cubierta"
+            },
+            {
+              "label": "Firma era solo referencia"
+            },
+            {
+              "label": "Garante tiene deber indicado de pago"
+            }
+          ],
+          "help": [
+            "Aplica condición y alcance escritos sin ampliar ninguno."
+          ],
+          "feedback": {
+            "met": "Renta omitida indicada activa garantía definida.",
+            "not_yet": "Aplica condición y alcance escritos sin ampliar ninguno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que segue destes termos claros?",
+          "scene": "Garantia fictícia cobre aluguéis omitidos durante este contrato; inquilino omite aluguel coberto.",
+          "options": [
+            {
+              "label": "Toda dívida alheia fica coberta"
+            },
+            {
+              "label": "Assinatura era só referência"
+            },
+            {
+              "label": "Fiador tem dever dado de pagar"
+            }
+          ],
+          "help": [
+            "Aplique condição e alcance escritos sem ampliar nenhum."
+          ],
+          "feedback": {
+            "met": "Aluguel omitido dado aciona garantia definida.",
+            "not_yet": "Aplique condição e alcance escritos sem ampliar nenhum."
+          }
+        }
+      }
+    }
+  ]
+}

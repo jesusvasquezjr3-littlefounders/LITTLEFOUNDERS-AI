@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-1",
+  "lesson_id": "fe-production-retirement-future-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate an intended retirement spending need from a projected account balance.",
+  "title": {
+    "en-US": "Future Spending",
+    "es-MX": "Saldo y necesidades de gasto",
+    "pt-BR": "Saldo e necessidades de gasto"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Future Spending\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Saldo y necesidades de gasto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Saldo e necessidades de gasto\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.01",
+      "observable_action": "Separate an intended retirement spending need from a projected account balance.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.saving-resilience.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Knowing a future account balance is different from knowing what future living costs require.",
+    "misconception": "A large projected balance proves that retirement spending needs are covered without stating those needs or their duration.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-example-01",
+        "supports_from": [],
+        "reasoning": "An account balance is one pool of money. Food, housing and care need repeated payments over an uncertain future period."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A balance is not itself a schedule of living costs."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The balance cannot be judged without the spending it must support."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Housing payments describe an ongoing use of money."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Different spending needs change how resources support the plan."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Different resources and needs have different timing and conditions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "A changed need alters the plan even with unchanged savings."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Knowing a future account balance is different from knowing what future living costs require."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Conocer un saldo futuro es distinto de saber qué exigirán los gastos para vivir."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Saber um saldo futuro é diferente de saber o que os gastos para viver vão exigir."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stock and ongoing needs",
+          "line": "An account balance is one pool of money. Food, housing and care need repeated payments over an uncertain future period."
+        },
+        "es-MX": {
+          "prompt": "Saldo y necesidades continuas",
+          "line": "Un saldo es una reserva de dinero. Comida, vivienda y cuidados requieren pagos repetidos durante un periodo futuro incierto."
+        },
+        "pt-BR": {
+          "prompt": "Saldo e necessidades contínuas",
+          "line": "Um saldo é uma reserva de dinheiro. Comida, moradia e cuidados exigem pagamentos repetidos por um período futuro incerto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this figure describe?",
+          "scene": "A projection states the account’s balance on a future retirement date.",
+          "options": [
+            {
+              "label": "The monthly spending need"
+            },
+            {
+              "label": "A pool available at that date"
+            },
+            {
+              "label": "Guaranteed lifelong income"
+            }
+          ],
+          "help": [
+            "Separate the stored amount from repeated spending."
+          ],
+          "feedback": {
+            "met": "A balance is not itself a schedule of living costs.",
+            "not_yet": "Separate the stored amount from repeated spending."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué describe esta cifra?",
+          "scene": "Una proyección indica el saldo de cuenta en una fecha futura de retiro.",
+          "options": [
+            {
+              "label": "La necesidad de gasto mensual"
+            },
+            {
+              "label": "Una reserva en esa fecha"
+            },
+            {
+              "label": "Ingreso vitalicio garantizado"
+            }
+          ],
+          "help": [
+            "Distingue monto acumulado de gastos repetidos."
+          ],
+          "feedback": {
+            "met": "Un saldo no es un calendario de gastos para vivir.",
+            "not_yet": "Distingue monto acumulado de gastos repetidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esse valor descreve?",
+          "scene": "Uma projeção dá o saldo da conta numa data futura de aposentadoria.",
+          "options": [
+            {
+              "label": "A necessidade de gasto mensal"
+            },
+            {
+              "label": "Uma reserva naquela data"
+            },
+            {
+              "label": "Renda vitalícia garantida"
+            }
+          ],
+          "help": [
+            "Separe valor guardado de gastos repetidos."
+          ],
+          "feedback": {
+            "met": "Um saldo não é um calendário de gastos para viver.",
+            "not_yet": "Separe valor guardado de gastos repetidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is still missing?",
+          "scene": "A person knows a projected balance but has not estimated housing or food needs.",
+          "options": [
+            {
+              "label": "Only the target balance"
+            },
+            {
+              "label": "The future spending plan"
+            },
+            {
+              "label": "Nothing, any balance is enough"
+            }
+          ],
+          "help": [
+            "Identify needs before judging whether resources cover them."
+          ],
+          "feedback": {
+            "met": "The balance cannot be judged without the spending it must support.",
+            "not_yet": "Identify needs before judging whether resources cover them."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta todavía?",
+          "scene": "Una persona conoce saldo proyectado, pero no estima necesidades de vivienda ni comida.",
+          "options": [
+            {
+              "label": "Solo el saldo objetivo"
+            },
+            {
+              "label": "El plan de gastos futuros"
+            },
+            {
+              "label": "Nada, cualquier saldo basta"
+            }
+          ],
+          "help": [
+            "Identifica necesidades antes de juzgar si los recursos alcanzan."
+          ],
+          "feedback": {
+            "met": "No puedes evaluar el saldo sin los gastos que sostendrá.",
+            "not_yet": "Identifica necesidades antes de juzgar si los recursos alcanzan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda falta?",
+          "scene": "Uma pessoa sabe o saldo projetado, mas não estima moradia nem comida.",
+          "options": [
+            {
+              "label": "Só o saldo desejado"
+            },
+            {
+              "label": "O plano de gastos futuros"
+            },
+            {
+              "label": "Nada, qualquer saldo basta"
+            }
+          ],
+          "help": [
+            "Identifique necessidades antes de julgar se os recursos bastam."
+          ],
+          "feedback": {
+            "met": "Não pode avaliar o saldo sem os gastos que sustentará.",
+            "not_yet": "Identifique necessidades antes de julgar se os recursos bastam."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is a spending need?",
+          "scene": "A plan lists an account balance and the expected recurring housing payment.",
+          "options": [
+            {
+              "label": "The recurring housing payment"
+            },
+            {
+              "label": "The account balance itself"
+            }
+          ],
+          "help": [
+            "Look for the amount spent over time."
+          ],
+          "feedback": {
+            "met": "Housing payments describe an ongoing use of money.",
+            "not_yet": "Look for the amount spent over time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es una necesidad de gasto?",
+          "scene": "Un plan lista saldo de cuenta y el pago recurrente esperado de vivienda.",
+          "options": [
+            {
+              "label": "El pago recurrente de vivienda"
+            },
+            {
+              "label": "El saldo de cuenta mismo"
+            }
+          ],
+          "help": [
+            "Busca el monto gastado a lo largo del tiempo."
+          ],
+          "feedback": {
+            "met": "Los pagos de vivienda describen un uso continuo del dinero.",
+            "not_yet": "Busca el monto gastado a lo largo del tiempo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é uma necessidade de gasto?",
+          "scene": "Um plano lista saldo da conta e o pagamento recorrente esperado de moradia.",
+          "options": [
+            {
+              "label": "O pagamento recorrente de moradia"
+            },
+            {
+              "label": "O saldo da conta em si"
+            }
+          ],
+          "help": [
+            "Busque o valor gasto ao longo do tempo."
+          ],
+          "feedback": {
+            "met": "Os pagamentos de moradia descrevem uso contínuo do dinheiro.",
+            "not_yet": "Busque o valor gasto ao longo do tempo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does equal balance mean equal coverage?",
+          "scene": "Two households have equal balances but different necessary spending.",
+          "options": [
+            {
+              "label": "Yes, equal balances cover equal lifetimes"
+            },
+            {
+              "label": "No, their needs differ"
+            }
+          ],
+          "help": [
+            "Compare the balance with each household’s actual needs."
+          ],
+          "feedback": {
+            "met": "Different spending needs change how resources support the plan.",
+            "not_yet": "Compare the balance with each household’s actual needs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Igual saldo cubre lo mismo?",
+          "scene": "Dos hogares tienen saldos iguales, pero gastos necesarios distintos.",
+          "options": [
+            {
+              "label": "Sí, cubren igual tiempo de vida"
+            },
+            {
+              "label": "No, sus necesidades difieren"
+            }
+          ],
+          "help": [
+            "Compara saldo con necesidades reales de cada hogar."
+          ],
+          "feedback": {
+            "met": "Necesidades distintas cambian cómo sostienen el plan los recursos.",
+            "not_yet": "Compara saldo con necesidades reales de cada hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo igual cobre o mesmo?",
+          "scene": "Duas casas têm saldos iguais, mas gastos necessários distintos.",
+          "options": [
+            {
+              "label": "Sim, cobrem igual tempo de vida"
+            },
+            {
+              "label": "Não, suas necessidades diferem"
+            }
+          ],
+          "help": [
+            "Compare saldo com necessidades reais de cada casa."
+          ],
+          "feedback": {
+            "met": "Necessidades distintas mudam como os recursos sustentam o plano.",
+            "not_yet": "Compare saldo com necessidades reais de cada casa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be recorded separately?",
+          "scene": "A person expects recurring public benefits and holds personal savings.",
+          "options": [
+            {
+              "label": "Income streams, savings and spending needs"
+            },
+            {
+              "label": "Only one combined unlabeled number"
+            }
+          ],
+          "help": [
+            "Keep the components visible before combining the plan."
+          ],
+          "feedback": {
+            "met": "Different resources and needs have different timing and conditions.",
+            "not_yet": "Keep the components visible before combining the plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registras por separado?",
+          "scene": "Una persona espera apoyos públicos recurrentes y tiene ahorros personales.",
+          "options": [
+            {
+              "label": "Flujos de ingreso, ahorro y necesidades de gasto"
+            },
+            {
+              "label": "Solo un número combinado sin etiqueta"
+            }
+          ],
+          "help": [
+            "Mantén visibles los componentes antes de combinar el plan."
+          ],
+          "feedback": {
+            "met": "Recursos y necesidades distintos tienen tiempos y condiciones diferentes.",
+            "not_yet": "Mantén visibles los componentes antes de combinar el plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que registrar à parte?",
+          "scene": "Uma pessoa espera benefícios públicos recorrentes e tem poupança pessoal.",
+          "options": [
+            {
+              "label": "Fluxos de renda, poupança e necessidades de gasto"
+            },
+            {
+              "label": "Só um número misturado sem nome"
+            }
+          ],
+          "help": [
+            "Mantenha visíveis as partes antes de juntar o plano."
+          ],
+          "feedback": {
+            "met": "Recursos e necessidades distintos têm prazos e condições diferentes.",
+            "not_yet": "Mantenha visíveis as partes antes de juntar o plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes?",
+          "scene": "The future balance projection is unchanged, but recurring care costs increase.",
+          "options": [
+            {
+              "label": "The balance proves coverage"
+            },
+            {
+              "label": "Reassess the spending plan"
+            },
+            {
+              "label": "Care costs disappear"
+            }
+          ],
+          "help": [
+            "Compare resources with the revised needs."
+          ],
+          "feedback": {
+            "met": "A changed need alters the plan even with unchanged savings.",
+            "not_yet": "Compare resources with the revised needs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia al necesitar cuidados?",
+          "scene": "El saldo futuro proyectado no cambia, pero suben los costos recurrentes esperados de cuidado.",
+          "options": [
+            {
+              "label": "El saldo solo demuestra cobertura"
+            },
+            {
+              "label": "Debes reevaluar el plan de gastos"
+            },
+            {
+              "label": "Los cuidados desaparecen en la proyección"
+            }
+          ],
+          "help": [
+            "Compara recursos con las necesidades revisadas."
+          ],
+          "feedback": {
+            "met": "Cambiar necesidades altera el plan aunque el ahorro siga igual.",
+            "not_yet": "Compara recursos con las necesidades revisadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda ao precisar de cuidado?",
+          "scene": "O saldo futuro projetado não muda, mas sobem os custos recorrentes esperados de cuidado.",
+          "options": [
+            {
+              "label": "O saldo sozinho prova cobertura"
+            },
+            {
+              "label": "Precisa reavaliar o plano de gastos"
+            },
+            {
+              "label": "Os cuidados somem na projeção"
+            }
+          ],
+          "help": [
+            "Compare recursos com as necessidades revistas."
+          ],
+          "feedback": {
+            "met": "Mudar necessidades altera o plano mesmo com poupança igual.",
+            "not_yet": "Compare recursos com as necessidades revistas."
+          }
+        }
+      }
+    }
+  ]
+}

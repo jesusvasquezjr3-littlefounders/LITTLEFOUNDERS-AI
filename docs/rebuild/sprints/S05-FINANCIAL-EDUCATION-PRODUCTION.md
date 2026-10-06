@@ -1,5 +1,7 @@
 # S05 Financial Education V2 production release
 
+**Superseded current state, 5 October 2026:** the owner subsequently rejected this catalog. The course and all 112 lessons have been withdrawn from publication after authenticated local backup. The release evidence below is historical technical evidence, not product acceptance. See [the recovery checkpoint](S05-FINANCIAL-EDUCATION-RECOVERY.md).
+
 Date: 5 October 2026
 Owner decision: Financial Education V2 is canonical. Every component that has valid content evidence may be enabled, and the complete course is approved to proceed to production without generated voice or narration audio.
 

@@ -53,11 +53,11 @@ describe('the real B.6 topic map (S05.3a)', () => {
     }
   });
 
-  it('keeps the original 28 active, approves 25 covered Financial Education KCs, and leaves 47 gaps draft', () => {
+  it('keeps 53 historical KCs active and all 300 unpublished KCs draft', () => {
     expect(ORIGINAL_28).toHaveLength(28);
-    expect(graph.kcs).toHaveLength(100);
+    expect(graph.kcs).toHaveLength(353);
     expect(graph.kcs.filter((k) => k.status === 'active')).toHaveLength(53);
-    expect(graph.kcs.filter((k) => k.status === 'draft')).toHaveLength(47);
+    expect(graph.kcs.filter((k) => k.status === 'draft')).toHaveLength(300);
     for (const kc of graph.kcs.filter((k) => k.status === 'draft')) expect(kc.skill_key ?? null, kc.key).toBeNull();
   });
 
@@ -65,12 +65,19 @@ describe('the real B.6 topic map (S05.3a)', () => {
     const taught = new Set(deriveTopicKcLinks(map).filter((l) => l.role === 'teaches').map((l) => l.kcKey));
     const untaught = ORIGINAL_28.filter((k) => !taught.has(k)).sort();
     expect(untaught).toEqual(['biz.goods-vs-services', 'money.fraction-of-amount']);
-    expect(map.content_gaps.map((g) => g.kc).sort()).toEqual(untaught);
+    expect(map.content_gaps.filter((g) => !g.kc.startsWith('finance.')).map((g) => g.kc).sort()).toEqual(untaught);
+    const replacement = graph.kcs.filter((kc) => kc.key.startsWith('finance.'));
+    expect(replacement).toHaveLength(253);
+    expect(map.content_gaps.filter((g) => g.kc.startsWith('finance.')).map((g) => g.kc).sort()).toEqual(replacement.map((kc) => kc.key).sort());
+    for (const kc of replacement) {
+      expect(kc.status, kc.key).toBe('draft');
+      expect(taught.has(kc.key), kc.key).toBe(false);
+    }
     // The two Mentor-unbridged KCs that DO have catalog content now reach it through the teen pathway.
     expect(taught.has('money.percent-intro')).toBe(true);
     expect(taught.has('biz.risk-and-reward')).toBe(true);
     // Every KC added in S05.3a is taught somewhere: none was invented without content.
-    for (const kc of graph.kcs.slice(28)) expect(taught.has(kc.key), kc.key).toBe(true);
+    for (const kc of graph.kcs.slice(28, 100)) expect(taught.has(kc.key), kc.key).toBe(true);
   });
 });
 

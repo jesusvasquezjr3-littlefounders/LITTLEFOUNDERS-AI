@@ -1,0 +1,905 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-2",
+  "lesson_id": "fe-production-retirement-future-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.01",
+    "finance.prod.retirement-future.02",
+    "finance.prod.retirement-future.03",
+    "finance.prod.retirement-future.04",
+    "finance.prod.retirement-future.05",
+    "finance.prod.goals-tradeoffs.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Interpret future resources separately from spending needs and inspect contribution, ownership and projection assumptions.",
+  "title": {
+    "en-US": "Retirement Planning",
+    "es-MX": "Lee un plan para el futuro",
+    "pt-BR": "Leia um plano para o futuro"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Retirement Planning\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee un plan para el futuro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia um plano para o futuro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.retirement-future.01",
+      "observable_action": "Interpret future resources separately from spending needs and inspect contribution, ownership and projection assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.saving-resilience.05"
+    ],
+    "retrieval_skills": [
+      "prod.retirement-future.01",
+      "prod.retirement-future.02",
+      "prod.retirement-future.03",
+      "prod.retirement-future.04",
+      "prod.retirement-future.05",
+      "prod.goals-tradeoffs.01"
+    ],
+    "relevance": "Use fictional dollars to distinguish projected resources, spending needs and plan conditions.",
+    "misconception": "A large projected balance proves coverage regardless of spending, eligibility, fees or ownership conditions.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The balance must be compared with the needs it supports."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The sources can differ in eligibility, ownership and access."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The unmet condition limits the stated employer ownership."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Earlier participation includes an additional contribution period."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Recurring costs reduce the money carried into later periods."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.goals-tradeoffs.01",
+        "context_id": "retirement-future-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Purpose, amount and date make the goal specific."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.01",
+        "context_id": "retirement-future-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Changed spending needs can alter coverage with the same balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use fictional dollars to distinguish projected resources, spending needs and plan conditions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa pesos ficticios para distinguir recursos proyectados, gastos necesarios y condiciones del plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use reais fictícios para distinguir recursos projetados, gastos necessários e condições do plano."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is still needed?",
+          "scene": "A projection gives a future balance, but ongoing living costs are unknown.",
+          "options": [
+            {
+              "label": "Only a higher return estimate"
+            },
+            {
+              "label": "A spending-needs plan"
+            },
+            {
+              "label": "The balance proves coverage"
+            }
+          ],
+          "help": [
+            "Separate stored resources from recurring expenses."
+          ],
+          "feedback": {
+            "met": "The balance must be compared with the needs it supports.",
+            "not_yet": "Separate stored resources from recurring expenses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta todavía?",
+          "scene": "Una proyección da saldo futuro, pero no se estiman gastos continuos para vivir.",
+          "options": [
+            {
+              "label": "Solo estimar mayor rendimiento"
+            },
+            {
+              "label": "Un plan de necesidades de gasto"
+            },
+            {
+              "label": "Nada, el saldo demuestra cobertura"
+            }
+          ],
+          "help": [
+            "Distingue recursos guardados de gastos recurrentes."
+          ],
+          "feedback": {
+            "met": "El saldo debe compararse con necesidades que sostendrá.",
+            "not_yet": "Distingue recursos guardados de gastos recurrentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda falta?",
+          "scene": "Uma projeção dá saldo futuro, mas não estimam gastos contínuos para viver.",
+          "options": [
+            {
+              "label": "Só estimar maior retorno"
+            },
+            {
+              "label": "Um plano de necessidades de gasto"
+            },
+            {
+              "label": "Nada, o saldo prova cobertura"
+            }
+          ],
+          "help": [
+            "Separe recursos guardados de gastos recorrentes."
+          ],
+          "feedback": {
+            "met": "O saldo deve ser comparado às necessidades que sustentará.",
+            "not_yet": "Separe recursos guardados de gastos recorrentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source needs its own conditions?",
+          "scene": "A plan lists public benefits, employer arrangements and personal savings.",
+          "options": [
+            {
+              "label": "None, one rule covers all"
+            },
+            {
+              "label": "Each source separately"
+            },
+            {
+              "label": "Only the largest number"
+            }
+          ],
+          "help": [
+            "Identify actual conditions for each source."
+          ],
+          "feedback": {
+            "met": "The sources can differ in eligibility, ownership and access.",
+            "not_yet": "Identify actual conditions for each source."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente requiere condiciones propias?",
+          "scene": "Un plan lista apoyos públicos, planes patronales y ahorro personal.",
+          "options": [
+            {
+              "label": "Ninguna, una regla cubre todo"
+            },
+            {
+              "label": "Cada fuente por separado"
+            },
+            {
+              "label": "Solo el número mayor"
+            }
+          ],
+          "help": [
+            "Identifica condiciones reales de cada fuente."
+          ],
+          "feedback": {
+            "met": "Las fuentes pueden diferir en requisitos, propiedad y acceso.",
+            "not_yet": "Identifica condiciones reales de cada fuente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte exige condições próprias?",
+          "scene": "Um plano lista benefícios públicos, planos patronais e poupança pessoal.",
+          "options": [
+            {
+              "label": "Nenhuma, uma regra cobre tudo"
+            },
+            {
+              "label": "Cada fonte à parte"
+            },
+            {
+              "label": "Só o número maior"
+            }
+          ],
+          "help": [
+            "Identifique condições reais de cada fonte."
+          ],
+          "feedback": {
+            "met": "As fontes podem diferir em requisitos, propriedade e acesso.",
+            "not_yet": "Identifique condições reais de cada fonte."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this amount fully owned?",
+          "scene": "A fictional employer contribution requires a service condition not yet satisfied.",
+          "options": [
+            {
+              "label": "Yes, displaying it grants ownership"
+            },
+            {
+              "label": "Not under the stated condition"
+            }
+          ],
+          "help": [
+            "Read the actual plan terms."
+          ],
+          "feedback": {
+            "met": "The unmet condition limits the stated employer ownership.",
+            "not_yet": "Read the actual plan terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este monto ya es propio?",
+          "scene": "Una aportación patronal ficticia exige antigüedad todavía no cumplida.",
+          "options": [
+            {
+              "label": "Sí, mostrarla da propiedad"
+            },
+            {
+              "label": "No según la condición indicada"
+            }
+          ],
+          "help": [
+            "Lee los términos reales del plan."
+          ],
+          "feedback": {
+            "met": "La condición incumplida limita la propiedad patronal indicada.",
+            "not_yet": "Lee los términos reales del plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse valor já é próprio?",
+          "scene": "Um aporte patronal fictício exige tempo de serviço ainda não cumprido.",
+          "options": [
+            {
+              "label": "Sim, exibir dá propriedade"
+            },
+            {
+              "label": "Não pela condição dada"
+            }
+          ],
+          "help": [
+            "Leia os termos reais do plano."
+          ],
+          "feedback": {
+            "met": "A condição não cumprida limita a propriedade patronal dada.",
+            "not_yet": "Leia os termos reais do plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                90,
+                60
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: 30 each period; no growth or fees. Three periods; later skips the first.",
+          "title": "Projected",
+          "data": {
+            "categories": [
+              {
+                "label": "Earlier"
+              },
+              {
+                "label": "Later"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "Later"
+              },
+              {
+                "label": "Earlier"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Earlier participation includes an additional contribution period.",
+            "not_yet": "Compare under the same stated assumptions."
+          },
+          "help": [
+            "Compare under the same stated assumptions."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: 30 cada periodo; sin crecimiento ni comisiones. Tres periodos; después omite el primero.",
+          "title": "Proyectado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Después"
+              },
+              {
+                "label": "Antes"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Participar antes incluye otro periodo de aportación.",
+            "not_yet": "Compara bajo los mismos supuestos indicados."
+          },
+          "help": [
+            "Compara bajo los mismos supuestos indicados."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: 30 por período; sem crescimento nem tarifas. Três períodos; depois pula o primeiro.",
+          "title": "Projetado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Depois"
+              },
+              {
+                "label": "Antes"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Participar antes inclui outro período de aporte.",
+            "not_yet": "Compare sob as mesmas hipóteses dadas."
+          },
+          "help": [
+            "Compare sob as mesmas hipóteses dadas."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes with fees?",
+          "scene": "Two projections share deposits and growth; one deducts fees each period.",
+          "options": [
+            {
+              "label": "No balance is affected"
+            },
+            {
+              "label": "Fees guarantee better growth"
+            },
+            {
+              "label": "Less carries forward"
+            }
+          ],
+          "help": [
+            "Follow the balance after costs, not just gross growth."
+          ],
+          "feedback": {
+            "met": "Recurring costs reduce the money carried into later periods.",
+            "not_yet": "Follow the balance after costs, not just gross growth."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia con comisión recurrente?",
+          "scene": "Dos proyecciones comparten depósitos y crecimiento; una descuenta comisión cada periodo.",
+          "options": [
+            {
+              "label": "No puede cambiar ningún saldo"
+            },
+            {
+              "label": "La comisión garantiza mejor crecimiento"
+            },
+            {
+              "label": "Pasa menos dinero tras esa comisión"
+            }
+          ],
+          "help": [
+            "Sigue saldo tras costos, no solo crecimiento bruto."
+          ],
+          "feedback": {
+            "met": "Los costos recurrentes reducen dinero que pasa a periodos posteriores.",
+            "not_yet": "Sigue saldo tras costos, no solo crecimiento bruto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda com tarifa recorrente?",
+          "scene": "Duas projeções têm aportes e crescimento iguais; uma desconta tarifa por período.",
+          "options": [
+            {
+              "label": "Nenhum saldo pode mudar"
+            },
+            {
+              "label": "A tarifa garante mais crescimento"
+            },
+            {
+              "label": "Passa menos dinheiro após a tarifa"
+            }
+          ],
+          "help": [
+            "Siga saldo após custos, não só crescimento bruto."
+          ],
+          "feedback": {
+            "met": "Custos recorrentes reduzem dinheiro levado aos períodos seguintes.",
+            "not_yet": "Siga saldo após custos, não só crescimento bruto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which goal is actionable?",
+          "scene": "A person wants to prepare a future care reserve.",
+          "options": [
+            {
+              "label": "Only a target investment return"
+            },
+            {
+              "label": "A named care purpose, target amount and date"
+            },
+            {
+              "label": "Just “be richer someday”"
+            }
+          ],
+          "help": [
+            "Translate the wish into a measurable target."
+          ],
+          "feedback": {
+            "met": "Purpose, amount and date make the goal specific.",
+            "not_yet": "Translate the wish into a measurable target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué meta es concreta?",
+          "scene": "Una persona quiere preparar una reserva para cuidados futuros.",
+          "options": [
+            {
+              "label": "Solo un rendimiento objetivo"
+            },
+            {
+              "label": "Propósito de cuidado, monto meta y fecha"
+            },
+            {
+              "label": "Solo «ser más rico algún día»"
+            }
+          ],
+          "help": [
+            "Convierte el deseo en una meta medible."
+          ],
+          "feedback": {
+            "met": "Propósito, monto y fecha vuelven específica la meta.",
+            "not_yet": "Convierte el deseo en una meta medible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual meta é concreta?",
+          "scene": "Uma pessoa quer preparar reserva para cuidados futuros.",
+          "options": [
+            {
+              "label": "Só um retorno desejado"
+            },
+            {
+              "label": "Finalidade de cuidado, valor-alvo e data"
+            },
+            {
+              "label": "Só “ser mais rico algum dia”"
+            }
+          ],
+          "help": [
+            "Transforme o desejo numa meta mensurável."
+          ],
+          "feedback": {
+            "met": "Finalidade, valor e data tornam a meta específica.",
+            "not_yet": "Transforme o desejo numa meta mensurável."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes after moving?",
+          "scene": "The savings projection stays unchanged, but future housing costs rise after relocation.",
+          "options": [
+            {
+              "label": "Only the account name"
+            },
+            {
+              "label": "Nothing, equal savings settle the plan"
+            },
+            {
+              "label": "The resources-to-needs comparison"
+            }
+          ],
+          "help": [
+            "Recompare resources with the actual revised needs."
+          ],
+          "feedback": {
+            "met": "Changed spending needs can alter coverage with the same balance.",
+            "not_yet": "Recompare resources with the actual revised needs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia tras mudarse?",
+          "scene": "La proyección de ahorro sigue igual, pero suben gastos futuros de vivienda tras mudarse.",
+          "options": [
+            {
+              "label": "Solo el nombre de cuenta"
+            },
+            {
+              "label": "Nada, igual ahorro resuelve el plan"
+            },
+            {
+              "label": "La comparación entre recursos y necesidades"
+            }
+          ],
+          "help": [
+            "Vuelve a comparar recursos con necesidades reales revisadas."
+          ],
+          "feedback": {
+            "met": "Cambiar gastos puede alterar cobertura con igual saldo.",
+            "not_yet": "Vuelve a comparar recursos con necesidades reales revisadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda após mudar de casa?",
+          "scene": "A projeção de poupança fica igual, mas os gastos futuros de moradia sobem.",
+          "options": [
+            {
+              "label": "Só o nome da conta"
+            },
+            {
+              "label": "Nada, poupança igual resolve o plano"
+            },
+            {
+              "label": "A comparação entre recursos e necessidades"
+            }
+          ],
+          "help": [
+            "Compare de novo recursos e necessidades reais revistas."
+          ],
+          "feedback": {
+            "met": "Mudar gastos pode alterar cobertura com saldo igual.",
+            "not_yet": "Compare de novo recursos e necessidades reais revistas."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **`CLAUDE.md` and `AGENTS.md` must always be identical.** They are the same content published under two filenames for two different agent tools. Any edit to one must be applied to the other in the same change — never let them drift.
 
+For course or lesson authoring, read `.github/skills/course-authoring/SKILL.md` and the shared workflow it references. Financial Education also uses `.github/skills/financial-lesson-authoring/SKILL.md`. Forge, Codex and Claude must use the same curriculum contract and verification; switching authoring tools is not a quality gate.
+
 ## Mandatory rules — non-negotiable
 
 These gates are not optional, not skippable under time pressure, and not satisfied by "it looked fine":

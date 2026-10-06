@@ -61,7 +61,15 @@ export function runningLedgerPilotDocument(locale: Locale): unknown {
 export function RunningLedgerBoard({ document, segment, onBack, sequence, onGrade }: {
   document: LessonClientDocument; segment: LedgerSegment; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }) {
-  const t = copy[document.locale];
+  const personalCopy = {
+    'en-US': { sale: 'Receive', supplies: 'Pay', coin: 'dollar', coins: 'dollars' },
+    'es-MX': { sale: 'Recibir', supplies: 'Pagar', coin: 'peso', coins: 'pesos' },
+    'pt-BR': { sale: 'Receber', supplies: 'Pagar', coin: 'real', coins: 'reais' },
+  }[document.locale];
+  const t = { ...copy[document.locale],
+    ...(segment.payload.personal ? { sale: personalCopy.sale, supplies: personalCopy.supplies } : {}),
+    ...(segment.payload.currency === 'local' ? { coin: personalCopy.coin, coins: personalCopy.coins } : {}),
+  };
   const grading = useSegmentGrade(segment.id, onGrade);
   const graded = segment.grading === 'server' && !!onGrade;
   const hide = graded && !grading.met;
@@ -79,7 +87,7 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence, onGrad
   const position = snapshot.balance > 0 ? t.above : snapshot.balance < 0 ? t.below : t.zero;
   const scale = Math.max(initial + maxEntries * sale, maxEntries * cost - initial, 1);
   const append = (amountValue: number) => {
-    if (replayIndex !== null || entries.length >= maxEntries) return;
+    if (grading.pending || replayIndex !== null || entries.length >= maxEntries) return;
     const next = [...entries, { id: `entry-${entries.length + 1}`, amount: amountValue }];
     if (runningLedger(initial, next, maxEntries)) { grading.reset(); setEntries(next); }
   };
@@ -98,13 +106,13 @@ export function RunningLedgerBoard({ document, segment, onBack, sequence, onGrad
           <SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
           columns={[t.movement, t.balance]} rows={rows}
-          controlLeading={<Button disabled={!entries.length} onClick={() => { setEntries([]); setReplayIndex(null); }}>{t.reset}</Button>}
+          controlLeading={<Button disabled={grading.pending || !entries.length} onClick={() => { grading.reset(); setEntries([]); setReplayIndex(null); }}>{t.reset}</Button>}
           chart={<BalanceMeterVisual label={`${t.balance}: ${hide ? '?' : balanceText(snapshot.balance)}. ${hide ? '' : position}. ${t.step}: ${shownEntries.length}/${maxEntries}.`}
             balance={snapshot.balance} scale={scale} aboveLabel={t.above} zeroLabel={t.zero} belowLabel={t.below} />}>
           {() => replayIndex === null ? <div className="lf-ledger-controls" role="group" aria-label={t.movement}>
-            <Button disabled={entries.length >= maxEntries} onClick={() => append(sale)}>{t.sale} {signed(sale)}</Button>
-            <Button disabled={entries.length >= maxEntries} onClick={() => append(-cost)}>{t.supplies} {signed(-cost)}</Button>
-            <Button disabled={!entries.length} onClick={() => setEntries((value) => value.slice(0, -1))}>{t.undo}</Button>
+            <Button disabled={grading.pending || entries.length >= maxEntries} onClick={() => append(sale)}>{t.sale} {signed(sale)}</Button>
+            <Button disabled={grading.pending || entries.length >= maxEntries} onClick={() => append(-cost)}>{t.supplies} {signed(-cost)}</Button>
+            <Button disabled={grading.pending || !entries.length} onClick={() => { grading.reset(); setEntries((value) => value.slice(0, -1)); }}>{t.undo}</Button>
           </div> : null}
         </TeachingChartBoard>
         {entries.length >= 2 ? <div className="lf-ledger-replay">

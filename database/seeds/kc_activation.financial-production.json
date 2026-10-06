@@ -1,0 +1,3663 @@
+{
+  "version": 2,
+  "course_slug": "financial-education",
+  "blueprint_sha256": "7625938b8672c6277eebbf20a94bfd8894d974cf6976e8f9d659f2d7a943ac40",
+  "expected_lessons": 294,
+  "expected_teaching": 236,
+  "catalog": [
+    {
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-00",
+      "lesson_slug": "fe-production-usable-money-00"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-01",
+      "lesson_slug": "fe-production-usable-money-01"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-02",
+      "lesson_slug": "fe-production-usable-money-02"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-03",
+      "lesson_slug": "fe-production-usable-money-03"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-04",
+      "lesson_slug": "fe-production-usable-money-04"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-05",
+      "lesson_slug": "fe-production-usable-money-05"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-06",
+      "lesson_slug": "fe-production-usable-money-06"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-07",
+      "lesson_slug": "fe-production-usable-money-07"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-08",
+      "lesson_slug": "fe-production-usable-money-08"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-review-1",
+      "lesson_slug": "fe-production-usable-money-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-review-2",
+      "lesson_slug": "fe-production-usable-money-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-01",
+      "lesson_slug": "fe-production-financial-math-01"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-02",
+      "lesson_slug": "fe-production-financial-math-02"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-03",
+      "lesson_slug": "fe-production-financial-math-03"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-04",
+      "lesson_slug": "fe-production-financial-math-04"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-05",
+      "lesson_slug": "fe-production-financial-math-05"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-06",
+      "lesson_slug": "fe-production-financial-math-06"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-07",
+      "lesson_slug": "fe-production-financial-math-07"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-08",
+      "lesson_slug": "fe-production-financial-math-08"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-09",
+      "lesson_slug": "fe-production-financial-math-09"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-10",
+      "lesson_slug": "fe-production-financial-math-10"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-11",
+      "lesson_slug": "fe-production-financial-math-11"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-12",
+      "lesson_slug": "fe-production-financial-math-12"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-13",
+      "lesson_slug": "fe-production-financial-math-13"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-review-1",
+      "lesson_slug": "fe-production-financial-math-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-review-2",
+      "lesson_slug": "fe-production-financial-math-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-01",
+      "lesson_slug": "fe-production-goals-tradeoffs-01"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-02",
+      "lesson_slug": "fe-production-goals-tradeoffs-02"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-03",
+      "lesson_slug": "fe-production-goals-tradeoffs-03"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-04",
+      "lesson_slug": "fe-production-goals-tradeoffs-04"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-05",
+      "lesson_slug": "fe-production-goals-tradeoffs-05"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-06",
+      "lesson_slug": "fe-production-goals-tradeoffs-06"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-07",
+      "lesson_slug": "fe-production-goals-tradeoffs-07"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-08",
+      "lesson_slug": "fe-production-goals-tradeoffs-08"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-review-1",
+      "lesson_slug": "fe-production-goals-tradeoffs-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-review-2",
+      "lesson_slug": "fe-production-goals-tradeoffs-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-01",
+      "lesson_slug": "fe-production-income-work-01"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-02",
+      "lesson_slug": "fe-production-income-work-02"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-03",
+      "lesson_slug": "fe-production-income-work-03"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-04",
+      "lesson_slug": "fe-production-income-work-04"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-05",
+      "lesson_slug": "fe-production-income-work-05"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-06",
+      "lesson_slug": "fe-production-income-work-06"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-07",
+      "lesson_slug": "fe-production-income-work-07"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-08",
+      "lesson_slug": "fe-production-income-work-08"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-09",
+      "lesson_slug": "fe-production-income-work-09"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-10",
+      "lesson_slug": "fe-production-income-work-10"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-review-1",
+      "lesson_slug": "fe-production-income-work-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-review-2",
+      "lesson_slug": "fe-production-income-work-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-01",
+      "lesson_slug": "fe-production-spending-patterns-01"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-02",
+      "lesson_slug": "fe-production-spending-patterns-02"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-03",
+      "lesson_slug": "fe-production-spending-patterns-03"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-04",
+      "lesson_slug": "fe-production-spending-patterns-04"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-05",
+      "lesson_slug": "fe-production-spending-patterns-05"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-06",
+      "lesson_slug": "fe-production-spending-patterns-06"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-07",
+      "lesson_slug": "fe-production-spending-patterns-07"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-08",
+      "lesson_slug": "fe-production-spending-patterns-08"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-09",
+      "lesson_slug": "fe-production-spending-patterns-09"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-10",
+      "lesson_slug": "fe-production-spending-patterns-10"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-review-1",
+      "lesson_slug": "fe-production-spending-patterns-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-review-2",
+      "lesson_slug": "fe-production-spending-patterns-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-01",
+      "lesson_slug": "fe-production-cashflow-budget-01"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-02",
+      "lesson_slug": "fe-production-cashflow-budget-02"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-03",
+      "lesson_slug": "fe-production-cashflow-budget-03"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-04",
+      "lesson_slug": "fe-production-cashflow-budget-04"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-05",
+      "lesson_slug": "fe-production-cashflow-budget-05"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-06",
+      "lesson_slug": "fe-production-cashflow-budget-06"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-07",
+      "lesson_slug": "fe-production-cashflow-budget-07"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-08",
+      "lesson_slug": "fe-production-cashflow-budget-08"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-09",
+      "lesson_slug": "fe-production-cashflow-budget-09"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-10",
+      "lesson_slug": "fe-production-cashflow-budget-10"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-11",
+      "lesson_slug": "fe-production-cashflow-budget-11"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-12",
+      "lesson_slug": "fe-production-cashflow-budget-12"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-13",
+      "lesson_slug": "fe-production-cashflow-budget-13"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-14",
+      "lesson_slug": "fe-production-cashflow-budget-14"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-review-1",
+      "lesson_slug": "fe-production-cashflow-budget-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-review-2",
+      "lesson_slug": "fe-production-cashflow-budget-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-01",
+      "lesson_slug": "fe-production-accounts-records-01"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-02",
+      "lesson_slug": "fe-production-accounts-records-02"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-03",
+      "lesson_slug": "fe-production-accounts-records-03"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-04",
+      "lesson_slug": "fe-production-accounts-records-04"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-05",
+      "lesson_slug": "fe-production-accounts-records-05"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-06",
+      "lesson_slug": "fe-production-accounts-records-06"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-07",
+      "lesson_slug": "fe-production-accounts-records-07"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-08",
+      "lesson_slug": "fe-production-accounts-records-08"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-09",
+      "lesson_slug": "fe-production-accounts-records-09"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-10",
+      "lesson_slug": "fe-production-accounts-records-10"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-review-1",
+      "lesson_slug": "fe-production-accounts-records-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-review-2",
+      "lesson_slug": "fe-production-accounts-records-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-01",
+      "lesson_slug": "fe-production-payments-digital-01"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-02",
+      "lesson_slug": "fe-production-payments-digital-02"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-03",
+      "lesson_slug": "fe-production-payments-digital-03"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-04",
+      "lesson_slug": "fe-production-payments-digital-04"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-05",
+      "lesson_slug": "fe-production-payments-digital-05"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-06",
+      "lesson_slug": "fe-production-payments-digital-06"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-07",
+      "lesson_slug": "fe-production-payments-digital-07"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-08",
+      "lesson_slug": "fe-production-payments-digital-08"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-09",
+      "lesson_slug": "fe-production-payments-digital-09"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-10",
+      "lesson_slug": "fe-production-payments-digital-10"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-review-1",
+      "lesson_slug": "fe-production-payments-digital-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-review-2",
+      "lesson_slug": "fe-production-payments-digital-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-01",
+      "lesson_slug": "fe-production-purchase-decisions-01"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-02",
+      "lesson_slug": "fe-production-purchase-decisions-02"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-03",
+      "lesson_slug": "fe-production-purchase-decisions-03"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-04",
+      "lesson_slug": "fe-production-purchase-decisions-04"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-05",
+      "lesson_slug": "fe-production-purchase-decisions-05"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-06",
+      "lesson_slug": "fe-production-purchase-decisions-06"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-07",
+      "lesson_slug": "fe-production-purchase-decisions-07"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-08",
+      "lesson_slug": "fe-production-purchase-decisions-08"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-09",
+      "lesson_slug": "fe-production-purchase-decisions-09"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-10",
+      "lesson_slug": "fe-production-purchase-decisions-10"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-3",
+      "saga_slug": "fe-production-purchase-decisions-part-3",
+      "topic_slug": "fe-production-purchase-decisions-11",
+      "lesson_slug": "fe-production-purchase-decisions-11"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-3",
+      "saga_slug": "fe-production-purchase-decisions-part-3",
+      "topic_slug": "fe-production-purchase-decisions-12",
+      "lesson_slug": "fe-production-purchase-decisions-12"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-3",
+      "saga_slug": "fe-production-purchase-decisions-part-3",
+      "topic_slug": "fe-production-purchase-decisions-review-1",
+      "lesson_slug": "fe-production-purchase-decisions-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-purchase-decisions-part-3",
+      "saga_slug": "fe-production-purchase-decisions-part-3",
+      "topic_slug": "fe-production-purchase-decisions-review-2",
+      "lesson_slug": "fe-production-purchase-decisions-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-01",
+      "lesson_slug": "fe-production-saving-resilience-01"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-02",
+      "lesson_slug": "fe-production-saving-resilience-02"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-03",
+      "lesson_slug": "fe-production-saving-resilience-03"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-04",
+      "lesson_slug": "fe-production-saving-resilience-04"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-05",
+      "lesson_slug": "fe-production-saving-resilience-05"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-06",
+      "lesson_slug": "fe-production-saving-resilience-06"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-07",
+      "lesson_slug": "fe-production-saving-resilience-07"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-08",
+      "lesson_slug": "fe-production-saving-resilience-08"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-09",
+      "lesson_slug": "fe-production-saving-resilience-09"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-10",
+      "lesson_slug": "fe-production-saving-resilience-10"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-review-1",
+      "lesson_slug": "fe-production-saving-resilience-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-review-2",
+      "lesson_slug": "fe-production-saving-resilience-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-01",
+      "lesson_slug": "fe-production-time-inflation-01"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-02",
+      "lesson_slug": "fe-production-time-inflation-02"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-03",
+      "lesson_slug": "fe-production-time-inflation-03"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-04",
+      "lesson_slug": "fe-production-time-inflation-04"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-05",
+      "lesson_slug": "fe-production-time-inflation-05"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-06",
+      "lesson_slug": "fe-production-time-inflation-06"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-07",
+      "lesson_slug": "fe-production-time-inflation-07"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-08",
+      "lesson_slug": "fe-production-time-inflation-08"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-09",
+      "lesson_slug": "fe-production-time-inflation-09"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-10",
+      "lesson_slug": "fe-production-time-inflation-10"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-review-1",
+      "lesson_slug": "fe-production-time-inflation-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-review-2",
+      "lesson_slug": "fe-production-time-inflation-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-01",
+      "lesson_slug": "fe-production-credit-mechanics-01"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-02",
+      "lesson_slug": "fe-production-credit-mechanics-02"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-03",
+      "lesson_slug": "fe-production-credit-mechanics-03"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-04",
+      "lesson_slug": "fe-production-credit-mechanics-04"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-05",
+      "lesson_slug": "fe-production-credit-mechanics-05"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-06",
+      "lesson_slug": "fe-production-credit-mechanics-06"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-07",
+      "lesson_slug": "fe-production-credit-mechanics-07"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-08",
+      "lesson_slug": "fe-production-credit-mechanics-08"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-09",
+      "lesson_slug": "fe-production-credit-mechanics-09"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-10",
+      "lesson_slug": "fe-production-credit-mechanics-10"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-3",
+      "saga_slug": "fe-production-credit-mechanics-part-3",
+      "topic_slug": "fe-production-credit-mechanics-11",
+      "lesson_slug": "fe-production-credit-mechanics-11"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-3",
+      "saga_slug": "fe-production-credit-mechanics-part-3",
+      "topic_slug": "fe-production-credit-mechanics-12",
+      "lesson_slug": "fe-production-credit-mechanics-12"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-3",
+      "saga_slug": "fe-production-credit-mechanics-part-3",
+      "topic_slug": "fe-production-credit-mechanics-review-1",
+      "lesson_slug": "fe-production-credit-mechanics-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-credit-mechanics-part-3",
+      "saga_slug": "fe-production-credit-mechanics-part-3",
+      "topic_slug": "fe-production-credit-mechanics-review-2",
+      "lesson_slug": "fe-production-credit-mechanics-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-01",
+      "lesson_slug": "fe-production-credit-products-01"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-02",
+      "lesson_slug": "fe-production-credit-products-02"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-03",
+      "lesson_slug": "fe-production-credit-products-03"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-04",
+      "lesson_slug": "fe-production-credit-products-04"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-05",
+      "lesson_slug": "fe-production-credit-products-05"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-06",
+      "lesson_slug": "fe-production-credit-products-06"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-07",
+      "lesson_slug": "fe-production-credit-products-07"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-08",
+      "lesson_slug": "fe-production-credit-products-08"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-09",
+      "lesson_slug": "fe-production-credit-products-09"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-10",
+      "lesson_slug": "fe-production-credit-products-10"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-review-1",
+      "lesson_slug": "fe-production-credit-products-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-review-2",
+      "lesson_slug": "fe-production-credit-products-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-01",
+      "lesson_slug": "fe-production-debt-recovery-01"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-02",
+      "lesson_slug": "fe-production-debt-recovery-02"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-03",
+      "lesson_slug": "fe-production-debt-recovery-03"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-04",
+      "lesson_slug": "fe-production-debt-recovery-04"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-05",
+      "lesson_slug": "fe-production-debt-recovery-05"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-06",
+      "lesson_slug": "fe-production-debt-recovery-06"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-07",
+      "lesson_slug": "fe-production-debt-recovery-07"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-08",
+      "lesson_slug": "fe-production-debt-recovery-08"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-review-1",
+      "lesson_slug": "fe-production-debt-recovery-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-review-2",
+      "lesson_slug": "fe-production-debt-recovery-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-01",
+      "lesson_slug": "fe-production-credit-records-01"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-02",
+      "lesson_slug": "fe-production-credit-records-02"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-03",
+      "lesson_slug": "fe-production-credit-records-03"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-04",
+      "lesson_slug": "fe-production-credit-records-04"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-2",
+      "saga_slug": "fe-production-credit-records-part-2",
+      "topic_slug": "fe-production-credit-records-05",
+      "lesson_slug": "fe-production-credit-records-05"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-2",
+      "saga_slug": "fe-production-credit-records-part-2",
+      "topic_slug": "fe-production-credit-records-06",
+      "lesson_slug": "fe-production-credit-records-06"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-2",
+      "saga_slug": "fe-production-credit-records-part-2",
+      "topic_slug": "fe-production-credit-records-review-1",
+      "lesson_slug": "fe-production-credit-records-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-credit-records-part-2",
+      "saga_slug": "fe-production-credit-records-part-2",
+      "topic_slug": "fe-production-credit-records-review-2",
+      "lesson_slug": "fe-production-credit-records-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-01",
+      "lesson_slug": "fe-production-insurance-risk-01"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-02",
+      "lesson_slug": "fe-production-insurance-risk-02"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-03",
+      "lesson_slug": "fe-production-insurance-risk-03"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-04",
+      "lesson_slug": "fe-production-insurance-risk-04"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-05",
+      "lesson_slug": "fe-production-insurance-risk-05"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-06",
+      "lesson_slug": "fe-production-insurance-risk-06"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-07",
+      "lesson_slug": "fe-production-insurance-risk-07"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-08",
+      "lesson_slug": "fe-production-insurance-risk-08"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-09",
+      "lesson_slug": "fe-production-insurance-risk-09"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-10",
+      "lesson_slug": "fe-production-insurance-risk-10"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-3",
+      "saga_slug": "fe-production-insurance-risk-part-3",
+      "topic_slug": "fe-production-insurance-risk-11",
+      "lesson_slug": "fe-production-insurance-risk-11"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-3",
+      "saga_slug": "fe-production-insurance-risk-part-3",
+      "topic_slug": "fe-production-insurance-risk-12",
+      "lesson_slug": "fe-production-insurance-risk-12"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-3",
+      "saga_slug": "fe-production-insurance-risk-part-3",
+      "topic_slug": "fe-production-insurance-risk-review-1",
+      "lesson_slug": "fe-production-insurance-risk-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-insurance-risk-part-3",
+      "saga_slug": "fe-production-insurance-risk-part-3",
+      "topic_slug": "fe-production-insurance-risk-review-2",
+      "lesson_slug": "fe-production-insurance-risk-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-01",
+      "lesson_slug": "fe-production-investing-foundations-01"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-02",
+      "lesson_slug": "fe-production-investing-foundations-02"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-03",
+      "lesson_slug": "fe-production-investing-foundations-03"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-04",
+      "lesson_slug": "fe-production-investing-foundations-04"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-05",
+      "lesson_slug": "fe-production-investing-foundations-05"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-06",
+      "lesson_slug": "fe-production-investing-foundations-06"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-07",
+      "lesson_slug": "fe-production-investing-foundations-07"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-08",
+      "lesson_slug": "fe-production-investing-foundations-08"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-09",
+      "lesson_slug": "fe-production-investing-foundations-09"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-10",
+      "lesson_slug": "fe-production-investing-foundations-10"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-11",
+      "lesson_slug": "fe-production-investing-foundations-11"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-12",
+      "lesson_slug": "fe-production-investing-foundations-12"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-13",
+      "lesson_slug": "fe-production-investing-foundations-13"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-14",
+      "lesson_slug": "fe-production-investing-foundations-14"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-review-1",
+      "lesson_slug": "fe-production-investing-foundations-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-review-2",
+      "lesson_slug": "fe-production-investing-foundations-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-01",
+      "lesson_slug": "fe-production-investment-comparison-01"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-02",
+      "lesson_slug": "fe-production-investment-comparison-02"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-03",
+      "lesson_slug": "fe-production-investment-comparison-03"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-04",
+      "lesson_slug": "fe-production-investment-comparison-04"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-05",
+      "lesson_slug": "fe-production-investment-comparison-05"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-06",
+      "lesson_slug": "fe-production-investment-comparison-06"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-07",
+      "lesson_slug": "fe-production-investment-comparison-07"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-08",
+      "lesson_slug": "fe-production-investment-comparison-08"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-09",
+      "lesson_slug": "fe-production-investment-comparison-09"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-10",
+      "lesson_slug": "fe-production-investment-comparison-10"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-review-1",
+      "lesson_slug": "fe-production-investment-comparison-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-review-2",
+      "lesson_slug": "fe-production-investment-comparison-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-01",
+      "lesson_slug": "fe-production-tax-public-systems-01"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-02",
+      "lesson_slug": "fe-production-tax-public-systems-02"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-03",
+      "lesson_slug": "fe-production-tax-public-systems-03"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-04",
+      "lesson_slug": "fe-production-tax-public-systems-04"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-05",
+      "lesson_slug": "fe-production-tax-public-systems-05"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-06",
+      "lesson_slug": "fe-production-tax-public-systems-06"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-07",
+      "lesson_slug": "fe-production-tax-public-systems-07"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-08",
+      "lesson_slug": "fe-production-tax-public-systems-08"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-review-1",
+      "lesson_slug": "fe-production-tax-public-systems-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-review-2",
+      "lesson_slug": "fe-production-tax-public-systems-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-01",
+      "lesson_slug": "fe-production-retirement-future-01"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-02",
+      "lesson_slug": "fe-production-retirement-future-02"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-03",
+      "lesson_slug": "fe-production-retirement-future-03"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-04",
+      "lesson_slug": "fe-production-retirement-future-04"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-05",
+      "lesson_slug": "fe-production-retirement-future-05"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-06",
+      "lesson_slug": "fe-production-retirement-future-06"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-07",
+      "lesson_slug": "fe-production-retirement-future-07"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-08",
+      "lesson_slug": "fe-production-retirement-future-08"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-09",
+      "lesson_slug": "fe-production-retirement-future-09"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-10",
+      "lesson_slug": "fe-production-retirement-future-10"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-review-1",
+      "lesson_slug": "fe-production-retirement-future-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-review-2",
+      "lesson_slug": "fe-production-retirement-future-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-01",
+      "lesson_slug": "fe-production-housing-transport-01"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-02",
+      "lesson_slug": "fe-production-housing-transport-02"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-03",
+      "lesson_slug": "fe-production-housing-transport-03"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-04",
+      "lesson_slug": "fe-production-housing-transport-04"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-05",
+      "lesson_slug": "fe-production-housing-transport-05"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-06",
+      "lesson_slug": "fe-production-housing-transport-06"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-07",
+      "lesson_slug": "fe-production-housing-transport-07"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-08",
+      "lesson_slug": "fe-production-housing-transport-08"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-09",
+      "lesson_slug": "fe-production-housing-transport-09"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-10",
+      "lesson_slug": "fe-production-housing-transport-10"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-3",
+      "saga_slug": "fe-production-housing-transport-part-3",
+      "topic_slug": "fe-production-housing-transport-11",
+      "lesson_slug": "fe-production-housing-transport-11"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-3",
+      "saga_slug": "fe-production-housing-transport-part-3",
+      "topic_slug": "fe-production-housing-transport-12",
+      "lesson_slug": "fe-production-housing-transport-12"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-3",
+      "saga_slug": "fe-production-housing-transport-part-3",
+      "topic_slug": "fe-production-housing-transport-review-1",
+      "lesson_slug": "fe-production-housing-transport-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-housing-transport-part-3",
+      "saga_slug": "fe-production-housing-transport-part-3",
+      "topic_slug": "fe-production-housing-transport-review-2",
+      "lesson_slug": "fe-production-housing-transport-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-01",
+      "lesson_slug": "fe-production-shared-finances-01"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-02",
+      "lesson_slug": "fe-production-shared-finances-02"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-03",
+      "lesson_slug": "fe-production-shared-finances-03"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-04",
+      "lesson_slug": "fe-production-shared-finances-04"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-05",
+      "lesson_slug": "fe-production-shared-finances-05"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-06",
+      "lesson_slug": "fe-production-shared-finances-06"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-07",
+      "lesson_slug": "fe-production-shared-finances-07"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-08",
+      "lesson_slug": "fe-production-shared-finances-08"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-review-1",
+      "lesson_slug": "fe-production-shared-finances-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-review-2",
+      "lesson_slug": "fe-production-shared-finances-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-01",
+      "lesson_slug": "fe-production-financial-landscape-01"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-02",
+      "lesson_slug": "fe-production-financial-landscape-02"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-03",
+      "lesson_slug": "fe-production-financial-landscape-03"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-04",
+      "lesson_slug": "fe-production-financial-landscape-04"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-05",
+      "lesson_slug": "fe-production-financial-landscape-05"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-06",
+      "lesson_slug": "fe-production-financial-landscape-06"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-07",
+      "lesson_slug": "fe-production-financial-landscape-07"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-08",
+      "lesson_slug": "fe-production-financial-landscape-08"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-09",
+      "lesson_slug": "fe-production-financial-landscape-09"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-10",
+      "lesson_slug": "fe-production-financial-landscape-10"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-review-1",
+      "lesson_slug": "fe-production-financial-landscape-review-1"
+    },
+    {
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-review-2",
+      "lesson_slug": "fe-production-financial-landscape-review-2"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-1",
+      "saga_slug": "fe-production-integrated-decisions-part-1",
+      "topic_slug": "fe-production-integrated-decisions-01",
+      "lesson_slug": "fe-production-integrated-decisions-01"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-1",
+      "saga_slug": "fe-production-integrated-decisions-part-1",
+      "topic_slug": "fe-production-integrated-decisions-02",
+      "lesson_slug": "fe-production-integrated-decisions-02"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-1",
+      "saga_slug": "fe-production-integrated-decisions-part-1",
+      "topic_slug": "fe-production-integrated-decisions-03",
+      "lesson_slug": "fe-production-integrated-decisions-03"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-1",
+      "saga_slug": "fe-production-integrated-decisions-part-1",
+      "topic_slug": "fe-production-integrated-decisions-04",
+      "lesson_slug": "fe-production-integrated-decisions-04"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-1",
+      "saga_slug": "fe-production-integrated-decisions-part-1",
+      "topic_slug": "fe-production-integrated-decisions-05",
+      "lesson_slug": "fe-production-integrated-decisions-05"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-1",
+      "saga_slug": "fe-production-integrated-decisions-part-1",
+      "topic_slug": "fe-production-integrated-decisions-06",
+      "lesson_slug": "fe-production-integrated-decisions-06"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-2",
+      "saga_slug": "fe-production-integrated-decisions-part-2",
+      "topic_slug": "fe-production-integrated-decisions-07",
+      "lesson_slug": "fe-production-integrated-decisions-07"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-2",
+      "saga_slug": "fe-production-integrated-decisions-part-2",
+      "topic_slug": "fe-production-integrated-decisions-08",
+      "lesson_slug": "fe-production-integrated-decisions-08"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-2",
+      "saga_slug": "fe-production-integrated-decisions-part-2",
+      "topic_slug": "fe-production-integrated-decisions-09",
+      "lesson_slug": "fe-production-integrated-decisions-09"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-2",
+      "saga_slug": "fe-production-integrated-decisions-part-2",
+      "topic_slug": "fe-production-integrated-decisions-10",
+      "lesson_slug": "fe-production-integrated-decisions-10"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-2",
+      "saga_slug": "fe-production-integrated-decisions-part-2",
+      "topic_slug": "fe-production-integrated-decisions-11",
+      "lesson_slug": "fe-production-integrated-decisions-11"
+    },
+    {
+      "adventure_slug": "fe-production-integrated-decisions-part-2",
+      "saga_slug": "fe-production-integrated-decisions-part-2",
+      "topic_slug": "fe-production-integrated-decisions-12",
+      "lesson_slug": "fe-production-integrated-decisions-12"
+    }
+  ],
+  "activations": [
+    {
+      "key": "finance.cash.direction",
+      "skill_key": "financial-education/fe-production-usable-money-00",
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-00",
+      "lesson_slug": "fe-production-usable-money-00"
+    },
+    {
+      "key": "finance.cash.received",
+      "skill_key": "financial-education/fe-production-usable-money-01",
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-01",
+      "lesson_slug": "fe-production-usable-money-01"
+    },
+    {
+      "key": "finance.cash.balance",
+      "skill_key": "financial-education/fe-production-usable-money-02",
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-02",
+      "lesson_slug": "fe-production-usable-money-02"
+    },
+    {
+      "key": "finance.cash.commitment",
+      "skill_key": "financial-education/fe-production-usable-money-03",
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-03",
+      "lesson_slug": "fe-production-usable-money-03"
+    },
+    {
+      "key": "finance.cash.reserved",
+      "skill_key": "financial-education/fe-production-usable-money-04",
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-04",
+      "lesson_slug": "fe-production-usable-money-04"
+    },
+    {
+      "key": "finance.cash.dates",
+      "skill_key": "financial-education/fe-production-usable-money-05",
+      "adventure_slug": "fe-production-usable-money-part-1",
+      "saga_slug": "fe-production-usable-money-part-1",
+      "topic_slug": "fe-production-usable-money-05",
+      "lesson_slug": "fe-production-usable-money-05"
+    },
+    {
+      "key": "finance.debt.obligation",
+      "skill_key": "financial-education/fe-production-usable-money-06",
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-06",
+      "lesson_slug": "fe-production-usable-money-06"
+    },
+    {
+      "key": "finance.cash.transfer",
+      "skill_key": "financial-education/fe-production-usable-money-07",
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-07",
+      "lesson_slug": "fe-production-usable-money-07"
+    },
+    {
+      "key": "finance.plan.uncertain-income",
+      "skill_key": "financial-education/fe-production-usable-money-08",
+      "adventure_slug": "fe-production-usable-money-part-2",
+      "saga_slug": "fe-production-usable-money-part-2",
+      "topic_slug": "fe-production-usable-money-08",
+      "lesson_slug": "fe-production-usable-money-08"
+    },
+    {
+      "key": "finance.prod.financial-math.01",
+      "skill_key": "financial-education/fe-production-financial-math-01",
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-01",
+      "lesson_slug": "fe-production-financial-math-01"
+    },
+    {
+      "key": "finance.prod.financial-math.02",
+      "skill_key": "financial-education/fe-production-financial-math-02",
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-02",
+      "lesson_slug": "fe-production-financial-math-02"
+    },
+    {
+      "key": "finance.prod.financial-math.03",
+      "skill_key": "financial-education/fe-production-financial-math-03",
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-03",
+      "lesson_slug": "fe-production-financial-math-03"
+    },
+    {
+      "key": "finance.prod.financial-math.04",
+      "skill_key": "financial-education/fe-production-financial-math-04",
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-04",
+      "lesson_slug": "fe-production-financial-math-04"
+    },
+    {
+      "key": "finance.prod.financial-math.05",
+      "skill_key": "financial-education/fe-production-financial-math-05",
+      "adventure_slug": "fe-production-financial-math-part-1",
+      "saga_slug": "fe-production-financial-math-part-1",
+      "topic_slug": "fe-production-financial-math-05",
+      "lesson_slug": "fe-production-financial-math-05"
+    },
+    {
+      "key": "finance.prod.financial-math.06",
+      "skill_key": "financial-education/fe-production-financial-math-06",
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-06",
+      "lesson_slug": "fe-production-financial-math-06"
+    },
+    {
+      "key": "finance.prod.financial-math.07",
+      "skill_key": "financial-education/fe-production-financial-math-07",
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-07",
+      "lesson_slug": "fe-production-financial-math-07"
+    },
+    {
+      "key": "finance.price.percent",
+      "skill_key": "financial-education/fe-production-financial-math-08",
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-08",
+      "lesson_slug": "fe-production-financial-math-08"
+    },
+    {
+      "key": "finance.prod.financial-math.09",
+      "skill_key": "financial-education/fe-production-financial-math-09",
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-09",
+      "lesson_slug": "fe-production-financial-math-09"
+    },
+    {
+      "key": "finance.prod.financial-math.10",
+      "skill_key": "financial-education/fe-production-financial-math-10",
+      "adventure_slug": "fe-production-financial-math-part-2",
+      "saga_slug": "fe-production-financial-math-part-2",
+      "topic_slug": "fe-production-financial-math-10",
+      "lesson_slug": "fe-production-financial-math-10"
+    },
+    {
+      "key": "finance.prod.financial-math.11",
+      "skill_key": "financial-education/fe-production-financial-math-11",
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-11",
+      "lesson_slug": "fe-production-financial-math-11"
+    },
+    {
+      "key": "finance.prod.financial-math.12",
+      "skill_key": "financial-education/fe-production-financial-math-12",
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-12",
+      "lesson_slug": "fe-production-financial-math-12"
+    },
+    {
+      "key": "finance.prod.financial-math.13",
+      "skill_key": "financial-education/fe-production-financial-math-13",
+      "adventure_slug": "fe-production-financial-math-part-3",
+      "saga_slug": "fe-production-financial-math-part-3",
+      "topic_slug": "fe-production-financial-math-13",
+      "lesson_slug": "fe-production-financial-math-13"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.01",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-01",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-01",
+      "lesson_slug": "fe-production-goals-tradeoffs-01"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.02",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-02",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-02",
+      "lesson_slug": "fe-production-goals-tradeoffs-02"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.03",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-03",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-03",
+      "lesson_slug": "fe-production-goals-tradeoffs-03"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.04",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-04",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-04",
+      "lesson_slug": "fe-production-goals-tradeoffs-04"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.05",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-05",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-1",
+      "saga_slug": "fe-production-goals-tradeoffs-part-1",
+      "topic_slug": "fe-production-goals-tradeoffs-05",
+      "lesson_slug": "fe-production-goals-tradeoffs-05"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.06",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-06",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-06",
+      "lesson_slug": "fe-production-goals-tradeoffs-06"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.07",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-07",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-07",
+      "lesson_slug": "fe-production-goals-tradeoffs-07"
+    },
+    {
+      "key": "finance.prod.goals-tradeoffs.08",
+      "skill_key": "financial-education/fe-production-goals-tradeoffs-08",
+      "adventure_slug": "fe-production-goals-tradeoffs-part-2",
+      "saga_slug": "fe-production-goals-tradeoffs-part-2",
+      "topic_slug": "fe-production-goals-tradeoffs-08",
+      "lesson_slug": "fe-production-goals-tradeoffs-08"
+    },
+    {
+      "key": "finance.prod.income-work.01",
+      "skill_key": "financial-education/fe-production-income-work-01",
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-01",
+      "lesson_slug": "fe-production-income-work-01"
+    },
+    {
+      "key": "finance.prod.income-work.02",
+      "skill_key": "financial-education/fe-production-income-work-02",
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-02",
+      "lesson_slug": "fe-production-income-work-02"
+    },
+    {
+      "key": "finance.prod.income-work.03",
+      "skill_key": "financial-education/fe-production-income-work-03",
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-03",
+      "lesson_slug": "fe-production-income-work-03"
+    },
+    {
+      "key": "finance.prod.income-work.04",
+      "skill_key": "financial-education/fe-production-income-work-04",
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-04",
+      "lesson_slug": "fe-production-income-work-04"
+    },
+    {
+      "key": "finance.prod.income-work.05",
+      "skill_key": "financial-education/fe-production-income-work-05",
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-05",
+      "lesson_slug": "fe-production-income-work-05"
+    },
+    {
+      "key": "finance.prod.income-work.06",
+      "skill_key": "financial-education/fe-production-income-work-06",
+      "adventure_slug": "fe-production-income-work-part-1",
+      "saga_slug": "fe-production-income-work-part-1",
+      "topic_slug": "fe-production-income-work-06",
+      "lesson_slug": "fe-production-income-work-06"
+    },
+    {
+      "key": "finance.prod.income-work.07",
+      "skill_key": "financial-education/fe-production-income-work-07",
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-07",
+      "lesson_slug": "fe-production-income-work-07"
+    },
+    {
+      "key": "finance.prod.income-work.08",
+      "skill_key": "financial-education/fe-production-income-work-08",
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-08",
+      "lesson_slug": "fe-production-income-work-08"
+    },
+    {
+      "key": "finance.prod.income-work.09",
+      "skill_key": "financial-education/fe-production-income-work-09",
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-09",
+      "lesson_slug": "fe-production-income-work-09"
+    },
+    {
+      "key": "finance.prod.income-work.10",
+      "skill_key": "financial-education/fe-production-income-work-10",
+      "adventure_slug": "fe-production-income-work-part-2",
+      "saga_slug": "fe-production-income-work-part-2",
+      "topic_slug": "fe-production-income-work-10",
+      "lesson_slug": "fe-production-income-work-10"
+    },
+    {
+      "key": "finance.prod.spending-patterns.01",
+      "skill_key": "financial-education/fe-production-spending-patterns-01",
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-01",
+      "lesson_slug": "fe-production-spending-patterns-01"
+    },
+    {
+      "key": "finance.prod.spending-patterns.02",
+      "skill_key": "financial-education/fe-production-spending-patterns-02",
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-02",
+      "lesson_slug": "fe-production-spending-patterns-02"
+    },
+    {
+      "key": "finance.prod.spending-patterns.03",
+      "skill_key": "financial-education/fe-production-spending-patterns-03",
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-03",
+      "lesson_slug": "fe-production-spending-patterns-03"
+    },
+    {
+      "key": "finance.prod.spending-patterns.04",
+      "skill_key": "financial-education/fe-production-spending-patterns-04",
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-04",
+      "lesson_slug": "fe-production-spending-patterns-04"
+    },
+    {
+      "key": "finance.prod.spending-patterns.05",
+      "skill_key": "financial-education/fe-production-spending-patterns-05",
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-05",
+      "lesson_slug": "fe-production-spending-patterns-05"
+    },
+    {
+      "key": "finance.prod.spending-patterns.06",
+      "skill_key": "financial-education/fe-production-spending-patterns-06",
+      "adventure_slug": "fe-production-spending-patterns-part-1",
+      "saga_slug": "fe-production-spending-patterns-part-1",
+      "topic_slug": "fe-production-spending-patterns-06",
+      "lesson_slug": "fe-production-spending-patterns-06"
+    },
+    {
+      "key": "finance.prod.spending-patterns.07",
+      "skill_key": "financial-education/fe-production-spending-patterns-07",
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-07",
+      "lesson_slug": "fe-production-spending-patterns-07"
+    },
+    {
+      "key": "finance.prod.spending-patterns.08",
+      "skill_key": "financial-education/fe-production-spending-patterns-08",
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-08",
+      "lesson_slug": "fe-production-spending-patterns-08"
+    },
+    {
+      "key": "finance.prod.spending-patterns.09",
+      "skill_key": "financial-education/fe-production-spending-patterns-09",
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-09",
+      "lesson_slug": "fe-production-spending-patterns-09"
+    },
+    {
+      "key": "finance.prod.spending-patterns.10",
+      "skill_key": "financial-education/fe-production-spending-patterns-10",
+      "adventure_slug": "fe-production-spending-patterns-part-2",
+      "saga_slug": "fe-production-spending-patterns-part-2",
+      "topic_slug": "fe-production-spending-patterns-10",
+      "lesson_slug": "fe-production-spending-patterns-10"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.01",
+      "skill_key": "financial-education/fe-production-cashflow-budget-01",
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-01",
+      "lesson_slug": "fe-production-cashflow-budget-01"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.02",
+      "skill_key": "financial-education/fe-production-cashflow-budget-02",
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-02",
+      "lesson_slug": "fe-production-cashflow-budget-02"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.03",
+      "skill_key": "financial-education/fe-production-cashflow-budget-03",
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-03",
+      "lesson_slug": "fe-production-cashflow-budget-03"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.04",
+      "skill_key": "financial-education/fe-production-cashflow-budget-04",
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-04",
+      "lesson_slug": "fe-production-cashflow-budget-04"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.05",
+      "skill_key": "financial-education/fe-production-cashflow-budget-05",
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-05",
+      "lesson_slug": "fe-production-cashflow-budget-05"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.06",
+      "skill_key": "financial-education/fe-production-cashflow-budget-06",
+      "adventure_slug": "fe-production-cashflow-budget-part-1",
+      "saga_slug": "fe-production-cashflow-budget-part-1",
+      "topic_slug": "fe-production-cashflow-budget-06",
+      "lesson_slug": "fe-production-cashflow-budget-06"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.07",
+      "skill_key": "financial-education/fe-production-cashflow-budget-07",
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-07",
+      "lesson_slug": "fe-production-cashflow-budget-07"
+    },
+    {
+      "key": "finance.plan.periodic",
+      "skill_key": "financial-education/fe-production-cashflow-budget-08",
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-08",
+      "lesson_slug": "fe-production-cashflow-budget-08"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.09",
+      "skill_key": "financial-education/fe-production-cashflow-budget-09",
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-09",
+      "lesson_slug": "fe-production-cashflow-budget-09"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.10",
+      "skill_key": "financial-education/fe-production-cashflow-budget-10",
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-10",
+      "lesson_slug": "fe-production-cashflow-budget-10"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.11",
+      "skill_key": "financial-education/fe-production-cashflow-budget-11",
+      "adventure_slug": "fe-production-cashflow-budget-part-2",
+      "saga_slug": "fe-production-cashflow-budget-part-2",
+      "topic_slug": "fe-production-cashflow-budget-11",
+      "lesson_slug": "fe-production-cashflow-budget-11"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.12",
+      "skill_key": "financial-education/fe-production-cashflow-budget-12",
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-12",
+      "lesson_slug": "fe-production-cashflow-budget-12"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.13",
+      "skill_key": "financial-education/fe-production-cashflow-budget-13",
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-13",
+      "lesson_slug": "fe-production-cashflow-budget-13"
+    },
+    {
+      "key": "finance.prod.cashflow-budget.14",
+      "skill_key": "financial-education/fe-production-cashflow-budget-14",
+      "adventure_slug": "fe-production-cashflow-budget-part-3",
+      "saga_slug": "fe-production-cashflow-budget-part-3",
+      "topic_slug": "fe-production-cashflow-budget-14",
+      "lesson_slug": "fe-production-cashflow-budget-14"
+    },
+    {
+      "key": "finance.prod.accounts-records.01",
+      "skill_key": "financial-education/fe-production-accounts-records-01",
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-01",
+      "lesson_slug": "fe-production-accounts-records-01"
+    },
+    {
+      "key": "finance.prod.accounts-records.02",
+      "skill_key": "financial-education/fe-production-accounts-records-02",
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-02",
+      "lesson_slug": "fe-production-accounts-records-02"
+    },
+    {
+      "key": "finance.prod.accounts-records.03",
+      "skill_key": "financial-education/fe-production-accounts-records-03",
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-03",
+      "lesson_slug": "fe-production-accounts-records-03"
+    },
+    {
+      "key": "finance.prod.accounts-records.04",
+      "skill_key": "financial-education/fe-production-accounts-records-04",
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-04",
+      "lesson_slug": "fe-production-accounts-records-04"
+    },
+    {
+      "key": "finance.prod.accounts-records.05",
+      "skill_key": "financial-education/fe-production-accounts-records-05",
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-05",
+      "lesson_slug": "fe-production-accounts-records-05"
+    },
+    {
+      "key": "finance.prod.accounts-records.06",
+      "skill_key": "financial-education/fe-production-accounts-records-06",
+      "adventure_slug": "fe-production-accounts-records-part-1",
+      "saga_slug": "fe-production-accounts-records-part-1",
+      "topic_slug": "fe-production-accounts-records-06",
+      "lesson_slug": "fe-production-accounts-records-06"
+    },
+    {
+      "key": "finance.prod.accounts-records.07",
+      "skill_key": "financial-education/fe-production-accounts-records-07",
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-07",
+      "lesson_slug": "fe-production-accounts-records-07"
+    },
+    {
+      "key": "finance.prod.accounts-records.08",
+      "skill_key": "financial-education/fe-production-accounts-records-08",
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-08",
+      "lesson_slug": "fe-production-accounts-records-08"
+    },
+    {
+      "key": "finance.prod.accounts-records.09",
+      "skill_key": "financial-education/fe-production-accounts-records-09",
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-09",
+      "lesson_slug": "fe-production-accounts-records-09"
+    },
+    {
+      "key": "finance.prod.accounts-records.10",
+      "skill_key": "financial-education/fe-production-accounts-records-10",
+      "adventure_slug": "fe-production-accounts-records-part-2",
+      "saga_slug": "fe-production-accounts-records-part-2",
+      "topic_slug": "fe-production-accounts-records-10",
+      "lesson_slug": "fe-production-accounts-records-10"
+    },
+    {
+      "key": "finance.prod.payments-digital.01",
+      "skill_key": "financial-education/fe-production-payments-digital-01",
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-01",
+      "lesson_slug": "fe-production-payments-digital-01"
+    },
+    {
+      "key": "finance.prod.payments-digital.02",
+      "skill_key": "financial-education/fe-production-payments-digital-02",
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-02",
+      "lesson_slug": "fe-production-payments-digital-02"
+    },
+    {
+      "key": "finance.prod.payments-digital.03",
+      "skill_key": "financial-education/fe-production-payments-digital-03",
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-03",
+      "lesson_slug": "fe-production-payments-digital-03"
+    },
+    {
+      "key": "finance.prod.payments-digital.04",
+      "skill_key": "financial-education/fe-production-payments-digital-04",
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-04",
+      "lesson_slug": "fe-production-payments-digital-04"
+    },
+    {
+      "key": "finance.prod.payments-digital.05",
+      "skill_key": "financial-education/fe-production-payments-digital-05",
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-05",
+      "lesson_slug": "fe-production-payments-digital-05"
+    },
+    {
+      "key": "finance.prod.payments-digital.06",
+      "skill_key": "financial-education/fe-production-payments-digital-06",
+      "adventure_slug": "fe-production-payments-digital-part-1",
+      "saga_slug": "fe-production-payments-digital-part-1",
+      "topic_slug": "fe-production-payments-digital-06",
+      "lesson_slug": "fe-production-payments-digital-06"
+    },
+    {
+      "key": "finance.prod.payments-digital.07",
+      "skill_key": "financial-education/fe-production-payments-digital-07",
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-07",
+      "lesson_slug": "fe-production-payments-digital-07"
+    },
+    {
+      "key": "finance.prod.payments-digital.08",
+      "skill_key": "financial-education/fe-production-payments-digital-08",
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-08",
+      "lesson_slug": "fe-production-payments-digital-08"
+    },
+    {
+      "key": "finance.prod.payments-digital.09",
+      "skill_key": "financial-education/fe-production-payments-digital-09",
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-09",
+      "lesson_slug": "fe-production-payments-digital-09"
+    },
+    {
+      "key": "finance.prod.payments-digital.10",
+      "skill_key": "financial-education/fe-production-payments-digital-10",
+      "adventure_slug": "fe-production-payments-digital-part-2",
+      "saga_slug": "fe-production-payments-digital-part-2",
+      "topic_slug": "fe-production-payments-digital-10",
+      "lesson_slug": "fe-production-payments-digital-10"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.01",
+      "skill_key": "financial-education/fe-production-purchase-decisions-01",
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-01",
+      "lesson_slug": "fe-production-purchase-decisions-01"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.02",
+      "skill_key": "financial-education/fe-production-purchase-decisions-02",
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-02",
+      "lesson_slug": "fe-production-purchase-decisions-02"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.03",
+      "skill_key": "financial-education/fe-production-purchase-decisions-03",
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-03",
+      "lesson_slug": "fe-production-purchase-decisions-03"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.04",
+      "skill_key": "financial-education/fe-production-purchase-decisions-04",
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-04",
+      "lesson_slug": "fe-production-purchase-decisions-04"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.05",
+      "skill_key": "financial-education/fe-production-purchase-decisions-05",
+      "adventure_slug": "fe-production-purchase-decisions-part-1",
+      "saga_slug": "fe-production-purchase-decisions-part-1",
+      "topic_slug": "fe-production-purchase-decisions-05",
+      "lesson_slug": "fe-production-purchase-decisions-05"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.06",
+      "skill_key": "financial-education/fe-production-purchase-decisions-06",
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-06",
+      "lesson_slug": "fe-production-purchase-decisions-06"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.07",
+      "skill_key": "financial-education/fe-production-purchase-decisions-07",
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-07",
+      "lesson_slug": "fe-production-purchase-decisions-07"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.08",
+      "skill_key": "financial-education/fe-production-purchase-decisions-08",
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-08",
+      "lesson_slug": "fe-production-purchase-decisions-08"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.09",
+      "skill_key": "financial-education/fe-production-purchase-decisions-09",
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-09",
+      "lesson_slug": "fe-production-purchase-decisions-09"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.10",
+      "skill_key": "financial-education/fe-production-purchase-decisions-10",
+      "adventure_slug": "fe-production-purchase-decisions-part-2",
+      "saga_slug": "fe-production-purchase-decisions-part-2",
+      "topic_slug": "fe-production-purchase-decisions-10",
+      "lesson_slug": "fe-production-purchase-decisions-10"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.11",
+      "skill_key": "financial-education/fe-production-purchase-decisions-11",
+      "adventure_slug": "fe-production-purchase-decisions-part-3",
+      "saga_slug": "fe-production-purchase-decisions-part-3",
+      "topic_slug": "fe-production-purchase-decisions-11",
+      "lesson_slug": "fe-production-purchase-decisions-11"
+    },
+    {
+      "key": "finance.prod.purchase-decisions.12",
+      "skill_key": "financial-education/fe-production-purchase-decisions-12",
+      "adventure_slug": "fe-production-purchase-decisions-part-3",
+      "saga_slug": "fe-production-purchase-decisions-part-3",
+      "topic_slug": "fe-production-purchase-decisions-12",
+      "lesson_slug": "fe-production-purchase-decisions-12"
+    },
+    {
+      "key": "finance.prod.saving-resilience.01",
+      "skill_key": "financial-education/fe-production-saving-resilience-01",
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-01",
+      "lesson_slug": "fe-production-saving-resilience-01"
+    },
+    {
+      "key": "finance.prod.saving-resilience.02",
+      "skill_key": "financial-education/fe-production-saving-resilience-02",
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-02",
+      "lesson_slug": "fe-production-saving-resilience-02"
+    },
+    {
+      "key": "finance.prod.saving-resilience.03",
+      "skill_key": "financial-education/fe-production-saving-resilience-03",
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-03",
+      "lesson_slug": "fe-production-saving-resilience-03"
+    },
+    {
+      "key": "finance.prod.saving-resilience.04",
+      "skill_key": "financial-education/fe-production-saving-resilience-04",
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-04",
+      "lesson_slug": "fe-production-saving-resilience-04"
+    },
+    {
+      "key": "finance.prod.saving-resilience.05",
+      "skill_key": "financial-education/fe-production-saving-resilience-05",
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-05",
+      "lesson_slug": "fe-production-saving-resilience-05"
+    },
+    {
+      "key": "finance.prod.saving-resilience.06",
+      "skill_key": "financial-education/fe-production-saving-resilience-06",
+      "adventure_slug": "fe-production-saving-resilience-part-1",
+      "saga_slug": "fe-production-saving-resilience-part-1",
+      "topic_slug": "fe-production-saving-resilience-06",
+      "lesson_slug": "fe-production-saving-resilience-06"
+    },
+    {
+      "key": "finance.prod.saving-resilience.07",
+      "skill_key": "financial-education/fe-production-saving-resilience-07",
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-07",
+      "lesson_slug": "fe-production-saving-resilience-07"
+    },
+    {
+      "key": "finance.prod.saving-resilience.08",
+      "skill_key": "financial-education/fe-production-saving-resilience-08",
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-08",
+      "lesson_slug": "fe-production-saving-resilience-08"
+    },
+    {
+      "key": "finance.prod.saving-resilience.09",
+      "skill_key": "financial-education/fe-production-saving-resilience-09",
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-09",
+      "lesson_slug": "fe-production-saving-resilience-09"
+    },
+    {
+      "key": "finance.prod.saving-resilience.10",
+      "skill_key": "financial-education/fe-production-saving-resilience-10",
+      "adventure_slug": "fe-production-saving-resilience-part-2",
+      "saga_slug": "fe-production-saving-resilience-part-2",
+      "topic_slug": "fe-production-saving-resilience-10",
+      "lesson_slug": "fe-production-saving-resilience-10"
+    },
+    {
+      "key": "finance.prod.time-inflation.01",
+      "skill_key": "financial-education/fe-production-time-inflation-01",
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-01",
+      "lesson_slug": "fe-production-time-inflation-01"
+    },
+    {
+      "key": "finance.prod.time-inflation.02",
+      "skill_key": "financial-education/fe-production-time-inflation-02",
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-02",
+      "lesson_slug": "fe-production-time-inflation-02"
+    },
+    {
+      "key": "finance.time.compound",
+      "skill_key": "financial-education/fe-production-time-inflation-03",
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-03",
+      "lesson_slug": "fe-production-time-inflation-03"
+    },
+    {
+      "key": "finance.prod.time-inflation.04",
+      "skill_key": "financial-education/fe-production-time-inflation-04",
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-04",
+      "lesson_slug": "fe-production-time-inflation-04"
+    },
+    {
+      "key": "finance.prod.time-inflation.05",
+      "skill_key": "financial-education/fe-production-time-inflation-05",
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-05",
+      "lesson_slug": "fe-production-time-inflation-05"
+    },
+    {
+      "key": "finance.prod.time-inflation.06",
+      "skill_key": "financial-education/fe-production-time-inflation-06",
+      "adventure_slug": "fe-production-time-inflation-part-1",
+      "saga_slug": "fe-production-time-inflation-part-1",
+      "topic_slug": "fe-production-time-inflation-06",
+      "lesson_slug": "fe-production-time-inflation-06"
+    },
+    {
+      "key": "finance.prod.time-inflation.07",
+      "skill_key": "financial-education/fe-production-time-inflation-07",
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-07",
+      "lesson_slug": "fe-production-time-inflation-07"
+    },
+    {
+      "key": "finance.prod.time-inflation.08",
+      "skill_key": "financial-education/fe-production-time-inflation-08",
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-08",
+      "lesson_slug": "fe-production-time-inflation-08"
+    },
+    {
+      "key": "finance.prod.time-inflation.09",
+      "skill_key": "financial-education/fe-production-time-inflation-09",
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-09",
+      "lesson_slug": "fe-production-time-inflation-09"
+    },
+    {
+      "key": "finance.prod.time-inflation.10",
+      "skill_key": "financial-education/fe-production-time-inflation-10",
+      "adventure_slug": "fe-production-time-inflation-part-2",
+      "saga_slug": "fe-production-time-inflation-part-2",
+      "topic_slug": "fe-production-time-inflation-10",
+      "lesson_slug": "fe-production-time-inflation-10"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.01",
+      "skill_key": "financial-education/fe-production-credit-mechanics-01",
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-01",
+      "lesson_slug": "fe-production-credit-mechanics-01"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.02",
+      "skill_key": "financial-education/fe-production-credit-mechanics-02",
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-02",
+      "lesson_slug": "fe-production-credit-mechanics-02"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.03",
+      "skill_key": "financial-education/fe-production-credit-mechanics-03",
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-03",
+      "lesson_slug": "fe-production-credit-mechanics-03"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.04",
+      "skill_key": "financial-education/fe-production-credit-mechanics-04",
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-04",
+      "lesson_slug": "fe-production-credit-mechanics-04"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.05",
+      "skill_key": "financial-education/fe-production-credit-mechanics-05",
+      "adventure_slug": "fe-production-credit-mechanics-part-1",
+      "saga_slug": "fe-production-credit-mechanics-part-1",
+      "topic_slug": "fe-production-credit-mechanics-05",
+      "lesson_slug": "fe-production-credit-mechanics-05"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.06",
+      "skill_key": "financial-education/fe-production-credit-mechanics-06",
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-06",
+      "lesson_slug": "fe-production-credit-mechanics-06"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.07",
+      "skill_key": "financial-education/fe-production-credit-mechanics-07",
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-07",
+      "lesson_slug": "fe-production-credit-mechanics-07"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.08",
+      "skill_key": "financial-education/fe-production-credit-mechanics-08",
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-08",
+      "lesson_slug": "fe-production-credit-mechanics-08"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.09",
+      "skill_key": "financial-education/fe-production-credit-mechanics-09",
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-09",
+      "lesson_slug": "fe-production-credit-mechanics-09"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.10",
+      "skill_key": "financial-education/fe-production-credit-mechanics-10",
+      "adventure_slug": "fe-production-credit-mechanics-part-2",
+      "saga_slug": "fe-production-credit-mechanics-part-2",
+      "topic_slug": "fe-production-credit-mechanics-10",
+      "lesson_slug": "fe-production-credit-mechanics-10"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.11",
+      "skill_key": "financial-education/fe-production-credit-mechanics-11",
+      "adventure_slug": "fe-production-credit-mechanics-part-3",
+      "saga_slug": "fe-production-credit-mechanics-part-3",
+      "topic_slug": "fe-production-credit-mechanics-11",
+      "lesson_slug": "fe-production-credit-mechanics-11"
+    },
+    {
+      "key": "finance.prod.credit-mechanics.12",
+      "skill_key": "financial-education/fe-production-credit-mechanics-12",
+      "adventure_slug": "fe-production-credit-mechanics-part-3",
+      "saga_slug": "fe-production-credit-mechanics-part-3",
+      "topic_slug": "fe-production-credit-mechanics-12",
+      "lesson_slug": "fe-production-credit-mechanics-12"
+    },
+    {
+      "key": "finance.prod.credit-products.01",
+      "skill_key": "financial-education/fe-production-credit-products-01",
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-01",
+      "lesson_slug": "fe-production-credit-products-01"
+    },
+    {
+      "key": "finance.prod.credit-products.02",
+      "skill_key": "financial-education/fe-production-credit-products-02",
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-02",
+      "lesson_slug": "fe-production-credit-products-02"
+    },
+    {
+      "key": "finance.prod.credit-products.03",
+      "skill_key": "financial-education/fe-production-credit-products-03",
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-03",
+      "lesson_slug": "fe-production-credit-products-03"
+    },
+    {
+      "key": "finance.prod.credit-products.04",
+      "skill_key": "financial-education/fe-production-credit-products-04",
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-04",
+      "lesson_slug": "fe-production-credit-products-04"
+    },
+    {
+      "key": "finance.prod.credit-products.05",
+      "skill_key": "financial-education/fe-production-credit-products-05",
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-05",
+      "lesson_slug": "fe-production-credit-products-05"
+    },
+    {
+      "key": "finance.prod.credit-products.06",
+      "skill_key": "financial-education/fe-production-credit-products-06",
+      "adventure_slug": "fe-production-credit-products-part-1",
+      "saga_slug": "fe-production-credit-products-part-1",
+      "topic_slug": "fe-production-credit-products-06",
+      "lesson_slug": "fe-production-credit-products-06"
+    },
+    {
+      "key": "finance.prod.credit-products.07",
+      "skill_key": "financial-education/fe-production-credit-products-07",
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-07",
+      "lesson_slug": "fe-production-credit-products-07"
+    },
+    {
+      "key": "finance.prod.credit-products.08",
+      "skill_key": "financial-education/fe-production-credit-products-08",
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-08",
+      "lesson_slug": "fe-production-credit-products-08"
+    },
+    {
+      "key": "finance.prod.credit-products.09",
+      "skill_key": "financial-education/fe-production-credit-products-09",
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-09",
+      "lesson_slug": "fe-production-credit-products-09"
+    },
+    {
+      "key": "finance.prod.credit-products.10",
+      "skill_key": "financial-education/fe-production-credit-products-10",
+      "adventure_slug": "fe-production-credit-products-part-2",
+      "saga_slug": "fe-production-credit-products-part-2",
+      "topic_slug": "fe-production-credit-products-10",
+      "lesson_slug": "fe-production-credit-products-10"
+    },
+    {
+      "key": "finance.prod.debt-recovery.01",
+      "skill_key": "financial-education/fe-production-debt-recovery-01",
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-01",
+      "lesson_slug": "fe-production-debt-recovery-01"
+    },
+    {
+      "key": "finance.prod.debt-recovery.02",
+      "skill_key": "financial-education/fe-production-debt-recovery-02",
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-02",
+      "lesson_slug": "fe-production-debt-recovery-02"
+    },
+    {
+      "key": "finance.prod.debt-recovery.03",
+      "skill_key": "financial-education/fe-production-debt-recovery-03",
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-03",
+      "lesson_slug": "fe-production-debt-recovery-03"
+    },
+    {
+      "key": "finance.prod.debt-recovery.04",
+      "skill_key": "financial-education/fe-production-debt-recovery-04",
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-04",
+      "lesson_slug": "fe-production-debt-recovery-04"
+    },
+    {
+      "key": "finance.prod.debt-recovery.05",
+      "skill_key": "financial-education/fe-production-debt-recovery-05",
+      "adventure_slug": "fe-production-debt-recovery-part-1",
+      "saga_slug": "fe-production-debt-recovery-part-1",
+      "topic_slug": "fe-production-debt-recovery-05",
+      "lesson_slug": "fe-production-debt-recovery-05"
+    },
+    {
+      "key": "finance.prod.debt-recovery.06",
+      "skill_key": "financial-education/fe-production-debt-recovery-06",
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-06",
+      "lesson_slug": "fe-production-debt-recovery-06"
+    },
+    {
+      "key": "finance.prod.debt-recovery.07",
+      "skill_key": "financial-education/fe-production-debt-recovery-07",
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-07",
+      "lesson_slug": "fe-production-debt-recovery-07"
+    },
+    {
+      "key": "finance.prod.debt-recovery.08",
+      "skill_key": "financial-education/fe-production-debt-recovery-08",
+      "adventure_slug": "fe-production-debt-recovery-part-2",
+      "saga_slug": "fe-production-debt-recovery-part-2",
+      "topic_slug": "fe-production-debt-recovery-08",
+      "lesson_slug": "fe-production-debt-recovery-08"
+    },
+    {
+      "key": "finance.prod.credit-records.01",
+      "skill_key": "financial-education/fe-production-credit-records-01",
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-01",
+      "lesson_slug": "fe-production-credit-records-01"
+    },
+    {
+      "key": "finance.prod.credit-records.02",
+      "skill_key": "financial-education/fe-production-credit-records-02",
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-02",
+      "lesson_slug": "fe-production-credit-records-02"
+    },
+    {
+      "key": "finance.prod.credit-records.03",
+      "skill_key": "financial-education/fe-production-credit-records-03",
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-03",
+      "lesson_slug": "fe-production-credit-records-03"
+    },
+    {
+      "key": "finance.prod.credit-records.04",
+      "skill_key": "financial-education/fe-production-credit-records-04",
+      "adventure_slug": "fe-production-credit-records-part-1",
+      "saga_slug": "fe-production-credit-records-part-1",
+      "topic_slug": "fe-production-credit-records-04",
+      "lesson_slug": "fe-production-credit-records-04"
+    },
+    {
+      "key": "finance.prod.credit-records.05",
+      "skill_key": "financial-education/fe-production-credit-records-05",
+      "adventure_slug": "fe-production-credit-records-part-2",
+      "saga_slug": "fe-production-credit-records-part-2",
+      "topic_slug": "fe-production-credit-records-05",
+      "lesson_slug": "fe-production-credit-records-05"
+    },
+    {
+      "key": "finance.prod.credit-records.06",
+      "skill_key": "financial-education/fe-production-credit-records-06",
+      "adventure_slug": "fe-production-credit-records-part-2",
+      "saga_slug": "fe-production-credit-records-part-2",
+      "topic_slug": "fe-production-credit-records-06",
+      "lesson_slug": "fe-production-credit-records-06"
+    },
+    {
+      "key": "finance.prod.insurance-risk.01",
+      "skill_key": "financial-education/fe-production-insurance-risk-01",
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-01",
+      "lesson_slug": "fe-production-insurance-risk-01"
+    },
+    {
+      "key": "finance.prod.insurance-risk.02",
+      "skill_key": "financial-education/fe-production-insurance-risk-02",
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-02",
+      "lesson_slug": "fe-production-insurance-risk-02"
+    },
+    {
+      "key": "finance.prod.insurance-risk.03",
+      "skill_key": "financial-education/fe-production-insurance-risk-03",
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-03",
+      "lesson_slug": "fe-production-insurance-risk-03"
+    },
+    {
+      "key": "finance.prod.insurance-risk.04",
+      "skill_key": "financial-education/fe-production-insurance-risk-04",
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-04",
+      "lesson_slug": "fe-production-insurance-risk-04"
+    },
+    {
+      "key": "finance.prod.insurance-risk.05",
+      "skill_key": "financial-education/fe-production-insurance-risk-05",
+      "adventure_slug": "fe-production-insurance-risk-part-1",
+      "saga_slug": "fe-production-insurance-risk-part-1",
+      "topic_slug": "fe-production-insurance-risk-05",
+      "lesson_slug": "fe-production-insurance-risk-05"
+    },
+    {
+      "key": "finance.prod.insurance-risk.06",
+      "skill_key": "financial-education/fe-production-insurance-risk-06",
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-06",
+      "lesson_slug": "fe-production-insurance-risk-06"
+    },
+    {
+      "key": "finance.prod.insurance-risk.07",
+      "skill_key": "financial-education/fe-production-insurance-risk-07",
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-07",
+      "lesson_slug": "fe-production-insurance-risk-07"
+    },
+    {
+      "key": "finance.prod.insurance-risk.08",
+      "skill_key": "financial-education/fe-production-insurance-risk-08",
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-08",
+      "lesson_slug": "fe-production-insurance-risk-08"
+    },
+    {
+      "key": "finance.prod.insurance-risk.09",
+      "skill_key": "financial-education/fe-production-insurance-risk-09",
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-09",
+      "lesson_slug": "fe-production-insurance-risk-09"
+    },
+    {
+      "key": "finance.prod.insurance-risk.10",
+      "skill_key": "financial-education/fe-production-insurance-risk-10",
+      "adventure_slug": "fe-production-insurance-risk-part-2",
+      "saga_slug": "fe-production-insurance-risk-part-2",
+      "topic_slug": "fe-production-insurance-risk-10",
+      "lesson_slug": "fe-production-insurance-risk-10"
+    },
+    {
+      "key": "finance.prod.insurance-risk.11",
+      "skill_key": "financial-education/fe-production-insurance-risk-11",
+      "adventure_slug": "fe-production-insurance-risk-part-3",
+      "saga_slug": "fe-production-insurance-risk-part-3",
+      "topic_slug": "fe-production-insurance-risk-11",
+      "lesson_slug": "fe-production-insurance-risk-11"
+    },
+    {
+      "key": "finance.prod.insurance-risk.12",
+      "skill_key": "financial-education/fe-production-insurance-risk-12",
+      "adventure_slug": "fe-production-insurance-risk-part-3",
+      "saga_slug": "fe-production-insurance-risk-part-3",
+      "topic_slug": "fe-production-insurance-risk-12",
+      "lesson_slug": "fe-production-insurance-risk-12"
+    },
+    {
+      "key": "finance.prod.investing-foundations.01",
+      "skill_key": "financial-education/fe-production-investing-foundations-01",
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-01",
+      "lesson_slug": "fe-production-investing-foundations-01"
+    },
+    {
+      "key": "finance.prod.investing-foundations.02",
+      "skill_key": "financial-education/fe-production-investing-foundations-02",
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-02",
+      "lesson_slug": "fe-production-investing-foundations-02"
+    },
+    {
+      "key": "finance.prod.investing-foundations.03",
+      "skill_key": "financial-education/fe-production-investing-foundations-03",
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-03",
+      "lesson_slug": "fe-production-investing-foundations-03"
+    },
+    {
+      "key": "finance.prod.investing-foundations.04",
+      "skill_key": "financial-education/fe-production-investing-foundations-04",
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-04",
+      "lesson_slug": "fe-production-investing-foundations-04"
+    },
+    {
+      "key": "finance.prod.investing-foundations.05",
+      "skill_key": "financial-education/fe-production-investing-foundations-05",
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-05",
+      "lesson_slug": "fe-production-investing-foundations-05"
+    },
+    {
+      "key": "finance.prod.investing-foundations.06",
+      "skill_key": "financial-education/fe-production-investing-foundations-06",
+      "adventure_slug": "fe-production-investing-foundations-part-1",
+      "saga_slug": "fe-production-investing-foundations-part-1",
+      "topic_slug": "fe-production-investing-foundations-06",
+      "lesson_slug": "fe-production-investing-foundations-06"
+    },
+    {
+      "key": "finance.prod.investing-foundations.07",
+      "skill_key": "financial-education/fe-production-investing-foundations-07",
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-07",
+      "lesson_slug": "fe-production-investing-foundations-07"
+    },
+    {
+      "key": "finance.prod.investing-foundations.08",
+      "skill_key": "financial-education/fe-production-investing-foundations-08",
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-08",
+      "lesson_slug": "fe-production-investing-foundations-08"
+    },
+    {
+      "key": "finance.prod.investing-foundations.09",
+      "skill_key": "financial-education/fe-production-investing-foundations-09",
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-09",
+      "lesson_slug": "fe-production-investing-foundations-09"
+    },
+    {
+      "key": "finance.prod.investing-foundations.10",
+      "skill_key": "financial-education/fe-production-investing-foundations-10",
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-10",
+      "lesson_slug": "fe-production-investing-foundations-10"
+    },
+    {
+      "key": "finance.prod.investing-foundations.11",
+      "skill_key": "financial-education/fe-production-investing-foundations-11",
+      "adventure_slug": "fe-production-investing-foundations-part-2",
+      "saga_slug": "fe-production-investing-foundations-part-2",
+      "topic_slug": "fe-production-investing-foundations-11",
+      "lesson_slug": "fe-production-investing-foundations-11"
+    },
+    {
+      "key": "finance.prod.investing-foundations.12",
+      "skill_key": "financial-education/fe-production-investing-foundations-12",
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-12",
+      "lesson_slug": "fe-production-investing-foundations-12"
+    },
+    {
+      "key": "finance.prod.investing-foundations.13",
+      "skill_key": "financial-education/fe-production-investing-foundations-13",
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-13",
+      "lesson_slug": "fe-production-investing-foundations-13"
+    },
+    {
+      "key": "finance.prod.investing-foundations.14",
+      "skill_key": "financial-education/fe-production-investing-foundations-14",
+      "adventure_slug": "fe-production-investing-foundations-part-3",
+      "saga_slug": "fe-production-investing-foundations-part-3",
+      "topic_slug": "fe-production-investing-foundations-14",
+      "lesson_slug": "fe-production-investing-foundations-14"
+    },
+    {
+      "key": "finance.prod.investment-comparison.01",
+      "skill_key": "financial-education/fe-production-investment-comparison-01",
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-01",
+      "lesson_slug": "fe-production-investment-comparison-01"
+    },
+    {
+      "key": "finance.prod.investment-comparison.02",
+      "skill_key": "financial-education/fe-production-investment-comparison-02",
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-02",
+      "lesson_slug": "fe-production-investment-comparison-02"
+    },
+    {
+      "key": "finance.prod.investment-comparison.03",
+      "skill_key": "financial-education/fe-production-investment-comparison-03",
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-03",
+      "lesson_slug": "fe-production-investment-comparison-03"
+    },
+    {
+      "key": "finance.prod.investment-comparison.04",
+      "skill_key": "financial-education/fe-production-investment-comparison-04",
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-04",
+      "lesson_slug": "fe-production-investment-comparison-04"
+    },
+    {
+      "key": "finance.prod.investment-comparison.05",
+      "skill_key": "financial-education/fe-production-investment-comparison-05",
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-05",
+      "lesson_slug": "fe-production-investment-comparison-05"
+    },
+    {
+      "key": "finance.prod.investment-comparison.06",
+      "skill_key": "financial-education/fe-production-investment-comparison-06",
+      "adventure_slug": "fe-production-investment-comparison-part-1",
+      "saga_slug": "fe-production-investment-comparison-part-1",
+      "topic_slug": "fe-production-investment-comparison-06",
+      "lesson_slug": "fe-production-investment-comparison-06"
+    },
+    {
+      "key": "finance.prod.investment-comparison.07",
+      "skill_key": "financial-education/fe-production-investment-comparison-07",
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-07",
+      "lesson_slug": "fe-production-investment-comparison-07"
+    },
+    {
+      "key": "finance.prod.investment-comparison.08",
+      "skill_key": "financial-education/fe-production-investment-comparison-08",
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-08",
+      "lesson_slug": "fe-production-investment-comparison-08"
+    },
+    {
+      "key": "finance.prod.investment-comparison.09",
+      "skill_key": "financial-education/fe-production-investment-comparison-09",
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-09",
+      "lesson_slug": "fe-production-investment-comparison-09"
+    },
+    {
+      "key": "finance.prod.investment-comparison.10",
+      "skill_key": "financial-education/fe-production-investment-comparison-10",
+      "adventure_slug": "fe-production-investment-comparison-part-2",
+      "saga_slug": "fe-production-investment-comparison-part-2",
+      "topic_slug": "fe-production-investment-comparison-10",
+      "lesson_slug": "fe-production-investment-comparison-10"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.01",
+      "skill_key": "financial-education/fe-production-tax-public-systems-01",
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-01",
+      "lesson_slug": "fe-production-tax-public-systems-01"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.02",
+      "skill_key": "financial-education/fe-production-tax-public-systems-02",
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-02",
+      "lesson_slug": "fe-production-tax-public-systems-02"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.03",
+      "skill_key": "financial-education/fe-production-tax-public-systems-03",
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-03",
+      "lesson_slug": "fe-production-tax-public-systems-03"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.04",
+      "skill_key": "financial-education/fe-production-tax-public-systems-04",
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-04",
+      "lesson_slug": "fe-production-tax-public-systems-04"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.05",
+      "skill_key": "financial-education/fe-production-tax-public-systems-05",
+      "adventure_slug": "fe-production-tax-public-systems-part-1",
+      "saga_slug": "fe-production-tax-public-systems-part-1",
+      "topic_slug": "fe-production-tax-public-systems-05",
+      "lesson_slug": "fe-production-tax-public-systems-05"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.06",
+      "skill_key": "financial-education/fe-production-tax-public-systems-06",
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-06",
+      "lesson_slug": "fe-production-tax-public-systems-06"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.07",
+      "skill_key": "financial-education/fe-production-tax-public-systems-07",
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-07",
+      "lesson_slug": "fe-production-tax-public-systems-07"
+    },
+    {
+      "key": "finance.prod.tax-public-systems.08",
+      "skill_key": "financial-education/fe-production-tax-public-systems-08",
+      "adventure_slug": "fe-production-tax-public-systems-part-2",
+      "saga_slug": "fe-production-tax-public-systems-part-2",
+      "topic_slug": "fe-production-tax-public-systems-08",
+      "lesson_slug": "fe-production-tax-public-systems-08"
+    },
+    {
+      "key": "finance.prod.retirement-future.01",
+      "skill_key": "financial-education/fe-production-retirement-future-01",
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-01",
+      "lesson_slug": "fe-production-retirement-future-01"
+    },
+    {
+      "key": "finance.prod.retirement-future.02",
+      "skill_key": "financial-education/fe-production-retirement-future-02",
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-02",
+      "lesson_slug": "fe-production-retirement-future-02"
+    },
+    {
+      "key": "finance.prod.retirement-future.03",
+      "skill_key": "financial-education/fe-production-retirement-future-03",
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-03",
+      "lesson_slug": "fe-production-retirement-future-03"
+    },
+    {
+      "key": "finance.prod.retirement-future.04",
+      "skill_key": "financial-education/fe-production-retirement-future-04",
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-04",
+      "lesson_slug": "fe-production-retirement-future-04"
+    },
+    {
+      "key": "finance.prod.retirement-future.05",
+      "skill_key": "financial-education/fe-production-retirement-future-05",
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-05",
+      "lesson_slug": "fe-production-retirement-future-05"
+    },
+    {
+      "key": "finance.prod.retirement-future.06",
+      "skill_key": "financial-education/fe-production-retirement-future-06",
+      "adventure_slug": "fe-production-retirement-future-part-1",
+      "saga_slug": "fe-production-retirement-future-part-1",
+      "topic_slug": "fe-production-retirement-future-06",
+      "lesson_slug": "fe-production-retirement-future-06"
+    },
+    {
+      "key": "finance.prod.retirement-future.07",
+      "skill_key": "financial-education/fe-production-retirement-future-07",
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-07",
+      "lesson_slug": "fe-production-retirement-future-07"
+    },
+    {
+      "key": "finance.prod.retirement-future.08",
+      "skill_key": "financial-education/fe-production-retirement-future-08",
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-08",
+      "lesson_slug": "fe-production-retirement-future-08"
+    },
+    {
+      "key": "finance.prod.retirement-future.09",
+      "skill_key": "financial-education/fe-production-retirement-future-09",
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-09",
+      "lesson_slug": "fe-production-retirement-future-09"
+    },
+    {
+      "key": "finance.prod.retirement-future.10",
+      "skill_key": "financial-education/fe-production-retirement-future-10",
+      "adventure_slug": "fe-production-retirement-future-part-2",
+      "saga_slug": "fe-production-retirement-future-part-2",
+      "topic_slug": "fe-production-retirement-future-10",
+      "lesson_slug": "fe-production-retirement-future-10"
+    },
+    {
+      "key": "finance.prod.housing-transport.01",
+      "skill_key": "financial-education/fe-production-housing-transport-01",
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-01",
+      "lesson_slug": "fe-production-housing-transport-01"
+    },
+    {
+      "key": "finance.prod.housing-transport.02",
+      "skill_key": "financial-education/fe-production-housing-transport-02",
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-02",
+      "lesson_slug": "fe-production-housing-transport-02"
+    },
+    {
+      "key": "finance.prod.housing-transport.03",
+      "skill_key": "financial-education/fe-production-housing-transport-03",
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-03",
+      "lesson_slug": "fe-production-housing-transport-03"
+    },
+    {
+      "key": "finance.prod.housing-transport.04",
+      "skill_key": "financial-education/fe-production-housing-transport-04",
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-04",
+      "lesson_slug": "fe-production-housing-transport-04"
+    },
+    {
+      "key": "finance.prod.housing-transport.05",
+      "skill_key": "financial-education/fe-production-housing-transport-05",
+      "adventure_slug": "fe-production-housing-transport-part-1",
+      "saga_slug": "fe-production-housing-transport-part-1",
+      "topic_slug": "fe-production-housing-transport-05",
+      "lesson_slug": "fe-production-housing-transport-05"
+    },
+    {
+      "key": "finance.prod.housing-transport.06",
+      "skill_key": "financial-education/fe-production-housing-transport-06",
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-06",
+      "lesson_slug": "fe-production-housing-transport-06"
+    },
+    {
+      "key": "finance.prod.housing-transport.07",
+      "skill_key": "financial-education/fe-production-housing-transport-07",
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-07",
+      "lesson_slug": "fe-production-housing-transport-07"
+    },
+    {
+      "key": "finance.prod.housing-transport.08",
+      "skill_key": "financial-education/fe-production-housing-transport-08",
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-08",
+      "lesson_slug": "fe-production-housing-transport-08"
+    },
+    {
+      "key": "finance.prod.housing-transport.09",
+      "skill_key": "financial-education/fe-production-housing-transport-09",
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-09",
+      "lesson_slug": "fe-production-housing-transport-09"
+    },
+    {
+      "key": "finance.prod.housing-transport.10",
+      "skill_key": "financial-education/fe-production-housing-transport-10",
+      "adventure_slug": "fe-production-housing-transport-part-2",
+      "saga_slug": "fe-production-housing-transport-part-2",
+      "topic_slug": "fe-production-housing-transport-10",
+      "lesson_slug": "fe-production-housing-transport-10"
+    },
+    {
+      "key": "finance.prod.housing-transport.11",
+      "skill_key": "financial-education/fe-production-housing-transport-11",
+      "adventure_slug": "fe-production-housing-transport-part-3",
+      "saga_slug": "fe-production-housing-transport-part-3",
+      "topic_slug": "fe-production-housing-transport-11",
+      "lesson_slug": "fe-production-housing-transport-11"
+    },
+    {
+      "key": "finance.prod.housing-transport.12",
+      "skill_key": "financial-education/fe-production-housing-transport-12",
+      "adventure_slug": "fe-production-housing-transport-part-3",
+      "saga_slug": "fe-production-housing-transport-part-3",
+      "topic_slug": "fe-production-housing-transport-12",
+      "lesson_slug": "fe-production-housing-transport-12"
+    },
+    {
+      "key": "finance.prod.shared-finances.01",
+      "skill_key": "financial-education/fe-production-shared-finances-01",
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-01",
+      "lesson_slug": "fe-production-shared-finances-01"
+    },
+    {
+      "key": "finance.prod.shared-finances.02",
+      "skill_key": "financial-education/fe-production-shared-finances-02",
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-02",
+      "lesson_slug": "fe-production-shared-finances-02"
+    },
+    {
+      "key": "finance.prod.shared-finances.03",
+      "skill_key": "financial-education/fe-production-shared-finances-03",
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-03",
+      "lesson_slug": "fe-production-shared-finances-03"
+    },
+    {
+      "key": "finance.prod.shared-finances.04",
+      "skill_key": "financial-education/fe-production-shared-finances-04",
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-04",
+      "lesson_slug": "fe-production-shared-finances-04"
+    },
+    {
+      "key": "finance.prod.shared-finances.05",
+      "skill_key": "financial-education/fe-production-shared-finances-05",
+      "adventure_slug": "fe-production-shared-finances-part-1",
+      "saga_slug": "fe-production-shared-finances-part-1",
+      "topic_slug": "fe-production-shared-finances-05",
+      "lesson_slug": "fe-production-shared-finances-05"
+    },
+    {
+      "key": "finance.prod.shared-finances.06",
+      "skill_key": "financial-education/fe-production-shared-finances-06",
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-06",
+      "lesson_slug": "fe-production-shared-finances-06"
+    },
+    {
+      "key": "finance.prod.shared-finances.07",
+      "skill_key": "financial-education/fe-production-shared-finances-07",
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-07",
+      "lesson_slug": "fe-production-shared-finances-07"
+    },
+    {
+      "key": "finance.prod.shared-finances.08",
+      "skill_key": "financial-education/fe-production-shared-finances-08",
+      "adventure_slug": "fe-production-shared-finances-part-2",
+      "saga_slug": "fe-production-shared-finances-part-2",
+      "topic_slug": "fe-production-shared-finances-08",
+      "lesson_slug": "fe-production-shared-finances-08"
+    },
+    {
+      "key": "finance.prod.financial-landscape.01",
+      "skill_key": "financial-education/fe-production-financial-landscape-01",
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-01",
+      "lesson_slug": "fe-production-financial-landscape-01"
+    },
+    {
+      "key": "finance.prod.financial-landscape.02",
+      "skill_key": "financial-education/fe-production-financial-landscape-02",
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-02",
+      "lesson_slug": "fe-production-financial-landscape-02"
+    },
+    {
+      "key": "finance.prod.financial-landscape.03",
+      "skill_key": "financial-education/fe-production-financial-landscape-03",
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-03",
+      "lesson_slug": "fe-production-financial-landscape-03"
+    },
+    {
+      "key": "finance.prod.financial-landscape.04",
+      "skill_key": "financial-education/fe-production-financial-landscape-04",
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-04",
+      "lesson_slug": "fe-production-financial-landscape-04"
+    },
+    {
+      "key": "finance.prod.financial-landscape.05",
+      "skill_key": "financial-education/fe-production-financial-landscape-05",
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-05",
+      "lesson_slug": "fe-production-financial-landscape-05"
+    },
+    {
+      "key": "finance.prod.financial-landscape.06",
+      "skill_key": "financial-education/fe-production-financial-landscape-06",
+      "adventure_slug": "fe-production-financial-landscape-part-1",
+      "saga_slug": "fe-production-financial-landscape-part-1",
+      "topic_slug": "fe-production-financial-landscape-06",
+      "lesson_slug": "fe-production-financial-landscape-06"
+    },
+    {
+      "key": "finance.prod.financial-landscape.07",
+      "skill_key": "financial-education/fe-production-financial-landscape-07",
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-07",
+      "lesson_slug": "fe-production-financial-landscape-07"
+    },
+    {
+      "key": "finance.prod.financial-landscape.08",
+      "skill_key": "financial-education/fe-production-financial-landscape-08",
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-08",
+      "lesson_slug": "fe-production-financial-landscape-08"
+    },
+    {
+      "key": "finance.prod.financial-landscape.09",
+      "skill_key": "financial-education/fe-production-financial-landscape-09",
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-09",
+      "lesson_slug": "fe-production-financial-landscape-09"
+    },
+    {
+      "key": "finance.prod.financial-landscape.10",
+      "skill_key": "financial-education/fe-production-financial-landscape-10",
+      "adventure_slug": "fe-production-financial-landscape-part-2",
+      "saga_slug": "fe-production-financial-landscape-part-2",
+      "topic_slug": "fe-production-financial-landscape-10",
+      "lesson_slug": "fe-production-financial-landscape-10"
+    }
+  ]
+}

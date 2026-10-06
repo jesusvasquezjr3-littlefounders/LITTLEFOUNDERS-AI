@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-04-save-with-a-purpose",
+  "lesson_id": "fe-solid-17-prepare-for-a-surprise",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.save.emergency"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish an unexpected necessary expense from a known planned cost or optional purchase, and preserve or rebuild a reserve accordingly.",
+  "title": {
+    "en-US": "Prepare for a surprise",
+    "es-MX": "Prepárate para imprevistos",
+    "pt-BR": "Prepare-se para imprevistos"
+  },
+  "new_concepts": [
+    "finance.save.emergency"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Prepare for a surprise\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepárate para imprevistos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare-se para imprevistos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "save.emergency",
+      "observable_action": "Distinguish an unexpected necessary expense from a known planned cost or optional purchase, and preserve or rebuild a reserve accordingly.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "plan.priority",
+      "plan.periodic",
+      "save.goal"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Some necessary expenses arrive unexpectedly. A reserve creates room to respond; its amount depends on your circumstances.",
+    "misconception": "Treating all nonmonthly spending as an emergency or regarding use of an emergency reserve for its purpose as failure.",
+    "numeracy_support": "This lesson classifies purpose and predictability; it does not prescribe an income percentage or a universal reserve amount.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-example-01",
+        "supports_from": [],
+        "reasoning": "A renewal with a known date belongs in a planned-cost fund. An unexpected essential repair has a different purpose."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-example-02",
+        "supports_from": [],
+        "reasoning": "Using the reserve for a real emergency serves its purpose. Revisit affordable contributions afterward; using it was not failure."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The repair is both necessary and unexpected in this scenario."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A reserve is meant to help with the event it protects against."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-practice-01",
+        "supports_from": [],
+        "reasoning": "Known infrequent costs can be prepared separately from emergencies."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-practice-02",
+        "supports_from": [],
+        "reasoning": "An optional purchase uses money reserved for another purpose."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-practice-03",
+        "supports_from": [],
+        "reasoning": "Rebuilding starts from current capacity, not an invented surplus."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "save.emergency",
+        "context_id": "prepare-for-a-surprise-transfer-01",
+        "supports_from": [],
+        "reasoning": "The reserve addresses an unexpected interruption of an essential activity."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "save.emergency",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Some necessary expenses arrive unexpectedly. A reserve creates room to respond; its amount depends on your circumstances."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Algunos gastos necesarios llegan sin aviso. Una reserva da margen para responder; su monto depende de tus circunstancias."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um gasto urgente pode surgir sem aviso. Guardar dinheiro dá tempo para agir; o valor depende da sua vida."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Known or unexpected?",
+          "line": "A renewal with a known date belongs in a planned-cost fund. An unexpected essential repair has a different purpose."
+        },
+        "es-MX": {
+          "prompt": "¿Conocido o inesperado?",
+          "line": "Una renovación con fecha conocida pertenece al ahorro para gastos previstos. Una reparación necesaria inesperada tiene otro propósito."
+        },
+        "pt-BR": {
+          "prompt": "Conhecido ou inesperado?",
+          "line": "Uma conta com data marcada entra no plano. Um conserto urgente que surge sem aviso pede outra reserva."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use, then rebuild",
+          "line": "Using the reserve for a real emergency serves its purpose. Revisit affordable contributions afterward; using it was not failure."
+        },
+        "es-MX": {
+          "prompt": "Usa y luego reconstruye",
+          "line": "Usar la reserva para una emergencia real cumple su propósito. Después revisa aportaciones posibles, en vez de verlo como fracaso."
+        },
+        "pt-BR": {
+          "prompt": "Use e depois reconstrua",
+          "line": "Usar a reserva para uma urgência real é seu papel. Depois, faça um plano para repor o que usou."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "Which situation matches an emergency reserve?",
+          "scene": "Choose the unexpected necessary expense.",
+          "options": [
+            {
+              "label": "A known annual renewal"
+            },
+            {
+              "label": "A sudden essential pipe repair"
+            },
+            {
+              "label": "A planned decorative upgrade"
+            }
+          ],
+          "help": [
+            "Check both necessity and whether it was already predictable."
+          ],
+          "feedback": {
+            "met": "The repair is both necessary and unexpected in this scenario.",
+            "not_yet": "Check both necessity and whether it was already predictable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué situación corresponde a la reserva?",
+          "scene": "Elige el gasto necesario e inesperado.",
+          "options": [
+            {
+              "label": "Una renovación anual conocida"
+            },
+            {
+              "label": "Una reparación urgente de tubería"
+            },
+            {
+              "label": "Una mejora decorativa planeada"
+            }
+          ],
+          "help": [
+            "Comprueba la necesidad y si el gasto ya era previsible."
+          ],
+          "feedback": {
+            "met": "La reparación es necesaria e inesperada en esta situación.",
+            "not_yet": "Comprueba la necesidad y si el gasto ya era previsible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando usar essa reserva?",
+          "scene": "Escolha o gasto urgente que surgiu sem aviso.",
+          "options": [
+            {
+              "label": "Uma renovação anual conhecida"
+            },
+            {
+              "label": "Um conserto súbito de cano essencial"
+            },
+            {
+              "label": "Uma melhoria decorativa planejada"
+            }
+          ],
+          "help": [
+            "Veja se é urgente e se já estava no plano."
+          ],
+          "feedback": {
+            "met": "O conserto é urgente e surgiu sem aviso.",
+            "not_yet": "Veja se é urgente e se já estava no plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the reserve achieve?",
+          "scene": "An unexpected essential repair was paid from money saved for emergencies.",
+          "options": [
+            {
+              "label": "Saving never worked"
+            },
+            {
+              "label": "Every future expense is covered"
+            },
+            {
+              "label": "The reserve served its purpose"
+            }
+          ],
+          "help": [
+            "Separate appropriate use from the need to rebuild afterward."
+          ],
+          "feedback": {
+            "met": "A reserve is meant to help with the event it protects against.",
+            "not_yet": "Separate appropriate use from the need to rebuild afterward."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra usar la reserva aquí?",
+          "scene": "Una reparación necesaria inesperada se pagó con dinero ahorrado para emergencias.",
+          "options": [
+            {
+              "label": "Ahorrar nunca funcionó"
+            },
+            {
+              "label": "Todo gasto futuro queda cubierto"
+            },
+            {
+              "label": "La reserva cumplió su propósito"
+            }
+          ],
+          "help": [
+            "Separa el uso adecuado de la necesidad de reconstruirla después."
+          ],
+          "feedback": {
+            "met": "Una reserva ayuda ante el evento para el que se preparó.",
+            "not_yet": "Separa el uso adecuado de la necesidad de reconstruirla después."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mostra usar a reserva aqui?",
+          "scene": "A reserva pagou um conserto urgente que surgiu sem aviso.",
+          "options": [
+            {
+              "label": "Poupar nunca funcionou"
+            },
+            {
+              "label": "Todo gasto futuro está coberto"
+            },
+            {
+              "label": "A reserva cumpriu seu papel"
+            }
+          ],
+          "help": [
+            "Usar bem a reserva não impede repor o valor depois."
+          ],
+          "feedback": {
+            "met": "A reserva ajudou no gasto para o qual foi feita.",
+            "not_yet": "Usar bem a reserva não impede repor o valor depois."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fund matches this cost?",
+          "scene": "An annual inspection has a known price and date.",
+          "options": [
+            {
+              "label": "Only an emergency reserve"
+            },
+            {
+              "label": "A planned-cost reserve"
+            },
+            {
+              "label": "Optional spending with no plan"
+            }
+          ],
+          "help": [
+            "Infrequent does not automatically mean unpredictable."
+          ],
+          "feedback": {
+            "met": "Known infrequent costs can be prepared separately from emergencies.",
+            "not_yet": "Infrequent does not automatically mean unpredictable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué reserva corresponde a este costo?",
+          "scene": "Una revisión anual tiene monto y fecha conocidos con anticipación.",
+          "options": [
+            {
+              "label": "Solo la reserva de emergencia"
+            },
+            {
+              "label": "Ahorro para gastos previstos"
+            },
+            {
+              "label": "Gasto opcional sin plan"
+            }
+          ],
+          "help": [
+            "Poco frecuente no significa automáticamente imprevisible."
+          ],
+          "feedback": {
+            "met": "Los costos conocidos poco frecuentes pueden prepararse aparte.",
+            "not_yet": "Poco frecuente no significa automáticamente imprevisible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual reserva corresponde a esse custo?",
+          "scene": "Uma revisão anual tem preço e data já marcados.",
+          "options": [
+            {
+              "label": "Só a reserva de emergência"
+            },
+            {
+              "label": "Reserva de gastos previstos"
+            },
+            {
+              "label": "Gasto opcional sem plano"
+            }
+          ],
+          "help": [
+            "Nem todo gasto fora do mês é uma surpresa."
+          ],
+          "feedback": {
+            "met": "Dá para planejar um gasto conhecido mesmo sem pagar todo mês.",
+            "not_yet": "Nem todo gasto fora do mês é uma surpresa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes after spending the reserve?",
+          "scene": "A sale tempts you without an essential need.",
+          "options": [
+            {
+              "label": "Less remains for unexpected needs"
+            },
+            {
+              "label": "The sale creates an emergency"
+            },
+            {
+              "label": "The reserve becomes larger"
+            }
+          ],
+          "help": [
+            "A limited offer does not change the purpose of the fund."
+          ],
+          "feedback": {
+            "met": "An optional purchase uses money reserved for another purpose.",
+            "not_yet": "A limited offer does not change the purpose of the fund."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia si se usa la reserva aquí?",
+          "scene": "Una oferta opcional resulta atractiva, pero no apareció ningún gasto necesario.",
+          "options": [
+            {
+              "label": "Queda menos para imprevistos"
+            },
+            {
+              "label": "La oferta crea una emergencia"
+            },
+            {
+              "label": "La reserva aumenta"
+            }
+          ],
+          "help": [
+            "Una oferta limitada no cambia el propósito del fondo."
+          ],
+          "feedback": {
+            "met": "Una compra opcional usa dinero reservado para otro propósito.",
+            "not_yet": "Una oferta limitada no cambia el propósito del fondo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda se usar a reserva aqui?",
+          "scene": "Uma oferta opcional é atraente, mas não apareceu nenhum gasto necessário.",
+          "options": [
+            {
+              "label": "Resta menos para imprevistos"
+            },
+            {
+              "label": "A oferta cria uma emergência"
+            },
+            {
+              "label": "A reserva aumenta"
+            }
+          ],
+          "help": [
+            "Uma oferta por pouco tempo não muda o papel da reserva."
+          ],
+          "feedback": {
+            "met": "A compra usa dinheiro que tinha outra função.",
+            "not_yet": "Uma oferta por pouco tempo não muda o papel da reserva."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "How can you rebuild it?",
+          "scene": "After using the reserve, essentials leave little to rebuild it.",
+          "options": [
+            {
+              "label": "Pretend the reserve is unchanged"
+            },
+            {
+              "label": "Plan unaffordable savings"
+            },
+            {
+              "label": "Plan an affordable contribution"
+            }
+          ],
+          "help": [
+            "Use the actual remaining resources and revise as circumstances change."
+          ],
+          "feedback": {
+            "met": "Rebuilding starts from current capacity, not an invented surplus.",
+            "not_yet": "Use the actual remaining resources and revise as circumstances change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué paso permite reconstruirla?",
+          "scene": "La reserva se usó correctamente. Los pagos necesarios dejan un monto pequeño disponible ahora.",
+          "options": [
+            {
+              "label": "Suponer que la reserva no cambió"
+            },
+            {
+              "label": "Fijar un monto que no puede caber"
+            },
+            {
+              "label": "Planear una aportación que sí cabe"
+            }
+          ],
+          "help": [
+            "Usa los recursos reales y ajusta cuando cambien las circunstancias."
+          ],
+          "feedback": {
+            "met": "Reconstruir parte de la capacidad actual, no de un sobrante inventado.",
+            "not_yet": "Usa los recursos reales y ajusta cuando cambien las circunstancias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como começar a repor a reserva?",
+          "scene": "A reserva foi bem usada. Depois das contas básicas, sobra pouco agora.",
+          "options": [
+            {
+              "label": "Supor que a reserva não mudou"
+            },
+            {
+              "label": "Fixar um valor que não pode caber"
+            },
+            {
+              "label": "Planejar uma contribuição que cabe"
+            }
+          ],
+          "help": [
+            "Use o que tem e reveja o plano quando houver mudanças."
+          ],
+          "feedback": {
+            "met": "O plano deve usar o que de fato sobra agora.",
+            "not_yet": "Use o que tem e reveja o plano quando houver mudanças."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purpose fits this reserve use?",
+          "scene": "Unexpected damage stops your essential work tool. Work requires a repair.",
+          "options": [
+            {
+              "label": "A routine decorative upgrade"
+            },
+            {
+              "label": "A known annual subscription"
+            },
+            {
+              "label": "An unexpected necessary repair"
+            }
+          ],
+          "help": [
+            "Classify the consequence and predictability, not the object alone."
+          ],
+          "feedback": {
+            "met": "The reserve addresses an unexpected interruption of an essential activity.",
+            "not_yet": "Classify the consequence and predictability, not the object alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué propósito corresponde a este uso?",
+          "scene": "Un daño inesperado detiene la única herramienta necesaria para trabajar. Hay que repararla para retomar el trabajo.",
+          "options": [
+            {
+              "label": "Una mejora decorativa habitual"
+            },
+            {
+              "label": "Una suscripción anual conocida"
+            },
+            {
+              "label": "Una reparación necesaria inesperada"
+            }
+          ],
+          "help": [
+            "Clasifica la consecuencia y previsibilidad, no solo el objeto."
+          ],
+          "feedback": {
+            "met": "La reserva atiende una interrupción inesperada de una actividad necesaria.",
+            "not_yet": "Clasifica la consecuencia y previsibilidad, no solo el objeto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que uso é esse?",
+          "scene": "Um dano inesperado para a única ferramenta necessária para trabalhar. É preciso consertá-la para retomar o trabalho.",
+          "options": [
+            {
+              "label": "Uma melhoria decorativa habitual"
+            },
+            {
+              "label": "Uma assinatura anual conhecida"
+            },
+            {
+              "label": "Um conserto urgente sem aviso"
+            }
+          ],
+          "help": [
+            "Veja o efeito e se era previsto, não só o objeto."
+          ],
+          "feedback": {
+            "met": "A reserva ajuda a retomar o trabalho após um dano súbito.",
+            "not_yet": "Veja o efeito e se era previsto, não só o objeto."
+          }
+        }
+      }
+    }
+  ]
+}

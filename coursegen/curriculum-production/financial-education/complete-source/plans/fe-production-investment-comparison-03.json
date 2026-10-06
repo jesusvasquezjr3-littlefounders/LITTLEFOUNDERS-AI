@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-1",
+  "lesson_id": "fe-production-investment-comparison-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify missing risk information in an offer that displays only its best historical return.",
+  "title": {
+    "en-US": "Chart Omissions",
+    "es-MX": "Pregunta qué omite la gráfica",
+    "pt-BR": "Pergunte o que o gráfico omite"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Chart Omissions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pregunta qué omite la gráfica\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pergunte o que o gráfico omite\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.03",
+      "observable_action": "Identify missing risk information in an offer that displays only its best historical return.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.03",
+      "prod.time-inflation.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The best past result cannot tell you how bad a different period could have been.",
+    "misconception": "A selected best return is enough to judge the full risk of an investment.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-example-01",
+        "supports_from": [],
+        "reasoning": "An ad shows the best year and hides losing years. Ask about losses and the full period before judging risk."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "One selected month omits the range of outcomes."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Loss size and timing matter to the spending goal."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-practice-01",
+        "supports_from": [],
+        "reasoning": "An average alone hides the path and possible losses."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-practice-02",
+        "supports_from": [],
+        "reasoning": "A complete record avoids selecting only winners."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Even complete history does not guarantee future results."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "Vacancies can change the result the selected months imply."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The best past result cannot tell you how bad a different period could have been."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El mejor resultado pasado no dice qué tan malo pudo ser otro periodo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O melhor resultado passado não conta o quanto outro período poderia ter sido ruim."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Winners are only part",
+          "line": "An ad shows the best year and hides losing years. Ask about losses and the full period before judging risk."
+        },
+        "es-MX": {
+          "prompt": "Ganar es solo una parte",
+          "line": "Un anuncio muestra el mejor año y oculta años de pérdidas. Pregunta por pérdidas y el periodo completo antes de juzgar."
+        },
+        "pt-BR": {
+          "prompt": "Ganhos são só uma parte",
+          "line": "Um anúncio mostra o melhor ano e esconde anos de perdas. Pergunte sobre perdas e o período todo antes de avaliar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "An offer displays only its strongest past month.",
+          "options": [
+            {
+              "label": "Other months, including losses"
+            },
+            {
+              "label": "More praise from the seller"
+            },
+            {
+              "label": "A bigger version of that number"
+            }
+          ],
+          "help": [
+            "Ask what happened outside the highlighted period."
+          ],
+          "feedback": {
+            "met": "One selected month omits the range of outcomes.",
+            "not_yet": "Ask what happened outside the highlighted period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta?",
+          "scene": "Una oferta muestra únicamente su mejor mes pasado.",
+          "options": [
+            {
+              "label": "Otros meses, incluidas pérdidas"
+            },
+            {
+              "label": "Más elogios del vendedor"
+            },
+            {
+              "label": "El mismo número más grande"
+            }
+          ],
+          "help": [
+            "Pregunta qué pasó fuera del periodo destacado."
+          ],
+          "feedback": {
+            "met": "Un mes seleccionado omite la variedad de resultados.",
+            "not_yet": "Pregunta qué pasó fuera del periodo destacado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta?",
+          "scene": "Uma oferta mostra apenas seu melhor mês passado.",
+          "options": [
+            {
+              "label": "Outros meses, incluindo perdas"
+            },
+            {
+              "label": "Mais elogios do vendedor"
+            },
+            {
+              "label": "O mesmo número maior"
+            }
+          ],
+          "help": [
+            "Pergunte o que ocorreu fora do período destacado."
+          ],
+          "feedback": {
+            "met": "Um mês escolhido omite a variedade de resultados.",
+            "not_yet": "Pergunte o que ocorreu fora do período destacado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question reveals risk?",
+          "scene": "A seller explains possible gains but says nothing about losing invested money.",
+          "options": [
+            {
+              "label": "How many followers approve?"
+            },
+            {
+              "label": "How much could be lost, and when?"
+            },
+            {
+              "label": "Which logo looks safest?"
+            }
+          ],
+          "help": [
+            "Ask about consequences, not popularity."
+          ],
+          "feedback": {
+            "met": "Loss size and timing matter to the spending goal.",
+            "not_yet": "Ask about consequences, not popularity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta revela riesgo?",
+          "scene": "Un vendedor explica posibles ganancias, pero no habla de perder el dinero invertido.",
+          "options": [
+            {
+              "label": "¿Cuántos seguidores aprueban?"
+            },
+            {
+              "label": "¿Cuánto se podría perder y cuándo?"
+            },
+            {
+              "label": "¿Qué logotipo parece seguro?"
+            }
+          ],
+          "help": [
+            "Pregunta por consecuencias, no popularidad."
+          ],
+          "feedback": {
+            "met": "El tamaño y momento de pérdidas afectan la meta.",
+            "not_yet": "Pregunta por consecuencias, no popularidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pergunta revela risco?",
+          "scene": "Um vendedor explica possíveis ganhos, mas não fala em perder o dinheiro aplicado.",
+          "options": [
+            {
+              "label": "Quantos seguidores aprovam?"
+            },
+            {
+              "label": "Quanto poderia perder, e quando?"
+            },
+            {
+              "label": "Qual logotipo parece seguro?"
+            }
+          ],
+          "help": [
+            "Pergunte sobre consequências, não popularidade."
+          ],
+          "feedback": {
+            "met": "O tamanho e o momento das perdas afetam a meta.",
+            "not_yet": "Pergunte sobre consequências, não popularidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does an average settle risk?",
+          "scene": "An investment’s average return is shown without any information about variation or losses.",
+          "options": [
+            {
+              "label": "No, different paths can share an average"
+            },
+            {
+              "label": "Yes, averages forbid bad years"
+            }
+          ],
+          "help": [
+            "Ask about the range behind the average."
+          ],
+          "feedback": {
+            "met": "An average alone hides the path and possible losses.",
+            "not_yet": "Ask about the range behind the average."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El promedio resuelve el riesgo?",
+          "scene": "Muestran rendimiento promedio sin información de variación o pérdidas.",
+          "options": [
+            {
+              "label": "No, distintas trayectorias comparten promedio"
+            },
+            {
+              "label": "Sí, promediar impide años malos"
+            }
+          ],
+          "help": [
+            "Pregunta por la variedad detrás del promedio."
+          ],
+          "feedback": {
+            "met": "Un promedio solo oculta la trayectoria y posibles pérdidas.",
+            "not_yet": "Pregunta por la variedad detrás del promedio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A média resolve o risco?",
+          "scene": "Mostram rendimento médio sem dados de variação ou perdas.",
+          "options": [
+            {
+              "label": "Não, caminhos distintos têm igual média"
+            },
+            {
+              "label": "Sim, média impede anos ruins"
+            }
+          ],
+          "help": [
+            "Pergunte pela variedade por trás da média."
+          ],
+          "feedback": {
+            "met": "Uma média sozinha esconde o caminho e possíveis perdas.",
+            "not_yet": "Pergunte pela variedade por trás da média."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence is stronger?",
+          "scene": "A promotion shows selected winning clients. Another record includes all outcomes over a stated period.",
+          "options": [
+            {
+              "label": "The complete stated-period record"
+            },
+            {
+              "label": "Only the happiest clients"
+            }
+          ],
+          "help": [
+            "Check who and which dates were excluded."
+          ],
+          "feedback": {
+            "met": "A complete record avoids selecting only winners.",
+            "not_yet": "Check who and which dates were excluded."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia es más completa?",
+          "scene": "Una promoción elige clientes ganadores. Otro registro incluye todos los resultados de un periodo indicado.",
+          "options": [
+            {
+              "label": "El registro completo del periodo"
+            },
+            {
+              "label": "Solo los clientes más felices"
+            }
+          ],
+          "help": [
+            "Revisa quiénes y qué fechas quedaron fuera."
+          ],
+          "feedback": {
+            "met": "Un registro completo evita seleccionar únicamente ganadores.",
+            "not_yet": "Revisa quiénes y qué fechas quedaron fuera."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evidência é mais completa?",
+          "scene": "Uma promoção escolhe clientes vencedores. Outro registro inclui todos os resultados de um período dado.",
+          "options": [
+            {
+              "label": "O registro completo do período"
+            },
+            {
+              "label": "Só os clientes mais felizes"
+            }
+          ],
+          "help": [
+            "Confira quem e quais datas ficaram de fora."
+          ],
+          "feedback": {
+            "met": "Um registro completo evita escolher apenas vencedores.",
+            "not_yet": "Confira quem e quais datas ficaram de fora."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains uncertain?",
+          "scene": "A full historical record is available, including losses. Someone says future outcomes are now certain.",
+          "options": [
+            {
+              "label": "History guarantees repetition"
+            },
+            {
+              "label": "The future remains uncertain"
+            }
+          ],
+          "help": [
+            "Better evidence reduces omissions, not all uncertainty."
+          ],
+          "feedback": {
+            "met": "Even complete history does not guarantee future results.",
+            "not_yet": "Better evidence reduces omissions, not all uncertainty."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue incierto?",
+          "scene": "Hay historial completo con pérdidas. Alguien dice que el futuro ya es seguro.",
+          "options": [
+            {
+              "label": "El historial garantiza repetición"
+            },
+            {
+              "label": "El futuro sigue incierto"
+            }
+          ],
+          "help": [
+            "Mejor evidencia reduce omisiones, no toda incertidumbre."
+          ],
+          "feedback": {
+            "met": "Ni el historial completo garantiza resultados futuros.",
+            "not_yet": "Mejor evidencia reduce omisiones, no toda incertidumbre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua incerto?",
+          "scene": "Há histórico completo com perdas. Alguém diz que o futuro agora é certo.",
+          "options": [
+            {
+              "label": "O histórico garante repetição"
+            },
+            {
+              "label": "O futuro continua incerto"
+            }
+          ],
+          "help": [
+            "Melhor evidência reduz omissões, não toda incerteza."
+          ],
+          "feedback": {
+            "met": "Nem o histórico completo garante resultados futuros.",
+            "not_yet": "Melhor evidência reduz omissões, não toda incerteza."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "A rental-investment pitch shows rent from fully occupied months and omits vacant months.",
+          "options": [
+            {
+              "label": "Only photos of occupied rooms"
+            },
+            {
+              "label": "Results including vacant periods and costs"
+            },
+            {
+              "label": "The best month repeated"
+            }
+          ],
+          "help": [
+            "Ask for relevant omitted outcomes."
+          ],
+          "feedback": {
+            "met": "Vacancies can change the result the selected months imply.",
+            "not_yet": "Ask for relevant omitted outcomes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes solicitar?",
+          "scene": "Una oferta inmobiliaria muestra rentas de meses ocupados y omite meses vacíos.",
+          "options": [
+            {
+              "label": "Solo fotos de habitaciones ocupadas"
+            },
+            {
+              "label": "Resultados con meses vacíos y costos"
+            },
+            {
+              "label": "Repetir el mejor mes"
+            }
+          ],
+          "help": [
+            "Pregunta por resultados relevantes omitidos."
+          ],
+          "feedback": {
+            "met": "Los meses vacíos pueden cambiar el resultado sugerido.",
+            "not_yet": "Pregunta por resultados relevantes omitidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pedir?",
+          "scene": "Uma oferta imobiliária mostra aluguéis de meses ocupados e omite meses vazios.",
+          "options": [
+            {
+              "label": "Só fotos de quartos ocupados"
+            },
+            {
+              "label": "Resultados com meses vazios e custos"
+            },
+            {
+              "label": "Repetir o melhor mês"
+            }
+          ],
+          "help": [
+            "Pergunte por resultados relevantes omitidos."
+          ],
+          "feedback": {
+            "met": "Meses vazios podem mudar o resultado sugerido.",
+            "not_yet": "Pergunte por resultados relevantes omitidos."
+          }
+        }
+      }
+    }
+  ]
+}

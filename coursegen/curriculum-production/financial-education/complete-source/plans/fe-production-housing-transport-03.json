@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-1",
+  "lesson_id": "fe-production-housing-transport-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Read a fictional rental agreement’s deposit, notice and repair responsibilities.",
+  "title": {
+    "en-US": "Rental Terms",
+    "es-MX": "Lee las condiciones de renta",
+    "pt-BR": "Leia as condições do aluguel"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Rental Terms\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee las condiciones de renta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia as condições do aluguel\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.03",
+      "observable_action": "Read a fictional rental agreement’s deposit, notice and repair responsibilities.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.08",
+      "prod.accounts-records.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A signature turns stated conditions into obligations; inspect a fictional rental agreement before deciding.",
+    "misconception": "A deposit replaces rent, verbal promises settle repairs, or notice can be ignored.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-example-01",
+        "supports_from": [],
+        "reasoning": "A fictional lease assigns repairs and notice duties. Read each clause; do not assume another contract uses identical rules."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The clause assigns roof repairs to the owner."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The deposit has a separate stated purpose."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Leaving alone does not satisfy the stated written-notice condition."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-practice-02",
+        "supports_from": [],
+        "reasoning": "An agreed starting record distinguishes existing damage from later changes."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Conflicting promises leave the actual obligation unclear."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.03",
+        "context_id": "housing-transport-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "Reporting follows the stated process for this appliance fault."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A signature turns stated conditions into obligations; inspect a fictional rental agreement before deciding."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una firma convierte condiciones en obligaciones; examina un contrato de renta ficticio antes de decidir."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma assinatura transforma condições em obrigações; examine um contrato de aluguel fictício antes de decidir."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find the responsibility",
+          "line": "A fictional lease assigns repairs and notice duties. Read each clause; do not assume another contract uses identical rules."
+        },
+        "es-MX": {
+          "prompt": "Busca la responsabilidad",
+          "line": "Un contrato ficticio asigna reparaciones y avisos. Lee cada cláusula; no supongas que otro contrato tiene reglas idénticas."
+        },
+        "pt-BR": {
+          "prompt": "Ache a responsabilidade",
+          "line": "Um contrato fictício define consertos e avisos. Leia cada cláusula; não suponha que outro contrato tenha regras iguais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Who handles the roof here?",
+          "scene": "Fictional clause: owner repairs roof leaks; tenant reports damage promptly.",
+          "options": [
+            {
+              "label": "Tenant replaces roof"
+            },
+            {
+              "label": "Owner repairs"
+            },
+            {
+              "label": "Nobody repairs"
+            }
+          ],
+          "help": [
+            "Separate reporting damage from paying for its repair."
+          ],
+          "feedback": {
+            "met": "The clause assigns roof repairs to the owner.",
+            "not_yet": "Separate reporting damage from paying for its repair."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién repara el techo aquí?",
+          "scene": "Cláusula ficticia: propietario repara filtraciones; inquilino reporta daños pronto.",
+          "options": [
+            {
+              "label": "Inquilino cambia techo"
+            },
+            {
+              "label": "Propietario repara"
+            },
+            {
+              "label": "Nadie repara"
+            }
+          ],
+          "help": [
+            "Separa reportar daños de pagar su reparación."
+          ],
+          "feedback": {
+            "met": "La cláusula asigna la reparación al propietario.",
+            "not_yet": "Separa reportar daños de pagar su reparación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem conserta o telhado aqui?",
+          "scene": "Cláusula fictícia: dono conserta goteiras; morador avisa logo sobre danos.",
+          "options": [
+            {
+              "label": "Morador troca telhado"
+            },
+            {
+              "label": "Dono conserta"
+            },
+            {
+              "label": "Ninguém conserta"
+            }
+          ],
+          "help": [
+            "Separe avisar sobre danos de pagar o conserto."
+          ],
+          "feedback": {
+            "met": "A cláusula atribui o conserto ao dono.",
+            "not_yet": "Separe avisar sobre danos de pagar o conserto."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the deposit do?",
+          "scene": "Fictional contract: deposit secures damage claims; monthly rent remains due.",
+          "options": [
+            {
+              "label": "Replaces all rent"
+            },
+            {
+              "label": "Pays every utility"
+            },
+            {
+              "label": "Security for damage"
+            }
+          ],
+          "help": [
+            "Read what the deposit covers and what remains due."
+          ],
+          "feedback": {
+            "met": "The deposit has a separate stated purpose.",
+            "not_yet": "Read what the deposit covers and what remains due."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hace el depósito?",
+          "scene": "Contrato ficticio: depósito garantiza reclamaciones por daños; la renta mensual sigue pendiente.",
+          "options": [
+            {
+              "label": "Sustituye toda renta"
+            },
+            {
+              "label": "Paga todo servicio"
+            },
+            {
+              "label": "Garantía por daños"
+            }
+          ],
+          "help": [
+            "Lee qué cubre el depósito y qué sigue pendiente."
+          ],
+          "feedback": {
+            "met": "El depósito tiene un propósito separado indicado.",
+            "not_yet": "Lee qué cubre el depósito y qué sigue pendiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Para que serve o depósito?",
+          "scene": "Contrato fictício: depósito garante cobranças por danos; aluguel mensal continua devido.",
+          "options": [
+            {
+              "label": "Substitui todo aluguel"
+            },
+            {
+              "label": "Paga todo serviço"
+            },
+            {
+              "label": "Garantia por danos"
+            }
+          ],
+          "help": [
+            "Leia o que ele cobre e o que continua devido."
+          ],
+          "feedback": {
+            "met": "O depósito tem uma finalidade própria indicada.",
+            "not_yet": "Leia o que ele cobre e o que continua devido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What must happen before leaving?",
+          "scene": "Fictional lease requires written notice before moving out.",
+          "options": [
+            {
+              "label": "Only tell a neighbor"
+            },
+            {
+              "label": "Assume departure gives notice"
+            },
+            {
+              "label": "Send required written notice"
+            }
+          ],
+          "help": [
+            "Follow the notice format stated in this agreement."
+          ],
+          "feedback": {
+            "met": "Leaving alone does not satisfy the stated written-notice condition.",
+            "not_yet": "Follow the notice format stated in this agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué exige salir del inmueble?",
+          "scene": "Contrato ficticio exige aviso escrito antes de mudarte.",
+          "options": [
+            {
+              "label": "Solo avisar al vecino"
+            },
+            {
+              "label": "Suponer que salir avisa"
+            },
+            {
+              "label": "Enviar aviso escrito requerido"
+            }
+          ],
+          "help": [
+            "Sigue el formato de aviso indicado en este contrato."
+          ],
+          "feedback": {
+            "met": "Salir no cumple por sí solo el aviso escrito indicado.",
+            "not_yet": "Sigue el formato de aviso indicado en este contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que exige sair do imóvel?",
+          "scene": "Contrato fictício exige aviso escrito antes da mudança.",
+          "options": [
+            {
+              "label": "Só avisar ao vizinho"
+            },
+            {
+              "label": "Supor que sair basta"
+            },
+            {
+              "label": "Enviar aviso escrito exigido"
+            }
+          ],
+          "help": [
+            "Siga o formato de aviso dado neste contrato."
+          ],
+          "feedback": {
+            "met": "Sair por si só não cumpre o aviso escrito indicado.",
+            "not_yet": "Siga o formato de aviso dado neste contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record helps resolve disagreement?",
+          "scene": "Both parties inspect existing damage before keys change hands.",
+          "options": [
+            {
+              "label": "Dated agreed condition record"
+            },
+            {
+              "label": "Unrelated shopping receipt"
+            },
+            {
+              "label": "Unrecorded memory only"
+            }
+          ],
+          "help": [
+            "Document the condition both parties actually inspected."
+          ],
+          "feedback": {
+            "met": "An agreed starting record distinguishes existing damage from later changes.",
+            "not_yet": "Document the condition both parties actually inspected."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro ayuda ante desacuerdos?",
+          "scene": "Ambas partes revisan daños existentes antes de entregar llaves.",
+          "options": [
+            {
+              "label": "Registro fechado acordado"
+            },
+            {
+              "label": "Recibo de otra compra"
+            },
+            {
+              "label": "Solo memoria sin registro"
+            }
+          ],
+          "help": [
+            "Documenta el estado que ambas partes revisaron."
+          ],
+          "feedback": {
+            "met": "El registro inicial distingue daños existentes de cambios posteriores.",
+            "not_yet": "Documenta el estado que ambas partes revisaron."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registro ajuda num desacordo?",
+          "scene": "Ambas as partes veem danos existentes antes da entrega das chaves.",
+          "options": [
+            {
+              "label": "Registro datado acordado"
+            },
+            {
+              "label": "Recibo de outra compra"
+            },
+            {
+              "label": "Só memória sem registro"
+            }
+          ],
+          "help": [
+            "Registre o estado que ambas as partes viram."
+          ],
+          "feedback": {
+            "met": "O registro inicial distingue danos existentes de mudanças posteriores.",
+            "not_yet": "Registre o estado que ambas as partes viram."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs clarification first?",
+          "scene": "The owner promises free parking; the draft charges for parking.",
+          "options": [
+            {
+              "label": "Assume the promise overrides"
+            },
+            {
+              "label": "Ignore the written charge"
+            },
+            {
+              "label": "Resolve the conflicting terms"
+            }
+          ],
+          "help": [
+            "Request clear agreed terms before signing."
+          ],
+          "feedback": {
+            "met": "Conflicting promises leave the actual obligation unclear.",
+            "not_yet": "Request clear agreed terms before signing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes aclarar primero?",
+          "scene": "Propietario promete estacionamiento gratis; el borrador cobra estacionamiento.",
+          "options": [
+            {
+              "label": "Suponer que manda la promesa"
+            },
+            {
+              "label": "Ignorar el cargo escrito"
+            },
+            {
+              "label": "Resolver condiciones contradictorias"
+            }
+          ],
+          "help": [
+            "Pide condiciones claras acordadas antes de firmar."
+          ],
+          "feedback": {
+            "met": "Las promesas contradictorias dejan la obligación sin aclarar.",
+            "not_yet": "Pide condiciones claras acordadas antes de firmar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer primeiro?",
+          "scene": "Dono promete vaga grátis; o texto cobra pela vaga.",
+          "options": [
+            {
+              "label": "Supor que vale a promessa"
+            },
+            {
+              "label": "Ignorar a cobrança escrita"
+            },
+            {
+              "label": "Resolver termos em conflito"
+            }
+          ],
+          "help": [
+            "Peça termos claros acordados antes de assinar."
+          ],
+          "feedback": {
+            "met": "Promessas em conflito deixam a obrigação sem clareza.",
+            "not_yet": "Peça termos claros acordados antes de assinar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action follows this lease?",
+          "scene": "Fictional clause: tenant reports appliance faults; owner authorizes repairs. The oven stops.",
+          "options": [
+            {
+              "label": "Replace without contacting owner"
+            },
+            {
+              "label": "Stop paying rent automatically"
+            },
+            {
+              "label": "Report before arranging repairs"
+            }
+          ],
+          "help": [
+            "Use this contract’s responsibility and authorization clauses."
+          ],
+          "feedback": {
+            "met": "Reporting follows the stated process for this appliance fault.",
+            "not_yet": "Use this contract’s responsibility and authorization clauses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción sigue este contrato?",
+          "scene": "Cláusula ficticia: inquilino reporta fallas; propietario autoriza reparación. El horno falla.",
+          "options": [
+            {
+              "label": "Reemplazar sin contactar"
+            },
+            {
+              "label": "Dejar de pagar automáticamente"
+            },
+            {
+              "label": "Reportar antes de reparar"
+            }
+          ],
+          "help": [
+            "Usa las cláusulas de responsabilidad y autorización de este contrato."
+          ],
+          "feedback": {
+            "met": "Reportar sigue el proceso indicado para esta falla.",
+            "not_yet": "Usa las cláusulas de responsabilidad y autorización de este contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ação segue este contrato?",
+          "scene": "Cláusula fictícia: morador avisa falhas; dono autoriza conserto. O forno quebra.",
+          "options": [
+            {
+              "label": "Trocar sem contatar"
+            },
+            {
+              "label": "Parar de pagar automaticamente"
+            },
+            {
+              "label": "Avisar antes de consertar"
+            }
+          ],
+          "help": [
+            "Use as cláusulas de responsabilidade e autorização deste contrato."
+          ],
+          "feedback": {
+            "met": "Avisar segue o processo dado para essa falha.",
+            "not_yet": "Use as cláusulas de responsabilidade e autorização deste contrato."
+          }
+        }
+      }
+    }
+  ]
+}

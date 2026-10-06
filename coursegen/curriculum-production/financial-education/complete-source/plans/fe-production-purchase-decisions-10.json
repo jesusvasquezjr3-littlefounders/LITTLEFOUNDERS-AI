@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-2",
+  "lesson_id": "fe-production-purchase-decisions-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize a misleading comparison that uses different quantities or periods.",
+  "title": {
+    "en-US": "Unequal Comparisons",
+    "es-MX": "Detecta comparación desigual",
+    "pt-BR": "Perceba uma comparação desigual"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Unequal Comparisons\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Detecta comparación desigual\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Perceba uma comparação desigual\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.10",
+      "observable_action": "Recognize a misleading comparison that uses different quantities or periods.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.01",
+      "prod.purchase-decisions.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Two prices may describe different quantities or periods; identify the mismatch before trusting the apparent saving.",
+    "misconception": "A smaller displayed number is better even when quantities, periods or service scope differ.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-example-01",
+        "supports_from": [],
+        "reasoning": "Check quantity, time period and included service. Convert to a common basis before declaring one offer cheaper."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Different quantities can explain the apparent price difference."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Weekly and monthly amounts cover different spans of service."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Half the total for half the quantity may not save per unit."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-practice-02",
+        "supports_from": [],
+        "reasoning": "The totals cover different things despite matching periods."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Duration and service differences can drive the price difference."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Unit price and package price are not the same basis."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Two prices may describe different quantities or periods; identify the mismatch before trusting the apparent saving."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Dos precios pueden describir cantidades o periodos distintos; identifica diferencia antes de confiar en ahorro aparente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um preço menor nem sempre poupa dinheiro. Veja quanto leva e por quanto tempo antes de escolher."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match what the price buys",
+          "line": "Check quantity, time period and included service. Convert to a common basis before declaring one offer cheaper."
+        },
+        "es-MX": {
+          "prompt": "Iguala lo que compra precio",
+          "line": "Revisa cantidad, periodo e inclusiones del servicio. Convierte a base común antes de declarar una oferta más barata."
+        },
+        "pt-BR": {
+          "prompt": "Iguale o que o preço compra",
+          "line": "Veja quanto leva e o tempo de uso. Compare preços para a mesma quantidade e o mesmo prazo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How can you compare value?",
+          "scene": "Same product, two package sizes, different prices.",
+          "options": [
+            {
+              "label": "Pick the larger package"
+            },
+            {
+              "label": "Pick the cheaper package"
+            },
+            {
+              "label": "Compare prices for equal quantities"
+            }
+          ],
+          "help": [
+            "Compare common-unit prices rather than package totals alone."
+          ],
+          "feedback": {
+            "met": "Different quantities can explain the apparent price difference.",
+            "not_yet": "Compare common-unit prices rather than package totals alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo comparas lo que recibes?",
+          "scene": "Mismo producto, dos tamaños de paquete y precios distintos.",
+          "options": [
+            {
+              "label": "Elegir el paquete más grande"
+            },
+            {
+              "label": "Elegir el paquete más barato"
+            },
+            {
+              "label": "Comparar precios por la misma cantidad"
+            }
+          ],
+          "help": [
+            "Compara precios unitarios, no solo totales de paquete."
+          ],
+          "feedback": {
+            "met": "Cantidades distintas pueden explicar diferencia aparente de precio.",
+            "not_yet": "Compara precios unitarios, no solo totales de paquete."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como comparar o que recebe?",
+          "scene": "Mesmo produto, dois tamanhos de pacote e preços distintos.",
+          "options": [
+            {
+              "label": "Escolher o pacote maior"
+            },
+            {
+              "label": "Escolher o pacote mais barato"
+            },
+            {
+              "label": "Comparar preços pela mesma quantidade"
+            }
+          ],
+          "help": [
+            "Compare preços unitários, não só totais de pacote."
+          ],
+          "feedback": {
+            "met": "Quantidades distintas podem explicar diferença aparente de preço.",
+            "not_yet": "Compare preços unitários, não só totais de pacote."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What must match before comparing costs?",
+          "scene": "One service advertises a weekly charge beside another’s monthly charge.",
+          "options": [
+            {
+              "label": "The printed price"
+            },
+            {
+              "label": "The payment method"
+            },
+            {
+              "label": "The billing period"
+            }
+          ],
+          "help": [
+            "Convert costs to a common stated period."
+          ],
+          "feedback": {
+            "met": "Weekly and monthly amounts cover different spans of service.",
+            "not_yet": "Convert costs to a common stated period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes igualar para comparar costos?",
+          "scene": "Servicio anuncia cargo semanal junto a mensual de otro.",
+          "options": [
+            {
+              "label": "El precio impreso"
+            },
+            {
+              "label": "El método de pago"
+            },
+            {
+              "label": "El periodo de cobro"
+            }
+          ],
+          "help": [
+            "Convierte costos a un mismo periodo indicado."
+          ],
+          "feedback": {
+            "met": "Montos semanales y mensuales cubren duraciones distintas.",
+            "not_yet": "Convierte costos a un mismo periodo indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve igualar ao comparar custos?",
+          "scene": "Serviço anuncia taxa semanal junto à mensal de outro.",
+          "options": [
+            {
+              "label": "O preço impresso"
+            },
+            {
+              "label": "A forma de pagar"
+            },
+            {
+              "label": "O prazo cobrado"
+            }
+          ],
+          "help": [
+            "Converta custos ao mesmo período dado."
+          ],
+          "feedback": {
+            "met": "Valores semanais e mensais cobrem durações distintas.",
+            "not_yet": "Converta custos ao mesmo período dado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from “half the price”?",
+          "scene": "The cheaper product provides half as many usable units.",
+          "options": [
+            {
+              "label": "The price before discount"
+            },
+            {
+              "label": "Nothing because the number is smaller"
+            },
+            {
+              "label": "A same-quantity comparison"
+            }
+          ],
+          "help": [
+            "Align usable quantity before accepting the saving claim."
+          ],
+          "feedback": {
+            "met": "Half the total for half the quantity may not save per unit.",
+            "not_yet": "Align usable quantity before accepting the saving claim."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en «mitad de precio»?",
+          "scene": "Producto barato ofrece mitad de unidades utilizables.",
+          "options": [
+            {
+              "label": "El precio antes del descuento"
+            },
+            {
+              "label": "Nada porque número es menor"
+            },
+            {
+              "label": "Comparación de misma cantidad"
+            }
+          ],
+          "help": [
+            "Iguala cantidad utilizable antes de aceptar ahorro anunciado."
+          ],
+          "feedback": {
+            "met": "Mitad de total por mitad de cantidad puede no ahorrar por unidad.",
+            "not_yet": "Iguala cantidad utilizable antes de aceptar ahorro anunciado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta em “metade do preço”?",
+          "scene": "Produto barato oferece metade das unidades utilizáveis.",
+          "options": [
+            {
+              "label": "O preço antes do desconto"
+            },
+            {
+              "label": "Nada pois número é menor"
+            },
+            {
+              "label": "Comparação da mesma quantidade"
+            }
+          ],
+          "help": [
+            "Iguale quantidade utilizável antes de aceitar economia anunciada."
+          ],
+          "feedback": {
+            "met": "Metade do total por metade da quantidade pode não poupar por unidade.",
+            "not_yet": "Iguale quantidade utilizável antes de aceitar economia anunciada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Are these totals comparable?",
+          "scene": "One quote covers purchase only; the other includes required maintenance for the same period.",
+          "options": [
+            {
+              "label": "Yes, ignore maintenance"
+            },
+            {
+              "label": "Yes, smaller total always wins"
+            },
+            {
+              "label": "No, align included cost scope"
+            }
+          ],
+          "help": [
+            "Include the same required cost categories."
+          ],
+          "feedback": {
+            "met": "The totals cover different things despite matching periods.",
+            "not_yet": "Include the same required cost categories."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pueden ordenarse directamente estos totales?",
+          "scene": "Cotización cubre solo compra; otra incluye cuidado requerido del mismo periodo.",
+          "options": [
+            {
+              "label": "Sí, ignorar cuidado"
+            },
+            {
+              "label": "Sí, menor total siempre gana"
+            },
+            {
+              "label": "No, igualar costos incluidos"
+            }
+          ],
+          "help": [
+            "Incluye mismas categorías de costos requeridos."
+          ],
+          "feedback": {
+            "met": "Totales cubren cosas distintas pese a periodos iguales.",
+            "not_yet": "Incluye mismas categorías de costos requeridos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode ordenar diretamente estes totais?",
+          "scene": "Cotação cobre só compra; outra inclui cuidado exigido do mesmo período.",
+          "options": [
+            {
+              "label": "Sim, ignorar cuidado"
+            },
+            {
+              "label": "Sim, menor total sempre vence"
+            },
+            {
+              "label": "Não, igualar custos incluídos"
+            }
+          ],
+          "help": [
+            "Inclua mesmas categorias de custos exigidos."
+          ],
+          "feedback": {
+            "met": "Totais cobrem coisas distintas apesar de períodos iguais.",
+            "not_yet": "Inclua mesmas categorias de custos exigidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes this claim testable?",
+          "scene": "Two internet offers list prices but different service duration and included data.",
+          "options": [
+            {
+              "label": "Compare headline numbers alone"
+            },
+            {
+              "label": "Align duration and included service"
+            },
+            {
+              "label": "Assume all plans are identical"
+            }
+          ],
+          "help": [
+            "Compare equivalent service over the same time."
+          ],
+          "feedback": {
+            "met": "Duration and service differences can drive the price difference.",
+            "not_yet": "Compare equivalent service over the same time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué haría comprobable esta afirmación?",
+          "scene": "Ofertas de internet dan precios pero distinta duración y datos incluidos.",
+          "options": [
+            {
+              "label": "Comparar solo números anunciados"
+            },
+            {
+              "label": "Igualar duración y servicio incluido"
+            },
+            {
+              "label": "Suponer todos los planes idénticos"
+            }
+          ],
+          "help": [
+            "Compara servicio equivalente durante mismo tiempo."
+          ],
+          "feedback": {
+            "met": "Duración y servicio pueden causar diferencia de precio.",
+            "not_yet": "Compara servicio equivalente durante mismo tiempo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como conferir qual oferta custa menos?",
+          "scene": "Planos de internet têm preços, prazos e limites de dados distintos.",
+          "options": [
+            {
+              "label": "Comparar só números anunciados"
+            },
+            {
+              "label": "Igualar duração e serviço incluído"
+            },
+            {
+              "label": "Supor todos os planos iguais"
+            }
+          ],
+          "help": [
+            "Compare serviço equivalente durante mesmo tempo."
+          ],
+          "feedback": {
+            "met": "Duração e serviço podem causar diferença de preço.",
+            "not_yet": "Compare serviço equivalente durante mesmo tempo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which flaw explains this “cheaper” claim?",
+          "scene": "A refill’s price per liter is compared with another product’s whole-bottle price.",
+          "options": [
+            {
+              "label": "An irrelevant label difference"
+            },
+            {
+              "label": "Different quantity bases"
+            },
+            {
+              "label": "A proven saving"
+            }
+          ],
+          "help": [
+            "Convert both offers to matching quantity units."
+          ],
+          "feedback": {
+            "met": "Unit price and package price are not the same basis.",
+            "not_yet": "Convert both offers to matching quantity units."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falla explica este «más barato»?",
+          "scene": "Precio por litro de recarga se compara con precio de botella entera de otro producto.",
+          "options": [
+            {
+              "label": "Diferencia irrelevante de etiqueta"
+            },
+            {
+              "label": "Bases de cantidad distintas"
+            },
+            {
+              "label": "Ahorro probado"
+            }
+          ],
+          "help": [
+            "Convierte ambas ofertas a unidades de cantidad iguales."
+          ],
+          "feedback": {
+            "met": "Precio unitario y de paquete no usan misma base.",
+            "not_yet": "Convierte ambas ofertas a unidades de cantidad iguales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que falha explica este “mais barato”?",
+          "scene": "Preço por litro de refil é comparado com preço de garrafa inteira de outro produto.",
+          "options": [
+            {
+              "label": "Diferença irrelevante de rótulo"
+            },
+            {
+              "label": "Quantidades distintas"
+            },
+            {
+              "label": "Economia provada"
+            }
+          ],
+          "help": [
+            "Use a mesma quantidade para comparar as duas ofertas."
+          ],
+          "feedback": {
+            "met": "Preço unitário e de pacote não usam mesma base.",
+            "not_yet": "Use a mesma quantidade para comparar as duas ofertas."
+          }
+        }
+      }
+    }
+  ]
+}

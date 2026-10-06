@@ -1,0 +1,673 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-records-part-2",
+  "lesson_id": "fe-production-credit-records-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-records.06",
+    "finance.prod.credit-records.04",
+    "finance.prod.credit-records.05",
+    "finance.prod.credit-mechanics.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Verify credit claims and respond to an unfamiliar account without treating a score or advertisement as authority.",
+  "title": {
+    "en-US": "Record protection",
+    "es-MX": "Protege el historial",
+    "pt-BR": "Proteja o histórico"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protect the credit record\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Protege el historial\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Proteja o histórico\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.credit-records.06",
+      "observable_action": "Verify credit claims and respond to an unfamiliar account without treating a score or advertisement as authority.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-records.02",
+      "prod.payments-digital.08"
+    ],
+    "retrieval_skills": [
+      "prod.credit-records.04",
+      "prod.credit-records.05",
+      "prod.credit-records.06",
+      "prod.credit-mechanics.01"
+    ],
+    "relevance": "Protect your records while checking what a credit offer actually establishes.",
+    "misconception": "Urgency, a score threshold or a deletion promise establishes the authority of an unsolicited contact.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "A deletion promise does not establish legitimate authority."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The unverified deposit condition still affects eligibility."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-records.06",
+        "context_id": "fe-production-credit-records-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Preserved details support reporting and investigation."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-records-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Interest is a borrowing charge, separate from the principal."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The essential-cost shortfall remains despite lender approval."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-records.06",
+        "context_id": "fe-production-credit-records-review-2-transfer-06",
+        "supports_from": [],
+        "reasoning": "A verified channel can investigate without surrendering your password."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-records.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Protect your records while checking what a credit offer actually establishes."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Protege tus registros al verificar qué demuestra realmente una oferta crediticia."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Proteja seus registros ao verificar o que uma oferta de crédito realmente comprova."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which claim needs independent verification?",
+          "scene": "A service guarantees removing genuine late payments and asks for immediate payment.",
+          "options": [
+            {
+              "label": "Only its advertised discount"
+            },
+            {
+              "label": "Its authority and applicable rules"
+            }
+          ],
+          "help": [
+            "Verify the process independently before sharing records or paying."
+          ],
+          "feedback": {
+            "met": "A deletion promise does not establish legitimate authority.",
+            "not_yet": "Verify the process independently before sharing records or paying."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes verificar aparte?",
+          "scene": "Un servicio garantiza borrar atrasos verdaderos y pide un pago inmediato.",
+          "options": [
+            {
+              "label": "Solo el descuento anunciado"
+            },
+            {
+              "label": "Su autoridad y las reglas aplicables"
+            }
+          ],
+          "help": [
+            "Verifica el procedimiento antes de compartir documentos o pagar."
+          ],
+          "feedback": {
+            "met": "Prometer una eliminación no demuestra autoridad legítima.",
+            "not_yet": "Verifica el procedimiento antes de compartir documentos o pagar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar à parte?",
+          "scene": "Um serviço garante apagar atrasos verdadeiros e pede pagamento imediato.",
+          "options": [
+            {
+              "label": "Só o desconto anunciado"
+            },
+            {
+              "label": "Sua autoridade e as regras aplicáveis"
+            }
+          ],
+          "help": [
+            "Verifique o procedimento antes de compartilhar documentos ou pagar."
+          ],
+          "feedback": {
+            "met": "Prometer uma exclusão não comprova autoridade legítima.",
+            "not_yet": "Verifique o procedimento antes de compartilhar documentos ou pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unresolved?",
+          "scene": "Your score qualifies for an offer that also requires a deposit you have not verified.",
+          "options": [
+            {
+              "label": "Whether you meet every condition"
+            },
+            {
+              "label": "Whether the score exists"
+            }
+          ],
+          "help": [
+            "Check every stated condition, not only the score."
+          ],
+          "feedback": {
+            "met": "The unverified deposit condition still affects eligibility.",
+            "not_yet": "Check every stated condition, not only the score."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue pendiente?",
+          "scene": "Tu puntaje cumple para una oferta que también exige un enganche aún no verificado.",
+          "options": [
+            {
+              "label": "Si cumples todas las condiciones"
+            },
+            {
+              "label": "Si existe el puntaje"
+            }
+          ],
+          "help": [
+            "Revisa todas las condiciones, no solo el puntaje."
+          ],
+          "feedback": {
+            "met": "La condición de enganche pendiente todavía afecta la elegibilidad.",
+            "not_yet": "Revisa todas las condiciones, no solo el puntaje."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua pendente?",
+          "scene": "Sua pontuação atende a uma oferta que também exige entrada ainda não verificada.",
+          "options": [
+            {
+              "label": "Se você atende a todas as condições"
+            },
+            {
+              "label": "Se a pontuação existe"
+            }
+          ],
+          "help": [
+            "Confira todas as condições, não só a pontuação."
+          ],
+          "feedback": {
+            "met": "A condição de entrada pendente ainda afeta a elegibilidade.",
+            "not_yet": "Confira todas as condições, não só a pontuação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action protects the investigation?",
+          "scene": "An unknown account appears after suspicious access to your email.",
+          "options": [
+            {
+              "label": "Preserve details and use verified reporting channels"
+            },
+            {
+              "label": "Delete the report to stop the account"
+            }
+          ],
+          "help": [
+            "Deleting your copy does not close the reported account."
+          ],
+          "feedback": {
+            "met": "Preserved details support reporting and investigation.",
+            "not_yet": "Deleting your copy does not close the reported account."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción protege la investigación?",
+          "scene": "Aparece una cuenta desconocida después de un acceso sospechoso a tu correo.",
+          "options": [
+            {
+              "label": "Conservar datos y reportar por canales verificados"
+            },
+            {
+              "label": "Borrar el reporte para cerrar la cuenta"
+            }
+          ],
+          "help": [
+            "Borrar tu copia no cierra la cuenta reportada."
+          ],
+          "feedback": {
+            "met": "Conservar los datos ayuda al reporte y la investigación.",
+            "not_yet": "Borrar tu copia no cierra la cuenta reportada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ação protege a investigação?",
+          "scene": "Uma conta desconhecida aparece após acesso suspeito ao seu e-mail.",
+          "options": [
+            {
+              "label": "Guardar dados e comunicar por canais verificados"
+            },
+            {
+              "label": "Apagar o relatório para encerrar a conta"
+            }
+          ],
+          "help": [
+            "Apagar sua cópia não encerra a conta informada."
+          ],
+          "feedback": {
+            "met": "Guardar os dados ajuda na comunicação e na investigação.",
+            "not_yet": "Apagar sua cópia não encerra a conta informada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Identify the borrowing charge.",
+          "scene": "The agreement separates borrowed cash from interest for using that cash.",
+          "options": [
+            {
+              "label": "The interest"
+            },
+            {
+              "label": "The borrowed principal"
+            }
+          ],
+          "help": [
+            "Identify what is charged for using the borrowed money."
+          ],
+          "feedback": {
+            "met": "Interest is a borrowing charge, separate from the principal.",
+            "not_yet": "Identify what is charged for using the borrowed money."
+          }
+        },
+        "es-MX": {
+          "prompt": "Identifica el cargo del crédito.",
+          "scene": "El contrato separa el dinero prestado del interés por usarlo.",
+          "options": [
+            {
+              "label": "El interés"
+            },
+            {
+              "label": "El capital prestado"
+            }
+          ],
+          "help": [
+            "Identifica qué se cobra por usar el dinero prestado."
+          ],
+          "feedback": {
+            "met": "El interés es un cargo del crédito, distinto del capital.",
+            "not_yet": "Identifica qué se cobra por usar el dinero prestado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Identifique o encargo do crédito.",
+          "scene": "O contrato separa o dinheiro emprestado dos juros pelo seu uso.",
+          "options": [
+            {
+              "label": "Os juros"
+            },
+            {
+              "label": "O principal emprestado"
+            }
+          ],
+          "help": [
+            "Identifique o que se cobra pelo uso do dinheiro emprestado."
+          ],
+          "feedback": {
+            "met": "Os juros são um encargo do crédito, distinto do principal.",
+            "not_yet": "Identifique o que se cobra pelo uso do dinheiro emprestado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this remove the shortfall?",
+          "scene": "A lender approves a loan, but its payment would displace your essential transport costs.",
+          "options": [
+            {
+              "label": "No, approval does not create income"
+            },
+            {
+              "label": "Yes, approval pays those costs"
+            }
+          ],
+          "help": [
+            "Compare the payment with actual available money."
+          ],
+          "feedback": {
+            "met": "The essential-cost shortfall remains despite lender approval.",
+            "not_yet": "Compare the payment with actual available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esto elimina el faltante?",
+          "scene": "La entidad aprueba un préstamo, pero su pago desplazaría tu transporte esencial.",
+          "options": [
+            {
+              "label": "No, aprobar no crea ingresos"
+            },
+            {
+              "label": "Sí, aprobar cubre esos gastos"
+            }
+          ],
+          "help": [
+            "Compara el pago con el dinero realmente disponible."
+          ],
+          "feedback": {
+            "met": "El faltante para gastos esenciales persiste pese a la aprobación.",
+            "not_yet": "Compara el pago con el dinero realmente disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso elimina a falta?",
+          "scene": "A instituição aprova um empréstimo, mas a parcela comprometeria seu transporte essencial.",
+          "options": [
+            {
+              "label": "Não, aprovar não cria renda"
+            },
+            {
+              "label": "Sim, aprovar cobre esses gastos"
+            }
+          ],
+          "help": [
+            "Compare a parcela com o dinheiro realmente disponível."
+          ],
+          "feedback": {
+            "met": "A falta para despesas essenciais permanece apesar da aprovação.",
+            "not_yet": "Compare a parcela com o dinheiro realmente disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Choose a trusted route.",
+          "scene": "A store account is not yours. A stranger requests your password to remove it.",
+          "options": [
+            {
+              "label": "Contact the store independently"
+            },
+            {
+              "label": "Share your password"
+            }
+          ],
+          "help": [
+            "Never trade access credentials for an unverified correction promise."
+          ],
+          "feedback": {
+            "met": "A verified channel can investigate without surrendering your password.",
+            "not_yet": "Never trade access credentials for an unverified correction promise."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige una vía verificable.",
+          "scene": "El reporte incluye una cuenta de tienda que no abriste. Un extraño pide tu contraseña para arreglarlo.",
+          "options": [
+            {
+              "label": "Contactar la tienda por su canal verificado"
+            },
+            {
+              "label": "Dar la contraseña al extraño"
+            }
+          ],
+          "help": [
+            "No entregues credenciales por una promesa de corrección no verificada."
+          ],
+          "feedback": {
+            "met": "Un canal verificado puede investigar sin entregar tu contraseña.",
+            "not_yet": "No entregues credenciales por una promesa de corrección no verificada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha um caminho verificável.",
+          "scene": "O relatório inclui uma conta de loja que você não abriu. Um desconhecido pede sua senha para resolver.",
+          "options": [
+            {
+              "label": "Contatar a loja pelo canal verificado"
+            },
+            {
+              "label": "Dar a senha ao desconhecido"
+            }
+          ],
+          "help": [
+            "Não entregue credenciais por uma promessa de correção não verificada."
+          ],
+          "feedback": {
+            "met": "Um canal verificado pode investigar sem entregar sua senha.",
+            "not_yet": "Não entregue credenciais por uma promessa de correção não verificada."
+          }
+        }
+      }
+    }
+  ]
+}

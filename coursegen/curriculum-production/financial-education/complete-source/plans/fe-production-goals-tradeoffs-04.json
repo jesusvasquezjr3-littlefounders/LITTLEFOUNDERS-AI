@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-1",
+  "lesson_id": "fe-production-goals-tradeoffs-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rank competing goals using the learner’s stated deadlines and consequences.",
+  "title": {
+    "en-US": "Setting priorities",
+    "es-MX": "Elige un orden",
+    "pt-BR": "Escolha uma ordem"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Choose an order\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Elige un orden\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Escolha uma ordem\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.04",
+      "observable_action": "Rank competing goals using the learner’s stated deadlines and consequences.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.goals-tradeoffs.02",
+      "prod.goals-tradeoffs.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Order goals using their deadlines and stated consequences.",
+    "misconception": "Automatically prioritize the cheapest or most attractive goal.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-example-01",
+        "supports_from": [],
+        "reasoning": "A 30-dollar repair prevents tomorrow’s work disruption; a decoration can wait. The deadline and consequence justify doing the repair first."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated health consequence and deadline justify priority."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "With equal consequences, the earlier deadline matters first."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Consequences matter beyond the sticker price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-practice-02",
+        "supports_from": [],
+        "reasoning": "A marketing deadline does not erase an essential obligation."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Missing constraints prevent a justified ranking."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Reopening depends on the stated safety condition."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Order goals using their deadlines and stated consequences."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Ordena metas usando fechas y consecuencias indicadas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Ordene metas usando prazos e consequências informadas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Deadline plus consequence",
+          "line": "A 30-dollar repair prevents tomorrow’s work disruption; a decoration can wait. The deadline and consequence justify doing the repair first."
+        },
+        "es-MX": {
+          "prompt": "Fecha más consecuencia",
+          "line": "Una reparación de 30 pesos evita interrumpir el trabajo mañana; decorar puede esperar. Fecha y consecuencia justifican reparar primero."
+        },
+        "pt-BR": {
+          "prompt": "Prazo mais consequência",
+          "line": "Um conserto de 30 reais evita interromper o trabalho amanhã; decorar pode esperar. Prazo e consequência justificam consertar primeiro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which goal comes first here?",
+          "scene": "A required medicine runs out tomorrow; optional headphones have no deadline.",
+          "options": [
+            {
+              "label": "Buy headphones"
+            },
+            {
+              "label": "Choose the brighter advertisement"
+            },
+            {
+              "label": "Replace the medicine"
+            }
+          ],
+          "help": [
+            "Use both urgency and consequences."
+          ],
+          "feedback": {
+            "met": "The stated health consequence and deadline justify priority.",
+            "not_yet": "Use both urgency and consequences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué meta va primero aquí?",
+          "scene": "Una medicina necesaria se acaba mañana; audífonos opcionales no tienen fecha límite.",
+          "options": [
+            {
+              "label": "Comprar audífonos"
+            },
+            {
+              "label": "Elegir el anuncio más vistoso"
+            },
+            {
+              "label": "Reponer la medicina"
+            }
+          ],
+          "help": [
+            "Usa urgencia y consecuencias."
+          ],
+          "feedback": {
+            "met": "La consecuencia de salud y fecha indicadas justifican prioridad.",
+            "not_yet": "Usa urgencia y consecuencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual meta vem primeiro aqui?",
+          "scene": "Um remédio necessário acaba amanhã; fones opcionais não têm prazo.",
+          "options": [
+            {
+              "label": "Comprar fones"
+            },
+            {
+              "label": "Escolher o anúncio mais vistoso"
+            },
+            {
+              "label": "Repor o remédio"
+            }
+          ],
+          "help": [
+            "Use urgência e consequências."
+          ],
+          "feedback": {
+            "met": "A consequência de saúde e o prazo informados justificam prioridade.",
+            "not_yet": "Use urgência e consequências."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which deadline needs attention first?",
+          "scene": "Two optional goals have equal importance; one deadline is tomorrow, the other next month.",
+          "options": [
+            {
+              "label": "Next month’s deadline"
+            },
+            {
+              "label": "Tomorrow’s deadline"
+            },
+            {
+              "label": "Neither because both are optional"
+            }
+          ],
+          "help": [
+            "Keep the stated equal importance assumption."
+          ],
+          "feedback": {
+            "met": "With equal consequences, the earlier deadline matters first.",
+            "not_yet": "Keep the stated equal importance assumption."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha requiere atención primero?",
+          "scene": "Dos metas opcionales importan igual; una vence mañana y otra el próximo mes.",
+          "options": [
+            {
+              "label": "La fecha del próximo mes"
+            },
+            {
+              "label": "La fecha de mañana"
+            },
+            {
+              "label": "Ninguna porque son opcionales"
+            }
+          ],
+          "help": [
+            "Conserva la importancia igual indicada."
+          ],
+          "feedback": {
+            "met": "Con consecuencias iguales, importa primero la fecha más cercana.",
+            "not_yet": "Conserva la importancia igual indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual prazo exige atenção primeiro?",
+          "scene": "Duas metas opcionais importam igualmente; uma vence amanhã e outra no próximo mês.",
+          "options": [
+            {
+              "label": "O prazo do próximo mês"
+            },
+            {
+              "label": "O prazo de amanhã"
+            },
+            {
+              "label": "Nenhum porque são opcionais"
+            }
+          ],
+          "help": [
+            "Mantenha a importância igual informada."
+          ],
+          "feedback": {
+            "met": "Com consequências iguais, importa primeiro o prazo mais próximo.",
+            "not_yet": "Mantenha a importância igual informada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fact supports repairing first?",
+          "scene": "A cheap decoration competes with a necessary repair that prevents water damage.",
+          "options": [
+            {
+              "label": "The decoration’s lower price"
+            },
+            {
+              "label": "The decoration’s color"
+            },
+            {
+              "label": "Avoiding the stated damage"
+            }
+          ],
+          "help": [
+            "Compare what waiting would cause."
+          ],
+          "feedback": {
+            "met": "Consequences matter beyond the sticker price.",
+            "not_yet": "Compare what waiting would cause."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato justifica reparar primero?",
+          "scene": "Una decoración barata compite con una reparación necesaria que evita daños por agua.",
+          "options": [
+            {
+              "label": "El menor precio de la decoración"
+            },
+            {
+              "label": "El color de la decoración"
+            },
+            {
+              "label": "Evitar el daño indicado"
+            }
+          ],
+          "help": [
+            "Compara qué causaría esperar."
+          ],
+          "feedback": {
+            "met": "Las consecuencias importan más allá del precio.",
+            "not_yet": "Compara qué causaría esperar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado justifica consertar primeiro?",
+          "scene": "Uma decoração barata compete com um conserto necessário que evita danos por água.",
+          "options": [
+            {
+              "label": "O menor preço da decoração"
+            },
+            {
+              "label": "A cor da decoração"
+            },
+            {
+              "label": "Evitar o dano informado"
+            }
+          ],
+          "help": [
+            "Compare o que esperar causaria."
+          ],
+          "feedback": {
+            "met": "As consequências importam além do preço.",
+            "not_yet": "Compare o que esperar causaria."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the sale alone decide priority?",
+          "scene": "An unnecessary item’s sale ends tonight; an essential bill is due.",
+          "options": [
+            {
+              "label": "Yes, every sale is urgent"
+            },
+            {
+              "label": "No, include the bill’s consequence"
+            },
+            {
+              "label": "Yes, deadlines replace needs"
+            }
+          ],
+          "help": [
+            "Check what is at risk if each goal waits."
+          ],
+          "feedback": {
+            "met": "A marketing deadline does not erase an essential obligation.",
+            "not_yet": "Check what is at risk if each goal waits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La fecha de oferta decide sola la prioridad?",
+          "scene": "Una oferta termina hoy, pero el artículo es innecesario y vence una cuenta esencial.",
+          "options": [
+            {
+              "label": "Sí, toda oferta es urgente"
+            },
+            {
+              "label": "No, incluye la consecuencia de la cuenta"
+            },
+            {
+              "label": "Sí, fechas sustituyen necesidades"
+            }
+          ],
+          "help": [
+            "Revisa qué se arriesga al esperar cada meta."
+          ],
+          "feedback": {
+            "met": "Una fecha comercial no borra una obligación esencial.",
+            "not_yet": "Revisa qué se arriesga al esperar cada meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O prazo da oferta decide sozinho a prioridade?",
+          "scene": "Uma oferta termina hoje, mas o item é desnecessário e vence uma conta essencial.",
+          "options": [
+            {
+              "label": "Sim, toda oferta é urgente"
+            },
+            {
+              "label": "Não, inclua a consequência da conta"
+            },
+            {
+              "label": "Sim, prazos substituem necessidades"
+            }
+          ],
+          "help": [
+            "Confira o que está em risco se cada meta esperar."
+          ],
+          "feedback": {
+            "met": "Um prazo comercial não apaga uma obrigação essencial.",
+            "not_yet": "Confira o que está em risco se cada meta esperar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What is needed before ranking them?",
+          "scene": "Two goals have no stated dates or consequences.",
+          "options": [
+            {
+              "label": "Copy someone else’s order"
+            },
+            {
+              "label": "Clarify dates and consequences"
+            },
+            {
+              "label": "Assume the larger goal wins"
+            }
+          ],
+          "help": [
+            "Do not invent priorities for another person."
+          ],
+          "feedback": {
+            "met": "Missing constraints prevent a justified ranking.",
+            "not_yet": "Do not invent priorities for another person."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de ordenarlas?",
+          "scene": "Dos metas no tienen fechas ni consecuencias indicadas.",
+          "options": [
+            {
+              "label": "Copiar el orden de otra persona"
+            },
+            {
+              "label": "Aclarar fechas y consecuencias"
+            },
+            {
+              "label": "Suponer que gana la meta mayor"
+            }
+          ],
+          "help": [
+            "No inventes prioridades de otra persona."
+          ],
+          "feedback": {
+            "met": "La falta de condiciones impide un orden justificado.",
+            "not_yet": "No inventes prioridades de otra persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de ordená-las?",
+          "scene": "Duas metas não têm prazos nem consequências informadas.",
+          "options": [
+            {
+              "label": "Copiar a ordem de outra pessoa"
+            },
+            {
+              "label": "Esclarecer prazos e consequências"
+            },
+            {
+              "label": "Supor que vence a meta maior"
+            }
+          ],
+          "help": [
+            "Não invente prioridades de outra pessoa."
+          ],
+          "feedback": {
+            "met": "A falta de condições impede uma ordem justificada.",
+            "not_yet": "Não invente prioridades de outra pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which goal should lead this plan?",
+          "scene": "A shared kitchen needs a safety repair before reopening; repainting has no operational consequence.",
+          "options": [
+            {
+              "label": "Whichever looks nicer"
+            },
+            {
+              "label": "The safety repair"
+            },
+            {
+              "label": "Repainting first"
+            }
+          ],
+          "help": [
+            "Use the outcome the plan must protect."
+          ],
+          "feedback": {
+            "met": "Reopening depends on the stated safety condition.",
+            "not_yet": "Use the outcome the plan must protect."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué meta debe encabezar este plan?",
+          "scene": "Una cocina compartida necesita reparación de seguridad para reabrir; pintar no afecta la operación.",
+          "options": [
+            {
+              "label": "Lo que se vea más bonito"
+            },
+            {
+              "label": "La reparación de seguridad"
+            },
+            {
+              "label": "Pintar primero"
+            }
+          ],
+          "help": [
+            "Usa el resultado que el plan debe proteger."
+          ],
+          "feedback": {
+            "met": "Reabrir depende de la condición de seguridad indicada.",
+            "not_yet": "Usa el resultado que el plan debe proteger."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual meta deve iniciar este plano?",
+          "scene": "Uma cozinha compartilhada precisa de conserto de segurança para reabrir; pintar não afeta a operação.",
+          "options": [
+            {
+              "label": "O que parecer mais bonito"
+            },
+            {
+              "label": "O conserto de segurança"
+            },
+            {
+              "label": "Pintar primeiro"
+            }
+          ],
+          "help": [
+            "Use o resultado que o plano deve proteger."
+          ],
+          "feedback": {
+            "met": "Reabrir depende da condição de segurança informada.",
+            "not_yet": "Use o resultado que o plano deve proteger."
+          }
+        }
+      }
+    }
+  ]
+}

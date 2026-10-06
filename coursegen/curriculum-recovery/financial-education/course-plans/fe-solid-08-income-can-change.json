@@ -1,0 +1,826 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-02-a-plan-that-fits",
+  "lesson_id": "fe-solid-08-income-can-change",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.uncertain-income"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate confirmed resources from uncertain income and revise optional spending when an expected receipt does not arrive.",
+  "title": {
+    "en-US": "Income can change",
+    "es-MX": "El ingreso puede cambiar",
+    "pt-BR": "A renda pode mudar"
+  },
+  "new_concepts": [
+    "finance.plan.uncertain-income"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Income can change\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El ingreso puede cambiar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"A renda pode mudar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "plan.uncertain-income",
+      "observable_action": "Separate confirmed resources from uncertain income and revise optional spending when an expected receipt does not arrive.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.reserved",
+      "plan.priority"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A useful plan still works when a hoped-for payment is late. Separate what is confirmed from what might arrive.",
+    "misconception": "Treating an unusually good month or an unconfirmed job as a guaranteed baseline.",
+    "numeracy_support": "Use comparisons and subtraction already demonstrated; uncertainty is described explicitly.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-example-01",
+        "supports_from": [],
+        "reasoning": "Ana has 100 available; a possible repair could bring 50. The repair is unconfirmed, so only 100 is available."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-example-02",
+        "supports_from": [],
+        "reasoning": "Necessary payments use 80, leaving 20. She can revise the plan if the extra payment actually arrives."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The possible repair has not produced a received payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The optional purchase depended on money that did not arrive."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-practice-01",
+        "supports_from": [],
+        "reasoning": "One unusually strong month does not establish a guaranteed monthly amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-practice-02",
+        "supports_from": [],
+        "reasoning": "The note distinguishes uncertainty from confirmed resources."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-practice-03",
+        "supports_from": [],
+        "reasoning": "Revising an optional future commitment responds to the changed resources."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "income-can-change-transfer-01",
+        "supports_from": [],
+        "reasoning": "A canceled unpaid sale does not fund the purchase."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.uncertain-income",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A useful plan still works when a hoped-for payment is late. Separate what is confirmed from what might arrive."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan útil considera que un pago esperado puede tardar. Separa lo confirmado de lo que podría llegar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano útil considera que um pagamento esperado pode atrasar. Separe o confirmado do que pode chegar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Confirmed and possible",
+          "line": "Ana has 100 available; a possible repair could bring 50. The repair is unconfirmed, so only 100 is available."
+        },
+        "es-MX": {
+          "prompt": "Confirmado y posible",
+          "line": "Ana tiene 100 disponibles; un posible trabajo daría 50. No está acordado, así que solo dispone de 100 hoy."
+        },
+        "pt-BR": {
+          "prompt": "Confirmado e possível",
+          "line": "Ana tem 100 disponíveis; um possível serviço renderia 50. Não foi combinado, então só dispõe de 100 agora."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Adjust the optional part",
+          "line": "Necessary payments use 80, leaving 20. She can revise the plan if the extra payment actually arrives."
+        },
+        "es-MX": {
+          "prompt": "Ajusta la parte opcional",
+          "line": "Sus pagos necesarios usan 80. Puede planear con los 20 restantes y ajustar si el pago extra realmente llega."
+        },
+        "pt-BR": {
+          "prompt": "Ajuste a parte opcional",
+          "line": "Seus pagamentos necessários usam 80. Pode planejar com os 20 restantes e ajustar se o pagamento extra chegar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount is available now?",
+          "scene": "You have 100. A possible repair might bring 50, but it is not agreed.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Separate money held from a possible future receipt."
+          ],
+          "feedback": {
+            "met": "The possible repair has not produced a received payment.",
+            "not_yet": "Separate money held from a possible future receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto está disponible hoy?",
+          "scene": "Tienes 100. Un posible trabajo daría 50, pero no está acordado.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Separa el dinero que tienes de una posible entrada futura."
+          ],
+          "feedback": {
+            "met": "El posible trabajo no ha producido un pago recibido.",
+            "not_yet": "Separa el dinero que tienes de una posible entrada futura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor está disponível agora?",
+          "scene": "Você tem 100. Um possível serviço renderia 50, mas não foi combinado.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Separe o dinheiro que tem de uma possível entrada futura."
+          ],
+          "feedback": {
+            "met": "O possível serviço não produziu um pagamento recebido.",
+            "not_yet": "Separe o dinheiro que tem de uma possível entrada futura."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          50
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes when the extra income fails?",
+          "scene": "Essentials are covered. An optional purchase needed an unconfirmed payment.",
+          "options": [
+            {
+              "label": "Assume it will arrive immediately"
+            },
+            {
+              "label": "Reconsider the optional purchase"
+            },
+            {
+              "label": "Count the unpaid amount anyway"
+            }
+          ],
+          "help": [
+            "Update the decision that relied on the uncertain amount."
+          ],
+          "feedback": {
+            "met": "The optional purchase depended on money that did not arrive.",
+            "not_yet": "Update the decision that relied on the uncertain amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia si no llega el ingreso extra?",
+          "scene": "Los pagos necesarios están protegidos. Una compra opcional dependía de un pago extra sin confirmar.",
+          "options": [
+            {
+              "label": "Suponer que llegará de inmediato"
+            },
+            {
+              "label": "Reconsiderar la compra opcional"
+            },
+            {
+              "label": "Contar lo no recibido de todos modos"
+            }
+          ],
+          "help": [
+            "Ajusta la decisión que dependía del monto incierto."
+          ],
+          "feedback": {
+            "met": "La compra opcional dependía de dinero que no llegó.",
+            "not_yet": "Ajusta la decisión que dependía del monto incierto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda se a renda extra não chegar?",
+          "scene": "Os pagamentos necessários estão protegidos. Uma compra opcional dependia de um pagamento extra não confirmado.",
+          "options": [
+            {
+              "label": "Supor que chegará imediatamente"
+            },
+            {
+              "label": "Reconsiderar a compra opcional"
+            },
+            {
+              "label": "Contar o não recebido mesmo assim"
+            }
+          ],
+          "help": [
+            "Ajuste a decisão que dependia do valor incerto."
+          ],
+          "feedback": {
+            "met": "A compra opcional dependia de dinheiro que não chegou.",
+            "not_yet": "Ajuste a decisão que dependia do valor incerto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you plan recurring expenses?",
+          "scene": "Festival earnings exceeded the usual monthly income.",
+          "options": [
+            {
+              "label": "Treat festival income as guaranteed"
+            },
+            {
+              "label": "Check ordinary months before committing"
+            },
+            {
+              "label": "Commit that amount to monthly expenses"
+            }
+          ],
+          "help": [
+            "A past result is not a promise about future receipts."
+          ],
+          "feedback": {
+            "met": "One unusually strong month does not establish a guaranteed monthly amount.",
+            "not_yet": "A past result is not a promise about future receipts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo planear los gastos recurrentes?",
+          "scene": "Una persona ganó mucho más durante un festival que en los meses anteriores.",
+          "options": [
+            {
+              "label": "Usar ese ingreso como garantía mensual"
+            },
+            {
+              "label": "Revisar meses normales antes de comprometer gastos"
+            },
+            {
+              "label": "Fijar gastos según ese mes"
+            }
+          ],
+          "help": [
+            "Un resultado pasado no promete futuras entradas."
+          ],
+          "feedback": {
+            "met": "Un mes excepcional no establece un monto mensual garantizado.",
+            "not_yet": "Un resultado pasado no promete futuras entradas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como planejar gastos recorrentes?",
+          "scene": "Uma pessoa ganhou muito mais durante um festival do que nos meses anteriores.",
+          "options": [
+            {
+              "label": "Usar essa renda como garantia mensal"
+            },
+            {
+              "label": "Rever meses normais antes de comprometer gastos"
+            },
+            {
+              "label": "Fixar gastos conforme esse mês"
+            }
+          ],
+          "help": [
+            "Um resultado passado não promete entradas futuras."
+          ],
+          "feedback": {
+            "met": "Um mês excepcional não estabelece um valor mensal garantido.",
+            "not_yet": "Um resultado passado não promete entradas futuras."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan exposes its uncertainty?",
+          "scene": "You are choosing a note for a possible payment.",
+          "options": [
+            {
+              "label": "Money: definitely available"
+            },
+            {
+              "label": "No need to review this later"
+            },
+            {
+              "label": "Possible receipt: not confirmed"
+            }
+          ],
+          "help": [
+            "An honest plan labels what is not yet known."
+          ],
+          "feedback": {
+            "met": "The note distinguishes uncertainty from confirmed resources.",
+            "not_yet": "An honest plan labels what is not yet known."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan muestra su incertidumbre?",
+          "scene": "Eliges una nota para un posible pago.",
+          "options": [
+            {
+              "label": "Dinero: disponible sin duda"
+            },
+            {
+              "label": "No hace falta revisarlo después"
+            },
+            {
+              "label": "Posible entrada: sin confirmar"
+            }
+          ],
+          "help": [
+            "Un plan útil señala lo que aún no se sabe."
+          ],
+          "feedback": {
+            "met": "La nota distingue la incertidumbre de los recursos confirmados.",
+            "not_yet": "Un plan útil señala lo que aún no se sabe."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano mostra sua incerteza?",
+          "scene": "Você escolhe uma anotação para um possível pagamento.",
+          "options": [
+            {
+              "label": "Dinheiro: disponível com certeza"
+            },
+            {
+              "label": "Não é preciso revisar depois"
+            },
+            {
+              "label": "Possível entrada: não confirmada"
+            }
+          ],
+          "help": [
+            "Um plano útil indica o que ainda não se sabe."
+          ],
+          "feedback": {
+            "met": "A nota distingue a incerteza dos recursos confirmados.",
+            "not_yet": "Um plano útil indica o que ainda não se sabe."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be revised first?",
+          "scene": "Payment is delayed. Food is covered; decorations remain optional.",
+          "options": [
+            {
+              "label": "The completed food payment"
+            },
+            {
+              "label": "The fact that the payment is late"
+            },
+            {
+              "label": "The optional decoration order"
+            }
+          ],
+          "help": [
+            "Change what is still controllable rather than rewriting a completed event."
+          ],
+          "feedback": {
+            "met": "Revising an optional future commitment responds to the changed resources.",
+            "not_yet": "Change what is still controllable rather than rewriting a completed event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conviene revisar primero?",
+          "scene": "Se retrasa un pago esperado. La comida necesaria está protegida; un pedido decorativo aún es opcional.",
+          "options": [
+            {
+              "label": "El pago de comida ya realizado"
+            },
+            {
+              "label": "El hecho de que el pago se retrasó"
+            },
+            {
+              "label": "El pedido decorativo opcional"
+            }
+          ],
+          "help": [
+            "Cambia lo que aún puedes controlar, no un hecho ya realizado."
+          ],
+          "feedback": {
+            "met": "Revisar un compromiso futuro opcional responde al cambio de recursos.",
+            "not_yet": "Cambia lo que aún puedes controlar, no un hecho ya realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que revisar primeiro?",
+          "scene": "Um pagamento esperado atrasa. A comida necessária está protegida; um pedido decorativo ainda é opcional.",
+          "options": [
+            {
+              "label": "O pagamento de comida já feito"
+            },
+            {
+              "label": "O fato de o pagamento ter atrasado"
+            },
+            {
+              "label": "O pedido decorativo opcional"
+            }
+          ],
+          "help": [
+            "Mude o que ainda controla, não um fato já realizado."
+          ],
+          "feedback": {
+            "met": "Revisar um compromisso futuro opcional responde à mudança de recursos.",
+            "not_yet": "Mude o que ainda controla, não um fato já realizado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "How does your plan change?",
+          "scene": "A buyer cancels without paying; your purchase depended on that sale.",
+          "options": [
+            {
+              "label": "Count the canceled sale"
+            },
+            {
+              "label": "Remove that expected receipt"
+            },
+            {
+              "label": "The agreed price remains available"
+            }
+          ],
+          "help": [
+            "Update the resource that your purchase depended on."
+          ],
+          "feedback": {
+            "met": "A canceled unpaid sale does not fund the purchase.",
+            "not_yet": "Update the resource that your purchase depended on."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia en tu plan de compra?",
+          "scene": "Planeaste una compra tras vender una silla usada. El comprador cancela sin pagar.",
+          "options": [
+            {
+              "label": "La venta cancelada cuenta como ingreso"
+            },
+            {
+              "label": "Quitar esa entrada esperada"
+            },
+            {
+              "label": "El precio acordado sigue disponible"
+            }
+          ],
+          "help": [
+            "Actualiza el recurso del que dependía tu compra."
+          ],
+          "feedback": {
+            "met": "Una venta cancelada y no pagada no financia la compra.",
+            "not_yet": "Actualiza el recurso del que dependía tu compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda no plano de compra?",
+          "scene": "Você planejou uma compra após vender uma cadeira usada. O comprador cancela sem pagar.",
+          "options": [
+            {
+              "label": "A venda cancelada conta como renda"
+            },
+            {
+              "label": "Retirar essa entrada esperada"
+            },
+            {
+              "label": "O preço combinado continua disponível"
+            }
+          ],
+          "help": [
+            "Atualize o recurso do qual sua compra dependia."
+          ],
+          "feedback": {
+            "met": "Uma venda cancelada e não paga não financia a compra.",
+            "not_yet": "Atualize o recurso do qual sua compra dependia."
+          }
+        }
+      }
+    }
+  ]
+}

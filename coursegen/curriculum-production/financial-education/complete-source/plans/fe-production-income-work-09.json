@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-2",
+  "lesson_id": "fe-production-income-work-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare two work arrangements using stated net income, time and necessary costs.",
+  "title": {
+    "en-US": "Comparing work",
+    "es-MX": "Compara el acuerdo completo",
+    "pt-BR": "Compare o acordo inteiro"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Compare the whole arrangement\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara el acuerdo completo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare o acordo inteiro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.09",
+      "observable_action": "Compare two work arrangements using stated net income, time and necessary costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.04",
+      "prod.income-work.05",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare work using received pay, required costs and time together.",
+    "misconception": "Choose the larger headline payment without accounting for costs or time constraints.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-example-01",
+        "supports_from": [],
+        "reasoning": "A shift pays 100 dollars minus 30 travel: 70 remains. Another pays 85 without costs, leaving more."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A leaves seventy; B leaves eighty under these terms."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Equal pay can come with unequal time commitments."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-practice-01",
+        "supports_from": [],
+        "reasoning": "The care constraint limits which offer is feasible."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Different pay periods require a common time basis."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-practice-03",
+        "supports_from": [],
+        "reasoning": "An unknown necessary cost can change the comparison."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "Remote leaves one hundred thirty; onsite leaves one hundred twenty."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare work using received pay, required costs and time together."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara trabajo usando pago recibido, costos necesarios y tiempo juntos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare trabalho usando pagamento recebido, custos necessários e tempo juntos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same comparison window",
+          "line": "A shift pays 100 dollars minus 30 travel: 70 remains. Another pays 85 without costs, leaving more."
+        },
+        "es-MX": {
+          "prompt": "La misma ventana de comparación",
+          "line": "Un turno paga 100 pesos con 30 de viaje; otro paga 85 sin viaje. Después de costos quedan 70 y 85."
+        },
+        "pt-BR": {
+          "prompt": "A mesma janela de comparação",
+          "line": "Um turno paga 100 reais com 30 de viagem; outro paga 85 sem viagem. Após custos sobram 70 e 85."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which leaves more after stated costs?",
+          "scene": "Same hours: A pays 90 after deductions with 20 travel; B pays 80 with no costs.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "They leave the same"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare after-cost amounts for the same hours."
+          ],
+          "feedback": {
+            "met": "A leaves seventy; B leaves eighty under these terms.",
+            "not_yet": "Compare after-cost amounts for the same hours."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál deja más tras costos indicados?",
+          "scene": "Mismas horas: A paga 90 netos con viaje de 20; B paga 80 sin costos.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Dejan igual"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compara montos tras costos para horas iguales."
+          ],
+          "feedback": {
+            "met": "A deja setenta; B deja ochenta bajo estas condiciones.",
+            "not_yet": "Compara montos tras costos para horas iguales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual deixa mais após custos informados?",
+          "scene": "Mesmas horas: A paga 90 líquidos com viagem de 20; B paga 80 sem custos.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Deixam igual"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare valores após custos para horas iguais."
+          ],
+          "feedback": {
+            "met": "A deixa setenta; B deixa oitenta sob essas condições.",
+            "not_yet": "Compare valores após custos para horas iguais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which extra comparison matters?",
+          "scene": "Two offers have equal after-cost pay but require different hours.",
+          "options": [
+            {
+              "label": "Only the equal pay"
+            },
+            {
+              "label": "Total time required"
+            },
+            {
+              "label": "Nothing beyond pay ever matters"
+            }
+          ],
+          "help": [
+            "Keep time and money visible together."
+          ],
+          "feedback": {
+            "met": "Equal pay can come with unequal time commitments.",
+            "not_yet": "Keep time and money visible together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación adicional importa?",
+          "scene": "Dos ofertas dejan igual pago tras costos, pero requieren horas distintas.",
+          "options": [
+            {
+              "label": "Solo el pago igual"
+            },
+            {
+              "label": "Tiempo total requerido"
+            },
+            {
+              "label": "Nada fuera del pago importa"
+            }
+          ],
+          "help": [
+            "Mantén visibles tiempo y dinero juntos."
+          ],
+          "feedback": {
+            "met": "Un pago igual puede exigir tiempos distintos.",
+            "not_yet": "Mantén visibles tiempo y dinero juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação adicional importa?",
+          "scene": "Duas ofertas deixam pagamento igual após custos, mas exigem horas diferentes.",
+          "options": [
+            {
+              "label": "Só o pagamento igual"
+            },
+            {
+              "label": "Tempo total exigido"
+            },
+            {
+              "label": "Nada além do pagamento importa"
+            }
+          ],
+          "help": [
+            "Mantenha tempo e dinheiro visíveis juntos."
+          ],
+          "feedback": {
+            "met": "Pagamento igual pode exigir tempos diferentes.",
+            "not_yet": "Mantenha tempo e dinheiro visíveis juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which shift fits?",
+          "scene": "A shift fits your available hours; another overlaps required caregiving with no replacement.",
+          "options": [
+            {
+              "label": "Either regardless of timing"
+            },
+            {
+              "label": "The shift that fits available hours"
+            },
+            {
+              "label": "Only the higher headline payment"
+            }
+          ],
+          "help": [
+            "Do not invent replacement care."
+          ],
+          "feedback": {
+            "met": "The care constraint limits which offer is feasible.",
+            "not_yet": "Do not invent replacement care."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es viable bajo esa condición?",
+          "scene": "Un turno cabe en tus horas; otro coincide con cuidados necesarios sin reemplazo.",
+          "options": [
+            {
+              "label": "Cualquiera sin importar horario"
+            },
+            {
+              "label": "El turno que cabe en tus horas"
+            },
+            {
+              "label": "Solo el pago anunciado mayor"
+            }
+          ],
+          "help": [
+            "No inventes cuidado de reemplazo."
+          ],
+          "feedback": {
+            "met": "La condición de cuidados limita qué oferta es viable.",
+            "not_yet": "No inventes cuidado de reemplazo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é viável sob essa condição?",
+          "scene": "Um turno cabe nas suas horas; outro coincide com cuidado necessário sem substituto.",
+          "options": [
+            {
+              "label": "Qualquer um sem importar horário"
+            },
+            {
+              "label": "O turno que cabe nas suas horas"
+            },
+            {
+              "label": "Só o maior pagamento anunciado"
+            }
+          ],
+          "help": [
+            "Não invente cuidado substituto."
+          ],
+          "feedback": {
+            "met": "A condição de cuidado limita qual oferta é viável.",
+            "not_yet": "Não invente cuidado substituto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "How to compare these amounts?",
+          "scene": "One offer lists weekly pay; another lists monthly pay.",
+          "options": [
+            {
+              "label": "Assume every month has four weeks"
+            },
+            {
+              "label": "Compare the printed numbers directly"
+            },
+            {
+              "label": "Convert to the same stated period"
+            }
+          ],
+          "help": [
+            "Use actual stated dates or lengths."
+          ],
+          "feedback": {
+            "met": "Different pay periods require a common time basis.",
+            "not_yet": "Use actual stated dates or lengths."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer antes de juzgar el número mayor?",
+          "scene": "Una oferta indica pago semanal; otra mensual.",
+          "options": [
+            {
+              "label": "Suponer cuatro semanas en todo mes"
+            },
+            {
+              "label": "Comparar números impresos directamente"
+            },
+            {
+              "label": "Convertir al mismo periodo indicado"
+            }
+          ],
+          "help": [
+            "Usa fechas o duraciones indicadas reales."
+          ],
+          "feedback": {
+            "met": "Periodos de pago distintos requieren una base común.",
+            "not_yet": "Usa fechas o duraciones indicadas reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer antes de julgar o número maior?",
+          "scene": "Uma oferta informa pagamento semanal; outra mensal.",
+          "options": [
+            {
+              "label": "Supor quatro semanas em todo mês"
+            },
+            {
+              "label": "Comparar números impressos diretamente"
+            },
+            {
+              "label": "Converter ao mesmo período informado"
+            }
+          ],
+          "help": [
+            "Use datas ou durações reais informadas."
+          ],
+          "feedback": {
+            "met": "Períodos de pagamento diferentes exigem base comum.",
+            "not_yet": "Use datas ou durações reais informadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Is an exact after-cost comparison ready?",
+          "scene": "An offer’s required equipment cost is unknown.",
+          "options": [
+            {
+              "label": "No, obtain the missing cost"
+            },
+            {
+              "label": "Yes, assume zero"
+            },
+            {
+              "label": "Yes, use the more attractive title"
+            }
+          ],
+          "help": [
+            "Do not hide missing facts inside a precise total."
+          ],
+          "feedback": {
+            "met": "An unknown necessary cost can change the comparison.",
+            "not_yet": "Do not hide missing facts inside a precise total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Está lista una comparación exacta tras costos?",
+          "scene": "No se conoce el costo del equipo necesario de una oferta.",
+          "options": [
+            {
+              "label": "No, obtén el costo faltante"
+            },
+            {
+              "label": "Sí, supone cero"
+            },
+            {
+              "label": "Sí, usa el título más atractivo"
+            }
+          ],
+          "help": [
+            "No ocultes datos faltantes dentro de un total preciso."
+          ],
+          "feedback": {
+            "met": "Un costo necesario desconocido puede cambiar la comparación.",
+            "not_yet": "No ocultes datos faltantes dentro de un total preciso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Está pronta uma comparação exata após custos?",
+          "scene": "O custo do equipamento necessário de uma oferta é desconhecido.",
+          "options": [
+            {
+              "label": "Não, obtenha o custo faltante"
+            },
+            {
+              "label": "Sim, suponha zero"
+            },
+            {
+              "label": "Sim, use o título mais atraente"
+            }
+          ],
+          "help": [
+            "Não esconda dados faltantes dentro de um total preciso."
+          ],
+          "feedback": {
+            "met": "Um custo necessário desconhecido pode mudar a comparação.",
+            "not_yet": "Não esconda dados faltantes dentro de um total preciso."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which leaves more under these terms?",
+          "scene": "Equal-duration projects: remote pays 140 with 10 required supplies; onsite pays 160 with 40 travel.",
+          "options": [
+            {
+              "label": "The onsite project"
+            },
+            {
+              "label": "The remote project"
+            },
+            {
+              "label": "They are equal"
+            }
+          ],
+          "help": [
+            "Compare each payment after its own required costs."
+          ],
+          "feedback": {
+            "met": "Remote leaves one hundred thirty; onsite leaves one hundred twenty.",
+            "not_yet": "Compare each payment after its own required costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál deja más bajo esas condiciones?",
+          "scene": "Proyectos de igual duración: remoto paga 140 con insumos de 10; presencial paga 160 con viaje de 40.",
+          "options": [
+            {
+              "label": "El proyecto presencial"
+            },
+            {
+              "label": "El proyecto remoto"
+            },
+            {
+              "label": "Son iguales"
+            }
+          ],
+          "help": [
+            "Compara cada pago tras sus propios costos necesarios."
+          ],
+          "feedback": {
+            "met": "Remoto deja ciento treinta; presencial deja ciento veinte.",
+            "not_yet": "Compara cada pago tras sus propios costos necesarios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual deixa mais sob essas condições?",
+          "scene": "Projetos de igual duração: remoto paga 140 com materiais de 10; presencial paga 160 com viagem de 40.",
+          "options": [
+            {
+              "label": "O projeto presencial"
+            },
+            {
+              "label": "O projeto remoto"
+            },
+            {
+              "label": "São iguais"
+            }
+          ],
+          "help": [
+            "Compare cada pagamento após seus próprios custos necessários."
+          ],
+          "feedback": {
+            "met": "Remoto deixa cento e trinta; presencial deixa cento e vinte.",
+            "not_yet": "Compare cada pagamento após seus próprios custos necessários."
+          }
+        }
+      }
+    }
+  ]
+}

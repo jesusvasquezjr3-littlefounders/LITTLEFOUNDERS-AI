@@ -1,0 +1,731 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-2",
+  "lesson_id": "fe-production-investment-comparison-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check whether a proposed portfolio adjustment restores a stated allocation or follows recent hype.",
+  "title": {
+    "en-US": "Restore Allocation",
+    "es-MX": "Regresa a la mezcla elegida",
+    "pt-BR": "Volte à composição escolhida"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Restore Allocation\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Regresa a la mezcla elegida\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Volte à composição escolhida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.08",
+      "observable_action": "Check whether a proposed portfolio adjustment restores a stated allocation or follows recent hype.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.09",
+      "price.percent"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A portfolio change can restore a plan or abandon it to chase yesterday’s winner.",
+    "misconception": "Buying more of the recent winner is always the same as restoring the chosen allocation.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-example-01",
+        "supports_from": [],
+        "reasoning": "A plan splits money equally between two groups. One grows larger; restoring equal shares differs from buying more of it."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The target calls for less relative weight in A."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Adding to an overweight holding moves farther from the target."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-practice-01",
+        "supports_from": [],
+        "reasoning": "The stated rule uses new money to restore the mix."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Restoring weights can still create costs."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A changed goal can justify reviewing the planned mix."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Reducing B’s excess moves toward the unchanged target."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A portfolio change can restore a plan or abandon it to chase yesterday’s winner."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un cambio puede recuperar el plan de cartera o abandonarlo para perseguir al ganador de ayer."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma mudança pode retomar o plano da carteira ou abandoná-lo para seguir o vencedor de ontem."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare target and current",
+          "line": "A plan splits money equally between two groups. One grows larger; restoring equal shares differs from buying more of it."
+        },
+        "es-MX": {
+          "prompt": "Compara meta y estado actual",
+          "line": "Un plan divide el dinero por igual entre dos grupos. Uno crece más; recuperar mitades difiere de comprar más de ese."
+        },
+        "pt-BR": {
+          "prompt": "Compare meta e estado atual",
+          "line": "Um plano divide o dinheiro em dois grupos iguais. Um cresce mais; retomar metades difere de comprar mais dele."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which direction restores the plan?",
+          "scene": "Target: equal shares in A and B. A now exceeds half; B is below half.",
+          "options": [
+            {
+              "label": "Reduce A’s share relative to B"
+            },
+            {
+              "label": "Increase A because it rose"
+            }
+          ],
+          "help": [
+            "Compare the current mix with the stated target."
+          ],
+          "feedback": {
+            "met": "The target calls for less relative weight in A.",
+            "not_yet": "Compare the current mix with the stated target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dirección recupera el plan?",
+          "scene": "Meta: partes iguales en A y B. A supera la mitad; B queda debajo.",
+          "options": [
+            {
+              "label": "Reducir A respecto a B"
+            },
+            {
+              "label": "Aumentar A porque subió"
+            }
+          ],
+          "help": [
+            "Compara la mezcla actual con la meta indicada."
+          ],
+          "feedback": {
+            "met": "La meta requiere menor peso relativo de A.",
+            "not_yet": "Compara la mezcla actual con la meta indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual direção retoma o plano?",
+          "scene": "Meta: partes iguais em A e B. A passa da metade; B fica abaixo.",
+          "options": [
+            {
+              "label": "Reduzir A em relação a B"
+            },
+            {
+              "label": "Aumentar A porque subiu"
+            }
+          ],
+          "help": [
+            "Compare a composição atual com a meta dada."
+          ],
+          "feedback": {
+            "met": "A meta pede menor peso relativo de A.",
+            "not_yet": "Compare a composição atual com a meta dada."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is being followed?",
+          "scene": "An investor increases an already overweight holding solely because it topped last month’s chart.",
+          "options": [
+            {
+              "label": "Recent performance, not the target"
+            },
+            {
+              "label": "The original target automatically"
+            }
+          ],
+          "help": [
+            "Identify the reason for the change."
+          ],
+          "feedback": {
+            "met": "Adding to an overweight holding moves farther from the target.",
+            "not_yet": "Identify the reason for the change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué está siguiendo?",
+          "scene": "Aumentan una inversión ya sobreponderada solo porque encabezó la gráfica del mes pasado.",
+          "options": [
+            {
+              "label": "El rendimiento reciente, no la meta"
+            },
+            {
+              "label": "Automáticamente la meta original"
+            }
+          ],
+          "help": [
+            "Identifica el motivo del cambio."
+          ],
+          "feedback": {
+            "met": "Agregar a una parte excesiva aleja más de la meta.",
+            "not_yet": "Identifica el motivo del cambio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está seguindo?",
+          "scene": "Aumentam um ativo já acima do peso da meta só porque liderou o gráfico passado.",
+          "options": [
+            {
+              "label": "O ganho recente, não a meta"
+            },
+            {
+              "label": "A meta original automaticamente"
+            }
+          ],
+          "help": [
+            "Identifique o motivo da mudança."
+          ],
+          "feedback": {
+            "met": "Adicionar a uma parte excessiva afasta mais da meta.",
+            "not_yet": "Identifique o motivo da mudança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action fits this rule?",
+          "scene": "Target shares are unchanged. New contributions may be directed to the group below its target.",
+          "options": [
+            {
+              "label": "Add only to the latest winner"
+            },
+            {
+              "label": "Add to the underweight group"
+            }
+          ],
+          "help": [
+            "Follow the target rather than the ranking."
+          ],
+          "feedback": {
+            "met": "The stated rule uses new money to restore the mix.",
+            "not_yet": "Follow the target rather than the ranking."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción cumple la regla?",
+          "scene": "Las proporciones meta no cambian. Pueden dirigir aportaciones nuevas al grupo debajo de su meta.",
+          "options": [
+            {
+              "label": "Aportar solo al último ganador"
+            },
+            {
+              "label": "Aportar al grupo insuficiente"
+            }
+          ],
+          "help": [
+            "Sigue la meta en lugar de la clasificación."
+          ],
+          "feedback": {
+            "met": "La regla usa dinero nuevo para recuperar la mezcla.",
+            "not_yet": "Sigue la meta en lugar de la clasificación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ação cumpre a regra?",
+          "scene": "Os pesos da meta não mudam. Novos aportes podem ir ao grupo abaixo da meta.",
+          "options": [
+            {
+              "label": "Aportar só ao último vencedor"
+            },
+            {
+              "label": "Aportar ao grupo insuficiente"
+            }
+          ],
+          "help": [
+            "Siga a meta em vez da classificação."
+          ],
+          "feedback": {
+            "met": "A regra usa dinheiro novo para retomar a composição.",
+            "not_yet": "Siga a meta em vez da classificação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be checked?",
+          "scene": "A proposed rebalance restores target weights but incurs trading fees and possible taxes.",
+          "options": [
+            {
+              "label": "Assume all changes are free"
+            },
+            {
+              "label": "Only whether the weights match"
+            },
+            {
+              "label": "Those costs before acting"
+            }
+          ],
+          "help": [
+            "Compare the intended adjustment with its actual charges."
+          ],
+          "feedback": {
+            "met": "Restoring weights can still create costs.",
+            "not_yet": "Compare the intended adjustment with its actual charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Un ajuste recupera las proporciones meta, pero genera comisiones y posibles impuestos.",
+          "options": [
+            {
+              "label": "Suponer que cambiar es gratis"
+            },
+            {
+              "label": "Solo si coinciden proporciones"
+            },
+            {
+              "label": "Esos costos antes de actuar"
+            }
+          ],
+          "help": [
+            "Compara el ajuste buscado con sus cargos reales."
+          ],
+          "feedback": {
+            "met": "Recuperar proporciones todavía puede generar costos.",
+            "not_yet": "Compara el ajuste buscado con sus cargos reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir?",
+          "scene": "Um ajuste retoma os pesos da meta, mas gera tarifas e possíveis impostos.",
+          "options": [
+            {
+              "label": "Supor que mudar é grátis"
+            },
+            {
+              "label": "Só se os pesos coincidem"
+            },
+            {
+              "label": "Esses custos antes de agir"
+            }
+          ],
+          "help": [
+            "Compare o ajuste desejado com suas cobranças reais."
+          ],
+          "feedback": {
+            "met": "Retomar pesos ainda pode gerar custos.",
+            "not_yet": "Compare o ajuste desejado com suas cobranças reais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Must the old target last forever?",
+          "scene": "A major goal change alters the investor’s time horizon and loss capacity.",
+          "options": [
+            {
+              "label": "Yes, no target can ever change"
+            },
+            {
+              "label": "No, reassess the target deliberately"
+            }
+          ],
+          "help": [
+            "Separate a reasoned plan change from chasing recent prices."
+          ],
+          "feedback": {
+            "met": "A changed goal can justify reviewing the planned mix.",
+            "not_yet": "Separate a reasoned plan change from chasing recent prices."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La meta anterior dura siempre?",
+          "scene": "Cambiar una meta importante modifica plazo y capacidad para perder.",
+          "options": [
+            {
+              "label": "Sí, ninguna meta puede cambiar"
+            },
+            {
+              "label": "No, reevalúa deliberadamente la mezcla"
+            }
+          ],
+          "help": [
+            "Distingue revisar razonadamente de perseguir precios recientes."
+          ],
+          "feedback": {
+            "met": "Una meta distinta puede justificar revisar la mezcla planeada.",
+            "not_yet": "Distingue revisar razonadamente de perseguir precios recientes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A meta antiga dura sempre?",
+          "scene": "Mudar uma meta importante altera prazo e capacidade de perder.",
+          "options": [
+            {
+              "label": "Sim, nenhuma meta pode mudar"
+            },
+            {
+              "label": "Não, reavalie a composição com critério"
+            }
+          ],
+          "help": [
+            "Separe rever com critério de seguir preços recentes."
+          ],
+          "feedback": {
+            "met": "Uma meta distinta pode justificar rever a composição planejada.",
+            "not_yet": "Separe rever com critério de seguir preços recentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which restores the plan?",
+          "scene": "Target: mostly A, less B. B exceeds its target; the goal is unchanged.",
+          "options": [
+            {
+              "label": "Reduce B’s relative weight"
+            },
+            {
+              "label": "Ignore the target"
+            },
+            {
+              "label": "Double the recent winner B"
+            }
+          ],
+          "help": [
+            "Use the stated mix, not a universal equal split."
+          ],
+          "feedback": {
+            "met": "Reducing B’s excess moves toward the unchanged target.",
+            "not_yet": "Use the stated mix, not a universal equal split."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué propuesta recupera el plan?",
+          "scene": "Meta: mayoría A y menor parte B. B supera su meta; el objetivo no cambia.",
+          "options": [
+            {
+              "label": "Reducir el peso relativo de B"
+            },
+            {
+              "label": "Ignorar por completo la meta"
+            },
+            {
+              "label": "Duplicar B porque ganó"
+            }
+          ],
+          "help": [
+            "Usa la mezcla indicada, no mitades universales."
+          ],
+          "feedback": {
+            "met": "Reducir el exceso de B acerca a la meta vigente.",
+            "not_yet": "Usa la mezcla indicada, no mitades universales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual proposta retoma o plano?",
+          "scene": "Meta: maior parte A e menor B. B passa da meta; o objetivo não muda.",
+          "options": [
+            {
+              "label": "Reduzir o peso relativo de B"
+            },
+            {
+              "label": "Ignorar toda a meta"
+            },
+            {
+              "label": "Dobrar B porque ganhou"
+            }
+          ],
+          "help": [
+            "Use a composição dada, não metades universais."
+          ],
+          "feedback": {
+            "met": "Reduzir o excesso de B aproxima da meta atual.",
+            "not_yet": "Use a composição dada, não metades universais."
+          }
+        }
+      }
+    }
+  ]
+}

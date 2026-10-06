@@ -1,0 +1,815 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-1",
+  "lesson_id": "fe-production-accounts-records-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a displayed account balance from funds available to withdraw in a stated scenario.",
+  "title": {
+    "en-US": "Withdrawable money",
+    "es-MX": "Visible no siempre es retirable",
+    "pt-BR": "Visível nem sempre pode ser sacado"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Displayed is not always withdrawable\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Visible no siempre es retirable\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Visível nem sempre pode ser sacado\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.02",
+      "observable_action": "Distinguish a displayed account balance from funds available to withdraw in a stated scenario.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Read what the provider means by each balance before using the money.",
+    "misconception": "Assuming every amount shown in an account can be withdrawn immediately, regardless of explicitly stated holds or availability.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-example-01",
+        "supports_from": [],
+        "reasoning": "Displayed balance: 100; the provider marks 30 unavailable. In this example, 70 can be withdrawn now."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "120 − 25 = 95 withdrawable under the stated conditions."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Use the stated balance definition to avoid double subtraction."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-practice-01",
+        "supports_from": [],
+        "reasoning": "150 − 40 = 110 excluding the unavailable deposit."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-practice-02",
+        "supports_from": [],
+        "reasoning": "The visible total alone does not establish deposit availability."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Withdrawal access and freedom from obligations are different questions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.02",
+        "context_id": "fe-production-accounts-records-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "A pending amount does not override its stated payout condition."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read what the provider means by each balance before using the money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Lee qué significa cada saldo antes de usar el dinero."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Leia o significado de cada saldo antes de usar o dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the availability label",
+          "line": "Displayed balance: 100; the provider marks 30 unavailable. In this example, 70 can be withdrawn now."
+        },
+        "es-MX": {
+          "prompt": "Lee la etiqueta de disponibilidad",
+          "line": "Saldo visible: 100; el proveedor marca 30 no disponibles. En este ejemplo puedes retirar 70 ahora."
+        },
+        "pt-BR": {
+          "prompt": "Leia o rótulo de disponibilidade",
+          "line": "Saldo visível: 100; o fornecedor marca 30 indisponíveis. Neste exemplo pode sacar 70 agora."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Withdrawable now?",
+          "scene": "Displayed: 120; explicitly unavailable: 25; no other restrictions in this fictional example.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "145"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Apply the explicit unavailable amount once."
+          ],
+          "feedback": {
+            "met": "120 − 25 = 95 withdrawable under the stated conditions.",
+            "not_yet": "Apply the explicit unavailable amount once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Retirable ahora?",
+          "scene": "Visible: 120; no disponible expresamente: 25; sin otras restricciones en este ejemplo ficticio.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "145"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Aplica el monto no disponible una vez."
+          ],
+          "feedback": {
+            "met": "120 − 25 = 95 retirables bajo las condiciones indicadas.",
+            "not_yet": "Aplica el monto no disponible una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode sacar agora?",
+          "scene": "Visível: 120; indisponível expressamente: 25; sem outras restrições neste exemplo fictício.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "145"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Aplique o valor indisponível uma vez."
+          ],
+          "feedback": {
+            "met": "120 − 25 = 95 disponíveis para saque nas condições informadas.",
+            "not_yet": "Aplique o valor indisponível uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Subtract this hold again?",
+          "scene": "A balance is labeled “available,” already accounting for the stated hold.",
+          "options": [
+            {
+              "label": "Always subtract every label"
+            },
+            {
+              "label": "Displayed balances never mean anything"
+            },
+            {
+              "label": "That would count it twice"
+            }
+          ],
+          "help": [
+            "Read which adjustments the available figure already includes."
+          ],
+          "feedback": {
+            "met": "Use the stated balance definition to avoid double subtraction.",
+            "not_yet": "Read which adjustments the available figure already includes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debes restar otra vez la misma retención?",
+          "scene": "Un saldo dice «disponible» y ya descuenta la retención indicada.",
+          "options": [
+            {
+              "label": "Sí, siempre resta cada etiqueta"
+            },
+            {
+              "label": "Sí, los saldos nunca significan nada"
+            },
+            {
+              "label": "No, la contarías dos veces"
+            }
+          ],
+          "help": [
+            "Lee qué ajustes ya incluye la cifra disponible."
+          ],
+          "feedback": {
+            "met": "Usa la definición indicada del saldo para evitar restar dos veces.",
+            "not_yet": "Lee qué ajustes ya incluye la cifra disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve subtrair novamente o mesmo bloqueio?",
+          "scene": "Um saldo diz «disponível» e já desconta o bloqueio informado.",
+          "options": [
+            {
+              "label": "Sim, sempre subtraia cada rótulo"
+            },
+            {
+              "label": "Sim, saldos nunca significam nada"
+            },
+            {
+              "label": "Não, contaria duas vezes"
+            }
+          ],
+          "help": [
+            "Leia quais ajustes a quantia disponível já inclui."
+          ],
+          "feedback": {
+            "met": "Use a definição informada do saldo para evitar subtrair duas vezes.",
+            "not_yet": "Leia quais ajustes a quantia disponível já inclui."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Available under these stated rules?",
+          "scene": "Displayed total: 150; a pending deposit of 40 is explicitly included but unavailable.",
+          "options": [
+            {
+              "label": "190"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Exclude only what the scene identifies as unavailable."
+          ],
+          "feedback": {
+            "met": "150 − 40 = 110 excluding the unavailable deposit.",
+            "not_yet": "Exclude only what the scene identifies as unavailable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Disponible según estas reglas indicadas?",
+          "scene": "Total visible: 150; incluye un depósito pendiente de 40 expresamente no disponible.",
+          "options": [
+            {
+              "label": "190"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Excluye solo lo señalado como no disponible."
+          ],
+          "feedback": {
+            "met": "150 − 40 = 110 sin el depósito no disponible.",
+            "not_yet": "Excluye solo lo señalado como no disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Disponível segundo essas regras informadas?",
+          "scene": "Total visível: 150; inclui um depósito pendente de 40 expressamente indisponível.",
+          "options": [
+            {
+              "label": "190"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Exclua só o que a cena identifica como indisponível."
+          ],
+          "feedback": {
+            "met": "150 − 40 = 110 sem o depósito indisponível.",
+            "not_yet": "Exclua só o que a cena identifica como indisponível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          40
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "The account shows a total without explaining the new deposit’s availability.",
+          "options": [
+            {
+              "label": "Verify when the deposit becomes available"
+            },
+            {
+              "label": "Invent a universal waiting period"
+            },
+            {
+              "label": "Assume immediate withdrawal is guaranteed"
+            }
+          ],
+          "help": [
+            "Use the provider’s actual applicable availability information."
+          ],
+          "feedback": {
+            "met": "The visible total alone does not establish deposit availability.",
+            "not_yet": "Use the provider’s actual applicable availability information."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de contar con él?",
+          "scene": "La cuenta muestra un total sin detalles de disponibilidad del depósito nuevo.",
+          "options": [
+            {
+              "label": "Verificar cuándo queda disponible el depósito"
+            },
+            {
+              "label": "Inventar una espera universal"
+            },
+            {
+              "label": "Suponer garantizado el retiro inmediato"
+            }
+          ],
+          "help": [
+            "Usa información de disponibilidad real aplicable del proveedor."
+          ],
+          "feedback": {
+            "met": "El total visible no establece por sí solo disponibilidad del depósito.",
+            "not_yet": "Usa información de disponibilidad real aplicable del proveedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de contar com ele?",
+          "scene": "A conta mostra um total sem detalhes de disponibilidade do novo depósito.",
+          "options": [
+            {
+              "label": "Conferir quando o depósito fica disponível"
+            },
+            {
+              "label": "Inventar uma espera universal"
+            },
+            {
+              "label": "Supor garantido o saque imediato"
+            }
+          ],
+          "help": [
+            "Use informações reais de disponibilidade aplicáveis do fornecedor."
+          ],
+          "feedback": {
+            "met": "O total visível não estabelece sozinho a disponibilidade do depósito.",
+            "not_yet": "Use informações reais de disponibilidade aplicáveis do fornecedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Are they free for optional spending?",
+          "scene": "Withdrawable funds are already reserved for an unpaid necessary bill.",
+          "options": [
+            {
+              "label": "All available funds are unassigned"
+            },
+            {
+              "label": "The household commitment remains"
+            },
+            {
+              "label": "Withdrawal erases the bill"
+            }
+          ],
+          "help": [
+            "Check both provider access and household commitments."
+          ],
+          "feedback": {
+            "met": "Withdrawal access and freedom from obligations are different questions.",
+            "not_yet": "Check both provider access and household commitments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por eso están libres para gasto opcional?",
+          "scene": "Puedes retirar fondos, pero el hogar ya los reservó para una cuenta necesaria pendiente.",
+          "options": [
+            {
+              "label": "Sí, todo disponible está sin asignar"
+            },
+            {
+              "label": "No, el compromiso familiar sigue"
+            },
+            {
+              "label": "Sí, retirar elimina la cuenta"
+            }
+          ],
+          "help": [
+            "Revisa acceso del proveedor y compromisos familiares."
+          ],
+          "feedback": {
+            "met": "Acceso al retiro y ausencia de obligaciones son cosas distintas.",
+            "not_yet": "Revisa acceso del proveedor y compromisos familiares."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por isso estão livres para gasto opcional?",
+          "scene": "Pode sacar recursos, mas a casa já os reservou para uma conta necessária pendente.",
+          "options": [
+            {
+              "label": "Sim, todo disponível está sem destinar"
+            },
+            {
+              "label": "Não, o compromisso familiar continua"
+            },
+            {
+              "label": "Sim, sacar elimina a conta"
+            }
+          ],
+          "help": [
+            "Confira acesso do fornecedor e compromissos familiares."
+          ],
+          "feedback": {
+            "met": "Acesso ao saque e ausência de obrigações são coisas diferentes.",
+            "not_yet": "Confira acesso do fornecedor e compromissos familiares."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can they be withdrawn now?",
+          "scene": "A platform shows pending proceeds; its payout condition remains unmet.",
+          "options": [
+            {
+              "label": "The condition remains unmet"
+            },
+            {
+              "label": "Any displayed amount is available"
+            },
+            {
+              "label": "Because the amount is positive"
+            }
+          ],
+          "help": [
+            "Check the actual availability state, not just the total."
+          ],
+          "feedback": {
+            "met": "A pending amount does not override its stated payout condition.",
+            "not_yet": "Check the actual availability state, not just the total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes tratarlos como retirables ahora?",
+          "scene": "Una plataforma muestra ingresos pendientes; aún no se cumple su condición de retiro indicada.",
+          "options": [
+            {
+              "label": "No, falta cumplir la condición indicada"
+            },
+            {
+              "label": "Sí, todo monto visible está disponible"
+            },
+            {
+              "label": "Sí, porque el monto es positivo"
+            }
+          ],
+          "help": [
+            "Revisa disponibilidad real, no solo total."
+          ],
+          "feedback": {
+            "met": "Un monto pendiente no anula su condición de retiro indicada.",
+            "not_yet": "Revisa disponibilidad real, no solo total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode sacá-los agora?",
+          "scene": "Uma plataforma mostra valores pendentes; sua condição de saque informada ainda não foi cumprida.",
+          "options": [
+            {
+              "label": "Não, falta cumprir a condição informada"
+            },
+            {
+              "label": "Sim, todo valor visível está disponível"
+            },
+            {
+              "label": "Sim, porque o valor é positivo"
+            }
+          ],
+          "help": [
+            "Confira disponibilidade real, não só total."
+          ],
+          "feedback": {
+            "met": "Um valor pendente não anula sua condição de saque informada.",
+            "not_yet": "Confira disponibilidade real, não só total."
+          }
+        }
+      }
+    }
+  ]
+}

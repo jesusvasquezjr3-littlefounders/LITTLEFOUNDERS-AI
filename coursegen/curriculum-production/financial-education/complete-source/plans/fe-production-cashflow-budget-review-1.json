@@ -1,0 +1,1118 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-3",
+  "lesson_id": "fe-production-cashflow-budget-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.01",
+    "finance.prod.cashflow-budget.01",
+    "finance.prod.cashflow-budget.02",
+    "finance.prod.cashflow-budget.03",
+    "finance.prod.cashflow-budget.04",
+    "finance.prod.cashflow-budget.05",
+    "finance.prod.cashflow-budget.06",
+    "finance.prod.cashflow-budget.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Between paydays",
+    "es-MX": "Planea entre fechas de cobro",
+    "pt-BR": "Planeje entre datas de recebimento"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Plan across paydays\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea entre fechas de cobro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje entre datas de recebimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.income-work.01",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "prod.cashflow-budget.01",
+      "prod.cashflow-budget.02",
+      "prod.cashflow-budget.03",
+      "prod.cashflow-budget.04",
+      "prod.cashflow-budget.05",
+      "prod.cashflow-budget.06",
+      "prod.cashflow-budget.07",
+      "prod.income-work.01"
+    ],
+    "relevance": "Check the period, reserves and dates before judging whether the plan works.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The comparison needs receipts and costs for the same dates."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Moving money does not automatically change its purpose."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "165 − 85 − 30 = 50 after both reserves."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "170 − (110 + 45) = 15 deficit."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "An expected wage cannot fund an earlier payment from absent cash."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Changing timing does not remove an excess of costs over income."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-07",
+        "supports_from": [],
+        "reasoning": "The receipt must be considered across the stated income gap."
+      },
+      {
+        "segment_id": "practice-08",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-cashflow-budget-review-1-practice-08",
+        "supports_from": [],
+        "reasoning": "Regular terms describe recurrence without guaranteeing income forever."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-cashflow-budget-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "A one-time refund does not establish recurring income."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check the period, reserves and dates before judging whether the plan works."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa periodo, reservas y fechas antes de juzgar si el plan funciona."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira período, reservas e datas antes de julgar se o plano funciona."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be aligned first?",
+          "scene": "A fortnight’s expenses are compared with income from one week.",
+          "options": [
+            {
+              "label": "The period covered"
+            },
+            {
+              "label": "Only the expense amount"
+            },
+            {
+              "label": "Only the income amount"
+            }
+          ],
+          "help": [
+            "Check the time window before subtracting amounts."
+          ],
+          "feedback": {
+            "met": "The comparison needs receipts and costs for the same dates.",
+            "not_yet": "Check the time window before subtracting amounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe igualarse primero?",
+          "scene": "Gastos de dos semanas se comparan con ingreso de una semana.",
+          "options": [
+            {
+              "label": "El periodo cubierto"
+            },
+            {
+              "label": "Solo el monto de gasto"
+            },
+            {
+              "label": "Solo el monto de ingreso"
+            }
+          ],
+          "help": [
+            "Revisa la ventana de tiempo antes de restar."
+          ],
+          "feedback": {
+            "met": "Comparar requiere entradas y costos de las mismas fechas.",
+            "not_yet": "Revisa la ventana de tiempo antes de restar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser igualado primeiro?",
+          "scene": "Gastos de duas semanas são comparados com renda de uma semana.",
+          "options": [
+            {
+              "label": "O período coberto"
+            },
+            {
+              "label": "Só o valor do gasto"
+            },
+            {
+              "label": "Só o valor da renda"
+            }
+          ],
+          "help": [
+            "Confira a janela de tempo antes de subtrair."
+          ],
+          "feedback": {
+            "met": "Comparar exige entradas e custos das mesmas datas.",
+            "not_yet": "Confira a janela de tempo antes de subtrair."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed?",
+          "scene": "Travel money moves from an account to cash while keeping its travel purpose.",
+          "options": [
+            {
+              "label": "The intended spending category"
+            },
+            {
+              "label": "Its storage location"
+            },
+            {
+              "label": "The amount earned from work"
+            }
+          ],
+          "help": [
+            "Separate where money is from what it is for."
+          ],
+          "feedback": {
+            "met": "Moving money does not automatically change its purpose.",
+            "not_yet": "Separate where money is from what it is for."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió?",
+          "scene": "El dinero de viaje pasa de cuenta a efectivo conservando su propósito.",
+          "options": [
+            {
+              "label": "La categoría prevista de gasto"
+            },
+            {
+              "label": "Su ubicación"
+            },
+            {
+              "label": "El monto ganado por trabajar"
+            }
+          ],
+          "help": [
+            "Separa dónde está del para qué sirve."
+          ],
+          "feedback": {
+            "met": "Mover dinero no cambia automáticamente su propósito.",
+            "not_yet": "Separa dónde está del para qué sirve."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou?",
+          "scene": "O dinheiro de viagem passa de conta a dinheiro vivo mantendo seu propósito.",
+          "options": [
+            {
+              "label": "A categoria prevista de gasto"
+            },
+            {
+              "label": "Sua localização"
+            },
+            {
+              "label": "O valor ganho trabalhando"
+            }
+          ],
+          "help": [
+            "Separe onde está de para que serve."
+          ],
+          "feedback": {
+            "met": "Mover dinheiro não muda automaticamente seu propósito.",
+            "not_yet": "Separe onde está de para que serve."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after reserves?",
+          "scene": "Available: 165; unavoidable bills before next receipt: 85 and 30.",
+          "options": [
+            {
+              "label": "135"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Protect both obligations before using the remainder."
+          ],
+          "feedback": {
+            "met": "165 − 85 − 30 = 50 after both reserves.",
+            "not_yet": "Protect both obligations before using the remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto tras reservar?",
+          "scene": "Disponible: 165; cuentas inevitables antes de recibir: 85 y 30.",
+          "options": [
+            {
+              "label": "135"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Protege ambas obligaciones antes de usar el resto."
+          ],
+          "feedback": {
+            "met": "165 − 85 − 30 = 50 tras ambas reservas.",
+            "not_yet": "Protege ambas obligaciones antes de usar el resto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante após reservar?",
+          "scene": "Disponível: 165; contas inevitáveis antes de receber: 85 e 30.",
+          "options": [
+            {
+              "label": "135"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Proteja ambas as obrigações antes de usar o restante."
+          ],
+          "feedback": {
+            "met": "165 − 85 − 30 = 50 após ambas as reservas.",
+            "not_yet": "Proteja ambas as obrigações antes de usar o restante."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          165,
+          85,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Deficit amount?",
+          "scene": "Same period: receipts 110 and 45; expenses total 170.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "325"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Add all receipts before comparing with total expenses."
+          ],
+          "feedback": {
+            "met": "170 − (110 + 45) = 15 deficit.",
+            "not_yet": "Add all receipts before comparing with total expenses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto del déficit?",
+          "scene": "Mismo periodo: entradas 110 y 45; gastos totales 170.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "325"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Suma todas las entradas antes de comparar con gastos."
+          ],
+          "feedback": {
+            "met": "170 − (110 + 45) = 15 de déficit.",
+            "not_yet": "Suma todas las entradas antes de comparar con gastos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor do déficit?",
+          "scene": "Mesmo período: entradas 110 e 45; gastos totais 170.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "325"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Some todas as entradas antes de comparar com gastos."
+          ],
+          "feedback": {
+            "met": "170 − (110 + 45) = 15 de déficit.",
+            "not_yet": "Some todas as entradas antes de comparar com gastos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          110,
+          45,
+          170
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 2
+            },
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the calendar expose?",
+          "scene": "A necessary fare is due before wages arrive; current cash cannot cover it.",
+          "options": [
+            {
+              "label": "A gap before the receipt"
+            },
+            {
+              "label": "A completed fare payment"
+            },
+            {
+              "label": "Wages already available"
+            }
+          ],
+          "help": [
+            "Check cash available when the fare is needed."
+          ],
+          "feedback": {
+            "met": "An expected wage cannot fund an earlier payment from absent cash.",
+            "not_yet": "Check cash available when the fare is needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra el calendario?",
+          "scene": "Un pasaje necesario vence antes del salario; el efectivo actual no alcanza.",
+          "options": [
+            {
+              "label": "Un faltante antes de recibir"
+            },
+            {
+              "label": "Un pasaje ya pagado"
+            },
+            {
+              "label": "Salario ya disponible"
+            }
+          ],
+          "help": [
+            "Revisa efectivo cuando se necesita el pasaje."
+          ],
+          "feedback": {
+            "met": "Un salario esperado no paga antes de llegar si falta efectivo.",
+            "not_yet": "Revisa efectivo cuando se necesita el pasaje."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o calendário mostra?",
+          "scene": "Uma passagem necessária vence antes do salário; o dinheiro atual não basta.",
+          "options": [
+            {
+              "label": "Uma falta antes de receber"
+            },
+            {
+              "label": "Uma passagem já paga"
+            },
+            {
+              "label": "Salário já disponível"
+            }
+          ],
+          "help": [
+            "Confira dinheiro quando a passagem é necessária."
+          ],
+          "feedback": {
+            "met": "Um salário esperado não paga antes de chegar se falta dinheiro.",
+            "not_yet": "Confira dinheiro quando a passagem é necessária."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unresolved?",
+          "scene": "Moving a deadline solves timing, but total essential costs still exceed income.",
+          "options": [
+            {
+              "label": "Nothing after changing dates"
+            },
+            {
+              "label": "The amount gap"
+            },
+            {
+              "label": "The already corrected deadline"
+            }
+          ],
+          "help": [
+            "Check amounts separately from timing."
+          ],
+          "feedback": {
+            "met": "Changing timing does not remove an excess of costs over income.",
+            "not_yet": "Check amounts separately from timing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue sin resolverse?",
+          "scene": "Mover el plazo resuelve fechas, pero lo esencial aún supera el ingreso.",
+          "options": [
+            {
+              "label": "Nada tras cambiar fechas"
+            },
+            {
+              "label": "El faltante de monto"
+            },
+            {
+              "label": "El plazo ya corregido"
+            }
+          ],
+          "help": [
+            "Revisa montos aparte de fechas."
+          ],
+          "feedback": {
+            "met": "Cambiar fechas no elimina costos mayores que el ingreso.",
+            "not_yet": "Revisa montos aparte de fechas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua sem solução?",
+          "scene": "Mover o prazo resolve datas, mas o essencial ainda supera a renda.",
+          "options": [
+            {
+              "label": "Nada após mudar datas"
+            },
+            {
+              "label": "A falta de valor"
+            },
+            {
+              "label": "O prazo já corrigido"
+            }
+          ],
+          "help": [
+            "Confira valores separados de datas."
+          ],
+          "feedback": {
+            "met": "Mudar datas não elimina custos maiores que a renda.",
+            "not_yet": "Confira valores separados de datas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What coverage should allocation consider?",
+          "scene": "An irregular receipt arrives; the next reliable receipt is months away.",
+          "options": [
+            {
+              "label": "The current day alone"
+            },
+            {
+              "label": "Only optional purchases"
+            },
+            {
+              "label": "Needs until the next reliable receipt"
+            }
+          ],
+          "help": [
+            "Use the reliable date to set the planning window."
+          ],
+          "feedback": {
+            "met": "The receipt must be considered across the stated income gap.",
+            "not_yet": "Use the reliable date to set the planning window."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cobertura debe considerar la asignación?",
+          "scene": "Llega una entrada irregular; la próxima fiable está a meses.",
+          "options": [
+            {
+              "label": "Únicamente el día actual"
+            },
+            {
+              "label": "Solo compras opcionales"
+            },
+            {
+              "label": "Necesidades hasta la próxima entrada fiable"
+            }
+          ],
+          "help": [
+            "Usa la fecha fiable para fijar la ventana."
+          ],
+          "feedback": {
+            "met": "La entrada debe considerarse durante el intervalo indicado sin ingresos.",
+            "not_yet": "Usa la fecha fiable para fijar la ventana."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual cobertura a destinação deve considerar?",
+          "scene": "Chega uma entrada irregular; a próxima confiável está a meses.",
+          "options": [
+            {
+              "label": "Apenas o dia atual"
+            },
+            {
+              "label": "Só compras opcionais"
+            },
+            {
+              "label": "Necessidades até a próxima entrada confiável"
+            }
+          ],
+          "help": [
+            "Use a data confiável para definir a janela."
+          ],
+          "feedback": {
+            "met": "A entrada deve ser considerada durante o intervalo informado sem renda.",
+            "not_yet": "Use a data confiável para definir a janela."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-08",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How to classify this pattern?",
+          "scene": "A contract states the same payment each month while its terms remain in force.",
+          "options": [
+            {
+              "label": "Recurring under the stated terms"
+            },
+            {
+              "label": "Received forever without conditions"
+            },
+            {
+              "label": "A one-time refund"
+            }
+          ],
+          "help": [
+            "Keep the stated conditions attached to the estimate."
+          ],
+          "feedback": {
+            "met": "Regular terms describe recurrence without guaranteeing income forever.",
+            "not_yet": "Keep the stated conditions attached to the estimate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo clasificar su patrón indicado?",
+          "scene": "Un contrato indica el mismo pago mensual mientras sigan sus condiciones.",
+          "options": [
+            {
+              "label": "Recurrente bajo condiciones indicadas"
+            },
+            {
+              "label": "Recibido por siempre sin condiciones"
+            },
+            {
+              "label": "Un reembolso único"
+            }
+          ],
+          "help": [
+            "Conserva las condiciones indicadas junto a la estimación."
+          ],
+          "feedback": {
+            "met": "Condiciones regulares describen recurrencia sin garantizar ingreso para siempre.",
+            "not_yet": "Conserva las condiciones indicadas junto a la estimación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como classificar seu padrão informado?",
+          "scene": "Um contrato informa o mesmo pagamento mensal enquanto valerem suas condições.",
+          "options": [
+            {
+              "label": "Recorrente sob condições informadas"
+            },
+            {
+              "label": "Recebido para sempre sem condições"
+            },
+            {
+              "label": "Um reembolso único"
+            }
+          ],
+          "help": [
+            "Mantenha as condições informadas junto à estimativa."
+          ],
+          "feedback": {
+            "met": "Condições regulares descrevem recorrência sem garantir renda para sempre.",
+            "not_yet": "Mantenha as condições informadas junto à estimativa."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How to forecast this income?",
+          "scene": "A canceled trip produces a one-time refund; no recurring refund is promised.",
+          "options": [
+            {
+              "label": "As permanent monthly income"
+            },
+            {
+              "label": "As a guaranteed yearly payment"
+            },
+            {
+              "label": "As a one-time receipt"
+            }
+          ],
+          "help": [
+            "Follow the stated frequency, not the desired one."
+          ],
+          "feedback": {
+            "met": "A one-time refund does not establish recurring income.",
+            "not_yet": "Follow the stated frequency, not the desired one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratarlo al estimar ingresos futuros?",
+          "scene": "Cancelar un viaje produce un reembolso único; no se promete recurrencia.",
+          "options": [
+            {
+              "label": "Como ingreso mensual permanente"
+            },
+            {
+              "label": "Como pago anual garantizado"
+            },
+            {
+              "label": "Como entrada única"
+            }
+          ],
+          "help": [
+            "Sigue la frecuencia indicada, no la deseada."
+          ],
+          "feedback": {
+            "met": "Un reembolso único no establece ingreso recurrente.",
+            "not_yet": "Sigue la frecuencia indicada, no la deseada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratá-lo ao estimar renda futura?",
+          "scene": "Cancelar uma viagem gera um reembolso único; não há promessa de recorrência.",
+          "options": [
+            {
+              "label": "Como renda mensal permanente"
+            },
+            {
+              "label": "Como pagamento anual garantido"
+            },
+            {
+              "label": "Como entrada única"
+            }
+          ],
+          "help": [
+            "Siga a frequência informada, não a desejada."
+          ],
+          "feedback": {
+            "met": "Um reembolso único não estabelece renda recorrente.",
+            "not_yet": "Siga a frequência informada, não a desejada."
+          }
+        }
+      }
+    }
+  ]
+}

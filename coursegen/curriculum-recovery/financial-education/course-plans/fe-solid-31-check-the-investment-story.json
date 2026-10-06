@@ -1,0 +1,744 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-07-risk-and-protection",
+  "lesson_id": "fe-solid-31-check-the-investment-story",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.invest.horizon",
+    "finance.time.compound",
+    "finance.invest.diversify"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Challenge a fictional investment pitch using compound-growth assumptions, payment horizons and actual exposures.",
+  "title": {
+    "en-US": "Check the investment story",
+    "es-MX": "Revisa la historia de inversión",
+    "pt-BR": "Confira a história do investimento"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check the investment story\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa la historia de inversión\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a história do investimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "invest.horizon",
+      "observable_action": "Challenge a fictional investment pitch using compound-growth assumptions, payment horizons and actual exposures.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "save.access",
+      "time.purchasing-power",
+      "time.compound"
+    ],
+    "retrieval_skills": [
+      "time.compound",
+      "invest.horizon",
+      "invest.diversify"
+    ],
+    "relevance": "A fictional pitch combines a growth chart, several funds and a near-term goal. Check each claim separately.",
+    "misconception": "Accepting a modeled return as a guarantee because an offer also uses the word diversified.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "time.compound",
+        "context_id": "check-the-investment-story-practice-01",
+        "supports_from": [],
+        "reasoning": "The calculated path depends on those stated assumptions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "invest.horizon",
+        "context_id": "check-the-investment-story-practice-02",
+        "supports_from": [],
+        "reasoning": "The access restriction prevents funding the stated payment on time."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "invest.diversify",
+        "context_id": "check-the-investment-story-practice-03",
+        "supports_from": [],
+        "reasoning": "Several wrappers can contain the same underlying risks."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "time.compound",
+        "context_id": "check-the-investment-story-practice-04",
+        "supports_from": [],
+        "reasoning": "Withdrawn gains cannot also remain in the compounding base."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "invest.diversify",
+        "context_id": "check-the-investment-story-practice-05",
+        "supports_from": [],
+        "reasoning": "Diversification reduces some dependence without guaranteeing a result."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "invest.horizon",
+        "context_id": "check-the-investment-story-transfer-01",
+        "supports_from": [],
+        "reasoning": "A long-term projection cannot meet an incompatible immediate need."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "invest.horizon",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A fictional pitch combines a growth chart, several funds and a near-term goal. Check each claim separately."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una oferta ficticia combina una gráfica de crecimiento, varios fondos y una meta cercana. Revisa cada afirmación."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma oferta fictícia combina um gráfico de crescimento, vários fundos e uma meta próxima. Confira cada afirmação."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the projection assume?",
+          "scene": "The chart reinvests gains at the same positive rate each period.",
+          "options": [
+            {
+              "label": "No dependence on assumptions"
+            },
+            {
+              "label": "Guaranteed real future returns"
+            },
+            {
+              "label": "Reinvestment at an unchanged rate"
+            }
+          ],
+          "help": [
+            "Distinguish the model inputs from future facts."
+          ],
+          "feedback": {
+            "met": "The calculated path depends on those stated assumptions.",
+            "not_yet": "Distinguish the model inputs from future facts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supone la proyección?",
+          "scene": "La gráfica reinvierte cada ganancia y aplica la misma tasa positiva en cada periodo.",
+          "options": [
+            {
+              "label": "Ninguna dependencia de supuestos"
+            },
+            {
+              "label": "Rendimientos futuros reales garantizados"
+            },
+            {
+              "label": "Reinversión repetida y tasa modelada constante"
+            }
+          ],
+          "help": [
+            "Distingue los datos del modelo de los hechos futuros."
+          ],
+          "feedback": {
+            "met": "El recorrido calculado depende de esos supuestos.",
+            "not_yet": "Distingue los datos del modelo de los hechos futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a projeção supõe?",
+          "scene": "O gráfico reinveste cada ganho e aplica a mesma taxa positiva em cada período.",
+          "options": [
+            {
+              "label": "Nenhuma dependência de hipóteses"
+            },
+            {
+              "label": "Retornos futuros reais garantidos"
+            },
+            {
+              "label": "Reinvestimento repetido e taxa modelada constante"
+            }
+          ],
+          "help": [
+            "Diferencie os dados do modelo dos fatos futuros."
+          ],
+          "feedback": {
+            "met": "O caminho calculado depende dessas hipóteses.",
+            "not_yet": "Diferencie os dados do modelo dos fatos futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "What conflicts with the goal?",
+          "scene": "Payment is due next week. Withdrawals open next year.",
+          "options": [
+            {
+              "label": "Access is too late"
+            },
+            {
+              "label": "The offer uses compound growth"
+            },
+            {
+              "label": "The chart has many periods"
+            }
+          ],
+          "help": [
+            "Compare the two dates."
+          ],
+          "feedback": {
+            "met": "The access restriction prevents funding the stated payment on time.",
+            "not_yet": "Compare the two dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué contradice la meta?",
+          "scene": "El pago de la meta es la próxima semana. La oferta restringe retiros hasta el próximo año.",
+          "options": [
+            {
+              "label": "El acceso llega después de la fecha necesaria"
+            },
+            {
+              "label": "La oferta usa crecimiento compuesto"
+            },
+            {
+              "label": "La gráfica tiene muchos periodos"
+            }
+          ],
+          "help": [
+            "Compara las dos fechas."
+          ],
+          "feedback": {
+            "met": "La restricción impide cubrir a tiempo el pago indicado.",
+            "not_yet": "Compara las dos fechas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conflita com a meta?",
+          "scene": "O pagamento da meta é na próxima semana. A oferta restringe retiradas até o próximo ano.",
+          "options": [
+            {
+              "label": "O acesso vem depois da data necessária"
+            },
+            {
+              "label": "A oferta usa crescimento composto"
+            },
+            {
+              "label": "O gráfico tem muitos períodos"
+            }
+          ],
+          "help": [
+            "Compare as duas datas."
+          ],
+          "feedback": {
+            "met": "A restrição impede cobrir o pagamento informado no prazo.",
+            "not_yet": "Compare as duas datas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "What do these holdings reveal?",
+          "scene": "The pitch lists several funds, but each mainly owns the same technology firms.",
+          "options": [
+            {
+              "label": "The exposures overlap substantially"
+            },
+            {
+              "label": "No shared risk remains"
+            },
+            {
+              "label": "Fund names guarantee diversification"
+            }
+          ],
+          "help": [
+            "Inspect what the funds own."
+          ],
+          "feedback": {
+            "met": "Several wrappers can contain the same underlying risks.",
+            "not_yet": "Inspect what the funds own."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revelan estos activos?",
+          "scene": "La oferta enumera varios fondos, pero todos poseen principalmente las mismas empresas tecnológicas.",
+          "options": [
+            {
+              "label": "Las exposiciones se repiten mucho"
+            },
+            {
+              "label": "Ya no hay riesgo compartido"
+            },
+            {
+              "label": "Los nombres garantizan diversificación"
+            }
+          ],
+          "help": [
+            "Revisa lo que poseen los fondos."
+          ],
+          "feedback": {
+            "met": "Varios envoltorios pueden contener los mismos riesgos.",
+            "not_yet": "Revisa lo que poseen los fondos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que estes ativos revelam?",
+          "scene": "A oferta lista vários fundos, mas todos possuem principalmente as mesmas empresas de tecnologia.",
+          "options": [
+            {
+              "label": "As exposições se repetem bastante"
+            },
+            {
+              "label": "Não resta risco compartilhado"
+            },
+            {
+              "label": "Os nomes garantem diversificação"
+            }
+          ],
+          "help": [
+            "Confira o que os fundos possuem."
+          ],
+          "feedback": {
+            "met": "Várias estruturas podem conter os mesmos riscos.",
+            "not_yet": "Confira o que os fundos possuem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes with withdrawals?",
+          "scene": "The chart reinvests gains. You would withdraw them for bills.",
+          "options": [
+            {
+              "label": "Withdrawals increase invested money"
+            },
+            {
+              "label": "The chart no longer fits"
+            },
+            {
+              "label": "The same growth is assured"
+            }
+          ],
+          "help": [
+            "Track what actually remains invested."
+          ],
+          "feedback": {
+            "met": "Withdrawn gains cannot also remain in the compounding base.",
+            "not_yet": "Track what actually remains invested."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia si se retiran las ganancias?",
+          "scene": "La gráfica supone reinvertir toda ganancia. La persona planea retirarla para pagar cuentas.",
+          "options": [
+            {
+              "label": "Los retiros aumentan la base invertida"
+            },
+            {
+              "label": "La gráfica ya no coincide con ese plan"
+            },
+            {
+              "label": "Se asegura el mismo recorrido compuesto"
+            }
+          ],
+          "help": [
+            "Sigue lo que realmente queda invertido."
+          ],
+          "feedback": {
+            "met": "Las ganancias retiradas no pueden seguir en la base compuesta.",
+            "not_yet": "Sigue lo que realmente queda invertido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda se os ganhos forem retirados?",
+          "scene": "O gráfico supõe reinvestir todo ganho. A pessoa planeja retirá-lo para pagar contas.",
+          "options": [
+            {
+              "label": "As retiradas aumentam a base investida"
+            },
+            {
+              "label": "O gráfico deixa de corresponder ao plano"
+            },
+            {
+              "label": "O mesmo caminho composto é garantido"
+            }
+          ],
+          "help": [
+            "Acompanhe o que realmente permanece investido."
+          ],
+          "feedback": {
+            "met": "Ganhos retirados não podem continuar na base composta.",
+            "not_yet": "Acompanhe o que realmente permanece investido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains possible?",
+          "scene": "Another portfolio spans different sectors. A broad market decline remains possible.",
+          "options": [
+            {
+              "label": "It must earn the projected rate"
+            },
+            {
+              "label": "It cannot lose value"
+            },
+            {
+              "label": "It can still lose value"
+            }
+          ],
+          "help": [
+            "Recall the limit of diversification."
+          ],
+          "feedback": {
+            "met": "Diversification reduces some dependence without guaranteeing a result.",
+            "not_yet": "Recall the limit of diversification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aún puede pasarle a esta cartera?",
+          "scene": "Otra cartera sí tiene sectores diferentes. Aún es posible una caída general del mercado.",
+          "options": [
+            {
+              "label": "Debe ganar la tasa proyectada"
+            },
+            {
+              "label": "No puede perder valor"
+            },
+            {
+              "label": "Aún puede perder valor"
+            }
+          ],
+          "help": [
+            "Recuerda el límite de diversificar."
+          ],
+          "feedback": {
+            "met": "Diversificar reduce ciertas dependencias sin garantizar un resultado.",
+            "not_yet": "Recuerda el límite de diversificar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda pode acontecer com esta carteira?",
+          "scene": "Outra carteira realmente tem setores diferentes. Uma queda geral do mercado continua possível.",
+          "options": [
+            {
+              "label": "Deve render a taxa projetada"
+            },
+            {
+              "label": "Não pode perder valor"
+            },
+            {
+              "label": "Ainda pode perder valor"
+            }
+          ],
+          "help": [
+            "Lembre o limite da diversificação."
+          ],
+          "feedback": {
+            "met": "Diversificar reduz certas dependências sem garantir um resultado.",
+            "not_yet": "Lembre o limite da diversificação."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you reassess?",
+          "scene": "Your essential bill is due tomorrow. Selling takes weeks and risks losses.",
+          "options": [
+            {
+              "label": "Trust its long-term chart"
+            },
+            {
+              "label": "Buy another identical fund"
+            },
+            {
+              "label": "Access and possible losses"
+            }
+          ],
+          "help": [
+            "The current payment constraint controls this decision."
+          ],
+          "feedback": {
+            "met": "A long-term projection cannot meet an incompatible immediate need.",
+            "not_yet": "The current payment constraint controls this decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "La inversión debe cubrir un pago esencial mañana. Venderla puede tardar semanas y causar pérdidas.",
+          "options": [
+            {
+              "label": "Confiar en su gráfica de largo plazo"
+            },
+            {
+              "label": "Comprar otro fondo igual"
+            },
+            {
+              "label": "Acceso y posibles pérdidas"
+            }
+          ],
+          "help": [
+            "La necesidad actual de pago condiciona esta decisión."
+          ],
+          "feedback": {
+            "met": "Una proyección larga no resuelve una necesidad inmediata incompatible.",
+            "not_yet": "La necesidad actual de pago condiciona esta decisión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve rever?",
+          "scene": "O investimento deve cobrir um pagamento essencial amanhã. Vendê-lo pode levar semanas e causar perdas.",
+          "options": [
+            {
+              "label": "Confiar no gráfico de longo prazo"
+            },
+            {
+              "label": "Comprar outro fundo igual"
+            },
+            {
+              "label": "Acesso e possíveis perdas"
+            }
+          ],
+          "help": [
+            "A necessidade atual de pagamento condiciona esta decisão."
+          ],
+          "feedback": {
+            "met": "Uma projeção longa não resolve uma necessidade imediata incompatível.",
+            "not_yet": "A necessidade atual de pagamento condiciona esta decisão."
+          }
+        }
+      }
+    }
+  ]
+}

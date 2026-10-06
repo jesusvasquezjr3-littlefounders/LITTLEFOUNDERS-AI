@@ -1,0 +1,853 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-2",
+  "lesson_id": "fe-production-financial-landscape-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.01",
+    "finance.prod.financial-landscape.02",
+    "finance.prod.financial-landscape.03",
+    "finance.prod.financial-landscape.04",
+    "finance.prod.financial-landscape.05",
+    "finance.prod.payments-digital.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Verify the genuine provider and permitted activity while distinguishing coverage and preparing an appropriate complaint route.",
+  "title": {
+    "en-US": "Provider Checks",
+    "es-MX": "Verifica proveedores y resuelve disputas",
+    "pt-BR": "Confira provedores e resolva disputas"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Provider Checks\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica proveedores y resuelve disputas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira provedores e resolva disputas\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.financial-landscape.01",
+      "observable_action": "Verify the genuine provider and permitted activity while distinguishing coverage and preparing an appropriate complaint route.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.07",
+      "prod.accounts-records.09"
+    ],
+    "retrieval_skills": [
+      "prod.financial-landscape.01",
+      "prod.financial-landscape.02",
+      "prod.financial-landscape.03",
+      "prod.financial-landscape.04",
+      "prod.financial-landscape.05",
+      "prod.payments-digital.07"
+    ],
+    "relevance": "Retrieve identity, coverage and complaint checks before trusting a financial claim.",
+    "misconception": "A familiar logo guarantees all losses and every authority can resolve any financial complaint.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "Identity matching does not establish permission for another activity."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.02",
+        "context_id": "financial-landscape-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Authorization does not remove the investment’s stated market exposure."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Both the product and loss event fall outside this scheme."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "A specific issue, proof and remedy make the complaint assessable."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The next route must match the stated official responsibilities."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.payments-digital.07",
+        "context_id": "financial-landscape-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Independent contact avoids trusting the suspicious message’s route."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "A genuine firm’s name does not authenticate the caller."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve identity, coverage and complaint checks before trusting a financial claim."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera revisión de identidad, cobertura y quejas antes de confiar en una afirmación financiera."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome conferência de identidade, cobertura e queixas antes de confiar numa alegação financeira."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unverified?",
+          "scene": "The register’s legal name matches, but its permitted activity differs from the offer.",
+          "options": [
+            {
+              "label": "Only the quoted return"
+            },
+            {
+              "label": "Permission for this activity"
+            },
+            {
+              "label": "Nothing because names match"
+            }
+          ],
+          "help": [
+            "Match both legal identity and activity scope."
+          ],
+          "feedback": {
+            "met": "Identity matching does not establish permission for another activity.",
+            "not_yet": "Match both legal identity and activity scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue sin verificar?",
+          "scene": "Nombre legal del registro coincide, pero actividad permitida difiere de oferta.",
+          "options": [
+            {
+              "label": "Solo el rendimiento ofrecido"
+            },
+            {
+              "label": "Permiso para esta actividad"
+            },
+            {
+              "label": "Nada porque nombres coinciden"
+            }
+          ],
+          "help": [
+            "Compara identidad legal y alcance de actividad."
+          ],
+          "feedback": {
+            "met": "Un mismo nombre no da permiso para otra actividad.",
+            "not_yet": "Compara identidad legal y alcance de actividad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que segue sem verificar?",
+          "scene": "Nome legal da lista coincide, mas serviço permitido difere da oferta.",
+          "options": [
+            {
+              "label": "Só o retorno oferecido"
+            },
+            {
+              "label": "Permissão para este serviço"
+            },
+            {
+              "label": "Nada pois nomes coincidem"
+            }
+          ],
+          "help": [
+            "Compare identidade legal e alcance do serviço."
+          ],
+          "feedback": {
+            "met": "Identidade igual não define permissão para outro serviço.",
+            "not_yet": "Compare identidade legal e alcance do serviço."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What does authorization fail to guarantee?",
+          "scene": "A regulated firm offers an investment exposed to price falls.",
+          "options": [
+            {
+              "label": "A listed legal identity"
+            },
+            {
+              "label": "Permission for its stated activity"
+            },
+            {
+              "label": "No market losses"
+            }
+          ],
+          "help": [
+            "Separate provider status from product risk."
+          ],
+          "feedback": {
+            "met": "Authorization does not remove the investment’s stated market exposure.",
+            "not_yet": "Separate provider status from product risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué no garantiza permiso?",
+          "scene": "Empresa regulada ofrece inversión expuesta a caídas de precio.",
+          "options": [
+            {
+              "label": "Identidad legal registrada"
+            },
+            {
+              "label": "Permiso para actividad indicada"
+            },
+            {
+              "label": "Ausencia de pérdidas de mercado"
+            }
+          ],
+          "help": [
+            "Separa estatus del proveedor de riesgo del producto."
+          ],
+          "feedback": {
+            "met": "Permiso no elimina riesgo de mercado dado.",
+            "not_yet": "Separa estatus del proveedor de riesgo del producto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que autorização não garante?",
+          "scene": "Empresa regulada oferece aplicação exposta a quedas de preço.",
+          "options": [
+            {
+              "label": "Identidade legal registrada"
+            },
+            {
+              "label": "Permissão para serviço dado"
+            },
+            {
+              "label": "Ausência de perdas de mercado"
+            }
+          ],
+          "help": [
+            "Separe situação do provedor de risco do produto."
+          ],
+          "feedback": {
+            "met": "Autorização não elimina exposição dada ao mercado.",
+            "not_yet": "Separe situação do provedor de risco do produto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this scheme cover this?",
+          "scene": "Fictional protection covers deposits after bank failure; the loss is a fund’s market decline.",
+          "options": [
+            {
+              "label": "No, wrong product and event"
+            },
+            {
+              "label": "Yes, all financial losses"
+            },
+            {
+              "label": "Yes, same seller"
+            }
+          ],
+          "help": [
+            "Apply the stated eligibility and event conditions."
+          ],
+          "feedback": {
+            "met": "Both the product and loss event fall outside this scheme.",
+            "not_yet": "Apply the stated eligibility and event conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El esquema indicado cubre esto?",
+          "scene": "Protección ficticia cubre depósitos tras quiebra; pérdida es caída de mercado de fondo.",
+          "options": [
+            {
+              "label": "No, producto y evento distintos"
+            },
+            {
+              "label": "Sí, toda pérdida financiera"
+            },
+            {
+              "label": "Sí, mismo vendedor"
+            }
+          ],
+          "help": [
+            "Aplica condiciones indicadas de producto y evento."
+          ],
+          "feedback": {
+            "met": "Producto y evento quedan fuera de este esquema.",
+            "not_yet": "Aplica condiciones indicadas de producto y evento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O sistema dado cobre isto?",
+          "scene": "Proteção fictícia cobre depósitos após quebra; perda é queda de mercado de fundo.",
+          "options": [
+            {
+              "label": "Não, produto e evento distintos"
+            },
+            {
+              "label": "Sim, toda perda financeira"
+            },
+            {
+              "label": "Sim, mesmo vendedor"
+            }
+          ],
+          "help": [
+            "Aplique condições dadas de produto e evento."
+          ],
+          "feedback": {
+            "met": "Produto e evento ficam fora deste sistema.",
+            "not_yet": "Aplique condições dadas de produto e evento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which complaint supports assessment?",
+          "scene": "An unexplained duplicate charge appears on a statement.",
+          "options": [
+            {
+              "label": "Hide the transaction reference"
+            },
+            {
+              "label": "Identify charge, attach evidence, request correction"
+            },
+            {
+              "label": "Only express anger"
+            }
+          ],
+          "help": [
+            "Connect the disputed transaction to the requested correction."
+          ],
+          "feedback": {
+            "met": "A specific issue, proof and remedy make the complaint assessable.",
+            "not_yet": "Connect the disputed transaction to the requested correction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queja permite evaluar?",
+          "scene": "Cargo duplicado sin explicación aparece en estado.",
+          "options": [
+            {
+              "label": "Ocultar referencia de pago"
+            },
+            {
+              "label": "Identificar cargo, adjuntar prueba, pedir corrección"
+            },
+            {
+              "label": "Solo expresar enojo"
+            }
+          ],
+          "help": [
+            "Conecta pago disputada con corrección solicitada."
+          ],
+          "feedback": {
+            "met": "Problema, prueba y solución concretos permiten evaluar queja.",
+            "not_yet": "Conecta pago disputada con corrección solicitada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que queixa permite avaliar?",
+          "scene": "Cobrança duplicada sem explicação aparece no extrato.",
+          "options": [
+            {
+              "label": "Ocultar referência da transação"
+            },
+            {
+              "label": "Identificar cobrança, anexar prova, pedir correção"
+            },
+            {
+              "label": "Só expressar raiva"
+            }
+          ],
+          "help": [
+            "Ligue transação contestada à correção pedida."
+          ],
+          "feedback": {
+            "met": "Problema, prova e solução concretos permitem avaliar queixa.",
+            "not_yet": "Ligue transação contestada à correção pedida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which next route fits an unresolved reply?",
+          "scene": "Official guidance assigns this product’s dispute to a named complaints body.",
+          "options": [
+            {
+              "label": "A guaranteed-recovery stranger"
+            },
+            {
+              "label": "Any authority regardless of scope"
+            },
+            {
+              "label": "That verified body with records"
+            }
+          ],
+          "help": [
+            "Use the official route and retain the complaint history."
+          ],
+          "feedback": {
+            "met": "The next route must match the stated official responsibilities.",
+            "not_yet": "Use the official route and retain the complaint history."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vía sigue a respuesta pendiente?",
+          "scene": "Guía oficial asigna disputa de este producto a organismo de quejas nombrado.",
+          "options": [
+            {
+              "label": "Extraño que promete recuperación segura"
+            },
+            {
+              "label": "Cualquier autoridad sin revisar alcance"
+            },
+            {
+              "label": "Ese organismo verificado con registros"
+            }
+          ],
+          "help": [
+            "Usa vía oficial y conserva historial de queja."
+          ],
+          "feedback": {
+            "met": "La vía siguiente debe coincidir con funciones oficiales indicadas.",
+            "not_yet": "Usa vía oficial y conserva historial de queja."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que via segue resposta pendente?",
+          "scene": "Guia oficial atribui disputa deste produto a órgão de queixas nomeado.",
+          "options": [
+            {
+              "label": "Estranho que promete recuperar sempre"
+            },
+            {
+              "label": "Qualquer autoridade sem ver alcance"
+            },
+            {
+              "label": "Esse órgão conferido com registros"
+            }
+          ],
+          "help": [
+            "Use via oficial e guarde histórico da queixa."
+          ],
+          "feedback": {
+            "met": "A próxima via deve coincidir com funções oficiais dadas.",
+            "not_yet": "Use via oficial e guarde histórico da queixa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.07",
+      "copy": {
+        "en-US": {
+          "prompt": "How should this alert be checked?",
+          "scene": "A suspicious text asks for account details through its link.",
+          "options": [
+            {
+              "label": "Contact provider through independently verified channel"
+            },
+            {
+              "label": "Use the text’s link"
+            },
+            {
+              "label": "Reply with the password"
+            }
+          ],
+          "help": [
+            "Use a genuine provider channel obtained separately."
+          ],
+          "feedback": {
+            "met": "Independent contact avoids trusting the suspicious message’s route.",
+            "not_yet": "Use a genuine provider channel obtained separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo revisar esta alerta?",
+          "scene": "Mensaje sospechoso pide datos de cuenta mediante su enlace.",
+          "options": [
+            {
+              "label": "Contactar proveedor por canal verificado aparte"
+            },
+            {
+              "label": "Usar enlace del mensaje"
+            },
+            {
+              "label": "Responder con contraseña"
+            }
+          ],
+          "help": [
+            "Usa canal auténtico del proveedor obtenido aparte."
+          ],
+          "feedback": {
+            "met": "Contacto independiente evita confiar en ruta sospechosa del mensaje.",
+            "not_yet": "Usa canal auténtico del proveedor obtenido aparte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como conferir este alerta?",
+          "scene": "Mensagem suspeita pede dados da conta pelo seu link.",
+          "options": [
+            {
+              "label": "Contatar provedor por canal conferido à parte"
+            },
+            {
+              "label": "Usar link da mensagem"
+            },
+            {
+              "label": "Responder com senha"
+            }
+          ],
+          "help": [
+            "Use canal real do provedor obtido à parte."
+          ],
+          "feedback": {
+            "met": "Contato independente evita confiar na rota suspeita da mensagem.",
+            "not_yet": "Use canal real do provedor obtido à parte."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be verified?",
+          "scene": "A caller copies a licensed firm’s name but uses different contact details.",
+          "options": [
+            {
+              "label": "Only the copied name"
+            },
+            {
+              "label": "Only the caller’s confidence"
+            },
+            {
+              "label": "Exact identity, activity and official contact"
+            }
+          ],
+          "help": [
+            "Cross-check the actual offer with independent official records."
+          ],
+          "feedback": {
+            "met": "A genuine firm’s name does not authenticate the caller.",
+            "not_yet": "Cross-check the actual offer with independent official records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar en esta oferta?",
+          "scene": "Persona que llama copia nombre de empresa autorizada pero usa contacto distinto.",
+          "options": [
+            {
+              "label": "Solo nombre copiado"
+            },
+            {
+              "label": "Solo seguridad de quien llama"
+            },
+            {
+              "label": "Nombre legal, actividad y contacto oficial"
+            }
+          ],
+          "help": [
+            "Contrasta oferta real con registros oficiales consultados aparte."
+          ],
+          "feedback": {
+            "met": "Nombre de empresa real no autentica a quien llama.",
+            "not_yet": "Contrasta oferta real con registros oficiales consultados aparte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar nesta oferta?",
+          "scene": "Pessoa que liga copia nome de empresa autorizada mas usa contato distinto.",
+          "options": [
+            {
+              "label": "Só nome copiado"
+            },
+            {
+              "label": "Só confiança de quem liga"
+            },
+            {
+              "label": "Identidade exata, serviço e contato oficial"
+            }
+          ],
+          "help": [
+            "Compare oferta real com listas oficiais de fonte segura."
+          ],
+          "feedback": {
+            "met": "Nome de empresa real não autentica quem liga.",
+            "not_yet": "Compare oferta real com listas oficiais de fonte segura."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,884 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-2",
+  "lesson_id": "fe-production-financial-math-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.price.percent"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a percentage of a stated amount.",
+  "title": {
+    "en-US": "Percentage shares",
+    "es-MX": "Una parte de un monto",
+    "pt-BR": "Uma parte de um valor"
+  },
+  "new_concepts": [
+    "finance.price.percent"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A share of an amount\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Una parte de un monto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Uma parte de um valor\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "price.percent",
+      "observable_action": "Calculate a percentage of a stated amount.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.05",
+      "prod.financial-math.07",
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Use the stated base to find a percentage amount.",
+    "misconception": "Apply the percentage to the wrong base or confuse the rate with the amount.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-example-01",
+        "supports_from": [],
+        "reasoning": "For 20% of 80, divide 80 by 100, then multiply by 20. The share is 16, not 20 money units."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The percentage applies to the stated whole."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The base is the whole named in the calculation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-practice-01",
+        "supports_from": [],
+        "reasoning": "The fee is the stated fraction of the payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-practice-02",
+        "supports_from": [],
+        "reasoning": "The share changes with its base."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A fixed share of a larger whole is larger."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Only the eligible base enters this calculation."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "price.percent",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use the stated base to find a percentage amount."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa la base indicada para encontrar un monto porcentual."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use a base informada para encontrar um valor percentual."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find one percent first",
+          "line": "For 20% of 80, divide 80 by 100, then multiply by 20. The share is 16, not 20 money units."
+        },
+        "es-MX": {
+          "prompt": "Primero encuentra uno por ciento",
+          "line": "Para 20% de 80, divide 80 entre 100 y multiplica por 20. La parte es 16, no 20 unidades monetarias."
+        },
+        "pt-BR": {
+          "prompt": "Primeiro encontre um por cento",
+          "line": "Para 20% de 80, divida 80 por 100 e multiplique por 20. A parte é 16, não 20 unidades monetárias."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Share amount?",
+          "scene": "Find 10% of 60. Divide the whole into ten equal shares.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "The rate is not itself the money amount."
+          ],
+          "feedback": {
+            "met": "The percentage applies to the stated whole.",
+            "not_yet": "The rate is not itself the money amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto de la parte?",
+          "scene": "Encuentra 10% de 60. Divide el total en diez partes iguales.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "La tasa no es por sí misma el monto."
+          ],
+          "feedback": {
+            "met": "El porcentaje se aplica al total indicado.",
+            "not_yet": "La tasa no es por sí misma el monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor da parte?",
+          "scene": "Encontre 10% de 60. Divida o total em dez partes iguais.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "A taxa não é por si o valor."
+          ],
+          "feedback": {
+            "met": "A porcentagem se aplica ao total informado.",
+            "not_yet": "A taxa não é por si o valor."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          60
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is the base?",
+          "scene": "A 25% share is taken from 40, not from a separate balance.",
+          "options": [
+            {
+              "label": "The percentage number"
+            },
+            {
+              "label": "Any available balance"
+            },
+            {
+              "label": "The forty-unit whole"
+            }
+          ],
+          "help": [
+            "Ask: a percentage of what?"
+          ],
+          "feedback": {
+            "met": "The base is the whole named in the calculation.",
+            "not_yet": "Ask: a percentage of what?"
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es la base?",
+          "scene": "Se toma 25% de 40, no de otro saldo.",
+          "options": [
+            {
+              "label": "El número porcentual"
+            },
+            {
+              "label": "Cualquier saldo disponible"
+            },
+            {
+              "label": "El total de cuarenta"
+            }
+          ],
+          "help": [
+            "Pregunta: ¿porcentaje de qué?"
+          ],
+          "feedback": {
+            "met": "La base es el total nombrado en el cálculo.",
+            "not_yet": "Pregunta: ¿porcentaje de qué?"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a base?",
+          "scene": "Retiram-se 25% de 40, não de outro saldo.",
+          "options": [
+            {
+              "label": "O número percentual"
+            },
+            {
+              "label": "Qualquer saldo disponível"
+            },
+            {
+              "label": "O total de quarenta"
+            }
+          ],
+          "help": [
+            "Pergunte: porcentagem de quê?"
+          ],
+          "feedback": {
+            "met": "A base é o total indicado no cálculo.",
+            "not_yet": "Pergunte: porcentagem de quê?"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Fee amount?",
+          "scene": "A fee is 5% of a payment of 200.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "195"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Multiply the base by the rate divided by one hundred."
+          ],
+          "feedback": {
+            "met": "The fee is the stated fraction of the payment.",
+            "not_yet": "Multiply the base by the rate divided by one hundred."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto del cargo?",
+          "scene": "Un cargo es 5% de un pago de 200.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "195"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Multiplica la base por la tasa dividida entre cien."
+          ],
+          "feedback": {
+            "met": "El cargo es la fracción indicada del pago.",
+            "not_yet": "Multiplica la base por la tasa dividida entre cien."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor da tarifa?",
+          "scene": "Uma tarifa é 5% de um pagamento de 200.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "195"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Multiplique a base pela taxa dividida por cem."
+          ],
+          "feedback": {
+            "met": "A tarifa é a fração informada do pagamento.",
+            "not_yet": "Multiplique a base pela taxa dividida por cem."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          5,
+          200
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Category amount?",
+          "scene": "A plan assigns 30% of 90 to one category.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "27"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Use the stated base, not a different total."
+          ],
+          "feedback": {
+            "met": "The share changes with its base.",
+            "not_yet": "Use the stated base, not a different total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto de la categoría?",
+          "scene": "Un plan asigna 30% de 90 a una categoría.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "27"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Usa la base indicada, no otro total."
+          ],
+          "feedback": {
+            "met": "La parte cambia con su base.",
+            "not_yet": "Usa la base indicada, no otro total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor da categoria?",
+          "scene": "Um plano destina 30% de 90 a uma categoria.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "27"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Use a base informada, não outro total."
+          ],
+          "feedback": {
+            "met": "A parte muda com sua base.",
+            "not_yet": "Use a base informada, não outro total."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          90
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to its amount?",
+          "scene": "The same positive percentage is applied to a larger base.",
+          "options": [
+            {
+              "label": "It disappears"
+            },
+            {
+              "label": "It stays fixed"
+            },
+            {
+              "label": "It increases"
+            }
+          ],
+          "help": [
+            "Separate the rate from the money amount."
+          ],
+          "feedback": {
+            "met": "A fixed share of a larger whole is larger.",
+            "not_yet": "Separate the rate from the money amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con su monto?",
+          "scene": "Se aplica el mismo porcentaje positivo a una base mayor.",
+          "options": [
+            {
+              "label": "Desaparece"
+            },
+            {
+              "label": "Permanece fijo"
+            },
+            {
+              "label": "Aumenta"
+            }
+          ],
+          "help": [
+            "Separa la tasa del monto de dinero."
+          ],
+          "feedback": {
+            "met": "Una parte fija de un total mayor es mayor.",
+            "not_yet": "Separa la tasa del monto de dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o valor?",
+          "scene": "Aplica-se a mesma porcentagem positiva a uma base maior.",
+          "options": [
+            {
+              "label": "Desaparece"
+            },
+            {
+              "label": "Permanece fixo"
+            },
+            {
+              "label": "Aumenta"
+            }
+          ],
+          "help": [
+            "Separe a taxa do valor em dinheiro."
+          ],
+          "feedback": {
+            "met": "Uma parte fixa de um total maior é maior.",
+            "not_yet": "Separe a taxa do valor em dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Reimbursement amount?",
+          "scene": "A reimbursement covers 75% of an eligible cost of 80; other costs are excluded.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Apply the fraction to the covered cost."
+          ],
+          "feedback": {
+            "met": "Only the eligible base enters this calculation.",
+            "not_yet": "Apply the fraction to the covered cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto del reembolso?",
+          "scene": "Un reembolso cubre 75% de un costo elegible de 80; otros costos quedan fuera.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Aplica la fracción al costo cubierto."
+          ],
+          "feedback": {
+            "met": "Solo la base elegible entra en este cálculo.",
+            "not_yet": "Aplica la fracción al costo cubierto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor do reembolso?",
+          "scene": "Um reembolso cobre 75% de um custo elegível de 80; outros custos ficam fora.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Aplique a fração ao custo coberto."
+          ],
+          "feedback": {
+            "met": "Só a base elegível entra neste cálculo.",
+            "not_yet": "Aplique a fração ao custo coberto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          75,
+          80
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

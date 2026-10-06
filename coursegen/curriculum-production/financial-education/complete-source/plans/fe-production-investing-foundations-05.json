@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-1",
+  "lesson_id": "fe-production-investing-foundations-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish owning a share from lending through a bond.",
+  "title": {
+    "en-US": "Investment Roles",
+    "es-MX": "¿Propietario o prestamista?",
+    "pt-BR": "Proprietário ou credor?"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Investment Roles\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Propietario o prestamista?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Proprietário ou credor?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.05",
+      "observable_action": "Distinguish owning a share from lending through a bond.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.04",
+      "debt.obligation"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Buying ownership and lending money create different claims on a business.",
+    "misconception": "A share and a bond are interchangeable promises to repay the buyer.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-example-01",
+        "supports_from": [],
+        "reasoning": "A share represents ownership. A bond represents a loan with repayment terms; neither label alone removes the risk of loss."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "An ownership stake is a share, not a repayment promise."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The borrower’s payment terms describe debt."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-practice-01",
+        "supports_from": [],
+        "reasoning": "The buyer owns a stake rather than lending principal."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-practice-02",
+        "supports_from": [],
+        "reasoning": "A repayment obligation identifies the lending relationship."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-practice-03",
+        "supports_from": [],
+        "reasoning": "A debt promise can still go unpaid."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "The offer promises repayment to lenders, not ownership."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Buying ownership and lending money create different claims on a business."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Comprar propiedad y prestar dinero crean derechos distintos frente a una empresa."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Comprar participação e emprestar dinheiro criam direitos diferentes perante uma empresa."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the relationship",
+          "line": "A share represents ownership. A bond represents a loan with repayment terms; neither label alone removes the risk of loss."
+        },
+        "es-MX": {
+          "prompt": "Lee la relación",
+          "line": "Una acción representa propiedad. Un bono representa un préstamo con condiciones de pago; ninguna etiqueta elimina el riesgo de perder."
+        },
+        "pt-BR": {
+          "prompt": "Leia a relação",
+          "line": "Uma ação representa participação. Um título de dívida representa empréstimo com condições de pagamento; nenhum nome elimina o risco de perda."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which relationship?",
+          "scene": "A company sells a small ownership stake rather than promising to repay a loan.",
+          "options": [
+            {
+              "label": "Share ownership"
+            },
+            {
+              "label": "Bond lending"
+            }
+          ],
+          "help": [
+            "Look for ownership versus a loan agreement."
+          ],
+          "feedback": {
+            "met": "An ownership stake is a share, not a repayment promise.",
+            "not_yet": "Look for ownership versus a loan agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué relación existe?",
+          "scene": "Una empresa vende una pequeña participación de propiedad, sin prometer devolver un préstamo.",
+          "options": [
+            {
+              "label": "Propiedad mediante acción"
+            },
+            {
+              "label": "Préstamo mediante bono"
+            }
+          ],
+          "help": [
+            "Busca propiedad o un acuerdo de préstamo."
+          ],
+          "feedback": {
+            "met": "La participación es una acción, no una promesa de devolución.",
+            "not_yet": "Busca propiedad o un acuerdo de préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que vínculo existe?",
+          "scene": "Uma empresa vende uma parte dela, sem tomar um empréstimo.",
+          "options": [
+            {
+              "label": "Ser sócio por ação"
+            },
+            {
+              "label": "Ser credor por título"
+            }
+          ],
+          "help": [
+            "Veja se há parte da empresa ou dívida."
+          ],
+          "feedback": {
+            "met": "A ação dá uma parte da empresa, não promete reembolso.",
+            "not_yet": "Veja se há parte da empresa ou dívida."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which relationship?",
+          "scene": "An issuer borrows through a security promising interest and repayment on stated dates.",
+          "options": [
+            {
+              "label": "Bond lending"
+            },
+            {
+              "label": "Share ownership"
+            }
+          ],
+          "help": [
+            "A repayment schedule is not an ownership percentage."
+          ],
+          "feedback": {
+            "met": "The borrower’s payment terms describe debt.",
+            "not_yet": "A repayment schedule is not an ownership percentage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué relación existe?",
+          "scene": "Un emisor obtiene un préstamo mediante un título que promete intereses y devolución en fechas indicadas.",
+          "options": [
+            {
+              "label": "Préstamo mediante bono"
+            },
+            {
+              "label": "Propiedad mediante acción"
+            }
+          ],
+          "help": [
+            "Un calendario de devolución no es participación de propiedad."
+          ],
+          "feedback": {
+            "met": "Las condiciones de pago del prestatario describen deuda.",
+            "not_yet": "Un calendario de devolución no es participación de propiedad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que vínculo existe?",
+          "scene": "Uma empresa toma dinheiro por um título e promete pagar juros e devolver nas datas dadas.",
+          "options": [
+            {
+              "label": "Ser credor por título"
+            },
+            {
+              "label": "Ser sócio por ação"
+            }
+          ],
+          "help": [
+            "Datas para pagar não são partes da empresa."
+          ],
+          "feedback": {
+            "met": "Quem deve pagar o empréstimo tem uma dívida.",
+            "not_yet": "Datas para pagar não são partes da empresa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a share promise repayment?",
+          "scene": "Someone buys ownership in a bakery. No loan contract exists.",
+          "options": [
+            {
+              "label": "No, ownership is not a loan"
+            },
+            {
+              "label": "Yes, every investment is a loan"
+            }
+          ],
+          "help": [
+            "Identify the contract, not just money changing hands."
+          ],
+          "feedback": {
+            "met": "The buyer owns a stake rather than lending principal.",
+            "not_yet": "Identify the contract, not just money changing hands."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La acción promete devolución?",
+          "scene": "Alguien compra propiedad en una panadería. No existe contrato de préstamo.",
+          "options": [
+            {
+              "label": "No, propiedad no es préstamo"
+            },
+            {
+              "label": "Sí, toda inversión es préstamo"
+            }
+          ],
+          "help": [
+            "Identifica el contrato, no solo el movimiento de dinero."
+          ],
+          "feedback": {
+            "met": "La persona tiene participación en lugar de prestar capital.",
+            "not_yet": "Identifica el contrato, no solo el movimiento de dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A ação promete reembolso?",
+          "scene": "Alguém compra uma parte de uma padaria. Não há empréstimo.",
+          "options": [
+            {
+              "label": "Não, ser sócio não é emprestar"
+            },
+            {
+              "label": "Sim, toda compra é empréstimo"
+            }
+          ],
+          "help": [
+            "Veja o acordo, não só a troca de dinheiro."
+          ],
+          "feedback": {
+            "met": "A pessoa é sócia, não quem emprestou dinheiro.",
+            "not_yet": "Veja o acordo, não só a troca de dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fact identifies debt?",
+          "scene": "Two securities belong to the same company. One has contractual repayment dates.",
+          "options": [
+            {
+              "label": "The shared company name"
+            },
+            {
+              "label": "The repayment obligation"
+            },
+            {
+              "label": "The company’s profit forecast"
+            }
+          ],
+          "help": [
+            "The same company can issue different kinds of claims."
+          ],
+          "feedback": {
+            "met": "A repayment obligation identifies the lending relationship.",
+            "not_yet": "The same company can issue different kinds of claims."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué identifica deuda?",
+          "scene": "Dos títulos pertenecen a la misma empresa. Uno tiene fechas contractuales de devolución.",
+          "options": [
+            {
+              "label": "El nombre de la empresa"
+            },
+            {
+              "label": "La obligación de devolver"
+            },
+            {
+              "label": "La ganancia prevista de la empresa"
+            }
+          ],
+          "help": [
+            "Una empresa puede emitir derechos de distintos tipos."
+          ],
+          "feedback": {
+            "met": "La obligación de devolver identifica la relación de préstamo.",
+            "not_yet": "Una empresa puede emitir derechos de distintos tipos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mostra dívida?",
+          "scene": "Dois papéis são da mesma empresa. Um exige devolver dinheiro nas datas do acordo.",
+          "options": [
+            {
+              "label": "O nome da empresa"
+            },
+            {
+              "label": "O dever de devolver"
+            },
+            {
+              "label": "O lucro previsto da empresa"
+            }
+          ],
+          "help": [
+            "Uma empresa pode emitir ação e dívida."
+          ],
+          "feedback": {
+            "met": "O dever de devolver mostra que houve um empréstimo.",
+            "not_yet": "Uma empresa pode emitir ação e dívida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the label settle safety?",
+          "scene": "A seller calls a security a bond and says this eliminates all risk.",
+          "options": [
+            {
+              "label": "No, the borrower could fail to pay"
+            },
+            {
+              "label": "Yes, bonds cannot lose money"
+            }
+          ],
+          "help": [
+            "Separate an obligation from certainty it will be met."
+          ],
+          "feedback": {
+            "met": "A debt promise can still go unpaid.",
+            "not_yet": "Separate an obligation from certainty it will be met."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La etiqueta asegura todo?",
+          "scene": "Un vendedor llama bono a un título y afirma que eso elimina todo riesgo.",
+          "options": [
+            {
+              "label": "No, el deudor podría no pagar"
+            },
+            {
+              "label": "Sí, los bonos no pueden perder"
+            }
+          ],
+          "help": [
+            "Distingue obligación de certeza de cumplimiento."
+          ],
+          "feedback": {
+            "met": "Una promesa de deuda puede quedar sin pagar.",
+            "not_yet": "Distingue obligación de certeza de cumplimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O nome garante tudo?",
+          "scene": "Um vendedor chama um papel de título de dívida e diz que não há risco.",
+          "options": [
+            {
+              "label": "Não, o devedor pode não pagar"
+            },
+            {
+              "label": "Sim, títulos não podem perder"
+            }
+          ],
+          "help": [
+            "Dever pagar não é certeza de pagar."
+          ],
+          "feedback": {
+            "met": "Uma promessa de dívida pode não ser paga.",
+            "not_yet": "Dever pagar não é certeza de pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Classify the new offer",
+          "scene": "A city raises money with a promise to repay lenders. It sells no ownership stake.",
+          "options": [
+            {
+              "label": "Debt investment"
+            },
+            {
+              "label": "Ownership investment"
+            }
+          ],
+          "help": [
+            "Classify the agreement even when the issuer changes."
+          ],
+          "feedback": {
+            "met": "The offer promises repayment to lenders, not ownership.",
+            "not_yet": "Classify the agreement even when the issuer changes."
+          }
+        },
+        "es-MX": {
+          "prompt": "Clasifica la oferta nueva",
+          "scene": "Una ciudad obtiene dinero prometiendo devolverlo a prestamistas. No vende participación de propiedad.",
+          "options": [
+            {
+              "label": "Inversión de deuda"
+            },
+            {
+              "label": "Inversión de propiedad"
+            }
+          ],
+          "help": [
+            "Clasifica el acuerdo aunque cambie el emisor."
+          ],
+          "feedback": {
+            "met": "La oferta promete devolver un préstamo, no entregar propiedad.",
+            "not_yet": "Clasifica el acuerdo aunque cambie el emisor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que tipo de oferta?",
+          "scene": "Uma cidade toma dinheiro e promete devolver a quem empresta. Não vende partes dela.",
+          "options": [
+            {
+              "label": "Aplicar em dívida"
+            },
+            {
+              "label": "Comprar parte da cidade"
+            }
+          ],
+          "help": [
+            "Veja o acordo mesmo quando muda quem pede dinheiro."
+          ],
+          "feedback": {
+            "met": "A oferta promete pagar um empréstimo, não dar uma parte.",
+            "not_yet": "Veja o acordo mesmo quando muda quem pede dinheiro."
+          }
+        }
+      }
+    }
+  ]
+}

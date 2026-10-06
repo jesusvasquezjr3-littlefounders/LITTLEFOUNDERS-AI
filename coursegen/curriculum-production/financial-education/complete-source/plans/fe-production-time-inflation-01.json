@@ -1,0 +1,948 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-1",
+  "lesson_id": "fe-production-time-inflation-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate simple interest using an explicitly stated principal, rate and period.",
+  "title": {
+    "en-US": "Simple interest",
+    "es-MX": "Interés de un periodo indicado",
+    "pt-BR": "Juros de um período informado"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Interest for a stated period\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Interés de un periodo indicado\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Juros de um período informado\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.01",
+      "observable_action": "Calculate simple interest using an explicitly stated principal, rate and period.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "price.percent",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An interest rate needs a starting amount and a matching period.",
+    "misconception": "Applying a quoted rate without checking its base, period or simple-interest assumption.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-example-01",
+        "supports_from": [],
+        "reasoning": "Simple interest uses the original principal. At 5% per year, 100 earns 5 each year under this fictional model."
+      },
+      {
+        "segment_id": "guided-worked-01",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-guided-worked-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The simple model repeats interest on the original principal."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-guided-01",
+        "supports_from": [
+          "guided-worked-01"
+        ],
+        "reasoning": "300 × 4% × 1 = 12 interest."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-practice-02",
+        "supports_from": [],
+        "reasoning": "500 × 2% × 3 = 30 interest."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-practice-03",
+        "supports_from": [],
+        "reasoning": "400 + (400 × 5% × 2) = 440."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-practice-04",
+        "supports_from": [],
+        "reasoning": "Rate and duration must refer to matching periods."
+      },
+      {
+        "segment_id": "transfer-05",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-01-transfer-05",
+        "supports_from": [],
+        "reasoning": "600 × 8% × 0.5 = 24 interest."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An interest rate needs a starting amount and a matching period."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una tasa necesita un monto inicial y un periodo coincidente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma taxa precisa de um valor inicial e um período correspondente."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Simple interest uses the original principal. At 5% per year, 100 earns 5 each year under this fictional model."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "El interés simple usa el capital original. Al 5% anual, 100 genera 5 cada año en este modelo ficticio."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Juros simples usam o principal original. A 5% por ano, 100 rende 5 por ano neste modelo fictício."
+        }
+      }
+    },
+    {
+      "id": "guided-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "20",
+          "step-3": "220"
+        }
+      },
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Model: 200 at 5% yearly, two years.",
+          "steps": [
+            {
+              "expression": "200 * 5 / 100",
+              "result": "10",
+              "spokenText": "Interest for one year."
+            },
+            {
+              "expression": "10 * 2",
+              "result": "20",
+              "spokenText": "Repeat that interest for two years."
+            },
+            {
+              "expression": "200 + 20",
+              "result": "220",
+              "spokenText": "Add interest to original principal."
+            }
+          ],
+          "feedback": {
+            "met": "The simple model repeats interest on the original principal.",
+            "not_yet": "Keep original principal as the interest base."
+          },
+          "help": [
+            "Keep original principal as the interest base."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Modelo: 200 al 5% anual, dos años.",
+          "steps": [
+            {
+              "expression": "200 * 5 / 100",
+              "result": "10",
+              "spokenText": "Interés de un año."
+            },
+            {
+              "expression": "10 * 2",
+              "result": "20",
+              "spokenText": "Repite ese interés por dos años."
+            },
+            {
+              "expression": "200 + 20",
+              "result": "220",
+              "spokenText": "Añade interés al capital original."
+            }
+          ],
+          "feedback": {
+            "met": "El modelo simple repite interés sobre el capital original.",
+            "not_yet": "Conserva el capital original como base de interés."
+          },
+          "help": [
+            "Conserva el capital original como base de interés."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Modelo: 200 a 5% ao ano, dois anos.",
+          "steps": [
+            {
+              "expression": "200 * 5 / 100",
+              "result": "10",
+              "spokenText": "Juros de um ano."
+            },
+            {
+              "expression": "10 * 2",
+              "result": "20",
+              "spokenText": "Repita esses juros por dois anos."
+            },
+            {
+              "expression": "200 + 20",
+              "result": "220",
+              "spokenText": "Some juros ao principal original."
+            }
+          ],
+          "feedback": {
+            "met": "O modelo simples repete juros sobre o principal original.",
+            "not_yet": "Mantenha o principal original como base dos juros."
+          },
+          "help": [
+            "Mantenha o principal original como base dos juros."
+          ]
+        }
+      },
+      "knowledge_component_id": "finance.prod.time-inflation.01"
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest earned?",
+          "scene": "Fictional simple interest: principal 300; annual rate 4%; duration 1 year.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "304"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Multiply principal by the annual fraction and years."
+          ],
+          "feedback": {
+            "met": "300 × 4% × 1 = 12 interest.",
+            "not_yet": "Multiply principal by the annual fraction and years."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés generado?",
+          "scene": "Interés simple ficticio: capital 300; tasa anual 4%; duración 1 año.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "304"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Multiplica capital por fracción anual y años."
+          ],
+          "feedback": {
+            "met": "300 × 4% × 1 = 12 de interés.",
+            "not_yet": "Multiplica capital por fracción anual y años."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros ganhos?",
+          "scene": "Juros simples fictícios: principal 300; taxa anual 4%; prazo 1 ano.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "304"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Multiplique principal pela fração anual e anos."
+          ],
+          "feedback": {
+            "met": "300 × 4% × 1 = 12 de juros.",
+            "not_yet": "Multiplique principal pela fração anual e anos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          4,
+          1
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Total interest?",
+          "scene": "Simple model: principal 500; yearly rate 2%; duration 3 years; no changes.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "530"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Repeat interest for every stated year."
+          ],
+          "feedback": {
+            "met": "500 × 2% × 3 = 30 interest.",
+            "not_yet": "Repeat interest for every stated year."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés total?",
+          "scene": "Modelo simple: capital 500; tasa anual 2%; duración 3 años; sin cambios.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "530"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Repite interés por cada año indicado."
+          ],
+          "feedback": {
+            "met": "500 × 2% × 3 = 30 de interés.",
+            "not_yet": "Repite interés por cada año indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros totais?",
+          "scene": "Modelo simples: principal 500; taxa anual 2%; prazo 3 anos; sem mudanças.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "530"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Repita juros por cada ano informado."
+          ],
+          "feedback": {
+            "met": "500 × 2% × 3 = 30 de juros.",
+            "not_yet": "Repita juros por cada ano informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          2,
+          3
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Final balance?",
+          "scene": "Simple model: principal 400; annual rate 5%; duration 2 years; no fees or contributions.",
+          "options": [
+            {
+              "label": "420"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "440"
+            }
+          ],
+          "help": [
+            "Balance includes principal and interest."
+          ],
+          "feedback": {
+            "met": "400 + (400 × 5% × 2) = 440.",
+            "not_yet": "Balance includes principal and interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo final?",
+          "scene": "Modelo simple: capital 400; tasa anual 5%; duración 2 años; sin cargos ni aportaciones.",
+          "options": [
+            {
+              "label": "420"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "440"
+            }
+          ],
+          "help": [
+            "El saldo incluye capital e interés."
+          ],
+          "feedback": {
+            "met": "400 + (400 × 5% × 2) = 440.",
+            "not_yet": "El saldo incluye capital e interés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo final?",
+          "scene": "Modelo simples: principal 400; taxa anual 5%; prazo 2 anos; sem tarifas nem aportes.",
+          "options": [
+            {
+              "label": "420"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "440"
+            }
+          ],
+          "help": [
+            "O saldo inclui principal e juros."
+          ],
+          "feedback": {
+            "met": "400 + (400 × 5% × 2) = 440.",
+            "not_yet": "O saldo inclui principal e juros."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          5,
+          2
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you multiply these directly?",
+          "scene": "A rate is annual; the duration is stated in months.",
+          "options": [
+            {
+              "label": "First align the time units"
+            },
+            {
+              "label": "Ignore the duration"
+            },
+            {
+              "label": "Treat each month as a year"
+            }
+          ],
+          "help": [
+            "Convert the duration before applying an annual rate."
+          ],
+          "feedback": {
+            "met": "Rate and duration must refer to matching periods.",
+            "not_yet": "Convert the duration before applying an annual rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes multiplicarlos directamente?",
+          "scene": "La tasa es anual; la duración está indicada en meses.",
+          "options": [
+            {
+              "label": "No, primero iguala unidades de tiempo"
+            },
+            {
+              "label": "Sí, ignora la duración"
+            },
+            {
+              "label": "Sí, trata cada mes como un año"
+            }
+          ],
+          "help": [
+            "Convierte la duración antes de aplicar una tasa anual."
+          ],
+          "feedback": {
+            "met": "Tasa y duración deben usar periodos coincidentes.",
+            "not_yet": "Convierte la duración antes de aplicar una tasa anual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode multiplicar diretamente?",
+          "scene": "A taxa é anual; o prazo está informado em meses.",
+          "options": [
+            {
+              "label": "Não, primeiro alinhe unidades de tempo"
+            },
+            {
+              "label": "Sim, ignore o prazo"
+            },
+            {
+              "label": "Sim, trate cada mês como um ano"
+            }
+          ],
+          "help": [
+            "Converta o prazo antes de aplicar uma taxa anual."
+          ],
+          "feedback": {
+            "met": "Taxa e prazo devem usar períodos correspondentes.",
+            "not_yet": "Converta o prazo antes de aplicar uma taxa anual."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest for that duration?",
+          "scene": "Fictional simple loan: principal 600; yearly rate 8%; duration 0.5 years.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "624"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "The duration is half of the rate’s yearly period."
+          ],
+          "feedback": {
+            "met": "600 × 8% × 0.5 = 24 interest.",
+            "not_yet": "The duration is half of the rate’s yearly period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés de esa duración?",
+          "scene": "Préstamo simple ficticio: capital 600; tasa anual 8%; duración 0.5 años.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "624"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "La duración es la mitad del periodo anual de la tasa."
+          ],
+          "feedback": {
+            "met": "600 × 8% × 0.5 = 24 de interés.",
+            "not_yet": "La duración es la mitad del periodo anual de la tasa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros desse prazo?",
+          "scene": "Empréstimo simples fictício: principal 600; taxa anual 8%; prazo 0,5 anos.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "624"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "O prazo é metade do período anual da taxa."
+          ],
+          "feedback": {
+            "met": "600 × 8% × 0,5 = 24 de juros.",
+            "not_yet": "O prazo é metade do período anual da taxa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          8,
+          0.5
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

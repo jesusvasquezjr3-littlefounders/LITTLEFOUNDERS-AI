@@ -1,0 +1,877 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-1",
+  "lesson_id": "fe-production-credit-products-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Place multiple buy-now-pay-later instalments on one payment calendar.",
+  "title": {
+    "en-US": "Instalment Calendar",
+    "es-MX": "Combina cuotas en un calendario",
+    "pt-BR": "Junte parcelas num calendário"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Instalment Calendar\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Combina cuotas en un calendario\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Junte parcelas num calendário\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.06",
+      "observable_action": "Place multiple buy-now-pay-later instalments on one payment calendar.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.02",
+      "prod.cashflow-budget.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Small instalments from separate purchases can fall together; place every due payment on the same calendar before checking available money.",
+    "misconception": "Each small instalment is affordable independently, so their combined schedule does not matter.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-example-01",
+        "supports_from": [],
+        "reasoning": "Place each plan’s payments on their dates, then add payments sharing a date. Compare the combined schedule with available money."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Plan A starts before plan B on this calendar."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The combined calendar retains every payment from both plans."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-practice-01",
+        "supports_from": [],
+        "reasoning": "Both instalments need funding on the same day."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Friday income arrives after Tuesday’s payments are due."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Older unpaid plans remain part of the combined commitment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Monday needs both payments, while Thursday keeps its own payment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Small instalments from separate purchases can fall together; place every due payment on the same calendar before checking available money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuotas pequeñas de compras distintas pueden coincidir; coloca cada pago en mismo calendario antes de revisar dinero disponible."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Parcelas pequenas de compras distintas podem coincidir; coloque cada pagamento no mesmo calendário antes de conferir dinheiro disponível."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "List, place, then add",
+          "line": "Place each plan’s payments on their dates, then add payments sharing a date. Compare the combined schedule with available money."
+        },
+        "es-MX": {
+          "prompt": "Lista, coloca y suma",
+          "line": "Coloca pagos de cada plan en sus fechas y suma pagos del mismo día. Compara calendario conjunto con dinero disponible."
+        },
+        "pt-BR": {
+          "prompt": "Liste, coloque e some",
+          "line": "Coloque pagamentos de cada plano nas datas e some os do mesmo dia. Compare calendário conjunto com dinheiro disponível."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "visual": {
+        "type": "timeline"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "events": [
+            {
+              "id": "due-0",
+              "date": "2026-11-05"
+            },
+            {
+              "id": "due-1",
+              "date": "2026-11-08"
+            },
+            {
+              "id": "due-2",
+              "date": "2026-11-19"
+            },
+            {
+              "id": "due-3",
+              "date": "2026-11-22"
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "plan-a"
+            },
+            {
+              "id": "plan-b"
+            },
+            {
+              "id": "both"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "plan-a"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional payment calendar; dollars. Read both plans together.",
+          "title": "Due dates",
+          "data": {
+            "events": [
+              {
+                "label": "A: 30"
+              },
+              {
+                "label": "B: 20"
+              },
+              {
+                "label": "A: 30"
+              },
+              {
+                "label": "B: 20"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which plan is due first?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "Both together"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Plan A starts before plan B on this calendar.",
+            "not_yet": "Read the event dates before combining the payments."
+          },
+          "help": [
+            "Read the event dates before combining the payments."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Calendario ficticio de pagos; pesos. Lee ambos planes juntos.",
+          "title": "Fechas de pago",
+          "data": {
+            "events": [
+              {
+                "label": "A: 30"
+              },
+              {
+                "label": "B: 20"
+              },
+              {
+                "label": "A: 30"
+              },
+              {
+                "label": "B: 20"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué plan vence primero?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "Ambos juntos"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Plan A comienza antes que B en este calendario.",
+            "not_yet": "Lee fechas de eventos antes de combinar pagos."
+          },
+          "help": [
+            "Lee fechas de eventos antes de combinar pagos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Calendário fictício de pagamentos; reais. Leia ambos os planos juntos.",
+          "title": "Datas de pagamento",
+          "data": {
+            "events": [
+              {
+                "label": "A: 30"
+              },
+              {
+                "label": "B: 20"
+              },
+              {
+                "label": "A: 30"
+              },
+              {
+                "label": "B: 20"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Que plano vence primeiro?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "Ambos juntos"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Plano A começa antes de B neste calendário.",
+            "not_yet": "Leia datas dos eventos antes de juntar pagamentos."
+          },
+          "help": [
+            "Leia datas dos eventos antes de juntar pagamentos."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which combines?",
+          "scene": "Fictional November payments: A 30 on 5,19; B 20 on 8,22.",
+          "options": [
+            {
+              "label": "5: A30; 19: A30 only"
+            },
+            {
+              "label": "8: B20; 22: B20 only"
+            },
+            {
+              "label": "5: A30; 8: B20; 19: A30; 22: B20"
+            }
+          ],
+          "help": [
+            "Keep each plan’s amount and due date together."
+          ],
+          "feedback": {
+            "met": "The combined calendar retains every payment from both plans.",
+            "not_yet": "Keep each plan’s amount and due date together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué calendario conserva ambos planes?",
+          "scene": "Cuotas ficticias de noviembre: A 30 el 5,19; B 20 el 8,22.",
+          "options": [
+            {
+              "label": "Solo 5: A30; 19: A30"
+            },
+            {
+              "label": "Solo 8: B20; 22: B20"
+            },
+            {
+              "label": "5: A30; 8: B20; 19: A30; 22: B20"
+            }
+          ],
+          "help": [
+            "Mantén juntos monto y fecha de cada plan."
+          ],
+          "feedback": {
+            "met": "Calendario conjunto conserva cada pago de ambos planes.",
+            "not_yet": "Mantén juntos monto y fecha de cada plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que calendário preserva ambos planos?",
+          "scene": "Parcelas fictícias de novembro: A 30 em 5,19; B 20 em 8,22.",
+          "options": [
+            {
+              "label": "Só 5: A30; 19: A30"
+            },
+            {
+              "label": "Só 8: B20; 22: B20"
+            },
+            {
+              "label": "5: A30; 8: B20; 19: A30; 22: B20"
+            }
+          ],
+          "help": [
+            "Mantenha juntos valor e data de cada plano."
+          ],
+          "feedback": {
+            "met": "Calendário conjunto preserva cada pagamento de ambos planos.",
+            "not_yet": "Mantenha juntos valor e data de cada plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What total falls on the shared date?",
+          "scene": "Fictional plans: first instalment 40; second instalment 25; both due the same day; no other payments.",
+          "options": [
+            {
+              "label": "65"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Add all payments sharing the due date."
+          ],
+          "feedback": {
+            "met": "Both instalments need funding on the same day.",
+            "not_yet": "Add all payments sharing the due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué total cae en fecha común?",
+          "scene": "Planes ficticios: primera cuota 40; segunda cuota 25; ambas vencen mismo día; sin otros pagos.",
+          "options": [
+            {
+              "label": "65"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Suma todos los pagos que comparten fecha."
+          ],
+          "feedback": {
+            "met": "Ambas cuotas necesitan fondos el mismo día.",
+            "not_yet": "Suma todos los pagos que comparten fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que total cai na data comum?",
+          "scene": "Planos fictícios: primeira parcela 40; segunda parcela 25; ambas vencem mesmo dia; sem outros pagamentos.",
+          "options": [
+            {
+              "label": "65"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Some todos os pagamentos que dividem data."
+          ],
+          "feedback": {
+            "met": "Ambas parcelas precisam de verba no mesmo dia.",
+            "not_yet": "Some todos os pagamentos que dividem data."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          25
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does money arrive promptly?",
+          "scene": "Instalments are due Tuesday; confirmed income arrives Friday; no earlier money is available.",
+          "options": [
+            {
+              "label": "Yes, same week suffices"
+            },
+            {
+              "label": "No, a timing gap remains"
+            },
+            {
+              "label": "Yes, small payments need nothing"
+            }
+          ],
+          "help": [
+            "Compare dates as well as total money."
+          ],
+          "feedback": {
+            "met": "Friday income arrives after Tuesday’s payments are due.",
+            "not_yet": "Compare dates as well as total money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dinero llega a tiempo?",
+          "scene": "Cuotas juntas vencen martes; ingreso confirmado necesario llega viernes; no hay dinero antes.",
+          "options": [
+            {
+              "label": "Sí, misma semana basta"
+            },
+            {
+              "label": "No, queda faltante de tiempo"
+            },
+            {
+              "label": "Sí, pagos pequeños no requieren fondos"
+            }
+          ],
+          "help": [
+            "Compara fechas además del dinero total."
+          ],
+          "feedback": {
+            "met": "Ingreso del viernes llega después de vencimientos del martes.",
+            "not_yet": "Compara fechas además del dinero total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro chega no prazo?",
+          "scene": "Parcelas juntas vencem terça; renda confirmada necessária chega sexta; não há dinheiro antes.",
+          "options": [
+            {
+              "label": "Sim, mesma semana basta"
+            },
+            {
+              "label": "Não, resta falta no prazo"
+            },
+            {
+              "label": "Sim, pagamentos pequenos não exigem verba"
+            }
+          ],
+          "help": [
+            "Compare datas além do dinheiro total."
+          ],
+          "feedback": {
+            "met": "Renda da sexta chega após vencimentos da terça.",
+            "not_yet": "Compare datas além do dinheiro total."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which omission understates next month’s commitments?",
+          "scene": "A calendar records new instalments but leaves out older plans still payable.",
+          "options": [
+            {
+              "label": "Keeping due dates visible"
+            },
+            {
+              "label": "Missing older instalments"
+            },
+            {
+              "label": "The month title"
+            }
+          ],
+          "help": [
+            "Include every active plan, not just the latest purchase."
+          ],
+          "feedback": {
+            "met": "Older unpaid plans remain part of the combined commitment.",
+            "not_yet": "Include every active plan, not just the latest purchase."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué omisión reduce compromisos mostrados?",
+          "scene": "Calendario registra cuotas nuevas pero omite planes anteriores aún pagaderos.",
+          "options": [
+            {
+              "label": "Mantener fechas visibles"
+            },
+            {
+              "label": "Cuotas anteriores faltantes"
+            },
+            {
+              "label": "Título del mes"
+            }
+          ],
+          "help": [
+            "Incluye todo plan activo, no solo última compra."
+          ],
+          "feedback": {
+            "met": "Planes anteriores sin pagar siguen siendo parte del compromiso conjunto.",
+            "not_yet": "Incluye todo plan activo, no solo última compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que omissão reduz compromissos mostrados?",
+          "scene": "Calendário registra parcelas novas mas omite planos antigos ainda devidos.",
+          "options": [
+            {
+              "label": "Manter datas visíveis"
+            },
+            {
+              "label": "Parcelas antigas faltantes"
+            },
+            {
+              "label": "Título do mês"
+            }
+          ],
+          "help": [
+            "Inclua todo plano ativo, não só última compra."
+          ],
+          "feedback": {
+            "met": "Planos antigos sem pagar seguem parte do compromisso conjunto.",
+            "not_yet": "Inclua todo plano ativo, não só última compra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which schedule is complete?",
+          "scene": "Fictional instalments: shoes 20 Monday; repair 35 Monday; course 15 Thursday.",
+          "options": [
+            {
+              "label": "Monday 55; Thursday 15"
+            },
+            {
+              "label": "Monday 20; Thursday 15"
+            },
+            {
+              "label": "Thursday 70 only"
+            }
+          ],
+          "help": [
+            "Group payments by their actual due dates."
+          ],
+          "feedback": {
+            "met": "Monday needs both payments, while Thursday keeps its own payment.",
+            "not_yet": "Group payments by their actual due dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué calendario conjunto está completo?",
+          "scene": "Cuotas ficticias: zapatos 20 lunes; reparación 35 lunes; curso 15 jueves.",
+          "options": [
+            {
+              "label": "Lunes 55; jueves 15"
+            },
+            {
+              "label": "Lunes 20; jueves 15"
+            },
+            {
+              "label": "Solo jueves 70"
+            }
+          ],
+          "help": [
+            "Agrupa pagos por sus fechas reales."
+          ],
+          "feedback": {
+            "met": "Lunes necesita ambos pagos; jueves conserva su propio pago.",
+            "not_yet": "Agrupa pagos por sus fechas reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que calendário conjunto está completo?",
+          "scene": "Parcelas fictícias: sapatos 20 segunda; reparo 35 segunda; curso 15 quinta.",
+          "options": [
+            {
+              "label": "Segunda 55; quinta 15"
+            },
+            {
+              "label": "Segunda 20; quinta 15"
+            },
+            {
+              "label": "Só quinta 70"
+            }
+          ],
+          "help": [
+            "Agrupe pagamentos pelas datas reais."
+          ],
+          "feedback": {
+            "met": "Segunda precisa de ambos pagamentos; quinta mantém seu pagamento.",
+            "not_yet": "Agrupe pagamentos pelas datas reais."
+          }
+        }
+      }
+    }
+  ]
+}

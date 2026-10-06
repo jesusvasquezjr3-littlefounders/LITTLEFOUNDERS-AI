@@ -99,6 +99,16 @@ describe('named feedback (B.20, Bible 02 §9.2)', () => {
     expect(verdictBannerText('es-MX', 'unavailable', named)).toBe(es.player.unavailable);
   });
 
+  it('explains the selected mistake without replacing success or network-error feedback', () => {
+    const named = namedFeedback('en-US', 'story');
+    const feedback = { met: 'You preserved the money for the bill.', not_yet: 'Compare the amounts.', choice_hints: { total: 'The total includes the money already reserved.', reserved: 'This is the protected amount, not the remainder.' } };
+    expect(verdictBannerText('en-US', 'review', named, feedback, 'total')).toBe(feedback.choice_hints.total);
+    expect(verdictBannerText('en-US', 'review', named, feedback, 'reserved')).toBe(feedback.choice_hints.reserved);
+    expect(verdictBannerText('en-US', 'review', named, feedback, 'unknown')).toBe(feedback.not_yet);
+    expect(verdictBannerText('en-US', 'met', named, feedback, 'total')).toBe(feedback.met);
+    expect(verdictBannerText('en-US', 'unavailable', named, feedback, 'total')).not.toBe(feedback.choice_hints.total);
+  });
+
   it('a lesson document carries feedback to the board, and the browser refuses malformed feedback', async () => {
     const cards = { id: 'cards-01', type: 'logic.rule-checker.v2', grading: 'server', prompt: 'Which cards must you turn?', visual: { type: 'rule-cards' },
       feedback: { met: 'You turned the cards that could hide a broken rule.', not_yet: 'Not yet. Which card could hide an odd number?' },

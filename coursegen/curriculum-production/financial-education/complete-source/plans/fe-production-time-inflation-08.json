@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-2",
+  "lesson_id": "fe-production-time-inflation-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish an economy-wide inflation measure from one household’s changing expenses.",
+  "title": {
+    "en-US": "Price indexes",
+    "es-MX": "Un índice no es tu recibo",
+    "pt-BR": "Um índice não é seu recibo"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"An index is not your receipt\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Un índice no es tu recibo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Um índice não é seu recibo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.08",
+      "observable_action": "Distinguish an economy-wide inflation measure from one household’s changing expenses.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.06",
+      "prod.spending-patterns.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A broad price index and your household’s spending can change differently.",
+    "misconception": "Treating a broad consumer-price measure as the exact price change of every household, product or spending total.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-example-01",
+        "supports_from": [],
+        "reasoning": "A price index combines many prices with defined weights. Your household may buy a different mix, so its experience differs."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "An aggregate measure does not describe every household’s exact purchases."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different spending shares can produce different experienced price changes."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-practice-03",
+        "supports_from": [],
+        "reasoning": "One category can rise faster than the weighted overall measure."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-practice-04",
+        "supports_from": [],
+        "reasoning": "Changing household needs can change spending independently of prices."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-practice-05",
+        "supports_from": [],
+        "reasoning": "Different reporting periods answer different questions."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.time-inflation.08",
+        "context_id": "fe-production-time-inflation-08-transfer-06",
+        "supports_from": [],
+        "reasoning": "Check the measure’s scope and compare your own spending records."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A broad price index and your household’s spending can change differently."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un índice general de precios y tus gastos pueden cambiar distinto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um índice amplo de preços e seus gastos podem mudar de modo diferente."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A price index combines many prices with defined weights. Your household may buy a different mix, so its experience differs."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Un índice combina muchos precios con ponderaciones definidas. Tu hogar puede comprar otra mezcla, por eso su experiencia difiere."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Um índice combina muitos preços com pesos definidos. Sua casa pode comprar outra mistura, por isso a experiência difere."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Must every household have that exact change?",
+          "scene": "A fictional consumer-price index rises 4%.",
+          "options": [
+            {
+              "label": "No, household buying patterns differ"
+            },
+            {
+              "label": "Yes, every receipt must rise exactly 4%"
+            },
+            {
+              "label": "Yes, every product has equal weight"
+            }
+          ],
+          "help": [
+            "Distinguish the index’s basket from the household’s."
+          ],
+          "feedback": {
+            "met": "An aggregate measure does not describe every household’s exact purchases.",
+            "not_yet": "Distinguish the index’s basket from the household’s."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Todo hogar debe tener ese cambio exacto?",
+          "scene": "Un índice ficticio de precios al consumidor sube 4%.",
+          "options": [
+            {
+              "label": "No, compras de hogares difieren"
+            },
+            {
+              "label": "Sí, todo recibo debe subir exactamente 4%"
+            },
+            {
+              "label": "Sí, todo producto tiene igual peso"
+            }
+          ],
+          "help": [
+            "Distingue canasta del índice y canasta del hogar."
+          ],
+          "feedback": {
+            "met": "Una medida agregada no describe compras exactas de cada hogar.",
+            "not_yet": "Distingue canasta del índice y canasta del hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Toda casa deve ter essa mudança exata?",
+          "scene": "Um índice fictício de preços ao consumidor sobe 4%.",
+          "options": [
+            {
+              "label": "Não, compras das casas diferem"
+            },
+            {
+              "label": "Sim, todo recibo deve subir exatamente 4%"
+            },
+            {
+              "label": "Sim, todo produto tem peso igual"
+            }
+          ],
+          "help": [
+            "Separe cesta do índice e cesta da casa."
+          ],
+          "feedback": {
+            "met": "Uma medida agregada não descreve compras exatas de cada casa.",
+            "not_yet": "Separe cesta do índice e cesta da casa."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Why this larger increase?",
+          "scene": "Medical prices rise faster; this household spends more on healthcare than the index.",
+          "options": [
+            {
+              "label": "The index promises identical expenses"
+            },
+            {
+              "label": "Medical spending cannot affect costs"
+            },
+            {
+              "label": "Its spending weights differ"
+            }
+          ],
+          "help": [
+            "Compare the share spent on the fast-rising category."
+          ],
+          "feedback": {
+            "met": "Different spending shares can produce different experienced price changes.",
+            "not_yet": "Compare the share spent on the fast-rising category."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué sentiría mayor aumento?",
+          "scene": "Precios médicos suben más; este hogar dedica más a salud que la mezcla del índice.",
+          "options": [
+            {
+              "label": "El índice promete gastos idénticos"
+            },
+            {
+              "label": "Gasto médico no puede afectar costos"
+            },
+            {
+              "label": "Sus pesos de gasto difieren"
+            }
+          ],
+          "help": [
+            "Compara cuánto destina a la categoría que sube más."
+          ],
+          "feedback": {
+            "met": "Proporciones de gasto distintas pueden producir cambios de precios distintos.",
+            "not_yet": "Compara cuánto destina a la categoría que sube más."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que sentiria maior aumento?",
+          "scene": "Preços médicos sobem mais; esta casa gasta mais com saúde que a mistura do índice.",
+          "options": [
+            {
+              "label": "O índice promete gastos idênticos"
+            },
+            {
+              "label": "Gasto médico não pode afetar custos"
+            },
+            {
+              "label": "Seus pesos de gasto diferem"
+            }
+          ],
+          "help": [
+            "Compare quanto destina à categoria que sobe mais."
+          ],
+          "feedback": {
+            "met": "Partes de gasto diferentes podem produzir mudanças de preços diferentes.",
+            "not_yet": "Compare quanto destina à categoria que sobe mais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does that alone contradict the index?",
+          "scene": "Your rent rises more than the broad price index.",
+          "options": [
+            {
+              "label": "Yes, all prices must match"
+            },
+            {
+              "label": "Yes, rent defines every price"
+            },
+            {
+              "label": "No, one price can differ"
+            }
+          ],
+          "help": [
+            "An index combines more than one category."
+          ],
+          "feedback": {
+            "met": "One category can rise faster than the weighted overall measure.",
+            "not_yet": "An index combines more than one category."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Eso solo contradice el índice?",
+          "scene": "Tu renta sube más que el índice general de precios.",
+          "options": [
+            {
+              "label": "Sí, todos los precios deben coincidir"
+            },
+            {
+              "label": "Sí, renta define todo precio"
+            },
+            {
+              "label": "No, un precio puede diferir"
+            }
+          ],
+          "help": [
+            "Un índice combina más de una categoría."
+          ],
+          "feedback": {
+            "met": "Una categoría puede subir más que la medida general ponderada.",
+            "not_yet": "Un índice combina más de una categoría."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso sozinho contradiz o índice?",
+          "scene": "Seu aluguel sobe mais que o índice geral de preços.",
+          "options": [
+            {
+              "label": "Sim, todos os preços devem coincidir"
+            },
+            {
+              "label": "Sim, aluguel define todo preço"
+            },
+            {
+              "label": "Não, um preço pode diferir"
+            }
+          ],
+          "help": [
+            "Um índice combina mais de uma categoria."
+          ],
+          "feedback": {
+            "met": "Uma categoria pode subir mais que a medida geral ponderada.",
+            "not_yet": "Um índice combina mais de uma categoria."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Is all extra spending inflation?",
+          "scene": "A household’s bill rises after a new dependent joins.",
+          "options": [
+            {
+              "label": "Every spending rise measures inflation"
+            },
+            {
+              "label": "Family size never affects spending"
+            },
+            {
+              "label": "Needs and quantities may change"
+            }
+          ],
+          "help": [
+            "Separate price, quantity and the mix purchased."
+          ],
+          "feedback": {
+            "met": "Changing household needs can change spending independently of prices.",
+            "not_yet": "Separate price, quantity and the mix purchased."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Todo gasto adicional es inflación de precios?",
+          "scene": "La cuenta del hogar aumenta al llegar otro dependiente.",
+          "options": [
+            {
+              "label": "Sí, todo aumento de gasto mide inflación"
+            },
+            {
+              "label": "Sí, tamaño familiar nunca afecta gasto"
+            },
+            {
+              "label": "No, necesidades y cantidades pueden cambiar"
+            }
+          ],
+          "help": [
+            "Separa precio, cantidad y mezcla comprada."
+          ],
+          "feedback": {
+            "met": "Cambiar necesidades del hogar puede alterar gasto sin cambiar precios.",
+            "not_yet": "Separa precio, cantidad y mezcla comprada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Todo gasto extra é inflação de preços?",
+          "scene": "A conta da casa aumenta quando chega outro dependente.",
+          "options": [
+            {
+              "label": "Sim, todo aumento de gasto mede inflação"
+            },
+            {
+              "label": "Sim, tamanho da família nunca afeta gasto"
+            },
+            {
+              "label": "Não, necessidades e quantidades podem mudar"
+            }
+          ],
+          "help": [
+            "Separe preço, quantidade e mistura comprada."
+          ],
+          "feedback": {
+            "met": "Mudar necessidades da casa pode alterar gasto sem mudar preços.",
+            "not_yet": "Separe preço, quantidade e mistura comprada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "copy": {
+        "en-US": {
+          "prompt": "How should these be compared?",
+          "scene": "One headline reports monthly inflation; another reports a yearly change.",
+          "options": [
+            {
+              "label": "Add them as separate costs"
+            },
+            {
+              "label": "Treat both as the same period"
+            },
+            {
+              "label": "Check matching periods and measures"
+            }
+          ],
+          "help": [
+            "Read the dates and index definition."
+          ],
+          "feedback": {
+            "met": "Different reporting periods answer different questions.",
+            "not_yet": "Read the dates and index definition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo comparar estos datos?",
+          "scene": "Un titular reporta inflación mensual; otro reporta cambio anual.",
+          "options": [
+            {
+              "label": "Sumarlos como costos distintos"
+            },
+            {
+              "label": "Tratarlos como el mismo periodo"
+            },
+            {
+              "label": "Revisar periodos y medidas coincidentes"
+            }
+          ],
+          "help": [
+            "Lee fechas y definición del índice."
+          ],
+          "feedback": {
+            "met": "Periodos de reporte diferentes responden preguntas diferentes.",
+            "not_yet": "Lee fechas y definición del índice."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como comparar esses dados?",
+          "scene": "Uma manchete relata inflação mensal; outra relata mudança anual.",
+          "options": [
+            {
+              "label": "Somar como custos separados"
+            },
+            {
+              "label": "Tratar como o mesmo período"
+            },
+            {
+              "label": "Conferir períodos e medidas correspondentes"
+            }
+          ],
+          "help": [
+            "Leia datas e definição do índice."
+          ],
+          "feedback": {
+            "met": "Períodos de relato diferentes respondem perguntas diferentes.",
+            "not_yet": "Leia datas e definição do índice."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Where should verification begin?",
+          "scene": "A post says the CPI proves your exact budget increase.",
+          "options": [
+            {
+              "label": "Assume all households buy the same mix"
+            },
+            {
+              "label": "BLS definition plus your own records"
+            },
+            {
+              "label": "The post’s claim alone"
+            }
+          ],
+          "help": [
+            "A broad index and your budget answer different questions."
+          ],
+          "feedback": {
+            "met": "Check the measure’s scope and compare your own spending records.",
+            "not_yet": "A broad index and your budget answer different questions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde comenzar a verificar?",
+          "scene": "Una publicación dice que el INPC demuestra el aumento exacto de tu presupuesto.",
+          "options": [
+            {
+              "label": "Suponer que todos compran lo mismo"
+            },
+            {
+              "label": "Definición del INEGI y tus registros"
+            },
+            {
+              "label": "Solo la afirmación publicada"
+            }
+          ],
+          "help": [
+            "Un índice general y tu presupuesto responden preguntas distintas."
+          ],
+          "feedback": {
+            "met": "Revisa alcance de la medida y compara tus registros de gasto.",
+            "not_yet": "Un índice general y tu presupuesto responden preguntas distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde começar a conferir?",
+          "scene": "Uma postagem diz que o IPCA prova o aumento exato do seu orçamento.",
+          "options": [
+            {
+              "label": "Supor que todos compram o mesmo"
+            },
+            {
+              "label": "Definição do IBGE e seus registros"
+            },
+            {
+              "label": "Só a afirmação publicada"
+            }
+          ],
+          "help": [
+            "Um índice geral e seu orçamento respondem perguntas diferentes."
+          ],
+          "feedback": {
+            "met": "Confira alcance da medida e compare seus registros de gastos.",
+            "not_yet": "Um índice geral e seu orçamento respondem perguntas diferentes."
+          }
+        }
+      }
+    }
+  ]
+}

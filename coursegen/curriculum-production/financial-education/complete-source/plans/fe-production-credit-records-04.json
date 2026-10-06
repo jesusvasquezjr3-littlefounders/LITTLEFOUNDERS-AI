@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-records-part-1",
+  "lesson_id": "fe-production-credit-records-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-records.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a verified local credit-report process from a promise to erase accurate history.",
+  "title": {
+    "en-US": "Verified processes",
+    "es-MX": "Verifica el proceso",
+    "pt-BR": "Verifique o processo"
+  },
+  "new_concepts": [
+    "finance.prod.credit-records.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify the process\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica el proceso\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Verifique o processo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-records.04",
+      "observable_action": "Separate a verified local credit-report process from a promise to erase accurate history.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-records.03",
+      "prod.payments-digital.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A promise to erase history can distract from a real correction process.",
+    "misconception": "A paid promise can guarantee removal of accurate credit history regardless of local rules.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-example-01",
+        "supports_from": [],
+        "reasoning": "An error correction checks evidence. A stranger promising guaranteed deletion offers no proof of a legitimate local process."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The verified channel provides a traceable correction process."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A guarantee in an advertisement does not establish legal eligibility."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Independent verification tests the claimed connection to the institution."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-practice-04",
+        "supports_from": [],
+        "reasoning": "The process needs a genuine discrepancy supported by records."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-practice-05",
+        "supports_from": [],
+        "reasoning": "Reporting procedures depend on the relevant local system."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-records.04",
+        "context_id": "fe-production-credit-records-04-transfer-06",
+        "supports_from": [],
+        "reasoning": "Pressure and guaranteed deletion do not verify a legitimate process."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-records.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A promise to erase history can distract from a real correction process."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Prometer borrar el historial puede distraerte de una corrección real."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma promessa de apagar o histórico pode desviar você de uma correção real."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "An error correction checks evidence. A stranger promising guaranteed deletion offers no proof of a legitimate local process."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Corregir un error exige revisar pruebas. Prometer una eliminación garantizada no demuestra que exista un procedimiento local legítimo."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Corrigir um erro exige verificar provas. Prometer exclusão garantida não comprova que exista um procedimento local legítimo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which route is verifiable?",
+          "scene": "You found an error. One link comes from the reporting company’s independently verified website.",
+          "options": [
+            {
+              "label": "Its published dispute process"
+            },
+            {
+              "label": "A stranger’s guaranteed erasure"
+            }
+          ],
+          "help": [
+            "Verify the institution independently before sharing records."
+          ],
+          "feedback": {
+            "met": "The verified channel provides a traceable correction process.",
+            "not_yet": "Verify the institution independently before sharing records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vía puedes verificar?",
+          "scene": "Encontraste un error. Un enlace viene del sitio verificado de la sociedad de información crediticia.",
+          "options": [
+            {
+              "label": "Su procedimiento de reclamación"
+            },
+            {
+              "label": "El borrado garantizado de un extraño"
+            }
+          ],
+          "help": [
+            "Verifica la institución por tu cuenta antes de compartir documentos."
+          ],
+          "feedback": {
+            "met": "El canal verificado ofrece un procedimiento con seguimiento.",
+            "not_yet": "Verifica la institución por tu cuenta antes de compartir documentos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual caminho é verificável?",
+          "scene": "Você encontrou um erro. Um link vem do site verificado da empresa de dados de crédito.",
+          "options": [
+            {
+              "label": "Seu processo de contestação"
+            },
+            {
+              "label": "A exclusão garantida por um desconhecido"
+            }
+          ],
+          "help": [
+            "Verifique a entidade por conta própria antes de compartilhar documentos."
+          ],
+          "feedback": {
+            "met": "O canal verificado oferece um processo com acompanhamento.",
+            "not_yet": "Verifique a entidade por conta própria antes de compartilhar documentos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this promise prove?",
+          "scene": "An advertisement guarantees removal of every accurate late payment for a fee.",
+          "options": [
+            {
+              "label": "Nothing about lawful eligibility"
+            },
+            {
+              "label": "That all history can be erased"
+            }
+          ],
+          "help": [
+            "A promise is not evidence of the applicable local rules."
+          ],
+          "feedback": {
+            "met": "A guarantee in an advertisement does not establish legal eligibility.",
+            "not_yet": "A promise is not evidence of the applicable local rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra la promesa?",
+          "scene": "Un anuncio garantiza borrar todos los atrasos correctos a cambio de un pago.",
+          "options": [
+            {
+              "label": "Nada sobre su procedencia legal"
+            },
+            {
+              "label": "Que todo historial puede borrarse"
+            }
+          ],
+          "help": [
+            "Una promesa no demuestra cuáles son las reglas locales."
+          ],
+          "feedback": {
+            "met": "Una garantía publicitaria no demuestra que la eliminación proceda.",
+            "not_yet": "Una promesa no demuestra cuáles son las reglas locales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a promessa comprova?",
+          "scene": "Um anúncio garante apagar todos os atrasos corretos mediante pagamento.",
+          "options": [
+            {
+              "label": "Nada sobre a possibilidade legal"
+            },
+            {
+              "label": "Que todo histórico pode ser apagado"
+            }
+          ],
+          "help": [
+            "Uma promessa não demonstra quais são as regras locais."
+          ],
+          "feedback": {
+            "met": "Uma garantia publicitária não comprova que a exclusão seja permitida.",
+            "not_yet": "Uma promessa não demonstra quais são as regras locais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you verify?",
+          "scene": "A service says it represents your reporting company but provides only a messaging account.",
+          "options": [
+            {
+              "label": "Its authority through an independent channel"
+            },
+            {
+              "label": "Its logo alone"
+            }
+          ],
+          "help": [
+            "A copied logo does not establish authority."
+          ],
+          "feedback": {
+            "met": "Independent verification tests the claimed connection to the institution.",
+            "not_yet": "A copied logo does not establish authority."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes verificar?",
+          "scene": "Un servicio dice representar a la sociedad crediticia, pero solo da un contacto por mensajería.",
+          "options": [
+            {
+              "label": "Su autoridad por un canal independiente"
+            },
+            {
+              "label": "Solo su logotipo"
+            }
+          ],
+          "help": [
+            "Un logotipo copiado no demuestra autoridad."
+          ],
+          "feedback": {
+            "met": "La verificación independiente comprueba la relación que afirma tener.",
+            "not_yet": "Un logotipo copiado no demuestra autoridad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar?",
+          "scene": "Um serviço diz representar a empresa de crédito, mas só fornece contato por mensagem.",
+          "options": [
+            {
+              "label": "Sua autoridade por canal independente"
+            },
+            {
+              "label": "Só seu logotipo"
+            }
+          ],
+          "help": [
+            "Um logotipo copiado não comprova autoridade."
+          ],
+          "feedback": {
+            "met": "A checagem independente confere a relação que ele afirma ter.",
+            "not_yet": "Um logotipo copiado não comprova autoridade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which request is appropriate?",
+          "scene": "The verified process asks you to identify an inaccurate account entry.",
+          "options": [
+            {
+              "label": "Describe the error with evidence"
+            },
+            {
+              "label": "Invent an error in accurate history"
+            }
+          ],
+          "help": [
+            "Correction concerns inaccurate information, not invented disputes."
+          ],
+          "feedback": {
+            "met": "The process needs a genuine discrepancy supported by records.",
+            "not_yet": "Correction concerns inaccurate information, not invented disputes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué solicitud corresponde?",
+          "scene": "El procedimiento verificado pide identificar un registro incorrecto.",
+          "options": [
+            {
+              "label": "Describir el error con pruebas"
+            },
+            {
+              "label": "Inventar un error en datos correctos"
+            }
+          ],
+          "help": [
+            "La corrección trata datos inexactos, no reclamaciones inventadas."
+          ],
+          "feedback": {
+            "met": "El procedimiento necesita una diferencia real respaldada por documentos.",
+            "not_yet": "La corrección trata datos inexactos, no reclamaciones inventadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual solicitação corresponde?",
+          "scene": "O processo verificado pede identificar um registro incorreto.",
+          "options": [
+            {
+              "label": "Descrever o erro com provas"
+            },
+            {
+              "label": "Inventar um erro em dados corretos"
+            }
+          ],
+          "help": [
+            "A correção trata dados incorretos, não reclamações inventadas."
+          ],
+          "feedback": {
+            "met": "O processo exige uma divergência real respaldada por documentos.",
+            "not_yet": "A correção trata dados incorretos, não reclamações inventadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Can another country’s steps suffice?",
+          "scene": "A guide describes foreign credit-report rules. Your report was issued locally.",
+          "options": [
+            {
+              "label": "Check the applicable local process"
+            },
+            {
+              "label": "Assume every rule is identical"
+            }
+          ],
+          "help": [
+            "Identify which institution and jurisdiction issued this report."
+          ],
+          "feedback": {
+            "met": "Reporting procedures depend on the relevant local system.",
+            "not_yet": "Identify which institution and jurisdiction issued this report."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Basta una guía extranjera?",
+          "scene": "Una guía explica reglas de otro país. Tu reporte se emitió aquí.",
+          "options": [
+            {
+              "label": "Verificar el procedimiento local"
+            },
+            {
+              "label": "Suponer que las reglas son iguales"
+            }
+          ],
+          "help": [
+            "Identifica la institución y jurisdicción que emitieron el reporte."
+          ],
+          "feedback": {
+            "met": "Los procedimientos dependen del sistema local correspondiente.",
+            "not_yet": "Identifica la institución y jurisdicción que emitieron el reporte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um guia estrangeiro basta?",
+          "scene": "Um guia explica regras de outro país. Seu relatório foi emitido aqui.",
+          "options": [
+            {
+              "label": "Verificar o procedimento local"
+            },
+            {
+              "label": "Supor que as regras são iguais"
+            }
+          ],
+          "help": [
+            "Identifique a entidade e a jurisdição que emitiram o relatório."
+          ],
+          "feedback": {
+            "met": "Os procedimentos dependem do sistema local da conta.",
+            "not_yet": "Identifique a entidade e a jurisdição que emitiram o relatório."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Choose the next step.",
+          "scene": "After a denied application, someone offers instant deletion of genuine history if paid today.",
+          "options": [
+            {
+              "label": "Pay because the offer expires"
+            },
+            {
+              "label": "Verify local options independently"
+            }
+          ],
+          "help": [
+            "An urgent deadline does not establish the service’s authority."
+          ],
+          "feedback": {
+            "met": "Pressure and guaranteed deletion do not verify a legitimate process.",
+            "not_yet": "An urgent deadline does not establish the service’s authority."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige el siguiente paso.",
+          "scene": "Tras una solicitud rechazada, alguien ofrece borrar historial verdadero si pagas hoy.",
+          "options": [
+            {
+              "label": "Pagar porque vence la oferta"
+            },
+            {
+              "label": "Verificar opciones locales por tu cuenta"
+            }
+          ],
+          "help": [
+            "La urgencia no demuestra que el servicio tenga autoridad."
+          ],
+          "feedback": {
+            "met": "La presión y el borrado garantizado no prueban legitimidad.",
+            "not_yet": "La urgencia no demuestra que el servicio tenga autoridad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha o próximo passo.",
+          "scene": "Após uma solicitação recusada, alguém oferece apagar histórico verdadeiro se você pagar hoje.",
+          "options": [
+            {
+              "label": "Pagar porque a oferta vence"
+            },
+            {
+              "label": "Verificar opções locais por conta própria"
+            }
+          ],
+          "help": [
+            "A urgência não comprova que o serviço tenha autoridade."
+          ],
+          "feedback": {
+            "met": "Pressão e exclusão garantida não comprovam validade.",
+            "not_yet": "A urgência não comprova que o serviço tenha autoridade."
+          }
+        }
+      }
+    }
+  ]
+}

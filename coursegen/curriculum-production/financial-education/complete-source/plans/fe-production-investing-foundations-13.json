@@ -1,0 +1,720 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-3",
+  "lesson_id": "fe-production-investing-foundations-13",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.13"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify leverage that can magnify a loss beyond an unleveraged price change.",
+  "title": {
+    "en-US": "Borrowed Exposure",
+    "es-MX": "Pedir prestado amplía la exposición",
+    "pt-BR": "Pegar emprestado amplia a exposição"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.13"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Borrowed Exposure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pedir prestado amplía la exposición\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pegar emprestado amplia a exposição\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.13",
+      "observable_action": "Identify leverage that can magnify a loss beyond an unleveraged price change.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01",
+      "prod.investing-foundations.03",
+      "prod.investing-foundations.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A falling investment can leave both a smaller asset and a loan still owed.",
+    "misconception": "Borrowing to invest increases only possible gains, while losses remain limited to cash contributed.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-example-01",
+        "supports_from": [],
+        "reasoning": "Borrowing increases the investment bought with your cash. A price fall reduces the asset but does not cancel the loan."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The asset price and the repayment obligation are separate."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Borrowing increases exposure relative to the investor’s own money."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-practice-01",
+        "supports_from": [],
+        "reasoning": "The sale does not cover the full repayment obligation."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-practice-02",
+        "supports_from": [],
+        "reasoning": "Investment income is not required for loan interest to accrue."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-practice-03",
+        "supports_from": [],
+        "reasoning": "Borrowing can magnify losses as well as gains."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.13",
+        "context_id": "investing-foundations-13-transfer-01",
+        "supports_from": [],
+        "reasoning": "Borrowing risk remains even outside shares and bonds."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.13",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A falling investment can leave both a smaller asset and a loan still owed."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una inversión que cae puede dejar un activo menor y un préstamo todavía pendiente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um investimento em queda pode deixar um ativo menor e um empréstimo ainda devido."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The loan remains",
+          "line": "Borrowing increases the investment bought with your cash. A price fall reduces the asset but does not cancel the loan."
+        },
+        "es-MX": {
+          "prompt": "El préstamo sigue",
+          "line": "Pedir prestado aumenta lo invertido con tu efectivo. Una caída reduce el activo, pero no cancela el préstamo."
+        },
+        "pt-BR": {
+          "prompt": "O empréstimo continua",
+          "line": "Pegar emprestado aumenta o investimento comprado com seu dinheiro. Uma queda reduz o ativo, mas não cancela o empréstimo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "copy": {
+        "en-US": {
+          "prompt": "What survives the loss?",
+          "scene": "Someone borrows to buy shares. The shares fall in value; the loan contract is unchanged.",
+          "options": [
+            {
+              "label": "The share loss cancels the loan"
+            },
+            {
+              "label": "The debt still requires repayment"
+            }
+          ],
+          "help": [
+            "A lender does not automatically share the investment loss."
+          ],
+          "feedback": {
+            "met": "The asset price and the repayment obligation are separate.",
+            "not_yet": "A lender does not automatically share the investment loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue tras perder?",
+          "scene": "Alguien pide prestado para comprar acciones. Las acciones bajan; el contrato del préstamo no cambia.",
+          "options": [
+            {
+              "label": "La caída cancela el préstamo"
+            },
+            {
+              "label": "La deuda sigue exigiendo devolución"
+            }
+          ],
+          "help": [
+            "El prestamista no comparte automáticamente la pérdida de inversión."
+          ],
+          "feedback": {
+            "met": "El precio del activo y la obligación de devolver son distintos.",
+            "not_yet": "El prestamista no comparte automáticamente la pérdida de inversión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que permanece após perder?",
+          "scene": "Alguém pega empréstimo para comprar ações. Elas caem; o contrato do empréstimo não muda.",
+          "options": [
+            {
+              "label": "A queda cancela o empréstimo"
+            },
+            {
+              "label": "A dívida ainda exige devolução"
+            }
+          ],
+          "help": [
+            "O credor não compartilha automaticamente a perda do investimento."
+          ],
+          "feedback": {
+            "met": "O preço do ativo e a obrigação de devolver são diferentes.",
+            "not_yet": "O credor não compartilha automaticamente a perda do investimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Why amplify loss?",
+          "scene": "Two people contribute equal cash. One borrows extra for more of the same falling asset.",
+          "options": [
+            {
+              "label": "More exposure against equal own cash"
+            },
+            {
+              "label": "Debt stabilizes prices"
+            }
+          ],
+          "help": [
+            "Compare exposure with the cash the investor contributed."
+          ],
+          "feedback": {
+            "met": "Borrowing increases exposure relative to the investor’s own money.",
+            "not_yet": "Compare exposure with the cash the investor contributed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué amplifica la pérdida?",
+          "scene": "Dos personas aportan igual efectivo. Una pide prestado para comprar más del mismo activo que cae.",
+          "options": [
+            {
+              "label": "Cae más exposición contra igual dinero propio"
+            },
+            {
+              "label": "La deuda estabiliza el precio"
+            }
+          ],
+          "help": [
+            "Compara exposición con el efectivo que aportó la persona."
+          ],
+          "feedback": {
+            "met": "Pedir prestado aumenta exposición respecto al dinero propio.",
+            "not_yet": "Compara exposición con el efectivo que aportó la persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que amplia a perda?",
+          "scene": "Duas pessoas aportam igual dinheiro. Uma toma empréstimo para comprar mais do mesmo ativo em queda.",
+          "options": [
+            {
+              "label": "Cai maior exposição contra igual dinheiro próprio"
+            },
+            {
+              "label": "A dívida estabiliza o preço"
+            }
+          ],
+          "help": [
+            "Compare exposição com o dinheiro aportado pela pessoa."
+          ],
+          "feedback": {
+            "met": "Pegar emprestado aumenta exposição em relação ao dinheiro próprio.",
+            "not_yet": "Compare exposição com o dinheiro aportado pela pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "copy": {
+        "en-US": {
+          "prompt": "If proceeds fall short?",
+          "scene": "A borrowed investment is sold for less than the outstanding loan, under an ordinary full-repayment contract.",
+          "options": [
+            {
+              "label": "Selling automatically clears every debt"
+            },
+            {
+              "label": "A debt remains after selling"
+            }
+          ],
+          "help": [
+            "Compare the sale proceeds with the debt owed."
+          ],
+          "feedback": {
+            "met": "The sale does not cover the full repayment obligation.",
+            "not_yet": "Compare the sale proceeds with the debt owed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Y si la venta no alcanza?",
+          "scene": "Venden una inversión por menos que el préstamo pendiente, cuyo contrato exige devolverlo completo.",
+          "options": [
+            {
+              "label": "Vender elimina automáticamente toda deuda"
+            },
+            {
+              "label": "Queda deuda después de vender"
+            }
+          ],
+          "help": [
+            "Compara lo recibido por vender con la deuda."
+          ],
+          "feedback": {
+            "met": "La venta no cubre toda la obligación de devolución.",
+            "not_yet": "Compara lo recibido por vender con la deuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "E se a venda não bastar?",
+          "scene": "Vendem uma aplicação por menos que o empréstimo pendente, cujo contrato exige devolução integral.",
+          "options": [
+            {
+              "label": "Vender elimina automaticamente toda dívida"
+            },
+            {
+              "label": "Resta dívida após vender"
+            }
+          ],
+          "help": [
+            "Compare o valor da venda com a dívida."
+          ],
+          "feedback": {
+            "met": "A venda não cobre toda a obrigação de devolução.",
+            "not_yet": "Compare o valor da venda com a dívida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "copy": {
+        "en-US": {
+          "prompt": "What additional cost matters?",
+          "scene": "A loan used for investing charges interest while the investment pays nothing.",
+          "options": [
+            {
+              "label": "Interest pauses automatically"
+            },
+            {
+              "label": "Loan interest still accrues as contracted"
+            }
+          ],
+          "help": [
+            "Read the borrowing terms independently of investment results."
+          ],
+          "feedback": {
+            "met": "Investment income is not required for loan interest to accrue.",
+            "not_yet": "Read the borrowing terms independently of investment results."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo adicional importa?",
+          "scene": "El préstamo para invertir cobra intereses mientras la inversión no paga nada.",
+          "options": [
+            {
+              "label": "Los intereses se pausan automáticamente"
+            },
+            {
+              "label": "Siguen intereses según el contrato"
+            }
+          ],
+          "help": [
+            "Lee las condiciones del préstamo aparte del resultado."
+          ],
+          "feedback": {
+            "met": "El interés del préstamo no depende de recibir ingresos de inversión.",
+            "not_yet": "Lee las condiciones del préstamo aparte del resultado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo adicional importa?",
+          "scene": "O empréstimo para investir cobra juros enquanto a aplicação não paga nada.",
+          "options": [
+            {
+              "label": "Os juros pausam automaticamente"
+            },
+            {
+              "label": "Continuam juros conforme o contrato"
+            }
+          ],
+          "help": [
+            "Leia as condições do empréstimo separadas do resultado."
+          ],
+          "feedback": {
+            "met": "Juros do empréstimo não dependem de receber rendimento da aplicação.",
+            "not_yet": "Leia as condições do empréstimo separadas do resultado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Which promise is false?",
+          "scene": "A seller says borrowed investing magnifies gains but cannot magnify losses.",
+          "options": [
+            {
+              "label": "The claim about losses"
+            },
+            {
+              "label": "The existence of borrowing"
+            }
+          ],
+          "help": [
+            "Examine what happens when the asset price falls."
+          ],
+          "feedback": {
+            "met": "Borrowing can magnify losses as well as gains.",
+            "not_yet": "Examine what happens when the asset price falls."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué promesa es falsa?",
+          "scene": "Un vendedor dice que invertir con deuda amplía ganancias, pero no puede ampliar pérdidas.",
+          "options": [
+            {
+              "label": "La afirmación sobre pérdidas"
+            },
+            {
+              "label": "La existencia del préstamo"
+            }
+          ],
+          "help": [
+            "Examina qué pasa cuando baja el precio del activo."
+          ],
+          "feedback": {
+            "met": "Pedir prestado puede ampliar pérdidas además de ganancias.",
+            "not_yet": "Examina qué pasa cuando baja el precio del activo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual promessa é falsa?",
+          "scene": "Um vendedor diz que investir com dívida amplia ganhos, mas não pode ampliar perdas.",
+          "options": [
+            {
+              "label": "A afirmação sobre perdas"
+            },
+            {
+              "label": "A existência do empréstimo"
+            }
+          ],
+          "help": [
+            "Examine o que ocorre quando o preço do ativo cai."
+          ],
+          "feedback": {
+            "met": "Pegar emprestado pode ampliar perdas além de ganhos.",
+            "not_yet": "Examine o que ocorre quando o preço do ativo cai."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "copy": {
+        "en-US": {
+          "prompt": "What risk remains?",
+          "scene": "A collectible bought with a loan loses most resale value. Repayment remains due.",
+          "options": [
+            {
+              "label": "Falling collectibles cancel debt"
+            },
+            {
+              "label": "Debt can exceed remaining value"
+            },
+            {
+              "label": "Only original price matters"
+            }
+          ],
+          "help": [
+            "Follow the repayment obligation after the asset loses value."
+          ],
+          "feedback": {
+            "met": "Borrowing risk remains even outside shares and bonds.",
+            "not_yet": "Follow the repayment obligation after the asset loses value."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué considerar?",
+          "scene": "Compran un objeto de colección con un préstamo. Pierde casi todo su valor de reventa; la devolución sigue pendiente.",
+          "options": [
+            {
+              "label": "Las caídas de objetos cancelan deuda"
+            },
+            {
+              "label": "La deuda puede superar el valor restante"
+            },
+            {
+              "label": "Solo importa el precio original"
+            }
+          ],
+          "help": [
+            "Sigue la obligación de devolución tras perder valor."
+          ],
+          "feedback": {
+            "met": "El riesgo de deuda existe fuera de acciones y bonos.",
+            "not_yet": "Sigue la obligación de devolución tras perder valor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que considerar?",
+          "scene": "Compram um item de coleção com empréstimo. Ele perde quase todo valor de revenda; a devolução continua pendente.",
+          "options": [
+            {
+              "label": "Quedas de objetos cancelam dívidas"
+            },
+            {
+              "label": "A dívida pode superar o valor restante"
+            },
+            {
+              "label": "Só importa o preço original"
+            }
+          ],
+          "help": [
+            "Acompanhe a obrigação de devolver após a perda de valor."
+          ],
+          "feedback": {
+            "met": "O risco da dívida existe fora de ações e títulos.",
+            "not_yet": "Acompanhe a obrigação de devolver após a perda de valor."
+          }
+        }
+      }
+    }
+  ]
+}

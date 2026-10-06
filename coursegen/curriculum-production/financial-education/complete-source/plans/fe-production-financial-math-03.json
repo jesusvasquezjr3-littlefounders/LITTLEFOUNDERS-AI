@@ -1,0 +1,824 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-1",
+  "lesson_id": "fe-production-financial-math-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Add several receipts without counting the same receipt twice.",
+  "title": {
+    "en-US": "Duplicate receipts",
+    "es-MX": "Cuenta cada entrada una vez",
+    "pt-BR": "Conte cada entrada uma vez"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Count each receipt once\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cuenta cada entrada una vez\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Conte cada entrada uma vez\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.03",
+      "observable_action": "Add several receipts without counting the same receipt twice.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.01",
+      "cash.transfer"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Records help total receipts without duplicating money.",
+    "misconception": "Count the same receipt again because it appears in two records.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-example-01",
+        "supports_from": [],
+        "reasoning": "One payment of 30 appears in two records. Count it once; another payment of 20 makes 50."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Separate completed receipts both belong in the total."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Two records can describe one movement."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Every distinct receipt contributes once."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-practice-02",
+        "supports_from": [],
+        "reasoning": "Moving your money does not create another receipt of income."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Equal amounts can still be separate payments."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.03",
+        "context_id": "fe-production-financial-math-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "Unique payment identities prevent duplicate totals."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Records help total receipts without duplicating money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Los registros permiten sumar entradas sin duplicar dinero."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Registros permitem somar entradas sem duplicar dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match the event",
+          "line": "One payment of 30 appears in two records. Count it once; another payment of 20 makes 50."
+        },
+        "es-MX": {
+          "prompt": "Identifica el evento",
+          "line": "Una entrada de 30 aparece en diario y estado de cuenta. Es una entrada; suma otra de 20 para obtener 50."
+        },
+        "pt-BR": {
+          "prompt": "Identifique o evento",
+          "line": "Uma entrada de 30 aparece no diário e extrato. É uma entrada; some outra de 20 para obter 50."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Total received?",
+          "scene": "Two separate receipts are 12 and 18. Add each once.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Add the distinct events."
+          ],
+          "feedback": {
+            "met": "Separate completed receipts both belong in the total.",
+            "not_yet": "Add the distinct events."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total recibido?",
+          "scene": "Dos entradas distintas son 12 y 18. Suma cada una una vez.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Suma los eventos distintos."
+          ],
+          "feedback": {
+            "met": "Ambas entradas realizadas pertenecen al total.",
+            "not_yet": "Suma los eventos distintos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total recebido?",
+          "scene": "Duas entradas distintas são 12 e 18. Some cada uma uma vez.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Some os eventos distintos."
+          ],
+          "feedback": {
+            "met": "As duas entradas concluídas pertencem ao total.",
+            "not_yet": "Some os eventos distintos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          12,
+          18
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "How often do you count it?",
+          "scene": "A bank alert and statement show the same refund.",
+          "options": [
+            {
+              "label": "Once"
+            },
+            {
+              "label": "Twice"
+            },
+            {
+              "label": "Never"
+            }
+          ],
+          "help": [
+            "Match the event, not the number of records."
+          ],
+          "feedback": {
+            "met": "Two records can describe one movement.",
+            "not_yet": "Match the event, not the number of records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas veces lo cuentas?",
+          "scene": "Una alerta y el estado de cuenta muestran la misma devolución.",
+          "options": [
+            {
+              "label": "Una vez"
+            },
+            {
+              "label": "Dos veces"
+            },
+            {
+              "label": "Nunca"
+            }
+          ],
+          "help": [
+            "Identifica el evento, no la cantidad de registros."
+          ],
+          "feedback": {
+            "met": "Dos registros pueden describir un movimiento.",
+            "not_yet": "Identifica el evento, no la cantidad de registros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas vezes contar?",
+          "scene": "Um alerta e o extrato mostram o mesmo reembolso.",
+          "options": [
+            {
+              "label": "Uma vez"
+            },
+            {
+              "label": "Duas vezes"
+            },
+            {
+              "label": "Nunca"
+            }
+          ],
+          "help": [
+            "Identifique o evento, não a quantidade de registros."
+          ],
+          "feedback": {
+            "met": "Dois registros podem descrever um movimento.",
+            "not_yet": "Identifique o evento, não a quantidade de registros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Total received?",
+          "scene": "Separate cash receipts are 10, 15 and 25.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Include all three events."
+          ],
+          "feedback": {
+            "met": "Every distinct receipt contributes once.",
+            "not_yet": "Include all three events."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total recibido?",
+          "scene": "Entradas distintas en efectivo: 10, 15 y 25.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Incluye los tres eventos."
+          ],
+          "feedback": {
+            "met": "Cada entrada distinta contribuye una vez.",
+            "not_yet": "Incluye los tres eventos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total recebido?",
+          "scene": "Entradas distintas em dinheiro: 10, 15 e 25.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Inclua os três eventos."
+          ],
+          "feedback": {
+            "met": "Cada entrada distinta contribui uma vez.",
+            "not_yet": "Inclua os três eventos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          15,
+          25
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does total owned money grow?",
+          "scene": "You transfer money from your own account to your own wallet.",
+          "options": [
+            {
+              "label": "Yes, if recorded twice"
+            },
+            {
+              "label": "No, its location changes"
+            },
+            {
+              "label": "Yes, it is new income"
+            }
+          ],
+          "help": [
+            "Follow both sides of the transfer."
+          ],
+          "feedback": {
+            "met": "Moving your money does not create another receipt of income.",
+            "not_yet": "Follow both sides of the transfer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Crece tu dinero total?",
+          "scene": "Transfieres dinero de tu cuenta a tu propia cartera.",
+          "options": [
+            {
+              "label": "Sí, si se registra dos veces"
+            },
+            {
+              "label": "No, cambia de lugar"
+            },
+            {
+              "label": "Sí, es ingreso nuevo"
+            }
+          ],
+          "help": [
+            "Sigue ambos lados de la transferencia."
+          ],
+          "feedback": {
+            "met": "Mover tu dinero no crea otro ingreso.",
+            "not_yet": "Sigue ambos lados de la transferencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Seu dinheiro total aumenta?",
+          "scene": "Transfere dinheiro da sua conta para sua própria carteira.",
+          "options": [
+            {
+              "label": "Sim, se registrar duas vezes"
+            },
+            {
+              "label": "Não, muda de lugar"
+            },
+            {
+              "label": "Sim, é renda nova"
+            }
+          ],
+          "help": [
+            "Acompanhe os dois lados da transferência."
+          ],
+          "feedback": {
+            "met": "Mover seu dinheiro não cria outra renda.",
+            "not_yet": "Acompanhe os dois lados da transferência."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record is appropriate?",
+          "scene": "Two customers each paid 20; they have different payment references.",
+          "options": [
+            {
+              "label": "Delete one equal amount"
+            },
+            {
+              "label": "Record neither"
+            },
+            {
+              "label": "Keep both receipts"
+            }
+          ],
+          "help": [
+            "Check identity before removing a duplicate."
+          ],
+          "feedback": {
+            "met": "Equal amounts can still be separate payments.",
+            "not_yet": "Check identity before removing a duplicate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro corresponde?",
+          "scene": "Dos clientes pagaron 20 cada uno; tienen referencias distintas.",
+          "options": [
+            {
+              "label": "Borra uno por ser igual"
+            },
+            {
+              "label": "No registres ninguno"
+            },
+            {
+              "label": "Conserva ambas entradas"
+            }
+          ],
+          "help": [
+            "Verifica identidad antes de eliminar un duplicado."
+          ],
+          "feedback": {
+            "met": "Montos iguales pueden ser pagos distintos.",
+            "not_yet": "Verifica identidad antes de eliminar un duplicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro corresponde?",
+          "scene": "Dois clientes pagaram 20 cada; têm referências diferentes.",
+          "options": [
+            {
+              "label": "Apague um por ser igual"
+            },
+            {
+              "label": "Não registre nenhum"
+            },
+            {
+              "label": "Mantenha as duas entradas"
+            }
+          ],
+          "help": [
+            "Verifique identidade antes de remover duplicata."
+          ],
+          "feedback": {
+            "met": "Valores iguais podem ser pagamentos distintos.",
+            "not_yet": "Verifique identidade antes de remover duplicata."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Total these receipts?",
+          "scene": "A fundraiser log lists gift A twice and gift B once. A is one confirmed payment.",
+          "options": [
+            {
+              "label": "Count A and B once each"
+            },
+            {
+              "label": "Count every line"
+            },
+            {
+              "label": "Discard both gifts"
+            }
+          ],
+          "help": [
+            "One duplicated record is not another gift."
+          ],
+          "feedback": {
+            "met": "Unique payment identities prevent duplicate totals.",
+            "not_yet": "One duplicated record is not another gift."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo sumas las entradas?",
+          "scene": "Una colecta registra donativo A dos veces y B una. A es un único pago confirmado.",
+          "options": [
+            {
+              "label": "Cuenta A y B una vez"
+            },
+            {
+              "label": "Cuenta cada renglón"
+            },
+            {
+              "label": "Descarta ambos donativos"
+            }
+          ],
+          "help": [
+            "Un registro duplicado no es otro donativo."
+          ],
+          "feedback": {
+            "met": "Identificar pagos únicos evita totales duplicados.",
+            "not_yet": "Un registro duplicado no es otro donativo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como somar entradas?",
+          "scene": "Uma coleta registra doação A duas vezes e B uma. A é um único pagamento confirmado.",
+          "options": [
+            {
+              "label": "Conte A e B uma vez"
+            },
+            {
+              "label": "Conte cada linha"
+            },
+            {
+              "label": "Descarte as duas doações"
+            }
+          ],
+          "help": [
+            "Um registro duplicado não é outra doação."
+          ],
+          "feedback": {
+            "met": "Identificar pagamentos únicos evita totais duplicados.",
+            "not_yet": "Um registro duplicado não é outra doação."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-08-decide-with-evidence",
+  "lesson_id": "fe-solid-34-check-an-agreement-before-signing",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.rights.agreement"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify missing or conflicting agreement terms, obtain a verified written explanation and preserve evidence for a later discrepancy.",
+  "title": {
+    "en-US": "Check before signing",
+    "es-MX": "Revisa antes de firmar",
+    "pt-BR": "Confira antes de assinar"
+  },
+  "new_concepts": [
+    "finance.rights.agreement"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check before signing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa antes de firmar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira antes de assinar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "rights.agreement",
+      "observable_action": "Identify missing or conflicting agreement terms, obtain a verified written explanation and preserve evidence for a later discrepancy.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "product.conditions",
+      "debt.total-cost",
+      "safety.fraud"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An agreement can create obligations beyond the advertisement. Make the costs, dates and conditions understandable before accepting.",
+    "misconception": "Assuming a verbal promise overrides written conditions or that signing without understanding is necessary to compare an offer.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-example-01",
+        "supports_from": [],
+        "reasoning": "The seller denies a fee listed in the agreement. Pause acceptance and request written clarification through verified support."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-example-02",
+        "supports_from": [],
+        "reasoning": "Keep accepted terms, receipts and messages. They help explain discrepancies to the provider or local consumer authority."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The conflicting cost information must be resolved."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Those records make the discrepancy specific and traceable."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-practice-01",
+        "supports_from": [],
+        "reasoning": "The full schedule is needed to evaluate the commitment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-practice-02",
+        "supports_from": [],
+        "reasoning": "Understanding the obligation should precede acceptance."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-practice-03",
+        "supports_from": [],
+        "reasoning": "Independent contact checks the document without trusting its sender."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "rights.agreement",
+        "context_id": "check-an-agreement-before-signing-transfer-01",
+        "supports_from": [],
+        "reasoning": "Records support checking discrepancies; outcomes depend on applicable terms and rules."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "rights.agreement",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An agreement can create obligations beyond the advertisement. Make the costs, dates and conditions understandable before accepting."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un acuerdo puede crear obligaciones más allá del anuncio. Aclara costos, fechas y condiciones antes de aceptar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um acordo pode criar obrigações além do anúncio. Entenda custos, datas e condições antes de aceitar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Resolve a conflict first",
+          "line": "The seller denies a fee listed in the agreement. Pause acceptance and request written clarification through verified support."
+        },
+        "es-MX": {
+          "prompt": "Aclara primero la contradicción",
+          "line": "El vendedor dice que no hay cargo, pero el acuerdo escrito incluye uno. Pausa la aceptación y pide aclaración escrita al soporte verificado."
+        },
+        "pt-BR": {
+          "prompt": "Esclareça primeiro a contradição",
+          "line": "O vendedor diz que não há tarifa, mas o acordo escrito inclui uma. Pause a aceitação e peça esclarecimento escrito ao suporte verificado."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the evidence",
+          "line": "Keep accepted terms, receipts and messages. They help explain discrepancies to the provider or local consumer authority."
+        },
+        "es-MX": {
+          "prompt": "Conserva la evidencia",
+          "line": "Guarda condiciones aceptadas, comprobantes y mensajes relevantes. Si un cargo difiere, ayudan a explicar el problema al proveedor o autoridad local."
+        },
+        "pt-BR": {
+          "prompt": "Guarde as provas",
+          "line": "Guarde condições aceitas, comprovantes e mensagens relevantes. Se uma cobrança divergir, ajudam a explicar o problema ao fornecedor ou autoridade local."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs clarification?",
+          "scene": "The ad promises no fees; the agreement requires a service charge.",
+          "options": [
+            {
+              "label": "Whether to ignore the agreement"
+            },
+            {
+              "label": "Which charge applies, and when"
+            },
+            {
+              "label": "Whether the ad looks familiar"
+            }
+          ],
+          "help": [
+            "Compare the promise with the actual obligation."
+          ],
+          "feedback": {
+            "met": "The conflicting cost information must be resolved.",
+            "not_yet": "Compare the promise with the actual obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes aclarar antes de aceptar?",
+          "scene": "El anuncio dice sin cargo. El acuerdo incluye un cargo obligatorio de servicio.",
+          "options": [
+            {
+              "label": "Si puedes ignorar el acuerdo"
+            },
+            {
+              "label": "Qué cargo escrito aplica y bajo qué condiciones"
+            },
+            {
+              "label": "Solo si el anuncio parece conocido"
+            }
+          ],
+          "help": [
+            "Compara la promesa con la obligación real."
+          ],
+          "feedback": {
+            "met": "La información contradictoria sobre el costo necesita aclararse.",
+            "not_yet": "Compara la promesa con la obligación real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve esclarecer antes de aceitar?",
+          "scene": "O anúncio diz sem tarifa. O acordo inclui uma cobrança obrigatória de serviço.",
+          "options": [
+            {
+              "label": "Se pode ignorar o acordo"
+            },
+            {
+              "label": "Qual cobrança escrita se aplica e em quais condições"
+            },
+            {
+              "label": "Só se o anúncio parece conhecido"
+            }
+          ],
+          "help": [
+            "Compare a promessa com a obrigação real."
+          ],
+          "feedback": {
+            "met": "A informação contraditória sobre o custo precisa ser esclarecida.",
+            "not_yet": "Compare a promessa com a obrigação real."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "Which records help dispute it?",
+          "scene": "A charge differs from accepted terms. Verified support will investigate.",
+          "options": [
+            {
+              "label": "The accepted terms and matching receipt"
+            },
+            {
+              "label": "Your account password"
+            },
+            {
+              "label": "Your memory of the ad"
+            }
+          ],
+          "help": [
+            "Use evidence of what was agreed and charged."
+          ],
+          "feedback": {
+            "met": "Those records make the discrepancy specific and traceable.",
+            "not_yet": "Use evidence of what was agreed and charged."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro ayuda a explicar un cargo distinto?",
+          "scene": "Un cargo posterior difiere de las condiciones aceptadas. Quieres que soporte verificado lo investigue.",
+          "options": [
+            {
+              "label": "Las condiciones aceptadas y el comprobante correspondiente"
+            },
+            {
+              "label": "La contraseña incluida en la queja"
+            },
+            {
+              "label": "Solo el recuerdo del anuncio"
+            }
+          ],
+          "help": [
+            "Usa evidencia de lo acordado y lo cobrado."
+          ],
+          "feedback": {
+            "met": "Esos registros permiten identificar y seguir la diferencia.",
+            "not_yet": "Usa evidencia de lo acordado y lo cobrado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro ajuda a explicar uma cobrança diferente?",
+          "scene": "Uma cobrança posterior difere das condições aceitas. Você quer que o suporte verificado investigue.",
+          "options": [
+            {
+              "label": "As condições aceitas e o comprovante correspondente"
+            },
+            {
+              "label": "A senha incluída na reclamação"
+            },
+            {
+              "label": "Só a lembrança do anúncio"
+            }
+          ],
+          "help": [
+            "Use provas do que foi acordado e cobrado."
+          ],
+          "feedback": {
+            "met": "Esses registros permitem identificar e acompanhar a diferença.",
+            "not_yet": "Use provas do que foi acordado e cobrado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this schedule complete?",
+          "scene": "A loan lists its first payment but omits later amounts and dates.",
+          "options": [
+            {
+              "label": "Yes, it covers all costs"
+            },
+            {
+              "label": "Yes, later payments match"
+            },
+            {
+              "label": "No, later payments are missing"
+            }
+          ],
+          "help": [
+            "Do not infer missing obligations from one payment."
+          ],
+          "feedback": {
+            "met": "The full schedule is needed to evaluate the commitment.",
+            "not_yet": "Do not infer missing obligations from one payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Está completo el calendario de devolución?",
+          "scene": "Una oferta de préstamo indica un primer pago pequeño, pero omite montos y fechas posteriores.",
+          "options": [
+            {
+              "label": "Sí, el primer pago describe todos los costos"
+            },
+            {
+              "label": "Sí, los pagos posteriores deben ser iguales"
+            },
+            {
+              "label": "No, faltan las obligaciones posteriores"
+            }
+          ],
+          "help": [
+            "No deduzcas obligaciones faltantes de un solo pago."
+          ],
+          "feedback": {
+            "met": "Se necesita el calendario completo para evaluar el compromiso.",
+            "not_yet": "No deduzcas obligaciones faltantes de un solo pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O calendário de devolução está completo?",
+          "scene": "Uma oferta de empréstimo informa uma primeira parcela pequena, mas omite valores e datas posteriores.",
+          "options": [
+            {
+              "label": "Sim, a primeira parcela descreve todos os custos"
+            },
+            {
+              "label": "Sim, as parcelas posteriores devem ser iguais"
+            },
+            {
+              "label": "Não, faltam as obrigações posteriores"
+            }
+          ],
+          "help": [
+            "Não deduza obrigações ausentes de uma só parcela."
+          ],
+          "feedback": {
+            "met": "É necessário o calendário completo para avaliar o compromisso.",
+            "not_yet": "Não deduza obrigações ausentes de uma só parcela."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you do first?",
+          "scene": "A withdrawal penalty confuses you. The seller urges signing.",
+          "options": [
+            {
+              "label": "Request a clear written explanation"
+            },
+            {
+              "label": "Assume unclear terms cannot apply"
+            },
+            {
+              "label": "Accept: the seller sounds confident"
+            }
+          ],
+          "help": [
+            "Signing does not resolve the missing understanding."
+          ],
+          "feedback": {
+            "met": "Understanding the obligation should precede acceptance.",
+            "not_yet": "Signing does not resolve the missing understanding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes hacer antes de firmar?",
+          "scene": "No entiendes una penalización por retiro. El representante presiona para firmar.",
+          "options": [
+            {
+              "label": "Pausar y pedir una explicación escrita comprensible"
+            },
+            {
+              "label": "Suponer que una condición confusa no aplica"
+            },
+            {
+              "label": "Aceptar porque el representante parece seguro"
+            }
+          ],
+          "help": [
+            "Firmar no resuelve la falta de comprensión."
+          ],
+          "feedback": {
+            "met": "Entender la obligación debe preceder a aceptarla.",
+            "not_yet": "Firmar no resuelve la falta de comprensión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer antes de assinar?",
+          "scene": "Não sabe como funciona uma multa de saque. O vendedor pede para assinar logo.",
+          "options": [
+            {
+              "label": "Pedir os termos por escrito, com clareza"
+            },
+            {
+              "label": "Supor que uma condição confusa não vale"
+            },
+            {
+              "label": "Aceitar porque o representante parece seguro"
+            }
+          ],
+          "help": [
+            "Assinar não resolve a falta de compreensão."
+          ],
+          "feedback": {
+            "met": "Entender a obrigação deve vir antes de aceitá-la.",
+            "not_yet": "Assinar não resolve a falta de compreensão."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "Where should you verify it?",
+          "scene": "An unexpected contract includes a new number. You know the official channel.",
+          "options": [
+            {
+              "label": "The independently verified channel"
+            },
+            {
+              "label": "The sender, including your code"
+            },
+            {
+              "label": "Only the new number"
+            }
+          ],
+          "help": [
+            "Verify identity separately from the supplied document."
+          ],
+          "feedback": {
+            "met": "Independent contact checks the document without trusting its sender.",
+            "not_yet": "Verify identity separately from the supplied document."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué canal debe recibir la consulta?",
+          "scene": "Un contrato llega por mensaje inesperado con un nuevo número. Ya conoces el canal oficial del proveedor.",
+          "options": [
+            {
+              "label": "El canal oficial verificado aparte"
+            },
+            {
+              "label": "El remitente, adjuntando tu código de acceso"
+            },
+            {
+              "label": "Solo el nuevo número del mensaje"
+            }
+          ],
+          "help": [
+            "Verifica la identidad por separado del documento recibido."
+          ],
+          "feedback": {
+            "met": "El contacto independiente verifica el documento sin confiar en su remitente.",
+            "not_yet": "Verifica la identidad por separado del documento recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual canal deve receber a consulta?",
+          "scene": "Uma mensagem inesperada traz contrato e número novo. Você conhece o canal oficial do fornecedor.",
+          "options": [
+            {
+              "label": "O canal oficial verificado separadamente"
+            },
+            {
+              "label": "O remetente, anexando seu código de acesso"
+            },
+            {
+              "label": "Só o número novo da mensagem"
+            }
+          ],
+          "help": [
+            "Verifique a identidade separadamente do documento recebido."
+          ],
+          "feedback": {
+            "met": "O contato independente verifica o documento sem confiar no remetente.",
+            "not_yet": "Verifique a identidade separadamente do documento recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "What evidence supports your complaint?",
+          "scene": "A renewal charge seems to breach cancellation terms. You contact verified support.",
+          "options": [
+            {
+              "label": "The ad alone"
+            },
+            {
+              "label": "Cancellation terms and your dated request"
+            },
+            {
+              "label": "Past payments alone"
+            }
+          ],
+          "help": [
+            "Document the event without assuming an unverified legal outcome."
+          ],
+          "feedback": {
+            "met": "Records support checking discrepancies; outcomes depend on applicable terms and rules.",
+            "not_yet": "Document the event without assuming an unverified legal outcome."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia respalda el siguiente paso?",
+          "scene": "Una renovación parece incumplir la cancelación acordada. Reclamas por el canal verificado del proveedor.",
+          "options": [
+            {
+              "label": "El anuncio sin las condiciones aceptadas"
+            },
+            {
+              "label": "Las condiciones de cancelación y la solicitud fechada"
+            },
+            {
+              "label": "Pagos anteriores sin la solicitud de cancelación"
+            }
+          ],
+          "help": [
+            "Documenta el hecho sin suponer un resultado legal no verificado."
+          ],
+          "feedback": {
+            "met": "Los registros permiten revisar la diferencia; el resultado depende del acuerdo y las reglas aplicables.",
+            "not_yet": "Documenta el hecho sin suponer un resultado legal no verificado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual prova apoia o próximo passo?",
+          "scene": "Pediu o fim do serviço, mas foi renovado. Vai reclamar pelo canal verificado.",
+          "options": [
+            {
+              "label": "O anúncio sem as condições aceitas"
+            },
+            {
+              "label": "As condições de cancelamento e o pedido datado"
+            },
+            {
+              "label": "Pagamentos anteriores sem o pedido de cancelamento"
+            }
+          ],
+          "help": [
+            "Documente o fato sem supor um resultado legal não verificado."
+          ],
+          "feedback": {
+            "met": "Os registros permitem verificar a diferença; o resultado depende do acordo e das regras aplicáveis.",
+            "not_yet": "Documente o fato sem supor um resultado legal não verificado."
+          }
+        }
+      }
+    }
+  ]
+}

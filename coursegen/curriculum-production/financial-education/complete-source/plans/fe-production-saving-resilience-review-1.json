@@ -1,0 +1,907 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-2",
+  "lesson_id": "fe-production-saving-resilience-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.01",
+    "finance.prod.saving-resilience.02",
+    "finance.prod.saving-resilience.03",
+    "finance.prod.saving-resilience.04",
+    "finance.prod.saving-resilience.05",
+    "finance.prod.spending-patterns.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate saving purposes, estimate the essential bridge and choose feasible targets and reserve access.",
+  "title": {
+    "en-US": "Savings Planning",
+    "es-MX": "Da propósito claro al ahorro",
+    "pt-BR": "Dê finalidade clara à poupança"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Savings Planning\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Da propósito claro al ahorro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dê finalidade clara à poupança\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.saving-resilience.01",
+      "observable_action": "Separate saving purposes, estimate the essential bridge and choose feasible targets and reserve access.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.05",
+      "plan.periodic"
+    ],
+    "retrieval_skills": [
+      "prod.saving-resilience.01",
+      "prod.saving-resilience.02",
+      "prod.saving-resilience.03",
+      "prod.saving-resilience.04",
+      "prod.saving-resilience.05",
+      "prod.spending-patterns.05"
+    ],
+    "relevance": "Retrieve planned bills, disruption estimates and reachable reserve choices.",
+    "misconception": "Every infrequent payment is unforeseen and a universal target or highest return always fits the household.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The known renewal belongs in advance planned-bill saving."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The bridge covers repeated essentials after confirmed support."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "A useful starter plan respects actual risks and capacity."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "A meets the stated access requirement when money is needed."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.saving-resilience.05",
+        "context_id": "saving-resilience-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Existing savings reduce the number of new contributions needed."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "saving-resilience-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "A known annual date makes the renewal predictable, though nonmonthly."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Separate allocations prevent promising the same money twice."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve planned bills, disruption estimates and reachable reserve choices."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera cuentas previstas, cálculos de imprevistos y opciones de reserva accesible."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome contas previstas, contas de imprevistos e opções de reserva acessível."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which allocation fits the known expense?",
+          "scene": "A dated annual renewal is known now; emergency money is for unexpected disruptions.",
+          "options": [
+            {
+              "label": "No allocation because annual"
+            },
+            {
+              "label": "Automatically the emergency allocation"
+            },
+            {
+              "label": "Planned-bill allocation"
+            }
+          ],
+          "help": [
+            "Separate predictable payments from unforeseen disruptions."
+          ],
+          "feedback": {
+            "met": "The known renewal belongs in advance planned-bill saving.",
+            "not_yet": "Separate predictable payments from unforeseen disruptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué apartado corresponde al gasto conocido?",
+          "scene": "Renovación anual fechada ya se conoce; reserva atiende imprevistos.",
+          "options": [
+            {
+              "label": "Ninguno porque es anual"
+            },
+            {
+              "label": "Siempre apartado de emergencia"
+            },
+            {
+              "label": "Apartado de cuenta prevista"
+            }
+          ],
+          "help": [
+            "Separa pagos previsibles de contratiempos inesperados."
+          ],
+          "feedback": {
+            "met": "Renovación conocida corresponde a ahorro previo de cuentas previstas.",
+            "not_yet": "Separa pagos previsibles de contratiempos inesperados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que verba cabe no gasto conhecido?",
+          "scene": "Renovação anual datada já se conhece; reserva atende imprevistos.",
+          "options": [
+            {
+              "label": "Nenhuma pois é anual"
+            },
+            {
+              "label": "Sempre verba de emergência"
+            },
+            {
+              "label": "Verba de conta prevista"
+            }
+          ],
+          "help": [
+            "Separe pagamentos previsíveis de contratempos inesperados."
+          ],
+          "feedback": {
+            "met": "Renovação conhecida cabe em poupança prévia de contas previstas.",
+            "not_yet": "Separe pagamentos previsíveis de contratempos inesperados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What essential bridge is needed?",
+          "scene": "Monthly essentials: 800; Interruption: 3 months; Confirmed total support: 400; No other resources.",
+          "options": [
+            {
+              "label": "2000"
+            },
+            {
+              "label": "2400"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Multiply duration and monthly costs, then subtract total support."
+          ],
+          "feedback": {
+            "met": "The bridge covers repeated essentials after confirmed support.",
+            "not_yet": "Multiply duration and monthly costs, then subtract total support."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puente esencial se necesita?",
+          "scene": "Esenciales mensuales: 800; Pausa: 3 meses; Apoyo total confirmado: 400; Sin otros recursos.",
+          "options": [
+            {
+              "label": "2000"
+            },
+            {
+              "label": "2400"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Multiplica duración y costos mensuales, resta apoyo total."
+          ],
+          "feedback": {
+            "met": "Puente cubre esenciales repetidos tras apoyo confirmado.",
+            "not_yet": "Multiplica duración y costos mensuales, resta apoyo total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ponte essencial precisa?",
+          "scene": "Essenciais mensais: 800; Pausa: 3 meses; Apoio total confirmado: 400; Sem outros recursos.",
+          "options": [
+            {
+              "label": "2000"
+            },
+            {
+              "label": "2400"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Multiplique duração e custos mensais, subtraia apoio total."
+          ],
+          "feedback": {
+            "met": "Ponte cobre essenciais repetidos após apoio confirmado.",
+            "not_yet": "Multiplique duração e custos mensais, subtraia apoio total."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          800,
+          3,
+          400
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan fits?",
+          "scene": "A disruption estimate guides the target; small contributions fit after essentials.",
+          "options": [
+            {
+              "label": "Copy someone’s large payment"
+            },
+            {
+              "label": "Use that target with feasible contributions"
+            },
+            {
+              "label": "Skip essentials to match an arbitrary rule"
+            }
+          ],
+          "help": [
+            "Choose feasible progress and review changing circumstances."
+          ],
+          "feedback": {
+            "met": "A useful starter plan respects actual risks and capacity.",
+            "not_yet": "Choose feasible progress and review changing circumstances."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan inicial cabe?",
+          "scene": "Estimación de contratiempo guía meta; solo pequeño aporte cabe tras esenciales.",
+          "options": [
+            {
+              "label": "Copiar pago grande de otro hogar"
+            },
+            {
+              "label": "Usar meta con aportes viables"
+            },
+            {
+              "label": "Omitir esenciales por regla arbitraria"
+            }
+          ],
+          "help": [
+            "Elige avance viable y revisa circunstancias cambiantes."
+          ],
+          "feedback": {
+            "met": "Plan inicial útil respeta riesgos y capacidad reales.",
+            "not_yet": "Elige avance viable y revisa circunstancias cambiantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que plano inicial cabe?",
+          "scene": "Estimativa de contratempo guia meta; só pequeno aporte cabe após essenciais.",
+          "options": [
+            {
+              "label": "Copiar pagamento grande de outra família"
+            },
+            {
+              "label": "Usar meta com aportes viáveis"
+            },
+            {
+              "label": "Pular essenciais por regra arbitrária"
+            }
+          ],
+          "help": [
+            "Escolha avanço viável e reveja situações que mudam."
+          ],
+          "feedback": {
+            "met": "Plano inicial útil respeita riscos e capacidade reais.",
+            "not_yet": "Escolha avanço viável e reveja situações que mudam."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option fits tomorrow’s reserve need?",
+          "scene": "A has confirmed immediate access and no fee; B locks money beyond tomorrow. Both state stable balances.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Either regardless of timing"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Match access, balance conditions and fees to the reserve’s purpose."
+          ],
+          "feedback": {
+            "met": "A meets the stated access requirement when money is needed.",
+            "not_yet": "Match access, balance conditions and fees to the reserve’s purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cubre necesidad de mañana?",
+          "scene": "A tiene acceso inmediato confirmado sin cargo; B bloquea más allá de mañana. Ambos indican saldo estable.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Cualquiera sin mirar tiempo"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Relaciona acceso, saldo y cargos con propósito de reserva."
+          ],
+          "feedback": {
+            "met": "A cumple acceso indicado cuando se requiere dinero.",
+            "not_yet": "Relaciona acceso, saldo y cargos con propósito de reserva."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que opção cobre necessidade de amanhã?",
+          "scene": "A tem acesso imediato confirmado sem taxa; B bloqueia além de amanhã. Ambos indicam saldo estável.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Qualquer um sem ver prazo"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Ligue acesso, saldo e taxas ao uso da reserva."
+          ],
+          "feedback": {
+            "met": "A atende acesso dado quando se precisa do dinheiro.",
+            "not_yet": "Ligue acesso, saldo e taxas ao uso da reserva."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How many contributions reach the goal?",
+          "scene": "Target: 450; Already saved: 150; Feasible contribution: 50; No return or withdrawals.",
+          "options": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "help": [
+            "Divide the remaining gap by each contribution."
+          ],
+          "feedback": {
+            "met": "Existing savings reduce the number of new contributions needed.",
+            "not_yet": "Divide the remaining gap by each contribution."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos aportes completan meta?",
+          "scene": "Meta: 450; Ya ahorrado: 150; Aporte viable: 50; Sin rendimiento ni retiros.",
+          "options": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "help": [
+            "Divide faltante restante entre cada aporte."
+          ],
+          "feedback": {
+            "met": "Ahorro existente reduce cantidad de aportes nuevos necesarios.",
+            "not_yet": "Divide faltante restante entre cada aporte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantos aportes completam meta?",
+          "scene": "Meta: 450; Já poupado: 150; Aporte viável: 50; Sem rendimento ou saques.",
+          "options": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "help": [
+            "Divida falta restante por cada aporte."
+          ],
+          "feedback": {
+            "met": "Poupança existente reduz quantidade de aportes novos necessários.",
+            "not_yet": "Divida falta restante por cada aporte."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          450,
+          150,
+          50
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which expense is predictable but irregular?",
+          "scene": "A license renews annually on a known date; an unrelated pipe suddenly bursts.",
+          "options": [
+            {
+              "label": "The sudden burst"
+            },
+            {
+              "label": "The dated license renewal"
+            },
+            {
+              "label": "Neither because both cost money"
+            }
+          ],
+          "help": [
+            "Distinguish irregular timing from unforeseen events."
+          ],
+          "feedback": {
+            "met": "A known annual date makes the renewal predictable, though nonmonthly.",
+            "not_yet": "Distinguish irregular timing from unforeseen events."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué gasto es previsible pero irregular?",
+          "scene": "Licencia se renueva anual en fecha conocida; tubería ajena revienta de repente.",
+          "options": [
+            {
+              "label": "Rotura repentina"
+            },
+            {
+              "label": "Renovación fechada de licencia"
+            },
+            {
+              "label": "Ninguno porque ambos cuestan"
+            }
+          ],
+          "help": [
+            "Distingue frecuencia irregular de eventos imprevistos."
+          ],
+          "feedback": {
+            "met": "Fecha anual conocida hace previsible renovación aunque no mensual.",
+            "not_yet": "Distingue frecuencia irregular de eventos imprevistos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que gasto é previsível mas irregular?",
+          "scene": "Licença renova anual em data conhecida; cano alheio estoura de repente.",
+          "options": [
+            {
+              "label": "Ruptura repentina"
+            },
+            {
+              "label": "Renovação datada da licença"
+            },
+            {
+              "label": "Nenhum pois ambos custam"
+            }
+          ],
+          "help": [
+            "Separe frequência irregular de eventos imprevistos."
+          ],
+          "feedback": {
+            "met": "Data anual conhecida torna previsível renovação embora não mensal.",
+            "not_yet": "Separe frequência irregular de eventos imprevistos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents double-counting?",
+          "scene": "One balance must cover a known school fee and an unexpected-disruption reserve.",
+          "options": [
+            {
+              "label": "Treat the known fee as impossible"
+            },
+            {
+              "label": "Earmark each purpose separately"
+            },
+            {
+              "label": "Count the whole balance for both"
+            }
+          ],
+          "help": [
+            "Assign actual money to each distinct purpose."
+          ],
+          "feedback": {
+            "met": "Separate allocations prevent promising the same money twice.",
+            "not_yet": "Assign actual money to each distinct purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué separación evita contar doble?",
+          "scene": "Un saldo debe cubrir cuota escolar conocida y reserva de imprevistos.",
+          "options": [
+            {
+              "label": "Tratar cuota conocida como imposible"
+            },
+            {
+              "label": "Apartar cada propósito por separado"
+            },
+            {
+              "label": "Contar saldo completo para ambos"
+            }
+          ],
+          "help": [
+            "Asigna dinero real a cada propósito distinto."
+          ],
+          "feedback": {
+            "met": "Apartados separados evitan prometer mismo dinero dos veces.",
+            "not_yet": "Asigna dinero real a cada propósito distinto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que separação evita contar dobrado?",
+          "scene": "Um saldo deve cobrir taxa escolar conhecida e reserva de imprevistos.",
+          "options": [
+            {
+              "label": "Tratar taxa conhecida como impossível"
+            },
+            {
+              "label": "Separar cada uso em sua verba"
+            },
+            {
+              "label": "Contar saldo inteiro para ambos"
+            }
+          ],
+          "help": [
+            "Atribua dinheiro real a cada uso distinto."
+          ],
+          "feedback": {
+            "met": "Verbas separadas evitam prometer mesmo dinheiro duas vezes.",
+            "not_yet": "Atribua dinheiro real a cada uso distinto."
+          }
+        }
+      }
+    }
+  ]
+}

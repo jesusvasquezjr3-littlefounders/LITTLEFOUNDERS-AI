@@ -1,0 +1,731 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-2",
+  "lesson_id": "fe-production-tax-public-systems-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize that a benefit’s eligibility and withdrawal conditions must be checked before budgeting it.",
+  "title": {
+    "en-US": "Benefit Conditions",
+    "es-MX": "Revisa primero las condiciones del apoyo",
+    "pt-BR": "Confira antes as condições do benefício"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Benefit Conditions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa primero las condiciones del apoyo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira antes as condições do benefício\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.07",
+      "observable_action": "Recognize that a benefit’s eligibility and withdrawal conditions must be checked before budgeting it.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.10",
+      "prod.cashflow-budget.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A benefit mentioned in an announcement is not yet money available in your plan.",
+    "misconception": "Hearing about a benefit establishes eligibility, amount, payment date and unrestricted access.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-example-01",
+        "supports_from": [],
+        "reasoning": "A benefit requires eligibility checks and pays later. Do not fund tomorrow’s bill with an unconfirmed future payment."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Eligibility must be established before assuming the payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The payment date arrives after the bill deadline."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-practice-01",
+        "supports_from": [],
+        "reasoning": "A maximum is not each applicant’s entitlement."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-practice-02",
+        "supports_from": [],
+        "reasoning": "The stated use restriction affects what the benefit can fund."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Changed circumstances may alter the applicable conditions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Unconfirmed conditions do not establish usable money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A benefit mentioned in an announcement is not yet money available in your plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un apoyo mencionado en un anuncio todavía no es dinero disponible en tu plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um benefício citado num anúncio ainda não é dinheiro disponível no seu plano."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Approval and access differ",
+          "line": "A benefit requires eligibility checks and pays later. Do not fund tomorrow’s bill with an unconfirmed future payment."
+        },
+        "es-MX": {
+          "prompt": "Aprobación y acceso difieren",
+          "line": "Un apoyo exige comprobar requisitos y paga después. No cubras la cuenta de mañana con un pago futuro sin confirmar."
+        },
+        "pt-BR": {
+          "prompt": "Aprovação e acesso diferem",
+          "line": "Um benefício exige conferir requisitos e paga depois. Não cubra a conta de amanhã com um pagamento futuro não confirmado."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked?",
+          "scene": "A benefit announcement states that only eligible applicants receive it.",
+          "options": [
+            {
+              "label": "Only the advertised maximum"
+            },
+            {
+              "label": "Whether the person meets the conditions"
+            },
+            {
+              "label": "Whether friends like the program"
+            }
+          ],
+          "help": [
+            "Read the actual access conditions."
+          ],
+          "feedback": {
+            "met": "Eligibility must be established before assuming the payment.",
+            "not_yet": "Read the actual access conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes verificar?",
+          "scene": "Un anuncio de apoyo dice que solo lo reciben solicitantes que cumplen requisitos.",
+          "options": [
+            {
+              "label": "Solo el máximo anunciado"
+            },
+            {
+              "label": "Si la persona cumple condiciones"
+            },
+            {
+              "label": "Si gusta el programa a amistades"
+            }
+          ],
+          "help": [
+            "Lee las condiciones reales de acceso."
+          ],
+          "feedback": {
+            "met": "Hay que establecer elegibilidad antes de suponer el pago.",
+            "not_yet": "Lee las condiciones reales de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir?",
+          "scene": "Um anúncio de benefício diz que só recebem as pessoas que cumprem requisitos.",
+          "options": [
+            {
+              "label": "Só o máximo anunciado"
+            },
+            {
+              "label": "Se a pessoa cumpre as condições"
+            },
+            {
+              "label": "Se amigos gostam do programa"
+            }
+          ],
+          "help": [
+            "Leia as condições reais de acesso."
+          ],
+          "feedback": {
+            "met": "É preciso verificar o direito antes de supor o pagamento.",
+            "not_yet": "Leia as condições reais de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it pay tomorrow’s bill?",
+          "scene": "A fictional benefit is approved but scheduled for next month. The bill is due tomorrow.",
+          "options": [
+            {
+              "label": "Not from that future payment"
+            },
+            {
+              "label": "Yes, approval equals immediate cash"
+            }
+          ],
+          "help": [
+            "Separate approval from when money is received."
+          ],
+          "feedback": {
+            "met": "The payment date arrives after the bill deadline.",
+            "not_yet": "Separate approval from when money is received."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Paga la cuenta de mañana?",
+          "scene": "Un apoyo ficticio está aprobado para el próximo mes. La cuenta vence mañana.",
+          "options": [
+            {
+              "label": "No con ese pago futuro"
+            },
+            {
+              "label": "Sí, aprobar equivale a efectivo inmediato"
+            }
+          ],
+          "help": [
+            "Distingue aprobar de cuándo recibes dinero."
+          ],
+          "feedback": {
+            "met": "La fecha de pago llega después del vencimiento.",
+            "not_yet": "Distingue aprobar de cuándo recibes dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Paga a conta de amanhã?",
+          "scene": "Um benefício fictício foi aprovado para o próximo mês. A conta vence amanhã.",
+          "options": [
+            {
+              "label": "Não com esse pagamento futuro"
+            },
+            {
+              "label": "Sim, aprovar equivale a dinheiro imediato"
+            }
+          ],
+          "help": [
+            "Separe aprovar de quando recebe dinheiro."
+          ],
+          "feedback": {
+            "met": "A data do pagamento chega após o vencimento.",
+            "not_yet": "Separe aprovar de quando recebe dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount belongs in the plan?",
+          "scene": "An ad states a maximum benefit, but this person’s assessed amount is lower.",
+          "options": [
+            {
+              "label": "The confirmed personal amount"
+            },
+            {
+              "label": "The advertised maximum for everyone"
+            }
+          ],
+          "help": [
+            "Use the amount confirmed for the stated case."
+          ],
+          "feedback": {
+            "met": "A maximum is not each applicant’s entitlement.",
+            "not_yet": "Use the amount confirmed for the stated case."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto va en el plan?",
+          "scene": "Un anuncio indica apoyo máximo, pero el monto evaluado para esta persona es menor.",
+          "options": [
+            {
+              "label": "El monto personal confirmado"
+            },
+            {
+              "label": "El máximo anunciado para todos"
+            }
+          ],
+          "help": [
+            "Usa el monto confirmado para el caso indicado."
+          ],
+          "feedback": {
+            "met": "Un máximo no es lo que corresponde a cada solicitante.",
+            "not_yet": "Usa el monto confirmado para el caso indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor entra no plano?",
+          "scene": "Um anúncio dá benefício máximo, mas o valor avaliado para esta pessoa é menor.",
+          "options": [
+            {
+              "label": "O valor pessoal confirmado"
+            },
+            {
+              "label": "O máximo anunciado para todos"
+            }
+          ],
+          "help": [
+            "Use o valor confirmado para o caso dado."
+          ],
+          "feedback": {
+            "met": "Um máximo não é o valor de cada pessoa.",
+            "not_yet": "Use o valor confirmado para o caso dado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this payment cover any expense?",
+          "scene": "The fictional benefit’s terms restrict it to a named service.",
+          "options": [
+            {
+              "label": "Yes, every benefit is unrestricted cash"
+            },
+            {
+              "label": "No, use must follow those terms"
+            }
+          ],
+          "help": [
+            "Check access and permitted use."
+          ],
+          "feedback": {
+            "met": "The stated use restriction affects what the benefit can fund.",
+            "not_yet": "Check access and permitted use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede cubrir cualquier gasto?",
+          "scene": "Las condiciones del apoyo ficticio lo limitan a un servicio indicado.",
+          "options": [
+            {
+              "label": "Sí, todo apoyo es efectivo sin restricción"
+            },
+            {
+              "label": "No, el uso debe seguir condiciones"
+            }
+          ],
+          "help": [
+            "Revisa acceso y uso permitido."
+          ],
+          "feedback": {
+            "met": "La restricción indicada determina qué puede financiar el apoyo.",
+            "not_yet": "Revisa acceso y uso permitido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode cobrir qualquer gasto?",
+          "scene": "As regras do benefício fictício o limitam a um serviço dado.",
+          "options": [
+            {
+              "label": "Sim, todo benefício é dinheiro livre"
+            },
+            {
+              "label": "Não, o uso deve seguir as regras"
+            }
+          ],
+          "help": [
+            "Confira acesso e uso permitido."
+          ],
+          "feedback": {
+            "met": "A restrição dada define o que o benefício pode financiar.",
+            "not_yet": "Confira acesso e uso permitido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs review after change?",
+          "scene": "A benefit depends on household circumstances that have now changed.",
+          "options": [
+            {
+              "label": "Whether eligibility or reporting duties change"
+            },
+            {
+              "label": "Assume last year’s amount forever"
+            }
+          ],
+          "help": [
+            "Check the official rule for the current situation."
+          ],
+          "feedback": {
+            "met": "Changed circumstances may alter the applicable conditions.",
+            "not_yet": "Check the official rule for the current situation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisas tras un cambio?",
+          "scene": "Un apoyo depende de circunstancias del hogar que ahora cambiaron.",
+          "options": [
+            {
+              "label": "Si cambian elegibilidad o deberes de informar"
+            },
+            {
+              "label": "Suponer para siempre el monto anterior"
+            }
+          ],
+          "help": [
+            "Consulta la regla oficial para la situación actual."
+          ],
+          "feedback": {
+            "met": "Cambiar circunstancias puede alterar las condiciones aplicables.",
+            "not_yet": "Consulta la regla oficial para la situación actual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que rever após mudar?",
+          "scene": "Um benefício depende de condições da casa que agora mudaram.",
+          "options": [
+            {
+              "label": "Se mudam o direito ou deveres de informar"
+            },
+            {
+              "label": "Supor para sempre o valor anterior"
+            }
+          ],
+          "help": [
+            "Consulte a regra oficial para a situação atual."
+          ],
+          "feedback": {
+            "met": "Mudar as condições pode alterar as regras aplicáveis.",
+            "not_yet": "Consulte a regra oficial para a situação atual."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it fund today?",
+          "scene": "A caregiver sees a program. Eligibility, timing and payment amount are unconfirmed.",
+          "options": [
+            {
+              "label": "Those conditions remain unresolved"
+            },
+            {
+              "label": "Hope equals received money"
+            },
+            {
+              "label": "The announcement is enough"
+            }
+          ],
+          "help": [
+            "Verify eligibility, amount and timing before funding a commitment."
+          ],
+          "feedback": {
+            "met": "Unconfirmed conditions do not establish usable money.",
+            "not_yet": "Verify eligibility, amount and timing before funding a commitment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide contar con él hoy?",
+          "scene": "Una persona cuidadora ve un programa. No confirma requisitos, tiempo de trámite ni monto.",
+          "options": [
+            {
+              "label": "Esas condiciones siguen sin resolver"
+            },
+            {
+              "label": "El pago esperado ya se recibió"
+            },
+            {
+              "label": "El anuncio solo basta"
+            }
+          ],
+          "help": [
+            "Verifica elegibilidad, monto y fecha antes de cubrir compromisos."
+          ],
+          "feedback": {
+            "met": "Condiciones sin confirmar no establecen dinero utilizable.",
+            "not_yet": "Verifica elegibilidad, monto y fecha antes de cubrir compromisos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede contar com ele hoje?",
+          "scene": "Uma pessoa cuidadora vê um programa. Não confirma requisitos, prazo nem valor.",
+          "options": [
+            {
+              "label": "Essas condições seguem sem resolver"
+            },
+            {
+              "label": "O pagamento esperado já chegou"
+            },
+            {
+              "label": "O anúncio sozinho basta"
+            }
+          ],
+          "help": [
+            "Confira direito, valor e prazo antes de cobrir compromissos."
+          ],
+          "feedback": {
+            "met": "Condições não confirmadas não estabelecem dinheiro utilizável.",
+            "not_yet": "Confira direito, valor e prazo antes de cobrir compromissos."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-1",
+  "lesson_id": "fe-production-credit-products-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Determine whether a fictional card’s stated grace-period conditions have been met.",
+  "title": {
+    "en-US": "Grace Conditions",
+    "es-MX": "Revisa condiciones para evitar intereses",
+    "pt-BR": "Veja condições para evitar juros"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Grace Conditions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa condiciones para evitar intereses\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Veja condições para evitar juros\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.03",
+      "observable_action": "Determine whether a fictional card’s stated grace-period conditions have been met.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-products.01",
+      "prod.credit-products.02",
+      "prod.credit-mechanics.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A fictional grace rule has specific conditions; test all of them before concluding that a card purchase avoids interest.",
+    "misconception": "Paying any minimum on time automatically avoids interest on all card transactions.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-example-01",
+        "supports_from": [],
+        "reasoning": "Check eligible purchases, prior balance conditions, required payment and deadline. Meeting only the minimum may fail the stated grace rule."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The payment fails the stated full-balance requirement."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "All three supplied conditions are explicitly met."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-practice-01",
+        "supports_from": [],
+        "reasoning": "The full payment misses the stated deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-practice-02",
+        "supports_from": [],
+        "reasoning": "The advance is explicitly outside the stated purchase rule."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-practice-03",
+        "supports_from": [],
+        "reasoning": "An unknown required condition cannot be assumed satisfied."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "Eligible purchases and timely partial payment still fail the full-payment condition."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A fictional grace rule has specific conditions; test all of them before concluding that a card purchase avoids interest."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Regla ficticia para evitar intereses tiene condiciones concretas; comprueba todas antes de concluir que compra no genera intereses."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Regra fictícia para evitar juros tem condições específicas; confira todas antes de concluir que compra não gera juros."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read every condition",
+          "line": "Check eligible purchases, prior balance conditions, required payment and deadline. Meeting only the minimum may fail the stated grace rule."
+        },
+        "es-MX": {
+          "prompt": "Lee cada condición",
+          "line": "Revisa compras elegibles, saldo previo, pago exigido y fecha. Cumplir solo mínimo puede fallar regla indicada para evitar intereses."
+        },
+        "pt-BR": {
+          "prompt": "Leia cada condição",
+          "line": "Veja compras elegíveis, saldo anterior, pagamento exigido e data. Cumprir só mínimo pode falhar regra dada para evitar juros."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does payment meet the rule?",
+          "scene": "Fictional rule: purchases avoid interest only with full statement payment by deadline; only minimum arrives on time.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, any timely payment"
+            },
+            {
+              "label": "Yes, minimum equals full"
+            }
+          ],
+          "help": [
+            "On-time and paid-in-full are separate conditions."
+          ],
+          "feedback": {
+            "met": "The payment fails the stated full-balance requirement.",
+            "not_yet": "On-time and paid-in-full are separate conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este pago cumple regla?",
+          "scene": "Regla ficticia: compras evitan intereses solo con pago total del estado a tiempo; llega solo mínimo puntual.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, cualquier pago puntual"
+            },
+            {
+              "label": "Sí, mínimo equivale a total"
+            }
+          ],
+          "help": [
+            "A tiempo y completo son condiciones distintas."
+          ],
+          "feedback": {
+            "met": "Pago falla requisito indicado de saldo completo.",
+            "not_yet": "A tiempo y completo son condiciones distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Este pagamento cumpre regra?",
+          "scene": "Regra fictícia: compras evitam juros só com pagamento total do extrato no prazo; chega só mínimo pontual.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, qualquer pagamento pontual"
+            },
+            {
+              "label": "Sim, mínimo equivale ao total"
+            }
+          ],
+          "help": [
+            "No prazo e completo são condições distintas."
+          ],
+          "feedback": {
+            "met": "Pagamento falha requisito dado de saldo completo.",
+            "not_yet": "No prazo e completo são condições distintas."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Are all stated conditions met?",
+          "scene": "Fictional rule: eligible purchases, no prior carried debt, full timely payment; this account meets all three.",
+          "options": [
+            {
+              "label": "Yes"
+            },
+            {
+              "label": "Only minimum payments qualify"
+            },
+            {
+              "label": "No, full payment cannot count"
+            }
+          ],
+          "help": [
+            "Evaluate the whole rule rather than one isolated condition."
+          ],
+          "feedback": {
+            "met": "All three supplied conditions are explicitly met.",
+            "not_yet": "Evaluate the whole rule rather than one isolated condition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cumple todas condiciones indicadas?",
+          "scene": "Regla ficticia: compras elegibles, sin deuda arrastrada, pago total puntual; cuenta cumple las tres.",
+          "options": [
+            {
+              "label": "Sí"
+            },
+            {
+              "label": "Solo mínimos cumplen"
+            },
+            {
+              "label": "No, pago total no cuenta"
+            }
+          ],
+          "help": [
+            "Evalúa regla completa, no condición aislada."
+          ],
+          "feedback": {
+            "met": "Tres condiciones dadas se cumplen expresamente.",
+            "not_yet": "Evalúa regla completa, no condición aislada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cumpre todas condições dadas?",
+          "scene": "Regra fictícia: compras elegíveis, sem dívida anterior, pagamento total pontual; conta cumpre as três.",
+          "options": [
+            {
+              "label": "Sim"
+            },
+            {
+              "label": "Só mínimos atendem"
+            },
+            {
+              "label": "Não, pagamento total não conta"
+            }
+          ],
+          "help": [
+            "Avalie regra completa, não condição isolada."
+          ],
+          "feedback": {
+            "met": "Três condições dadas são cumpridas de modo claro.",
+            "not_yet": "Avalie regra completa, não condição isolada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does paying in full later meet these terms?",
+          "scene": "Fictional rule requires full payment by June 12; full payment arrives June 14.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, timing never matters"
+            },
+            {
+              "label": "Yes, later means on time"
+            }
+          ],
+          "help": [
+            "Both amount and timing must satisfy the rule."
+          ],
+          "feedback": {
+            "met": "The full payment misses the stated deadline.",
+            "not_yet": "Both amount and timing must satisfy the rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pago total posterior cumple términos?",
+          "scene": "Regla ficticia exige pago total hasta 12 de junio; pago total llega 14 de junio.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, fecha nunca importa"
+            },
+            {
+              "label": "Sí, después significa puntual"
+            }
+          ],
+          "help": [
+            "Monto y fecha deben cumplir regla."
+          ],
+          "feedback": {
+            "met": "Pago total incumple fecha límite indicada.",
+            "not_yet": "Monto y fecha deben cumplir regla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagamento total depois cumpre termos?",
+          "scene": "Regra fictícia exige total até 12 de junho; pagamento total chega 14 de junho.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, data nunca importa"
+            },
+            {
+              "label": "Sim, depois significa pontual"
+            }
+          ],
+          "help": [
+            "Valor e data devem cumprir regra."
+          ],
+          "feedback": {
+            "met": "Pagamento total perde prazo dado.",
+            "not_yet": "Valor e data devem cumprir regra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does purchase grace apply?",
+          "scene": "Fictional grace covers purchases only; this transaction is a cash advance excluded from that rule.",
+          "options": [
+            {
+              "label": "Yes, same card means same terms"
+            },
+            {
+              "label": "Yes, every card use qualifies"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Check the transaction type as well as the payment."
+          ],
+          "feedback": {
+            "met": "The advance is explicitly outside the stated purchase rule.",
+            "not_yet": "Check the transaction type as well as the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Regla de compras aplica aquí?",
+          "scene": "Regla ficticia para evitar intereses cubre solo compras; transacción es adelanto de efectivo excluido de regla.",
+          "options": [
+            {
+              "label": "Sí, misma tarjeta mismos términos"
+            },
+            {
+              "label": "Sí, todo uso de tarjeta cumple"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Revisa tipo de transacción además del pago."
+          ],
+          "feedback": {
+            "met": "Adelanto queda expresamente fuera de regla de compras.",
+            "not_yet": "Revisa tipo de transacción además del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Regra de compras vale aqui?",
+          "scene": "Regra fictícia para evitar juros cobre só compras; transação é saque a crédito excluído da regra.",
+          "options": [
+            {
+              "label": "Sim, mesmo cartão mesmos termos"
+            },
+            {
+              "label": "Sim, todo uso do cartão atende"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Veja tipo de transação além do pagamento."
+          ],
+          "feedback": {
+            "met": "Saque fica de modo claro fora da regra de compras.",
+            "not_yet": "Veja tipo de transação além do pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents a conclusion?",
+          "scene": "The rule requires no prior carried balance, but that account fact is unknown.",
+          "options": [
+            {
+              "label": "The minimum payment due"
+            },
+            {
+              "label": "Nothing, assume it was zero"
+            },
+            {
+              "label": "Missing prior-balance fact"
+            }
+          ],
+          "help": [
+            "Verify the missing fact before applying the grace rule."
+          ],
+          "feedback": {
+            "met": "An unknown required condition cannot be assumed satisfied.",
+            "not_yet": "Verify the missing fact before applying the grace rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide concluir?",
+          "scene": "Regla exige no arrastrar saldo previo, pero ese dato de cuenta es desconocido.",
+          "options": [
+            {
+              "label": "El pago mínimo exigido"
+            },
+            {
+              "label": "Nada, suponer que era cero"
+            },
+            {
+              "label": "Falta dato de saldo previo"
+            }
+          ],
+          "help": [
+            "Verifica dato faltante antes de aplicar regla."
+          ],
+          "feedback": {
+            "met": "Condición requerida desconocida no puede suponerse cumplida.",
+            "not_yet": "Verifica dato faltante antes de aplicar regla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede concluir?",
+          "scene": "Regra exige não carregar saldo anterior, mas esse dado da conta é desconhecido.",
+          "options": [
+            {
+              "label": "O pagamento mínimo devido"
+            },
+            {
+              "label": "Nada, supor que era zero"
+            },
+            {
+              "label": "Falta dado de saldo anterior"
+            }
+          ],
+          "help": [
+            "Verifique dado faltante antes de aplicar regra."
+          ],
+          "feedback": {
+            "met": "Condição exigida desconhecida não pode ser suposta cumprida.",
+            "not_yet": "Verifique dado faltante antes de aplicar regra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this case pass?",
+          "scene": "Fictional rule requires eligible purchases and full timely payment; eligible purchases received timely partial payment.",
+          "options": [
+            {
+              "label": "Yes, before deadline suffices"
+            },
+            {
+              "label": "Yes, eligibility alone suffices"
+            },
+            {
+              "label": "No, payment is incomplete"
+            }
+          ],
+          "help": [
+            "Check all conditions together, including the required amount."
+          ],
+          "feedback": {
+            "met": "Eligible purchases and timely partial payment still fail the full-payment condition.",
+            "not_yet": "Check all conditions together, including the required amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Caso cumple regla dada?",
+          "scene": "Regla ficticia exige compras elegibles y pago total puntual; compras elegibles se pagaron solo en parte antes del límite.",
+          "options": [
+            {
+              "label": "Sí, antes del límite basta"
+            },
+            {
+              "label": "Sí, elegibilidad sola basta"
+            },
+            {
+              "label": "No, pago incompleto"
+            }
+          ],
+          "help": [
+            "Revisa todas condiciones juntas, incluido monto exigido."
+          ],
+          "feedback": {
+            "met": "Compras elegibles y pago parcial puntual fallan condición de pago total.",
+            "not_yet": "Revisa todas condiciones juntas, incluido monto exigido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Caso cumpre regra dada?",
+          "scene": "Regra fictícia exige compras elegíveis e pagamento total pontual; compras elegíveis foram pagas só em parte antes do prazo.",
+          "options": [
+            {
+              "label": "Sim, antes do prazo basta"
+            },
+            {
+              "label": "Sim, elegibilidade só basta"
+            },
+            {
+              "label": "Não, pagamento incompleto"
+            }
+          ],
+          "help": [
+            "Veja todas condições juntas, inclusive valor exigido."
+          ],
+          "feedback": {
+            "met": "Compras elegíveis e pagamento parcial pontual falham condição de total.",
+            "not_yet": "Veja todas condições juntas, inclusive valor exigido."
+          }
+        }
+      }
+    }
+  ]
+}

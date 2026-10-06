@@ -1,0 +1,773 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-2",
+  "lesson_id": "fe-production-goals-tradeoffs-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.commitment",
+    "finance.prod.goals-tradeoffs.05",
+    "finance.prod.goals-tradeoffs.06",
+    "finance.prod.goals-tradeoffs.07",
+    "finance.prod.goals-tradeoffs.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Shared goals",
+    "es-MX": "Revisa una meta compartida",
+    "pt-BR": "Reveja uma meta compartilhada"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Revise a shared goal\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa una meta compartida\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reveja uma meta compartilhada\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.commitment",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "prod.goals-tradeoffs.05",
+      "prod.goals-tradeoffs.06",
+      "prod.goals-tradeoffs.07",
+      "prod.goals-tradeoffs.08",
+      "cash.commitment"
+    ],
+    "relevance": "Adjust a shared plan when costs, capacity or purpose change.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Divide the remaining gap over future collections."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "More time may reduce each required contribution."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Obtaining a quote is an observable information step."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "A fulfilled purpose changes the original funding need."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "cash.commitment",
+        "context_id": "fe-production-goals-tradeoffs-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "A refund does not erase a separate unpaid obligation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.commitment",
+        "context_id": "fe-production-goals-tradeoffs-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "Changed plans do not automatically cancel an existing stated obligation."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.commitment",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Adjust a shared plan when costs, capacity or purpose change."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Ajusta un plan compartido si cambian costos, capacidad o propósito."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Ajuste um plano compartilhado quando custos, capacidade ou propósito mudam."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Equal amount per date?",
+          "scene": "A shared goal costs 140 dollars, has 60 saved, and 4 collection dates left.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Remove existing savings before dividing."
+          ],
+          "feedback": {
+            "met": "Divide the remaining gap over future collections.",
+            "not_yet": "Remove existing savings before dividing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto igual por fecha?",
+          "scene": "Una meta cuesta 140 pesos, tiene 60 ahorrados y quedan 4 colectas.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Retira ahorro existente antes de dividir."
+          ],
+          "feedback": {
+            "met": "Divide lo faltante entre colectas futuras.",
+            "not_yet": "Retira ahorro existente antes de dividir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor igual por data?",
+          "scene": "Uma meta custa 140 reais, tem 60 guardados e restam 4 coletas.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Retire a poupança existente antes de dividir."
+          ],
+          "feedback": {
+            "met": "Divida o que falta pelas coletas futuras.",
+            "not_yet": "Retire a poupança existente antes de dividir."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          140,
+          60,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision is worth calculating?",
+          "scene": "Required contributions exceed the group’s safe capacity; the deadline is flexible.",
+          "options": [
+            {
+              "label": "Extend the collection period"
+            },
+            {
+              "label": "Assume nonexistent contributions"
+            },
+            {
+              "label": "Ignore essential bills"
+            }
+          ],
+          "help": [
+            "Respect actual capacity when revising."
+          ],
+          "feedback": {
+            "met": "More time may reduce each required contribution.",
+            "not_yet": "Respect actual capacity when revising."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión conviene calcular?",
+          "scene": "Las aportaciones superan la capacidad segura del grupo; la fecha es flexible.",
+          "options": [
+            {
+              "label": "Ampliar el periodo de colecta"
+            },
+            {
+              "label": "Suponer aportaciones inexistentes"
+            },
+            {
+              "label": "Ignorar cuentas esenciales"
+            }
+          ],
+          "help": [
+            "Respeta capacidad real al revisar."
+          ],
+          "feedback": {
+            "met": "Más tiempo puede reducir cada aportación necesaria.",
+            "not_yet": "Respeta capacidad real al revisar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual revisão vale calcular?",
+          "scene": "O grupo não pode pagar as cotas sem faltar nas contas; a data pode mudar.",
+          "options": [
+            {
+              "label": "Ampliar o período de coleta"
+            },
+            {
+              "label": "Contar com cotas que não vieram"
+            },
+            {
+              "label": "Ignorar contas essenciais"
+            }
+          ],
+          "help": [
+            "Use só o que o grupo pode pagar."
+          ],
+          "feedback": {
+            "met": "Mais tempo pode baixar o valor de cada cota.",
+            "not_yet": "Use só o que o grupo pode pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which step is checkable?",
+          "scene": "The group has no spare money today and lacks a current written quote.",
+          "options": [
+            {
+              "label": "Become financially perfect"
+            },
+            {
+              "label": "Deposit money that is unavailable"
+            },
+            {
+              "label": "Request and record a current quote"
+            }
+          ],
+          "help": [
+            "Choose a feasible action with visible completion."
+          ],
+          "feedback": {
+            "met": "Obtaining a quote is an observable information step.",
+            "not_yet": "Choose a feasible action with visible completion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué siguiente paso es verificable?",
+          "scene": "El grupo no tiene sobrante hoy y le falta cotización escrita vigente.",
+          "options": [
+            {
+              "label": "Volverse financieramente perfecto"
+            },
+            {
+              "label": "Depositar dinero no disponible"
+            },
+            {
+              "label": "Pedir y registrar una cotización vigente"
+            }
+          ],
+          "help": [
+            "Elige acción viable con finalización visible."
+          ],
+          "feedback": {
+            "met": "Obtener una cotización es un paso de información observable.",
+            "not_yet": "Elige acción viable con finalización visible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual próximo passo é verificável?",
+          "scene": "O grupo não tem sobra hoje nem sabe o preço atual.",
+          "options": [
+            {
+              "label": "Ser perfeito com dinheiro"
+            },
+            {
+              "label": "Guardar dinheiro que não existe"
+            },
+            {
+              "label": "Pedir o preço atual por escrito"
+            }
+          ],
+          "help": [
+            "Escolha algo que pode fazer e conferir."
+          ],
+          "feedback": {
+            "met": "Pedir o preço é algo que dá para conferir.",
+            "not_yet": "Escolha algo que pode fazer e conferir."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the group do with the plan?",
+          "scene": "A donated replacement now meets the goal’s original purpose.",
+          "options": [
+            {
+              "label": "Review the need before collecting more"
+            },
+            {
+              "label": "Keep collecting automatically"
+            },
+            {
+              "label": "Assume all other obligations disappeared"
+            }
+          ],
+          "help": [
+            "Update the specific goal, not unrelated commitments."
+          ],
+          "feedback": {
+            "met": "A fulfilled purpose changes the original funding need.",
+            "not_yet": "Update the specific goal, not unrelated commitments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe hacer el grupo con el plan?",
+          "scene": "Un reemplazo donado cumple ahora el propósito original de la meta.",
+          "options": [
+            {
+              "label": "Revisar necesidad antes de reunir más"
+            },
+            {
+              "label": "Seguir reuniendo automáticamente"
+            },
+            {
+              "label": "Suponer que desaparecieron otras obligaciones"
+            }
+          ],
+          "help": [
+            "Actualiza esa meta, no compromisos ajenos."
+          ],
+          "feedback": {
+            "met": "Un propósito cumplido cambia la necesidad original de fondos.",
+            "not_yet": "Actualiza esa meta, no compromisos ajenos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o grupo deve fazer com o plano?",
+          "scene": "O grupo ganhou um item que já atende à meta.",
+          "options": [
+            {
+              "label": "Rever necessidade antes de reunir mais"
+            },
+            {
+              "label": "Continuar reunindo automaticamente"
+            },
+            {
+              "label": "Supor que outras obrigações desapareceram"
+            }
+          ],
+          "help": [
+            "Reveja essa meta, não outras contas."
+          ],
+          "feedback": {
+            "met": "A meta já atendida muda quanto ainda é preciso juntar.",
+            "not_yet": "Reveja essa meta, não outras contas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Which money need must stay visible?",
+          "scene": "A supplier refund arrived, but a separate unpaid delivery bill remains.",
+          "options": [
+            {
+              "label": "The unpaid delivery commitment"
+            },
+            {
+              "label": "The already refunded charge again"
+            },
+            {
+              "label": "None because a refund arrived"
+            }
+          ],
+          "help": [
+            "Track each commitment by its own status."
+          ],
+          "feedback": {
+            "met": "A refund does not erase a separate unpaid obligation.",
+            "not_yet": "Track each commitment by its own status."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesidad de dinero sigue vigente?",
+          "scene": "Llegó una devolución del proveedor, pero sigue pendiente otra cuenta de entrega.",
+          "options": [
+            {
+              "label": "El compromiso de entrega pendiente"
+            },
+            {
+              "label": "Otra vez el cargo devuelto"
+            },
+            {
+              "label": "Ninguna porque llegó devolución"
+            }
+          ],
+          "help": [
+            "Sigue cada compromiso según su estado."
+          ],
+          "feedback": {
+            "met": "Una devolución no borra otra obligación pendiente.",
+            "not_yet": "Sigue cada compromiso según su estado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual necessidade de dinheiro segue vigente?",
+          "scene": "Chegou um reembolso do fornecedor, mas outra conta de entrega segue pendente.",
+          "options": [
+            {
+              "label": "O compromisso de entrega pendente"
+            },
+            {
+              "label": "A cobrança já devolvida de novo"
+            },
+            {
+              "label": "Nenhuma porque chegou reembolso"
+            }
+          ],
+          "help": [
+            "Confira quais contas já foram pagas."
+          ],
+          "feedback": {
+            "met": "Um valor devolvido não apaga outra conta por pagar.",
+            "not_yet": "Confira quais contas já foram pagas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Does cancellation free the reserved fee?",
+          "scene": "Event canceled; its stated nonrefundable venue fee remains unpaid.",
+          "options": [
+            {
+              "label": "No, the stated obligation remains"
+            },
+            {
+              "label": "Yes, ignore the stated terms"
+            },
+            {
+              "label": "Yes, every canceled event erases debt"
+            }
+          ],
+          "help": [
+            "Use the specific payment terms given here."
+          ],
+          "feedback": {
+            "met": "Changed plans do not automatically cancel an existing stated obligation.",
+            "not_yet": "Use the specific payment terms given here."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cancelar libera por sí solo la reserva?",
+          "scene": "Se cancela un evento, pero su cargo indicado no reembolsable sigue pendiente.",
+          "options": [
+            {
+              "label": "No, la obligación indicada sigue"
+            },
+            {
+              "label": "Sí, ignora las condiciones indicadas"
+            },
+            {
+              "label": "Sí, cancelar borra toda deuda"
+            }
+          ],
+          "help": [
+            "Usa las condiciones de pago específicas indicadas."
+          ],
+          "feedback": {
+            "met": "Cambiar planes no cancela automáticamente una obligación indicada existente.",
+            "not_yet": "Usa las condiciones de pago específicas indicadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cancelar sozinho libera a reserva?",
+          "scene": "Um evento foi cancelado. O acordo diz que a taxa é devida mesmo assim; ela não foi paga.",
+          "options": [
+            {
+              "label": "Não, a conta continua devida"
+            },
+            {
+              "label": "Sim, ignore as condições informadas"
+            },
+            {
+              "label": "Sim, cancelar apaga toda dívida"
+            }
+          ],
+          "help": [
+            "Use a regra de pagamento dada na cena."
+          ],
+          "feedback": {
+            "met": "Mudar o plano não apaga uma conta ainda devida.",
+            "not_yet": "Use a regra de pagamento dada na cena."
+          }
+        }
+      }
+    }
+  ]
+}

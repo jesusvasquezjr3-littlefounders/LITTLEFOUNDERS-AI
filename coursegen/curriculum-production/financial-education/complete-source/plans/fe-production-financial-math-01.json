@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-1",
+  "lesson_id": "fe-production-financial-math-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Read a monetary amount with whole units and fractional units in the local notation.",
+  "title": {
+    "en-US": "Units, cents",
+    "es-MX": "Unidades y centavos",
+    "pt-BR": "Unidades e centavos"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Units and cents\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Unidades y centavos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Unidades e centavos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.01",
+      "observable_action": "Read a monetary amount with whole units and fractional units in the local notation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Read a price before comparing it with your money.",
+    "misconception": "Treat the decimal separator as decoration or read cents as whole units.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-example-01",
+        "supports_from": [],
+        "reasoning": "12.50 means twelve dollars and fifty cents; the digits after the point count hundredths."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Both parts contribute to the price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The zero keeps five in the hundredths position."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-practice-01",
+        "supports_from": [],
+        "reasoning": "The two decimal digits name eighty hundredths."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Zero whole units can still include cents."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-practice-03",
+        "supports_from": [],
+        "reasoning": "With equal whole units, five cents is less than fifty."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.01",
+        "context_id": "fe-production-financial-math-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Two hundredths means two cents, not twenty."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read a price before comparing it with your money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Lee un precio antes de compararlo con tu dinero."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Leia um preço antes de compará-lo com seu dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read both parts",
+          "line": "12.50 means twelve dollars and fifty cents; the digits after the point count hundredths."
+        },
+        "es-MX": {
+          "prompt": "Lee ambas partes",
+          "line": "12.50 significa doce pesos y cincuenta centavos; los dígitos después del punto cuentan centésimos."
+        },
+        "pt-BR": {
+          "prompt": "Leia as duas partes",
+          "line": "12,50 significa doze reais e cinquenta centavos; os dígitos após a vírgula contam centésimos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What does it mean?",
+          "scene": "The price is 8.25. Read units before the point, cents after it.",
+          "options": [
+            {
+              "label": "Eight hundred dollars"
+            },
+            {
+              "label": "Eight dollars, twenty-five cents"
+            },
+            {
+              "label": "Twenty-five dollars"
+            }
+          ],
+          "help": [
+            "Separate whole units from hundredths."
+          ],
+          "feedback": {
+            "met": "Both parts contribute to the price.",
+            "not_yet": "Separate whole units from hundredths."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa?",
+          "scene": "El precio es 8.25. Lee unidades antes del punto y centavos después.",
+          "options": [
+            {
+              "label": "Ochocientos pesos"
+            },
+            {
+              "label": "Ocho pesos, veinticinco centavos"
+            },
+            {
+              "label": "Veinticinco pesos"
+            }
+          ],
+          "help": [
+            "Separa unidades enteras de centésimos."
+          ],
+          "feedback": {
+            "met": "Ambas partes forman el precio.",
+            "not_yet": "Separa unidades enteras de centésimos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa?",
+          "scene": "O preço é 8,25. Leia unidades antes da vírgula e centavos depois.",
+          "options": [
+            {
+              "label": "Oitocentos reais"
+            },
+            {
+              "label": "Oito reais, vinte e cinco centavos"
+            },
+            {
+              "label": "Vinte e cinco reais"
+            }
+          ],
+          "help": [
+            "Separe unidades inteiras de centésimos."
+          ],
+          "feedback": {
+            "met": "As duas partes formam o preço.",
+            "not_yet": "Separe unidades inteiras de centésimos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which reading matches?",
+          "scene": "A label says 3.05. Two digits after the point show cents.",
+          "options": [
+            {
+              "label": "Thirty-five dollars"
+            },
+            {
+              "label": "Three dollars, fifty cents"
+            },
+            {
+              "label": "Three dollars, five cents"
+            }
+          ],
+          "help": [
+            "Five cents and fifty cents differ."
+          ],
+          "feedback": {
+            "met": "The zero keeps five in the hundredths position.",
+            "not_yet": "Five cents and fifty cents differ."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué lectura coincide?",
+          "scene": "Una etiqueta dice 3.05. Dos dígitos después del punto indican centavos.",
+          "options": [
+            {
+              "label": "Treinta y cinco pesos"
+            },
+            {
+              "label": "Tres pesos, cincuenta centavos"
+            },
+            {
+              "label": "Tres pesos, cinco centavos"
+            }
+          ],
+          "help": [
+            "Cinco y cincuenta centavos son distintos."
+          ],
+          "feedback": {
+            "met": "El cero coloca el cinco en los centésimos.",
+            "not_yet": "Cinco y cincuenta centavos son distintos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual leitura corresponde?",
+          "scene": "Uma etiqueta diz 3,05. Dois dígitos após a vírgula indicam centavos.",
+          "options": [
+            {
+              "label": "Trinta e cinco reais"
+            },
+            {
+              "label": "Três reais, cinquenta centavos"
+            },
+            {
+              "label": "Três reais, cinco centavos"
+            }
+          ],
+          "help": [
+            "Cinco e cinquenta centavos são diferentes."
+          ],
+          "feedback": {
+            "met": "O zero mantém o cinco na posição dos centésimos.",
+            "not_yet": "Cinco e cinquenta centavos são diferentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is its fractional part?",
+          "scene": "A fare costs 6.80.",
+          "options": [
+            {
+              "label": "Eighty cents"
+            },
+            {
+              "label": "Eight cents"
+            },
+            {
+              "label": "Six cents"
+            }
+          ],
+          "help": [
+            "Read both decimal digits together."
+          ],
+          "feedback": {
+            "met": "The two decimal digits name eighty hundredths.",
+            "not_yet": "Read both decimal digits together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es su parte fraccionaria?",
+          "scene": "Un pasaje cuesta 6.80.",
+          "options": [
+            {
+              "label": "Ochenta centavos"
+            },
+            {
+              "label": "Ocho centavos"
+            },
+            {
+              "label": "Seis centavos"
+            }
+          ],
+          "help": [
+            "Lee juntos ambos dígitos decimales."
+          ],
+          "feedback": {
+            "met": "Los dos decimales indican ochenta centésimos.",
+            "not_yet": "Lee juntos ambos dígitos decimales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é sua parte fracionária?",
+          "scene": "Uma passagem custa 6,80.",
+          "options": [
+            {
+              "label": "Oitenta centavos"
+            },
+            {
+              "label": "Oito centavos"
+            },
+            {
+              "label": "Seis centavos"
+            }
+          ],
+          "help": [
+            "Leia os dois dígitos decimais juntos."
+          ],
+          "feedback": {
+            "met": "Os dois decimais indicam oitenta centésimos.",
+            "not_yet": "Leia os dois dígitos decimais juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What arrived?",
+          "scene": "A refund is 0.75.",
+          "options": [
+            {
+              "label": "Seventy-five cents"
+            },
+            {
+              "label": "Seven dollars"
+            },
+            {
+              "label": "Seventy-five dollars"
+            }
+          ],
+          "help": [
+            "The whole-unit part is zero."
+          ],
+          "feedback": {
+            "met": "Zero whole units can still include cents.",
+            "not_yet": "The whole-unit part is zero."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué llegó?",
+          "scene": "Una devolución es de 0.75.",
+          "options": [
+            {
+              "label": "Setenta y cinco centavos"
+            },
+            {
+              "label": "Siete pesos"
+            },
+            {
+              "label": "Setenta y cinco pesos"
+            }
+          ],
+          "help": [
+            "La parte entera es cero."
+          ],
+          "feedback": {
+            "met": "Cero unidades enteras puede incluir centavos.",
+            "not_yet": "La parte entera es cero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que chegou?",
+          "scene": "Um reembolso é de 0,75.",
+          "options": [
+            {
+              "label": "Setenta e cinco centavos"
+            },
+            {
+              "label": "Sete reais"
+            },
+            {
+              "label": "Setenta e cinco reais"
+            }
+          ],
+          "help": [
+            "A parte inteira é zero."
+          ],
+          "feedback": {
+            "met": "Zero unidades inteiras ainda pode incluir centavos.",
+            "not_yet": "A parte inteira é zero."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs less?",
+          "scene": "One tag reads 4.50; another reads 4.05.",
+          "options": [
+            {
+              "label": "The fifty-cent tag"
+            },
+            {
+              "label": "The five-cent tag"
+            },
+            {
+              "label": "They are equal"
+            }
+          ],
+          "help": [
+            "Compare the fractional parts."
+          ],
+          "feedback": {
+            "met": "With equal whole units, five cents is less than fifty.",
+            "not_yet": "Compare the fractional parts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál cuesta menos?",
+          "scene": "Una etiqueta dice 4.50; otra dice 4.05.",
+          "options": [
+            {
+              "label": "La etiqueta de cincuenta centavos"
+            },
+            {
+              "label": "La etiqueta de cinco centavos"
+            },
+            {
+              "label": "Cuestan lo mismo"
+            }
+          ],
+          "help": [
+            "Compara las partes fraccionarias."
+          ],
+          "feedback": {
+            "met": "Con unidades iguales, cinco centavos es menos que cincuenta.",
+            "not_yet": "Compara las partes fraccionarias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custa menos?",
+          "scene": "Uma etiqueta diz 4,50; outra diz 4,05.",
+          "options": [
+            {
+              "label": "A etiqueta de cinquenta centavos"
+            },
+            {
+              "label": "A etiqueta de cinco centavos"
+            },
+            {
+              "label": "Custam o mesmo"
+            }
+          ],
+          "help": [
+            "Compare as partes fracionárias."
+          ],
+          "feedback": {
+            "met": "Com unidades iguais, cinco centavos é menos que cinquenta.",
+            "not_yet": "Compare as partes fracionárias."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you read it?",
+          "scene": "A statement shows a fee of 10.02.",
+          "options": [
+            {
+              "label": "Ten dollars and two cents"
+            },
+            {
+              "label": "One hundred two dollars"
+            },
+            {
+              "label": "Ten dollars and twenty cents"
+            }
+          ],
+          "help": [
+            "Keep the zero in its position."
+          ],
+          "feedback": {
+            "met": "Two hundredths means two cents, not twenty.",
+            "not_yet": "Keep the zero in its position."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debes leerlo?",
+          "scene": "Un estado de cuenta muestra un cargo de 10.02.",
+          "options": [
+            {
+              "label": "Diez pesos y dos centavos"
+            },
+            {
+              "label": "Ciento dos pesos"
+            },
+            {
+              "label": "Diez pesos y veinte centavos"
+            }
+          ],
+          "help": [
+            "Conserva el cero en su posición."
+          ],
+          "feedback": {
+            "met": "Dos centésimos son dos centavos, no veinte.",
+            "not_yet": "Conserva el cero en su posición."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como deve ler?",
+          "scene": "Um extrato mostra uma tarifa de 10,02.",
+          "options": [
+            {
+              "label": "Dez reais e dois centavos"
+            },
+            {
+              "label": "Cento e dois reais"
+            },
+            {
+              "label": "Dez reais e vinte centavos"
+            }
+          ],
+          "help": [
+            "Mantenha o zero na posição."
+          ],
+          "feedback": {
+            "met": "Dois centésimos são dois centavos, não vinte.",
+            "not_yet": "Mantenha o zero na posição."
+          }
+        }
+      }
+    }
+  ]
+}

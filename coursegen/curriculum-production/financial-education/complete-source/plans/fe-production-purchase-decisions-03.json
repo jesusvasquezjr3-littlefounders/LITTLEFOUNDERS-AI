@@ -1,0 +1,903 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-1",
+  "lesson_id": "fe-production-purchase-decisions-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the price after one percentage discount.",
+  "title": {
+    "en-US": "Percentage Discounts",
+    "es-MX": "Precio tras descuento porcentual",
+    "pt-BR": "Preço após desconto percentual"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Percentage Discounts\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Precio tras descuento porcentual\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Preço após desconto percentual\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.03",
+      "observable_action": "Calculate the price after one percentage discount.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "price.percent",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A discount percentage names a share of the original price; calculate both the saving and what you still pay.",
+    "misconception": "The discount amount is the final price, or a percentage can be subtracted as an ordinary currency amount.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-example-01",
+        "supports_from": [],
+        "reasoning": "Multiply original price by the discount percentage divided by a hundred. Subtract that saving to find the discounted price."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The final price is original price minus the discount amount."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The reduction is the saving, not automatically the final price."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Subtract the percentage saving from the original price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-practice-02",
+        "supports_from": [],
+        "reasoning": "This question asks for the reduction rather than the final price."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-practice-03",
+        "supports_from": [],
+        "reasoning": "A percentage must first be applied to its price base."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "The discounted quote is cheaper than the competing total."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A discount percentage names a share of the original price; calculate both the saving and what you still pay."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un porcentaje de descuento nombra parte del precio original; calcula ahorro y lo que aún pagas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um percentual de desconto indica parte do preço original; calcule economia e o que ainda paga."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find saving, then subtract",
+          "line": "Multiply original price by the discount percentage divided by a hundred. Subtract that saving to find the discounted price."
+        },
+        "es-MX": {
+          "prompt": "Calcula ahorro, luego resta",
+          "line": "Multiplica precio original por porcentaje de descuento dividido entre cien. Resta ese ahorro para encontrar precio con descuento."
+        },
+        "pt-BR": {
+          "prompt": "Ache economia, depois subtraia",
+          "line": "Multiplique preço original pelo percentual de desconto dividido por cem. Subtraia essa economia para achar preço com desconto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "40",
+          "step-3": "160"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Original price 200; discount 20%; no other charges. Find the amount still payable.",
+          "feedback": {
+            "met": "The final price is original price minus the discount amount.",
+            "not_yet": "Calculate the saving before subtracting it."
+          },
+          "help": [
+            "Calculate the saving before subtracting it."
+          ],
+          "steps": [
+            {
+              "expression": "20 / 100",
+              "result": "0.2",
+              "spokenText": "Discount as a fraction"
+            },
+            {
+              "expression": "200 * 0.2",
+              "result": "40",
+              "spokenText": "Saving"
+            },
+            {
+              "expression": "200 - 40",
+              "result": "160",
+              "spokenText": "Discounted price"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Precio original 200; descuento 20%; sin otros cargos. Calcula monto aún pagadero.",
+          "feedback": {
+            "met": "Precio final es original menos monto descontado.",
+            "not_yet": "Calcula ahorro antes de restarlo."
+          },
+          "help": [
+            "Calcula ahorro antes de restarlo."
+          ],
+          "steps": [
+            {
+              "expression": "20 / 100",
+              "result": "0.2",
+              "spokenText": "Descuento como fracción"
+            },
+            {
+              "expression": "200 * 0.2",
+              "result": "40",
+              "spokenText": "Ahorro"
+            },
+            {
+              "expression": "200 - 40",
+              "result": "160",
+              "spokenText": "Precio con descuento"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Preço original 200; desconto 20%; sem outros custos. Ache valor ainda devido.",
+          "feedback": {
+            "met": "Preço final é original menos valor descontado.",
+            "not_yet": "Calcule economia antes de subtraí-la."
+          },
+          "help": [
+            "Calcule economia antes de subtraí-la."
+          ],
+          "steps": [
+            {
+              "expression": "20 / 100",
+              "result": "0,2",
+              "spokenText": "Desconto como fração"
+            },
+            {
+              "expression": "200 * 0,2",
+              "result": "40",
+              "spokenText": "Economia"
+            },
+            {
+              "expression": "200 - 40",
+              "result": "160",
+              "spokenText": "Preço com desconto"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the discount amount represent?",
+          "scene": "The reduction has been calculated from the original price.",
+          "options": [
+            {
+              "label": "An added mandatory fee"
+            },
+            {
+              "label": "Money saved"
+            },
+            {
+              "label": "The final payable price necessarily"
+            }
+          ],
+          "help": [
+            "Subtract the saving from the original amount."
+          ],
+          "feedback": {
+            "met": "The reduction is the saving, not automatically the final price.",
+            "not_yet": "Subtract the saving from the original amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué representa monto descontado?",
+          "scene": "La reducción se calculó sobre precio original.",
+          "options": [
+            {
+              "label": "Cargo obligatorio añadido"
+            },
+            {
+              "label": "Dinero ahorrado"
+            },
+            {
+              "label": "Precio final necesariamente"
+            }
+          ],
+          "help": [
+            "Resta ahorro al monto original."
+          ],
+          "feedback": {
+            "met": "La reducción es ahorro, no automáticamente precio final.",
+            "not_yet": "Resta ahorro al monto original."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que representa valor descontado?",
+          "scene": "A redução foi calculada sobre preço original.",
+          "options": [
+            {
+              "label": "Taxa obrigatória acrescentada"
+            },
+            {
+              "label": "Dinheiro economizado"
+            },
+            {
+              "label": "Preço final necessariamente"
+            }
+          ],
+          "help": [
+            "Subtraia economia do valor original."
+          ],
+          "feedback": {
+            "met": "A redução é economia, não automaticamente preço final.",
+            "not_yet": "Subtraia economia do valor original."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What price remains payable?",
+          "scene": "Original price: 80; Discount: 25%; No other charges.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "55"
+            }
+          ],
+          "help": [
+            "Find one quarter of the original price, then subtract."
+          ],
+          "feedback": {
+            "met": "Subtract the percentage saving from the original price.",
+            "not_yet": "Find one quarter of the original price, then subtract."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué precio queda por pagar?",
+          "scene": "Precio original: 80; Descuento: 25%; Sin otros cargos.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "55"
+            }
+          ],
+          "help": [
+            "Calcula cuarta parte del precio original y réstala."
+          ],
+          "feedback": {
+            "met": "Resta ahorro porcentual al precio original.",
+            "not_yet": "Calcula cuarta parte del precio original y réstala."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que preço resta pagar?",
+          "scene": "Preço original: 80; Desconto: 25%; Sem outros custos.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "55"
+            }
+          ],
+          "help": [
+            "Calcule quarta parte do preço original e subtraia."
+          ],
+          "feedback": {
+            "met": "Subtraia economia percentual do preço original.",
+            "not_yet": "Calcule quarta parte do preço original e subtraia."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is saved, not paid?",
+          "scene": "Original price: 150; Discount: 10%; No other charges.",
+          "options": [
+            {
+              "label": "140"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Multiply the original price by the discount fraction."
+          ],
+          "feedback": {
+            "met": "This question asks for the reduction rather than the final price.",
+            "not_yet": "Multiply the original price by the discount fraction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto se ahorra, no se paga?",
+          "scene": "Precio original: 150; Descuento: 10%; Sin otros cargos.",
+          "options": [
+            {
+              "label": "140"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Multiplica precio original por fracción de descuento."
+          ],
+          "feedback": {
+            "met": "Esta pregunta pide reducción, no precio final.",
+            "not_yet": "Multiplica precio original por fracción de descuento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto economiza, não paga?",
+          "scene": "Preço original: 150; Desconto: 10%; Sem outros custos.",
+          "options": [
+            {
+              "label": "140"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Multiplique preço original pela fração de desconto."
+          ],
+          "feedback": {
+            "met": "Esta pergunta pede redução, não preço final.",
+            "not_yet": "Multiplique preço original pela fração de desconto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          10
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Why is this wrong?",
+          "scene": "Someone subtracts the percentage number directly from a price in currency.",
+          "options": [
+            {
+              "label": "Percent is not a currency amount"
+            },
+            {
+              "label": "Discounts must always be added"
+            },
+            {
+              "label": "Nothing, units always match"
+            }
+          ],
+          "help": [
+            "Calculate the saving in currency before subtracting it."
+          ],
+          "feedback": {
+            "met": "A percentage must first be applied to its price base.",
+            "not_yet": "Calculate the saving in currency before subtracting it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falla en este método?",
+          "scene": "Alguien resta número porcentual directo de precio en moneda.",
+          "options": [
+            {
+              "label": "Porcentaje no es monto monetario"
+            },
+            {
+              "label": "Descuentos siempre deben sumarse"
+            },
+            {
+              "label": "Nada, unidades siempre coinciden"
+            }
+          ],
+          "help": [
+            "Calcula ahorro en moneda antes de restarlo."
+          ],
+          "feedback": {
+            "met": "Un porcentaje debe aplicarse primero a su precio base.",
+            "not_yet": "Calcula ahorro en moneda antes de restarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falha neste método?",
+          "scene": "Alguém subtrai número percentual direto do preço em moeda.",
+          "options": [
+            {
+              "label": "Percentual não é valor em moeda"
+            },
+            {
+              "label": "Descontos sempre devem ser somados"
+            },
+            {
+              "label": "Nada, unidades sempre coincidem"
+            }
+          ],
+          "help": [
+            "Calcule economia em moeda antes de subtrair."
+          ],
+          "feedback": {
+            "met": "Um percentual deve ser aplicado primeiro ao preço base.",
+            "not_yet": "Calcule economia em moeda antes de subtrair."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Saving by choosing the sale?",
+          "scene": "Same shoes: sale 240 less 15%; other store 210. No other charges.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "210"
+            }
+          ],
+          "help": [
+            "Compare the discounted price with the other store’s total."
+          ],
+          "feedback": {
+            "met": "The discounted quote is cheaper than the competing total.",
+            "not_yet": "Compare the discounted price with the other store’s total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto ahorras al elegir oferta?",
+          "scene": "Mismos zapatos: oferta 240 menos 15%; otra tienda 210. Sin otros cargos.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "210"
+            }
+          ],
+          "help": [
+            "Compara precio descontado con total de la otra tienda."
+          ],
+          "feedback": {
+            "met": "La oferta descontada cuesta menos que el total de la otra tienda.",
+            "not_yet": "Compara precio descontado con total de la otra tienda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto poupa escolhendo a oferta?",
+          "scene": "Mesmo calçado: oferta 240 menos 15%; outra loja 210. Sem outros custos.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "210"
+            }
+          ],
+          "help": [
+            "Compare preço com desconto ao total da outra loja."
+          ],
+          "feedback": {
+            "met": "A oferta com desconto custa menos que o total da outra loja.",
+            "not_yet": "Compare preço com desconto ao total da outra loja."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          15,
+          210
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 2
+            },
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

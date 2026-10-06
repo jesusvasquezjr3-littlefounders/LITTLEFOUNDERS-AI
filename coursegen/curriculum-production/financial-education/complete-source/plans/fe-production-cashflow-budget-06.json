@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-1",
+  "lesson_id": "fe-production-cashflow-budget-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a timing problem from a persistent gap between income and expenses.",
+  "title": {
+    "en-US": "Persistent gaps",
+    "es-MX": "¿Fechas o faltante persistente?",
+    "pt-BR": "Datas ou falta persistente?"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Timing or a lasting gap?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Fechas o faltante persistente?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Datas ou falta persistente?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.06",
+      "observable_action": "Distinguish a timing problem from a persistent gap between income and expenses.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.04",
+      "prod.cashflow-budget.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Different causes require different changes to a plan.",
+    "misconception": "Assuming that moving a due date increases income or fixes expenses that repeatedly exceed it.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-example-01",
+        "supports_from": [],
+        "reasoning": "Moving a deadline may solve a timing gap. It cannot remove a shortfall when expenses keep exceeding income."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated totals fit; the arrival and due dates do not."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Changing dates does not change the stated amounts."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-practice-01",
+        "supports_from": [],
+        "reasoning": "230 − 200 = 30 remains each month under these conditions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-practice-02",
+        "supports_from": [],
+        "reasoning": "The agreement changed timing, not the amounts."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-practice-03",
+        "supports_from": [],
+        "reasoning": "A plan can have both kinds of gap at once."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "fe-production-cashflow-budget-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Smoothing timing cannot eliminate an annual amount shortage."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Different causes require different changes to a plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Causas distintas requieren cambios distintos al plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Causas diferentes exigem mudanças diferentes no plano."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check totals and dates",
+          "line": "Moving a deadline may solve a timing gap. It cannot remove a shortfall when expenses keep exceeding income."
+        },
+        "es-MX": {
+          "prompt": "Revisa totales y fechas",
+          "line": "Mover un vencimiento puede resolver un desfase. No elimina un faltante si los gastos siguen superando el ingreso."
+        },
+        "pt-BR": {
+          "prompt": "Confira totais e datas",
+          "line": "Mover um vencimento pode resolver um desencontro. Não elimina uma falta se os gastos continuam superando a renda."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which problem is shown?",
+          "scene": "Monthly income covers bills, but arrives after a deadline; current cash cannot cover that bill.",
+          "options": [
+            {
+              "label": "A canceled bill"
+            },
+            {
+              "label": "Expenses exceed monthly income"
+            },
+            {
+              "label": "A timing gap"
+            }
+          ],
+          "help": [
+            "Compare both totals and timing."
+          ],
+          "feedback": {
+            "met": "The stated totals fit; the arrival and due dates do not.",
+            "not_yet": "Compare both totals and timing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué problema se muestra?",
+          "scene": "El ingreso mensual cubre las cuentas, pero llega después de un vencimiento. El efectivo actual no alcanza.",
+          "options": [
+            {
+              "label": "Una cuenta que ya no existe"
+            },
+            {
+              "label": "Gastos necesariamente mayores al ingreso mensual"
+            },
+            {
+              "label": "Un desfase de fechas"
+            }
+          ],
+          "help": [
+            "Compara totales y fechas."
+          ],
+          "feedback": {
+            "met": "Los totales indicados alcanzan; las fechas no coinciden.",
+            "not_yet": "Compara totales y fechas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual problema aparece?",
+          "scene": "A renda mensal cobre as contas, mas chega depois de um vencimento. O dinheiro atual não basta.",
+          "options": [
+            {
+              "label": "Uma conta que já não existe"
+            },
+            {
+              "label": "Gastos necessariamente maiores que a renda mensal"
+            },
+            {
+              "label": "Um desencontro de datas"
+            }
+          ],
+          "help": [
+            "Compare totais e datas."
+          ],
+          "feedback": {
+            "met": "Os totais informados bastam; as datas não coincidem.",
+            "not_yet": "Compare totais e datas."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Would changing dates alone solve it?",
+          "scene": "Every month, essential expenses exceed income even if all dates align.",
+          "options": [
+            {
+              "label": "The bills become smaller"
+            },
+            {
+              "label": "Later deadlines create income"
+            },
+            {
+              "label": "The amount gap remains"
+            }
+          ],
+          "help": [
+            "Separate moving a payment from reducing its amount."
+          ],
+          "feedback": {
+            "met": "Changing dates does not change the stated amounts.",
+            "not_yet": "Separate moving a payment from reducing its amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambiar solo fechas lo resuelve?",
+          "scene": "Cada mes, lo esencial supera el ingreso aunque las fechas coincidan.",
+          "options": [
+            {
+              "label": "Sí, las cuentas se reducen"
+            },
+            {
+              "label": "Sí, vencer después crea ingreso"
+            },
+            {
+              "label": "No, sigue faltando monto"
+            }
+          ],
+          "help": [
+            "Separa mover un pago de reducir su monto."
+          ],
+          "feedback": {
+            "met": "Cambiar fechas no cambia los montos indicados.",
+            "not_yet": "Separa mover un pago de reducir su monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mudar só datas resolve?",
+          "scene": "Todo mês, o essencial supera a renda mesmo com datas alinhadas.",
+          "options": [
+            {
+              "label": "Sim, as contas diminuem"
+            },
+            {
+              "label": "Sim, vencer depois cria renda"
+            },
+            {
+              "label": "Não, continua faltando valor"
+            }
+          ],
+          "help": [
+            "Separe mover um pagamento de reduzir seu valor."
+          ],
+          "feedback": {
+            "met": "Mudar datas não muda os valores informados.",
+            "not_yet": "Separe mover um pagamento de reduzir seu valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Persistent monthly amount gap?",
+          "scene": "Monthly income: 200; monthly essential costs: 230, repeated under the same conditions.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "430"
+            }
+          ],
+          "help": [
+            "Compare amounts for the same period."
+          ],
+          "feedback": {
+            "met": "230 − 200 = 30 remains each month under these conditions.",
+            "not_yet": "Compare amounts for the same period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante mensual persistente?",
+          "scene": "Ingreso mensual: 200; costos esenciales mensuales: 230, repetidos bajo las mismas condiciones.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "430"
+            }
+          ],
+          "help": [
+            "Compara montos del mismo periodo."
+          ],
+          "feedback": {
+            "met": "230 − 200 = 30 faltan cada mes bajo esas condiciones.",
+            "not_yet": "Compara montos del mismo periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta mensal persistente?",
+          "scene": "Renda mensal: 200; custos essenciais mensais: 230, repetidos nas mesmas condições.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "430"
+            }
+          ],
+          "help": [
+            "Compare valores do mesmo período."
+          ],
+          "feedback": {
+            "met": "230 − 200 = 30 faltam por mês nessas condições.",
+            "not_yet": "Compare valores do mesmo período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          230
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What did this address?",
+          "scene": "A confirmed change puts an unchanged bill after income arrives; income covers all costs.",
+          "options": [
+            {
+              "label": "The timing mismatch"
+            },
+            {
+              "label": "An increase in income"
+            },
+            {
+              "label": "A reduction in the bill amount"
+            }
+          ],
+          "help": [
+            "Use the confirmed effect rather than an imagined saving."
+          ],
+          "feedback": {
+            "met": "The agreement changed timing, not the amounts.",
+            "not_yet": "Use the confirmed effect rather than an imagined saving."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué atendió este cambio?",
+          "scene": "Un cambio confirmado pone la misma cuenta después del ingreso; el ingreso total cubre los costos.",
+          "options": [
+            {
+              "label": "El desfase de fechas"
+            },
+            {
+              "label": "Un aumento del ingreso"
+            },
+            {
+              "label": "Una reducción de la cuenta"
+            }
+          ],
+          "help": [
+            "Usa el efecto confirmado sin inventar un ahorro."
+          ],
+          "feedback": {
+            "met": "El acuerdo cambió fechas, no montos.",
+            "not_yet": "Usa el efecto confirmado sin inventar un ahorro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que essa mudança tratou?",
+          "scene": "Uma mudança confirmada coloca a mesma conta após a renda; a renda total cobre os custos.",
+          "options": [
+            {
+              "label": "O desencontro de datas"
+            },
+            {
+              "label": "Um aumento da renda"
+            },
+            {
+              "label": "Uma redução do valor da conta"
+            }
+          ],
+          "help": [
+            "Use o efeito confirmado sem inventar uma economia."
+          ],
+          "feedback": {
+            "met": "O acordo mudou datas, não valores.",
+            "not_yet": "Use o efeito confirmado sem inventar uma economia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs attention?",
+          "scene": "Total expenses exceed income, and some bills also fall before the next receipt.",
+          "options": [
+            {
+              "label": "Both amounts and timing"
+            },
+            {
+              "label": "Neither, because a receipt is expected"
+            },
+            {
+              "label": "Only timing in every case"
+            }
+          ],
+          "help": [
+            "Do not force a mixed problem into one category."
+          ],
+          "feedback": {
+            "met": "A plan can have both kinds of gap at once.",
+            "not_yet": "Do not force a mixed problem into one category."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesita atención?",
+          "scene": "Los gastos totales superan el ingreso y algunas cuentas vencen antes de recibir.",
+          "options": [
+            {
+              "label": "Montos y fechas"
+            },
+            {
+              "label": "Nada, porque se espera una entrada"
+            },
+            {
+              "label": "Solo fechas en todos los casos"
+            }
+          ],
+          "help": [
+            "No fuerces un problema mixto a una sola categoría."
+          ],
+          "feedback": {
+            "met": "Un plan puede tener ambos faltantes a la vez.",
+            "not_yet": "No fuerces un problema mixto a una sola categoría."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa de atenção?",
+          "scene": "Os gastos totais superam a renda e algumas contas vencem antes de receber.",
+          "options": [
+            {
+              "label": "Valores e datas"
+            },
+            {
+              "label": "Nada, porque se espera uma entrada"
+            },
+            {
+              "label": "Só datas em todos os casos"
+            }
+          ],
+          "help": [
+            "Não force um problema misto a uma só categoria."
+          ],
+          "feedback": {
+            "met": "Um plano pode ter ambos os tipos de falta ao mesmo tempo.",
+            "not_yet": "Não force um problema misto a uma só categoria."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Would spreading receipts fix everything?",
+          "scene": "Seasonal income arrives briefly each year and falls below yearly costs.",
+          "options": [
+            {
+              "label": "Distribution creates extra income"
+            },
+            {
+              "label": "The annual amount gap remains"
+            },
+            {
+              "label": "Annual costs stop mattering"
+            }
+          ],
+          "help": [
+            "Check the full season’s totals as well as payment dates."
+          ],
+          "feedback": {
+            "met": "Smoothing timing cannot eliminate an annual amount shortage.",
+            "not_yet": "Check the full season’s totals as well as payment dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Distribuir entradas entre meses resuelve todo?",
+          "scene": "Los costos anuales de un trabajo temporal superan su ingreso anual; además recibe en una temporada corta.",
+          "options": [
+            {
+              "label": "Sí, distribuir crea ingreso extra"
+            },
+            {
+              "label": "No, sigue el faltante anual"
+            },
+            {
+              "label": "Sí, los costos anuales dejan de importar"
+            }
+          ],
+          "help": [
+            "Revisa totales de temporada además de fechas de pago."
+          ],
+          "feedback": {
+            "met": "Distribuir fechas no elimina un faltante de monto anual.",
+            "not_yet": "Revisa totales de temporada además de fechas de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Distribuir entradas entre meses resolve tudo?",
+          "scene": "Os custos anuais de um trabalho sazonal superam a renda anual; além disso recebe numa temporada curta.",
+          "options": [
+            {
+              "label": "Sim, distribuir cria renda extra"
+            },
+            {
+              "label": "Não, continua a falta anual"
+            },
+            {
+              "label": "Sim, custos anuais deixam de importar"
+            }
+          ],
+          "help": [
+            "Confira totais da temporada além de datas de pagamento."
+          ],
+          "feedback": {
+            "met": "Distribuir datas não elimina uma falta de valor anual.",
+            "not_yet": "Confira totais da temporada além de datas de pagamento."
+          }
+        }
+      }
+    }
+  ]
+}

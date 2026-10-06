@@ -1,0 +1,1050 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-1",
+  "lesson_id": "fe-production-credit-mechanics-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the total amount repaid from a complete payment schedule.",
+  "title": {
+    "en-US": "Loan payments",
+    "es-MX": "Suma todos los pagos",
+    "pt-BR": "Some todos os pagamentos"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Add every repayment\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Suma todos los pagos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Some todos os pagamentos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.02",
+      "observable_action": "Calculate the total amount repaid from a complete payment schedule.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01",
+      "prod.financial-math.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A small installment can hide a large total repayment.",
+    "misconception": "The installment amount alone is the total cost of repaying a loan.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-example-01",
+        "supports_from": [],
+        "reasoning": "Three payments of 20 total 60. Add a separate fee of 5: the complete repayment is 65."
+      },
+      {
+        "segment_id": "guided-worked-01",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-guided-worked-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The entered values follow the displayed repayment calculation."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-guided-01",
+        "supports_from": [
+          "guided-worked-01"
+        ],
+        "reasoning": "Multiply the payment amount by the number of payments."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The separate fee adds to the scheduled payments."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-practice-03",
+        "supports_from": [],
+        "reasoning": "The final payment differs, so add the actual schedule."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-practice-04",
+        "supports_from": [],
+        "reasoning": "Included charges are already part of the stated payments."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-practice-05",
+        "supports_from": [],
+        "reasoning": "The initial payment also belongs in the complete schedule."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "fe-production-credit-mechanics-02-transfer-06",
+        "supports_from": [],
+        "reasoning": "Total repayment includes earlier payments and all closing charges."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A small installment can hide a large total repayment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un pago pequeño puede esconder un total elevado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma parcela pequena pode esconder um total alto."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Three payments of 20 total 60. Add a separate fee of 5: the complete repayment is 65."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Tres pagos de 20 suman 60. Añade una comisión separada de 5: el pago completo suma 65."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Três parcelas de 20 somam 60. Some uma tarifa separada de 5: o total pago é 65."
+        }
+      }
+    },
+    {
+      "id": "guided-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "5",
+          "step-3": "65"
+        }
+      },
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Trace: three payments of 20, then fee 5.",
+          "steps": [
+            {
+              "expression": "3 * 20",
+              "result": "60",
+              "spokenText": "Three payments total sixty."
+            },
+            {
+              "expression": "5",
+              "result": "5",
+              "spokenText": "The separate fee is five."
+            },
+            {
+              "expression": "60 + 5",
+              "result": "65",
+              "spokenText": "Add the fee to all payments."
+            }
+          ],
+          "feedback": {
+            "met": "The entered values follow the displayed repayment calculation.",
+            "not_yet": "Use the payment total, then add the separate fee."
+          },
+          "help": [
+            "Use the payment total, then add the separate fee."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Sigue: tres pagos de 20 y comisión 5.",
+          "steps": [
+            {
+              "expression": "3 * 20",
+              "result": "60",
+              "spokenText": "Tres pagos suman sesenta."
+            },
+            {
+              "expression": "5",
+              "result": "5",
+              "spokenText": "La comisión separada es cinco."
+            },
+            {
+              "expression": "60 + 5",
+              "result": "65",
+              "spokenText": "Suma la comisión a todos los pagos."
+            }
+          ],
+          "feedback": {
+            "met": "Los valores siguen el cálculo de pagos mostrado.",
+            "not_yet": "Usa el total de pagos y añade la comisión separada."
+          },
+          "help": [
+            "Usa el total de pagos y añade la comisión separada."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Siga: três parcelas de 20 e tarifa 5.",
+          "steps": [
+            {
+              "expression": "3 * 20",
+              "result": "60",
+              "spokenText": "Três parcelas somam sessenta."
+            },
+            {
+              "expression": "5",
+              "result": "5",
+              "spokenText": "A tarifa separada é cinco."
+            },
+            {
+              "expression": "60 + 5",
+              "result": "65",
+              "spokenText": "Some a tarifa a todas as parcelas."
+            }
+          ],
+          "feedback": {
+            "met": "Os valores seguem o cálculo de pagamentos mostrado.",
+            "not_yet": "Use o total das parcelas e some a tarifa separada."
+          },
+          "help": [
+            "Use o total das parcelas e some a tarifa separada."
+          ]
+        }
+      },
+      "knowledge_component_id": "finance.prod.credit-mechanics.02"
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total repayment?",
+          "scene": "Fictional loan: 4 payments of 30. No other charges.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "34"
+            }
+          ],
+          "help": [
+            "Count every scheduled payment, not just the first."
+          ],
+          "feedback": {
+            "met": "Multiply the payment amount by the number of payments.",
+            "not_yet": "Count every scheduled payment, not just the first."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pagado?",
+          "scene": "Préstamo ficticio: 4 pagos de 30. Sin otros cargos.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "34"
+            }
+          ],
+          "help": [
+            "Cuenta todos los pagos previstos, no solo el primero."
+          ],
+          "feedback": {
+            "met": "Multiplica el importe por el número de pagos.",
+            "not_yet": "Cuenta todos los pagos previstos, no solo el primero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total pago?",
+          "scene": "Empréstimo fictício: 4 parcelas de 30. Sem outros encargos.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "34"
+            }
+          ],
+          "help": [
+            "Conte todas as parcelas previstas, não só a primeira."
+          ],
+          "feedback": {
+            "met": "Multiplique o valor pelo número de parcelas.",
+            "not_yet": "Conte todas as parcelas previstas, não só a primeira."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          4,
+          30
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Include the separate fee.",
+          "scene": "Loan: 5 payments of 20 plus a separate fee of 8.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "108"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Multiply the installments, then add the separately charged fee."
+          ],
+          "feedback": {
+            "met": "The separate fee adds to the scheduled payments.",
+            "not_yet": "Multiply the installments, then add the separately charged fee."
+          }
+        },
+        "es-MX": {
+          "prompt": "Incluye la comisión separada.",
+          "scene": "Préstamo: 5 pagos de 20 más una comisión separada de 8.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "108"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Multiplica los pagos y añade la comisión cobrada aparte."
+          ],
+          "feedback": {
+            "met": "La comisión separada se suma a los pagos previstos.",
+            "not_yet": "Multiplica los pagos y añade la comisión cobrada aparte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Inclua a tarifa separada.",
+          "scene": "Empréstimo: 5 parcelas de 20 mais uma tarifa separada de 8.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "108"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Multiplique as parcelas e some a tarifa cobrada à parte."
+          ],
+          "feedback": {
+            "met": "A tarifa separada se soma às parcelas previstas.",
+            "not_yet": "Multiplique as parcelas e some a tarifa cobrada à parte."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          5,
+          20,
+          8
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total repayment?",
+          "scene": "Final loan schedule: payments of 25, 25 and 40. No other charges.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Do not assume the last payment equals the earlier ones."
+          ],
+          "feedback": {
+            "met": "The final payment differs, so add the actual schedule.",
+            "not_yet": "Do not assume the last payment equals the earlier ones."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pagado?",
+          "scene": "Calendario final: pagos de 25, 25 y 40. Sin otros cargos.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "No supongas que el último pago es igual a los anteriores."
+          ],
+          "feedback": {
+            "met": "El último pago cambia: suma el calendario real.",
+            "not_yet": "No supongas que el último pago es igual a los anteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total pago?",
+          "scene": "Calendário final: parcelas de 25, 25 e 40. Sem outros encargos.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Não suponha que a última parcela seja igual às anteriores."
+          ],
+          "feedback": {
+            "met": "A última parcela muda: some o calendário real.",
+            "not_yet": "Não suponha que a última parcela seja igual às anteriores."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          25,
+          40
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total repayment?",
+          "scene": "Agreement: 6 payments of 15, all fees already included.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "21"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Count the schedule without adding included charges again."
+          ],
+          "feedback": {
+            "met": "Included charges are already part of the stated payments.",
+            "not_yet": "Count the schedule without adding included charges again."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pagado?",
+          "scene": "Contrato: 6 pagos de 15, con todas las comisiones incluidas.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "21"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Suma el calendario sin volver a añadir cargos incluidos."
+          ],
+          "feedback": {
+            "met": "Los cargos incluidos ya forman parte de los pagos.",
+            "not_yet": "Suma el calendario sin volver a añadir cargos incluidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total pago?",
+          "scene": "Contrato: 6 parcelas de 15, com todas as tarifas incluídas.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "21"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Some o calendário sem acrescentar encargos incluídos outra vez."
+          ],
+          "feedback": {
+            "met": "Os encargos incluídos já fazem parte das parcelas.",
+            "not_yet": "Some o calendário sem acrescentar encargos incluídos outra vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          6,
+          15
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total repayment?",
+          "scene": "Pay 10 immediately, then 3 payments of 25. Nothing else is due.",
+          "options": [
+            {
+              "label": "38"
+            },
+            {
+              "label": "85"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Include what is paid now and what is paid later."
+          ],
+          "feedback": {
+            "met": "The initial payment also belongs in the complete schedule.",
+            "not_yet": "Include what is paid now and what is paid later."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pagado?",
+          "scene": "Paga 10 ahora y después 3 pagos de 25. No debes nada más.",
+          "options": [
+            {
+              "label": "38"
+            },
+            {
+              "label": "85"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Incluye lo pagado ahora y lo pagado después."
+          ],
+          "feedback": {
+            "met": "El pago inicial también forma parte del calendario completo.",
+            "not_yet": "Incluye lo pagado ahora y lo pagado después."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total pago?",
+          "scene": "Pague 10 agora e depois 3 parcelas de 25. Nada mais é devido.",
+          "options": [
+            {
+              "label": "38"
+            },
+            {
+              "label": "85"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Inclua o que é pago agora e o que será pago depois."
+          ],
+          "feedback": {
+            "met": "O pagamento inicial também faz parte do calendário completo.",
+            "not_yet": "Inclua o que é pago agora e o que será pago depois."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          3,
+          25
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total paid through closure?",
+          "scene": "Already repaid 20. Closing payment: 90 plus exit fee 8. Nothing else due.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "118"
+            },
+            {
+              "label": "98"
+            }
+          ],
+          "help": [
+            "Include the payment already made, not just today’s settlement."
+          ],
+          "feedback": {
+            "met": "Total repayment includes earlier payments and all closing charges.",
+            "not_yet": "Include the payment already made, not just today’s settlement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pagado al liquidar?",
+          "scene": "Ya pagaste 20. Para liquidar: 90 más comisión de salida 8. Nada más pendiente.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "118"
+            },
+            {
+              "label": "98"
+            }
+          ],
+          "help": [
+            "Incluye lo ya pagado, no solo la liquidación de hoy."
+          ],
+          "feedback": {
+            "met": "El total incluye pagos anteriores y todos los cargos finales.",
+            "not_yet": "Incluye lo ya pagado, no solo la liquidación de hoy."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total pago até quitar?",
+          "scene": "Já pagou 20. Para quitar: 90 mais tarifa de saída 8. Nada mais devido.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "118"
+            },
+            {
+              "label": "98"
+            }
+          ],
+          "help": [
+            "Inclua o que já pagou, não só a quitação de hoje."
+          ],
+          "feedback": {
+            "met": "O total inclui pagamentos anteriores e todos os encargos finais.",
+            "not_yet": "Inclua o que já pagou, não só a quitação de hoje."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          20,
+          90,
+          8
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

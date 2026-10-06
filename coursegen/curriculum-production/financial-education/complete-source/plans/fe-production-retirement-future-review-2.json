@@ -1,0 +1,841 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-2",
+  "lesson_id": "fe-production-retirement-future-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.06",
+    "finance.prod.retirement-future.07",
+    "finance.prod.retirement-future.08",
+    "finance.prod.retirement-future.09",
+    "finance.prod.retirement-future.10",
+    "finance.prod.goals-tradeoffs.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish retirement plan pressures and revise resources, contribution decisions and records using current conditions.",
+  "title": {
+    "en-US": "Future Resilience",
+    "es-MX": "Pon a prueba el plan futuro",
+    "pt-BR": "Teste o plano futuro"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Future Resilience\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pon a prueba el plan futuro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Teste o plano futuro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.retirement-future.06",
+      "observable_action": "Distinguish retirement plan pressures and revise resources, contribution decisions and records using current conditions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.06",
+      "prod.saving-resilience.02"
+    ],
+    "retrieval_skills": [
+      "prod.retirement-future.06",
+      "prod.retirement-future.07",
+      "prod.retirement-future.08",
+      "prod.retirement-future.09",
+      "prod.retirement-future.10",
+      "prod.goals-tradeoffs.01"
+    ],
+    "relevance": "Check how changing needs, prices and access conditions affect a future spending plan.",
+    "misconception": "One current balance or average return settles future spending, emergency access and personal records indefinitely.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "More years extend the period needing support."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The balance is not accessible when the payment is needed."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Withdrawals reduce the balance participating in later recovery."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The plan must reflect current resources and obligations."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Personal changes call for checking actual account records."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.goals-tradeoffs.01",
+        "context_id": "retirement-future-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "The missing amount and date prevent checking progress."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "More years and higher annual costs can both strain resources."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check how changing needs, prices and access conditions affect a future spending plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa cómo necesidades, precios y acceso cambiantes afectan un plan de gastos futuros."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira como necessidades, preços e acesso mudam um plano de gastos futuros."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which pressure is described?",
+          "scene": "Prices stay fixed, but resources must support more years than the plan assumed.",
+          "options": [
+            {
+              "label": "Neither can affect the plan"
+            },
+            {
+              "label": "Longevity risk"
+            },
+            {
+              "label": "Price inflation"
+            }
+          ],
+          "help": [
+            "Distinguish duration from each year’s cost."
+          ],
+          "feedback": {
+            "met": "More years extend the period needing support.",
+            "not_yet": "Distinguish duration from each year’s cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué presión se describe?",
+          "scene": "Los precios siguen fijos, pero los recursos deben sostener más años de los supuestos.",
+          "options": [
+            {
+              "label": "Ninguno afecta el plan"
+            },
+            {
+              "label": "Riesgo de longevidad"
+            },
+            {
+              "label": "Inflación de precios"
+            }
+          ],
+          "help": [
+            "Distingue duración de costo de cada año."
+          ],
+          "feedback": {
+            "met": "Más años extienden el periodo que requiere apoyo.",
+            "not_yet": "Distingue duración de costo de cada año."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pressão é descrita?",
+          "scene": "Os preços ficam fixos, mas os recursos devem sustentar mais anos que o previsto.",
+          "options": [
+            {
+              "label": "Nenhum afeta o plano"
+            },
+            {
+              "label": "Risco de longevidade"
+            },
+            {
+              "label": "Inflação de preços"
+            }
+          ],
+          "help": [
+            "Separe duração do custo de cada ano."
+          ],
+          "feedback": {
+            "met": "Mais anos ampliam o período que exige apoio.",
+            "not_yet": "Separe duração do custo de cada ano."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it serve as emergency cash?",
+          "scene": "A retirement account prohibits access until after the urgent bill deadline.",
+          "options": [
+            {
+              "label": "No, the access condition conflicts"
+            },
+            {
+              "label": "Yes, any owned balance is immediate cash"
+            }
+          ],
+          "help": [
+            "Check timing rather than ownership alone."
+          ],
+          "feedback": {
+            "met": "The balance is not accessible when the payment is needed.",
+            "not_yet": "Check timing rather than ownership alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Sirve como efectivo de emergencia?",
+          "scene": "Una cuenta de retiro prohíbe acceso hasta después del vencimiento urgente.",
+          "options": [
+            {
+              "label": "No, la condición de acceso contradice el plazo"
+            },
+            {
+              "label": "Sí, todo saldo propio es efectivo inmediato"
+            }
+          ],
+          "help": [
+            "Revisa fecha además de propiedad."
+          ],
+          "feedback": {
+            "met": "El saldo no está accesible cuando se necesita pagar.",
+            "not_yet": "Revisa fecha además de propiedad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Serve como dinheiro de emergência?",
+          "scene": "Uma conta de aposentadoria proíbe acesso até depois do vencimento urgente.",
+          "options": [
+            {
+              "label": "Não, a condição de acesso conflita com o prazo"
+            },
+            {
+              "label": "Sim, todo saldo próprio é dinheiro imediato"
+            }
+          ],
+          "help": [
+            "Confira data além da propriedade."
+          ],
+          "feedback": {
+            "met": "O saldo não está acessível quando precisa pagar.",
+            "not_yet": "Confira data além da propriedade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Why do early losses matter?",
+          "scene": "Withdrawals occur after an early decline and before recovery.",
+          "options": [
+            {
+              "label": "Averages fix every path"
+            },
+            {
+              "label": "Less invested money reaches recovery"
+            },
+            {
+              "label": "Spent money also earns later returns"
+            }
+          ],
+          "help": [
+            "Track the order of returns and withdrawals."
+          ],
+          "feedback": {
+            "met": "Withdrawals reduce the balance participating in later recovery.",
+            "not_yet": "Track the order of returns and withdrawals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué importan pérdidas tempranas?",
+          "scene": "Retiran después de una caída inicial y antes de una recuperación posterior.",
+          "options": [
+            {
+              "label": "El promedio fija toda trayectoria"
+            },
+            {
+              "label": "Llega menos dinero invertido a recuperarse"
+            },
+            {
+              "label": "Lo gastado también gana después"
+            }
+          ],
+          "help": [
+            "Sigue el orden de rendimientos y retiros."
+          ],
+          "feedback": {
+            "met": "Los retiros reducen saldo que participa en recuperación posterior.",
+            "not_yet": "Sigue el orden de rendimientos y retiros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que perdas iniciais importam?",
+          "scene": "Sacam após uma queda inicial e antes de uma recuperação futura.",
+          "options": [
+            {
+              "label": "A média fixa todo caminho"
+            },
+            {
+              "label": "Chega menos dinheiro aplicado à recuperação"
+            },
+            {
+              "label": "O gasto também rende depois"
+            }
+          ],
+          "help": [
+            "Siga a ordem dos rendimentos e saques."
+          ],
+          "feedback": {
+            "met": "Saques reduzem saldo que participa da recuperação futura.",
+            "not_yet": "Siga a ordem dos rendimentos e saques."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision fits?",
+          "scene": "Income falls; essentials remain due and voluntary contributions can be adjusted.",
+          "options": [
+            {
+              "label": "Ignore the new shortfall"
+            },
+            {
+              "label": "Keep the old contribution with imaginary income"
+            },
+            {
+              "label": "Protect essentials and reassess contributions"
+            }
+          ],
+          "help": [
+            "Recalculate before committing money the plan no longer has."
+          ],
+          "feedback": {
+            "met": "The plan must reflect current resources and obligations.",
+            "not_yet": "Recalculate before committing money the plan no longer has."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión corresponde a menor ingreso?",
+          "scene": "Baja el ingreso; lo indispensable vence y las aportaciones voluntarias son ajustables.",
+          "options": [
+            {
+              "label": "Ignorar el faltante nuevo"
+            },
+            {
+              "label": "Mantener aportación con ingreso imaginario"
+            },
+            {
+              "label": "Proteger lo esencial y reevaluar aportaciones"
+            }
+          ],
+          "help": [
+            "Recalcula antes de comprometer dinero que ya no tienes."
+          ],
+          "feedback": {
+            "met": "El plan debe reflejar recursos y obligaciones actuales.",
+            "not_yet": "Recalcula antes de comprometer dinero que ya no tienes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual revisão cabe à renda menor?",
+          "scene": "A renda cai; o essencial vence e aportes voluntários podem ser ajustados.",
+          "options": [
+            {
+              "label": "Ignorar a nova falta"
+            },
+            {
+              "label": "Manter aporte com renda imaginária"
+            },
+            {
+              "label": "Proteger o essencial e reavaliar aportes"
+            }
+          ],
+          "help": [
+            "Recalcule antes de comprometer dinheiro que já não tem."
+          ],
+          "feedback": {
+            "met": "O plano deve refletir recursos e deveres atuais.",
+            "not_yet": "Recalcule antes de comprometer dinheiro que já não tem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows a household change?",
+          "scene": "Several accounts still contain old contacts and beneficiary designations.",
+          "options": [
+            {
+              "label": "Review each through verified procedures"
+            },
+            {
+              "label": "Give strangers the account passwords"
+            },
+            {
+              "label": "Assume every account updates automatically"
+            }
+          ],
+          "help": [
+            "Use official processes and qualified local advice where needed."
+          ],
+          "feedback": {
+            "met": "Personal changes call for checking actual account records.",
+            "not_yet": "Use official processes and qualified local advice where needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue a un cambio del hogar?",
+          "scene": "Varias cuentas todavía tienen contactos y beneficiarios anteriores.",
+          "options": [
+            {
+              "label": "Revisar cada una por procesos verificados"
+            },
+            {
+              "label": "Dar contraseñas a desconocidos"
+            },
+            {
+              "label": "Suponer cambios automáticos en todas"
+            }
+          ],
+          "help": [
+            "Usa procesos oficiales y orientación local calificada cuando haga falta."
+          ],
+          "feedback": {
+            "met": "Cambios personales requieren revisar registros reales de cuenta.",
+            "not_yet": "Usa procesos oficiales y orientación local calificada cuando haga falta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que segue a mudança da família?",
+          "scene": "Várias contas ainda têm contatos e nomes antigos de quem recebe recursos.",
+          "options": [
+            {
+              "label": "Rever cada uma pelo processo oficial"
+            },
+            {
+              "label": "Dar senhas a estranhos"
+            },
+            {
+              "label": "Supor mudanças automáticas em todas"
+            }
+          ],
+          "help": [
+            "Use processos oficiais e ajuda local qualificada quando precisar."
+          ],
+          "feedback": {
+            "met": "Mudanças pessoais pedem conferir fichas reais das contas.",
+            "not_yet": "Use processos oficiais e ajuda local qualificada quando precisar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes it measurable?",
+          "scene": "Someone wants a future transport reserve but has stated no amount or date.",
+          "options": [
+            {
+              "label": "Specify purpose, amount and target date"
+            },
+            {
+              "label": "Keep only “someday”"
+            },
+            {
+              "label": "Choose a higher return target"
+            }
+          ],
+          "help": [
+            "Give the goal concrete boundaries."
+          ],
+          "feedback": {
+            "met": "The missing amount and date prevent checking progress.",
+            "not_yet": "Give the goal concrete boundaries."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve medible este deseo?",
+          "scene": "Quieren reserva futura de transporte, pero no indican monto ni fecha.",
+          "options": [
+            {
+              "label": "Precisar propósito, monto y fecha meta"
+            },
+            {
+              "label": "Dejar solo «algún día»"
+            },
+            {
+              "label": "Elegir mayor rendimiento objetivo"
+            }
+          ],
+          "help": [
+            "Da límites concretos a la meta."
+          ],
+          "feedback": {
+            "met": "Sin monto ni fecha no puedes comprobar avance.",
+            "not_yet": "Da límites concretos a la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna esse desejo mensurável?",
+          "scene": "Querem reserva futura de transporte, mas não dão valor nem data.",
+          "options": [
+            {
+              "label": "Definir finalidade, valor e data-alvo"
+            },
+            {
+              "label": "Deixar só “algum dia”"
+            },
+            {
+              "label": "Escolher maior retorno desejado"
+            }
+          ],
+          "help": [
+            "Dê limites concretos à meta."
+          ],
+          "feedback": {
+            "met": "Sem valor nem data não pode conferir o avanço.",
+            "not_yet": "Dê limites concretos à meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which two pressures need testing?",
+          "scene": "A fixed income must fund both a longer life and rising essential prices.",
+          "options": [
+            {
+              "label": "Only price changes"
+            },
+            {
+              "label": "Duration and inflation together"
+            },
+            {
+              "label": "Only the starting balance"
+            }
+          ],
+          "help": [
+            "Test both changes rather than treating them as one risk."
+          ],
+          "feedback": {
+            "met": "More years and higher annual costs can both strain resources.",
+            "not_yet": "Test both changes rather than treating them as one risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dos presiones debes probar?",
+          "scene": "Un ingreso fijo debe cubrir vida más larga y precios indispensables crecientes.",
+          "options": [
+            {
+              "label": "Solo cambios de precio"
+            },
+            {
+              "label": "Duración e inflación juntas"
+            },
+            {
+              "label": "Solo el saldo inicial"
+            }
+          ],
+          "help": [
+            "Prueba ambos cambios sin tratarlos como un solo riesgo."
+          ],
+          "feedback": {
+            "met": "Más años y costos anuales mayores pueden tensionar recursos.",
+            "not_yet": "Prueba ambos cambios sin tratarlos como un solo riesgo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais duas pressões testar?",
+          "scene": "Uma renda fixa deve cobrir vida mais longa e preços essenciais crescentes.",
+          "options": [
+            {
+              "label": "Só mudanças de preço"
+            },
+            {
+              "label": "Duração e inflação juntas"
+            },
+            {
+              "label": "Só o saldo inicial"
+            }
+          ],
+          "help": [
+            "Teste ambas as mudanças sem tratá-las como um só risco."
+          ],
+          "feedback": {
+            "met": "Mais anos e custos anuais maiores podem apertar recursos.",
+            "not_yet": "Teste ambas as mudanças sem tratá-las como um só risco."
+          }
+        }
+      }
+    }
+  ]
+}

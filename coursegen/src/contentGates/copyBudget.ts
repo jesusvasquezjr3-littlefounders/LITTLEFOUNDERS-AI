@@ -33,6 +33,7 @@ const REMEDY: Readonly<Record<Exclude<CopyRole, 'data'>, string>> = {
   option: 'an option is a short label the picture can carry; move the reason into the option rationale',
   mentor: 'one Mentor turn holds one idea and at most one question; split the rest into another turn',
   body: 'one idea per string: cut reassurance and repetition, or move the detail behind a "Why?" tap',
+  narrative: 'the visible scenario holds at most two short sentences; preserve the facts needed for the decision',
   detail: 'a sheet behind a tap holds at most 60 words in short paragraphs',
 };
 

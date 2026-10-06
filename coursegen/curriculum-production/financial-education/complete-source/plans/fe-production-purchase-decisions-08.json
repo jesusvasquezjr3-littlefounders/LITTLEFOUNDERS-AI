@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-2",
+  "lesson_id": "fe-production-purchase-decisions-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a contract’s renewal, cancellation and exit-cost terms before agreeing.",
+  "title": {
+    "en-US": "Contract Endings",
+    "es-MX": "Lee cómo termina un contrato",
+    "pt-BR": "Leia como um contrato termina"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Contract Endings\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee cómo termina un contrato\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia como um contrato termina\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.08",
+      "observable_action": "Identify a contract’s renewal, cancellation and exit-cost terms before agreeing.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A service can keep charging after the first period; check renewal, cancellation method and exit costs before agreeing.",
+    "misconception": "Stopping use or deleting an app automatically cancels a renewing contract and removes every exit obligation.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-example-01",
+        "supports_from": [],
+        "reasoning": "Check automatic renewal, cancellation method and deadline, and any exit charge. Keep confirmation when cancellation is completed."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The clause requires cancellation to prevent renewal."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The specified process is different from removing the app."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Leaving early may trigger the explicitly stated exit charge."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Confirmation records the completed cancellation and its timing."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A free opening period can lead to later paid renewal."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Price alone does not explain how commitments can end."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A service can keep charging after the first period; check renewal, cancellation method and exit costs before agreeing."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Servicio puede seguir cobrando tras primer periodo; revisa renovación, método de cancelación y costos de salida antes de aceptar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Serviço pode seguir cobrando após primeiro período; confira renovação, forma de cancelar e custos de saída antes de aceitar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Renewal, notice, exit cost",
+          "line": "Check automatic renewal, cancellation method and deadline, and any exit charge. Keep confirmation when cancellation is completed."
+        },
+        "es-MX": {
+          "prompt": "Renovación, aviso, costo de salida",
+          "line": "Busca renovación automática, cómo y cuándo cancelar y cualquier cargo de salida indicado. Guarda confirmación de cancelación completada."
+        },
+        "pt-BR": {
+          "prompt": "Renovação, aviso, custo de saída",
+          "line": "Busque renovação automática, como e quando cancelar e qualquer custo de saída dado. Guarde confirmação do cancelamento concluído."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens under this fictional clause?",
+          "scene": "Service renews automatically unless canceled through the stated process.",
+          "options": [
+            {
+              "label": "It renews without a valid cancellation"
+            },
+            {
+              "label": "It always becomes free"
+            },
+            {
+              "label": "It ends when unused"
+            }
+          ],
+          "help": [
+            "Read the actual renewal trigger."
+          ],
+          "feedback": {
+            "met": "The clause requires cancellation to prevent renewal.",
+            "not_yet": "Read the actual renewal trigger."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ocurre bajo cláusula ficticia?",
+          "scene": "Servicio se renueva automáticamente si no se cancela por proceso indicado.",
+          "options": [
+            {
+              "label": "Se renueva sin cancelación válida"
+            },
+            {
+              "label": "Siempre se vuelve gratis"
+            },
+            {
+              "label": "Termina al no usarlo"
+            }
+          ],
+          "help": [
+            "Lee qué activa realmente renovación."
+          ],
+          "feedback": {
+            "met": "Cláusula exige cancelar para impedir renovación.",
+            "not_yet": "Lee qué activa realmente renovación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ocorre nesta cláusula fictícia?",
+          "scene": "Serviço renova automaticamente sem cancelamento pelo processo dado.",
+          "options": [
+            {
+              "label": "Renova sem cancelamento válido"
+            },
+            {
+              "label": "Sempre fica grátis"
+            },
+            {
+              "label": "Termina ao deixar de usar"
+            }
+          ],
+          "help": [
+            "Leia o que ativa de fato a renovação."
+          ],
+          "feedback": {
+            "met": "Cláusula exige cancelar para impedir renovação.",
+            "not_yet": "Leia o que ativa de fato a renovação."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which follows the method?",
+          "scene": "Contract requires cancellation through its account settings; merely deleting the app is not listed.",
+          "options": [
+            {
+              "label": "Only stop opening emails"
+            },
+            {
+              "label": "Only uninstall the app"
+            },
+            {
+              "label": "Use the required cancellation settings"
+            }
+          ],
+          "help": [
+            "Follow the contract’s actual cancellation route."
+          ],
+          "feedback": {
+            "met": "The specified process is different from removing the app.",
+            "not_yet": "Follow the contract’s actual cancellation route."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción sigue método indicado?",
+          "scene": "Contrato exige cancelar desde ajustes de cuenta; borrar app no figura.",
+          "options": [
+            {
+              "label": "Solo dejar de abrir correos"
+            },
+            {
+              "label": "Solo desinstalar app"
+            },
+            {
+              "label": "Usar ajustes requeridos de cancelación"
+            }
+          ],
+          "help": [
+            "Sigue vía real de cancelación del contrato."
+          ],
+          "feedback": {
+            "met": "Proceso indicado es distinto de quitar app.",
+            "not_yet": "Sigue vía real de cancelación del contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ação segue método dado?",
+          "scene": "Contrato exige cancelar nos ajustes da conta; apagar app não consta.",
+          "options": [
+            {
+              "label": "Só parar de abrir emails"
+            },
+            {
+              "label": "Só desinstalar app"
+            },
+            {
+              "label": "Usar ajustes exigidos de cancelamento"
+            }
+          ],
+          "help": [
+            "Siga via real de cancelamento do contrato."
+          ],
+          "feedback": {
+            "met": "Processo dado é diferente de remover app.",
+            "not_yet": "Siga via real de cancelamento do contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What cost needs checking before leaving?",
+          "scene": "Fictional agreement includes a charge for ending before the minimum term.",
+          "options": [
+            {
+              "label": "Early-exit charge"
+            },
+            {
+              "label": "Only the sign-up discount"
+            },
+            {
+              "label": "Only last month’s bill"
+            }
+          ],
+          "help": [
+            "Read the term and charge before calculating exit cost."
+          ],
+          "feedback": {
+            "met": "Leaving early may trigger the explicitly stated exit charge.",
+            "not_yet": "Read the term and charge before calculating exit cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo revisar antes de salir?",
+          "scene": "Acuerdo ficticio incluye cargo por terminar antes de plazo mínimo.",
+          "options": [
+            {
+              "label": "Cargo de salida anticipada"
+            },
+            {
+              "label": "Solo descuento de alta"
+            },
+            {
+              "label": "Solo la cuenta del mes anterior"
+            }
+          ],
+          "help": [
+            "Lee plazo y cargo antes de calcular costo de salida."
+          ],
+          "feedback": {
+            "met": "Salir antes puede activar cargo de salida explícito.",
+            "not_yet": "Lee plazo y cargo antes de calcular costo de salida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo conferir antes de sair?",
+          "scene": "Acordo fictício inclui cobrança por terminar antes do prazo mínimo.",
+          "options": [
+            {
+              "label": "Cobrança de saída antecipada"
+            },
+            {
+              "label": "Só desconto de adesão"
+            },
+            {
+              "label": "Só a conta do mês anterior"
+            }
+          ],
+          "help": [
+            "Leia prazo e cobrança antes de calcular custo de saída."
+          ],
+          "feedback": {
+            "met": "Sair antes pode ativar cobrança de saída explícita.",
+            "not_yet": "Leia prazo e cobrança antes de calcular custo de saída."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What proves the cancellation status best?",
+          "scene": "The service provides dated confirmation that cancellation was completed.",
+          "options": [
+            {
+              "label": "Assume logging out proves it"
+            },
+            {
+              "label": "Rely only on memory"
+            },
+            {
+              "label": "Keep the dated confirmation"
+            }
+          ],
+          "help": [
+            "Retain evidence of the actual status change."
+          ],
+          "feedback": {
+            "met": "Confirmation records the completed cancellation and its timing.",
+            "not_yet": "Retain evidence of the actual status change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué prueba mejor estado de cancelación?",
+          "scene": "Servicio da confirmación fechada de cancelación completada.",
+          "options": [
+            {
+              "label": "Suponer cerrar sesión lo prueba"
+            },
+            {
+              "label": "Confiar solo en memoria"
+            },
+            {
+              "label": "Guardar confirmación fechada"
+            }
+          ],
+          "help": [
+            "Conserva evidencia del cambio real de estado."
+          ],
+          "feedback": {
+            "met": "Confirmación registra cancelación completada y momento.",
+            "not_yet": "Conserva evidencia del cambio real de estado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que prova melhor estado do cancelamento?",
+          "scene": "Serviço dá confirmação datada do cancelamento concluído.",
+          "options": [
+            {
+              "label": "Supor sair da conta prova isso"
+            },
+            {
+              "label": "Confiar só na memória"
+            },
+            {
+              "label": "Guardar confirmação datada"
+            }
+          ],
+          "help": [
+            "Guarde prova da mudança real de estado."
+          ],
+          "feedback": {
+            "met": "Confirmação registra cancelamento concluído e momento.",
+            "not_yet": "Guarde prova da mudança real de estado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What must this trial clarify?",
+          "scene": "The offer is free initially, then renews for payment under stated terms.",
+          "options": [
+            {
+              "label": "Renewal date, price and cancellation terms"
+            },
+            {
+              "label": "Only the free headline"
+            },
+            {
+              "label": "Assume no future charges"
+            }
+          ],
+          "help": [
+            "Check the transition before accepting the trial."
+          ],
+          "feedback": {
+            "met": "A free opening period can lead to later paid renewal.",
+            "not_yet": "Check the transition before accepting the trial."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar en esta prueba?",
+          "scene": "Oferta gratis al inicio, luego se renueva con pago según términos indicados.",
+          "options": [
+            {
+              "label": "Fecha, precio y términos de cancelación"
+            },
+            {
+              "label": "Solo anuncio de gratis"
+            },
+            {
+              "label": "Suponer ningún cargo futuro"
+            }
+          ],
+          "help": [
+            "Revisa transición antes de aceptar prueba."
+          ],
+          "feedback": {
+            "met": "Periodo inicial gratis puede llevar a renovación pagada.",
+            "not_yet": "Revisa transición antes de aceptar prueba."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir neste teste?",
+          "scene": "Oferta grátis no início, depois renova com pagamento pelos termos dados.",
+          "options": [
+            {
+              "label": "Data, preço e termos de cancelamento"
+            },
+            {
+              "label": "Só anúncio de grátis"
+            },
+            {
+              "label": "Supor nenhum custo futuro"
+            }
+          ],
+          "help": [
+            "Confira transição antes de aceitar teste."
+          ],
+          "feedback": {
+            "met": "Período inicial grátis pode levar à renovação paga.",
+            "not_yet": "Confira transição antes de aceitar teste."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "A contract states renewal price but omits how to cancel and any exit charges.",
+          "options": [
+            {
+              "label": "Only the provider’s slogan"
+            },
+            {
+              "label": "Nothing because price is shown"
+            },
+            {
+              "label": "Cancellation route and exit costs"
+            }
+          ],
+          "help": [
+            "Obtain the missing cancellation and exit terms before agreeing."
+          ],
+          "feedback": {
+            "met": "Price alone does not explain how commitments can end.",
+            "not_yet": "Obtain the missing cancellation and exit terms before agreeing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información falta todavía?",
+          "scene": "Contrato indica precio de renovación pero omite cómo cancelar y cargos de salida.",
+          "options": [
+            {
+              "label": "Solo lema del proveedor"
+            },
+            {
+              "label": "Nada porque muestra precio"
+            },
+            {
+              "label": "Vía de cancelación y costos de salida"
+            }
+          ],
+          "help": [
+            "Obtén términos faltantes de cancelación y salida antes de aceptar."
+          ],
+          "feedback": {
+            "met": "Precio solo no explica cómo terminan compromisos.",
+            "not_yet": "Obtén términos faltantes de cancelación y salida antes de aceptar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que informação ainda falta?",
+          "scene": "Contrato indica preço de renovação mas omite como cancelar e custos de saída.",
+          "options": [
+            {
+              "label": "Só lema do provedor"
+            },
+            {
+              "label": "Nada pois mostra preço"
+            },
+            {
+              "label": "Via de cancelamento e custos de saída"
+            }
+          ],
+          "help": [
+            "Obtenha termos ausentes de cancelamento e saída antes de aceitar."
+          ],
+          "feedback": {
+            "met": "Preço só não explica como terminam compromissos.",
+            "not_yet": "Obtenha termos ausentes de cancelamento e saída antes de aceitar."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-1",
+  "lesson_id": "fe-production-accounts-records-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize how a pending charge can affect spending decisions before it settles.",
+  "title": {
+    "en-US": "Pending charges",
+    "es-MX": "Sigue un cobro pendiente",
+    "pt-BR": "Acompanhe uma cobrança pendente"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Track a pending charge\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue un cobro pendiente\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Acompanhe uma cobrança pendente\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.06",
+      "observable_action": "Recognize how a pending charge can affect spending decisions before it settles.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.02",
+      "prod.accounts-records.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A pending payment must remain visible without being counted twice.",
+    "misconception": "Ignoring pending commitments because they are not settled, or subtracting them twice when available balance already accounts for them.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-example-01",
+        "supports_from": [],
+        "reasoning": "A pending purchase can commit money before it settles. Check whether the available balance already includes that hold."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated available balance already reflects the hold."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Pending and canceled are different payment states."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-practice-01",
+        "supports_from": [],
+        "reasoning": "110 − 28 = 82 after accounting for the stated hold."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A status change does not create a second purchase."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-practice-03",
+        "supports_from": [],
+        "reasoning": "A cancellation message may precede the actual release of funds."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Returning an item does not itself verify release of a hold."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A pending payment must remain visible without being counted twice."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un pago pendiente debe seguir visible sin contarse dos veces."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um pagamento pendente deve continuar visível sem ser contado duas vezes."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pending still matters",
+          "line": "A pending purchase can commit money before it settles. Check whether the available balance already includes that hold."
+        },
+        "es-MX": {
+          "prompt": "Pendiente sigue importando",
+          "line": "Una compra pendiente puede comprometer dinero antes de liquidarse. Revisa si el saldo disponible ya incluye esa retención."
+        },
+        "pt-BR": {
+          "prompt": "Pendente ainda importa",
+          "line": "Uma compra pendente pode comprometer dinheiro antes de liquidar. Confira se o saldo disponível já inclui esse bloqueio."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Should that hold be subtracted again?",
+          "scene": "A purchase is pending; the available balance already excludes its hold.",
+          "options": [
+            {
+              "label": "It is already reflected"
+            },
+            {
+              "label": "Subtract each label separately"
+            },
+            {
+              "label": "Pending always means uncounted"
+            }
+          ],
+          "help": [
+            "Follow the explicit balance definition."
+          ],
+          "feedback": {
+            "met": "The stated available balance already reflects the hold.",
+            "not_yet": "Follow the explicit balance definition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debe restarse otra vez esa retención?",
+          "scene": "Una compra está pendiente; el proveedor ya excluye su retención del saldo disponible.",
+          "options": [
+            {
+              "label": "No, ya está reflejada"
+            },
+            {
+              "label": "Sí, resta cada etiqueta aparte"
+            },
+            {
+              "label": "Sí, pendiente siempre significa no contado"
+            }
+          ],
+          "help": [
+            "Sigue la definición explícita del saldo."
+          ],
+          "feedback": {
+            "met": "El saldo disponible indicado ya refleja la retención.",
+            "not_yet": "Sigue la definición explícita del saldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve subtrair novamente esse bloqueio?",
+          "scene": "Uma compra está pendente; o fornecedor já exclui seu bloqueio do saldo disponível.",
+          "options": [
+            {
+              "label": "Não, já está refletido"
+            },
+            {
+              "label": "Sim, subtraia cada rótulo separadamente"
+            },
+            {
+              "label": "Sim, pendente sempre significa não contado"
+            }
+          ],
+          "help": [
+            "Siga a definição explícita do saldo."
+          ],
+          "feedback": {
+            "met": "O saldo disponível informado já reflete o bloqueio.",
+            "not_yet": "Siga a definição explícita do saldo."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Is it free for another purchase?",
+          "scene": "A purchase remains pending, not canceled; its money is unreleased.",
+          "options": [
+            {
+              "label": "Yes, absence of settlement proves release"
+            },
+            {
+              "label": "Yes, pending means canceled"
+            },
+            {
+              "label": "No, retain the commitment"
+            }
+          ],
+          "help": [
+            "Check whether the commitment actually ended."
+          ],
+          "feedback": {
+            "met": "Pending and canceled are different payment states.",
+            "not_yet": "Check whether the commitment actually ended."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Su monto está libre para otra compra?",
+          "scene": "Una compra sigue pendiente sin cancelarse; su dinero no se ha liberado.",
+          "options": [
+            {
+              "label": "Sí, no liquidarse demuestra liberación"
+            },
+            {
+              "label": "Sí, pendiente significa cancelado"
+            },
+            {
+              "label": "No, conserva el compromiso"
+            }
+          ],
+          "help": [
+            "Revisa si el compromiso realmente terminó."
+          ],
+          "feedback": {
+            "met": "Pendiente y cancelado son estados de pago distintos.",
+            "not_yet": "Revisa si el compromiso realmente terminó."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Seu valor está livre para outra compra?",
+          "scene": "Uma compra continua pendente sem cancelamento; seu dinheiro não foi liberado.",
+          "options": [
+            {
+              "label": "Sim, não liquidar comprova liberação"
+            },
+            {
+              "label": "Sim, pendente significa cancelado"
+            },
+            {
+              "label": "Não, mantenha o compromisso"
+            }
+          ],
+          "help": [
+            "Confira se o compromisso realmente terminou."
+          ],
+          "feedback": {
+            "met": "Pendente e cancelado são estados de pagamento diferentes.",
+            "not_yet": "Confira se o compromisso realmente terminou."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after allowing for the hold?",
+          "scene": "Displayed funds: 110; pending hold not yet deducted: 28; no other commitments.",
+          "options": [
+            {
+              "label": "138"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "82"
+            }
+          ],
+          "help": [
+            "This example explicitly says the hold is not deducted yet."
+          ],
+          "feedback": {
+            "met": "110 − 28 = 82 after accounting for the stated hold.",
+            "not_yet": "This example explicitly says the hold is not deducted yet."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto considerando la retención?",
+          "scene": "Fondos visibles: 110; retención pendiente aún no descontada: 28; sin otros compromisos.",
+          "options": [
+            {
+              "label": "138"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "82"
+            }
+          ],
+          "help": [
+            "Este ejemplo indica que aún no se descontó la retención."
+          ],
+          "feedback": {
+            "met": "110 − 28 = 82 considerando la retención indicada.",
+            "not_yet": "Este ejemplo indica que aún no se descontó la retención."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante considerando o bloqueio?",
+          "scene": "Recursos visíveis: 110; bloqueio pendente ainda não descontado: 28; sem outros compromissos.",
+          "options": [
+            {
+              "label": "138"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "82"
+            }
+          ],
+          "help": [
+            "Este exemplo informa que o bloqueio ainda não foi descontado."
+          ],
+          "feedback": {
+            "met": "110 − 28 = 82 considerando o bloqueio informado.",
+            "not_yet": "Este exemplo informa que o bloqueio ainda não foi descontado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          110,
+          28
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How should records change?",
+          "scene": "A pending purchase becomes a settled charge with the same payment reference.",
+          "options": [
+            {
+              "label": "Add another identical purchase"
+            },
+            {
+              "label": "Remove the purchase from spending"
+            },
+            {
+              "label": "Update the same payment’s status"
+            }
+          ],
+          "help": [
+            "Link records by the matching payment reference."
+          ],
+          "feedback": {
+            "met": "A status change does not create a second purchase.",
+            "not_yet": "Link records by the matching payment reference."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe cambiar el registro personal?",
+          "scene": "Una compra pendiente pasa a liquidada con la misma referencia de pago.",
+          "options": [
+            {
+              "label": "Añadir otra compra idéntica"
+            },
+            {
+              "label": "Quitar la compra del gasto"
+            },
+            {
+              "label": "Actualizar estado del mismo pago"
+            }
+          ],
+          "help": [
+            "Vincula registros mediante su referencia coincidente."
+          ],
+          "feedback": {
+            "met": "Cambiar el estado no crea una segunda compra.",
+            "not_yet": "Vincula registros mediante su referencia coincidente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como deve mudar o registro pessoal?",
+          "scene": "Uma compra pendente passa a liquidada com a mesma referência de pagamento.",
+          "options": [
+            {
+              "label": "Adicionar outra compra idêntica"
+            },
+            {
+              "label": "Retirar a compra do gasto"
+            },
+            {
+              "label": "Atualizar estado do mesmo pagamento"
+            }
+          ],
+          "help": [
+            "Vincule registros pela referência correspondente."
+          ],
+          "feedback": {
+            "met": "Mudar o estado não cria uma segunda compra.",
+            "not_yet": "Vincule registros pela referência correspondente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "A merchant reports cancellation, but the provider still shows a hold.",
+          "options": [
+            {
+              "label": "Assume the statement updated instantly"
+            },
+            {
+              "label": "The provider’s actual release status"
+            },
+            {
+              "label": "A universal release deadline invented now"
+            }
+          ],
+          "help": [
+            "Verify available funds rather than assuming immediate release."
+          ],
+          "feedback": {
+            "met": "A cancellation message may precede the actual release of funds.",
+            "not_yet": "Verify available funds rather than assuming immediate release."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de reutilizar fondos?",
+          "scene": "Un comercio dice que canceló una compra, pero el proveedor aún muestra retención.",
+          "options": [
+            {
+              "label": "Suponer actualización instantánea del estado"
+            },
+            {
+              "label": "El estado real de liberación del proveedor"
+            },
+            {
+              "label": "Un plazo universal inventado ahora"
+            }
+          ],
+          "help": [
+            "Verifica disponibilidad sin suponer liberación inmediata."
+          ],
+          "feedback": {
+            "met": "Un mensaje de cancelación puede preceder la liberación real.",
+            "not_yet": "Verifica disponibilidad sin suponer liberación inmediata."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de reutilizar recursos?",
+          "scene": "Um comércio diz que cancelou uma compra, mas o fornecedor ainda mostra bloqueio.",
+          "options": [
+            {
+              "label": "Supor atualização instantânea do extrato"
+            },
+            {
+              "label": "O estado real de liberação do fornecedor"
+            },
+            {
+              "label": "Um prazo universal inventado agora"
+            }
+          ],
+          "help": [
+            "Confira disponibilidade sem supor liberação imediata."
+          ],
+          "feedback": {
+            "met": "Uma mensagem de cancelamento pode preceder a liberação real.",
+            "not_yet": "Confira disponibilidade sem supor liberação imediata."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you treat it?",
+          "scene": "After returning a rental, its deposit remains held without confirmed release.",
+          "options": [
+            {
+              "label": "As held until release is verified"
+            },
+            {
+              "label": "As automatically available on return"
+            },
+            {
+              "label": "As new rental income"
+            }
+          ],
+          "help": [
+            "Check the held amount’s actual status."
+          ],
+          "feedback": {
+            "met": "Returning an item does not itself verify release of a hold.",
+            "not_yet": "Check the held amount’s actual status."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratarlo al decidir un gasto nuevo?",
+          "scene": "Un depósito de alquiler sigue retenido tras devolver el artículo; no se confirma liberación.",
+          "options": [
+            {
+              "label": "Como retenido hasta verificar liberación"
+            },
+            {
+              "label": "Como disponible automáticamente al devolver"
+            },
+            {
+              "label": "Como ingreso nuevo del alquiler"
+            }
+          ],
+          "help": [
+            "Revisa el estado real del monto retenido."
+          ],
+          "feedback": {
+            "met": "Devolver un artículo no verifica por sí solo la liberación.",
+            "not_yet": "Revisa el estado real del monto retenido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratá-lo ao decidir um novo gasto?",
+          "scene": "Um depósito de aluguel continua bloqueado após devolver o item; não há liberação confirmada.",
+          "options": [
+            {
+              "label": "Como bloqueado até conferir liberação"
+            },
+            {
+              "label": "Como disponível automaticamente ao devolver"
+            },
+            {
+              "label": "Como renda nova do aluguel"
+            }
+          ],
+          "help": [
+            "Confira o estado real do valor bloqueado."
+          ],
+          "feedback": {
+            "met": "Devolver um item não verifica sozinho a liberação.",
+            "not_yet": "Confira o estado real do valor bloqueado."
+          }
+        }
+      }
+    }
+  ]
+}

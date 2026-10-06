@@ -1,0 +1,841 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-1",
+  "lesson_id": "fe-production-income-work-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish gross pay from money received using explicitly explained deductions.",
+  "title": {
+    "en-US": "Net pay",
+    "es-MX": "Antes y después de descuentos",
+    "pt-BR": "Antes e depois dos descontos"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Before and after deductions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Antes y después de descuentos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Antes e depois dos descontos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.02",
+      "observable_action": "Distinguish gross pay from money received using explicitly explained deductions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Read gross pay and received pay as different amounts.",
+    "misconception": "Spend the gross amount even though stated deductions reduce the actual payment.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-example-01",
+        "supports_from": [],
+        "reasoning": "Gross pay is 100 dollars before deductions. Subtracting the stated 12 leaves 88 received."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The deduction reduces what is paid out."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Net identifies the amount after deductions."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Remove both stated deductions from gross pay."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-practice-02",
+        "supports_from": [],
+        "reasoning": "Missing deduction information prevents an exact net calculation."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-practice-03",
+        "supports_from": [],
+        "reasoning": "The net amount already reflects that reduction."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.02",
+        "context_id": "fe-production-income-work-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Use only the deduction explicitly stated in this example."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read gross pay and received pay as different amounts."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Lee pago bruto y recibido como montos distintos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Leia pagamento bruto e recebido como valores distintos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the deduction",
+          "line": "Gross pay is 100 dollars before deductions. Subtracting the stated 12 leaves 88 received."
+        },
+        "es-MX": {
+          "prompt": "Sigue el descuento",
+          "line": "El pago bruto es 100 pesos antes de descuentos. Un descuento indicado de 12 deja 88 recibidos; no es una tasa legal."
+        },
+        "pt-BR": {
+          "prompt": "Acompanhe o desconto",
+          "line": "O pagamento bruto é 100 reais antes de descontos. Um desconto informado de 12 deixa 88 recebidos; não é taxa legal."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Received pay?",
+          "scene": "Gross pay is 80; a stated deduction is 10. Subtract it.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Start with gross pay, then remove the stated deduction."
+          ],
+          "feedback": {
+            "met": "The deduction reduces what is paid out.",
+            "not_yet": "Start with gross pay, then remove the stated deduction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pago recibido?",
+          "scene": "Pago bruto 80; descuento indicado 10. Réstalo.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Empieza con bruto y retira el descuento indicado."
+          ],
+          "feedback": {
+            "met": "El descuento reduce lo que se entrega.",
+            "not_yet": "Empieza con bruto y retira el descuento indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagamento recebido?",
+          "scene": "Pagamento bruto 80; desconto informado 10. Subtraia.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Comece pelo bruto e retire o desconto informado."
+          ],
+          "feedback": {
+            "met": "O desconto reduz o que é entregue.",
+            "not_yet": "Comece pelo bruto e retire o desconto informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which names the after-deduction amount?",
+          "scene": "A statement lists gross and net pay; net means after the stated deductions.",
+          "options": [
+            {
+              "label": "The deduction itself"
+            },
+            {
+              "label": "Net pay"
+            },
+            {
+              "label": "Gross pay"
+            }
+          ],
+          "help": [
+            "Use the definition provided in this record."
+          ],
+          "feedback": {
+            "met": "Net identifies the amount after deductions.",
+            "not_yet": "Use the definition provided in this record."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál nombra el monto posterior al descuento?",
+          "scene": "Un registro dice bruto y neto; neto significa después de descuentos indicados.",
+          "options": [
+            {
+              "label": "El descuento mismo"
+            },
+            {
+              "label": "Pago neto"
+            },
+            {
+              "label": "Pago bruto"
+            }
+          ],
+          "help": [
+            "Usa la definición dada en este registro."
+          ],
+          "feedback": {
+            "met": "Neto identifica el monto después de descuentos.",
+            "not_yet": "Usa la definición dada en este registro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual nomeia o valor após descontos?",
+          "scene": "Um registro diz bruto e líquido; líquido significa após os descontos informados.",
+          "options": [
+            {
+              "label": "O próprio desconto"
+            },
+            {
+              "label": "Pagamento líquido"
+            },
+            {
+              "label": "Pagamento bruto"
+            }
+          ],
+          "help": [
+            "Use a definição dada neste registro."
+          ],
+          "feedback": {
+            "met": "Líquido identifica o valor após descontos.",
+            "not_yet": "Use a definição dada neste registro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Received amount?",
+          "scene": "Gross pay is 150; stated deductions are 20 and 5.",
+          "options": [
+            {
+              "label": "175"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "130"
+            }
+          ],
+          "help": [
+            "Include every deduction exactly once."
+          ],
+          "feedback": {
+            "met": "Remove both stated deductions from gross pay.",
+            "not_yet": "Include every deduction exactly once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto recibido?",
+          "scene": "Pago bruto 150; descuentos indicados 20 y 5.",
+          "options": [
+            {
+              "label": "175"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "130"
+            }
+          ],
+          "help": [
+            "Incluye cada descuento una vez."
+          ],
+          "feedback": {
+            "met": "Retira ambos descuentos indicados del bruto.",
+            "not_yet": "Incluye cada descuento una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor recebido?",
+          "scene": "Pagamento bruto 150; descontos informados 20 e 5.",
+          "options": [
+            {
+              "label": "175"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "130"
+            }
+          ],
+          "help": [
+            "Inclua cada desconto uma vez."
+          ],
+          "feedback": {
+            "met": "Retire os dois descontos informados do bruto.",
+            "not_yet": "Inclua cada desconto uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          20,
+          5
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you know exact net pay?",
+          "scene": "A work offer advertises gross pay, but deductions are not explained.",
+          "options": [
+            {
+              "label": "Ask for deduction details"
+            },
+            {
+              "label": "Gross always equals net"
+            },
+            {
+              "label": "Use someone else’s rate"
+            }
+          ],
+          "help": [
+            "Do not invent a deduction rate."
+          ],
+          "feedback": {
+            "met": "Missing deduction information prevents an exact net calculation.",
+            "not_yet": "Do not invent a deduction rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya puedes saber el neto exacto?",
+          "scene": "Un trabajo anuncia pago bruto, pero no explica descuentos.",
+          "options": [
+            {
+              "label": "No, pide detalles de descuentos"
+            },
+            {
+              "label": "Sí, bruto siempre iguala neto"
+            },
+            {
+              "label": "Sí, usa la tasa de otro"
+            }
+          ],
+          "help": [
+            "No inventes una tasa de descuento."
+          ],
+          "feedback": {
+            "met": "Sin información de descuentos no hay cálculo neto exacto.",
+            "not_yet": "No inventes una tasa de descuento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Já pode saber o líquido exato?",
+          "scene": "Um trabalho anuncia pagamento bruto, mas não explica descontos.",
+          "options": [
+            {
+              "label": "Não, peça detalhes dos descontos"
+            },
+            {
+              "label": "Sim, bruto sempre iguala líquido"
+            },
+            {
+              "label": "Sim, use a taxa de outra pessoa"
+            }
+          ],
+          "help": [
+            "Não invente uma taxa de desconto."
+          ],
+          "feedback": {
+            "met": "Sem dados dos descontos não há cálculo líquido exato.",
+            "not_yet": "Não invente uma taxa de desconto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Should you subtract that deduction again?",
+          "scene": "Net pay already excludes the listed deduction.",
+          "options": [
+            {
+              "label": "No, that would double-count it"
+            },
+            {
+              "label": "Yes, every label means a new deduction"
+            },
+            {
+              "label": "Yes, to be more accurate"
+            }
+          ],
+          "help": [
+            "Check which stage the amount represents."
+          ],
+          "feedback": {
+            "met": "The net amount already reflects that reduction.",
+            "not_yet": "Check which stage the amount represents."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debes restar otra vez ese descuento?",
+          "scene": "El pago neto ya excluye el descuento indicado.",
+          "options": [
+            {
+              "label": "No, se contaría dos veces"
+            },
+            {
+              "label": "Sí, cada etiqueta es otro descuento"
+            },
+            {
+              "label": "Sí, para ser más preciso"
+            }
+          ],
+          "help": [
+            "Revisa qué etapa representa el monto."
+          ],
+          "feedback": {
+            "met": "El monto neto ya refleja esa reducción.",
+            "not_yet": "Revisa qué etapa representa el monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve subtrair esse desconto de novo?",
+          "scene": "O pagamento líquido já exclui o desconto informado.",
+          "options": [
+            {
+              "label": "Não, seria contado duas vezes"
+            },
+            {
+              "label": "Sim, cada rótulo é outro desconto"
+            },
+            {
+              "label": "Sim, para ser mais preciso"
+            }
+          ],
+          "help": [
+            "Confira qual etapa o valor representa."
+          ],
+          "feedback": {
+            "met": "O valor líquido já reflete essa redução.",
+            "not_yet": "Confira qual etapa o valor representa."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Expected net under these terms?",
+          "scene": "A temporary assignment promises gross 240 and states a single deduction of 30.",
+          "options": [
+            {
+              "label": "270"
+            },
+            {
+              "label": "210"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Gross pay is before the stated deduction."
+          ],
+          "feedback": {
+            "met": "Use only the deduction explicitly stated in this example.",
+            "not_yet": "Gross pay is before the stated deduction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Neto esperado bajo estas condiciones?",
+          "scene": "Un trabajo temporal ofrece bruto 240 y un descuento único de 30.",
+          "options": [
+            {
+              "label": "270"
+            },
+            {
+              "label": "210"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "El bruto es antes del descuento indicado."
+          ],
+          "feedback": {
+            "met": "Usa solo el descuento explícito de este ejemplo.",
+            "not_yet": "El bruto es antes del descuento indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Líquido esperado sob essas condições?",
+          "scene": "Um trabalho temporário oferece bruto 240 e desconto único de 30.",
+          "options": [
+            {
+              "label": "270"
+            },
+            {
+              "label": "210"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "O bruto vem antes do desconto informado."
+          ],
+          "feedback": {
+            "met": "Use só o desconto explícito deste exemplo.",
+            "not_yet": "O bruto vem antes do desconto informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

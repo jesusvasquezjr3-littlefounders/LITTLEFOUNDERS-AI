@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-1",
+  "lesson_id": "fe-production-payments-digital-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize a false urgency or impersonation cue in a payment message.",
+  "title": {
+    "en-US": "Payment pressure",
+    "es-MX": "Pausa un pago bajo presión",
+    "pt-BR": "Pause um pagamento sob pressão"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Pause a pressured payment\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pausa un pago bajo presión\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pause um pagamento sob pressão\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.06",
+      "observable_action": "Recognize a false urgency or impersonation cue in a payment message.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.02",
+      "prod.payments-digital.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Notice pressure that tries to replace checking with fear or secrecy.",
+    "misconception": "Treating urgency, a familiar name or private information as proof that a payment request is genuine.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-example-01",
+        "supports_from": [],
+        "reasoning": "A familiar name does not prove identity. Demands for secrecy or immediate transfers are reasons to stop and verify independently."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Urgency can push you to act before checking the request."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A familiar name does not establish who sent the request."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Personal details can be known by someone impersonating a provider."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-practice-03",
+        "supports_from": [],
+        "reasoning": "A destination change should be checked without using the new message’s contacts."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-practice-04",
+        "supports_from": [],
+        "reasoning": "A deadline alone establishes neither fraud nor authenticity."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.06",
+        "context_id": "fe-production-payments-digital-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "A photo and urgent story do not establish who controls the number."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Notice pressure that tries to replace checking with fear or secrecy."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Detecta presión que intenta reemplazar la revisión con miedo o secreto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Note pressão que tenta trocar a conferência por medo ou segredo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pressure is a reason to check",
+          "line": "A familiar name does not prove identity. Demands for secrecy or immediate transfers are reasons to stop and verify independently."
+        },
+        "es-MX": {
+          "prompt": "La presión exige revisar",
+          "line": "Un nombre conocido no prueba identidad. Exigir secreto o transferencias inmediatas es motivo para detenerse y verificar por separado."
+        },
+        "pt-BR": {
+          "prompt": "A pressão exige conferir",
+          "line": "Um nome conhecido não prova quem fala. Exigir segredo ou envio imediato é motivo para parar e conferir por outro caminho."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cue calls for a pause?",
+          "scene": "A “bank agent” demands an immediate transfer to “protect” your savings.",
+          "options": [
+            {
+              "label": "The word savings alone"
+            },
+            {
+              "label": "Pressure to move money now"
+            },
+            {
+              "label": "Any message about an account"
+            }
+          ],
+          "help": [
+            "Identify what prevents a calm check."
+          ],
+          "feedback": {
+            "met": "Urgency can push you to act before checking the request.",
+            "not_yet": "Identify what prevents a calm check."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué señal exige una pausa?",
+          "scene": "Un «agente bancario» exige transferir ya para «proteger» tus ahorros.",
+          "options": [
+            {
+              "label": "Solo la palabra ahorros"
+            },
+            {
+              "label": "Presión para mover dinero ahora"
+            },
+            {
+              "label": "Cualquier mensaje sobre una cuenta"
+            }
+          ],
+          "help": [
+            "Identifica qué impide revisar con calma."
+          ],
+          "feedback": {
+            "met": "La urgencia puede llevarte a actuar sin revisar la solicitud.",
+            "not_yet": "Identifica qué impide revisar con calma."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual sinal exige uma pausa?",
+          "scene": "Um «agente do banco» exige transferir já para «proteger» suas economias.",
+          "options": [
+            {
+              "label": "Só a palavra economias"
+            },
+            {
+              "label": "Pressão para mover dinheiro agora"
+            },
+            {
+              "label": "Qualquer mensagem sobre uma conta"
+            }
+          ],
+          "help": [
+            "Identifique o que impede conferir com calma."
+          ],
+          "feedback": {
+            "met": "A pressa pode levar você a agir sem conferir o pedido.",
+            "not_yet": "Identifique o que impede conferir com calma."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "A message naming your manager demands secret payment.",
+          "options": [
+            {
+              "label": "Only whether the name is spelled right"
+            },
+            {
+              "label": "The request through an independent channel"
+            },
+            {
+              "label": "Only whether you can afford it"
+            }
+          ],
+          "help": [
+            "Secrecy and authority do not replace verification."
+          ],
+          "feedback": {
+            "met": "A familiar name does not establish who sent the request.",
+            "not_yet": "Secrecy and authority do not replace verification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes verificar primero?",
+          "scene": "Un mensaje usa el nombre de tu gerente y exige pagar en secreto.",
+          "options": [
+            {
+              "label": "Solo si el nombre está bien escrito"
+            },
+            {
+              "label": "La solicitud por un canal independiente"
+            },
+            {
+              "label": "Solo si puedes pagarlo"
+            }
+          ],
+          "help": [
+            "Secreto y autoridad no reemplazan verificar."
+          ],
+          "feedback": {
+            "met": "Un nombre conocido no demuestra quién envió la solicitud.",
+            "not_yet": "Secreto y autoridad no reemplazan verificar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir primeiro?",
+          "scene": "Uma mensagem usa o nome de seu gerente e exige pagar em segredo.",
+          "options": [
+            {
+              "label": "Só se o nome está bem escrito"
+            },
+            {
+              "label": "O pedido por um canal independente"
+            },
+            {
+              "label": "Só se pode pagar"
+            }
+          ],
+          "help": [
+            "Segredo e autoridade não substituem conferir."
+          ],
+          "feedback": {
+            "met": "Um nome conhecido não prova quem enviou o pedido.",
+            "not_yet": "Segredo e autoridade não substituem conferir."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does knowing your name prove legitimacy?",
+          "scene": "A caller knows your name and threatens account closure unless you send money.",
+          "options": [
+            {
+              "label": "Verify separately"
+            },
+            {
+              "label": "Threats require immediate payment"
+            },
+            {
+              "label": "Names are private passwords"
+            }
+          ],
+          "help": [
+            "Separate knowledge of details from proof of identity."
+          ],
+          "feedback": {
+            "met": "Personal details can be known by someone impersonating a provider.",
+            "not_yet": "Separate knowledge of details from proof of identity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saber tu nombre prueba autenticidad?",
+          "scene": "Alguien sabe tu nombre y amenaza cerrar tu cuenta si no envías dinero.",
+          "options": [
+            {
+              "label": "No, verifica por separado"
+            },
+            {
+              "label": "Sí, amenazas exigen pago inmediato"
+            },
+            {
+              "label": "Sí, nombres son contraseñas privadas"
+            }
+          ],
+          "help": [
+            "Separa conocer datos de probar identidad."
+          ],
+          "feedback": {
+            "met": "Quien suplanta a un proveedor puede conocer datos personales.",
+            "not_yet": "Separa conocer datos de probar identidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saber seu nome prova que é real?",
+          "scene": "Alguém sabe seu nome e ameaça fechar sua conta se não enviar dinheiro.",
+          "options": [
+            {
+              "label": "Não, confira por outro caminho"
+            },
+            {
+              "label": "Sim, ameaças exigem pagamento imediato"
+            },
+            {
+              "label": "Sim, nomes são senhas privadas"
+            }
+          ],
+          "help": [
+            "Separe saber dados de provar quem fala."
+          ],
+          "feedback": {
+            "met": "Quem finge ser um fornecedor pode saber dados pessoais.",
+            "not_yet": "Separe saber dados de provar quem fala."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which detail raises concern?",
+          "scene": "A genuine-looking invoice lists a new bank account and says not to call.",
+          "options": [
+            {
+              "label": "Listing the purchased service"
+            },
+            {
+              "label": "Changed destination plus blocked verification"
+            },
+            {
+              "label": "Having any due date"
+            }
+          ],
+          "help": [
+            "Notice what changed and whether checking is discouraged."
+          ],
+          "feedback": {
+            "met": "A destination change should be checked without using the new message’s contacts.",
+            "not_yet": "Notice what changed and whether checking is discouraged."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué detalle requiere atención?",
+          "scene": "Una factura aparentemente real cambia la cuenta bancaria y pide no llamar.",
+          "options": [
+            {
+              "label": "Indicar el servicio comprado"
+            },
+            {
+              "label": "Destino cambiado y revisión impedida"
+            },
+            {
+              "label": "Tener cualquier vencimiento"
+            }
+          ],
+          "help": [
+            "Detecta qué cambió y si impiden revisar."
+          ],
+          "feedback": {
+            "met": "Verifica el cambio de destino usando contactos ajenos al mensaje.",
+            "not_yet": "Detecta qué cambió y si impiden revisar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual detalhe exige atenção?",
+          "scene": "Uma fatura que parece real muda a conta bancária e pede não ligar.",
+          "options": [
+            {
+              "label": "Informar o serviço comprado"
+            },
+            {
+              "label": "Destino alterado e conferência impedida"
+            },
+            {
+              "label": "Ter qualquer vencimento"
+            }
+          ],
+          "help": [
+            "Note o que mudou e se impedem conferir."
+          ],
+          "feedback": {
+            "met": "Confira a mudança de destino usando contatos fora da mensagem.",
+            "not_yet": "Note o que mudou e se impedem conferir."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a deadline prove fraud?",
+          "scene": "An expected bill matches your records and is due soon.",
+          "options": [
+            {
+              "label": "Yes, every deadline is a scam"
+            },
+            {
+              "label": "No, therefore skip all checks"
+            },
+            {
+              "label": "No, check the actual request"
+            }
+          ],
+          "help": [
+            "Use the full context instead of a single word."
+          ],
+          "feedback": {
+            "met": "A deadline alone establishes neither fraud nor authenticity.",
+            "not_yet": "Use the full context instead of a single word."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Un plazo por sí solo prueba fraude?",
+          "scene": "Una cuenta esperada vence pronto; monto y proveedor coinciden con tus registros.",
+          "options": [
+            {
+              "label": "Sí, todo plazo es fraude"
+            },
+            {
+              "label": "No, entonces omite toda revisión"
+            },
+            {
+              "label": "No, revisa la solicitud concreta"
+            }
+          ],
+          "help": [
+            "Usa el contexto completo, no una sola palabra."
+          ],
+          "feedback": {
+            "met": "Un plazo solo no demuestra fraude ni autenticidad.",
+            "not_yet": "Usa el contexto completo, no una sola palabra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um prazo sozinho prova golpe?",
+          "scene": "Uma conta esperada vence logo; valor e fornecedor batem com seus registros.",
+          "options": [
+            {
+              "label": "Sim, todo prazo é golpe"
+            },
+            {
+              "label": "Não, então pule toda conferência"
+            },
+            {
+              "label": "Não, confira o pedido concreto"
+            }
+          ],
+          "help": [
+            "Use o contexto todo, não uma só palavra."
+          ],
+          "feedback": {
+            "met": "Um prazo sozinho não prova golpe nem autenticidade.",
+            "not_yet": "Use o contexto todo, não uma só palavra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What should come before payment?",
+          "scene": "A relative’s new number requests urgent money and refuses a call.",
+          "options": [
+            {
+              "label": "Pay because refusing feels rude"
+            },
+            {
+              "label": "Trust the family photo"
+            },
+            {
+              "label": "Confirm through a known contact"
+            }
+          ],
+          "help": [
+            "Check identity outside the channel asking for money."
+          ],
+          "feedback": {
+            "met": "A photo and urgent story do not establish who controls the number.",
+            "not_yet": "Check identity outside the channel asking for money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe ocurrir antes de pagar?",
+          "scene": "Un número nuevo de un familiar pide dinero urgente y rechaza llamadas.",
+          "options": [
+            {
+              "label": "Pagar para no parecer descortés"
+            },
+            {
+              "label": "Confiar en la foto familiar"
+            },
+            {
+              "label": "Confirmar mediante un contacto conocido"
+            }
+          ],
+          "help": [
+            "Verifica identidad fuera del canal que pide dinero."
+          ],
+          "feedback": {
+            "met": "Una foto y urgencia no prueban quién controla el número.",
+            "not_yet": "Verifica identidad fuera del canal que pide dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ocorrer antes de pagar?",
+          "scene": "Um número novo de um parente pede dinheiro urgente e recusa ligações.",
+          "options": [
+            {
+              "label": "Pagar para não parecer grosseiro"
+            },
+            {
+              "label": "Confiar na foto de família"
+            },
+            {
+              "label": "Confirmar por um contato conhecido"
+            }
+          ],
+          "help": [
+            "Confira quem fala fora do canal que pede dinheiro."
+          ],
+          "feedback": {
+            "met": "Uma foto e pressa não provam quem controla o número.",
+            "not_yet": "Confira quem fala fora do canal que pede dinheiro."
+          }
+        }
+      }
+    }
+  ]
+}

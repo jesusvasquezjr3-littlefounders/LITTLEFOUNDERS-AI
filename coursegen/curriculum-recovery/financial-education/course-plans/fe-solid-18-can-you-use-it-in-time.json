@@ -1,0 +1,815 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-04-save-with-a-purpose",
+  "lesson_id": "fe-solid-18-can-you-use-it-in-time",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.save.access"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check when money can actually be used and whether withdrawal conditions fit a stated near-term need.",
+  "title": {
+    "en-US": "Access to savings",
+    "es-MX": "¿Puedes usarlo a tiempo?",
+    "pt-BR": "Pode usar a tempo?"
+  },
+  "new_concepts": [
+    "finance.save.access"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Access to savings\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Puedes usarlo a tiempo?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pode usar a tempo?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "save.access",
+      "observable_action": "Check when money can actually be used and whether withdrawal conditions fit a stated near-term need.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.dates",
+      "save.emergency"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money you own may not be usable immediately. For a near-term payment, access time matters as well as amount.",
+    "misconception": "Treating ownership, an account balance or a promised return as immediate access to spendable money.",
+    "numeracy_support": "Compare access dates and payment dates already taught; no rate comparison is needed.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-example-01",
+        "supports_from": [],
+        "reasoning": "Ana must pay tomorrow. Her saved amount is sufficient, but the stated account conditions release it next week."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-example-02",
+        "supports_from": [],
+        "reasoning": "The amount exists, but arrives too late for this payment. Liquidity describes how readily money or an asset becomes usable."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The withdrawal condition does not fit the payment date."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The access date directly tests whether the reserve is usable in time."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-practice-01",
+        "supports_from": [],
+        "reasoning": "The usable withdrawal occurs before the stated payment deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-practice-02",
+        "supports_from": [],
+        "reasoning": "A withdrawal deduction can reduce the amount available for the payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-practice-03",
+        "supports_from": [],
+        "reasoning": "Return information alone does not establish access."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "save.access",
+        "context_id": "can-you-use-it-in-time-transfer-01",
+        "supports_from": [],
+        "reasoning": "An asset value does not establish money available by today deadline."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "save.access",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money you own may not be usable immediately. For a near-term payment, access time matters as well as amount."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero que tienes puede no estar disponible de inmediato. Para un pago cercano importa el plazo de acceso."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O dinheiro que você tem pode não estar disponível de imediato. Para um pagamento próximo, importa o prazo de acesso."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Amount and access",
+          "line": "Ana must pay tomorrow. Her saved amount is sufficient, but the stated account conditions release it next week."
+        },
+        "es-MX": {
+          "prompt": "Monto y acceso",
+          "line": "Ana debe pagar mañana. Su ahorro alcanza, pero las condiciones de la cuenta permiten retirarlo la próxima semana."
+        },
+        "pt-BR": {
+          "prompt": "Valor e acesso",
+          "line": "Ana precisa pagar amanhã. Sua poupança basta, mas as condições da conta permitem retirá-la na próxima semana."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check the condition",
+          "line": "The amount exists, but arrives too late for this payment. Liquidity describes how readily money or an asset becomes usable."
+        },
+        "es-MX": {
+          "prompt": "Comprueba la condición",
+          "line": "El monto existe, pero llega tarde para este pago. La liquidez describe qué tan fácilmente el dinero o un activo puede usarse."
+        },
+        "pt-BR": {
+          "prompt": "Confira a condição",
+          "line": "O valor existe, mas chega tarde para esse pagamento. Liquidez descreve quão facilmente o dinheiro ou um ativo pode ser usado."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these savings pay tomorrow?",
+          "scene": "Enough is saved, but withdrawals open next week.",
+          "options": [
+            {
+              "label": "Yes, ownership is enough"
+            },
+            {
+              "label": "No, access is after the deadline"
+            },
+            {
+              "label": "Yes, the balance is large"
+            }
+          ],
+          "help": [
+            "Check usable money at the deadline, not only the balance."
+          ],
+          "feedback": {
+            "met": "The withdrawal condition does not fit the payment date.",
+            "not_yet": "Check usable money at the deadline, not only the balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El ahorro resuelve el pago de mañana?",
+          "scene": "El monto alcanza, pero solo se permite retirarlo la próxima semana.",
+          "options": [
+            {
+              "label": "Sí, basta con ser dueño"
+            },
+            {
+              "label": "No, el acceso es después del plazo"
+            },
+            {
+              "label": "Sí, si el saldo mostrado es grande"
+            }
+          ],
+          "help": [
+            "Revisa el dinero utilizable al vencer, no solo el saldo."
+          ],
+          "feedback": {
+            "met": "La condición de retiro no coincide con la fecha de pago.",
+            "not_yet": "Revisa el dinero utilizable al vencer, no solo el saldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A poupança resolve o pagamento de amanhã?",
+          "scene": "O valor basta, mas só é permitido retirar na próxima semana.",
+          "options": [
+            {
+              "label": "Sim, basta ser o dono"
+            },
+            {
+              "label": "Não, o acesso é após o prazo"
+            },
+            {
+              "label": "Sim, se o saldo mostrado for grande"
+            }
+          ],
+          "help": [
+            "Confira o dinheiro utilizável no vencimento, não só o saldo."
+          ],
+          "feedback": {
+            "met": "A condição de retirada não atende à data do pagamento.",
+            "not_yet": "Confira o dinheiro utilizável no vencimento, não só o saldo."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question checks access?",
+          "scene": "You need the reserve for an urgent payment.",
+          "options": [
+            {
+              "label": "What was the largest past balance?"
+            },
+            {
+              "label": "What return is advertised?"
+            },
+            {
+              "label": "When can I use the money?"
+            }
+          ],
+          "help": [
+            "A return claim does not establish withdrawal conditions."
+          ],
+          "feedback": {
+            "met": "The access date directly tests whether the reserve is usable in time.",
+            "not_yet": "A return claim does not establish withdrawal conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta comprueba el acceso?",
+          "scene": "Necesitas saber si una reserva puede cubrir un pago urgente.",
+          "options": [
+            {
+              "label": "¿Cuál fue el mayor saldo anterior?"
+            },
+            {
+              "label": "¿Qué rendimiento destaca el anuncio?"
+            },
+            {
+              "label": "¿Cuándo puedo usar realmente el dinero?"
+            }
+          ],
+          "help": [
+            "Un rendimiento anunciado no establece las condiciones de retiro."
+          ],
+          "feedback": {
+            "met": "La fecha de acceso comprueba si la reserva puede usarse a tiempo.",
+            "not_yet": "Un rendimiento anunciado no establece las condiciones de retiro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pergunta verifica o acesso?",
+          "scene": "Você precisa saber se uma reserva pode cobrir um pagamento urgente.",
+          "options": [
+            {
+              "label": "Qual foi o maior saldo anterior?"
+            },
+            {
+              "label": "Qual retorno o anúncio destaca?"
+            },
+            {
+              "label": "Quando posso realmente usar o dinheiro?"
+            }
+          ],
+          "help": [
+            "Um retorno anunciado não define as condições de retirada."
+          ],
+          "feedback": {
+            "met": "A data de acesso verifica se a reserva pode ser usada a tempo.",
+            "not_yet": "Um retorno anunciado não define as condições de retirada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option meets Friday?",
+          "scene": "You must pay Friday; A permits usable withdrawal Thursday; B permits it Monday afterward. Both amounts are sufficient.",
+          "options": [
+            {
+              "label": "Only A"
+            },
+            {
+              "label": "Only B"
+            },
+            {
+              "label": "Both automatically"
+            }
+          ],
+          "help": [
+            "Compare access dates under the stated conditions."
+          ],
+          "feedback": {
+            "met": "The usable withdrawal occurs before the stated payment deadline.",
+            "not_yet": "Compare access dates under the stated conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción indicada respeta el plazo?",
+          "scene": "Debes pagar el viernes; A permite usar el retiro el jueves; B, el lunes posterior. Ambos montos alcanzan.",
+          "options": [
+            {
+              "label": "Solo A"
+            },
+            {
+              "label": "Solo B"
+            },
+            {
+              "label": "Ambas automáticamente"
+            }
+          ],
+          "help": [
+            "Compara las fechas de acceso según las condiciones dadas."
+          ],
+          "feedback": {
+            "met": "El retiro utilizable ocurre antes del vencimiento indicado.",
+            "not_yet": "Compara las fechas de acceso según las condiciones dadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual opção informada atende ao prazo?",
+          "scene": "Precisa pagar na sexta; A permite usar a retirada na quinta; B, na segunda seguinte. Ambos os valores bastam.",
+          "options": [
+            {
+              "label": "Só A"
+            },
+            {
+              "label": "Só B"
+            },
+            {
+              "label": "Ambas automaticamente"
+            }
+          ],
+          "help": [
+            "Compare as datas de acesso segundo as condições dadas."
+          ],
+          "feedback": {
+            "met": "A retirada utilizável ocorre antes do vencimento informado.",
+            "not_yet": "Compare as datas de acesso segundo as condições dadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "Will you receive the full balance?",
+          "scene": "Early withdrawal has a fee you have not checked.",
+          "options": [
+            {
+              "label": "Yes, withdrawals always pay everything"
+            },
+            {
+              "label": "Yes, ignore the deduction"
+            },
+            {
+              "label": "No, check the net usable amount"
+            }
+          ],
+          "help": [
+            "Access conditions include both time and the amount actually received."
+          ],
+          "feedback": {
+            "met": "A withdrawal deduction can reduce the amount available for the payment.",
+            "not_yet": "Access conditions include both time and the amount actually received."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes suponer que todo el monto está disponible?",
+          "scene": "Se puede retirar antes, pero las condiciones mencionan una deducción que no has revisado.",
+          "options": [
+            {
+              "label": "Sí, todo retiro entrega el saldo completo"
+            },
+            {
+              "label": "Sí, ignora la deducción"
+            },
+            {
+              "label": "No, revisa el monto neto utilizable"
+            }
+          ],
+          "help": [
+            "Las condiciones incluyen el plazo y el monto realmente recibido."
+          ],
+          "feedback": {
+            "met": "Una deducción puede reducir el monto disponible para pagar.",
+            "not_yet": "Las condiciones incluyen el plazo y el monto realmente recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode supor que todo o valor está disponível?",
+          "scene": "É possível retirar antes, mas as condições citam uma dedução que você não conferiu.",
+          "options": [
+            {
+              "label": "Sim, toda retirada entrega o saldo total"
+            },
+            {
+              "label": "Sim, ignore a dedução"
+            },
+            {
+              "label": "Não, confira o valor líquido utilizável"
+            }
+          ],
+          "help": [
+            "As condições incluem o prazo e o valor realmente recebido."
+          ],
+          "feedback": {
+            "met": "Uma dedução pode reduzir o valor disponível para pagar.",
+            "not_yet": "As condições incluem o prazo e o valor realmente recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unknown?",
+          "scene": "An offer advertises growth but says nothing about withdrawals.",
+          "options": [
+            {
+              "label": "Whether the advertisement has a title"
+            },
+            {
+              "label": "Whether growth guarantees access"
+            },
+            {
+              "label": "Withdrawal timing and conditions"
+            }
+          ],
+          "help": [
+            "Look for the withdrawal terms rather than guessing from the headline."
+          ],
+          "feedback": {
+            "met": "Return information alone does not establish access.",
+            "not_yet": "Look for the withdrawal terms rather than guessing from the headline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue sin saberse?",
+          "scene": "Una oferta anuncia crecimiento, pero no dice nada sobre retiros.",
+          "options": [
+            {
+              "label": "Si el anuncio tiene título"
+            },
+            {
+              "label": "Si crecimiento y acceso significan lo mismo"
+            },
+            {
+              "label": "Cuándo y bajo qué condiciones se usa el dinero"
+            }
+          ],
+          "help": [
+            "Busca las condiciones de retiro en vez de deducirlas del anuncio."
+          ],
+          "feedback": {
+            "met": "La información de rendimiento no establece el acceso.",
+            "not_yet": "Busca las condiciones de retiro en vez de deducirlas del anuncio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua desconhecido?",
+          "scene": "Uma oferta anuncia crescimento, mas não informa nada sobre retiradas.",
+          "options": [
+            {
+              "label": "Se o anúncio tem título"
+            },
+            {
+              "label": "Se crescimento e acesso significam a mesma coisa"
+            },
+            {
+              "label": "Quando e em quais condições o dinheiro é utilizável"
+            }
+          ],
+          "help": [
+            "Busque as condições de retirada em vez de deduzir pelo anúncio."
+          ],
+          "feedback": {
+            "met": "A informação sobre retorno não estabelece o acesso.",
+            "not_yet": "Busque as condições de retirada em vez de deduzir pelo anúncio."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it pay today?",
+          "scene": "Unsold equipment could cover a bill due today; no buyer is confirmed.",
+          "options": [
+            {
+              "label": "Yes, ownership guarantees cash"
+            },
+            {
+              "label": "Yes, value equals cash"
+            },
+            {
+              "label": "No, the sale is incomplete"
+            }
+          ],
+          "help": [
+            "Distinguish a valuable asset from completed usable proceeds."
+          ],
+          "feedback": {
+            "met": "An asset value does not establish money available by today deadline.",
+            "not_yet": "Distinguish a valuable asset from completed usable proceeds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El valor estimado paga el recibo de hoy?",
+          "scene": "El equipo vale lo suficiente, pero no hay comprador; debes pagar hoy.",
+          "options": [
+            {
+              "label": "Sí, ser dueño garantiza cobrar hoy"
+            },
+            {
+              "label": "Sí, el valor estimado es efectivo utilizable"
+            },
+            {
+              "label": "No, aún falta una venta realizada"
+            }
+          ],
+          "help": [
+            "Distingue un activo valioso de dinero realmente recibido y utilizable."
+          ],
+          "feedback": {
+            "met": "El valor de un activo no demuestra dinero disponible hoy.",
+            "not_yet": "Distingue un activo valioso de dinero realmente recibido y utilizable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O valor estimado paga a conta de hoje?",
+          "scene": "Seu equipamento vale o suficiente, mas não há comprador; a conta vence hoje.",
+          "options": [
+            {
+              "label": "Sim, ser dono garante receber hoje"
+            },
+            {
+              "label": "Sim, o valor estimado é dinheiro utilizável"
+            },
+            {
+              "label": "Não, ainda falta uma venda concluída"
+            }
+          ],
+          "help": [
+            "Distinga um ativo valioso de dinheiro realmente recebido e utilizável."
+          ],
+          "feedback": {
+            "met": "O valor de um ativo não demonstra dinheiro disponível hoje.",
+            "not_yet": "Distinga um ativo valioso de dinheiro realmente recebido e utilizável."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "checked_on": "2026-10-05",
+  "scope": "Official starting points for labor guidance only. No lesson states a legal rate, promises a benefit, determines employment classification or decides an individual legal claim.",
+  "sources": [
+    {"locale":"en-US","url":"https://www.dol.gov/agencies/whd/flsa/","use":"Federal wage-and-hour guidance has defined coverage; a source must match the person's jurisdiction and circumstances."},
+    {"locale":"es-MX","url":"https://www.gob.mx/profedet/que-hacemos","use":"Official labor and social-security guidance; scope and competent authority must be checked for the case."},
+    {"locale":"pt-BR","url":"https://www.gov.br/pt-br/servicos/buscar-orientacao-trabalhista?id=9917&origem=servico","use":"Official labor-guidance service for questions about applicable labor rules."}
+  ],
+  "review_status": "Agent source check; no human regional legal approval claimed."
+}

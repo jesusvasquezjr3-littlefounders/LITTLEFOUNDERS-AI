@@ -146,6 +146,15 @@ describe('concept boards', () => {
     expect(screen.getByRole('button', { name: 'Continue' })).not.toBeDisabled();
   });
 
+  it('inflation: one-year and two-year controls use the matching unit in teaching copy', () => {
+    const raw = { ...lesson(SEGMENTS.prices), segments: [{ ...SEGMENTS.prices,
+      payload: { ...SEGMENTS.prices.payload, min_years: 1, max_years: 2, year_step: 1 } }] };
+    render(<LessonDocumentView raw={raw} locale="en-US" ageBand="13-17" onBack={noop} onGradeAny={async () => ({ verdict: 'met' })} />);
+    expect(screen.getByText('year, it costs')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Years: More' }));
+    expect(screen.getByText('years, it costs')).toBeTruthy();
+  });
+
   it('inflation: the sentence drives the rate, the answer stays hidden, and the prediction is sent', async () => {
     const { onGradeAny } = play(SEGMENTS.prices);
     expect(screen.getAllByText('?').length).toBeGreaterThan(0);

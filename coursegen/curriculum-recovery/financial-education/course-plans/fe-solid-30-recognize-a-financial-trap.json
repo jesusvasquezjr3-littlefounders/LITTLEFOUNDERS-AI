@@ -1,0 +1,815 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-07-risk-and-protection",
+  "lesson_id": "fe-solid-30-recognize-a-financial-trap",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.safety.fraud"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Pause a pressured financial request and verify its identity and terms through an independently obtained official channel.",
+  "title": {
+    "en-US": "Spotting fraud",
+    "es-MX": "Reconoce una trampa financiera",
+    "pt-BR": "Reconheça uma armadilha financeira"
+  },
+  "new_concepts": [
+    "finance.safety.fraud"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Spotting fraud\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reconoce una trampa financiera\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reconheça uma armadilha financeira\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "safety.fraud",
+      "observable_action": "Pause a pressured financial request and verify its identity and terms through an independently obtained official channel.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.total-cost",
+      "invest.horizon"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A convincing message can still be false. Separate its claim from evidence you can check independently.",
+    "misconception": "Treating urgency, familiar logos, testimonials or promised returns as proof of legitimacy.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-example-01",
+        "supports_from": [],
+        "reasoning": "A message demands an urgent transfer. Avoid its link; contact the institution through an independently verified channel."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-example-02",
+        "supports_from": [],
+        "reasoning": "Promises of large, certain gains are warning signs. Testimonials and polished websites do not verify identity or returns."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "Independent contact avoids relying on the suspicious message itself."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The promise and pressure are warning signs, not verification."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-practice-01",
+        "supports_from": [],
+        "reasoning": "A copied visual is not independent identity evidence."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-practice-02",
+        "supports_from": [],
+        "reasoning": "A separate known channel can check whether the friend made the request."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-practice-03",
+        "supports_from": [],
+        "reasoning": "Urgency does not supply the missing terms."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "safety.fraud",
+        "context_id": "recognize-a-financial-trap-transfer-01",
+        "supports_from": [],
+        "reasoning": "An unexpected reward tied to an advance payment deserves independent checking."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "safety.fraud",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A convincing message can still be false. Separate its claim from evidence you can check independently."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un mensaje convincente puede ser falso. Separa lo que promete de lo que puedes comprobar por otra vía."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma mensagem convincente pode ser falsa. Separe o que promete do que pode conferir por outra via."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pause before acting",
+          "line": "A message demands an urgent transfer. Avoid its link; contact the institution through an independently verified channel."
+        },
+        "es-MX": {
+          "prompt": "Pausa antes de actuar",
+          "line": "Un mensaje exige transferir de inmediato para proteger una cuenta. Evita su enlace; contacta a la institución por un canal verificado aparte."
+        },
+        "pt-BR": {
+          "prompt": "Pare antes de agir",
+          "line": "Uma mensagem exige transferência imediata para proteger uma conta. Evite o link; contate a instituição por um canal verificado separadamente."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A claim is not proof",
+          "line": "Promises of large, certain gains are warning signs. Testimonials and polished websites do not verify identity or returns."
+        },
+        "es-MX": {
+          "prompt": "Una promesa no es prueba",
+          "line": "Prometer ganancias grandes y seguras es una alerta. Testimonios y sitios cuidados no verifican identidad ni rendimientos."
+        },
+        "pt-BR": {
+          "prompt": "Uma promessa não é prova",
+          "line": "Prometer ganhos grandes e certos é um alerta. Depoimentos e sites bem feitos não verificam identidade nem retornos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you check?",
+          "scene": "A text requests an urgent transfer through its bank-support link.",
+          "options": [
+            {
+              "label": "Use the supplied link"
+            },
+            {
+              "label": "Contact the bank through an independently verified channel"
+            },
+            {
+              "label": "Send a small test transfer"
+            }
+          ],
+          "help": [
+            "The message cannot authenticate its own link."
+          ],
+          "feedback": {
+            "met": "Independent contact avoids relying on the suspicious message itself.",
+            "not_yet": "The message cannot authenticate its own link."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es la siguiente comprobación más segura?",
+          "scene": "Un mensaje afirma que tu banco necesita una transferencia urgente e incluye un enlace de soporte.",
+          "options": [
+            {
+              "label": "Preguntar al soporte del enlace"
+            },
+            {
+              "label": "Contactar al banco por un canal verificado aparte"
+            },
+            {
+              "label": "Transferir poco como prueba"
+            }
+          ],
+          "help": [
+            "El mensaje no puede autenticar su propio enlace."
+          ],
+          "feedback": {
+            "met": "El contacto independiente evita depender del mensaje sospechoso.",
+            "not_yet": "El mensaje no puede autenticar su propio enlace."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a próxima verificação mais segura?",
+          "scene": "Uma mensagem afirma que seu banco precisa de uma transferência urgente e inclui um link de suporte.",
+          "options": [
+            {
+              "label": "Perguntar ao suporte do link"
+            },
+            {
+              "label": "Contatar o banco por um canal verificado separadamente"
+            },
+            {
+              "label": "Transferir pouco como teste"
+            }
+          ],
+          "help": [
+            "A mensagem não pode autenticar o próprio link."
+          ],
+          "feedback": {
+            "met": "O contato independente evita depender da própria mensagem suspeita.",
+            "not_yet": "A mensagem não pode autenticar o próprio link."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this promise justify?",
+          "scene": "A stranger promises large returns without risk, demanding payment before questions.",
+          "options": [
+            {
+              "label": "Pay: the guarantee removes uncertainty"
+            },
+            {
+              "label": "Rely on the seller testimonials"
+            },
+            {
+              "label": "Pause and verify independently"
+            }
+          ],
+          "help": [
+            "Look for evidence outside the seller own claims."
+          ],
+          "feedback": {
+            "met": "The promise and pressure are warning signs, not verification.",
+            "not_yet": "Look for evidence outside the seller own claims."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué justifica esta promesa?",
+          "scene": "Un vendedor desconocido promete grandes ganancias garantizadas sin riesgo y exige pagar antes de preguntar.",
+          "options": [
+            {
+              "label": "Pagar porque la garantía elimina dudas"
+            },
+            {
+              "label": "Confiar en los testimonios del vendedor"
+            },
+            {
+              "label": "Pausar y verificar por otra vía"
+            }
+          ],
+          "help": [
+            "Busca pruebas fuera de las afirmaciones del vendedor."
+          ],
+          "feedback": {
+            "met": "La promesa y la presión son alertas, no comprobaciones.",
+            "not_yet": "Busca pruebas fuera de las afirmaciones del vendedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esta promessa justifica?",
+          "scene": "Um vendedor desconhecido promete grandes ganhos garantidos sem risco e exige pagar antes de perguntar.",
+          "options": [
+            {
+              "label": "Pagar porque a garantia elimina dúvidas"
+            },
+            {
+              "label": "Confiar nos depoimentos do vendedor"
+            },
+            {
+              "label": "Parar e verificar por outra via"
+            }
+          ],
+          "help": [
+            "Procure provas fora das afirmações do vendedor."
+          ],
+          "feedback": {
+            "met": "A promessa e a pressão são alertas, não verificações.",
+            "not_yet": "Procure provas fora das afirmações do vendedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the logo establish?",
+          "scene": "A payment request shows a familiar logo from an unverified address.",
+          "options": [
+            {
+              "label": "The company sent it"
+            },
+            {
+              "label": "Payment is required now"
+            },
+            {
+              "label": "It does not verify the sender"
+            }
+          ],
+          "help": [
+            "Separate appearance from verified origin."
+          ],
+          "feedback": {
+            "met": "A copied visual is not independent identity evidence.",
+            "not_yet": "Separate appearance from verified origin."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra el logotipo?",
+          "scene": "Una solicitud de pago muestra el logo de una empresa conocida, pero llegó de una dirección no verificada.",
+          "options": [
+            {
+              "label": "Que el remitente es la empresa"
+            },
+            {
+              "label": "Que debes pagar ahora"
+            },
+            {
+              "label": "El logo solo no verifica al remitente"
+            }
+          ],
+          "help": [
+            "Separa la apariencia del origen verificado."
+          ],
+          "feedback": {
+            "met": "Una imagen copiada no prueba la identidad por otra vía.",
+            "not_yet": "Separa la apariencia del origen verificado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o logotipo demonstra?",
+          "scene": "Um pedido de pagamento mostra o logo de uma empresa conhecida, mas veio de um endereço não verificado.",
+          "options": [
+            {
+              "label": "Que o remetente é a empresa"
+            },
+            {
+              "label": "Que deve pagar agora"
+            },
+            {
+              "label": "O logo sozinho não verifica o remetente"
+            }
+          ],
+          "help": [
+            "Separe aparência de origem verificada."
+          ],
+          "feedback": {
+            "met": "Uma imagem copiada não comprova a identidade por outra via.",
+            "not_yet": "Separe aparência de origem verificada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "How can you verify it?",
+          "scene": "An unusual message from your friend’s account requests emergency money.",
+          "options": [
+            {
+              "label": "Only reply to that account"
+            },
+            {
+              "label": "Call your friend’s previously known number"
+            },
+            {
+              "label": "Pay: the profile photo matches"
+            }
+          ],
+          "help": [
+            "The account itself may be compromised."
+          ],
+          "feedback": {
+            "met": "A separate known channel can check whether the friend made the request.",
+            "not_yet": "The account itself may be compromised."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo puedes verificar esta solicitud?",
+          "scene": "Un mensaje de la cuenta de una amistad pide dinero urgente. La forma de escribir resulta extraña.",
+          "options": [
+            {
+              "label": "Responder solo a la misma cuenta"
+            },
+            {
+              "label": "Llamar usando un número ya conocido"
+            },
+            {
+              "label": "Enviar porque coincide la foto del perfil"
+            }
+          ],
+          "help": [
+            "La propia cuenta podría estar comprometida."
+          ],
+          "feedback": {
+            "met": "Un canal conocido separado permite comprobar quién pidió el dinero.",
+            "not_yet": "La propia cuenta podría estar comprometida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como pode verificar este pedido?",
+          "scene": "Uma mensagem da conta de um amigo pede dinheiro urgente. O jeito de escrever parece estranho.",
+          "options": [
+            {
+              "label": "Responder só à mesma conta"
+            },
+            {
+              "label": "Ligar usando um número já conhecido"
+            },
+            {
+              "label": "Enviar porque a foto do perfil coincide"
+            }
+          ],
+          "help": [
+            "A própria conta pode estar comprometida."
+          ],
+          "feedback": {
+            "met": "Um canal conhecido separado permite conferir quem pediu o dinheiro.",
+            "not_yet": "A própria conta pode estar comprometida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the countdown prove?",
+          "scene": "A seller withholds written costs and demands immediate payment before the offer expires.",
+          "options": [
+            {
+              "label": "The price is unusually good"
+            },
+            {
+              "label": "The seller is verified"
+            },
+            {
+              "label": "Pressure, without verified terms"
+            }
+          ],
+          "help": [
+            "Check what information is missing despite the deadline."
+          ],
+          "feedback": {
+            "met": "Urgency does not supply the missing terms.",
+            "not_yet": "Check what information is missing despite the deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra la cuenta regresiva?",
+          "scene": "Un vendedor oculta los costos por escrito y exige pagar antes de que expire la oferta.",
+          "options": [
+            {
+              "label": "El precio debe ser excepcional"
+            },
+            {
+              "label": "El vendedor está verificado"
+            },
+            {
+              "label": "Presión, sin condiciones verificadas"
+            }
+          ],
+          "help": [
+            "Revisa qué información falta pese al plazo."
+          ],
+          "feedback": {
+            "met": "La urgencia no aporta las condiciones que faltan.",
+            "not_yet": "Revisa qué información falta pese al plazo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a contagem regressiva prova?",
+          "scene": "Um vendedor oculta os custos por escrito e exige pagamento antes de a oferta expirar.",
+          "options": [
+            {
+              "label": "O preço deve ser excepcional"
+            },
+            {
+              "label": "O vendedor está verificado"
+            },
+            {
+              "label": "Pressão, sem condições verificadas"
+            }
+          ],
+          "help": [
+            "Confira qual informação falta apesar do prazo."
+          ],
+          "feedback": {
+            "met": "A urgência não fornece as condições que faltam.",
+            "not_yet": "Confira qual informação falta apesar do prazo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you do first?",
+          "scene": "An unexpected caller requires a fee to an unfamiliar account before releasing winnings.",
+          "options": [
+            {
+              "label": "Verify through the caller"
+            },
+            {
+              "label": "Pay to claim the prize"
+            },
+            {
+              "label": "Pause payment; verify independently"
+            }
+          ],
+          "help": [
+            "Do not use the requested payment as a verification method."
+          ],
+          "feedback": {
+            "met": "An unexpected reward tied to an advance payment deserves independent checking.",
+            "not_yet": "Do not use the requested payment as a verification method."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes hacer primero?",
+          "scene": "Una llamada inesperada ofrece un premio si pagas primero un cargo a una cuenta nueva.",
+          "options": [
+            {
+              "label": "Usar solo el número de quien llama"
+            },
+            {
+              "label": "Pagar porque el premio supera el cargo"
+            },
+            {
+              "label": "Pausar el pago y verificar aparte"
+            }
+          ],
+          "help": [
+            "No uses el pago solicitado como método de verificación."
+          ],
+          "feedback": {
+            "met": "Una recompensa inesperada ligada a un anticipo requiere verificación independiente.",
+            "not_yet": "No uses el pago solicitado como método de verificación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer primeiro?",
+          "scene": "Uma ligação inesperada oferece um prêmio se pagar primeiro uma tarifa para uma conta nova.",
+          "options": [
+            {
+              "label": "Usar só o número de quem ligou"
+            },
+            {
+              "label": "Pagar porque o prêmio supera a tarifa"
+            },
+            {
+              "label": "Pausar o pagamento e verificar separadamente"
+            }
+          ],
+          "help": [
+            "Não use o pagamento pedido como método de verificação."
+          ],
+          "feedback": {
+            "met": "Uma recompensa inesperada ligada a um adiantamento exige verificação independente.",
+            "not_yet": "Não use o pagamento pedido como método de verificação."
+          }
+        }
+      }
+    }
+  ]
+}

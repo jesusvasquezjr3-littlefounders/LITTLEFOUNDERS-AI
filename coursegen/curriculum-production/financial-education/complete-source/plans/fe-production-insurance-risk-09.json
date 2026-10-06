@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-2",
+  "lesson_id": "fe-production-insurance-risk-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify documents and deadlines to preserve for a fictional claim.",
+  "title": {
+    "en-US": "Claim Records",
+    "es-MX": "Conserva evidencia del reclamo",
+    "pt-BR": "Guarde provas do pedido"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Claim Records\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Conserva evidencia del reclamo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Guarde provas do pedido\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.09",
+      "observable_action": "Identify documents and deadlines to preserve for a fictional claim.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03",
+      "prod.insurance-risk.06",
+      "prod.accounts-records.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Claims need relevant facts, records and dates; preserve what you submit and its confirmation.",
+    "misconception": "A verbal report guarantees payment or removes documentary requirements and stated deadlines.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-example-01",
+        "supports_from": [],
+        "reasoning": "Check the claim instructions; preserve relevant evidence, deadlines, submitted copies and confirmation. Reporting alone does not guarantee coverage or payment."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The requested records document the actual loss and its cost."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The notice deadline differs from the later invoice deadline."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-practice-01",
+        "supports_from": [],
+        "reasoning": "A saved copy and receipt document what was sent and when."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-practice-02",
+        "supports_from": [],
+        "reasoning": "The official channel can clarify acceptable evidence and next steps."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Receipt confirms submission, not the final coverage decision."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The first deadline still applies while supporting receipts follow later."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Claims need relevant facts, records and dates; preserve what you submit and its confirmation."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Reclamo necesita hechos, comprobantes y fechas bajo términos reales; guarda copia rastreable de lo que entregas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pedido precisa de fatos, comprovantes e datas sob termos reais; guarde cópia rastreável do que envia."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Facts, records and dates",
+          "line": "Check the claim instructions; preserve relevant evidence, deadlines, submitted copies and confirmation. Reporting alone does not guarantee coverage or payment."
+        },
+        "es-MX": {
+          "prompt": "Hechos, registros y fechas",
+          "line": "Revisa instrucciones; conserva evidencia relevante, fechas, copias entregadas y confirmación. Reportar solo no garantiza cobertura ni pago."
+        },
+        "pt-BR": {
+          "prompt": "Fatos, registros e datas",
+          "line": "Veja instruções; guarde provas relevantes, datas, cópias enviadas e confirmação. Informar só não garante cobertura nem pagamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record set meets these instructions?",
+          "scene": "Fictional claim asks for event date, damage photos and repair invoice.",
+          "options": [
+            {
+              "label": "Only a premium advertisement"
+            },
+            {
+              "label": "Only an unrelated receipt"
+            },
+            {
+              "label": "All three requested records"
+            }
+          ],
+          "help": [
+            "Match each requested item to the relevant evidence."
+          ],
+          "feedback": {
+            "met": "The requested records document the actual loss and its cost.",
+            "not_yet": "Match each requested item to the relevant evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registros cumplen instrucciones?",
+          "scene": "Reclamo ficticio pide fecha del evento, fotos del daño y factura de reparación.",
+          "options": [
+            {
+              "label": "Solo anuncio de prima"
+            },
+            {
+              "label": "Solo recibo ajeno"
+            },
+            {
+              "label": "Los tres registros pedidos"
+            }
+          ],
+          "help": [
+            "Relaciona cada elemento pedido con evidencia relevante."
+          ],
+          "feedback": {
+            "met": "Registros pedidos documentan pérdida real y su costo.",
+            "not_yet": "Relaciona cada elemento pedido con evidencia relevante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registros atendem instruções?",
+          "scene": "Pedido fictício exige data do evento, fotos do dano e nota do reparo.",
+          "options": [
+            {
+              "label": "Só anúncio de prêmio"
+            },
+            {
+              "label": "Só recibo alheio"
+            },
+            {
+              "label": "Os três registros pedidos"
+            }
+          ],
+          "help": [
+            "Ligue cada item pedido à prova relevante."
+          ],
+          "feedback": {
+            "met": "Registros pedidos documentam perda real e seu custo.",
+            "not_yet": "Ligue cada item pedido à prova relevante."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which deadline applies to notice?",
+          "scene": "Fictional instructions: notify by May 8; invoices may follow by May 20.",
+          "options": [
+            {
+              "label": "May 20 for everything"
+            },
+            {
+              "label": "Whenever repair ends"
+            },
+            {
+              "label": "May 8"
+            }
+          ],
+          "help": [
+            "Track each required action with its own stated date."
+          ],
+          "feedback": {
+            "met": "The notice deadline differs from the later invoice deadline.",
+            "not_yet": "Track each required action with its own stated date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha aplica al aviso?",
+          "scene": "Instrucciones ficticias: avisar antes o el 8 de mayo; facturas hasta 20 de mayo.",
+          "options": [
+            {
+              "label": "20 de mayo para todo"
+            },
+            {
+              "label": "Cuando acabe reparación"
+            },
+            {
+              "label": "8 de mayo"
+            }
+          ],
+          "help": [
+            "Registra cada acción requerida con su propia fecha."
+          ],
+          "feedback": {
+            "met": "Fecha de aviso difiere de fecha posterior de facturas.",
+            "not_yet": "Registra cada acción requerida con su propia fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que data vale para aviso?",
+          "scene": "Instruções fictícias: avisar até 8 de maio; notas podem seguir até 20 de maio.",
+          "options": [
+            {
+              "label": "20 de maio para tudo"
+            },
+            {
+              "label": "Quando acabar reparo"
+            },
+            {
+              "label": "8 de maio"
+            }
+          ],
+          "help": [
+            "Registre cada ação exigida com sua própria data."
+          ],
+          "feedback": {
+            "met": "Data do aviso difere da data posterior das notas.",
+            "not_yet": "Registre cada ação exigida com sua própria data."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What proves the submission trail?",
+          "scene": "A claim was submitted through the official portal.",
+          "options": [
+            {
+              "label": "Memory alone"
+            },
+            {
+              "label": "Deleting the confirmation"
+            },
+            {
+              "label": "Saved copy and receipt reference"
+            }
+          ],
+          "help": [
+            "Preserve evidence of submission as well as evidence of loss."
+          ],
+          "feedback": {
+            "met": "A saved copy and receipt document what was sent and when.",
+            "not_yet": "Preserve evidence of submission as well as evidence of loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué prueba entrega del reclamo?",
+          "scene": "Reclamo fue entregado por portal oficial.",
+          "options": [
+            {
+              "label": "Solo memoria"
+            },
+            {
+              "label": "Borrar confirmación"
+            },
+            {
+              "label": "Copia guardada y folio de recepción"
+            }
+          ],
+          "help": [
+            "Conserva evidencia de entrega además de evidencia de pérdida."
+          ],
+          "feedback": {
+            "met": "Copia y recepción documentan qué se envió y cuándo.",
+            "not_yet": "Conserva evidencia de entrega además de evidencia de pérdida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que prova envio do pedido?",
+          "scene": "Pedido foi enviado pelo portal oficial.",
+          "options": [
+            {
+              "label": "Só memória"
+            },
+            {
+              "label": "Apagar confirmação"
+            },
+            {
+              "label": "Cópia salva e protocolo de recebimento"
+            }
+          ],
+          "help": [
+            "Guarde prova de envio além de prova da perda."
+          ],
+          "feedback": {
+            "met": "Cópia e recebimento documentam o que foi enviado e quando.",
+            "not_yet": "Guarde prova de envio além de prova da perda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What should happen with an unclear requirement?",
+          "scene": "Instructions request a document that is unavailable; the deadline is near.",
+          "options": [
+            {
+              "label": "Ask official claim channel promptly"
+            },
+            {
+              "label": "Invent a document"
+            },
+            {
+              "label": "Assume the deadline vanished"
+            }
+          ],
+          "help": [
+            "Raise the issue promptly and keep its written response."
+          ],
+          "feedback": {
+            "met": "The official channel can clarify acceptable evidence and next steps.",
+            "not_yet": "Raise the issue promptly and keep its written response."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer con requisito poco claro?",
+          "scene": "Instrucciones piden documento no disponible; fecha límite está cerca.",
+          "options": [
+            {
+              "label": "Consultar pronto canal oficial de reclamos"
+            },
+            {
+              "label": "Inventar documento"
+            },
+            {
+              "label": "Suponer fecha borrada"
+            }
+          ],
+          "help": [
+            "Consulta pronto y guarda respuesta escrita."
+          ],
+          "feedback": {
+            "met": "Canal oficial puede aclarar evidencia aceptable y siguientes pasos.",
+            "not_yet": "Consulta pronto y guarda respuesta escrita."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer com exigência pouco clara?",
+          "scene": "Instruções pedem documento indisponível; prazo está perto.",
+          "options": [
+            {
+              "label": "Consultar logo canal oficial de pedidos"
+            },
+            {
+              "label": "Inventar documento"
+            },
+            {
+              "label": "Supor prazo apagado"
+            }
+          ],
+          "help": [
+            "Consulte logo e guarde resposta escrita."
+          ],
+          "feedback": {
+            "met": "Canal oficial pode esclarecer prova aceita e próximos passos.",
+            "not_yet": "Consulte logo e guarde resposta escrita."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a receipt confirm coverage approval?",
+          "scene": "The portal confirms only that the claim was received.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, every report guarantees payment"
+            },
+            {
+              "label": "Yes, receipt means approved"
+            }
+          ],
+          "help": [
+            "Distinguish acknowledgment from approval and payment."
+          ],
+          "feedback": {
+            "met": "Receipt confirms submission, not the final coverage decision.",
+            "not_yet": "Distinguish acknowledgment from approval and payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Recepción confirma aprobación de cobertura?",
+          "scene": "Portal solo confirma que recibió reclamo.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, todo reporte garantiza pago"
+            },
+            {
+              "label": "Sí, recepción significa aprobado"
+            }
+          ],
+          "help": [
+            "Distingue recepción de aprobación y pago."
+          ],
+          "feedback": {
+            "met": "Recepción confirma entrega, no decisión final de cobertura.",
+            "not_yet": "Distingue recepción de aprobación y pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Recebimento confirma aprovação de cobertura?",
+          "scene": "Portal só confirma que recebeu pedido.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, todo aviso garante pagamento"
+            },
+            {
+              "label": "Sim, recebimento significa aprovado"
+            }
+          ],
+          "help": [
+            "Separe recebimento de aprovação e pagamento."
+          ],
+          "feedback": {
+            "met": "Recebimento confirma envio, não decisão final da cobertura.",
+            "not_yet": "Separe recebimento de aprovação e pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action preserves claims?",
+          "scene": "Fictional terms require notice today, then receipts later; receipts are not ready.",
+          "options": [
+            {
+              "label": "Wait until receipts are ready"
+            },
+            {
+              "label": "Send unrelated receipts instead"
+            },
+            {
+              "label": "Notify today; preserve reference and receipts"
+            }
+          ],
+          "help": [
+            "Follow each stated deadline and retain the submission trail."
+          ],
+          "feedback": {
+            "met": "The first deadline still applies while supporting receipts follow later.",
+            "not_yet": "Follow each stated deadline and retain the submission trail."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción preserva este reclamo?",
+          "scene": "Términos ficticios exigen aviso hoy y recibos después; recibos aún no están listos.",
+          "options": [
+            {
+              "label": "Esperar recibos listos"
+            },
+            {
+              "label": "Enviar recibos ajenos"
+            },
+            {
+              "label": "Avisar hoy; guardar folio y recibos"
+            }
+          ],
+          "help": [
+            "Sigue cada fecha indicada y conserva evidencia de entrega."
+          ],
+          "feedback": {
+            "met": "Primera fecha sigue aplicando aunque recibos lleguen después.",
+            "not_yet": "Sigue cada fecha indicada y conserva evidencia de entrega."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ação preserva este pedido?",
+          "scene": "Termos fictícios exigem aviso hoje e recibos depois; recibos ainda não estão prontos.",
+          "options": [
+            {
+              "label": "Esperar recibos prontos"
+            },
+            {
+              "label": "Enviar recibos alheios"
+            },
+            {
+              "label": "Avisar hoje; guardar protocolo e recibos"
+            }
+          ],
+          "help": [
+            "Siga cada prazo dado e guarde prova de envio."
+          ],
+          "feedback": {
+            "met": "Primeiro prazo segue valendo mesmo com recibos depois.",
+            "not_yet": "Siga cada prazo dado e guarde prova de envio."
+          }
+        }
+      }
+    }
+  ]
+}

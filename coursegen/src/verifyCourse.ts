@@ -101,6 +101,17 @@ async function attestCourseRelease(courseId: string, checks: readonly ReleaseChe
 }
 
 (async () => {
+  const sourceFlags = ['--blueprint', '--plans', '--lesson-ids'];
+  if (sourceFlags.some(flag => process.argv.includes(flag))) {
+    const values = sourceFlags.map(flag => {
+      const index = process.argv.indexOf(flag);
+      const value = index < 0 ? undefined : process.argv[index + 1];
+      if (!value || value.startsWith('--')) throw new Error(`verify:course: exact-source verification requires ${flag} <path>`);
+      return path.resolve(value);
+    });
+    const { verifyV2Course } = await import('./v2/verifyCourse.js');
+    process.exit(await verifyV2Course(COURSE, { source: { blueprint: values[0]!, plans: values[1]!, lessonIds: values[2]! } }));
+  }
   // A v2 structure is an explicit declaration that v2 is the authored source
   // of truth. Never verify that course against the similarly named legacy
   // blueprint or fabricate v1 lesson_documents to satisfy old checks.

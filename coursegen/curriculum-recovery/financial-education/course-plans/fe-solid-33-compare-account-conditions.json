@@ -1,0 +1,817 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-08-decide-with-evidence",
+  "lesson_id": "fe-solid-33-compare-account-conditions",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.product.conditions"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare fictional account costs and access conditions against an explicitly stated pattern of use.",
+  "title": {
+    "en-US": "Account costs",
+    "es-MX": "Compara condiciones de cuentas",
+    "pt-BR": "Compare condições de contas"
+  },
+  "new_concepts": [
+    "finance.product.conditions"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Account costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara condiciones de cuentas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare condições de contas\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "product.conditions",
+      "observable_action": "Compare fictional account costs and access conditions against an explicitly stated pattern of use.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "price.final",
+      "save.access",
+      "debt.obligation",
+      "plan.periodic"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An account can have several kinds of cost. Compare the operations you actually need and when you need them.",
+    "misconception": "Treating a no-monthly-fee headline as proof that all operations are free or all access needs are met.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-example-01",
+        "supports_from": [],
+        "reasoning": "Fictional account A charges per withdrawal, without monthly fees. Account B charges monthly and includes those withdrawals."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-example-02",
+        "supports_from": [],
+        "reasoning": "Calculate each account cost for the same planned operations. Then check access times, restrictions and any conditions for fee waivers."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "A monthly-fee statement does not price every operation."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Equal use makes the totals comparable."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-practice-01",
+        "supports_from": [],
+        "reasoning": "A conditional benefit applies only under its stated conditions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-practice-02",
+        "supports_from": [],
+        "reasoning": "A low cost does not fix an incompatible access time."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-practice-03",
+        "supports_from": [],
+        "reasoning": "Spending permission can create debt rather than new income."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "product.conditions",
+        "context_id": "compare-account-conditions-transfer-01",
+        "supports_from": [],
+        "reasoning": "Changed use can change the relevant costs and conditions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "product.conditions",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An account can have several kinds of cost. Compare the operations you actually need and when you need them."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cuenta puede tener varios costos. Compara las operaciones que necesitas y cuándo las necesitas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma conta pode ter vários custos. Compare as operações necessárias e quando precisa delas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read beyond the headline",
+          "line": "Fictional account A charges per withdrawal, without monthly fees. Account B charges monthly and includes those withdrawals."
+        },
+        "es-MX": {
+          "prompt": "Lee más allá del anuncio",
+          "line": "La cuenta ficticia A no cobra mensualidad, pero cobra cada retiro. La B cobra mensualidad e incluye esos retiros."
+        },
+        "pt-BR": {
+          "prompt": "Leia além do anúncio",
+          "line": "A conta fictícia A não cobra mensalidade, mas cobra cada saque. A B cobra mensalidade e inclui esses saques."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare the same use",
+          "line": "Calculate each account cost for the same planned operations. Then check access times, restrictions and any conditions for fee waivers."
+        },
+        "es-MX": {
+          "prompt": "Compara el mismo uso",
+          "line": "Calcula el costo de cada cuenta para las mismas operaciones. Después revisa acceso, restricciones y condiciones para evitar cargos."
+        },
+        "pt-BR": {
+          "prompt": "Compare o mesmo uso",
+          "line": "Calcule o custo de cada conta para as mesmas operações. Depois confira acesso, restrições e condições para evitar cobranças."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from the headline?",
+          "scene": "An account advertises no monthly fee, omitting prices for your frequent withdrawals.",
+          "options": [
+            {
+              "label": "A promise of free services"
+            },
+            {
+              "label": "Your withdrawal costs"
+            },
+            {
+              "label": "The opening date"
+            }
+          ],
+          "help": [
+            "List the operations you actually plan to make."
+          ],
+          "feedback": {
+            "met": "A monthly-fee statement does not price every operation.",
+            "not_yet": "List the operations you actually plan to make."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en el anuncio?",
+          "scene": "Una cuenta anuncia cero mensualidad. Necesitas retiros frecuentes y no muestra sus precios.",
+          "options": [
+            {
+              "label": "Una promesa de que todo es gratis"
+            },
+            {
+              "label": "El costo de retiros según tu uso"
+            },
+            {
+              "label": "Solo la fecha de apertura"
+            }
+          ],
+          "help": [
+            "Enumera las operaciones que realmente planeas hacer."
+          ],
+          "feedback": {
+            "met": "La mensualidad no indica el precio de cada operación.",
+            "not_yet": "Enumera las operaciones que realmente planeas hacer."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta no anúncio?",
+          "scene": "Uma conta anuncia mensalidade zero. Você precisa de saques frequentes e os preços não aparecem.",
+          "options": [
+            {
+              "label": "Uma promessa de que tudo é grátis"
+            },
+            {
+              "label": "O custo dos saques conforme seu uso"
+            },
+            {
+              "label": "Só a data de abertura"
+            }
+          ],
+          "help": [
+            "Liste as operações que realmente pretende fazer."
+          ],
+          "feedback": {
+            "met": "A mensalidade não informa o preço de cada operação.",
+            "not_yet": "Liste as operações que realmente pretende fazer."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison is fair?",
+          "scene": "Two accounts price withdrawals and transfers differently. You know your planned usage.",
+          "options": [
+            {
+              "label": "Compare different operations"
+            },
+            {
+              "label": "Price the same operations in both"
+            },
+            {
+              "label": "Compare advertised benefits only"
+            }
+          ],
+          "help": [
+            "Keep the usage pattern constant."
+          ],
+          "feedback": {
+            "met": "Equal use makes the totals comparable.",
+            "not_yet": "Keep the usage pattern constant."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación es equivalente?",
+          "scene": "Dos cuentas cobran distinto por retiros y transferencias. Conoces tus operaciones previstas.",
+          "options": [
+            {
+              "label": "Comparar una transferencia con muchos retiros"
+            },
+            {
+              "label": "Cotizar las mismas operaciones en ambas"
+            },
+            {
+              "label": "Comparar solo el beneficio anunciado más grande"
+            }
+          ],
+          "help": [
+            "Mantén igual el patrón de uso."
+          ],
+          "feedback": {
+            "met": "El mismo uso hace comparables los totales.",
+            "not_yet": "Mantén igual el patrón de uso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação é equivalente?",
+          "scene": "Duas contas cobram diferente por saques e transferências. Você conhece suas operações previstas.",
+          "options": [
+            {
+              "label": "Comparar uma transferência com muitos saques"
+            },
+            {
+              "label": "Calcular as mesmas operações em ambas"
+            },
+            {
+              "label": "Comparar só o maior benefício anunciado"
+            }
+          ],
+          "help": [
+            "Mantenha igual o padrão de uso."
+          ],
+          "feedback": {
+            "met": "O mesmo uso torna os totais comparáveis.",
+            "not_yet": "Mantenha igual o padrão de uso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "When would you pay fees?",
+          "scene": "Avoiding fees requires a minimum balance. Yours often falls below.",
+          "options": [
+            {
+              "label": "When the required balance is missing"
+            },
+            {
+              "label": "Never: the waiver always applies"
+            },
+            {
+              "label": "Never: variable deposits cancel conditions"
+            }
+          ],
+          "help": [
+            "Compare the requirement with your stated use."
+          ],
+          "feedback": {
+            "met": "A conditional benefit applies only under its stated conditions.",
+            "not_yet": "Compare the requirement with your stated use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo pagarías el cargo?",
+          "scene": "Evitar el cargo exige un saldo mínimo. El tuyo suele quedar por debajo.",
+          "options": [
+            {
+              "label": "Cuando falte el saldo requerido"
+            },
+            {
+              "label": "Nunca: siempre aplica cero cargo"
+            },
+            {
+              "label": "Nunca: los depósitos variables eliminan condiciones"
+            }
+          ],
+          "help": [
+            "Compara el requisito con el uso indicado."
+          ],
+          "feedback": {
+            "met": "Un beneficio condicionado depende de cumplir sus condiciones.",
+            "not_yet": "Compara el requisito con el uso indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando pagaria a tarifa?",
+          "scene": "Evitar a tarifa exige um saldo mínimo. O seu costuma ficar abaixo dele.",
+          "options": [
+            {
+              "label": "Quando faltar o saldo exigido"
+            },
+            {
+              "label": "Nunca: a tarifa zero sempre vale"
+            },
+            {
+              "label": "Nunca: depósitos variáveis eliminam condições"
+            }
+          ],
+          "help": [
+            "Compare o requisito com o uso informado."
+          ],
+          "feedback": {
+            "met": "Um benefício condicional depende de cumprir suas condições.",
+            "not_yet": "Compare o requisito com o uso informado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the lower fee enough?",
+          "scene": "The cheaper account misses your payment deadline. The other meets it.",
+          "options": [
+            {
+              "label": "Yes, only fees matter"
+            },
+            {
+              "label": "Yes, cheaper always means faster"
+            },
+            {
+              "label": "No, access must be timely"
+            }
+          ],
+          "help": [
+            "Check both total cost and usability."
+          ],
+          "feedback": {
+            "met": "A low cost does not fix an incompatible access time.",
+            "not_yet": "Check both total cost and usability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Basta el menor cargo?",
+          "scene": "La cuenta más barata no entrega dinero antes del pago obligatorio. La otra sí.",
+          "options": [
+            {
+              "label": "Sí, los cargos son la única condición"
+            },
+            {
+              "label": "Sí, lo más barato siempre llega antes"
+            },
+            {
+              "label": "No, necesitas acceso a tiempo"
+            }
+          ],
+          "help": [
+            "Revisa el costo total y la utilidad real."
+          ],
+          "feedback": {
+            "met": "Un costo bajo no corrige un plazo de acceso incompatible.",
+            "not_yet": "Revisa el costo total y la utilidad real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A menor tarifa basta?",
+          "scene": "A conta mais barata não entrega o dinheiro antes do pagamento obrigatório. A outra entrega.",
+          "options": [
+            {
+              "label": "Sim, tarifas são a única condição"
+            },
+            {
+              "label": "Sim, o mais barato sempre chega antes"
+            },
+            {
+              "label": "Não, precisa de acesso a tempo"
+            }
+          ],
+          "help": [
+            "Confira o custo total e a utilidade real."
+          ],
+          "feedback": {
+            "met": "Um custo baixo não corrige um prazo de acesso incompatível.",
+            "not_yet": "Confira o custo total e a utilidade real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "What is this overdraft amount?",
+          "scene": "You can spend beyond your deposits, but must repay with agreed charges.",
+          "options": [
+            {
+              "label": "Extra earned income"
+            },
+            {
+              "label": "Borrowed money with obligations"
+            },
+            {
+              "label": "A waiver requiring no repayment"
+            }
+          ],
+          "help": [
+            "Read the repayment requirement."
+          ],
+          "feedback": {
+            "met": "Spending permission can create debt rather than new income.",
+            "not_yet": "Read the repayment requirement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué representa este sobregiro?",
+          "scene": "Una cuenta permite gastar más de lo depositado, con devolución y cargos exigidos por el acuerdo.",
+          "options": [
+            {
+              "label": "Ingreso adicional ganado"
+            },
+            {
+              "label": "Dinero prestado con obligaciones"
+            },
+            {
+              "label": "Una exención sin devolución"
+            }
+          ],
+          "help": [
+            "Lee la obligación de devolución."
+          ],
+          "feedback": {
+            "met": "La autorización de gasto puede crear deuda y no ingreso.",
+            "not_yet": "Lee la obligación de devolución."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que representa este cheque especial?",
+          "scene": "Uma conta permite gastar além do depositado, com devolução e cobranças exigidas pelo acordo.",
+          "options": [
+            {
+              "label": "Renda adicional ganha"
+            },
+            {
+              "label": "Dinheiro emprestado com obrigações"
+            },
+            {
+              "label": "Uma isenção sem devolução"
+            }
+          ],
+          "help": [
+            "Leia a obrigação de devolução."
+          ],
+          "feedback": {
+            "met": "A autorização de gasto pode criar dívida em vez de renda.",
+            "not_yet": "Leia a obrigação de devolução."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you compare now?",
+          "scene": "You replace cash withdrawals with regular transfers. Accounts price these differently.",
+          "options": [
+            {
+              "label": "Only the old withdrawal costs"
+            },
+            {
+              "label": "Only the same headline"
+            },
+            {
+              "label": "Updated usage costs and access"
+            }
+          ],
+          "help": [
+            "Compare what you will actually do next."
+          ],
+          "feedback": {
+            "met": "Changed use can change the relevant costs and conditions.",
+            "not_yet": "Compare what you will actually do next."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe cambiar en la comparación?",
+          "scene": "Cambias retiros de efectivo por transferencias regulares. Las cuentas cobran distinto por ambos.",
+          "options": [
+            {
+              "label": "Conservar la comparación basada solo en retiros"
+            },
+            {
+              "label": "Elegir solo por el mismo anuncio"
+            },
+            {
+              "label": "Recalcular el nuevo uso y revisar acceso"
+            }
+          ],
+          "help": [
+            "Compara lo que realmente harás ahora."
+          ],
+          "feedback": {
+            "met": "Un uso distinto puede cambiar los costos y condiciones relevantes.",
+            "not_yet": "Compara lo que realmente harás ahora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve mudar na comparação?",
+          "scene": "Troca saques por transferências regulares. As contas cobram diferente por ambos.",
+          "options": [
+            {
+              "label": "Manter a comparação baseada só em saques"
+            },
+            {
+              "label": "Escolher só pelo mesmo anúncio"
+            },
+            {
+              "label": "Recalcular o novo uso e conferir acesso"
+            }
+          ],
+          "help": [
+            "Compare o que realmente fará agora."
+          ],
+          "feedback": {
+            "met": "Um uso diferente pode mudar os custos e condições relevantes.",
+            "not_yet": "Compare o que realmente fará agora."
+          }
+        }
+      }
+    }
+  ]
+}

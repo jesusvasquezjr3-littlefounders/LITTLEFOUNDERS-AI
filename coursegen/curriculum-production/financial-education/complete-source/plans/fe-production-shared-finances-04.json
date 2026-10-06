@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-1",
+  "lesson_id": "fe-production-shared-finances-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize financial coercion and identify a safe support option without requiring confrontation.",
+  "title": {
+    "en-US": "Financial Coercion",
+    "es-MX": "Reconoce coerción financiera",
+    "pt-BR": "Reconheça coação com dinheiro"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Financial Coercion\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reconoce coerción financiera\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reconheça coação com dinheiro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.04",
+      "observable_action": "Recognize financial coercion and identify a safe support option without requiring confrontation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.05",
+      "prod.goals-tradeoffs.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money can be used to control someone; recognize pressure and choose support that respects their immediate safety.",
+    "misconception": "Coerced debt is normal sharing, or seeking help always requires confronting the controlling person first.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-example-01",
+        "supports_from": [],
+        "reasoning": "Forced debt or blocked money access can signal coercion. Seek trusted support through a safe channel; confrontation is not required."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Threats remove the freedom to choose the debt."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A safer channel reduces exposure while seeking support."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Punitive restriction uses money to control another person."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-practice-02",
+        "supports_from": [],
+        "reasoning": "Support does not require risking confrontation first."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Support should preserve safety and the person’s choices."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Threat-based control warrants support that prioritizes safety."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money can be used to control someone; recognize pressure and choose support that respects their immediate safety."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero puede usarse para controlar; reconoce presión y elige apoyo que respete la seguridad inmediata."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dinheiro pode ser usado para controlar alguém; reconheça pressão e escolha apoio que respeite sua segurança de hoje."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Safety before confrontation",
+          "line": "Forced debt or blocked money access can signal coercion. Seek trusted support through a safe channel; confrontation is not required."
+        },
+        "es-MX": {
+          "prompt": "Seguridad antes de confrontar",
+          "line": "Deuda forzada o acceso bloqueado al dinero pueden señalar coerción. Busca apoyo confiable por canal seguro; confrontar no es obligatorio."
+        },
+        "pt-BR": {
+          "prompt": "Segurança antes de confrontar",
+          "line": "Dívida forçada ou acesso bloqueado ao dinheiro podem indicar coação. Busque apoio confiável por canal seguro; confrontar não é obrigatório."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which behavior signals coercion?",
+          "scene": "A partner threatens harm unless another signs a loan they do not want.",
+          "options": [
+            {
+              "label": "A voluntary gift"
+            },
+            {
+              "label": "Freely agreed budget discussion"
+            },
+            {
+              "label": "Threatening to force debt"
+            }
+          ],
+          "help": [
+            "Distinguish consent from pressure backed by threats."
+          ],
+          "feedback": {
+            "met": "Threats remove the freedom to choose the debt.",
+            "not_yet": "Distinguish consent from pressure backed by threats."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conducta señala coerción?",
+          "scene": "Pareja amenaza con daño si alguien no firma un préstamo que no quiere.",
+          "options": [
+            {
+              "label": "Un regalo voluntario"
+            },
+            {
+              "label": "Presupuesto discutido libremente"
+            },
+            {
+              "label": "Amenazar para forzar deuda"
+            }
+          ],
+          "help": [
+            "Distingue consentimiento de presión con amenazas."
+          ],
+          "feedback": {
+            "met": "Las amenazas quitan libertad para elegir la deuda.",
+            "not_yet": "Distingue consentimiento de presión con amenazas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que conduta indica coação?",
+          "scene": "Parceiro ameaça causar dano se alguém não assinar empréstimo que não quer.",
+          "options": [
+            {
+              "label": "Um presente voluntário"
+            },
+            {
+              "label": "Orçamento discutido livremente"
+            },
+            {
+              "label": "Ameaçar para forçar dívida"
+            }
+          ],
+          "help": [
+            "Separe escolha livre de pressão com ameaças."
+          ],
+          "feedback": {
+            "met": "Ameaças tiram a liberdade de escolher a dívida.",
+            "not_yet": "Separe escolha livre de pressão com ameaças."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which support choice respects safety?",
+          "scene": "A controlling person monitors the shared phone; another trusted private channel is available.",
+          "options": [
+            {
+              "label": "Post private details publicly"
+            },
+            {
+              "label": "Use the safer private channel"
+            },
+            {
+              "label": "Confront them immediately"
+            }
+          ],
+          "help": [
+            "Consider monitoring before choosing how to contact help."
+          ],
+          "feedback": {
+            "met": "A safer channel reduces exposure while seeking support.",
+            "not_yet": "Consider monitoring before choosing how to contact help."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué apoyo respeta seguridad?",
+          "scene": "Persona controladora vigila teléfono compartido; hay otro canal privado confiable.",
+          "options": [
+            {
+              "label": "Publicar datos privados"
+            },
+            {
+              "label": "Usar canal privado más seguro"
+            },
+            {
+              "label": "Confrontar de inmediato"
+            }
+          ],
+          "help": [
+            "Considera vigilancia antes de elegir cómo contactar ayuda."
+          ],
+          "feedback": {
+            "met": "Un canal más seguro reduce exposición al buscar apoyo.",
+            "not_yet": "Considera vigilancia antes de elegir cómo contactar ayuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que apoio respeita segurança?",
+          "scene": "Pessoa controladora vigia telefone conjunto; há outro canal privado confiável.",
+          "options": [
+            {
+              "label": "Publicar dados privados"
+            },
+            {
+              "label": "Usar canal privado mais seguro"
+            },
+            {
+              "label": "Confrontar de imediato"
+            }
+          ],
+          "help": [
+            "Considere vigilância antes de escolher como contatar ajuda."
+          ],
+          "feedback": {
+            "met": "Um canal mais seguro reduz exposição ao buscar apoio.",
+            "not_yet": "Considere vigilância antes de escolher como contatar ajuda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What distinguishes this from agreement?",
+          "scene": "One adult blocks all money access to punish another for refusing a demand.",
+          "options": [
+            {
+              "label": "An ordinary price comparison"
+            },
+            {
+              "label": "Mutual voluntary budgeting"
+            },
+            {
+              "label": "Control through financial restriction"
+            }
+          ],
+          "help": [
+            "Look for freely given agreement and ability to refuse."
+          ],
+          "feedback": {
+            "met": "Punitive restriction uses money to control another person.",
+            "not_yet": "Look for freely given agreement and ability to refuse."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distingue esto de un acuerdo?",
+          "scene": "Un adulto bloquea todo acceso al dinero para castigar rechazo a una exigencia.",
+          "options": [
+            {
+              "label": "Comparación normal de precios"
+            },
+            {
+              "label": "Presupuesto voluntario mutuo"
+            },
+            {
+              "label": "Control mediante restricción financiera"
+            }
+          ],
+          "help": [
+            "Busca acuerdo libre y capacidad de negarse."
+          ],
+          "feedback": {
+            "met": "Restringir como castigo usa dinero para controlar a otra persona.",
+            "not_yet": "Busca acuerdo libre y capacidad de negarse."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que distingue isso de um acordo?",
+          "scene": "Um adulto bloqueia todo acesso ao dinheiro para punir recusa a uma exigência.",
+          "options": [
+            {
+              "label": "Comparação comum de preços"
+            },
+            {
+              "label": "Orçamento voluntário mútuo"
+            },
+            {
+              "label": "Controle por bloqueio com dinheiro"
+            }
+          ],
+          "help": [
+            "Busque acordo livre e capacidade de recusar."
+          ],
+          "feedback": {
+            "met": "Restringir como castigo usa dinheiro para controlar outra pessoa.",
+            "not_yet": "Busque acordo livre e capacidade de recusar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Must support wait for confrontation?",
+          "scene": "Someone fears retaliation and can safely contact a qualified local support service.",
+          "options": [
+            {
+              "label": "No, seek safe support first"
+            },
+            {
+              "label": "Yes, confront before any help"
+            },
+            {
+              "label": "Yes, prove bravery first"
+            }
+          ],
+          "help": [
+            "Choose a support path suited to the person’s safety."
+          ],
+          "feedback": {
+            "met": "Support does not require risking confrontation first.",
+            "not_yet": "Choose a support path suited to the person’s safety."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El apoyo debe esperar confrontación?",
+          "scene": "Alguien teme represalias y puede contactar con seguridad apoyo local calificado.",
+          "options": [
+            {
+              "label": "No, buscar primero apoyo seguro"
+            },
+            {
+              "label": "Sí, confrontar antes de ayuda"
+            },
+            {
+              "label": "Sí, demostrar valentía primero"
+            }
+          ],
+          "help": [
+            "Elige apoyo adecuado a la seguridad de la persona."
+          ],
+          "feedback": {
+            "met": "El apoyo no exige arriesgarse a confrontar primero.",
+            "not_yet": "Elige apoyo adecuado a la seguridad de la persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Apoio deve esperar confronto?",
+          "scene": "Alguém teme vingança e pode contatar com segurança apoio local treinado.",
+          "options": [
+            {
+              "label": "Não, buscar primeiro apoio seguro"
+            },
+            {
+              "label": "Sim, confrontar antes de ajuda"
+            },
+            {
+              "label": "Sim, provar coragem primeiro"
+            }
+          ],
+          "help": [
+            "Escolha apoio adequado à segurança da pessoa."
+          ],
+          "feedback": {
+            "met": "Apoio não exige arriscar confronto antes.",
+            "not_yet": "Escolha apoio adequado à segurança da pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response supports the person?",
+          "scene": "A friend describes being forced into borrowing.",
+          "options": [
+            {
+              "label": "Listen without blame; offer safe support"
+            },
+            {
+              "label": "Demand immediate confrontation"
+            },
+            {
+              "label": "Blame them for signing"
+            }
+          ],
+          "help": [
+            "Avoid blame and pressure that remove their control."
+          ],
+          "feedback": {
+            "met": "Support should preserve safety and the person’s choices.",
+            "not_yet": "Avoid blame and pressure that remove their control."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta apoya a la persona?",
+          "scene": "Amistad cuenta que la forzaron a endeudarse.",
+          "options": [
+            {
+              "label": "Escuchar sin culpar; ofrecer apoyo seguro"
+            },
+            {
+              "label": "Exigir confrontación inmediata"
+            },
+            {
+              "label": "Culparle por firmar"
+            }
+          ],
+          "help": [
+            "Evita culpa y presión que quiten control."
+          ],
+          "feedback": {
+            "met": "El apoyo debe preservar seguridad y decisiones propias.",
+            "not_yet": "Evita culpa y presión que quiten control."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que resposta apoia a pessoa?",
+          "scene": "Amizade conta que foi forçada a se endividar.",
+          "options": [
+            {
+              "label": "Ouvir sem culpar; oferecer apoio seguro"
+            },
+            {
+              "label": "Exigir confronto imediato"
+            },
+            {
+              "label": "Culpar por assinar"
+            }
+          ],
+          "help": [
+            "Evite culpa e pressão que tirem seu controle."
+          ],
+          "feedback": {
+            "met": "Apoio deve preservar segurança e escolhas da pessoa.",
+            "not_yet": "Evite culpa e pressão que tirem seu controle."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which next step fits?",
+          "scene": "Someone’s wages are seized through threats; a confidential local support service is safely reachable.",
+          "options": [
+            {
+              "label": "Announce a confrontation first"
+            },
+            {
+              "label": "Contact that service safely"
+            },
+            {
+              "label": "Share every password publicly"
+            }
+          ],
+          "help": [
+            "Use the available safe support route without forced confrontation."
+          ],
+          "feedback": {
+            "met": "Threat-based control warrants support that prioritizes safety.",
+            "not_yet": "Use the available safe support route without forced confrontation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué paso corresponde aquí?",
+          "scene": "Retienen salario mediante amenazas; apoyo local sigiloso puede contactarse con seguridad.",
+          "options": [
+            {
+              "label": "Anunciar confrontación primero"
+            },
+            {
+              "label": "Contactar ese apoyo con seguridad"
+            },
+            {
+              "label": "Publicar todas las contraseñas"
+            }
+          ],
+          "help": [
+            "Usa el apoyo seguro disponible sin confrontación forzada."
+          ],
+          "feedback": {
+            "met": "Control mediante amenazas merece apoyo que priorice seguridad.",
+            "not_yet": "Usa el apoyo seguro disponible sin confrontación forzada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que passo cabe aqui?",
+          "scene": "Retêm salário por ameaças; apoio local sigiloso pode ser contatado com segurança.",
+          "options": [
+            {
+              "label": "Anunciar confronto primeiro"
+            },
+            {
+              "label": "Contatar esse apoio com segurança"
+            },
+            {
+              "label": "Publicar todas as senhas"
+            }
+          ],
+          "help": [
+            "Use o apoio seguro disponível sem confronto forçado."
+          ],
+          "feedback": {
+            "met": "Controle por ameaças merece apoio que priorize segurança.",
+            "not_yet": "Use o apoio seguro disponível sem confronto forçado."
+          }
+        }
+      }
+    }
+  ]
+}

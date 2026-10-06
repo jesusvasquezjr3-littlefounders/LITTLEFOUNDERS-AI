@@ -1,0 +1,731 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-2",
+  "lesson_id": "fe-production-investing-foundations-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify concentration risk when several holdings depend on the same source of income.",
+  "title": {
+    "en-US": "Shared Exposure",
+    "es-MX": "Nombres distintos, riesgo común",
+    "pt-BR": "Nomes diferentes, risco comum"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Shared Exposure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Nombres distintos, riesgo común\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Nomes diferentes, risco comum\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.08",
+      "observable_action": "Identify concentration risk when several holdings depend on the same source of income.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.03",
+      "prod.investing-foundations.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Several investments can all depend on the same source of income.",
+    "misconception": "Counting account names or securities proves diversification without examining their exposures.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-example-01",
+        "supports_from": [],
+        "reasoning": "Hotel shares and an airport business both depend on tourism. A travel collapse can hurt both despite different names."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Both businesses depend on travel demand."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different apps can hold the identical underlying investment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-practice-01",
+        "supports_from": [],
+        "reasoning": "One employer’s trouble could affect both income and investments."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Overlapping holdings can preserve concentration across several funds."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Different industries can still share one geographic dependence."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.08",
+        "context_id": "investing-foundations-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "One customer’s failure could damage both businesses."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Several investments can all depend on the same source of income."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Varias inversiones pueden depender de la misma fuente de ingresos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Vários investimentos podem depender da mesma fonte de renda."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the dependence",
+          "line": "Hotel shares and an airport business both depend on tourism. A travel collapse can hurt both despite different names."
+        },
+        "es-MX": {
+          "prompt": "Sigue la dependencia",
+          "line": "Acciones de hoteles y un negocio aeroportuario dependen del turismo. Una caída de viajes puede afectar ambos pese a nombres distintos."
+        },
+        "pt-BR": {
+          "prompt": "Siga a dependência",
+          "line": "Ações de hotéis e um negócio aeroportuário dependem do turismo. Uma queda das viagens pode afetar ambos apesar dos nomes diferentes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which common risk?",
+          "scene": "A portfolio owns a resort and a cruise operator. Both rely on holiday travel.",
+          "options": [
+            {
+              "label": "Fewer travelers"
+            },
+            {
+              "label": "Their different company sizes"
+            }
+          ],
+          "help": [
+            "Look through the names to their customers."
+          ],
+          "feedback": {
+            "met": "Both businesses depend on travel demand.",
+            "not_yet": "Look through the names to their customers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo comparten?",
+          "scene": "Una cartera tiene un hotel turístico y una operadora de cruceros. Ambos dependen de viajes vacacionales.",
+          "options": [
+            {
+              "label": "Menos viajeros"
+            },
+            {
+              "label": "Sus distintos tamaños de empresa"
+            }
+          ],
+          "help": [
+            "Mira sus clientes, no solo los nombres."
+          ],
+          "feedback": {
+            "met": "Ambos negocios dependen de la demanda de viajes.",
+            "not_yet": "Mira sus clientes, no solo los nombres."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco compartilham?",
+          "scene": "Uma carteira tem um resort e uma operadora de cruzeiros. Ambos dependem de viagens de férias.",
+          "options": [
+            {
+              "label": "Menos viajantes"
+            },
+            {
+              "label": "Seus diferentes tamanhos de empresa"
+            }
+          ],
+          "help": [
+            "Observe os clientes, não só os nomes."
+          ],
+          "feedback": {
+            "met": "Ambos os negócios dependem da demanda por viagens.",
+            "not_yet": "Observe os clientes, não só os nomes."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Did exposure change?",
+          "scene": "Someone buys the same company’s shares through two different apps.",
+          "options": [
+            {
+              "label": "Yes, two apps mean two businesses"
+            },
+            {
+              "label": "No, the company exposure remains"
+            }
+          ],
+          "help": [
+            "Inspect what is owned inside each account."
+          ],
+          "feedback": {
+            "met": "Different apps can hold the identical underlying investment.",
+            "not_yet": "Inspect what is owned inside each account."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambió la exposición?",
+          "scene": "Alguien compra acciones de la misma empresa mediante dos aplicaciones.",
+          "options": [
+            {
+              "label": "Sí, dos aplicaciones son dos negocios"
+            },
+            {
+              "label": "No, depende de la misma empresa"
+            }
+          ],
+          "help": [
+            "Revisa qué posee cada cuenta."
+          ],
+          "feedback": {
+            "met": "Aplicaciones distintas pueden guardar la misma inversión.",
+            "not_yet": "Revisa qué posee cada cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A exposição mudou?",
+          "scene": "Alguém compra ações da mesma empresa por dois aplicativos.",
+          "options": [
+            {
+              "label": "Sim, dois aplicativos são dois negócios"
+            },
+            {
+              "label": "Não, depende da mesma empresa"
+            }
+          ],
+          "help": [
+            "Confira o que cada conta possui."
+          ],
+          "feedback": {
+            "met": "Aplicativos diferentes podem guardar o mesmo investimento.",
+            "not_yet": "Confira o que cada conta possui."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which household is concentrated?",
+          "scene": "A worker’s income and almost all investments depend on the same employer.",
+          "options": [
+            {
+              "label": "Neither, wages are not shares"
+            },
+            {
+              "label": "That worker’s household"
+            }
+          ],
+          "help": [
+            "Consider linked risks beyond the investment account."
+          ],
+          "feedback": {
+            "met": "One employer’s trouble could affect both income and investments.",
+            "not_yet": "Consider linked risks beyond the investment account."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hogar está concentrado?",
+          "scene": "El ingreso laboral y casi todas las inversiones dependen del mismo empleador.",
+          "options": [
+            {
+              "label": "Ninguno, salario no es acción"
+            },
+            {
+              "label": "El de esa persona"
+            }
+          ],
+          "help": [
+            "Considera riesgos conectados fuera de la cuenta de inversión."
+          ],
+          "feedback": {
+            "met": "Problemas del empleador podrían afectar ingresos e inversiones.",
+            "not_yet": "Considera riesgos conectados fuera de la cuenta de inversión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual família está concentrada?",
+          "scene": "A renda do trabalho e quase todos os investimentos dependem do mesmo empregador.",
+          "options": [
+            {
+              "label": "Nenhuma, salário não é ação"
+            },
+            {
+              "label": "A dessa pessoa"
+            }
+          ],
+          "help": [
+            "Considere riscos ligados fora da conta de investimentos."
+          ],
+          "feedback": {
+            "met": "Problemas do empregador podem afetar renda e investimentos.",
+            "not_yet": "Considere riscos ligados fora da conta de investimentos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be inspected?",
+          "scene": "Three differently named funds may hold many of the same companies.",
+          "options": [
+            {
+              "label": "Only past fund returns"
+            },
+            {
+              "label": "Only the fund count"
+            },
+            {
+              "label": "Their underlying holdings"
+            }
+          ],
+          "help": [
+            "Count distinct exposures, not product labels."
+          ],
+          "feedback": {
+            "met": "Overlapping holdings can preserve concentration across several funds.",
+            "not_yet": "Count distinct exposures, not product labels."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes inspeccionar?",
+          "scene": "Tres fondos con nombres distintos podrían tener muchas de las mismas empresas.",
+          "options": [
+            {
+              "label": "Solo rendimientos pasados"
+            },
+            {
+              "label": "Solo cuántos fondos hay"
+            },
+            {
+              "label": "Sus inversiones subyacentes"
+            }
+          ],
+          "help": [
+            "Cuenta exposiciones distintas, no etiquetas."
+          ],
+          "feedback": {
+            "met": "Coincidir en inversiones puede mantener la concentración entre fondos.",
+            "not_yet": "Cuenta exposiciones distintas, no etiquetas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que inspecionar?",
+          "scene": "Três fundos com nomes diferentes podem ter muitas das mesmas empresas.",
+          "options": [
+            {
+              "label": "Só retornos passados"
+            },
+            {
+              "label": "Só quantos fundos existem"
+            },
+            {
+              "label": "Seus investimentos subjacentes"
+            }
+          ],
+          "help": [
+            "Conte exposições distintas, não rótulos."
+          ],
+          "feedback": {
+            "met": "Investimentos coincidentes podem manter concentração entre fundos.",
+            "not_yet": "Conte exposições distintas, não rótulos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk remains?",
+          "scene": "A portfolio holds several unrelated industries, but all revenue comes from one small town.",
+          "options": [
+            {
+              "label": "No shared risk can remain"
+            },
+            {
+              "label": "A shared local shock"
+            }
+          ],
+          "help": [
+            "Look for more than one source of concentration."
+          ],
+          "feedback": {
+            "met": "Different industries can still share one geographic dependence.",
+            "not_yet": "Look for more than one source of concentration."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo queda?",
+          "scene": "Una cartera tiene industrias diferentes, pero todos sus ingresos vienen de una localidad pequeña.",
+          "options": [
+            {
+              "label": "No puede quedar riesgo común"
+            },
+            {
+              "label": "Un problema local común"
+            }
+          ],
+          "help": [
+            "Busca más de una fuente de concentración."
+          ],
+          "feedback": {
+            "met": "Industrias distintas pueden compartir dependencia geográfica.",
+            "not_yet": "Busca más de una fuente de concentración."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco permanece?",
+          "scene": "Uma carteira tem setores diferentes, mas toda receita vem de uma cidade pequena.",
+          "options": [
+            {
+              "label": "Não pode restar risco comum"
+            },
+            {
+              "label": "Um problema local comum"
+            }
+          ],
+          "help": [
+            "Procure mais de uma fonte de concentração."
+          ],
+          "feedback": {
+            "met": "Setores diferentes podem compartilhar dependência geográfica.",
+            "not_yet": "Procure mais de uma fonte de concentração."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Where is the link?",
+          "scene": "A delivery business and a packaging supplier earn nearly everything from the same retailer.",
+          "options": [
+            {
+              "label": "Their separate bank accounts"
+            },
+            {
+              "label": "Their different products eliminate dependence"
+            },
+            {
+              "label": "Their shared main customer"
+            }
+          ],
+          "help": [
+            "Follow the revenue source behind each business."
+          ],
+          "feedback": {
+            "met": "One customer’s failure could damage both businesses.",
+            "not_yet": "Follow the revenue source behind each business."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde está la conexión?",
+          "scene": "Una empresa de reparto y un proveedor de empaques reciben casi todos sus ingresos del mismo comercio.",
+          "options": [
+            {
+              "label": "Sus cuentas bancarias separadas"
+            },
+            {
+              "label": "Sus productos distintos eliminan dependencia"
+            },
+            {
+              "label": "Su cliente principal compartido"
+            }
+          ],
+          "help": [
+            "Sigue la fuente de ingresos de cada negocio."
+          ],
+          "feedback": {
+            "met": "La caída de un cliente podría dañar ambos negocios.",
+            "not_yet": "Sigue la fuente de ingresos de cada negocio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde está a ligação?",
+          "scene": "Uma transportadora e um fornecedor de embalagens recebem quase toda receita da mesma loja.",
+          "options": [
+            {
+              "label": "Suas contas bancárias separadas"
+            },
+            {
+              "label": "Produtos diferentes eliminam dependência"
+            },
+            {
+              "label": "Seu principal cliente comum"
+            }
+          ],
+          "help": [
+            "Siga a fonte de receita de cada negócio."
+          ],
+          "feedback": {
+            "met": "A quebra de um cliente pode prejudicar ambos os negócios.",
+            "not_yet": "Siga a fonte de receita de cada negócio."
+          }
+        }
+      }
+    }
+  ]
+}

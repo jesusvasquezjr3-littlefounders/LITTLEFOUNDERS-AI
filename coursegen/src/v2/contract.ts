@@ -103,7 +103,7 @@ export interface V2Segment {
   /** Up to two help ladder steps shown on request as one Mentor speech-plate turn each. */
   help?: string[];
   /** GAP-FIX-R6 (B.20, Bible 02 §9.2): the graded step's banner text; `met` names what was done right, `not_yet` is a hint. */
-  feedback?: { met?: string; not_yet?: string };
+  feedback?: { met?: string; not_yet?: string; choice_hints?: Record<string, string> };
   item_role?: 'practice' | 'transfer';
   /** Appendix P Part 8 (GAP-FIX-R2): L12/$11 pre/post items and the representation variant an A/B compares. */
   item_phase?: 'pre' | 'post';

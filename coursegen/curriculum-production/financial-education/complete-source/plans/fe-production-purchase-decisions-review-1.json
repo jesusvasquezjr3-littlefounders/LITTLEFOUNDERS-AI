@@ -1,0 +1,1239 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-3",
+  "lesson_id": "fe-production-purchase-decisions-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.01",
+    "finance.prod.purchase-decisions.02",
+    "finance.prod.purchase-decisions.03",
+    "finance.prod.purchase-decisions.04",
+    "finance.prod.purchase-decisions.05",
+    "finance.prod.purchase-decisions.06",
+    "finance.prod.financial-math.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare normalized unit costs and calculate mandatory charges, discounts and complete ownership cost.",
+  "title": {
+    "en-US": "Purchase Calculations",
+    "es-MX": "Encuentra costo real de compra",
+    "pt-BR": "Ache o custo real da compra"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Purchase Calculations\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Encuentra costo real de compra\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ache o custo real da compra\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.01",
+      "observable_action": "Compare normalized unit costs and calculate mandatory charges, discounts and complete ownership cost.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.06",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [
+      "prod.purchase-decisions.01",
+      "prod.purchase-decisions.02",
+      "prod.purchase-decisions.03",
+      "prod.purchase-decisions.04",
+      "prod.purchase-decisions.05",
+      "prod.purchase-decisions.06",
+      "prod.financial-math.06"
+    ],
+    "relevance": "Retrieve unit prices, discount order and complete costs before trusting a promotion.",
+    "misconception": "Headline numbers compare directly, successive percentages add, and promotion labels guarantee less spending.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The common kilogram basis makes unit costs comparable."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Both mandatory extras belong in the complete price."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.03",
+        "context_id": "purchase-decisions-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The discount amount must be subtracted from the original price."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The second percentage uses the price after the first discount."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "A discount label does not beat the original lower spending plan."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "B costs less after including the stated use costs."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.financial-math.06",
+        "context_id": "purchase-decisions-review-1-practice-07",
+        "supports_from": [],
+        "reasoning": "Equal contributions divide the total among the stated people."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "The container contains more than one common unit."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve unit prices, discount order and complete costs before trusting a promotion."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera precios unitarios, orden de descuentos y costos completos antes de confiar en promoción."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome preços unitários, ordem dos descontos e custos completos antes de confiar numa promoção."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the price per kilogram?",
+          "scene": "Package: 400 grams; Grams per kilogram: 1000; Price: 8.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "8"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Scale price using the stated grams-per-kilogram conversion."
+          ],
+          "feedback": {
+            "met": "The common kilogram basis makes unit costs comparable.",
+            "not_yet": "Scale price using the stated grams-per-kilogram conversion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio por kilogramo?",
+          "scene": "Paquete: 400 gramos; Gramos por kilogramo: 1000; Precio: 8.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "8"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Lleva precio a kilogramo con conversión indicada."
+          ],
+          "feedback": {
+            "met": "Base común de kilogramo permite comparar costos unitarios.",
+            "not_yet": "Lleva precio a kilogramo con conversión indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço por quilograma?",
+          "scene": "Pacote: 400 gramas; Gramas por quilograma: 1000; Preço: 8.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "8"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Leve preço a quilograma com conversão dada."
+          ],
+          "feedback": {
+            "met": "Base comum de quilograma permite comparar custos unitários.",
+            "not_yet": "Leve preço a quilograma com conversão dada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          1000,
+          8
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the final required price?",
+          "scene": "Base: 120; Mandatory shipping: 15; Mandatory setup: 5; No other charges.",
+          "options": [
+            {
+              "label": "140"
+            },
+            {
+              "label": "135"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Add base price and every required charge."
+          ],
+          "feedback": {
+            "met": "Both mandatory extras belong in the complete price.",
+            "not_yet": "Add base price and every required charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio final requerido?",
+          "scene": "Base: 120; Envío obligatorio: 15; Preparación obligatoria: 5; Sin otros cargos.",
+          "options": [
+            {
+              "label": "140"
+            },
+            {
+              "label": "135"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Suma base y cada cargo requerido."
+          ],
+          "feedback": {
+            "met": "Ambos extras obligatorios pertenecen al precio completo.",
+            "not_yet": "Suma base y cada cargo requerido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço final exigido?",
+          "scene": "Base: 120; Envio obrigatório: 15; Preparo obrigatório: 5; Sem outros custos.",
+          "options": [
+            {
+              "label": "140"
+            },
+            {
+              "label": "135"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Some base e cada custo exigido."
+          ],
+          "feedback": {
+            "met": "Ambos os extras obrigatórios pertencem ao preço completo.",
+            "not_yet": "Some base e cada custo exigido."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          15,
+          5
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after the discount?",
+          "scene": "Original: 160; Discount: 25%; No other charges.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "135"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Calculate the percentage reduction, then the amount payable."
+          ],
+          "feedback": {
+            "met": "The discount amount must be subtracted from the original price.",
+            "not_yet": "Calculate the percentage reduction, then the amount payable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras descuento?",
+          "scene": "Original: 160; Descuento: 25%; Sin otros cargos.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "135"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Calcula reducción porcentual y luego monto pagadero."
+          ],
+          "feedback": {
+            "met": "Monto descontado debe restarse al precio original.",
+            "not_yet": "Calcula reducción porcentual y luego monto pagadero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra após desconto?",
+          "scene": "Original: 160; Desconto: 25%; Sem outros custos.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "135"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Calcule redução percentual e depois valor devido."
+          ],
+          "feedback": {
+            "met": "Valor descontado deve ser subtraído do preço original.",
+            "not_yet": "Calcule redução percentual e depois valor devido."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          160,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after both discounts?",
+          "scene": "Original: 80; First discount: 25%; Second on reduced price: 10%; No fees.",
+          "options": [
+            {
+              "label": "52"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "54"
+            }
+          ],
+          "help": [
+            "Apply each reduction to the current remaining price."
+          ],
+          "feedback": {
+            "met": "The second percentage uses the price after the first discount.",
+            "not_yet": "Apply each reduction to the current remaining price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras ambos descuentos?",
+          "scene": "Original: 80; Primero: 25%; Segundo sobre precio reducido: 10%; Sin cargos.",
+          "options": [
+            {
+              "label": "52"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "54"
+            }
+          ],
+          "help": [
+            "Aplica cada reducción al precio restante actual."
+          ],
+          "feedback": {
+            "met": "Segundo porcentaje usa precio tras primer descuento.",
+            "not_yet": "Aplica cada reducción al precio restante actual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra após ambos os descontos?",
+          "scene": "Original: 80; Primeiro: 25%; Segundo sobre preço reduzido: 10%; Sem taxas.",
+          "options": [
+            {
+              "label": "52"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "54"
+            }
+          ],
+          "help": [
+            "Aplique cada redução ao preço restante atual."
+          ],
+          "feedback": {
+            "met": "Segundo percentual usa preço após primeiro desconto.",
+            "not_yet": "Aplique cada redução ao preço restante atual."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          25,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "op": "divide",
+                          "args": [
+                            {
+                              "op": "multiply",
+                              "args": [
+                                {
+                                  "input": 0
+                                },
+                                {
+                                  "input": 1
+                                }
+                              ]
+                            },
+                            {
+                              "constant": 100
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does qualifying save?",
+          "scene": "The discounted qualifying basket costs more than the planned basket; every extra item is unwanted.",
+          "options": [
+            {
+              "label": "Yes, any discount saves"
+            },
+            {
+              "label": "No, it raises actual spending"
+            },
+            {
+              "label": "Yes, extras are free"
+            }
+          ],
+          "help": [
+            "Compare complete spending with the original intended purchase."
+          ],
+          "feedback": {
+            "met": "A discount label does not beat the original lower spending plan.",
+            "not_yet": "Compare complete spending with the original intended purchase."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cumplir mínimo ahorra aquí?",
+          "scene": "Canasta mínima descontada cuesta más que prevista; todo extra no se desea.",
+          "options": [
+            {
+              "label": "Sí, todo descuento ahorra"
+            },
+            {
+              "label": "No, aumenta gasto real"
+            },
+            {
+              "label": "Sí, extras no deseados son gratis"
+            }
+          ],
+          "help": [
+            "Compara gasto completo con compra original prevista."
+          ],
+          "feedback": {
+            "met": "Etiqueta de descuento no supera plan original de menor gasto.",
+            "not_yet": "Compara gasto completo con compra original prevista."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Atingir mínimo poupa aqui?",
+          "scene": "Cesta mínima com desconto custa mais que prevista; todo extra é indesejado.",
+          "options": [
+            {
+              "label": "Sim, todo desconto poupa"
+            },
+            {
+              "label": "Não, aumenta gasto real"
+            },
+            {
+              "label": "Sim, extras indesejados são grátis"
+            }
+          ],
+          "help": [
+            "Compare gasto completo com compra original prevista."
+          ],
+          "feedback": {
+            "met": "Rótulo de desconto não supera plano original de menor gasto.",
+            "not_yet": "Compare gasto completo com compra original prevista."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                400,
+                360
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same ownership period; A purchase 250, total use 150; B purchase 300, total use 60; no other costs or resale.",
+          "title": "Ownership total",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which costs less?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B costs less after including the stated use costs.",
+            "not_yet": "Compare purchase plus operation for the same period."
+          },
+          "help": [
+            "Compare purchase plus operation for the same period."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mismo periodo; A compra 250, uso total 150; B compra 300, uso total 60; sin otros costos ni reventa.",
+          "title": "Total de propiedad",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué cuesta menos?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B cuesta menos incluyendo costos de uso indicados.",
+            "not_yet": "Compara compra más uso del mismo periodo."
+          },
+          "help": [
+            "Compara compra más uso del mismo periodo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesmo período; A compra 250, uso total 150; B compra 300, uso total 60; sem outros custos ou revenda.",
+          "title": "Total de posse",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual custa menos?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B custa menos incluindo custos de uso dados.",
+            "not_yet": "Compare compra mais uso do mesmo período."
+          },
+          "help": [
+            "Compare compra mais uso do mesmo período."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What is each equal contribution?",
+          "scene": "Shared purchase cost: 240; Equal contributors: 4.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Use the agreed equal split."
+          ],
+          "feedback": {
+            "met": "Equal contributions divide the total among the stated people.",
+            "not_yet": "Use the agreed equal split."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es cada aporte igual?",
+          "scene": "Compra compartida: 240; Aportes iguales entre: 4 personas.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Usa división igual acordada."
+          ],
+          "feedback": {
+            "met": "Aportes iguales dividen total entre personas indicadas.",
+            "not_yet": "Usa división igual acordada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é cada aporte igual?",
+          "scene": "Compra conjunta: 240; Aportes iguais entre: 4 pessoas.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Use divisão igual combinada."
+          ],
+          "feedback": {
+            "met": "Aportes iguais dividem total entre pessoas dadas.",
+            "not_yet": "Use divisão igual combinada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the price per liter?",
+          "scene": "Container: 2000 milliliters; Milliliters per liter: 1000; Price: 14.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "7"
+            },
+            {
+              "label": "14"
+            }
+          ],
+          "help": [
+            "Divide price by the converted volume in liters."
+          ],
+          "feedback": {
+            "met": "The container contains more than one common unit.",
+            "not_yet": "Divide price by the converted volume in liters."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio por litro?",
+          "scene": "Envase: 2000 mililitros; Mililitros por litro: 1000; Precio: 14.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "7"
+            },
+            {
+              "label": "14"
+            }
+          ],
+          "help": [
+            "Divide precio entre volumen convertido a litros."
+          ],
+          "feedback": {
+            "met": "Envase contiene más de una unidad común.",
+            "not_yet": "Divide precio entre volumen convertido a litros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço por litro?",
+          "scene": "Recipiente: 2000 mililitros; Mililitros por litro: 1000; Preço: 14.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "7"
+            },
+            {
+              "label": "14"
+            }
+          ],
+          "help": [
+            "Divida preço pelo volume convertido em litros."
+          ],
+          "feedback": {
+            "met": "Recipiente contém mais de uma unidade comum.",
+            "not_yet": "Divida preço pelo volume convertido em litros."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2000,
+          1000,
+          14
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,983 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-2",
+  "lesson_id": "fe-production-debt-recovery-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check whether consolidation reduces total cost or only lowers the monthly payment.",
+  "title": {
+    "en-US": "Consolidation costs",
+    "es-MX": "Un solo pago puede costar más",
+    "pt-BR": "Um só pagamento pode custar mais"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"One payment can still cost more\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Un solo pago puede costar más\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Um só pagamento pode custar mais\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.06",
+      "observable_action": "Check whether consolidation reduces total cost or only lowers the monthly payment.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Combining debts simplifies a schedule only if the actual terms fit; it does not automatically lower cost.",
+    "misconception": "Assuming that consolidating several debts into one payment always lowers total cost or removes the underlying debt.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-example-01",
+        "supports_from": [],
+        "reasoning": "Consolidation replaces debts with another agreement. Compare remaining total cost, fees, term and consequences; one smaller payment alone proves little."
+      },
+      {
+        "segment_id": "example-costs",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-example-costs",
+        "supports_from": [],
+        "reasoning": "Fictional remaining totals in dollars, all charges included."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-guided-01",
+        "supports_from": [
+          "example-costs"
+        ],
+        "reasoning": "6 × 20 + 4 × 30 = 240."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "12 × 25 = 300 under these fictional terms."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Longer repayment and fees can offset a lower monthly amount."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-practice-04",
+        "supports_from": [],
+        "reasoning": "Approval and actual settlement are distinct events."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-practice-05",
+        "supports_from": [],
+        "reasoning": "700 + 80 = 780 across the remaining obligations."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.06",
+        "context_id": "fe-production-debt-recovery-06-transfer-06",
+        "supports_from": [],
+        "reasoning": "The smaller payment lasts longer, increasing total repayment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Combining debts simplifies a schedule only if the actual terms fit; it does not automatically lower cost."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Combinar deudas solo ayuda si las condiciones caben; no reduce costo automáticamente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Juntar dívidas só ajuda se as regras couberem; não reduz custo de modo automático."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Consolidation replaces debts with another agreement. Compare remaining total cost, fees, term and consequences; one smaller payment alone proves little."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Consolidar reemplaza deudas con otro acuerdo. Compara costo total pendiente, cargos, plazo y consecuencias; una cuota menor sola prueba poco."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Consolidar troca dívidas por outro acordo. Compare custo total restante, tarifas, prazo e efeitos; uma parcela menor sozinha prova pouco."
+        }
+      }
+    },
+    {
+      "id": "example-costs",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "existing"
+            },
+            {
+              "id": "replacement"
+            }
+          ],
+          "series": [
+            {
+              "id": "remaining-cost",
+              "values": [
+                240,
+                300
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional remaining totals in dollars, all charges included.",
+          "title": "Remaining repayment totals",
+          "data": {
+            "categories": [
+              {
+                "label": "Existing"
+              },
+              {
+                "label": "Replacement"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Totales pendientes ficticios en pesos, todos los cargos incluidos.",
+          "title": "Totales pendientes de devolución",
+          "data": {
+            "categories": [
+              {
+                "label": "Actual"
+              },
+              {
+                "label": "Nuevo"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Totais restantes fictícios em reais, todas as tarifas incluídas.",
+          "title": "Totais restantes de devolução",
+          "data": {
+            "categories": [
+              {
+                "label": "Atual"
+              },
+              {
+                "label": "Novo"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Existing remaining total?",
+          "scene": "A: 6 remaining payments of 20; B: 4 remaining payments of 30; fees included.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Add both complete remaining schedules."
+          ],
+          "feedback": {
+            "met": "6 × 20 + 4 × 30 = 240.",
+            "not_yet": "Add both complete remaining schedules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pendiente actual?",
+          "scene": "A: 6 pagos pendientes de 20; B: 4 pagos pendientes de 30; cargos incluidos.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Suma ambos calendarios pendientes completos."
+          ],
+          "feedback": {
+            "met": "6 × 20 + 4 × 30 = 240.",
+            "not_yet": "Suma ambos calendarios pendientes completos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total restante atual?",
+          "scene": "A: 6 parcelas restantes de 20; B: 4 parcelas restantes de 30; tarifas incluídas.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Some ambos os calendários restantes completos."
+          ],
+          "feedback": {
+            "met": "6 × 20 + 4 × 30 = 240.",
+            "not_yet": "Some ambos os calendários restantes completos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          6,
+          20,
+          4,
+          30
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 3
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Replacement remaining total?",
+          "scene": "New agreement: 12 payments of 25; all charges included; settles the old debts.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "37"
+            }
+          ],
+          "help": [
+            "A lower installment can last for more periods."
+          ],
+          "feedback": {
+            "met": "12 × 25 = 300 under these fictional terms.",
+            "not_yet": "A lower installment can last for more periods."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total pendiente del reemplazo?",
+          "scene": "Acuerdo nuevo: 12 pagos de 25; cargos incluidos; liquida deudas anteriores.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "37"
+            }
+          ],
+          "help": [
+            "Una cuota menor puede durar más periodos."
+          ],
+          "feedback": {
+            "met": "12 × 25 = 300 bajo estas condiciones ficticias.",
+            "not_yet": "Una cuota menor puede durar más periodos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total restante da troca?",
+          "scene": "Acordo novo: 12 parcelas de 25; tarifas incluídas; quita dívidas anteriores.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "37"
+            }
+          ],
+          "help": [
+            "Uma parcela menor pode durar mais períodos."
+          ],
+          "feedback": {
+            "met": "12 × 25 = 300 sob essas regras fictícias.",
+            "not_yet": "Uma parcela menor pode durar mais períodos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          12,
+          25
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this establish savings?",
+          "scene": "The new loan lowers monthly payments but adds years and a fee.",
+          "options": [
+            {
+              "label": "Consolidation erases all charges"
+            },
+            {
+              "label": "Compare complete remaining costs"
+            },
+            {
+              "label": "Monthly reduction equals total saving"
+            }
+          ],
+          "help": [
+            "Read the complete schedule before concluding savings."
+          ],
+          "feedback": {
+            "met": "Longer repayment and fees can offset a lower monthly amount.",
+            "not_yet": "Read the complete schedule before concluding savings."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Una mensualidad menor demuestra ahorro?",
+          "scene": "El préstamo nuevo baja mensualidades, pero añade años y comisión.",
+          "options": [
+            {
+              "label": "Sí, consolidar elimina todo cargo"
+            },
+            {
+              "label": "No, compara costos pendientes completos"
+            },
+            {
+              "label": "Sí, reducción mensual equivale a ahorro total"
+            }
+          ],
+          "help": [
+            "Lee el calendario completo antes de concluir ahorro."
+          ],
+          "feedback": {
+            "met": "Un plazo mayor y cargos pueden compensar una cuota menor.",
+            "not_yet": "Lee el calendario completo antes de concluir ahorro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma parcela mensal menor prova economia?",
+          "scene": "O empréstimo novo baixa parcelas, mas soma anos e tarifa.",
+          "options": [
+            {
+              "label": "Sim, consolidar elimina toda tarifa"
+            },
+            {
+              "label": "Não, compare custos restantes completos"
+            },
+            {
+              "label": "Sim, queda mensal equivale à economia total"
+            }
+          ],
+          "help": [
+            "Leia o calendário completo antes de concluir economia."
+          ],
+          "feedback": {
+            "met": "Um prazo maior e tarifas podem compensar uma parcela menor.",
+            "not_yet": "Leia o calendário completo antes de concluir economia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Before considering debts closed?",
+          "scene": "A new loan is approved; old debts still show balances.",
+          "options": [
+            {
+              "label": "Approval alone proves every old debt paid"
+            },
+            {
+              "label": "Actual settlement and closure status"
+            },
+            {
+              "label": "Ignore the old statements"
+            }
+          ],
+          "help": [
+            "Verify where the new funds went and what remains owed."
+          ],
+          "feedback": {
+            "met": "Approval and actual settlement are distinct events.",
+            "not_yet": "Verify where the new funds went and what remains owed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué requiere evidencia antes de cerrar deudas previas?",
+          "scene": "Aprobaron préstamo nuevo; acreedores previos aún muestran saldos pendientes.",
+          "options": [
+            {
+              "label": "Aprobar prueba todo pago anterior"
+            },
+            {
+              "label": "Liquidación real y estado de cierre"
+            },
+            {
+              "label": "Ignorar los estados anteriores"
+            }
+          ],
+          "help": [
+            "Verifica destino de fondos nuevos y qué queda pendiente."
+          ],
+          "feedback": {
+            "met": "Aprobar y liquidar realmente son sucesos distintos.",
+            "not_yet": "Verifica destino de fondos nuevos y qué queda pendiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que exige prova antes de encerrar dívidas antigas?",
+          "scene": "Aprovaram empréstimo novo; credores antigos ainda mostram saldos devidos.",
+          "options": [
+            {
+              "label": "Aprovar prova todo pagamento antigo"
+            },
+            {
+              "label": "Quitação real e estado de fechamento"
+            },
+            {
+              "label": "Ignorar extratos antigos"
+            }
+          ],
+          "help": [
+            "Confira destino dos recursos novos e o que resta devido."
+          ],
+          "feedback": {
+            "met": "Aprovar e quitar de fato são eventos distintos.",
+            "not_yet": "Confira destino dos recursos novos e o que resta devido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "New obligation after fresh borrowing?",
+          "scene": "Consolidation balance 700; additional new card borrowing 80; no repayments or charges since.",
+          "options": [
+            {
+              "label": "780"
+            },
+            {
+              "label": "620"
+            },
+            {
+              "label": "700"
+            }
+          ],
+          "help": [
+            "A cleared card can create new debt if used again."
+          ],
+          "feedback": {
+            "met": "700 + 80 = 780 across the remaining obligations.",
+            "not_yet": "A cleared card can create new debt if used again."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Obligación nueva tras volver a pedir?",
+          "scene": "Saldo consolidado 700; préstamo nuevo adicional en tarjeta 80; sin pagos ni cargos posteriores.",
+          "options": [
+            {
+              "label": "780"
+            },
+            {
+              "label": "620"
+            },
+            {
+              "label": "700"
+            }
+          ],
+          "help": [
+            "Una tarjeta liquidada puede generar deuda al usarse otra vez."
+          ],
+          "feedback": {
+            "met": "700 + 80 = 780 entre obligaciones pendientes.",
+            "not_yet": "Una tarjeta liquidada puede generar deuda al usarse otra vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Nova obrigação após pedir de novo?",
+          "scene": "Saldo consolidado 700; novo empréstimo extra no cartão 80; sem pagamentos nem tarifas posteriores.",
+          "options": [
+            {
+              "label": "780"
+            },
+            {
+              "label": "620"
+            },
+            {
+              "label": "700"
+            }
+          ],
+          "help": [
+            "Um cartão quitado pode gerar dívida ao ser usado de novo."
+          ],
+          "feedback": {
+            "met": "700 + 80 = 780 entre obrigações restantes.",
+            "not_yet": "Um cartão quitado pode gerar dívida ao ser usado de novo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          700,
+          80
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Extra total cost?",
+          "scene": "Fictional remaining monthly schedules, fees included: existing 5 payments of 60; consolidation 8 payments of 45.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "360"
+            }
+          ],
+          "help": [
+            "Compare both complete schedules, not just each monthly payment."
+          ],
+          "feedback": {
+            "met": "The smaller payment lasts longer, increasing total repayment.",
+            "not_yet": "Compare both complete schedules, not just each monthly payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo total adicional?",
+          "scene": "Calendarios mensuales pendientes ficticios, cargos incluidos: actual 5 pagos de 60; consolidación 8 pagos de 45.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "360"
+            }
+          ],
+          "help": [
+            "Compara ambos calendarios completos, no solo cada mensualidad."
+          ],
+          "feedback": {
+            "met": "La cuota menor dura más tiempo y aumenta el total pagado.",
+            "not_yet": "Compara ambos calendarios completos, no solo cada mensualidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo total extra?",
+          "scene": "Calendários mensais restantes fictícios, tarifas incluídas: atual 5 parcelas de 60; consolidação 8 parcelas de 45.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "360"
+            }
+          ],
+          "help": [
+            "Compare ambos os calendários completos, não só cada parcela mensal."
+          ],
+          "feedback": {
+            "met": "A parcela menor dura mais tempo e aumenta o total pago.",
+            "not_yet": "Compare ambos os calendários completos, não só cada parcela mensal."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          5,
+          60,
+          8,
+          45
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 3
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

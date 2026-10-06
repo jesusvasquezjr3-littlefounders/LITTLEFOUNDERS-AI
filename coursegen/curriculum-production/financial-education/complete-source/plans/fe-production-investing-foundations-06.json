@@ -1,0 +1,731 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-1",
+  "lesson_id": "fe-production-investing-foundations-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain a bond’s credit risk using a borrower unable to make a promised payment.",
+  "title": {
+    "en-US": "Default Risk",
+    "es-MX": "Una promesa puede incumplirse",
+    "pt-BR": "Uma promessa pode não ser cumprida"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Default Risk\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Una promesa puede incumplirse\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Uma promessa pode não ser cumprida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.06",
+      "observable_action": "Explain a bond’s credit risk using a borrower unable to make a promised payment.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.05",
+      "prod.credit-mechanics.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An interest promise is useful only if the borrower can actually make the payment.",
+    "misconception": "A printed fixed payment eliminates borrower default risk.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-example-01",
+        "supports_from": [],
+        "reasoning": "A bond promises payment, but the issuer runs out of money. The promise remains; the investor may receive less."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The borrower cannot meet its payment obligation."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Fixed terms do not ensure the issuer has money."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-practice-01",
+        "supports_from": [],
+        "reasoning": "Missed payments directly concern the borrower’s reliability."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A good history does not eliminate future credit risk."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Failure to pay concerns the borrower’s obligation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Lower receipts can prevent the promised debt payment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An interest promise is useful only if the borrower can actually make the payment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una promesa de intereses sirve solo si el deudor puede realmente pagar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma promessa de juros depende de o devedor conseguir realmente pagar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The borrower matters",
+          "line": "A bond promises payment, but the issuer runs out of money. The promise remains; the investor may receive less."
+        },
+        "es-MX": {
+          "prompt": "El deudor importa",
+          "line": "Un bono promete pagar, pero al emisor se le acaba el dinero. La promesa sigue; el inversionista podría recibir menos."
+        },
+        "pt-BR": {
+          "prompt": "O devedor importa",
+          "line": "Um título promete pagar, mas o emissor fica sem dinheiro. A promessa continua; o investidor pode receber menos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk appeared?",
+          "scene": "A bond issuer cannot make the promised interest payment because it lacks funds.",
+          "options": [
+            {
+              "label": "Only a changing resale price"
+            },
+            {
+              "label": "Credit risk"
+            }
+          ],
+          "help": [
+            "Ask whether the borrower can pay."
+          ],
+          "feedback": {
+            "met": "The borrower cannot meet its payment obligation.",
+            "not_yet": "Ask whether the borrower can pay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo apareció?",
+          "scene": "El emisor de un bono no puede pagar los intereses prometidos porque no tiene fondos.",
+          "options": [
+            {
+              "label": "Solo cambio del precio de reventa"
+            },
+            {
+              "label": "Riesgo de crédito"
+            }
+          ],
+          "help": [
+            "Revisa si el deudor puede pagar."
+          ],
+          "feedback": {
+            "met": "El deudor no puede cumplir su obligación de pago.",
+            "not_yet": "Revisa si el deudor puede pagar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco apareceu?",
+          "scene": "O emissor de um título não consegue pagar os juros prometidos por falta de recursos.",
+          "options": [
+            {
+              "label": "Só mudança do preço de revenda"
+            },
+            {
+              "label": "Risco de crédito"
+            }
+          ],
+          "help": [
+            "Confira se o devedor consegue pagar."
+          ],
+          "feedback": {
+            "met": "O devedor não consegue cumprir sua obrigação de pagamento.",
+            "not_yet": "Confira se o devedor consegue pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does fixed mean certain?",
+          "scene": "A fixed-interest bond’s issuer has stopped paying its debts.",
+          "options": [
+            {
+              "label": "Yes, fixed guarantees payment"
+            },
+            {
+              "label": "No, fixed describes the terms"
+            }
+          ],
+          "help": [
+            "Separate the promised amount from the ability to pay."
+          ],
+          "feedback": {
+            "met": "Fixed terms do not ensure the issuer has money.",
+            "not_yet": "Separate the promised amount from the ability to pay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Fijo significa seguro?",
+          "scene": "El emisor de un bono con interés fijo dejó de pagar sus deudas.",
+          "options": [
+            {
+              "label": "Sí, fijo garantiza el pago"
+            },
+            {
+              "label": "No, fijo describe condiciones"
+            }
+          ],
+          "help": [
+            "Distingue monto prometido de capacidad para pagar."
+          ],
+          "feedback": {
+            "met": "Condiciones fijas no aseguran que el emisor tenga dinero.",
+            "not_yet": "Distingue monto prometido de capacidad para pagar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Fixo significa certo?",
+          "scene": "O emissor de um título com juros fixos parou de pagar suas dívidas.",
+          "options": [
+            {
+              "label": "Sim, fixo garante pagamento"
+            },
+            {
+              "label": "Não, fixo descreve condições"
+            }
+          ],
+          "help": [
+            "Separe o valor prometido da capacidade de pagar."
+          ],
+          "feedback": {
+            "met": "Condições fixas não garantem recursos ao emissor.",
+            "not_yet": "Separe o valor prometido da capacidade de pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What deserves investigation?",
+          "scene": "An issuer offers unusually high interest but has repeated missed payments.",
+          "options": [
+            {
+              "label": "Only the advertised interest"
+            },
+            {
+              "label": "The advertisement’s popularity"
+            },
+            {
+              "label": "Its ability to meet debt payments"
+            }
+          ],
+          "help": [
+            "A larger promise is not proof of stronger repayment."
+          ],
+          "feedback": {
+            "met": "Missed payments directly concern the borrower’s reliability.",
+            "not_yet": "A larger promise is not proof of stronger repayment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes investigar?",
+          "scene": "Un emisor ofrece intereses muy altos, pero acumula pagos incumplidos.",
+          "options": [
+            {
+              "label": "Solo el interés anunciado"
+            },
+            {
+              "label": "La popularidad del anuncio"
+            },
+            {
+              "label": "Su capacidad para pagar deudas"
+            }
+          ],
+          "help": [
+            "Prometer más no demuestra mayor capacidad de pago."
+          ],
+          "feedback": {
+            "met": "Los incumplimientos afectan directamente la confiabilidad del deudor.",
+            "not_yet": "Prometer más no demuestra mayor capacidad de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que investigar?",
+          "scene": "Um emissor oferece juros muito altos, mas acumula pagamentos atrasados.",
+          "options": [
+            {
+              "label": "Só os juros anunciados"
+            },
+            {
+              "label": "A popularidade do anúncio"
+            },
+            {
+              "label": "Sua capacidade de pagar dívidas"
+            }
+          ],
+          "help": [
+            "Prometer mais não demonstra maior capacidade de pagamento."
+          ],
+          "feedback": {
+            "met": "Atrasos afetam diretamente a confiabilidade do devedor.",
+            "not_yet": "Prometer mais não demonstra maior capacidade de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What can be concluded?",
+          "scene": "A borrower has paid every past instalment. Its future income is uncertain.",
+          "options": [
+            {
+              "label": "Past payments do not guarantee future ones"
+            },
+            {
+              "label": "Future repayment is guaranteed"
+            }
+          ],
+          "help": [
+            "Future resources can differ from past resources."
+          ],
+          "feedback": {
+            "met": "A good history does not eliminate future credit risk.",
+            "not_yet": "Future resources can differ from past resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puedes concluir?",
+          "scene": "Un deudor pagó todas las cuotas anteriores. Sus ingresos futuros son inciertos.",
+          "options": [
+            {
+              "label": "Pagos pasados no garantizan futuros"
+            },
+            {
+              "label": "La devolución futura está garantizada"
+            }
+          ],
+          "help": [
+            "Los recursos futuros pueden cambiar."
+          ],
+          "feedback": {
+            "met": "Un buen historial no elimina el riesgo futuro de crédito.",
+            "not_yet": "Los recursos futuros pueden cambiar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que se pode concluir?",
+          "scene": "Um devedor pagou todas as parcelas anteriores. Sua renda futura é incerta.",
+          "options": [
+            {
+              "label": "Pagamentos passados não garantem futuros"
+            },
+            {
+              "label": "A devolução futura está garantida"
+            }
+          ],
+          "help": [
+            "Os recursos futuros podem mudar."
+          ],
+          "feedback": {
+            "met": "Um bom histórico não elimina o risco futuro de crédito.",
+            "not_yet": "Os recursos futuros podem mudar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which event is default-related?",
+          "scene": "A company misses a promised bond payment. Another bond merely receives a lower sale offer.",
+          "options": [
+            {
+              "label": "The missed payment"
+            },
+            {
+              "label": "Only the lower sale offer"
+            }
+          ],
+          "help": [
+            "A resale price movement need not mean missed payment."
+          ],
+          "feedback": {
+            "met": "Failure to pay concerns the borrower’s obligation.",
+            "not_yet": "A resale price movement need not mean missed payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evento implica incumplimiento?",
+          "scene": "Una empresa omite el pago prometido de un bono. Otro bono solo recibe una oferta de venta menor.",
+          "options": [
+            {
+              "label": "El pago omitido"
+            },
+            {
+              "label": "Solo la oferta menor"
+            }
+          ],
+          "help": [
+            "Un cambio de precio no implica necesariamente falta de pago."
+          ],
+          "feedback": {
+            "met": "No pagar afecta la obligación del deudor.",
+            "not_yet": "Un cambio de precio no implica necesariamente falta de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evento envolve inadimplência?",
+          "scene": "Uma empresa deixa de pagar um título. Outro título apenas recebe uma oferta menor de compra.",
+          "options": [
+            {
+              "label": "O pagamento não feito"
+            },
+            {
+              "label": "Só a oferta menor"
+            }
+          ],
+          "help": [
+            "Uma mudança de preço não implica necessariamente falta de pagamento."
+          ],
+          "feedback": {
+            "met": "Não pagar afeta a obrigação do devedor.",
+            "not_yet": "Uma mudança de preço não implica necessariamente falta de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What weakens repayment?",
+          "scene": "A project promises repayment from ticket sales. Sales collapse, leaving insufficient cash.",
+          "options": [
+            {
+              "label": "The promised repayment date"
+            },
+            {
+              "label": "The borrower lacks funds"
+            },
+            {
+              "label": "The promise removes the shortage"
+            }
+          ],
+          "help": [
+            "Trace the money available to repay the loan."
+          ],
+          "feedback": {
+            "met": "Lower receipts can prevent the promised debt payment.",
+            "not_yet": "Trace the money available to repay the loan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve frágil el plan?",
+          "scene": "Un proyecto promete devolver un préstamo con ventas de boletos. Las ventas caen y falta efectivo.",
+          "options": [
+            {
+              "label": "La fecha prometida de pago"
+            },
+            {
+              "label": "El deudor tiene menos capacidad de pago"
+            },
+            {
+              "label": "La promesa elimina el faltante"
+            }
+          ],
+          "help": [
+            "Sigue el dinero disponible para devolver el préstamo."
+          ],
+          "feedback": {
+            "met": "Menos ingresos pueden impedir el pago de deuda prometido.",
+            "not_yet": "Sigue el dinero disponible para devolver el préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fragiliza isso?",
+          "scene": "Um projeto promete devolver um empréstimo com vendas de ingressos. As vendas caem e falta dinheiro.",
+          "options": [
+            {
+              "label": "A data prometida de pagamento"
+            },
+            {
+              "label": "O devedor tem menor capacidade de pagamento"
+            },
+            {
+              "label": "A promessa elimina a falta"
+            }
+          ],
+          "help": [
+            "Acompanhe o dinheiro disponível para devolver o empréstimo."
+          ],
+          "feedback": {
+            "met": "Menos receitas podem impedir o pagamento prometido da dívida.",
+            "not_yet": "Acompanhe o dinheiro disponível para devolver o empréstimo."
+          }
+        }
+      }
+    }
+  ]
+}

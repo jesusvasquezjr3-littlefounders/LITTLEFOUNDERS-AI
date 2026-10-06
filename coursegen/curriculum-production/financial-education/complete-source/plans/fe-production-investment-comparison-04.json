@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-1",
+  "lesson_id": "fe-production-investment-comparison-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare a fund’s stated objective and holdings with the exposure a learner intended to obtain.",
+  "title": {
+    "en-US": "Fund Fit",
+    "es-MX": "¿El fondo coincide con la meta?",
+    "pt-BR": "O fundo combina com a meta?"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Fund Fit\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿El fondo coincide con la meta?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O fundo combina com a meta?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.04",
+      "observable_action": "Compare a fund’s stated objective and holdings with the exposure a learner intended to obtain.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.10",
+      "prod.investing-foundations.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A fund can follow its own objective perfectly and still be wrong for the exposure you intended.",
+    "misconception": "A fund’s attractive name or successful performance proves it matches the learner’s desired exposure.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-example-01",
+        "supports_from": [],
+        "reasoning": "You want many industries. A fund holds only energy shares, so it does not provide the broad exposure you wanted."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "One industry does not meet the stated broad-exposure goal."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The documents reveal what exposure each fund seeks and holds."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Performance does not change the stated exposure mismatch."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-practice-02",
+        "supports_from": [],
+        "reasoning": "B’s holdings match the geographic scope requested."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A policy change can alter the exposure being purchased."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "The holdings differ in both asset type and currency."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A fund can follow its own objective perfectly and still be wrong for the exposure you intended."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un fondo puede cumplir su objetivo y aun así no coincidir con la exposición que buscabas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um fundo pode cumprir sua meta e ainda não combinar com o risco que você pretendia assumir."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match contents to purpose",
+          "line": "You want many industries. A fund holds only energy shares, so it does not provide the broad exposure you wanted."
+        },
+        "es-MX": {
+          "prompt": "Relaciona contenido y propósito",
+          "line": "Buscas varias industrias. Un fondo solo tiene acciones energéticas, así que no ofrece la exposición amplia que querías."
+        },
+        "pt-BR": {
+          "prompt": "Relacione conteúdo e propósito",
+          "line": "Você busca vários setores. Um fundo só tem ações de energia, então não oferece a variedade que você queria."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this match?",
+          "scene": "The stated goal is broad industry exposure. The fund owns only bank shares.",
+          "options": [
+            {
+              "label": "Yes, banks are investments"
+            },
+            {
+              "label": "No, it concentrates in banking"
+            }
+          ],
+          "help": [
+            "Compare the holdings with the actual goal."
+          ],
+          "feedback": {
+            "met": "One industry does not meet the stated broad-exposure goal.",
+            "not_yet": "Compare the holdings with the actual goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Coincide?",
+          "scene": "La meta indica exposición a varias industrias. El fondo solo posee acciones bancarias.",
+          "options": [
+            {
+              "label": "Sí, los bancos son inversiones"
+            },
+            {
+              "label": "No, se concentra en bancos"
+            }
+          ],
+          "help": [
+            "Compara las inversiones con la meta real."
+          ],
+          "feedback": {
+            "met": "Una industria no cumple la meta de exposición amplia.",
+            "not_yet": "Compara las inversiones con la meta real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Combina?",
+          "scene": "A meta pede vários setores. O fundo só possui ações de bancos.",
+          "options": [
+            {
+              "label": "Sim, bancos são investimentos"
+            },
+            {
+              "label": "Não, concentra em bancos"
+            }
+          ],
+          "help": [
+            "Compare os ativos com a meta real."
+          ],
+          "feedback": {
+            "met": "Um setor não atende à meta de variedade.",
+            "not_yet": "Compare os ativos com a meta real."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record helps?",
+          "scene": "A learner wants short-term debt exposure. Two funds have unclear names.",
+          "options": [
+            {
+              "label": "Only the names"
+            },
+            {
+              "label": "Their recent returns"
+            },
+            {
+              "label": "Their objectives and holdings"
+            }
+          ],
+          "help": [
+            "Read beyond the label."
+          ],
+          "feedback": {
+            "met": "The documents reveal what exposure each fund seeks and holds.",
+            "not_yet": "Read beyond the label."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro ayuda?",
+          "scene": "Buscan exposición a deuda de corto plazo. Dos fondos tienen nombres poco claros.",
+          "options": [
+            {
+              "label": "Solo los nombres"
+            },
+            {
+              "label": "Sus rendimientos recientes"
+            },
+            {
+              "label": "Sus objetivos e inversiones"
+            }
+          ],
+          "help": [
+            "Lee más allá de la etiqueta."
+          ],
+          "feedback": {
+            "met": "Los documentos revelan qué exposición busca y tiene cada fondo.",
+            "not_yet": "Lee más allá de la etiqueta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro ajuda?",
+          "scene": "Buscam dívida de curto prazo. Dois fundos têm nomes pouco claros.",
+          "options": [
+            {
+              "label": "Só os nomes"
+            },
+            {
+              "label": "Seus retornos recentes"
+            },
+            {
+              "label": "Suas metas e ativos"
+            }
+          ],
+          "help": [
+            "Leia além do rótulo."
+          ],
+          "feedback": {
+            "met": "Os documentos mostram o que cada fundo busca e possui.",
+            "not_yet": "Leia além do rótulo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a good return fix mismatch?",
+          "scene": "A learner wants no share exposure. A share fund had excellent recent returns.",
+          "options": [
+            {
+              "label": "No, it still holds shares"
+            },
+            {
+              "label": "Yes, good returns change its holdings"
+            }
+          ],
+          "help": [
+            "Check what is owned, not just past performance."
+          ],
+          "feedback": {
+            "met": "Performance does not change the stated exposure mismatch.",
+            "not_yet": "Check what is owned, not just past performance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ganar resuelve la diferencia?",
+          "scene": "Una persona no quiere exposición a acciones. Un fondo accionario tuvo ganancias recientes excelentes.",
+          "options": [
+            {
+              "label": "No, sigue teniendo acciones"
+            },
+            {
+              "label": "Sí, ganar cambia sus inversiones"
+            }
+          ],
+          "help": [
+            "Revisa lo que posee, no solo resultados pasados."
+          ],
+          "feedback": {
+            "met": "El rendimiento no cambia la exposición incompatible indicada.",
+            "not_yet": "Revisa lo que posee, no solo resultados pasados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ganhar resolve a diferença?",
+          "scene": "Uma pessoa não quer ações. Um fundo de ações teve ótimos ganhos recentes.",
+          "options": [
+            {
+              "label": "Não, ainda tem ações"
+            },
+            {
+              "label": "Sim, ganhar muda seus ativos"
+            }
+          ],
+          "help": [
+            "Confira o que possui, não só ganhos passados."
+          ],
+          "feedback": {
+            "met": "O rendimento não muda o risco que a pessoa não queria.",
+            "not_yet": "Confira o que possui, não só ganhos passados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fund fits?",
+          "scene": "The goal is several countries. A holds one local company; B spans those countries.",
+          "options": [
+            {
+              "label": "A has fewer pages"
+            },
+            {
+              "label": "B matches the requested scope"
+            }
+          ],
+          "help": [
+            "Use holdings to check the requested scope."
+          ],
+          "feedback": {
+            "met": "B’s holdings match the geographic scope requested.",
+            "not_yet": "Use holdings to check the requested scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fondo coincide?",
+          "scene": "La meta pide empresas de varios países. A tiene una empresa local; B abarca los países indicados.",
+          "options": [
+            {
+              "label": "A porque tiene menos páginas"
+            },
+            {
+              "label": "B coincide con lo pedido"
+            }
+          ],
+          "help": [
+            "Usa las inversiones para revisar el alcance solicitado."
+          ],
+          "feedback": {
+            "met": "Las inversiones de B coinciden con el alcance geográfico pedido.",
+            "not_yet": "Usa las inversiones para revisar el alcance solicitado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fundo combina?",
+          "scene": "A meta pede empresas de vários países. A tem uma empresa local; B abrange os países dados.",
+          "options": [
+            {
+              "label": "A por ter menos páginas"
+            },
+            {
+              "label": "B combina com o pedido"
+            }
+          ],
+          "help": [
+            "Use os ativos para conferir o alcance pedido."
+          ],
+          "feedback": {
+            "met": "Os ativos de B combinam com os países pedidos.",
+            "not_yet": "Use os ativos para conferir o alcance pedido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be rechecked?",
+          "scene": "A fund changes its permitted holdings from bonds to mixed bonds and shares.",
+          "options": [
+            {
+              "label": "Whether its exposure still fits"
+            },
+            {
+              "label": "Only its unchanged name"
+            }
+          ],
+          "help": [
+            "Revisit contents when the stated strategy changes."
+          ],
+          "feedback": {
+            "met": "A policy change can alter the exposure being purchased.",
+            "not_yet": "Revisit contents when the stated strategy changes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes volver a revisar?",
+          "scene": "Un fondo cambia sus inversiones permitidas de bonos a una mezcla de bonos y acciones.",
+          "options": [
+            {
+              "label": "Si la exposición todavía coincide"
+            },
+            {
+              "label": "Solo su nombre sin cambios"
+            }
+          ],
+          "help": [
+            "Revisa el contenido cuando cambie la estrategia indicada."
+          ],
+          "feedback": {
+            "met": "Cambiar reglas puede cambiar la exposición comprada.",
+            "not_yet": "Revisa el contenido cuando cambie la estrategia indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir de novo?",
+          "scene": "Um fundo muda seus ativos permitidos de títulos para títulos e ações.",
+          "options": [
+            {
+              "label": "Se o risco ainda combina"
+            },
+            {
+              "label": "Só seu nome igual"
+            }
+          ],
+          "help": [
+            "Reveja o conteúdo quando mudar a estratégia dada."
+          ],
+          "feedback": {
+            "met": "Mudar as regras pode mudar o risco comprado.",
+            "not_yet": "Reveja o conteúdo quando mudar a estratégia dada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the mix fit?",
+          "scene": "A saver wants local-currency debt. A fund’s name sounds local, but it mainly holds foreign-currency shares.",
+          "options": [
+            {
+              "label": "No, assets and currency differ"
+            },
+            {
+              "label": "Yes, the local name is enough"
+            }
+          ],
+          "help": [
+            "Compare the actual mix with both stated constraints."
+          ],
+          "feedback": {
+            "met": "The holdings differ in both asset type and currency.",
+            "not_yet": "Compare the actual mix with both stated constraints."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La mezcla real coincide?",
+          "scene": "Buscan deuda en moneda local. El nombre del fondo parece local, pero contiene sobre todo acciones en moneda extranjera.",
+          "options": [
+            {
+              "label": "No, cambian activos y moneda"
+            },
+            {
+              "label": "Sí, basta el nombre local"
+            }
+          ],
+          "help": [
+            "Compara la mezcla real con ambas condiciones."
+          ],
+          "feedback": {
+            "met": "Las inversiones difieren en tipo de activo y moneda.",
+            "not_yet": "Compara la mezcla real con ambas condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A composição real combina?",
+          "scene": "Buscam dívida em moeda local. O nome do fundo parece local, mas predominam ações em moeda estrangeira.",
+          "options": [
+            {
+              "label": "Não, ativos e moeda diferem"
+            },
+            {
+              "label": "Sim, basta o nome local"
+            }
+          ],
+          "help": [
+            "Compare a composição real com ambas as condições."
+          ],
+          "feedback": {
+            "met": "Os ativos diferem em tipo e moeda.",
+            "not_yet": "Compare a composição real com ambas as condições."
+          }
+        }
+      }
+    }
+  ]
+}

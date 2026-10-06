@@ -1,0 +1,863 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-1",
+  "lesson_id": "fe-production-saving-resilience-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Estimate essential expenses during a stated income interruption.",
+  "title": {
+    "en-US": "Essential Buffer",
+    "es-MX": "Calcula puente de gastos esenciales",
+    "pt-BR": "Calcule ponte de gastos essenciais"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Essential Buffer\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Calcula puente de gastos esenciales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Calcule ponte de gastos essenciais\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.02",
+      "observable_action": "Estimate essential expenses during a stated income interruption.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "prod.financial-math.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "During an income interruption, essentials still need funding; estimate the stated period using fictional dollars and confirmed resources.",
+    "misconception": "A reserve target equals normal income without checking actual essential expenses, interruption duration or confirmed support.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-example-01",
+        "supports_from": [],
+        "reasoning": "Add essential expenses for the interruption period, then subtract confirmed resources available for that period. Keep uncertain support separate."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The gap covers essentials after confirmed support."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The bridge reflects costs that remain necessary during the interruption."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The monthly need repeats throughout the stated interruption."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-practice-02",
+        "supports_from": [],
+        "reasoning": "Confirmed resources offset part of the same period’s essential costs."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Pending support is not yet a confirmed resource."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "saving-resilience-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The bridge covers the period total after confirmed resources."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "During an income interruption, essentials still need funding; estimate the stated period using fictional dollars and confirmed resources."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Durante pausa de ingresos, esenciales requieren fondos; calcula periodo indicado con pesos ficticios y recursos confirmados."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Durante pausa de renda, essenciais precisam de verba; calcule período dado com reais fictícios e recursos confirmados."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Costs across the gap",
+          "line": "Add essential expenses for the interruption period, then subtract confirmed resources available for that period. Keep uncertain support separate."
+        },
+        "es-MX": {
+          "prompt": "Costos durante la pausa",
+          "line": "Suma esenciales del periodo sin ingreso y resta recursos confirmados disponibles para ese periodo. Separa apoyos inciertos."
+        },
+        "pt-BR": {
+          "prompt": "Custos durante a pausa",
+          "line": "Some essenciais do período sem renda e subtraia recursos confirmados disponíveis para esse período. Separe apoios incertos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "1600",
+          "step-3": "1300"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Monthly housing 600 and food 200; interruption 2 months; confirmed total support 300; no other essentials. Find funding gap.",
+          "feedback": {
+            "met": "The gap covers essentials after confirmed support.",
+            "not_yet": "Total monthly essentials, multiply duration, then subtract confirmed support."
+          },
+          "help": [
+            "Total monthly essentials, multiply duration, then subtract confirmed support."
+          ],
+          "steps": [
+            {
+              "expression": "600 + 200",
+              "result": "800",
+              "spokenText": "Monthly essentials"
+            },
+            {
+              "expression": "800 * 2",
+              "result": "1600",
+              "spokenText": "Essentials across interruption"
+            },
+            {
+              "expression": "1600 - 300",
+              "result": "1300",
+              "spokenText": "Remaining funding gap"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Vivienda mensual 600 y comida 200; pausa 2 meses; apoyo total confirmado 300; sin otros esenciales. Calcula faltante.",
+          "feedback": {
+            "met": "Faltante cubre esenciales tras apoyo confirmado.",
+            "not_yet": "Suma esenciales, multiplica duración y resta apoyo confirmado."
+          },
+          "help": [
+            "Suma esenciales, multiplica duración y resta apoyo confirmado."
+          ],
+          "steps": [
+            {
+              "expression": "600 + 200",
+              "result": "800",
+              "spokenText": "Esenciales mensuales"
+            },
+            {
+              "expression": "800 * 2",
+              "result": "1600",
+              "spokenText": "Esenciales durante pausa"
+            },
+            {
+              "expression": "1600 - 300",
+              "result": "1300",
+              "spokenText": "Faltante restante"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Moradia mensal 600 e comida 200; pausa 2 meses; apoio total confirmado 300; sem outros essenciais. Ache falta.",
+          "feedback": {
+            "met": "Falta cobre essenciais após apoio confirmado.",
+            "not_yet": "Some essenciais, multiplique duração e subtraia apoio confirmado."
+          },
+          "help": [
+            "Some essenciais, multiplique duração e subtraia apoio confirmado."
+          ],
+          "steps": [
+            {
+              "expression": "600 + 200",
+              "result": "800",
+              "spokenText": "Essenciais mensais"
+            },
+            {
+              "expression": "800 * 2",
+              "result": "1600",
+              "spokenText": "Essenciais durante pausa"
+            },
+            {
+              "expression": "1600 - 300",
+              "result": "1300",
+              "spokenText": "Falta restante"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs belong in the stated bridge?",
+          "scene": "Housing and necessary food continue; an optional trip is canceled.",
+          "options": [
+            {
+              "label": "The canceled trip only"
+            },
+            {
+              "label": "Continuing essentials"
+            },
+            {
+              "label": "Every past expense unchanged"
+            }
+          ],
+          "help": [
+            "Use the scenario’s actual essential expenses."
+          ],
+          "feedback": {
+            "met": "The bridge reflects costs that remain necessary during the interruption.",
+            "not_yet": "Use the scenario’s actual essential expenses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costos entran en puente indicado?",
+          "scene": "Vivienda y comida necesaria siguen; viaje opcional se cancela.",
+          "options": [
+            {
+              "label": "Solo viaje cancelado"
+            },
+            {
+              "label": "Esenciales que continúan"
+            },
+            {
+              "label": "Todo gasto pasado sin cambio"
+            }
+          ],
+          "help": [
+            "Usa gastos esenciales reales del escenario."
+          ],
+          "feedback": {
+            "met": "El puente refleja costos necesarios durante pausa.",
+            "not_yet": "Usa gastos esenciales reales del escenario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custos entram na ponte dada?",
+          "scene": "Moradia e comida necessária seguem; viagem opcional é cancelada.",
+          "options": [
+            {
+              "label": "Só viagem cancelada"
+            },
+            {
+              "label": "Essenciais que continuam"
+            },
+            {
+              "label": "Todo gasto antigo sem mudança"
+            }
+          ],
+          "help": [
+            "Use gastos essenciais reais do cenário."
+          ],
+          "feedback": {
+            "met": "A ponte reflete custos necessários durante pausa.",
+            "not_yet": "Use gastos essenciais reais do cenário."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "How much covers the stated essentials?",
+          "scene": "Monthly essential total: 900; Interruption: 3 months; No other income or support.",
+          "options": [
+            {
+              "label": "2700"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "1800"
+            }
+          ],
+          "help": [
+            "Multiply essential monthly costs by the duration."
+          ],
+          "feedback": {
+            "met": "The monthly need repeats throughout the stated interruption.",
+            "not_yet": "Multiply essential monthly costs by the duration."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto cubre esenciales indicados?",
+          "scene": "Total esencial mensual: 900; Pausa: 3 meses; Sin otro ingreso ni apoyo.",
+          "options": [
+            {
+              "label": "2700"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "1800"
+            }
+          ],
+          "help": [
+            "Multiplica costos esenciales mensuales por duración."
+          ],
+          "feedback": {
+            "met": "Necesidad mensual se repite durante pausa indicada.",
+            "not_yet": "Multiplica costos esenciales mensuales por duración."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto cobre essenciais dados?",
+          "scene": "Total essencial mensal: 900; Pausa: 3 meses; Sem outra renda ou apoio.",
+          "options": [
+            {
+              "label": "2700"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "1800"
+            }
+          ],
+          "help": [
+            "Multiplique custos essenciais mensais pela duração."
+          ],
+          "feedback": {
+            "met": "Necessidade mensal se repete durante pausa dada.",
+            "not_yet": "Multiplique custos essenciais mensais pela duração."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          900,
+          3
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What funding remains needed?",
+          "scene": "Period essentials total: 2100; Confirmed available support total: 600; No other resources.",
+          "options": [
+            {
+              "label": "2100"
+            },
+            {
+              "label": "2700"
+            },
+            {
+              "label": "1500"
+            }
+          ],
+          "help": [
+            "Subtract confirmed available support from the period total."
+          ],
+          "feedback": {
+            "met": "Confirmed resources offset part of the same period’s essential costs.",
+            "not_yet": "Subtract confirmed available support from the period total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fondos faltan todavía?",
+          "scene": "Esenciales totales del periodo: 2100; Apoyo total confirmado disponible: 600; Sin otros recursos.",
+          "options": [
+            {
+              "label": "2100"
+            },
+            {
+              "label": "2700"
+            },
+            {
+              "label": "1500"
+            }
+          ],
+          "help": [
+            "Resta apoyo confirmado disponible al total del periodo."
+          ],
+          "feedback": {
+            "met": "Recursos confirmados cubren parte de esenciales del mismo periodo.",
+            "not_yet": "Resta apoyo confirmado disponible al total del periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que verba ainda falta?",
+          "scene": "Essenciais totais do período: 2100; Apoio total confirmado disponível: 600; Sem outros recursos.",
+          "options": [
+            {
+              "label": "2100"
+            },
+            {
+              "label": "2700"
+            },
+            {
+              "label": "1500"
+            }
+          ],
+          "help": [
+            "Subtraia apoio confirmado disponível do total do período."
+          ],
+          "feedback": {
+            "met": "Recursos confirmados cobrem parte dos essenciais do mesmo período.",
+            "not_yet": "Subtraia apoio confirmado disponível do total do período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2100,
+          600
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can pending support close today’s gap?",
+          "scene": "An application has no confirmed payment amount or date.",
+          "options": [
+            {
+              "label": "Yes, any application equals cash"
+            },
+            {
+              "label": "Not as confirmed available money"
+            },
+            {
+              "label": "Yes, expected support pays immediately"
+            }
+          ],
+          "help": [
+            "Keep uncertain resources separate from the funded plan."
+          ],
+          "feedback": {
+            "met": "Pending support is not yet a confirmed resource.",
+            "not_yet": "Keep uncertain resources separate from the funded plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Apoyo pendiente cierra faltante de hoy?",
+          "scene": "Solicitud no tiene monto ni fecha confirmados de pago.",
+          "options": [
+            {
+              "label": "Sí, toda solicitud equivale a efectivo"
+            },
+            {
+              "label": "No como dinero confirmado disponible"
+            },
+            {
+              "label": "Sí, apoyo esperado paga de inmediato"
+            }
+          ],
+          "help": [
+            "Separa recursos inciertos del plan con fondos."
+          ],
+          "feedback": {
+            "met": "Apoyo pendiente aún no es recurso confirmado.",
+            "not_yet": "Separa recursos inciertos del plan con fondos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Apoio pendente fecha falta de hoje?",
+          "scene": "Pedido não tem valor nem data confirmados de pagamento.",
+          "options": [
+            {
+              "label": "Sim, todo pedido equivale a dinheiro"
+            },
+            {
+              "label": "Não como dinheiro confirmado disponível"
+            },
+            {
+              "label": "Sim, apoio esperado paga de imediato"
+            }
+          ],
+          "help": [
+            "Separe recursos incertos do plano com verba."
+          ],
+          "feedback": {
+            "met": "Apoio pendente ainda não é recurso confirmado.",
+            "not_yet": "Separe recursos incertos do plano com verba."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What bridge is required?",
+          "scene": "Monthly essentials: 700; Interruption: 2 months; Confirmed total resources: 250; No other needs or resources.",
+          "options": [
+            {
+              "label": "1400"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "1150"
+            }
+          ],
+          "help": [
+            "Multiply monthly essentials by duration, then subtract resources."
+          ],
+          "feedback": {
+            "met": "The bridge covers the period total after confirmed resources.",
+            "not_yet": "Multiply monthly essentials by duration, then subtract resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puente se requiere?",
+          "scene": "Esenciales mensuales: 700; Pausa: 2 meses; Recursos totales confirmados: 250; Sin otras necesidades ni recursos.",
+          "options": [
+            {
+              "label": "1400"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "1150"
+            }
+          ],
+          "help": [
+            "Multiplica esenciales mensuales por duración y resta recursos."
+          ],
+          "feedback": {
+            "met": "Puente cubre total del periodo tras recursos confirmados.",
+            "not_yet": "Multiplica esenciales mensuales por duración y resta recursos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ponte é exigida?",
+          "scene": "Essenciais mensais: 700; Pausa: 2 meses; Recursos totais confirmados: 250; Sem outras necessidades ou recursos.",
+          "options": [
+            {
+              "label": "1400"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "1150"
+            }
+          ],
+          "help": [
+            "Multiplique essenciais mensais por duração e subtraia recursos."
+          ],
+          "feedback": {
+            "met": "Ponte cobre total do período após recursos confirmados.",
+            "not_yet": "Multiplique essenciais mensais por duração e subtraia recursos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          700,
+          2,
+          250
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

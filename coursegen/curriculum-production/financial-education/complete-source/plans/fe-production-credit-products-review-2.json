@@ -1,0 +1,853 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-2",
+  "lesson_id": "fe-production-credit-products-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.06",
+    "finance.prod.credit-products.07",
+    "finance.prod.credit-products.08",
+    "finance.prod.credit-products.09",
+    "finance.prod.credit-products.10",
+    "finance.prod.accounts-records.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build a combined payment schedule and distinguish borrowed funds, collateral consequences, guarantee scope and renewal-only costs.",
+  "title": {
+    "en-US": "Credit Commitments",
+    "es-MX": "Combina compromisos y consecuencias",
+    "pt-BR": "Junte compromissos e consequências"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Credit Commitments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Combina compromisos y consecuencias\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Junte compromissos e consequências\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.credit-products.06",
+      "observable_action": "Build a combined payment schedule and distinguish borrowed funds, collateral consequences, guarantee scope and renewal-only costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.02",
+      "prod.cashflow-budget.05"
+    ],
+    "retrieval_skills": [
+      "prod.credit-products.06",
+      "prod.credit-products.07",
+      "prod.credit-products.08",
+      "prod.credit-products.09",
+      "prod.credit-products.10",
+      "prod.accounts-records.04"
+    ],
+    "relevance": "Retrieve combined instalments, owned funds, collateral, guarantees and renewal costs.",
+    "misconception": "Small separate payments never collide, credit is owned money, and fees or promises erase repayment obligations.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Tuesday combines both plans and Friday retains A’s remaining instalment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The overdraft portion is unused borrowing capacity, not owned funds."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.08",
+        "context_id": "credit-products-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "A’s lower cost does not erase its stated collateral consequence."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-products.09",
+        "context_id": "credit-products-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The agreement defines a payment duty limited to its stated scope."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-products.10",
+        "context_id": "credit-products-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The stated allocation pays for time without reducing principal."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "credit-products-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "The description identifies the credited amount as a purchase refund."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.06",
+        "context_id": "credit-products-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "Wednesday combines transport and equipment while Saturday keeps its own payment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve combined instalments, owned funds, collateral, guarantees and renewal costs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera cuotas juntas, fondos propios, bienes en garantía, compromisos de garante y costos de renovar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome parcelas juntas, fundos próprios, bens em garantia, deveres do garantidor e custos de renovar."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which calendar keeps every instalment?",
+          "scene": "Fictional plans: A owes 20 Tuesday and Friday; B owes 30 Tuesday.",
+          "options": [
+            {
+              "label": "Tuesday 20; Friday 20"
+            },
+            {
+              "label": "Friday 50 only"
+            },
+            {
+              "label": "Tuesday 50; Friday 20"
+            }
+          ],
+          "help": [
+            "Place every payment on its actual date before adding."
+          ],
+          "feedback": {
+            "met": "Tuesday combines both plans and Friday retains A’s remaining instalment.",
+            "not_yet": "Place every payment on its actual date before adding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué calendario conserva toda cuota?",
+          "scene": "Planes ficticios: A debe 20 martes y viernes; B debe 30 martes.",
+          "options": [
+            {
+              "label": "Martes 20; viernes 20"
+            },
+            {
+              "label": "Solo viernes 50"
+            },
+            {
+              "label": "Martes 50; viernes 20"
+            }
+          ],
+          "help": [
+            "Coloca cada pago en fecha real antes de sumar."
+          ],
+          "feedback": {
+            "met": "Martes combina ambos planes; viernes conserva cuota restante de A.",
+            "not_yet": "Coloca cada pago en fecha real antes de sumar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que calendário mantém toda parcela?",
+          "scene": "Planos fictícios: A deve 20 terça e sexta; B deve 30 terça.",
+          "options": [
+            {
+              "label": "Terça 20; sexta 20"
+            },
+            {
+              "label": "Só sexta 50"
+            },
+            {
+              "label": "Terça 50; sexta 20"
+            }
+          ],
+          "help": [
+            "Coloque cada pagamento na data real antes de somar."
+          ],
+          "feedback": {
+            "met": "Terça junta ambos planos; sexta mantém parcela restante de A.",
+            "not_yet": "Coloque cada pagamento na data real antes de somar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which portion is money already owned?",
+          "scene": "Fictional account display combines own balance 70 with unused overdraft 150.",
+          "options": [
+            {
+              "label": "Overdraft 150"
+            },
+            {
+              "label": "Combined 220"
+            },
+            {
+              "label": "Own balance 70"
+            }
+          ],
+          "help": [
+            "Separate owned balance from credit availability."
+          ],
+          "feedback": {
+            "met": "The overdraft portion is unused borrowing capacity, not owned funds.",
+            "not_yet": "Separate owned balance from credit availability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué parte es dinero ya propio?",
+          "scene": "Pantalla ficticia combina saldo propio 70 y sobregiro sin usar 150.",
+          "options": [
+            {
+              "label": "Sobregiro 150"
+            },
+            {
+              "label": "Total 220"
+            },
+            {
+              "label": "Saldo propio 70"
+            }
+          ],
+          "help": [
+            "Separa saldo propio de crédito disponible."
+          ],
+          "feedback": {
+            "met": "Parte de sobregiro es capacidad de préstamo, no fondos propios.",
+            "not_yet": "Separa saldo propio de crédito disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que parte é dinheiro já próprio?",
+          "scene": "Tela fictícia junta saldo próprio 70 e cheque especial sem uso 150.",
+          "options": [
+            {
+              "label": "Cheque especial 150"
+            },
+            {
+              "label": "Total 220"
+            },
+            {
+              "label": "Saldo próprio 70"
+            }
+          ],
+          "help": [
+            "Separe saldo próprio de crédito disponível."
+          ],
+          "feedback": {
+            "met": "Parte do cheque especial é capacidade de empréstimo, não fundos próprios.",
+            "not_yet": "Separe saldo próprio de crédito disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which respects both?",
+          "scene": "Fictional A costs less but pledges essential equipment; B costs more without pledged collateral.",
+          "options": [
+            {
+              "label": "Assume B has no repayment duty"
+            },
+            {
+              "label": "Only the smallest instalment"
+            },
+            {
+              "label": "Cost plus collateral consequences"
+            }
+          ],
+          "help": [
+            "Compare total cost and what missed payments can affect."
+          ],
+          "feedback": {
+            "met": "A’s lower cost does not erase its stated collateral consequence.",
+            "not_yet": "Compare total cost and what missed payments can affect."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación respeta ambas ofertas?",
+          "scene": "A ficticia cuesta menos pero compromete equipo esencial; B cuesta más sin bien comprometido.",
+          "options": [
+            {
+              "label": "Suponer que B no exige pago"
+            },
+            {
+              "label": "Solo cuota más pequeña"
+            },
+            {
+              "label": "Costo y consecuencias de garantía"
+            }
+          ],
+          "help": [
+            "Compara costo total y qué puede afectar impago."
+          ],
+          "feedback": {
+            "met": "Costo menor de A no borra consecuencia indicada de garantía.",
+            "not_yet": "Compara costo total y qué puede afectar impago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que comparação respeita ambas ofertas?",
+          "scene": "A fictícia custa menos mas dá equipamento essencial; B custa mais sem bem em garantia.",
+          "options": [
+            {
+              "label": "Supor que B não exige pagamento"
+            },
+            {
+              "label": "Só menor parcela"
+            },
+            {
+              "label": "Custo e consequências da garantia"
+            }
+          ],
+          "help": [
+            "Compare custo total e o que atrasos podem afetar."
+          ],
+          "feedback": {
+            "met": "Custo menor de A não apaga consequência dada da garantia.",
+            "not_yet": "Compare custo total e o que atrasos podem afetar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What duty does this guarantee create?",
+          "scene": "Fictional guarantor pays missed loan A instalments; loan B is excluded.",
+          "options": [
+            {
+              "label": "Pay covered missed A instalments"
+            },
+            {
+              "label": "Pay every future loan"
+            },
+            {
+              "label": "Only offer a reference"
+            }
+          ],
+          "help": [
+            "Apply both the trigger and the scope of the guarantee."
+          ],
+          "feedback": {
+            "met": "The agreement defines a payment duty limited to its stated scope.",
+            "not_yet": "Apply both the trigger and the scope of the guarantee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué deber crea esta garantía?",
+          "scene": "Términos ficticios exigen al garante pagar cuotas omitidas del préstamo A; B queda excluido.",
+          "options": [
+            {
+              "label": "Pagar cuotas cubiertas omitidas de A"
+            },
+            {
+              "label": "Pagar todo préstamo futuro"
+            },
+            {
+              "label": "Solo dar referencia"
+            }
+          ],
+          "help": [
+            "Aplica condición y alcance de garantía."
+          ],
+          "feedback": {
+            "met": "Acuerdo define deber de pago limitado a alcance indicado.",
+            "not_yet": "Aplica condición y alcance de garantía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dever cria esta garantia?",
+          "scene": "Termos fictícios exigem ao garantidor pagar parcelas omitidas do empréstimo A; B fica excluído.",
+          "options": [
+            {
+              "label": "Pagar parcelas cobertas omitidas de A"
+            },
+            {
+              "label": "Pagar todo empréstimo futuro"
+            },
+            {
+              "label": "Só dar referência"
+            }
+          ],
+          "help": [
+            "Aplique condição e alcance da garantia."
+          ],
+          "feedback": {
+            "met": "Acordo define dever de pagamento limitado ao alcance dado.",
+            "not_yet": "Aplique condição e alcance da garantia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What did this renewal payment achieve?",
+          "scene": "Fictional fee buys extra time only; none goes toward the loan principal.",
+          "options": [
+            {
+              "label": "Reduced principal by the fee"
+            },
+            {
+              "label": "Cleared all debt"
+            },
+            {
+              "label": "Extended time; principal unchanged"
+            }
+          ],
+          "help": [
+            "Distinguish renewal cost from debt repayment."
+          ],
+          "feedback": {
+            "met": "The stated allocation pays for time without reducing principal.",
+            "not_yet": "Distinguish renewal cost from debt repayment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué logró este pago de renovación?",
+          "scene": "Cargo ficticio compra solo tiempo extra; nada va al capital del préstamo.",
+          "options": [
+            {
+              "label": "Capital reducido por cargo"
+            },
+            {
+              "label": "Toda deuda liquidada"
+            },
+            {
+              "label": "Más tiempo; capital sin cambio"
+            }
+          ],
+          "help": [
+            "Distingue costo de renovación de pago de deuda."
+          ],
+          "feedback": {
+            "met": "Aplicación indicada paga tiempo sin reducir capital.",
+            "not_yet": "Distingue costo de renovación de pago de deuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fez este pagamento de renovação?",
+          "scene": "Taxa fictícia compra só tempo extra; nada vai ao principal do empréstimo.",
+          "options": [
+            {
+              "label": "Principal reduzido pela taxa"
+            },
+            {
+              "label": "Toda dívida quitada"
+            },
+            {
+              "label": "Mais tempo; principal sem mudança"
+            }
+          ],
+          "help": [
+            "Separe custo de renovação de pagamento da dívida."
+          ],
+          "feedback": {
+            "met": "Aplicação dada paga tempo sem reduzir principal.",
+            "not_yet": "Separe custo de renovação de pagamento da dívida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which classification follows the entry?",
+          "scene": "Fictional deposit statement: August 3; returned purchase; credit 24.",
+          "options": [
+            {
+              "label": "August 3; refund inflow 24"
+            },
+            {
+              "label": "August 24; fee 3"
+            },
+            {
+              "label": "August 3; new borrowing 24"
+            }
+          ],
+          "help": [
+            "Use date, description and amount together before classifying."
+          ],
+          "feedback": {
+            "met": "The description identifies the credited amount as a purchase refund.",
+            "not_yet": "Use date, description and amount together before classifying."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué clasificación sigue al registro?",
+          "scene": "Estado ficticio de depósito: 3 de agosto; compra devuelta; abono 24.",
+          "options": [
+            {
+              "label": "3 agosto; entrada por devolución 24"
+            },
+            {
+              "label": "24 agosto; cargo 3"
+            },
+            {
+              "label": "3 agosto; préstamo nuevo 24"
+            }
+          ],
+          "help": [
+            "Usa fecha, descripción y monto juntos antes de clasificar."
+          ],
+          "feedback": {
+            "met": "Descripción identifica abono como devolución de compra.",
+            "not_yet": "Usa fecha, descripción y monto juntos antes de clasificar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que classificação segue ao lançamento?",
+          "scene": "Extrato fictício de depósito: 3 de agosto; compra devolvida; crédito 24.",
+          "options": [
+            {
+              "label": "3 agosto; entrada por devolução 24"
+            },
+            {
+              "label": "24 agosto; taxa 3"
+            },
+            {
+              "label": "3 agosto; empréstimo novo 24"
+            }
+          ],
+          "help": [
+            "Use data, descrição e valor juntos antes de classificar."
+          ],
+          "feedback": {
+            "met": "Descrição identifica crédito como devolução de compra.",
+            "not_yet": "Use data, descrição e valor juntos antes de classificar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which schedule combines the obligations correctly?",
+          "scene": "Fictional plans: transport 15 Wednesday; equipment 25 Wednesday and Saturday.",
+          "options": [
+            {
+              "label": "Saturday 65 only"
+            },
+            {
+              "label": "Wednesday 15; Saturday 25"
+            },
+            {
+              "label": "Wednesday 40; Saturday 25"
+            }
+          ],
+          "help": [
+            "Preserve each due date and add only payments sharing it."
+          ],
+          "feedback": {
+            "met": "Wednesday combines transport and equipment while Saturday keeps its own payment.",
+            "not_yet": "Preserve each due date and add only payments sharing it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué calendario combina obligaciones correctamente?",
+          "scene": "Planes ficticios: transporte 15 miércoles; equipo 25 miércoles y sábado.",
+          "options": [
+            {
+              "label": "Solo sábado 65"
+            },
+            {
+              "label": "Miércoles 15; sábado 25"
+            },
+            {
+              "label": "Miércoles 40; sábado 25"
+            }
+          ],
+          "help": [
+            "Conserva cada fecha y suma solo pagos que la comparten."
+          ],
+          "feedback": {
+            "met": "Miércoles combina transporte y equipo; sábado conserva pago propio.",
+            "not_yet": "Conserva cada fecha y suma solo pagos que la comparten."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que calendário junta deveres corretamente?",
+          "scene": "Planos fictícios: transporte 15 quarta; equipamento 25 quarta e sábado.",
+          "options": [
+            {
+              "label": "Só sábado 65"
+            },
+            {
+              "label": "Quarta 15; sábado 25"
+            },
+            {
+              "label": "Quarta 40; sábado 25"
+            }
+          ],
+          "help": [
+            "Preserve cada data e some só pagamentos que a dividem."
+          ],
+          "feedback": {
+            "met": "Quarta junta transporte e equipamento; sábado mantém pagamento próprio.",
+            "not_yet": "Preserve cada data e some só pagamentos que a dividem."
+          }
+        }
+      }
+    }
+  ]
+}

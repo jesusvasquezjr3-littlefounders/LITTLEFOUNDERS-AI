@@ -1,0 +1,1136 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-01-money-today",
+  "lesson_id": "fe-solid-04-protect-committed-money",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.reserved"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the money free to spend after protecting a stated necessary payment, then check whether a purchase fits.",
+  "title": {
+    "en-US": "What can you spend?",
+    "es-MX": "¿Cuánto puedes gastar?",
+    "pt-BR": "Quanto pode gastar?"
+  },
+  "new_concepts": [
+    "finance.cash.reserved"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"What can you spend?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Cuánto puedes gastar?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Quanto pode gastar?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "cash.reserved",
+      "observable_action": "Calculate the money free to spend after protecting a stated necessary payment, then check whether a purchase fits.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "These fictional amounts use dollars. Some money you have may already be needed for a bill.",
+    "misconception": "Confusing the full balance with the amount available for a new purchase.",
+    "numeracy_support": "A previous interactive ledger teaches adding receipts and subtracting payments; the worked example subtracts the reserved amount explicitly.",
+    "evidence": [
+      {
+        "segment_id": "example-total",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-example-total",
+        "supports_from": [],
+        "reasoning": "Ana has 100 available today. She needs 70 for a bill due before her next payment."
+      },
+      {
+        "segment_id": "example-remainder",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-example-remainder",
+        "supports_from": [],
+        "reasoning": "100 − 70 = 30. Keeping 70 aside leaves 30 for another purchase."
+      },
+      {
+        "segment_id": "example-chart",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-example-chart",
+        "supports_from": [],
+        "reasoning": "The longer bar is 100; the committed part is 70. Their difference, 30, remains free."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-guided-01",
+        "supports_from": [
+          "example-chart"
+        ],
+        "reasoning": "That remainder leaves the committed amount untouched."
+      },
+      {
+        "segment_id": "example-compare",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-example-compare",
+        "supports_from": [],
+        "reasoning": "Ana has 30 left. A purchase costing 40 would use money reserved for the bill, so it does not fit."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-guided-02",
+        "supports_from": [
+          "example-compare"
+        ],
+        "reasoning": "That purchase would use part of the reserved money."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-practice-01",
+        "supports_from": [],
+        "reasoning": "That remainder leaves the committed amount untouched."
+      },
+      {
+        "segment_id": "example-still-in-account",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-example-still-in-account",
+        "supports_from": [],
+        "reasoning": "Reserved money still counts as committed when it remains in your account. Moving it is not what makes it reserved."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-practice-02",
+        "supports_from": [],
+        "reasoning": "This option leaves the entire committed amount available."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-practice-03",
+        "supports_from": [],
+        "reasoning": "Its purpose matters even when its location stays unchanged."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.reserved",
+        "context_id": "protect-committed-money-transfer-01",
+        "supports_from": [],
+        "reasoning": "You kept the upcoming transport cost in the decision."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.reserved",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "These fictional amounts use dollars. Some money you have may already be needed for a bill."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Estos montos ficticios están en pesos. Parte del dinero que tienes puede estar apartado para un recibo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Estes valores fictícios estão em reais. Parte do dinheiro que você tem pode estar reservada para uma conta."
+        }
+      }
+    },
+    {
+      "id": "example-total",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Start with what arrived",
+          "line": "Ana has 100 available today. She needs 70 for a bill due before her next payment."
+        },
+        "es-MX": {
+          "prompt": "Empieza con lo recibido",
+          "line": "Ana tiene 100 disponibles hoy. Necesita 70 para un recibo que vence antes de su próximo pago."
+        },
+        "pt-BR": {
+          "prompt": "Comece com o recebido",
+          "line": "Ana tem 100 disponíveis hoje. Precisa de 70 para uma conta que vence antes do próximo pagamento."
+        }
+      }
+    },
+    {
+      "id": "example-remainder",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Set the bill aside",
+          "line": "100 − 70 = 30. Keeping 70 aside leaves 30 for another purchase."
+        },
+        "es-MX": {
+          "prompt": "Aparta lo del recibo",
+          "line": "100 − 70 = 30. Apartar 70 deja 30 para otra compra."
+        },
+        "pt-BR": {
+          "prompt": "Reserve o valor da conta",
+          "line": "100 − 70 = 30. Reservar 70 deixa 30 para outra compra."
+        }
+      }
+    },
+    {
+      "id": "example-chart",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "available-now"
+            },
+            {
+              "id": "already-committed"
+            }
+          ],
+          "series": [
+            {
+              "id": "amount",
+              "values": [
+                100,
+                70
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The longer bar is 100; the committed part is 70. Their difference, 30, remains free.",
+          "title": "Total and committed",
+          "data": {
+            "categories": [
+              {
+                "label": "Available now"
+              },
+              {
+                "label": "Already committed"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amount"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "La barra larga muestra 100; el monto apartado es 70. La diferencia, 30, queda libre.",
+          "title": "Total y apartado",
+          "data": {
+            "categories": [
+              {
+                "label": "Disponible hoy"
+              },
+              {
+                "label": "Ya apartado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monto"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "A barra longa mostra 100; o reservado é 70. A diferença, 30, fica livre.",
+          "title": "Total e reservado",
+          "data": {
+            "categories": [
+              {
+                "label": "Disponível hoje"
+              },
+              {
+                "label": "Já reservado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Valor"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "available-now"
+            },
+            {
+              "id": "already-committed"
+            }
+          ],
+          "series": [
+            {
+              "id": "amount",
+              "values": [
+                95,
+                60
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "amount-60"
+            },
+            {
+              "id": "amount-35"
+            },
+            {
+              "id": "amount-95"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "amount-35"
+        ]
+      },
+      "knowledge_component_id": "finance.cash.reserved",
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Available: 95; committed: 60. Compare the bars.",
+          "title": "Two amounts",
+          "data": {
+            "categories": [
+              {
+                "label": "Available now"
+              },
+              {
+                "label": "Already committed"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amount"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How much is left for another purchase?",
+            "options": [
+              {
+                "label": "60"
+              },
+              {
+                "label": "35"
+              },
+              {
+                "label": "95"
+              }
+            ]
+          },
+          "help": [
+            "Take the committed amount away from the available total."
+          ],
+          "feedback": {
+            "met": "That remainder leaves the committed amount untouched.",
+            "not_yet": "Keep the committed amount separate from the remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "Disponible: 95; apartado: 60. Compara las barras.",
+          "title": "Dos montos",
+          "data": {
+            "categories": [
+              {
+                "label": "Disponible hoy"
+              },
+              {
+                "label": "Ya apartado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monto"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuánto queda para otra compra?",
+            "options": [
+              {
+                "label": "60"
+              },
+              {
+                "label": "35"
+              },
+              {
+                "label": "95"
+              }
+            ]
+          },
+          "help": [
+            "Quita el monto apartado del total disponible."
+          ],
+          "feedback": {
+            "met": "Ese resto mantiene intacto el dinero apartado.",
+            "not_yet": "Separa el monto apartado de lo que queda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Disponível: 95; reservado: 60. Compare as barras.",
+          "title": "Dois valores",
+          "data": {
+            "categories": [
+              {
+                "label": "Disponível hoje"
+              },
+              {
+                "label": "Já reservado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Valor"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quanto sobra para outra compra?",
+            "options": [
+              {
+                "label": "60"
+              },
+              {
+                "label": "35"
+              },
+              {
+                "label": "95"
+              }
+            ]
+          },
+          "help": [
+            "Tire o valor reservado do total disponível."
+          ],
+          "feedback": {
+            "met": "Esse restante mantém intacto o dinheiro reservado.",
+            "not_yet": "Separe o valor reservado do que sobra."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "chart-values",
+        "visible_inputs": [
+          95,
+          60
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-compare",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check the purchase",
+          "line": "Ana has 30 left. A purchase costing 40 would use money reserved for the bill, so it does not fit."
+        },
+        "es-MX": {
+          "prompt": "Revisa la compra",
+          "line": "A Ana le quedan 30. Comprar algo de 40 usaría dinero del recibo, así que no alcanza."
+        },
+        "pt-BR": {
+          "prompt": "Confira a compra",
+          "line": "Ana tem 30 restantes. Comprar algo de 40 usaria dinheiro da conta, então não cabe."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you spend 40 without using the reserved money?",
+          "scene": "You have 80; 50 is reserved for a bill.",
+          "options": [
+            {
+              "label": "Yes"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "First take away the reserved amount; then compare the price."
+          ],
+          "feedback": {
+            "met": "That purchase would use part of the reserved money.",
+            "not_yet": "First take away the reserved amount; then compare the price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes gastar 40 sin tocar lo apartado?",
+          "scene": "Tienes 80; apartaste 50 para un recibo.",
+          "options": [
+            {
+              "label": "Sí"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Primero quita lo apartado; después compara el precio."
+          ],
+          "feedback": {
+            "met": "Esa compra usaría parte del dinero apartado.",
+            "not_yet": "Primero quita lo apartado; después compara el precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode gastar 40 sem usar o valor reservado?",
+          "scene": "Você tem 80; reservou 50 para uma conta.",
+          "options": [
+            {
+              "label": "Sim"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Primeiro tire o reservado; depois compare o preço."
+          ],
+          "feedback": {
+            "met": "Essa compra usaria parte do dinheiro reservado.",
+            "not_yet": "Primeiro tire o reservado; depois compare o preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "available-now"
+            },
+            {
+              "id": "already-committed"
+            }
+          ],
+          "series": [
+            {
+              "id": "amount",
+              "values": [
+                140,
+                90
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "amount-140"
+            },
+            {
+              "id": "amount-90"
+            },
+            {
+              "id": "amount-50"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "amount-50"
+        ]
+      },
+      "knowledge_component_id": "finance.cash.reserved",
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Available: 140; committed: 90. Compare the bars.",
+          "title": "Two amounts",
+          "data": {
+            "categories": [
+              {
+                "label": "Available now"
+              },
+              {
+                "label": "Already committed"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amount"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "How much is left for another purchase?",
+            "options": [
+              {
+                "label": "140"
+              },
+              {
+                "label": "90"
+              },
+              {
+                "label": "50"
+              }
+            ]
+          },
+          "help": [
+            "Take the committed amount away from the available total."
+          ],
+          "feedback": {
+            "met": "That remainder leaves the committed amount untouched.",
+            "not_yet": "Keep the committed amount separate from the remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "Disponible: 140; apartado: 90. Compara las barras.",
+          "title": "Dos montos",
+          "data": {
+            "categories": [
+              {
+                "label": "Disponible hoy"
+              },
+              {
+                "label": "Ya apartado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monto"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuánto queda para otra compra?",
+            "options": [
+              {
+                "label": "140"
+              },
+              {
+                "label": "90"
+              },
+              {
+                "label": "50"
+              }
+            ]
+          },
+          "help": [
+            "Quita el monto apartado del total disponible."
+          ],
+          "feedback": {
+            "met": "Ese resto mantiene intacto el dinero apartado.",
+            "not_yet": "Separa el monto apartado de lo que queda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Disponível: 140; reservado: 90. Compare as barras.",
+          "title": "Dois valores",
+          "data": {
+            "categories": [
+              {
+                "label": "Disponível hoje"
+              },
+              {
+                "label": "Já reservado"
+              }
+            ],
+            "series": [
+              {
+                "label": "Valor"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Quanto sobra para outra compra?",
+            "options": [
+              {
+                "label": "140"
+              },
+              {
+                "label": "90"
+              },
+              {
+                "label": "50"
+              }
+            ]
+          },
+          "help": [
+            "Tire o valor reservado do total disponível."
+          ],
+          "feedback": {
+            "met": "Esse restante mantém intacto o dinheiro reservado.",
+            "not_yet": "Separe o valor reservado do que sobra."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "chart-values",
+        "visible_inputs": [
+          140,
+          90
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-still-in-account",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The location changes nothing",
+          "line": "Reserved money still counts as committed when it remains in your account. Moving it is not what makes it reserved."
+        },
+        "es-MX": {
+          "prompt": "El lugar no cambia nada",
+          "line": "Lo apartado sigue comprometido aunque permanezca en tu cuenta. No necesitas moverlo para reconocer para qué lo usarás."
+        },
+        "pt-BR": {
+          "prompt": "O lugar não muda nada",
+          "line": "O reservado continua comprometido mesmo na sua conta. Não precisa movê-lo para reconhecer para que será usado."
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purchase leaves the full bill amount untouched?",
+          "scene": "You have 200; 150 is reserved until tomorrow’s bill.",
+          "options": [
+            {
+              "label": "Spend 70"
+            },
+            {
+              "label": "Spend 50"
+            },
+            {
+              "label": "Spend 200"
+            }
+          ],
+          "help": [
+            "Only compare purchases with the amount left after reserving."
+          ],
+          "feedback": {
+            "met": "This option leaves the entire committed amount available.",
+            "not_yet": "Only compare purchases with the amount left after reserving."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué compra deja intacto todo lo del recibo?",
+          "scene": "Tienes 200; apartaste 150 para un recibo de mañana.",
+          "options": [
+            {
+              "label": "Gastar 70"
+            },
+            {
+              "label": "Gastar 50"
+            },
+            {
+              "label": "Gastar 200"
+            }
+          ],
+          "help": [
+            "Compara las compras solo con lo que queda después de apartar."
+          ],
+          "feedback": {
+            "met": "Esta opción conserva todo el monto apartado.",
+            "not_yet": "Compara las compras solo con lo que queda después de apartar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual compra deixa intacto todo o valor da conta?",
+          "scene": "Você tem 200; reservou 150 para uma conta de amanhã.",
+          "options": [
+            {
+              "label": "Gastar 70"
+            },
+            {
+              "label": "Gastar 50"
+            },
+            {
+              "label": "Gastar 200"
+            }
+          ],
+          "help": [
+            "Compare as compras somente com o que sobra depois de reservar."
+          ],
+          "feedback": {
+            "met": "Essa opção conserva todo o valor reservado.",
+            "not_yet": "Compare as compras somente com o que sobra depois de reservar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Does leaving it there make it free to spend?",
+          "scene": "Your reserved bill money remains in the same account.",
+          "options": [
+            {
+              "label": "No, the bill still needs it"
+            },
+            {
+              "label": "Yes, the account shows it"
+            }
+          ],
+          "help": [
+            "Check what the money is needed for."
+          ],
+          "feedback": {
+            "met": "Its purpose matters even when its location stays unchanged.",
+            "not_yet": "Check what the money is needed for."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dejarlo ahí lo convierte en dinero libre para gastar?",
+          "scene": "El dinero apartado para el recibo sigue en tu cuenta.",
+          "options": [
+            {
+              "label": "No, sigue destinado al recibo"
+            },
+            {
+              "label": "Sí, aparece en la cuenta"
+            }
+          ],
+          "help": [
+            "Revisa para qué se necesita ese dinero."
+          ],
+          "feedback": {
+            "met": "Su propósito importa aunque siga en el mismo lugar.",
+            "not_yet": "Revisa para qué se necesita ese dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deixá-lo ali torna esse dinheiro livre para gastar?",
+          "scene": "O dinheiro reservado para a conta continua na mesma conta.",
+          "options": [
+            {
+              "label": "Não, continua destinado à conta"
+            },
+            {
+              "label": "Sim, aparece na conta"
+            }
+          ],
+          "help": [
+            "Confira para que esse dinheiro é necessário."
+          ],
+          "feedback": {
+            "met": "Sua finalidade importa mesmo permanecendo no mesmo lugar.",
+            "not_yet": "Confira para que esse dinheiro é necessário."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you spend 50 while protecting transport money?",
+          "scene": "You receive 160; transport before your next payment costs 115.",
+          "options": [
+            {
+              "label": "Yes, 160 covers 50"
+            },
+            {
+              "label": "No, transport leaves less than 50"
+            }
+          ],
+          "help": [
+            "Consider what must last until the next payment."
+          ],
+          "feedback": {
+            "met": "You kept the upcoming transport cost in the decision.",
+            "not_yet": "Consider what must last until the next payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes comprar algo de 50 y conservar lo del transporte?",
+          "scene": "Recibes 160; el transporte hasta tu próximo pago cuesta 115.",
+          "options": [
+            {
+              "label": "Sí, 160 alcanza para 50"
+            },
+            {
+              "label": "No, tras el transporte queda menos"
+            }
+          ],
+          "help": [
+            "Considera lo que debe alcanzar hasta el próximo pago."
+          ],
+          "feedback": {
+            "met": "Tomaste en cuenta el costo del transporte próximo.",
+            "not_yet": "Considera lo que debe alcanzar hasta el próximo pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode comprar algo de 50 e conservar o transporte?",
+          "scene": "Você recebe 160; o transporte até o próximo pagamento custa 115.",
+          "options": [
+            {
+              "label": "Sim, 160 cobre 50"
+            },
+            {
+              "label": "Não, após o transporte sobra menos"
+            }
+          ],
+          "help": [
+            "Considere o que precisa durar até o próximo pagamento."
+          ],
+          "feedback": {
+            "met": "Você considerou o custo do transporte na decisão.",
+            "not_yet": "Considere o que precisa durar até o próximo pagamento."
+          }
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

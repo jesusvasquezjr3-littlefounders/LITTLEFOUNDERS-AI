@@ -1,6 +1,7 @@
 import { useId, useMemo, useState } from 'react';
 import type { Locale } from '../design/copyBudget';
 import { Button, SegmentedControl, Slider, ProgressBar } from '../design/controls';
+import { pluralUnit } from '../design/plural';
 import { growthComparison } from './growthComparisonModel.generated';
 import { TeachingChartBoard } from './TeachingChartBoard';
 import { GrowthCompareVisual } from './pizarron';
@@ -21,7 +22,7 @@ const copy: Record<Locale, {
   rate: string; years: string; prediction: string; simple: string; compound: string; year: string;
   hidden: string; reveal: string; tryAgain: string; continue: string; reset: string; start: string; difference: string;
   chart: string; chartHidden: string; chartShown: string; perYear: string; horizontalAxis: string; verticalAxis: string;
-  aboveScale: string; scale: string; nearScale: string; longScale: string;
+  aboveScale: string; scale: string;
 }> = {
   'en-US': {
     back: 'Back', explore: 'Explore', board: 'Board', showTable: 'Show as table', showChart: 'Show chart',
@@ -30,7 +31,7 @@ const copy: Record<Locale, {
     year: 'Year', hidden: 'Hidden', reveal: 'Reveal', tryAgain: 'Try another', continue: 'Continue', reset: 'Reset', start: 'Start',
     difference: 'Difference', chart: 'Two-line growth chart', chartHidden: 'Compound line hidden until reveal',
     chartShown: 'Both lines shown', perYear: 'per year', horizontalAxis: 'years', verticalAxis: 'amount',
-    aboveScale: 'above chart scale', scale: 'Time scale', nearScale: '5 years', longScale: '30 years',
+    aboveScale: 'above chart scale', scale: 'Time scale',
   },
   'es-MX': {
     back: 'Volver', explore: 'Explorar', board: 'Pizarrón', showTable: 'Ver tabla', showChart: 'Ver gráfico',
@@ -39,7 +40,7 @@ const copy: Record<Locale, {
     year: 'Año', hidden: 'Oculto', reveal: 'Revelar', tryAgain: 'Probar otra', continue: 'Continuar', reset: 'Restablecer', start: 'Inicio',
     difference: 'Diferencia', chart: 'Gráfica de dos líneas', chartHidden: 'La línea compuesta se revela después',
     chartShown: 'Ambas líneas visibles', perYear: 'al año', horizontalAxis: 'años', verticalAxis: 'cantidad',
-    aboveScale: 'sobre la escala', scale: 'Escala de tiempo', nearScale: '5 años', longScale: '30 años',
+    aboveScale: 'sobre la escala', scale: 'Escala de tiempo',
   },
   'pt-BR': {
     back: 'Voltar', explore: 'Explorar', board: 'Quadro', showTable: 'Ver tabela', showChart: 'Ver gráfico',
@@ -48,7 +49,7 @@ const copy: Record<Locale, {
     year: 'Ano', hidden: 'Oculto', reveal: 'Revelar', tryAgain: 'Tentar outra', continue: 'Continuar', reset: 'Recomeçar', start: 'Início',
     difference: 'Diferença', chart: 'Gráfico de duas linhas', chartHidden: 'Linha composta oculta até revelar',
     chartShown: 'Ambas as linhas visíveis', perYear: 'ao ano', horizontalAxis: 'anos', verticalAxis: 'valor',
-    aboveScale: 'acima da escala', scale: 'Escala de tempo', nearScale: '5 anos', longScale: '30 anos',
+    aboveScale: 'acima da escala', scale: 'Escala de tempo',
   },
 };
 const localCurrency: Record<Locale, string> = { 'en-US': 'USD', 'es-MX': 'MXN', 'pt-BR': 'BRL' };
@@ -94,6 +95,7 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence, onG
   const number = useMemo(() => new Intl.NumberFormat(locale, { style: 'currency',
     currency: localCurrency[locale], currencyDisplay: 'code' }), [locale]);
   const percent = useMemo(() => new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }), [locale]);
+  const yearWord = (count: number) => pluralUnit(locale, count, { one: t.year.toLowerCase(), other: t.years.toLowerCase() });
   const money = (minor: number) => number.format(minor / 100);
   const changeRate = (next: number) => { setRate(next); setCommitted(null); grading.reset(); };
   const changeYears = (next: number) => { setYears(next); setCommitted(null); grading.reset(); };
@@ -142,7 +144,8 @@ export function GrowthComparisonBoard({ document, segment, onBack, sequence, onG
           {() => <div className="lf-growth-compare-controls">
             <SegmentedControl legend={t.scale} legendHidden name={`${scaleName}-scale`} value={String(years)}
               onValueChange={(value) => changeYears(Number(value))} options={[
-                { value: String(p.minimumYears), label: t.nearScale }, { value: String(p.maximumYears), label: t.longScale },
+                { value: String(p.minimumYears), label: `${percent.format(p.minimumYears)} ${yearWord(p.minimumYears)}` },
+                { value: String(p.maximumYears), label: `${percent.format(p.maximumYears)} ${yearWord(p.maximumYears)}` },
               ]} />
             <Slider label={t.prediction} valueText={money(prediction)} min={p.principalMinor}
               max={p.predictionMaximumMinor} step={p.predictionStepMinor} value={prediction} onValueChange={changePrediction} />

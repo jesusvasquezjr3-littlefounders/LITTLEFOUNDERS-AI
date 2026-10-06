@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-2",
+  "lesson_id": "fe-production-accounts-records-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare account access conditions with a person’s stated device, location and documentation constraints.",
+  "title": {
+    "en-US": "Usable access",
+    "es-MX": "El acceso debe servirte",
+    "pt-BR": "O acesso precisa servir para você"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Access must work for you\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El acceso debe servirte\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O acesso precisa servir para você\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.08",
+      "observable_action": "Compare account access conditions with a person’s stated device, location and documentation constraints.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare the required device, location and documents with what the person actually has.",
+    "misconception": "Assuming a low-cost account is usable despite unavailable devices, inaccessible branches or unmet documentation requirements.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-example-01",
+        "supports_from": [],
+        "reasoning": "A low fee is not enough if the required access route is unavailable. Check device, location and documented requirements."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The required device is part of whether the account is usable."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A listed feature is useful only through an accessible route."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Verify permitted alternatives rather than inventing eligibility."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Service speed alone does not solve unavailable connectivity."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Assistance need not mean surrendering private account access."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Access depends on a usable supported verification method."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare the required device, location and documents with what the person actually has."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara dispositivo, ubicación y documentos requeridos con lo que la persona realmente tiene."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare aparelho, localização e documentos exigidos com o que a pessoa realmente tem."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A usable access route",
+          "line": "A low fee is not enough if the required access route is unavailable. Check device, location and documented requirements."
+        },
+        "es-MX": {
+          "prompt": "Una vía de acceso viable",
+          "line": "Una comisión baja no basta si no puedes acceder. Revisa dispositivo, ubicación y requisitos documentados."
+        },
+        "pt-BR": {
+          "prompt": "Uma via de acesso viável",
+          "line": "Uma tarifa baixa não basta se não consegue acessar. Confira aparelho, localização e requisitos documentados."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which constraint needs resolution?",
+          "scene": "A fictional account requires a smartphone app; the person has no compatible smartphone.",
+          "options": [
+            {
+              "label": "The required device access"
+            },
+            {
+              "label": "Only the account’s interest label"
+            },
+            {
+              "label": "Only the printed balance format"
+            }
+          ],
+          "help": [
+            "Check whether an alternative access route is actually offered."
+          ],
+          "feedback": {
+            "met": "The required device is part of whether the account is usable.",
+            "not_yet": "Check whether an alternative access route is actually offered."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué límite necesita resolverse?",
+          "scene": "Una cuenta ficticia exige aplicación móvil; la persona no tiene teléfono compatible.",
+          "options": [
+            {
+              "label": "El acceso al dispositivo requerido"
+            },
+            {
+              "label": "Solo la etiqueta de interés"
+            },
+            {
+              "label": "Solo el formato impreso del saldo"
+            }
+          ],
+          "help": [
+            "Revisa si realmente ofrecen otra vía de acceso."
+          ],
+          "feedback": {
+            "met": "El dispositivo requerido determina si puede usarse la cuenta.",
+            "not_yet": "Revisa si realmente ofrecen otra vía de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual limite precisa de solução?",
+          "scene": "Uma conta fictícia exige aplicativo móvel; a pessoa não tem celular compatível.",
+          "options": [
+            {
+              "label": "O acesso ao aparelho exigido"
+            },
+            {
+              "label": "Só o rótulo de juros"
+            },
+            {
+              "label": "Só o formato impresso do saldo"
+            }
+          ],
+          "help": [
+            "Confira se realmente oferecem outra via de acesso."
+          ],
+          "feedback": {
+            "met": "O aparelho exigido determina se a conta pode ser usada.",
+            "not_yet": "Confira se realmente oferecem outra via de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is shown?",
+          "scene": "A fictional cash service requires branch visits; this person cannot reach any branch.",
+          "options": [
+            {
+              "label": "It is usable because listed"
+            },
+            {
+              "label": "It fails these access needs"
+            },
+            {
+              "label": "Location never affects account choice"
+            }
+          ],
+          "help": [
+            "Use the person’s actual access constraints."
+          ],
+          "feedback": {
+            "met": "A listed feature is useful only through an accessible route.",
+            "not_yet": "Use the person’s actual access constraints."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra esto?",
+          "scene": "Un servicio ficticio de efectivo exige ir a sucursal; la más cercana es inaccesible para esta persona.",
+          "options": [
+            {
+              "label": "Puede usarse porque está anunciado"
+            },
+            {
+              "label": "El servicio no cubre el acceso indicado"
+            },
+            {
+              "label": "Ubicación nunca afecta elegir cuenta"
+            }
+          ],
+          "help": [
+            "Usa los límites reales de acceso de la persona."
+          ],
+          "feedback": {
+            "met": "Una función anunciada sirve mediante una vía accesible.",
+            "not_yet": "Usa los límites reales de acceso de la persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mostra?",
+          "scene": "Um serviço fictício de dinheiro exige ir à agência; a mais próxima é inacessível para esta pessoa.",
+          "options": [
+            {
+              "label": "Pode ser usado porque está anunciado"
+            },
+            {
+              "label": "O serviço não atende ao acesso informado"
+            },
+            {
+              "label": "Localização nunca afeta escolher conta"
+            }
+          ],
+          "help": [
+            "Use os limites reais de acesso da pessoa."
+          ],
+          "feedback": {
+            "met": "Uma função anunciada serve por uma via acessível.",
+            "not_yet": "Use os limites reais de acesso da pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be checked?",
+          "scene": "An application requires a document the person lacks; alternative documents are not specified.",
+          "options": [
+            {
+              "label": "Invent the missing document details"
+            },
+            {
+              "label": "Official accepted-document alternatives"
+            },
+            {
+              "label": "Assume any document is accepted"
+            }
+          ],
+          "help": [
+            "Requirements vary; use the actual applicable list."
+          ],
+          "feedback": {
+            "met": "Verify permitted alternatives rather than inventing eligibility.",
+            "not_yet": "Requirements vary; use the actual applicable list."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe revisarse?",
+          "scene": "Una solicitud exige un documento faltante; no se indican alternativas.",
+          "options": [
+            {
+              "label": "Inventar datos del documento faltante"
+            },
+            {
+              "label": "Alternativas documentales oficiales aceptadas"
+            },
+            {
+              "label": "Suponer que aceptan cualquier documento"
+            }
+          ],
+          "help": [
+            "Requisitos varían; usa la lista real aplicable."
+          ],
+          "feedback": {
+            "met": "Verifica alternativas permitidas sin inventar elegibilidad.",
+            "not_yet": "Requisitos varían; usa la lista real aplicable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser conferido?",
+          "scene": "Uma solicitação exige documento ausente; não informa alternativas.",
+          "options": [
+            {
+              "label": "Inventar dados do documento ausente"
+            },
+            {
+              "label": "Alternativas documentais oficiais aceitas"
+            },
+            {
+              "label": "Supor que aceitam qualquer documento"
+            }
+          ],
+          "help": [
+            "Requisitos variam; use a lista real aplicável."
+          ],
+          "feedback": {
+            "met": "Confira alternativas permitidas sem inventar elegibilidade.",
+            "not_yet": "Requisitos variam; use a lista real aplicável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What belongs in the comparison?",
+          "scene": "This account needs frequent online access; the person has unreliable connectivity.",
+          "options": [
+            {
+              "label": "A workable access and recovery route"
+            },
+            {
+              "label": "Assuming constant coverage"
+            },
+            {
+              "label": "Only the advertised transfer speed"
+            }
+          ],
+          "help": [
+            "Check access during the person’s real conditions."
+          ],
+          "feedback": {
+            "met": "Service speed alone does not solve unavailable connectivity.",
+            "not_yet": "Check access during the person’s real conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué corresponde a la comparación?",
+          "scene": "La cuenta indicada exige conexión frecuente; la persona tiene conectividad inestable.",
+          "options": [
+            {
+              "label": "Una vía viable de acceso y recuperación"
+            },
+            {
+              "label": "Suponer cobertura constante"
+            },
+            {
+              "label": "Solo la velocidad anunciada de transferencia"
+            }
+          ],
+          "help": [
+            "Revisa acceso bajo condiciones reales de la persona."
+          ],
+          "feedback": {
+            "met": "La velocidad del servicio no resuelve falta de conexión.",
+            "not_yet": "Revisa acceso bajo condiciones reales de la persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que cabe na comparação?",
+          "scene": "A conta informada exige conexão frequente; a pessoa tem conexão instável.",
+          "options": [
+            {
+              "label": "Uma via viável de acesso e recuperação"
+            },
+            {
+              "label": "Supor cobertura constante"
+            },
+            {
+              "label": "Só a velocidade anunciada da transferência"
+            }
+          ],
+          "help": [
+            "Confira acesso nas condições reais da pessoa."
+          ],
+          "feedback": {
+            "met": "A velocidade do serviço não resolve falta de conexão.",
+            "not_yet": "Confira acesso nas condições reais da pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which support fits?",
+          "scene": "An account permits assistance while requiring the holder’s credentials to stay private.",
+          "options": [
+            {
+              "label": "Give the helper the account password"
+            },
+            {
+              "label": "Use the authorized assistance process"
+            },
+            {
+              "label": "Assume assistance transfers account ownership"
+            }
+          ],
+          "help": [
+            "Follow the stated assistance process and access boundaries."
+          ],
+          "feedback": {
+            "met": "Assistance need not mean surrendering private account access.",
+            "not_yet": "Follow the stated assistance process and access boundaries."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué apoyo respeta este límite?",
+          "scene": "Una cuenta permite asistencia, pero exige conservar privadas las credenciales del titular.",
+          "options": [
+            {
+              "label": "Dar la contraseña a quien ayuda"
+            },
+            {
+              "label": "Usar el proceso autorizado de asistencia"
+            },
+            {
+              "label": "Suponer que ayudar transfiere titularidad"
+            }
+          ],
+          "help": [
+            "Sigue el proceso indicado y límites de acceso."
+          ],
+          "feedback": {
+            "met": "Recibir ayuda no implica entregar acceso privado.",
+            "not_yet": "Sigue el proceso indicado y límites de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual apoio respeita esse limite?",
+          "scene": "Uma conta permite assistência, mas exige manter privadas as credenciais do titular.",
+          "options": [
+            {
+              "label": "Dar a senha a quem ajuda"
+            },
+            {
+              "label": "Usar o processo autorizado de assistência"
+            },
+            {
+              "label": "Supor que ajudar transfere titularidade"
+            }
+          ],
+          "help": [
+            "Siga o processo informado e limites de acesso."
+          ],
+          "feedback": {
+            "met": "Receber ajuda não implica entregar acesso privado.",
+            "not_yet": "Siga o processo informado e limites de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs verification?",
+          "scene": "Travel requires account access abroad; verification depends on an unavailable home SIM.",
+          "options": [
+            {
+              "label": "Only the account’s balance"
+            },
+            {
+              "label": "Assuming codes arrive anywhere"
+            },
+            {
+              "label": "A supported verification method while away"
+            }
+          ],
+          "help": [
+            "Check access conditions before the required journey."
+          ],
+          "feedback": {
+            "met": "Access depends on a usable supported verification method.",
+            "not_yet": "Check access conditions before the required journey."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acceso debe verificarse?",
+          "scene": "Una persona viaja y necesita acceder; la verificación indicada depende de una SIM local no disponible.",
+          "options": [
+            {
+              "label": "Solo el saldo de cuenta"
+            },
+            {
+              "label": "Suponer que códigos llegan a cualquier sitio"
+            },
+            {
+              "label": "Un método de verificación permitido durante el viaje"
+            }
+          ],
+          "help": [
+            "Revisa condiciones de acceso antes del viaje necesario."
+          ],
+          "feedback": {
+            "met": "Acceder requiere un método de verificación permitido y utilizable.",
+            "not_yet": "Revisa condiciones de acceso antes del viaje necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual acesso conferir?",
+          "scene": "Uma pessoa viaja e precisa acessar; a verificação informada depende de um chip local indisponível.",
+          "options": [
+            {
+              "label": "Só o saldo da conta"
+            },
+            {
+              "label": "Supor que códigos chegam em qualquer lugar"
+            },
+            {
+              "label": "Um método de verificação permitido durante a viagem"
+            }
+          ],
+          "help": [
+            "Confira condições de acesso antes da viagem necessária."
+          ],
+          "feedback": {
+            "met": "Acessar exige um método de verificação permitido e utilizável.",
+            "not_yet": "Confira condições de acesso antes da viagem necessária."
+          }
+        }
+      }
+    }
+  ]
+}

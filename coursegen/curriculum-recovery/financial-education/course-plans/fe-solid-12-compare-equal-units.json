@@ -1,0 +1,800 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-03-compare-before-paying",
+  "lesson_id": "fe-solid-12-compare-equal-units",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.price.unit"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a price per equal unit and distinguish the least unit price from an affordable, useful purchase.",
+  "title": {
+    "en-US": "Compare equal units",
+    "es-MX": "Compara unidades iguales",
+    "pt-BR": "Compare unidades iguais"
+  },
+  "new_concepts": [
+    "finance.price.unit"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Compare equal units\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara unidades iguales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare unidades iguais\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "price.unit",
+      "observable_action": "Calculate a price per equal unit and distinguish the least unit price from an affordable, useful purchase.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance",
+      "plan.priority"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Package sizes differ. Compare prices in dollars for equal units before deciding what fits your actual needs.",
+    "misconception": "Assuming the largest package or lowest total price always gives the lowest price per usable unit.",
+    "numeracy_support": "A worked example splits a total into equal repeated parts before naming division; assessed unit prices are whole numbers.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-example-01",
+        "supports_from": [],
+        "reasoning": "Two equal bars cost 20: 10 + 10 = 20, so each costs 10. Dividing 20 by 2 gives 10."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-example-02",
+        "supports_from": [],
+        "reasoning": "Another pack has three equal bars for 24: 8 + 8 + 8 = 24. Its price per bar is lower."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "You compared the price of the same unit in both packs."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A unit-price comparison does not remove the spending limit."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-practice-01",
+        "supports_from": [],
+        "reasoning": "The larger pack did not automatically offer the lower unit price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-practice-02",
+        "supports_from": [],
+        "reasoning": "Different bottle sizes are not equal comparison units."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-practice-03",
+        "supports_from": [],
+        "reasoning": "Unused spoiled portions reduce the value of the purchase."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "price.unit",
+        "context_id": "compare-equal-units-transfer-01",
+        "supports_from": [],
+        "reasoning": "You compared equal units in a new purchase context."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "price.unit",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Package sizes differ. Compare prices in dollars for equal units before deciding what fits your actual needs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Los paquetes tienen tamaños distintos. Compara precios en pesos por unidades iguales antes de decidir qué necesitas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Os pacotes têm tamanhos diferentes. Compare preços em reais por unidades iguais antes de decidir o que precisa."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Split into equal parts",
+          "line": "Two equal bars cost 20: 10 + 10 = 20, so each costs 10. Dividing 20 by 2 gives 10."
+        },
+        "es-MX": {
+          "prompt": "Reparte en partes iguales",
+          "line": "Dos barras iguales cuestan 20: 10 + 10 = 20, así que cada una cuesta 10. Dividir 20 entre 2 da 10."
+        },
+        "pt-BR": {
+          "prompt": "Divida em partes iguais",
+          "line": "Duas barras iguais custam 20: 10 + 10 = 20, então cada uma custa 10. Dividir 20 por 2 dá 10."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare the same unit",
+          "line": "Another pack has three equal bars for 24: 8 + 8 + 8 = 24. Its price per bar is lower."
+        },
+        "es-MX": {
+          "prompt": "Compara la misma unidad",
+          "line": "Otro paquete tiene tres barras iguales por 24: 8 + 8 + 8 = 24. Su precio por barra es menor."
+        },
+        "pt-BR": {
+          "prompt": "Compare a mesma unidade",
+          "line": "Outro pacote tem três barras iguais por 24: 8 + 8 + 8 = 24. Seu preço por barra é menor."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "offer-1",
+            "quantity": 2,
+            "price_minor": 2000
+          },
+          {
+            "id": "offer-2",
+            "quantity": 3,
+            "price_minor": 2400
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "offer-1": "10",
+          "offer-2": "8"
+        },
+        "better_id": "offer-2"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "Enter each price per equal bar, then choose the lower one. Split each total by its quantity.",
+          "unitLabel": "bar",
+          "offers": [
+            {
+              "label": "Two equal bars"
+            },
+            {
+              "label": "Three equal bars"
+            }
+          ],
+          "feedback": {
+            "met": "You compared the price of the same unit in both packs.",
+            "not_yet": "Divide each total by the number of equal bars."
+          },
+          "help": [
+            "Divide each total by the number of equal bars."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Escribe cada precio por barra igual y elige el menor. Reparte cada total entre su cantidad.",
+          "unitLabel": "barra",
+          "offers": [
+            {
+              "label": "Dos barras iguales"
+            },
+            {
+              "label": "Tres barras iguales"
+            }
+          ],
+          "feedback": {
+            "met": "Comparaste el precio de la misma unidad en ambos paquetes.",
+            "not_yet": "Divide cada total entre el número de barras iguales."
+          },
+          "help": [
+            "Divide cada total entre el número de barras iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Digite cada preço por barra igual e escolha o menor. Divida cada total pela quantidade.",
+          "unitLabel": "barra",
+          "offers": [
+            {
+              "label": "Duas barras iguais"
+            },
+            {
+              "label": "Três barras iguais"
+            }
+          ],
+          "feedback": {
+            "met": "Você comparou o preço da mesma unidade nos dois pacotes.",
+            "not_yet": "Divida cada total pelo número de barras iguais."
+          },
+          "help": [
+            "Divida cada total pelo número de barras iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "Does unit price settle the purchase?",
+          "scene": "The cheaper pack per bar exceeds your spending limit.",
+          "options": [
+            {
+              "label": "Yes, always buy that pack"
+            },
+            {
+              "label": "No, check the total"
+            },
+            {
+              "label": "Yes, ignore the total price"
+            }
+          ],
+          "help": [
+            "Check both value per unit and the total you must pay."
+          ],
+          "feedback": {
+            "met": "A unit-price comparison does not remove the spending limit.",
+            "not_yet": "Check both value per unit and the total you must pay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El menor precio unitario decide la compra?",
+          "scene": "El paquete más barato por barra cuesta en total más de lo que puedes gastar hoy.",
+          "options": [
+            {
+              "label": "Sí, siempre compra ese paquete"
+            },
+            {
+              "label": "No, el total también debe caber"
+            },
+            {
+              "label": "Sí, ignora el precio total"
+            }
+          ],
+          "help": [
+            "Comprueba el valor por unidad y el total que debes pagar."
+          ],
+          "feedback": {
+            "met": "Comparar precios unitarios no elimina el límite de gasto.",
+            "not_yet": "Comprueba el valor por unidad y el total que debes pagar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O menor preço unitário decide a compra?",
+          "scene": "O pacote mais barato por barra custa no total mais do que você pode gastar hoje.",
+          "options": [
+            {
+              "label": "Sim, sempre compre esse pacote"
+            },
+            {
+              "label": "Não, o total também deve caber"
+            },
+            {
+              "label": "Sim, ignore o preço total"
+            }
+          ],
+          "help": [
+            "Confira o valor por unidade e o total que precisa pagar."
+          ],
+          "feedback": {
+            "met": "Comparar preços unitários não elimina o limite de gasto.",
+            "not_yet": "Confira o valor por unidade e o total que precisa pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "offer-1",
+            "quantity": 4,
+            "price_minor": 2800
+          },
+          {
+            "id": "offer-2",
+            "quantity": 6,
+            "price_minor": 4800
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "offer-1": "7",
+          "offer-2": "8"
+        },
+        "better_id": "offer-1"
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "These equal cans contain the same amount. Find each unit price and select the lower one.",
+          "unitLabel": "can",
+          "offers": [
+            {
+              "label": "Four equal cans"
+            },
+            {
+              "label": "Six equal cans"
+            }
+          ],
+          "feedback": {
+            "met": "The larger pack did not automatically offer the lower unit price.",
+            "not_yet": "Compare one equal can from each pack."
+          },
+          "help": [
+            "Compare one equal can from each pack."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Estas latas iguales contienen lo mismo. Halla cada precio unitario y elige el menor.",
+          "unitLabel": "lata",
+          "offers": [
+            {
+              "label": "Cuatro latas iguales"
+            },
+            {
+              "label": "Seis latas iguales"
+            }
+          ],
+          "feedback": {
+            "met": "El paquete grande no ofrecía automáticamente el menor precio unitario.",
+            "not_yet": "Compara una lata igual de cada paquete."
+          },
+          "help": [
+            "Compara una lata igual de cada paquete."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Estas latas iguais contêm a mesma quantidade. Ache cada preço unitário e escolha o menor.",
+          "unitLabel": "lata",
+          "offers": [
+            {
+              "label": "Quatro latas iguais"
+            },
+            {
+              "label": "Seis latas iguais"
+            }
+          ],
+          "feedback": {
+            "met": "O pacote maior não oferecia automaticamente o menor preço unitário.",
+            "not_yet": "Compare uma lata igual de cada pacote."
+          },
+          "help": [
+            "Compare uma lata igual de cada pacote."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked first?",
+          "scene": "Unequal bottles: the smaller has the lower price.",
+          "options": [
+            {
+              "label": "The price for an equal volume"
+            },
+            {
+              "label": "Only the number of bottles"
+            },
+            {
+              "label": "Only which bottle is cheaper"
+            }
+          ],
+          "help": [
+            "Use the same amount of product in both comparisons."
+          ],
+          "feedback": {
+            "met": "Different bottle sizes are not equal comparison units.",
+            "not_yet": "Use the same amount of product in both comparisons."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes comprobar primero?",
+          "scene": "Una botella es mucho mayor que otra. La pequeña cuesta menos por botella.",
+          "options": [
+            {
+              "label": "El precio por un volumen igual"
+            },
+            {
+              "label": "Solo el número de botellas"
+            },
+            {
+              "label": "Solo cuál botella cuesta menos"
+            }
+          ],
+          "help": [
+            "Usa la misma cantidad de producto en ambas comparaciones."
+          ],
+          "feedback": {
+            "met": "Botellas de distintos tamaños no son unidades iguales.",
+            "not_yet": "Usa la misma cantidad de producto en ambas comparaciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir primeiro?",
+          "scene": "Uma garrafa é muito maior que a outra. A pequena custa menos por garrafa.",
+          "options": [
+            {
+              "label": "O preço por um volume igual"
+            },
+            {
+              "label": "Só o número de garrafas"
+            },
+            {
+              "label": "Só qual garrafa custa menos"
+            }
+          ],
+          "help": [
+            "Use a mesma quantidade de produto nas duas comparações."
+          ],
+          "feedback": {
+            "met": "Garrafas de tamanhos diferentes não são unidades iguais.",
+            "not_yet": "Use a mesma quantidade de produto nas duas comparações."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "What cancels the saving?",
+          "scene": "A pack costs less per portion but will spoil before you finish it.",
+          "options": [
+            {
+              "label": "Knowing the total price"
+            },
+            {
+              "label": "Comparing equal portions"
+            },
+            {
+              "label": "Paying for wasted portions"
+            }
+          ],
+          "help": [
+            "Compare useful portions, not just everything inside the pack."
+          ],
+          "feedback": {
+            "met": "Unused spoiled portions reduce the value of the purchase.",
+            "not_yet": "Compare useful portions, not just everything inside the pack."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede eliminar el ahorro aparente?",
+          "scene": "Un paquete de comida cuesta menos por porción igual, pero no lo usarás antes de que se eche a perder.",
+          "options": [
+            {
+              "label": "Conocer el precio total"
+            },
+            {
+              "label": "Comparar porciones iguales"
+            },
+            {
+              "label": "Pagar por porciones que no usarás"
+            }
+          ],
+          "help": [
+            "Compara porciones útiles, no solo todo lo que trae el paquete."
+          ],
+          "feedback": {
+            "met": "Las porciones desperdiciadas reducen el valor de la compra.",
+            "not_yet": "Compara porciones útiles, no solo todo lo que trae el paquete."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode eliminar a economia aparente?",
+          "scene": "Um pacote de comida custa menos por porção igual, mas não será usado antes de estragar.",
+          "options": [
+            {
+              "label": "Conhecer o preço total"
+            },
+            {
+              "label": "Comparar porções iguais"
+            },
+            {
+              "label": "Pagar por porções que não usará"
+            }
+          ],
+          "help": [
+            "Compare porções úteis, não só tudo que vem no pacote."
+          ],
+          "feedback": {
+            "met": "As porções desperdiçadas reduzem o valor da compra.",
+            "not_yet": "Compare porções úteis, não só tudo que vem no pacote."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.unit-price.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "ratio-table"
+      },
+      "payload": {
+        "currency": "local",
+        "offers": [
+          {
+            "id": "offer-1",
+            "quantity": 3,
+            "price_minor": 2700
+          },
+          {
+            "id": "offer-2",
+            "quantity": 5,
+            "price_minor": 4000
+          }
+        ]
+      },
+      "rubric": {
+        "unit_prices": {
+          "offer-1": "9",
+          "offer-2": "8"
+        },
+        "better_id": "offer-2"
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "Compare equal replacement filters. Enter the price of one filter in each pack and select the lower unit price.",
+          "unitLabel": "filter",
+          "offers": [
+            {
+              "label": "Three equal filters"
+            },
+            {
+              "label": "Five equal filters"
+            }
+          ],
+          "feedback": {
+            "met": "You compared equal units in a new purchase context.",
+            "not_yet": "Divide each pack price by the filters it contains."
+          },
+          "help": [
+            "Divide each pack price by the filters it contains."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Compara filtros de reemplazo iguales. Escribe el precio de un filtro en cada paquete y elige el menor.",
+          "unitLabel": "filtro",
+          "offers": [
+            {
+              "label": "Tres filtros iguales"
+            },
+            {
+              "label": "Cinco filtros iguales"
+            }
+          ],
+          "feedback": {
+            "met": "Comparaste unidades iguales en una nueva situación de compra.",
+            "not_yet": "Divide el precio de cada paquete entre los filtros que contiene."
+          },
+          "help": [
+            "Divide el precio de cada paquete entre los filtros que contiene."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Compare filtros de reposição iguais. Digite o preço de um filtro em cada pacote e escolha o menor.",
+          "unitLabel": "filtro",
+          "offers": [
+            {
+              "label": "Três filtros iguais"
+            },
+            {
+              "label": "Cinco filtros iguais"
+            }
+          ],
+          "feedback": {
+            "met": "Você comparou unidades iguais em uma nova situação de compra.",
+            "not_yet": "Divida o preço de cada pacote pelos filtros que contém."
+          },
+          "help": [
+            "Divida o preço de cada pacote pelos filtros que contém."
+          ]
+        }
+      }
+    }
+  ]
+}

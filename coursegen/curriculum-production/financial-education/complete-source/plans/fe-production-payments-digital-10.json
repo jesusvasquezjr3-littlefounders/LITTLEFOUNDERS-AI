@@ -1,0 +1,768 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-2",
+  "lesson_id": "fe-production-payments-digital-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a mistaken transfer from an unauthorized payment when preparing a report.",
+  "title": {
+    "en-US": "Accurate reports",
+    "es-MX": "Reporta lo que realmente ocurrió",
+    "pt-BR": "Relate o que de fato ocorreu"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Report what actually happened\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reporta lo que realmente ocurrió\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Relate o que de fato ocorreu\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.10",
+      "observable_action": "Distinguish a mistaken transfer from an unauthorized payment when preparing a report.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.02",
+      "prod.payments-digital.03",
+      "prod.accounts-records.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Describe who initiated a payment, what you intended and what the record shows.",
+    "misconception": "Calling every unwanted result unauthorized or promising the same recovery for every payment problem.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-example-01",
+        "supports_from": [],
+        "reasoning": "Sending to the wrong recipient differs from a payment you never initiated. Report the facts; applicable remedies require verification."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Your mistaken selection is a fact support needs to understand."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Describe the absence of your approval without inventing a cause."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Report both your action and the deception; rules depend on the facts."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-practice-02",
+        "supports_from": [],
+        "reasoning": "The mismatch concerns the amount; preserve the matching transaction details."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Uncertainty can be reported without inventing facts or delaying protection."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "fe-production-payments-digital-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "You authorized a payment but made an amount error. Report both facts."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Describe who initiated a payment, what you intended and what the record shows."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Describe quién inició el pago, qué intentabas y qué muestra el registro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Descreva quem iniciou o pagamento, o que pretendia e o que o registro mostra."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Facts before labels",
+          "line": "Sending to the wrong recipient differs from a payment you never initiated. Report the facts; applicable remedies require verification."
+        },
+        "es-MX": {
+          "prompt": "Hechos antes de etiquetas",
+          "line": "Enviar al destinatario equivocado difiere de un pago que no iniciaste. Reporta hechos; las soluciones aplicables requieren verificación."
+        },
+        "pt-BR": {
+          "prompt": "Fatos antes de rótulos",
+          "line": "Enviar ao destino errado difere de um pagamento que não iniciou. Relate os fatos; confira quais soluções cabem."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description matches?",
+          "scene": "You confirmed a transfer but selected the wrong saved recipient.",
+          "options": [
+            {
+              "label": "The recipient necessarily stole access"
+            },
+            {
+              "label": "I never initiated any transfer"
+            },
+            {
+              "label": "I sent it to the wrong recipient"
+            }
+          ],
+          "help": [
+            "Distinguish your action from the result you wanted."
+          ],
+          "feedback": {
+            "met": "Your mistaken selection is a fact support needs to understand.",
+            "not_yet": "Distinguish your action from the result you wanted."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción coincide?",
+          "scene": "Confirmaste una transferencia, pero elegiste al destinatario guardado equivocado.",
+          "options": [
+            {
+              "label": "El destinatario necesariamente robó acceso"
+            },
+            {
+              "label": "Nunca inicié ninguna transferencia"
+            },
+            {
+              "label": "La envié al destinatario equivocado"
+            }
+          ],
+          "help": [
+            "Distingue tu acción del resultado que querías."
+          ],
+          "feedback": {
+            "met": "Tu selección equivocada es un hecho que soporte debe conocer.",
+            "not_yet": "Distingue tu acción del resultado que querías."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição corresponde?",
+          "scene": "Confirmou uma transferência, mas escolheu o destinatário salvo errado.",
+          "options": [
+            {
+              "label": "O destinatário certamente roubou acesso"
+            },
+            {
+              "label": "Nunca iniciei transferência alguma"
+            },
+            {
+              "label": "Enviei ao destinatário errado"
+            }
+          ],
+          "help": [
+            "Separe sua ação do resultado que queria."
+          ],
+          "feedback": {
+            "met": "Sua escolha errada é um fato que o suporte precisa saber.",
+            "not_yet": "Separe sua ação do resultado que queria."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What should reports state?",
+          "scene": "A payment appears that you did not initiate or approve.",
+          "options": [
+            {
+              "label": "I accidentally chose the recipient"
+            },
+            {
+              "label": "I did not initiate or approve it"
+            },
+            {
+              "label": "I received a promised refund"
+            }
+          ],
+          "help": [
+            "State what you know about your own actions."
+          ],
+          "feedback": {
+            "met": "Describe the absence of your approval without inventing a cause.",
+            "not_yet": "State what you know about your own actions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe indicar el reporte?",
+          "scene": "Aparece un pago que no iniciaste ni aprobaste.",
+          "options": [
+            {
+              "label": "Elegí al destinatario por error"
+            },
+            {
+              "label": "No lo inicié ni aprobé"
+            },
+            {
+              "label": "Recibí un reembolso prometido"
+            }
+          ],
+          "help": [
+            "Indica qué sabes de tus propias acciones."
+          ],
+          "feedback": {
+            "met": "Describe la falta de autorización sin inventar la causa.",
+            "not_yet": "Indica qué sabes de tus propias acciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve dizer o relato?",
+          "scene": "Surge um pagamento que não iniciou nem aprovou.",
+          "options": [
+            {
+              "label": "Escolhi o destinatário por engano"
+            },
+            {
+              "label": "Não iniciei nem aprovei esse pagamento"
+            },
+            {
+              "label": "Recebi uma devolução prometida"
+            }
+          ],
+          "help": [
+            "Diga o que sabe das suas próprias ações."
+          ],
+          "feedback": {
+            "met": "Descreva a falta de aprovação sem inventar a causa.",
+            "not_yet": "Diga o que sabe das suas próprias ações."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which account is accurate?",
+          "scene": "You sent money because a caller impersonated your provider.",
+          "options": [
+            {
+              "label": "I never sent any payment"
+            },
+            {
+              "label": "I sent it after being deceived"
+            },
+            {
+              "label": "It was a normal intended purchase"
+            }
+          ],
+          "help": [
+            "Do not erase either the transfer or the deception."
+          ],
+          "feedback": {
+            "met": "Report both your action and the deception; rules depend on the facts.",
+            "not_yet": "Do not erase either the transfer or the deception."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué relato es exacto?",
+          "scene": "Enviaste dinero porque alguien se hizo pasar por tu proveedor.",
+          "options": [
+            {
+              "label": "Nunca envié ningún pago"
+            },
+            {
+              "label": "Lo envié tras ser engañado"
+            },
+            {
+              "label": "Fue una compra normal prevista"
+            }
+          ],
+          "help": [
+            "No omitas la transferencia ni el engaño."
+          ],
+          "feedback": {
+            "met": "Reporta tu acción y el engaño; las reglas dependen de hechos.",
+            "not_yet": "No omitas la transferencia ni el engaño."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual relato é exato?",
+          "scene": "Enviou dinheiro porque alguém fingiu ser seu fornecedor.",
+          "options": [
+            {
+              "label": "Nunca enviei pagamento algum"
+            },
+            {
+              "label": "Enviei após ser enganado"
+            },
+            {
+              "label": "Foi uma compra normal prevista"
+            }
+          ],
+          "help": [
+            "Não omita a transferência nem o golpe."
+          ],
+          "feedback": {
+            "met": "Relate sua ação e o golpe; regras dependem dos fatos.",
+            "not_yet": "Não omita a transferência nem o golpe."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence supports checking?",
+          "scene": "The seller matches, but the amount differs from your receipt.",
+          "options": [
+            {
+              "label": "Only the seller’s general reputation"
+            },
+            {
+              "label": "A claim that no purchase happened"
+            },
+            {
+              "label": "Both amounts and their matching reference"
+            }
+          ],
+          "help": [
+            "Describe the actual discrepancy."
+          ],
+          "feedback": {
+            "met": "The mismatch concerns the amount; preserve the matching transaction details.",
+            "not_yet": "Describe the actual discrepancy."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia permite revisar?",
+          "scene": "Reconoces al comercio, pero el monto registrado difiere del comprobante.",
+          "options": [
+            {
+              "label": "Solo la reputación general del comercio"
+            },
+            {
+              "label": "Afirmar que no hubo compra"
+            },
+            {
+              "label": "Ambos montos y su referencia coincidente"
+            }
+          ],
+          "help": [
+            "Describe la diferencia real."
+          ],
+          "feedback": {
+            "met": "La diferencia es de monto; conserva datos de la operación coincidente.",
+            "not_yet": "Describe la diferencia real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual prova ajuda a conferir?",
+          "scene": "Reconhece a loja, mas o valor registrado difere do recibo.",
+          "options": [
+            {
+              "label": "Só a fama geral da loja"
+            },
+            {
+              "label": "Dizer que não houve compra"
+            },
+            {
+              "label": "Ambos os valores e sua referência comum"
+            }
+          ],
+          "help": [
+            "Descreva a diferença real."
+          ],
+          "feedback": {
+            "met": "A diferença é de valor; guarde dados da operação correspondente.",
+            "not_yet": "Descreva a diferença real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What to report?",
+          "scene": "You cannot yet match an unfamiliar entry to your purchase.",
+          "options": [
+            {
+              "label": "A guarantee that the entry is harmless"
+            },
+            {
+              "label": "An invented story about theft"
+            },
+            {
+              "label": "The entry and what remains uncertain"
+            }
+          ],
+          "help": [
+            "Separate observations from assumptions."
+          ],
+          "feedback": {
+            "met": "Uncertainty can be reported without inventing facts or delaying protection.",
+            "not_yet": "Separate observations from assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué corresponde reportar?",
+          "scene": "Aún no sabes si una entrada desconocida corresponde a tu compra previa.",
+          "options": [
+            {
+              "label": "Garantizar que la entrada es inofensiva"
+            },
+            {
+              "label": "Una historia inventada de robo"
+            },
+            {
+              "label": "La entrada y lo que desconoces"
+            }
+          ],
+          "help": [
+            "Separa observaciones de suposiciones."
+          ],
+          "feedback": {
+            "met": "Puedes reportar dudas sin inventar hechos ni posponer protección.",
+            "not_yet": "Separa observaciones de suposiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que cabe relatar?",
+          "scene": "Ainda não sabe se um registro desconhecido corresponde à compra anterior.",
+          "options": [
+            {
+              "label": "Garantir que o registro é inofensivo"
+            },
+            {
+              "label": "Uma história inventada de roubo"
+            },
+            {
+              "label": "O registro e o que não sabe"
+            }
+          ],
+          "help": [
+            "Separe o que viu do que supõe."
+          ],
+          "feedback": {
+            "met": "Pode relatar dúvidas sem inventar fatos nem adiar proteção.",
+            "not_yet": "Separe o que viu do que supõe."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which report is accurate?",
+          "scene": "You approved a rent payment, accidentally entering an extra zero in the amount.",
+          "options": [
+            {
+              "label": "I entered the wrong amount"
+            },
+            {
+              "label": "I never approved this payment"
+            }
+          ],
+          "help": [
+            "Distinguish an input mistake from a payment you did not approve."
+          ],
+          "feedback": {
+            "met": "You authorized a payment but made an amount error. Report both facts.",
+            "not_yet": "Distinguish an input mistake from a payment you did not approve."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué reporte es exacto?",
+          "scene": "Aprobaste un pago de renta e ingresaste por error un cero adicional en el monto.",
+          "options": [
+            {
+              "label": "Ingresé un monto equivocado"
+            },
+            {
+              "label": "Nunca aprobé este pago"
+            }
+          ],
+          "help": [
+            "Distingue un error al ingresar datos de un pago que no aprobaste."
+          ],
+          "feedback": {
+            "met": "Autorizaste un pago, pero equivocaste el monto. Reporta ambos hechos.",
+            "not_yet": "Distingue un error al ingresar datos de un pago que no aprobaste."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual relato é exato?",
+          "scene": "Aprovou um pagamento de aluguel e digitou por engano um zero extra no valor.",
+          "options": [
+            {
+              "label": "Digitei um valor errado"
+            },
+            {
+              "label": "Nunca aprovei esse pagamento"
+            }
+          ],
+          "help": [
+            "Separe um erro de digitação de um pagamento que não aprovou."
+          ],
+          "feedback": {
+            "met": "Autorizou um pagamento, mas errou o valor. Relate ambos os fatos.",
+            "not_yet": "Separe um erro de digitação de um pagamento que não aprovou."
+          }
+        }
+      }
+    }
+  ]
+}

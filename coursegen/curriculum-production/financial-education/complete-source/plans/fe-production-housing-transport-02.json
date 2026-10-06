@@ -1,0 +1,922 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-1",
+  "lesson_id": "fe-production-housing-transport-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare housing options using transport, utilities and other stated necessary costs.",
+  "title": {
+    "en-US": "Housing Totals",
+    "es-MX": "La renta no es todo el costo",
+    "pt-BR": "Aluguel não é todo o custo"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Housing Totals\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"La renta no es todo el costo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Aluguel não é todo o custo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.02",
+      "observable_action": "Compare housing options using transport, utilities and other stated necessary costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.01",
+      "prod.purchase-decisions.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A lower rent can come with higher necessary transport or utility costs; compare the full fictional dollar totals.",
+    "misconception": "The lowest rent necessarily means the lowest total cost of living in that location.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-example-01",
+        "supports_from": [],
+        "reasoning": "Compare rent plus necessary utilities and transport over the same month. The rent alone can hide a more expensive location."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The transport difference outweighs the rent difference here."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated goal includes the linked necessary costs."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The total includes each stated necessary cost."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-practice-02",
+        "supports_from": [],
+        "reasoning": "Missing necessary charges prevent a full cost comparison."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Mixed periods make totals incomparable until aligned."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.02",
+        "context_id": "housing-transport-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The higher rent still produces the lower stated combined cost."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A lower rent can come with higher necessary transport or utility costs; compare the full fictional dollar totals."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una renta menor puede acompañarse de transporte o servicios necesarios más caros; compara totales completos en pesos ficticios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um aluguel menor pode vir com transporte ou serviços necessários mais caros; compare totais completos em reais fictícios."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Add the linked costs",
+          "line": "Compare rent plus necessary utilities and transport over the same month. The rent alone can hide a more expensive location."
+        },
+        "es-MX": {
+          "prompt": "Suma costos relacionados",
+          "line": "Compara renta más servicios y transporte necesarios durante el mismo mes. La renta sola puede ocultar una ubicación más cara."
+        },
+        "pt-BR": {
+          "prompt": "Some custos ligados",
+          "line": "Compare aluguel mais serviços e transporte necessários no mesmo mês. O aluguel sozinho pode esconder um local mais caro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                530,
+                520
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Monthly: A rent 400, utilities 50, transport 80; B rent 450, utilities 50, transport 20.",
+          "title": "Total cost",
+          "data": {
+            "categories": [
+              {
+                "label": "Home A"
+              },
+              {
+                "label": "Home B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which total is lower?",
+            "options": [
+              {
+                "label": "Home A"
+              },
+              {
+                "label": "Home B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "The transport difference outweighs the rent difference here.",
+            "not_yet": "Add all listed monthly costs for each home."
+          },
+          "help": [
+            "Add all listed monthly costs for each home."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mensual: A renta 400, servicios 50, transporte 80; B renta 450, servicios 50, transporte 20.",
+          "title": "Costo total",
+          "data": {
+            "categories": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué total es menor?",
+            "options": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "La diferencia de transporte supera la diferencia de renta aquí.",
+            "not_yet": "Suma todos los costos mensuales listados de cada vivienda."
+          },
+          "help": [
+            "Suma todos los costos mensuales listados de cada vivienda."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mensal: A aluguel 400, serviços 50, transporte 80; B aluguel 450, serviços 50, transporte 20.",
+          "title": "Custo total",
+          "data": {
+            "categories": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual total é menor?",
+            "options": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A diferença de transporte supera a diferença de aluguel aqui.",
+            "not_yet": "Some todos os custos mensais listados de cada moradia."
+          },
+          "help": [
+            "Some todos os custos mensais listados de cada moradia."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs belong here?",
+          "scene": "The goal is the total monthly housing-location cost, including required commuting.",
+          "options": [
+            {
+              "label": "Rent, utilities and necessary transport"
+            },
+            {
+              "label": "Rent alone"
+            },
+            {
+              "label": "Only the cheapest advertised charge"
+            }
+          ],
+          "help": [
+            "Keep the comparison’s scope consistent."
+          ],
+          "feedback": {
+            "met": "The stated goal includes the linked necessary costs.",
+            "not_yet": "Keep the comparison’s scope consistent."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costos corresponden?",
+          "scene": "Buscan costo mensual total de vivir ahí, incluido traslado necesario.",
+          "options": [
+            {
+              "label": "Renta, servicios y transporte necesario"
+            },
+            {
+              "label": "Solo renta"
+            },
+            {
+              "label": "Solo el cargo anunciado más barato"
+            }
+          ],
+          "help": [
+            "Mantén consistente el alcance de la comparación."
+          ],
+          "feedback": {
+            "met": "La meta indicada incluye costos necesarios relacionados.",
+            "not_yet": "Mantén consistente el alcance de la comparación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais custos entram?",
+          "scene": "Buscam custo mensal total de morar ali, incluindo deslocamento necessário.",
+          "options": [
+            {
+              "label": "Aluguel, serviços e transporte necessário"
+            },
+            {
+              "label": "Só aluguel"
+            },
+            {
+              "label": "Só a cobrança anunciada mais barata"
+            }
+          ],
+          "help": [
+            "Mantenha igual o alcance da comparação."
+          ],
+          "feedback": {
+            "met": "A meta dada inclui custos necessários ligados.",
+            "not_yet": "Mantenha igual o alcance da comparação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the monthly total?",
+          "scene": "Rent 600; required utilities 70; necessary transport 90. No other stated costs.",
+          "options": [
+            {
+              "label": "690"
+            },
+            {
+              "label": "760"
+            },
+            {
+              "label": "670"
+            }
+          ],
+          "help": [
+            "Add rent, utilities and transport for the same period."
+          ],
+          "feedback": {
+            "met": "The total includes each stated necessary cost.",
+            "not_yet": "Add rent, utilities and transport for the same period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el total mensual?",
+          "scene": "Renta 600; servicios requeridos 70; transporte necesario 90. Sin otros costos indicados.",
+          "options": [
+            {
+              "label": "690"
+            },
+            {
+              "label": "760"
+            },
+            {
+              "label": "670"
+            }
+          ],
+          "help": [
+            "Suma renta, servicios y transporte del mismo periodo."
+          ],
+          "feedback": {
+            "met": "El total incluye cada costo necesario indicado.",
+            "not_yet": "Suma renta, servicios y transporte del mismo periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o total mensal?",
+          "scene": "Aluguel 600; serviços exigidos 70; transporte necessário 90. Sem outros custos dados.",
+          "options": [
+            {
+              "label": "690"
+            },
+            {
+              "label": "760"
+            },
+            {
+              "label": "670"
+            }
+          ],
+          "help": [
+            "Some aluguel, serviços e transporte do mesmo período."
+          ],
+          "feedback": {
+            "met": "O total inclui cada custo necessário dado.",
+            "not_yet": "Some aluguel, serviços e transporte do mesmo período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          70,
+          90
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can the totals be ranked yet?",
+          "scene": "One home’s mandatory utilities are unknown; the other’s quote includes them.",
+          "options": [
+            {
+              "label": "Yes, omitted utilities are free"
+            },
+            {
+              "label": "Not until the missing costs are known"
+            }
+          ],
+          "help": [
+            "Do not replace an unknown cost with zero."
+          ],
+          "feedback": {
+            "met": "Missing necessary charges prevent a full cost comparison.",
+            "not_yet": "Do not replace an unknown cost with zero."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes ordenar los totales?",
+          "scene": "Desconoces servicios obligatorios de una vivienda; la otra cotización los incluye.",
+          "options": [
+            {
+              "label": "Sí, servicios omitidos son gratis"
+            },
+            {
+              "label": "No hasta conocer costos faltantes"
+            }
+          ],
+          "help": [
+            "No reemplaces costo desconocido por cero."
+          ],
+          "feedback": {
+            "met": "Cargos necesarios faltantes impiden comparar costos completos.",
+            "not_yet": "No reemplaces costo desconocido por cero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode ordenar os totais?",
+          "scene": "Não sabe serviços obrigatórios de uma casa; a outra cotação os inclui.",
+          "options": [
+            {
+              "label": "Sim, serviços omitidos são grátis"
+            },
+            {
+              "label": "Não até saber custos que faltam"
+            }
+          ],
+          "help": [
+            "Não troque custo desconhecido por zero."
+          ],
+          "feedback": {
+            "met": "Cobranças necessárias ausentes impedem comparar custos completos.",
+            "not_yet": "Não troque custo desconhecido por zero."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be aligned?",
+          "scene": "One transport quote is weekly and another monthly, alongside monthly rents.",
+          "options": [
+            {
+              "label": "Ignore every transport cost"
+            },
+            {
+              "label": "Convert to the same period"
+            },
+            {
+              "label": "Add all numbers without conversion"
+            }
+          ],
+          "help": [
+            "Use a common time period for every component."
+          ],
+          "feedback": {
+            "met": "Mixed periods make totals incomparable until aligned.",
+            "not_yet": "Use a common time period for every component."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes igualar?",
+          "scene": "Un transporte se cotiza por semana y otro por mes, junto con rentas mensuales.",
+          "options": [
+            {
+              "label": "Ignorar todo transporte"
+            },
+            {
+              "label": "Convertir al mismo periodo"
+            },
+            {
+              "label": "Sumar sin convertir"
+            }
+          ],
+          "help": [
+            "Usa un periodo común para cada componente."
+          ],
+          "feedback": {
+            "met": "Mezclar periodos impide comparar hasta igualarlos.",
+            "not_yet": "Usa un periodo común para cada componente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que igualar?",
+          "scene": "Um transporte é cotado por semana e outro por mês, junto com aluguéis mensais.",
+          "options": [
+            {
+              "label": "Ignorar todo transporte"
+            },
+            {
+              "label": "Converter ao mesmo período"
+            },
+            {
+              "label": "Somar sem converter"
+            }
+          ],
+          "help": [
+            "Use um período comum para cada parte."
+          ],
+          "feedback": {
+            "met": "Misturar períodos impede comparar até igualá-los.",
+            "not_yet": "Use um período comum para cada parte."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                760,
+                810
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Monthly: A rent 700, utilities 40, accessible transport 20; B rent 650, utilities 60, accessible transport 100.",
+          "title": "Total cost",
+          "data": {
+            "categories": [
+              {
+                "label": "Home A"
+              },
+              {
+                "label": "Home B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which total is lower?",
+            "options": [
+              {
+                "label": "Home A"
+              },
+              {
+                "label": "Home B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "The higher rent still produces the lower stated combined cost.",
+            "not_yet": "Include the necessary accessible transport in both totals."
+          },
+          "help": [
+            "Include the necessary accessible transport in both totals."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mensual: A renta 700, servicios 40, transporte accesible 20; B renta 650, servicios 60, transporte accesible 100.",
+          "title": "Costo total",
+          "data": {
+            "categories": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué total es menor?",
+            "options": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "La renta mayor todavía da menor costo combinado indicado.",
+            "not_yet": "Incluye transporte accesible necesario en ambos totales."
+          },
+          "help": [
+            "Incluye transporte accesible necesario en ambos totales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mensal: A aluguel 700, serviços 40, transporte acessível 20; B aluguel 650, serviços 60, transporte acessível 100.",
+          "title": "Custo total",
+          "data": {
+            "categories": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual total é menor?",
+            "options": [
+              {
+                "label": "Casa A"
+              },
+              {
+                "label": "Casa B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "O aluguel maior ainda dá menor custo combinado informado.",
+            "not_yet": "Inclua transporte acessível necessário nos dois totais."
+          },
+          "help": [
+            "Inclua transporte acessível necessário nos dois totais."
+          ]
+        }
+      }
+    }
+  ]
+}

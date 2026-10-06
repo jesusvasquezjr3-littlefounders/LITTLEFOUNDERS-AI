@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-1",
+  "lesson_id": "fe-production-debt-recovery-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build a debt inventory containing balances, costs, deadlines and stated consequences.",
+  "title": {
+    "en-US": "Debt inventory",
+    "es-MX": "Pon cada deuda en una lista",
+    "pt-BR": "Ponha cada dívida numa lista"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Put every debt on one list\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pon cada deuda en una lista\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ponha cada dívida numa lista\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.01",
+      "observable_action": "Build a debt inventory containing balances, costs, deadlines and stated consequences.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-products.01",
+      "prod.credit-mechanics.02",
+      "prod.credit-mechanics.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A repayment plan needs verified balances, costs, deadlines and consequences.",
+    "misconception": "Planning from whichever debt is most noticeable while omitting other balances, due dates or consequences.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-example-01",
+        "supports_from": [],
+        "reasoning": "List each creditor, current balance, payment due, date, costs and stated consequences. Check records before deciding what to pay."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Amounts without dates cannot show when cash must be available."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "300 + 500 = 800 owed across these debts."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Different notices can describe the same underlying obligation."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-practice-04",
+        "supports_from": [],
+        "reasoning": "Dates and intervening payments or charges explain what needs reconciliation."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-practice-05",
+        "supports_from": [],
+        "reasoning": "Total balance and currently required payment answer different questions."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-01-transfer-06",
+        "supports_from": [],
+        "reasoning": "Costs, timing and consequences affect the next feasible action."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A repayment plan needs verified balances, costs, deadlines and consequences."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan de pagos necesita saldos, costos, plazos y consecuencias verificados."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano de pagamento precisa de saldos, custos, prazos e efeitos conferidos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "List each creditor, current balance, payment due, date, costs and stated consequences. Check records before deciding what to pay."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Lista acreedor, saldo actual, pago exigido, fecha, costos y consecuencias indicadas. Revisa registros antes de decidir qué pagar."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Liste credor, saldo atual, parcela devida, data, custos e efeitos informados. Confira registros antes de decidir o que pagar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What information is missing?",
+          "scene": "Your list shows balances but no payment dates.",
+          "options": [
+            {
+              "label": "When payments are due"
+            },
+            {
+              "label": "Whether balances should be hidden"
+            },
+            {
+              "label": "Only the balance already shown"
+            }
+          ],
+          "help": [
+            "A plan must cover both amount and timing."
+          ],
+          "feedback": {
+            "met": "Amounts without dates cannot show when cash must be available.",
+            "not_yet": "A plan must cover both amount and timing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información falta?",
+          "scene": "Tu lista muestra saldos, pero no fechas de pago.",
+          "options": [
+            {
+              "label": "Cuándo vencen los pagos"
+            },
+            {
+              "label": "Si debes ocultar saldos"
+            },
+            {
+              "label": "Solo el saldo ya mostrado"
+            }
+          ],
+          "help": [
+            "Un plan debe cubrir monto y fecha."
+          ],
+          "feedback": {
+            "met": "Montos sin fechas no muestran cuándo necesitas efectivo.",
+            "not_yet": "Un plan debe cubrir monto y fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual informação falta?",
+          "scene": "Sua lista mostra saldos, mas não datas de pagamento.",
+          "options": [
+            {
+              "label": "Quando vencem os pagamentos"
+            },
+            {
+              "label": "Se deve esconder os saldos"
+            },
+            {
+              "label": "Só o saldo já mostrado"
+            }
+          ],
+          "help": [
+            "Um plano deve cobrir valor e data."
+          ],
+          "feedback": {
+            "met": "Valores sem datas não mostram quando precisa de dinheiro.",
+            "not_yet": "Um plano deve cobrir valor e data."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Total distinct balances?",
+          "scene": "Verified debts: card 300; separate loan 500; no overlap.",
+          "options": [
+            {
+              "label": "800"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Add each distinct obligation once."
+          ],
+          "feedback": {
+            "met": "300 + 500 = 800 owed across these debts.",
+            "not_yet": "Add each distinct obligation once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de saldos distintos?",
+          "scene": "Deudas verificadas: tarjeta 300; préstamo separado 500; sin duplicados.",
+          "options": [
+            {
+              "label": "800"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Suma cada obligación distinta una vez."
+          ],
+          "feedback": {
+            "met": "300 + 500 = 800 adeudados entre estas deudas.",
+            "not_yet": "Suma cada obligación distinta una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total de saldos distintos?",
+          "scene": "Dívidas conferidas: cartão 300; empréstimo separado 500; sem duplicatas.",
+          "options": [
+            {
+              "label": "800"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Some cada obrigação distinta uma vez."
+          ],
+          "feedback": {
+            "met": "300 + 500 = 800 devidos nessas dívidas.",
+            "not_yet": "Some cada obrigação distinta uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          500
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How to avoid duplicate counting?",
+          "scene": "A collector letter and lender statement identify the same debt.",
+          "options": [
+            {
+              "label": "Ignore both because names differ"
+            },
+            {
+              "label": "Match references before adding another balance"
+            },
+            {
+              "label": "Count both as separate loans"
+            }
+          ],
+          "help": [
+            "Identify the obligation, not just the sender."
+          ],
+          "feedback": {
+            "met": "Different notices can describe the same underlying obligation.",
+            "not_yet": "Identify the obligation, not just the sender."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo evitar contar dos veces?",
+          "scene": "Una carta de cobranza y un estado identifican la misma deuda.",
+          "options": [
+            {
+              "label": "Ignorar ambos porque difieren nombres"
+            },
+            {
+              "label": "Comparar referencias antes de sumar otro saldo"
+            },
+            {
+              "label": "Contar ambos como préstamos distintos"
+            }
+          ],
+          "help": [
+            "Identifica la obligación, no solo el remitente."
+          ],
+          "feedback": {
+            "met": "Avisos distintos pueden describir una misma obligación.",
+            "not_yet": "Identifica la obligación, no solo el remitente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como evitar contar duas vezes?",
+          "scene": "Uma carta de cobrança e um extrato indicam a mesma dívida.",
+          "options": [
+            {
+              "label": "Ignorar ambos porque nomes diferem"
+            },
+            {
+              "label": "Comparar referências antes de somar outro saldo"
+            },
+            {
+              "label": "Contar ambos como empréstimos distintos"
+            }
+          ],
+          "help": [
+            "Identifique a obrigação, não só quem envia."
+          ],
+          "feedback": {
+            "met": "Avisos diferentes podem descrever a mesma obrigação.",
+            "not_yet": "Identifique a obrigação, não só quem envia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be verified?",
+          "scene": "An old balance differs from the newest dated statement.",
+          "options": [
+            {
+              "label": "Only the smaller number"
+            },
+            {
+              "label": "Only the larger number"
+            },
+            {
+              "label": "The current balance and recorded changes"
+            }
+          ],
+          "help": [
+            "Use current evidence rather than choosing a convenient number."
+          ],
+          "feedback": {
+            "met": "Dates and intervening payments or charges explain what needs reconciliation.",
+            "not_yet": "Use current evidence rather than choosing a convenient number."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe verificarse?",
+          "scene": "Un saldo antiguo difiere del estado fechado más reciente.",
+          "options": [
+            {
+              "label": "Solo el número menor"
+            },
+            {
+              "label": "Solo el número mayor"
+            },
+            {
+              "label": "Saldo actual y cambios registrados"
+            }
+          ],
+          "help": [
+            "Usa evidencia actual, no el número más conveniente."
+          ],
+          "feedback": {
+            "met": "Fechas, pagos y cargos posteriores indican qué conciliar.",
+            "not_yet": "Usa evidencia actual, no el número más conveniente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir?",
+          "scene": "Um saldo antigo difere do extrato mais recente com data.",
+          "options": [
+            {
+              "label": "Só o número menor"
+            },
+            {
+              "label": "Só o número maior"
+            },
+            {
+              "label": "Saldo atual e mudanças registradas"
+            }
+          ],
+          "help": [
+            "Use provas atuais, não o número mais conveniente."
+          ],
+          "feedback": {
+            "met": "Datas, pagamentos e cobranças posteriores indicam o que conferir.",
+            "not_yet": "Use provas atuais, não o número mais conveniente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Distinguish what?",
+          "scene": "The statement separates total balance and current required payment.",
+          "options": [
+            {
+              "label": "Treat the smaller payment as total debt"
+            },
+            {
+              "label": "Total debt versus current required payment"
+            },
+            {
+              "label": "Assume the whole balance is due now"
+            }
+          ],
+          "help": [
+            "Preserve both fields with their dates."
+          ],
+          "feedback": {
+            "met": "Total balance and currently required payment answer different questions.",
+            "not_yet": "Preserve both fields with their dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe distinguir la lista?",
+          "scene": "Un estado muestra saldo total y un pago menor exigido ahora.",
+          "options": [
+            {
+              "label": "Tratar pago menor como toda la deuda"
+            },
+            {
+              "label": "Deuda total y pago actual exigido"
+            },
+            {
+              "label": "Suponer todo el saldo exigible hoy"
+            }
+          ],
+          "help": [
+            "Conserva ambos campos con sus fechas."
+          ],
+          "feedback": {
+            "met": "Saldo total y pago exigido ahora responden preguntas distintas.",
+            "not_yet": "Conserva ambos campos con sus fechas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a lista deve distinguir?",
+          "scene": "Um extrato mostra saldo total e um pagamento menor devido agora.",
+          "options": [
+            {
+              "label": "Tratar pagamento menor como toda a dívida"
+            },
+            {
+              "label": "Dívida total e pagamento atual exigido"
+            },
+            {
+              "label": "Supor todo saldo devido hoje"
+            }
+          ],
+          "help": [
+            "Guarde ambos os campos com suas datas."
+          ],
+          "feedback": {
+            "met": "Saldo total e pagamento devido agora respondem perguntas diferentes.",
+            "not_yet": "Guarde ambos os campos com suas datas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What belongs in the inventory?",
+          "scene": "Two household debts have different rates, deadlines and collateral terms.",
+          "options": [
+            {
+              "label": "Balances, costs, dates and stated consequences"
+            },
+            {
+              "label": "Only whichever creditor calls most"
+            },
+            {
+              "label": "Balances alone ranked by size"
+            }
+          ],
+          "help": [
+            "Record decision-relevant terms for both obligations."
+          ],
+          "feedback": {
+            "met": "Costs, timing and consequences affect the next feasible action.",
+            "not_yet": "Record decision-relevant terms for both obligations."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué integra un inventario útil?",
+          "scene": "Dos deudas del hogar tienen tasas, plazos y garantías distintos.",
+          "options": [
+            {
+              "label": "Saldos, costos, fechas y consecuencias indicadas"
+            },
+            {
+              "label": "Solo el acreedor que llama más"
+            },
+            {
+              "label": "Solo saldos ordenados por tamaño"
+            }
+          ],
+          "help": [
+            "Registra condiciones relevantes para decidir sobre ambas obligaciones."
+          ],
+          "feedback": {
+            "met": "Costos, fechas y consecuencias influyen en la siguiente acción viable.",
+            "not_yet": "Registra condiciones relevantes para decidir sobre ambas obligaciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que entra numa lista útil?",
+          "scene": "Duas dívidas da casa têm taxas, prazos e garantias diferentes.",
+          "options": [
+            {
+              "label": "Saldos, custos, datas e efeitos informados"
+            },
+            {
+              "label": "Só o credor que liga mais"
+            },
+            {
+              "label": "Só saldos em ordem de tamanho"
+            }
+          ],
+          "help": [
+            "Registre regras relevantes para decidir sobre ambas as obrigações."
+          ],
+          "feedback": {
+            "met": "Custos, datas e efeitos influem na próxima ação viável.",
+            "not_yet": "Registre regras relevantes para decidir sobre ambas as obrigações."
+          }
+        }
+      }
+    }
+  ]
+}

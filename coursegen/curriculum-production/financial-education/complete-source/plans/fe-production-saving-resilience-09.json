@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-2",
+  "lesson_id": "fe-production-saving-resilience-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Decide whether a stated expense fits the purpose of an emergency reserve.",
+  "title": {
+    "en-US": "Reserve Purpose",
+    "es-MX": "¿Esto corresponde a la reserva?",
+    "pt-BR": "Isto cabe na reserva?"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Reserve Purpose\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Esto corresponde a la reserva?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Isto cabe na reserva?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.09",
+      "observable_action": "Decide whether a stated expense fits the purpose of an emergency reserve.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.01",
+      "prod.saving-resilience.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A reserve needs a stated purpose; judge an expense against that purpose instead of calling every tempting purchase an emergency.",
+    "misconception": "Any expensive or urgent-looking offer fits an emergency reserve, or the reserve should never be used even for its stated purpose.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-example-01",
+        "supports_from": [],
+        "reasoning": "Check whether the expense is unexpected, necessary and fits the reserve’s purpose. A promotion deadline alone does not create emergencies."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The unexpected essential failure matches the stated reserve purpose."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A promotion deadline does not change the optional purchase’s purpose."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-practice-01",
+        "supports_from": [],
+        "reasoning": "The known bill belongs to planned-expense preparation."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Unexpected alone does not establish a match with the reserve."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Using a reserve for its purpose is planned protection in action."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The unexpected disruption affects the exact essential purpose protected."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A reserve needs a stated purpose; judge an expense against that purpose instead of calling every tempting purchase an emergency."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Reserva necesita propósito indicado; evalúa gasto contra ese propósito sin llamar emergencia a toda compra tentadora."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Reserva precisa de finalidade dada; avalie gasto por essa finalidade sem chamar toda compra tentadora de emergência."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use the agreed purpose",
+          "line": "Check whether the expense is unexpected, necessary and fits the reserve’s purpose. A promotion deadline alone does not create emergencies."
+        },
+        "es-MX": {
+          "prompt": "Usa propósito acordado",
+          "line": "Revisa si gasto es inesperado, necesario y cumple propósito de reserva. Fecha límite de promoción sola no crea emergencia."
+        },
+        "pt-BR": {
+          "prompt": "Use finalidade combinada",
+          "line": "Confira se gasto é imprevisto, necessário e cumpre finalidade da reserva. Prazo de promoção sozinho não cria emergência."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Fund this failure?",
+          "scene": "Reserve: unexpected essential repairs; the only heater fails unexpectedly during cold weather.",
+          "options": [
+            {
+              "label": "Yes, it matches the purpose"
+            },
+            {
+              "label": "Only with a sale label"
+            },
+            {
+              "label": "No, reserves can never be used"
+            }
+          ],
+          "help": [
+            "Compare the expense with the reserve’s actual purpose."
+          ],
+          "feedback": {
+            "met": "The unexpected essential failure matches the stated reserve purpose.",
+            "not_yet": "Compare the expense with the reserve’s actual purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Gasto corresponde a reserva indicada?",
+          "scene": "Propósito: arreglos esenciales imprevistos; único calentador utilizable falla de repente durante frío.",
+          "options": [
+            {
+              "label": "Sí, cumple propósito"
+            },
+            {
+              "label": "Solo si hay etiqueta de oferta"
+            },
+            {
+              "label": "No, reservas nunca se usan"
+            }
+          ],
+          "help": [
+            "Compara gasto con propósito real de reserva."
+          ],
+          "feedback": {
+            "met": "Falla esencial inesperada cumple propósito indicado de reserva.",
+            "not_yet": "Compara gasto con propósito real de reserva."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Usar dinheiro nesta falha?",
+          "scene": "Dinheiro guardado para consertos urgentes e imprevistos; único aquecedor falha de surpresa no frio.",
+          "options": [
+            {
+              "label": "Sim, serve para isso"
+            },
+            {
+              "label": "Só se houver oferta"
+            },
+            {
+              "label": "Não, nunca se usa reserva"
+            }
+          ],
+          "help": [
+            "Confira para que esse dinheiro foi guardado."
+          ],
+          "feedback": {
+            "met": "O conserto urgente é o uso para o qual se poupou.",
+            "not_yet": "Confira para que esse dinheiro foi guardado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this create an emergency?",
+          "scene": "Reserve covers essential disruptions; a working phone has an optional discounted upgrade.",
+          "options": [
+            {
+              "label": "No, upgrade remains optional"
+            },
+            {
+              "label": "Yes, any discount qualifies"
+            },
+            {
+              "label": "Yes, every deadline is an emergency"
+            }
+          ],
+          "help": [
+            "Distinguish sales pressure from an essential disruption."
+          ],
+          "feedback": {
+            "met": "A promotion deadline does not change the optional purchase’s purpose.",
+            "not_yet": "Distinguish sales pressure from an essential disruption."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Plazo de oferta crea emergencia?",
+          "scene": "Reserva cubre contratiempos esenciales; teléfono funcional tiene mejora opcional con descuento.",
+          "options": [
+            {
+              "label": "No, mejora sigue opcional"
+            },
+            {
+              "label": "Sí, cualquier descuento califica"
+            },
+            {
+              "label": "Sí, todo plazo es emergencia"
+            }
+          ],
+          "help": [
+            "Distingue presión comercial de contratiempo esencial."
+          ],
+          "feedback": {
+            "met": "Plazo de promoción no cambia propósito de compra opcional.",
+            "not_yet": "Distingue presión comercial de contratiempo esencial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Prazo da oferta cria emergência?",
+          "scene": "Reserva cobre imprevistos essenciais; telefone funciona e troca por modelo novo é opcional.",
+          "options": [
+            {
+              "label": "Não, troca segue opcional"
+            },
+            {
+              "label": "Sim, qualquer desconto serve"
+            },
+            {
+              "label": "Sim, todo prazo é emergência"
+            }
+          ],
+          "help": [
+            "Separe pressão para comprar de algo essencial que falhou."
+          ],
+          "feedback": {
+            "met": "O prazo da oferta não torna necessária a troca opcional.",
+            "not_yet": "Separe pressão para comprar de algo essencial que falhou."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which saving purpose fits?",
+          "scene": "A predictable yearly expense has been known for months; reserve is for unexpected disruptions.",
+          "options": [
+            {
+              "label": "Automatically the emergency purpose"
+            },
+            {
+              "label": "No fund can ever pay it"
+            },
+            {
+              "label": "Planned-expense savings"
+            }
+          ],
+          "help": [
+            "Separate funding gaps from whether the expense was predictable."
+          ],
+          "feedback": {
+            "met": "The known bill belongs to planned-expense preparation.",
+            "not_yet": "Separate funding gaps from whether the expense was predictable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué propósito corresponde a cuenta conocida?",
+          "scene": "Gasto anual previsible se conoce hace meses; reserva es para imprevistos.",
+          "options": [
+            {
+              "label": "Automáticamente propósito de emergencia"
+            },
+            {
+              "label": "Ningún fondo puede pagarlo"
+            },
+            {
+              "label": "Ahorro de gastos previstos"
+            }
+          ],
+          "help": [
+            "Separa falta de fondos de si gasto era previsible."
+          ],
+          "feedback": {
+            "met": "Cuenta conocida corresponde a preparación de gastos previstos.",
+            "not_yet": "Separa falta de fondos de si gasto era previsible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que verba cabe nesta conta?",
+          "scene": "Conta anual era conhecida há meses; reserva é para imprevistos.",
+          "options": [
+            {
+              "label": "Sempre a reserva de emergência"
+            },
+            {
+              "label": "Nenhum fundo pode pagar"
+            },
+            {
+              "label": "Verba para contas previstas"
+            }
+          ],
+          "help": [
+            "Não ter verba não torna a conta uma surpresa."
+          ],
+          "feedback": {
+            "met": "A conta conhecida pode ser prevista no plano de gastos.",
+            "not_yet": "Não ter verba não torna a conta uma surpresa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking before deciding?",
+          "scene": "An expense is unexpected, but its necessity and reserve-purpose fit are unclear.",
+          "options": [
+            {
+              "label": "Necessity and the stated purpose"
+            },
+            {
+              "label": "Only the seller’s urgency"
+            },
+            {
+              "label": "Only whether it feels exciting"
+            }
+          ],
+          "help": [
+            "Check the remaining criteria before using earmarked money."
+          ],
+          "feedback": {
+            "met": "Unexpected alone does not establish a match with the reserve.",
+            "not_yet": "Check the remaining criteria before using earmarked money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de decidir?",
+          "scene": "Gasto inesperado tiene necesidad y encaje con propósito de reserva poco claros.",
+          "options": [
+            {
+              "label": "Necesidad y propósito indicado"
+            },
+            {
+              "label": "Solo urgencia del vendedor"
+            },
+            {
+              "label": "Solo si entusiasma"
+            }
+          ],
+          "help": [
+            "Revisa criterios restantes antes de usar dinero apartado."
+          ],
+          "feedback": {
+            "met": "Ser inesperado solo no establece encaje con reserva.",
+            "not_yet": "Revisa criterios restantes antes de usar dinero apartado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de decidir?",
+          "scene": "Gasto não era previsto; falta saber se é essencial e cabe no uso desta reserva.",
+          "options": [
+            {
+              "label": "Se é essencial e cabe"
+            },
+            {
+              "label": "Só a pressa do vendedor"
+            },
+            {
+              "label": "Só se empolga"
+            }
+          ],
+          "help": [
+            "Confira para que se poupou e se o gasto serve a isso."
+          ],
+          "feedback": {
+            "met": "Ser surpresa não basta para usar esta reserva.",
+            "not_yet": "Confira para que se poupou e se o gasto serve a isso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does reserve use mean failure?",
+          "scene": "An expense meets the purpose the household deliberately saved for.",
+          "options": [
+            {
+              "label": "Yes, any withdrawal is failure"
+            },
+            {
+              "label": "No, it serves its intended purpose"
+            },
+            {
+              "label": "Yes, reserves must only grow"
+            }
+          ],
+          "help": [
+            "Evaluate the reason for use, then plan replenishment if needed."
+          ],
+          "feedback": {
+            "met": "Using a reserve for its purpose is planned protection in action.",
+            "not_yet": "Evaluate the reason for use, then plan replenishment if needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Usar reserva siempre es fallar?",
+          "scene": "Gasto cumple el propósito para el que hogar guardó dinero.",
+          "options": [
+            {
+              "label": "Sí, todo retiro es fracaso"
+            },
+            {
+              "label": "No, cumple propósito previsto"
+            },
+            {
+              "label": "Sí, reservas solo deben crecer"
+            }
+          ],
+          "help": [
+            "Evalúa motivo de uso y luego reposición si hace falta."
+          ],
+          "feedback": {
+            "met": "Usar reserva para su propósito pone protección prevista en acción.",
+            "not_yet": "Evalúa motivo de uso y luego reposición si hace falta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Usar reserva é sempre falhar?",
+          "scene": "O gasto serve ao uso para o qual a família guardou dinheiro.",
+          "options": [
+            {
+              "label": "Sim, todo saque é falha"
+            },
+            {
+              "label": "Não, ela cumpre seu papel"
+            },
+            {
+              "label": "Sim, reserva só deve crescer"
+            }
+          ],
+          "help": [
+            "Confira o motivo do uso e planeje repor se precisar."
+          ],
+          "feedback": {
+            "met": "A reserva ajuda ao ser usada para o fim previsto.",
+            "not_yet": "Confira o motivo do uso e planeje repor se precisar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which expense fits this stated purpose?",
+          "scene": "Reserve protects essential travel after sudden disruption; an unexpected breakdown blocks necessary care travel.",
+          "options": [
+            {
+              "label": "Essential alternative travel"
+            },
+            {
+              "label": "A planned annual subscription"
+            },
+            {
+              "label": "An optional holiday upgrade"
+            }
+          ],
+          "help": [
+            "Match necessity and event to the reserve’s defined use."
+          ],
+          "feedback": {
+            "met": "The unexpected disruption affects the exact essential purpose protected.",
+            "not_yet": "Match necessity and event to the reserve’s defined use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué gasto cumple propósito indicado?",
+          "scene": "Reserva protege traslado esencial tras imprevisto; avería inesperada bloquea viaje necesario de cuidados.",
+          "options": [
+            {
+              "label": "Transporte alterno esencial"
+            },
+            {
+              "label": "Suscripción anual prevista"
+            },
+            {
+              "label": "Mejora vacacional opcional"
+            }
+          ],
+          "help": [
+            "Relaciona necesidad y evento con uso definido de reserva."
+          ],
+          "feedback": {
+            "met": "Contratiempo inesperado afecta uso esencial protegido.",
+            "not_yet": "Relaciona necesidad y evento con uso definido de reserva."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que gasto cabe nesta reserva?",
+          "scene": "Reserva cobre viagem essencial após pane; veículo quebrou e impede ida para cuidar de alguém.",
+          "options": [
+            {
+              "label": "Outro transporte essencial"
+            },
+            {
+              "label": "Assinatura anual prevista"
+            },
+            {
+              "label": "Passeio de férias opcional"
+            }
+          ],
+          "help": [
+            "Confira o que ocorreu e para que serve esta reserva."
+          ],
+          "feedback": {
+            "met": "A pane impede a viagem essencial que a reserva protege.",
+            "not_yet": "Confira o que ocorreu e para que serve esta reserva."
+          }
+        }
+      }
+    }
+  ]
+}

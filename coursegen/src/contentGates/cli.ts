@@ -16,6 +16,9 @@
 //                          (repeatable)
 //   --no-ui                skip the system/UI copy scan (frontend/src/i18n + frontend/src/rebuild)
 //   --register kid|adult   audience register (default kid)
+//   --blueprint <path>     explicit v2 source; requires --course, --plans and --lesson-ids
+//   --plans <directory>    authored plans for that complete source
+//   --lesson-ids <path>    exact slug-to-Vault mapping; never use historical catalog defaults
 //   --json <file>          report path (default runs/content-gates/<label>-<timestamp>.json)
 //
 // Exit codes: 0 no blocking finding, 1 blocking findings (release check fails), 2 setup error.
@@ -40,6 +43,7 @@ import { loadCourseCatalog } from '../catalog/loader.js';
 import { buildCoursePolicy, type CoursePolicy } from './policyGates.js';
 import { emitV2Lesson } from '../v2/emit.js';
 import { loadV2Plans } from '../v2/plan.js';
+import { loadCourseReleaseSource, type CourseReleaseSourcePaths } from '../v2/courseReleaseSource.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, '../..');
@@ -51,6 +55,9 @@ interface Options {
   ui: boolean;
   register: 'kid' | 'adult';
   json?: string;
+  blueprint?: string;
+  plans?: string;
+  lessonIds?: string;
 }
 
 function parseArgs(argv: readonly string[]): Options {
@@ -74,10 +81,17 @@ function parseArgs(argv: readonly string[]): Options {
         break;
       }
       case '--json': options.json = value(); break;
+      case '--blueprint': options.blueprint = value(); break;
+      case '--plans': options.plans = value(); break;
+      case '--lesson-ids': options.lessonIds = value(); break;
       default: throw new Error(`unknown flag ${flag}`);
     }
   }
   if (options.course && !/^[a-z0-9-]+$/.test(options.course)) throw new Error('--course must be a lowercase slug');
+  const explicit = [options.blueprint, options.plans, options.lessonIds];
+  if (explicit.some(Boolean) && (!explicit.every(Boolean) || !options.course || options.documents.length)) {
+    throw new Error('An explicit course source requires --course, --blueprint, --plans and --lesson-ids together, without --documents.');
+  }
   if (!options.course && options.documents.length === 0 && !options.ui) throw new Error('nothing to check: pass --course, --documents, or keep the UI scan');
   return options;
 }
@@ -106,8 +120,10 @@ function loadDocuments(target: string): { documents: SourcedDocument[]; strings:
  * adapter, so report that evidence directly instead of falling back to a
  * similarly named legacy catalog.
  */
-function runCanonicalV2(options: Options, courseDir: string): void {
-  const loaded = loadV2Plans(path.join(courseDir, 'plans'));
+function runCanonicalV2(options: Options, courseDir: string, explicit?: CourseReleaseSourcePaths): void {
+  const loaded = explicit
+    ? loadCourseReleaseSource(options.course!, explicit, { allowCalibration: true }).plans.map(plan => ({ plan, errors: [] as string[], file: explicit.plans }))
+    : loadV2Plans(path.join(courseDir, 'plans'));
   const setup = loaded.flatMap((entry) => entry.errors.map((error) => `${entry.file}: ${error}`));
   const blocking: Array<{ lesson: string; gate: number; locale?: string; message: string }> = [];
   const review: Array<{ lesson: string; gate: number; locale?: string; message: string }> = [];
@@ -129,7 +145,7 @@ function runCanonicalV2(options: Options, courseDir: string): void {
     generatedAt,
     pipeline: 'v2',
     course: options.course,
-    sources: [`curriculum-v2/${options.course}`, ...(options.ui ? ['frontend/src/i18n', 'frontend/src/rebuild'] : [])],
+    sources: [...(explicit ? [explicit.blueprint, explicit.plans, explicit.lessonIds] : [`curriculum-v2/${options.course}`]), ...(options.ui ? ['frontend/src/i18n', 'frontend/src/rebuild'] : [])],
     plans: loaded.length,
     documents: documentCount,
     setup,
@@ -163,6 +179,13 @@ function main(): void {
   }
 
   if (options.course) {
+    if (options.blueprint && options.plans && options.lessonIds) {
+      try { runCanonicalV2(options, '', { blueprint: options.blueprint, plans: options.plans, lessonIds: options.lessonIds }); } catch (error) {
+        console.error(`content:gates: ${(error as Error).message}`);
+        process.exit(2);
+      }
+      return;
+    }
     const v2Dir = path.join(PACKAGE_ROOT, 'curriculum-v2', options.course);
     if (existsSync(path.join(v2Dir, 'structure.yaml'))) {
       try { runCanonicalV2(options, v2Dir); } catch (error) {

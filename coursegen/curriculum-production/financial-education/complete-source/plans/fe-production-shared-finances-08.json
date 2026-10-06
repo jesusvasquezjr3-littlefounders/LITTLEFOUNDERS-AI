@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-2",
+  "lesson_id": "fe-production-shared-finances-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify estate and decision-authority questions that require qualified local advice after a death or incapacity.",
+  "title": {
+    "en-US": "Legal Authority",
+    "es-MX": "Facultades tras enfermedad o muerte",
+    "pt-BR": "Poderes após doença ou falecimento"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Legal Authority\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Facultades tras enfermedad o muerte\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Poderes após doença ou falecimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.08",
+      "observable_action": "Identify estate and decision-authority questions that require qualified local advice after a death or incapacity.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03",
+      "prod.retirement-future.10",
+      "prod.accounts-records.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Family connection does not answer every authority question; identify what must be checked locally before acting for someone else.",
+    "misconception": "A password, family relationship or beneficiary listing automatically authorizes every action after death or incapacity.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-example-01",
+        "supports_from": [],
+        "reasoning": "Decision authority, inheritance and access differ. Verify documents and local rules for death or incapacity before acting."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Family connection alone does not establish decision authority."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Receiving assets is distinct from accessing an account."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Future receipt does not establish present decision authority."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-practice-02",
+        "supports_from": [],
+        "reasoning": "A changed event requires checking the applicable authority again."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Relevant documents help clarify the actual legal arrangements."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "shared-finances-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Distinct legal questions require the relevant local rules and documents."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Family connection does not answer every authority question; identify what must be checked locally before acting for someone else."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El vínculo familiar no responde toda pregunta de poderes; identifica qué verificar localmente antes de actuar por alguien."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Vínculo familiar não responde toda pergunta de poderes; identifique o que verificar localmente antes de agir por alguém."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Verify the role and event",
+          "line": "Decision authority, inheritance and access differ. Verify documents and local rules for death or incapacity before acting."
+        },
+        "es-MX": {
+          "prompt": "Verifica el rol y evento",
+          "line": "Facultades de decisión, herencia y acceso son preguntas distintas. Verifica documentos y reglas locales para muerte o falta de capacidad antes de actuar."
+        },
+        "pt-BR": {
+          "prompt": "Verifique a função e o evento",
+          "line": "Poder de decisão, herança e acesso são questões distintas. Verifique documentos e regras locais para morte ou falta de capacidade antes de agir."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked first?",
+          "scene": "A relative cannot make financial decisions; a family member wants to act.",
+          "options": [
+            {
+              "label": "Only knowing the password"
+            },
+            {
+              "label": "Recognized authority and required documents"
+            },
+            {
+              "label": "Only being the oldest relative"
+            }
+          ],
+          "help": [
+            "Verify the applicable role and supporting documents locally."
+          ],
+          "feedback": {
+            "met": "Family connection alone does not establish decision authority.",
+            "not_yet": "Verify the applicable role and supporting documents locally."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar primero?",
+          "scene": "Familiar no puede decidir financieramente; alguien de la familia quiere actuar.",
+          "options": [
+            {
+              "label": "Solo saber contraseña"
+            },
+            {
+              "label": "Facultades reconocidas y documentos requeridos"
+            },
+            {
+              "label": "Solo ser familiar mayor"
+            }
+          ],
+          "help": [
+            "Verifica localmente rol aplicable y documentos que lo respaldan."
+          ],
+          "feedback": {
+            "met": "El vínculo familiar solo no establece poderes de decisión.",
+            "not_yet": "Verifica localmente rol aplicable y documentos que lo respaldan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir primeiro?",
+          "scene": "Parente não pode decidir sobre dinheiro; alguém da família quer agir.",
+          "options": [
+            {
+              "label": "Só saber a senha"
+            },
+            {
+              "label": "Poderes reconhecidos e documentos exigidos"
+            },
+            {
+              "label": "Só ser parente mais velho"
+            }
+          ],
+          "help": [
+            "Verifique localmente função do caso e documentos que a apoiam."
+          ],
+          "feedback": {
+            "met": "Vínculo familiar sozinho não define poder de decisão.",
+            "not_yet": "Verifique localmente função do caso e documentos que a apoiam."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question concerns inheritance?",
+          "scene": "Someone asks who is entitled to receive assets after a death.",
+          "options": [
+            {
+              "label": "Who legally receives the assets?"
+            },
+            {
+              "label": "Who visited most recently?"
+            },
+            {
+              "label": "Who remembers the login?"
+            }
+          ],
+          "help": [
+            "Verify estate and beneficiary rules using qualified local guidance."
+          ],
+          "feedback": {
+            "met": "Receiving assets is distinct from accessing an account.",
+            "not_yet": "Verify estate and beneficiary rules using qualified local guidance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta trata herencia?",
+          "scene": "Alguien pregunta quién tiene derecho a recibir bienes tras un muerte.",
+          "options": [
+            {
+              "label": "¿Quién recibe legalmente los bienes?"
+            },
+            {
+              "label": "¿Quién visitó más recientemente?"
+            },
+            {
+              "label": "¿Quién recuerda acceso?"
+            }
+          ],
+          "help": [
+            "Verifica reglas de herencia y beneficiarios con orientación local experta."
+          ],
+          "feedback": {
+            "met": "Recibir bienes es distinto de acceder a una cuenta.",
+            "not_yet": "Verifica reglas de herencia y beneficiarios con orientación local experta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que pergunta trata herança?",
+          "scene": "Alguém pergunta quem tem direito a receber bens após uma morte.",
+          "options": [
+            {
+              "label": "Quem recebe legalmente os bens?"
+            },
+            {
+              "label": "Quem visitou por último?"
+            },
+            {
+              "label": "Quem lembra o acesso?"
+            }
+          ],
+          "help": [
+            "Verifique regras de herança e beneficiários com orientação local perita."
+          ],
+          "feedback": {
+            "met": "Receber bens é diferente de acessar uma conta.",
+            "not_yet": "Verifique regras de herança e beneficiários com orientação local perita."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does beneficiary status settle current authority?",
+          "scene": "A person is listed to receive funds later but wants to control today’s spending.",
+          "options": [
+            {
+              "label": "Yes, always"
+            },
+            {
+              "label": "No, verify decision authority separately"
+            },
+            {
+              "label": "Yes, if related"
+            }
+          ],
+          "help": [
+            "Separate beneficiary status from present decision permission."
+          ],
+          "feedback": {
+            "met": "Future receipt does not establish present decision authority.",
+            "not_yet": "Separate beneficiary status from present decision permission."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ser beneficiario resuelve poderes de hoy?",
+          "scene": "Persona figura para recibir fondos después, pero quiere controlar gastos de hoy.",
+          "options": [
+            {
+              "label": "Sí, siempre"
+            },
+            {
+              "label": "No, verificar poderes por separado"
+            },
+            {
+              "label": "Sí, si es familiar"
+            }
+          ],
+          "help": [
+            "Separa calidad de beneficiario de permiso para actuar ahora."
+          ],
+          "feedback": {
+            "met": "Recepción futura no establece poderes de hoy de decisión.",
+            "not_yet": "Separa calidad de beneficiario de permiso para actuar ahora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ser beneficiário define poderes atuais?",
+          "scene": "Pessoa consta para receber recursos depois, mas quer controlar gastos atuais.",
+          "options": [
+            {
+              "label": "Sim, sempre"
+            },
+            {
+              "label": "Não, verificar poderes em separado"
+            },
+            {
+              "label": "Sim, se é parente"
+            }
+          ],
+          "help": [
+            "Separe condição de beneficiário da permissão para agir agora."
+          ],
+          "feedback": {
+            "met": "Recebimento futuro não define poder atual de decisão.",
+            "not_yet": "Separe condição de beneficiário da permissão para agir agora."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking after death?",
+          "scene": "A helper previously had permission to act; the account holder has died.",
+          "options": [
+            {
+              "label": "Assume all permissions continue"
+            },
+            {
+              "label": "Use the password as proof"
+            },
+            {
+              "label": "Whether that authority still applies"
+            }
+          ],
+          "help": [
+            "Verify death-specific procedures instead of assuming prior permissions remain."
+          ],
+          "feedback": {
+            "met": "A changed event requires checking the applicable authority again.",
+            "not_yet": "Verify death-specific procedures instead of assuming prior permissions remain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar tras muerte?",
+          "scene": "Ayudante tenía permiso para actuar; titular ha fallecido.",
+          "options": [
+            {
+              "label": "Suponer que todo permiso continúa"
+            },
+            {
+              "label": "Usar contraseña como prueba"
+            },
+            {
+              "label": "Si esas poderes siguen aplicando"
+            }
+          ],
+          "help": [
+            "Verifica procedimientos por muerte sin suponer accesos anteriores vigentes."
+          ],
+          "feedback": {
+            "met": "Un evento cambiado exige revisar otra vez poderes del caso.",
+            "not_yet": "Verifica procedimientos por muerte sin suponer accesos anteriores vigentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir após morte?",
+          "scene": "Ajudante tinha permissão para agir; titular morreu.",
+          "options": [
+            {
+              "label": "Supor toda permissão continua"
+            },
+            {
+              "label": "Usar senha como prova"
+            },
+            {
+              "label": "Se esses poderes ainda se aplicam"
+            }
+          ],
+          "help": [
+            "Verifique procedimentos após morte sem supor acessos antigos em vigor."
+          ],
+          "feedback": {
+            "met": "Um evento mudado exige conferir de novo os poderes do caso.",
+            "not_yet": "Verifique procedimentos após morte sem supor acessos antigos em vigor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which preparation supports qualified advice?",
+          "scene": "A family needs to clarify estate and decision roles.",
+          "options": [
+            {
+              "label": "Share passwords publicly"
+            },
+            {
+              "label": "Secure relevant contracts and authority documents"
+            },
+            {
+              "label": "Guess from family custom alone"
+            }
+          ],
+          "help": [
+            "Prepare records while protecting private information."
+          ],
+          "feedback": {
+            "met": "Relevant documents help clarify the actual legal arrangements.",
+            "not_yet": "Prepare records while protecting private information."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué preparación apoya orientación experta?",
+          "scene": "Familia necesita aclarar herencia y roles de decisión.",
+          "options": [
+            {
+              "label": "Publicar contraseñas"
+            },
+            {
+              "label": "Guardar contratos y documentos de poderes"
+            },
+            {
+              "label": "Adivinar solo por costumbre familiar"
+            }
+          ],
+          "help": [
+            "Prepara registros mientras proteges datos privados."
+          ],
+          "feedback": {
+            "met": "Documentos pertinentes ayudan a aclarar acuerdos legales reales.",
+            "not_yet": "Prepara registros mientras proteges datos privados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que preparo apoia orientação perita?",
+          "scene": "Família precisa esclarecer herança e funções de decisão.",
+          "options": [
+            {
+              "label": "Publicar senhas"
+            },
+            {
+              "label": "Guardar contratos e documentos de poderes"
+            },
+            {
+              "label": "Adivinhar só por costume familiar"
+            }
+          ],
+          "help": [
+            "Prepare registros enquanto protege dados privados."
+          ],
+          "feedback": {
+            "met": "Documentos úteis ajudam a esclarecer acordos legais reais.",
+            "not_yet": "Prepare registros enquanto protege dados privados."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which questions need local advice?",
+          "scene": "After a death, relatives dispute who may pay debts and receive account funds.",
+          "options": [
+            {
+              "label": "Only who arrives first"
+            },
+            {
+              "label": "Authority, liabilities and entitlement"
+            },
+            {
+              "label": "Only who knows the PIN"
+            }
+          ],
+          "help": [
+            "Do not infer authority or ownership from access alone."
+          ],
+          "feedback": {
+            "met": "Distinct legal questions require the relevant local rules and documents.",
+            "not_yet": "Do not infer authority or ownership from access alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué preguntas necesitan orientación local?",
+          "scene": "Tras muerte, familiares disputan quién puede pagar deudas y recibir fondos.",
+          "options": [
+            {
+              "label": "Solo quién llega primero"
+            },
+            {
+              "label": "Poderes, deudas y derechos"
+            },
+            {
+              "label": "Solo quién sabe el NIP"
+            }
+          ],
+          "help": [
+            "No deduzcas poderes ni propiedad solo por acceso."
+          ],
+          "feedback": {
+            "met": "Preguntas legales distintas requieren reglas y documentos locales pertinentes.",
+            "not_yet": "No deduzcas poderes ni propiedad solo por acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que perguntas precisam de orientação local?",
+          "scene": "Após morte, parentes disputam quem pode pagar dívidas e receber recursos.",
+          "options": [
+            {
+              "label": "Só quem chega primeiro"
+            },
+            {
+              "label": "Poderes, deveres e direitos"
+            },
+            {
+              "label": "Só quem sabe a senha"
+            }
+          ],
+          "help": [
+            "Não deduza poderes nem posse só pelo acesso."
+          ],
+          "feedback": {
+            "met": "Questões legais distintas exigem regras e documentos locais úteis.",
+            "not_yet": "Não deduza poderes nem posse só pelo acesso."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,815 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-2",
+  "lesson_id": "fe-production-spending-patterns-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare planned and actual spending without treating every deviation as a personal failure.",
+  "title": {
+    "en-US": "Spending differences",
+    "es-MX": "Lee la diferencia de gasto",
+    "pt-BR": "Leia a diferença de gasto"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Read the spending difference\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee la diferencia de gasto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia a diferença de gasto\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.09",
+      "observable_action": "Compare planned and actual spending without treating every deviation as a personal failure.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.01",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Use the difference to investigate and improve the next plan.",
+    "misconception": "Treating any spending above a forecast as proof of irresponsibility rather than checking its cause.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-example-01",
+        "supports_from": [],
+        "reasoning": "Planned: 40; spent: 46. The difference is 6 above plan; check why before deciding what to change."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "58 − 50 = 8 above the plan."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A price change can explain a difference without extra purchases."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-practice-01",
+        "supports_from": [],
+        "reasoning": "70 − 61 = 9 below plan."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-practice-02",
+        "supports_from": [],
+        "reasoning": "An incomplete record cannot fully explain the spending difference."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Delayed spending can remain a future obligation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.09",
+        "context_id": "fe-production-spending-patterns-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The new required visit count is relevant to the next estimate."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use the difference to investigate and improve the next plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa la diferencia para investigar y mejorar el siguiente plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use a diferença para investigar e melhorar o próximo plano."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Measure, then investigate",
+          "line": "Planned: 40; spent: 46. The difference is 6 above plan; check why before deciding what to change."
+        },
+        "es-MX": {
+          "prompt": "Mide y luego investiga",
+          "line": "Planeado: 40; gastado: 46. Son 6 sobre el plan; revisa por qué antes de decidir qué cambiar."
+        },
+        "pt-BR": {
+          "prompt": "Meça e depois investigue",
+          "line": "Previsto: 40; gasto: 46. São 6 acima do plano; confira por quê antes de decidir o que mudar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "copy": {
+        "en-US": {
+          "prompt": "How much above the plan?",
+          "scene": "Planned grocery spending: 50. Actual grocery spending: 58.",
+          "options": [
+            {
+              "label": "8"
+            },
+            {
+              "label": "58"
+            },
+            {
+              "label": "108"
+            }
+          ],
+          "help": [
+            "Subtract the planned amount from the actual amount."
+          ],
+          "feedback": {
+            "met": "58 − 50 = 8 above the plan.",
+            "not_yet": "Subtract the planned amount from the actual amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto sobre el plan?",
+          "scene": "Gasto de comida planeado: 50. Gasto real: 58.",
+          "options": [
+            {
+              "label": "8"
+            },
+            {
+              "label": "58"
+            },
+            {
+              "label": "108"
+            }
+          ],
+          "help": [
+            "Resta el monto planeado al monto real."
+          ],
+          "feedback": {
+            "met": "58 − 50 = 8 sobre el plan.",
+            "not_yet": "Resta el monto planeado al monto real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto acima do plano?",
+          "scene": "Gasto de comida previsto: 50. Gasto real: 58.",
+          "options": [
+            {
+              "label": "8"
+            },
+            {
+              "label": "58"
+            },
+            {
+              "label": "108"
+            }
+          ],
+          "help": [
+            "Subtraia o valor previsto do valor real."
+          ],
+          "feedback": {
+            "met": "58 − 50 = 8 acima do plano.",
+            "not_yet": "Subtraia o valor previsto do valor real."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          58
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What explains the higher spending here?",
+          "scene": "The same essential groceries cost more after a price increase.",
+          "options": [
+            {
+              "label": "The stated price increase"
+            },
+            {
+              "label": "A proven extra purchase"
+            },
+            {
+              "label": "Failure to record the amount"
+            }
+          ],
+          "help": [
+            "Use the stated cause, not a personal judgment."
+          ],
+          "feedback": {
+            "met": "A price change can explain a difference without extra purchases.",
+            "not_yet": "Use the stated cause, not a personal judgment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué explica aquí el mayor gasto?",
+          "scene": "La misma comida esencial costó más tras un aumento de precios.",
+          "options": [
+            {
+              "label": "El aumento de precios indicado"
+            },
+            {
+              "label": "Una compra adicional demostrada"
+            },
+            {
+              "label": "No registrar el monto"
+            }
+          ],
+          "help": [
+            "Usa la causa indicada, no un juicio personal."
+          ],
+          "feedback": {
+            "met": "Un cambio de precio puede explicar la diferencia sin compras adicionales.",
+            "not_yet": "Usa la causa indicada, no un juicio personal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que explica aqui o gasto maior?",
+          "scene": "A mesma comida essencial custou mais após aumento de preços.",
+          "options": [
+            {
+              "label": "O aumento de preços informado"
+            },
+            {
+              "label": "Uma compra adicional comprovada"
+            },
+            {
+              "label": "Não registrar o valor"
+            }
+          ],
+          "help": [
+            "Use a causa informada, não um julgamento pessoal."
+          ],
+          "feedback": {
+            "met": "Uma mudança de preço pode explicar a diferença sem compras adicionais.",
+            "not_yet": "Use a causa informada, não um julgamento pessoal."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "copy": {
+        "en-US": {
+          "prompt": "How much below plan?",
+          "scene": "Transport was planned at 70 and actually cost 61.",
+          "options": [
+            {
+              "label": "9"
+            },
+            {
+              "label": "61"
+            },
+            {
+              "label": "131"
+            }
+          ],
+          "help": [
+            "Compare the actual cost with its planned amount."
+          ],
+          "feedback": {
+            "met": "70 − 61 = 9 below plan.",
+            "not_yet": "Compare the actual cost with its planned amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto por debajo del plan?",
+          "scene": "El transporte se planeó en 70 y costó 61.",
+          "options": [
+            {
+              "label": "9"
+            },
+            {
+              "label": "61"
+            },
+            {
+              "label": "131"
+            }
+          ],
+          "help": [
+            "Compara el costo real con su monto planeado."
+          ],
+          "feedback": {
+            "met": "70 − 61 = 9 por debajo del plan.",
+            "not_yet": "Compara el costo real con su monto planeado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto abaixo do plano?",
+          "scene": "O transporte foi previsto em 70 e custou 61.",
+          "options": [
+            {
+              "label": "9"
+            },
+            {
+              "label": "61"
+            },
+            {
+              "label": "131"
+            }
+          ],
+          "help": [
+            "Compare o custo real com seu valor previsto."
+          ],
+          "feedback": {
+            "met": "70 − 61 = 9 abaixo do plano.",
+            "not_yet": "Compare o custo real com seu valor previsto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          70,
+          61
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What improves the comparison first?",
+          "scene": "Spending exceeds plan; some cash purchases are missing from the record.",
+          "options": [
+            {
+              "label": "Assume the missing purchases were free"
+            },
+            {
+              "label": "Complete and check the record"
+            },
+            {
+              "label": "Label every expense unnecessary"
+            }
+          ],
+          "help": [
+            "Look for missing evidence before deciding on a change."
+          ],
+          "feedback": {
+            "met": "An incomplete record cannot fully explain the spending difference.",
+            "not_yet": "Look for missing evidence before deciding on a change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué mejora primero la comparación?",
+          "scene": "Tu total supera el plan, pero faltan compras en efectivo en el registro.",
+          "options": [
+            {
+              "label": "Suponer gratuitas las compras faltantes"
+            },
+            {
+              "label": "Completar y revisar el registro"
+            },
+            {
+              "label": "Llamar innecesario a todo gasto"
+            }
+          ],
+          "help": [
+            "Busca evidencia faltante antes de decidir un cambio."
+          ],
+          "feedback": {
+            "met": "Un registro incompleto no explica toda la diferencia de gasto.",
+            "not_yet": "Busca evidencia faltante antes de decidir un cambio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que melhora primeiro a comparação?",
+          "scene": "Seu total supera o plano, mas faltam compras em dinheiro no registro.",
+          "options": [
+            {
+              "label": "Supor gratuitas as compras ausentes"
+            },
+            {
+              "label": "Completar e conferir o registro"
+            },
+            {
+              "label": "Chamar todo gasto de desnecessário"
+            }
+          ],
+          "help": [
+            "Busque evidências ausentes antes de decidir uma mudança."
+          ],
+          "feedback": {
+            "met": "Um registro incompleto não explica toda a diferença de gasto.",
+            "not_yet": "Busque evidências ausentes antes de decidir uma mudança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What must next month retain?",
+          "scene": "Spending fell because a necessary repair was delayed and remains unpaid.",
+          "options": [
+            {
+              "label": "The pending repair obligation"
+            },
+            {
+              "label": "A permanently lower repair cost"
+            },
+            {
+              "label": "An assumption that the cost disappeared"
+            }
+          ],
+          "help": [
+            "Distinguish postponing a payment from removing its need."
+          ],
+          "feedback": {
+            "met": "Delayed spending can remain a future obligation.",
+            "not_yet": "Distinguish postponing a payment from removing its need."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe conservar el siguiente plan?",
+          "scene": "El menor gasto de este mes vino de posponer una reparación necesaria aún pendiente.",
+          "options": [
+            {
+              "label": "La reparación pendiente"
+            },
+            {
+              "label": "Un costo de reparación menor para siempre"
+            },
+            {
+              "label": "Suponer que el costo desapareció"
+            }
+          ],
+          "help": [
+            "Distingue posponer el pago de eliminar su necesidad."
+          ],
+          "feedback": {
+            "met": "Un gasto aplazado puede seguir siendo una obligación futura.",
+            "not_yet": "Distingue posponer el pago de eliminar su necesidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o próximo plano deve manter?",
+          "scene": "O gasto menor deste mês veio de adiar um conserto necessário ainda pendente.",
+          "options": [
+            {
+              "label": "O conserto pendente"
+            },
+            {
+              "label": "Um custo de conserto menor para sempre"
+            },
+            {
+              "label": "Supor que o custo desapareceu"
+            }
+          ],
+          "help": [
+            "Distinga adiar o pagamento de eliminar sua necessidade."
+          ],
+          "feedback": {
+            "met": "Um gasto adiado pode continuar sendo uma obrigação futura.",
+            "not_yet": "Distinga adiar o pagamento de eliminar sua necessidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What supports the next plan?",
+          "scene": "A care budget exceeded its estimate because required visits increased.",
+          "options": [
+            {
+              "label": "Update the expected visits and cost"
+            },
+            {
+              "label": "Cancel required care automatically"
+            },
+            {
+              "label": "Reuse the old estimate unchanged"
+            }
+          ],
+          "help": [
+            "Carry the known change into the next forecast."
+          ],
+          "feedback": {
+            "met": "The new required visit count is relevant to the next estimate.",
+            "not_yet": "Carry the known change into the next forecast."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ayuda al siguiente plan?",
+          "scene": "Un presupuesto de cuidados superó lo estimado porque aumentaron visitas necesarias.",
+          "options": [
+            {
+              "label": "Actualizar visitas previstas y costo"
+            },
+            {
+              "label": "Cancelar cuidados necesarios automáticamente"
+            },
+            {
+              "label": "Repetir la estimación anterior sin cambios"
+            }
+          ],
+          "help": [
+            "Incluye el cambio conocido en la siguiente estimación."
+          ],
+          "feedback": {
+            "met": "La nueva cantidad de visitas necesarias importa para estimar después.",
+            "not_yet": "Incluye el cambio conocido en la siguiente estimación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ajuda o próximo plano?",
+          "scene": "Um orçamento de cuidados superou a estimativa porque aumentaram visitas necessárias.",
+          "options": [
+            {
+              "label": "Atualizar visitas previstas e custo"
+            },
+            {
+              "label": "Cancelar cuidados necessários automaticamente"
+            },
+            {
+              "label": "Repetir a estimativa anterior sem mudanças"
+            }
+          ],
+          "help": [
+            "Inclua a mudança conhecida na próxima estimativa."
+          ],
+          "feedback": {
+            "met": "A nova quantidade de visitas necessárias importa para estimar depois.",
+            "not_yet": "Inclua a mudança conhecida na próxima estimativa."
+          }
+        }
+      }
+    }
+  ]
+}

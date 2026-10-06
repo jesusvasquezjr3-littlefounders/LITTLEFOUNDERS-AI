@@ -83,6 +83,8 @@ audiogen/src/samples/
 !.claude/skills/
 .claude/skills/*
 !.claude/skills/caveman/
+!.claude/skills/financial-lesson-authoring/
+!.claude/skills/course-authoring/
 
 # Production database dumps (PII + credential hashes — never commit)
 /database/backups/
@@ -102,6 +104,13 @@ audiogen/src/samples/
 
 # Per-worktree Vite/test caches for parallel lane checkouts
 .lane-cache/
+
+# Intermediate author batches; complete-source is the reviewable curriculum.
+/coursegen/curriculum-production/*/integration-draft/
+/coursegen/curriculum-production/*/authoring/*/draft-plans/
+/coursegen/curriculum-production/*/authoring/*/draft-output/
+/coursegen/curriculum-production/*/authoring/foundations/plans/
+/coursegen/curriculum-production/*/authoring/foundations/emitted/
 
 # Python bytecode (database/scripts verifiers import a shared helper, lf_pg_replay.py)
 __pycache__/

@@ -58,7 +58,7 @@ describe('build-and-test boards (GAP-FIX-R2)', () => {
     render(<LessonDocumentView raw={doc('10-12', unitPrice, unitCaps)} locale="en-US" ageBand="10-12" onBack={noop} onGradeAny={onGradeAny} />);
     fireEvent.change(screen.getByLabelText('Pack of 3: per sticker'), { target: { value: '15' } });
     fireEvent.change(screen.getByLabelText('Pack of 5: per sticker'), { target: { value: '14' } });
-    fireEvent.click(within(screen.getByRole('group', { name: 'Better buy' })).getByRole('radio', { name: 'Pack of 5' }));
+    fireEvent.click(within(screen.getByRole('group', { name: 'Lower unit price' })).getByRole('radio', { name: 'Pack of 5' }));
     fireEvent.click(screen.getByRole('button', { name: 'Check' }));
     const answer = { unit_prices: { small: '15', big: '14' }, choice: 'big' };
     await waitFor(() => expect(onGradeAny).toHaveBeenCalledWith(answer, 'unit-01', expect.anything()));

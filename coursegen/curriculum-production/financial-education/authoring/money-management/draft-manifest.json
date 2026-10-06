@@ -1,0 +1,517 @@
+{
+  "authoring_complete": false,
+  "publication_authorized": false,
+  "lessons": 44,
+  "proposedSkills": [
+    {
+      "lesson_id": "fe-production-credit-records-01",
+      "skill_id": "prod.credit-records.01",
+      "objective": "Distinguish a credit report’s recorded information from a score derived from it.",
+      "objective_i18n": {
+        "en-US": "Distinguish a credit report’s recorded information from a score derived from it.",
+        "es-MX": "Distinguir los datos registrados en un reporte crediticio del puntaje calculado a partir de ellos.",
+        "pt-BR": "Distinguir os dados registrados em um relatório de crédito da pontuação calculada a partir deles."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-accounts-records-04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-02",
+      "skill_id": "prod.credit-records.02",
+      "objective": "Match a fictional credit-report entry to the corresponding account record.",
+      "objective_i18n": {
+        "en-US": "Match a fictional credit-report entry to the corresponding account record.",
+        "es-MX": "Relacionar un registro de un reporte crediticio ficticio con el documento de la cuenta correspondiente.",
+        "pt-BR": "Relacionar um registro de um relatório de crédito fictício ao documento da conta correspondente."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-records-01",
+        "fe-production-accounts-records-05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-03",
+      "skill_id": "prod.credit-records.03",
+      "objective": "Identify a factual error and assemble supporting evidence for a dispute.",
+      "objective_i18n": {
+        "en-US": "Identify a factual error and assemble supporting evidence for a dispute.",
+        "es-MX": "Identificar un error de hecho y reunir documentos que respalden su reclamación.",
+        "pt-BR": "Identificar um erro factual e reunir documentos que sustentem sua contestação."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-records-02",
+        "fe-production-accounts-records-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-04",
+      "skill_id": "prod.credit-records.04",
+      "objective": "Separate a verified local credit-report process from a promise to erase accurate history.",
+      "objective_i18n": {
+        "en-US": "Separate a verified local credit-report process from a promise to erase accurate history.",
+        "es-MX": "Distinguir un procedimiento local verificado de reporte crediticio de una promesa de borrar historial correcto.",
+        "pt-BR": "Distinguir um processo local verificado de relatório de crédito de uma promessa de apagar histórico correto."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-records-03",
+        "fe-production-payments-digital-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-05",
+      "skill_id": "prod.credit-records.05",
+      "objective": "Explain why an advertised score threshold cannot guarantee a lending decision.",
+      "objective_i18n": {
+        "en-US": "Explain why an advertised score threshold cannot guarantee a lending decision.",
+        "es-MX": "Explicar por qué un puntaje mínimo anunciado no garantiza una decisión favorable de crédito.",
+        "pt-BR": "Explicar por que uma pontuação mínima anunciada não garante uma decisão favorável de crédito."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-records-01",
+        "fe-production-credit-mechanics-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-06",
+      "skill_id": "prod.credit-records.06",
+      "objective": "Choose protective steps after discovering an account the person did not open.",
+      "objective_i18n": {
+        "en-US": "Choose protective steps after discovering an account the person did not open.",
+        "es-MX": "Elegir medidas de protección al descubrir una cuenta que la persona no abrió.",
+        "pt-BR": "Escolher medidas de proteção ao descobrir uma conta que a pessoa não abriu."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-records-02",
+        "fe-production-payments-digital-08"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-02",
+      "skill_id": "prod.credit-mechanics.02",
+      "objective": "Calculate the total amount repaid from a complete payment schedule.",
+      "objective_i18n": {
+        "en-US": "Calculate the total amount repaid from a complete payment schedule.",
+        "es-MX": "Calcular el total devuelto a partir de un calendario completo de pagos.",
+        "pt-BR": "Calcular o total devolvido a partir de um calendário completo de pagamentos."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-financial-math-03"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-03",
+      "skill_id": "prod.credit-mechanics.03",
+      "objective": "Calculate a period’s interest on the explicitly stated outstanding balance.",
+      "objective_i18n": {
+        "en-US": "Calculate a period’s interest on the explicitly stated outstanding balance.",
+        "es-MX": "Calcular el interés de un periodo sobre el saldo pendiente indicado explícitamente.",
+        "pt-BR": "Calcular os juros de um período sobre o saldo devedor indicado explicitamente."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-11"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-04",
+      "skill_id": "prod.credit-mechanics.04",
+      "objective": "Separate a payment’s interest component from its principal reduction.",
+      "objective_i18n": {
+        "en-US": "Separate a payment’s interest component from its principal reduction.",
+        "es-MX": "Separar la parte de interés de un pago de la reducción de capital.",
+        "pt-BR": "Separar a parte de juros de uma parcela da redução do principal."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-03",
+        "fe-production-financial-math-02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-05",
+      "skill_id": "prod.credit-mechanics.05",
+      "objective": "Update the outstanding principal after a payment.",
+      "objective_i18n": {
+        "en-US": "Update the outstanding principal after a payment.",
+        "es-MX": "Actualizar el capital pendiente después de un pago.",
+        "pt-BR": "Atualizar o principal devedor após um pagamento."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-01",
+      "skill_id": "prod.credit-mechanics.01",
+      "objective": "Identify principal, interest and fees in a fictional loan agreement.",
+      "objective_i18n": {
+        "en-US": "Identify principal, interest and fees in a fictional loan agreement.",
+        "es-MX": "Identificar capital, intereses y comisiones en un contrato de préstamo ficticio.",
+        "pt-BR": "Identificar principal, juros e tarifas em um contrato de empréstimo fictício."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-usable-money-06",
+        "fe-production-purchase-decisions-02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-08",
+      "skill_id": "prod.credit-mechanics.08",
+      "objective": "Explain the consequence of a missed payment using the agreement’s stated terms.",
+      "objective_i18n": {
+        "en-US": "Explain the consequence of a missed payment using the agreement’s stated terms.",
+        "es-MX": "Explicar la consecuencia de omitir un pago según las condiciones indicadas en el contrato.",
+        "pt-BR": "Explicar a consequência de não pagar uma parcela segundo as regras indicadas no contrato."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-usable-money-05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-09",
+      "skill_id": "prod.credit-mechanics.09",
+      "objective": "Distinguish collateral at risk from the amount originally borrowed.",
+      "objective_i18n": {
+        "en-US": "Distinguish collateral at risk from the amount originally borrowed.",
+        "es-MX": "Distinguir el bien en garantía que está en riesgo del importe originalmente prestado.",
+        "pt-BR": "Distinguir o bem em garantia que está em risco do valor originalmente emprestado."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-10",
+      "skill_id": "prod.credit-mechanics.10",
+      "objective": "Identify how a variable-rate clause could change future payments.",
+      "objective_i18n": {
+        "en-US": "Identify how a variable-rate clause could change future payments.",
+        "es-MX": "Identificar cómo una cláusula de tasa variable puede cambiar los pagos futuros.",
+        "pt-BR": "Identificar como uma cláusula de taxa variável pode mudar as parcelas futuras."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-03",
+        "fe-production-credit-mechanics-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-06",
+      "skill_id": "prod.credit-mechanics.06",
+      "objective": "Compare loans with different payment sizes using total cost and duration.",
+      "objective_i18n": {
+        "en-US": "Compare loans with different payment sizes using total cost and duration.",
+        "es-MX": "Comparar préstamos con pagos distintos mediante el costo total y la duración.",
+        "pt-BR": "Comparar empréstimos com parcelas diferentes usando o custo total e a duração."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-07",
+      "skill_id": "prod.credit-mechanics.07",
+      "objective": "Check whether a proposed payment fits the borrower’s existing cash-flow plan.",
+      "objective_i18n": {
+        "en-US": "Check whether a proposed payment fits the borrower’s existing cash-flow plan.",
+        "es-MX": "Comprobar si un pago propuesto cabe en el plan de flujo de dinero existente de la persona.",
+        "pt-BR": "Verificar se uma parcela proposta cabe no plano de fluxo de dinheiro existente da pessoa."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-cashflow-budget-05",
+        "fe-production-credit-mechanics-02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-11",
+      "skill_id": "prod.credit-mechanics.11",
+      "objective": "Compare periodic rates only after aligning periods and compounding assumptions.",
+      "objective_i18n": {
+        "en-US": "Compare periodic rates only after aligning periods and compounding assumptions.",
+        "es-MX": "Comparar tasas periódicas solo después de igualar periodos y supuestos de capitalización.",
+        "pt-BR": "Comparar taxas periódicas somente após igualar períodos e hipóteses de capitalização."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-03",
+        "fe-production-time-inflation-03"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-12",
+      "skill_id": "prod.credit-mechanics.12",
+      "objective": "Identify which disclosed annual cost measure and included charges need local interpretation.",
+      "objective_i18n": {
+        "en-US": "Identify which disclosed annual cost measure and included charges need local interpretation.",
+        "es-MX": "Identificar qué indicador de costo anual divulgado y qué cargos incluidos requieren interpretación local.",
+        "pt-BR": "Identificar qual indicador de custo anual divulgado e quais encargos incluídos exigem interpretação local."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-11"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-01",
+      "skill_id": "prod.time-inflation.01",
+      "objective": "Calculate simple interest using an explicitly stated principal, rate and period.",
+      "objective_i18n": {
+        "en-US": "Calculate simple interest using an explicitly stated principal, rate and period.",
+        "es-MX": "Calcular interés simple usando capital, tasa y periodo expresamente indicados.",
+        "pt-BR": "Calcular juros simples usando principal, taxa e período expressamente informados."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-11"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-02",
+      "skill_id": "prod.time-inflation.02",
+      "objective": "Distinguish earned interest from a contribution to an account.",
+      "objective_i18n": {
+        "en-US": "Distinguish earned interest from a contribution to an account.",
+        "es-MX": "Distinguir interés ganado de una aportación a la cuenta.",
+        "pt-BR": "Distinguir juros ganhos de um aporte à conta."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-01",
+        "fe-production-usable-money-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-03",
+      "skill_id": "prod.time-inflation.03",
+      "objective": "Calculate a second period’s compound growth after adding the first period’s interest.",
+      "objective_i18n": {
+        "en-US": "Calculate a second period’s compound growth after adding the first period’s interest.",
+        "es-MX": "Calcular crecimiento compuesto del segundo periodo tras añadir el interés del primero.",
+        "pt-BR": "Calcular crescimento composto do segundo período após somar os juros do primeiro."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-01",
+        "fe-production-time-inflation-02",
+        "fe-production-financial-math-08"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-04",
+      "skill_id": "prod.time-inflation.04",
+      "objective": "Compare simple and compound growth under the same stated assumptions.",
+      "objective_i18n": {
+        "en-US": "Compare simple and compound growth under the same stated assumptions.",
+        "es-MX": "Comparar crecimiento simple y compuesto con los mismos supuestos indicados.",
+        "pt-BR": "Comparar crescimento simples e composto com as mesmas hipóteses informadas."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-01",
+        "fe-production-time-inflation-03"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-05",
+      "skill_id": "prod.time-inflation.05",
+      "objective": "Separate the effect of contributions from the effect of modeled returns.",
+      "objective_i18n": {
+        "en-US": "Separate the effect of contributions from the effect of modeled returns.",
+        "es-MX": "Separar el efecto de las aportaciones del efecto de rendimientos modelados.",
+        "pt-BR": "Separar o efeito dos aportes do efeito de retornos modelados."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-02",
+        "fe-production-time-inflation-03"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-06",
+      "skill_id": "prod.time-inflation.06",
+      "objective": "Calculate the nominal price change for a fixed basket of goods.",
+      "objective_i18n": {
+        "en-US": "Calculate the nominal price change for a fixed basket of goods.",
+        "es-MX": "Calcular el cambio nominal de precio de una canasta fija de bienes.",
+        "pt-BR": "Calcular a mudança nominal de preço de uma cesta fixa de bens."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-financial-math-08",
+        "fe-production-purchase-decisions-01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-07",
+      "skill_id": "prod.time-inflation.07",
+      "objective": "Determine whether a stated nominal income change keeps up with a stated basket’s price change.",
+      "objective_i18n": {
+        "en-US": "Determine whether a stated nominal income change keeps up with a stated basket’s price change.",
+        "es-MX": "Determinar si un cambio nominal de ingresos indicado mantiene el paso con el cambio de precio de una canasta indicada.",
+        "pt-BR": "Determinar se uma mudança nominal de renda informada acompanha a mudança de preço de uma cesta informada."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-06",
+        "fe-production-financial-math-08"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-08",
+      "skill_id": "prod.time-inflation.08",
+      "objective": "Distinguish an economy-wide inflation measure from one household’s changing expenses.",
+      "objective_i18n": {
+        "en-US": "Distinguish an economy-wide inflation measure from one household’s changing expenses.",
+        "es-MX": "Distinguir una medida general de inflación de los gastos cambiantes de un hogar.",
+        "pt-BR": "Distinguir uma medida geral de inflação dos gastos variáveis de uma casa."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-06",
+        "fe-production-spending-patterns-01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-09",
+      "skill_id": "prod.time-inflation.09",
+      "objective": "Compare nominal growth with purchasing-power growth under explicit assumptions.",
+      "objective_i18n": {
+        "en-US": "Compare nominal growth with purchasing-power growth under explicit assumptions.",
+        "es-MX": "Comparar crecimiento nominal con crecimiento del poder de compra bajo supuestos explícitos.",
+        "pt-BR": "Comparar crescimento nominal com crescimento do poder de compra sob hipóteses explícitas."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-06",
+        "fe-production-financial-math-09"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-10",
+      "skill_id": "prod.time-inflation.10",
+      "objective": "Identify why a constant-return projection is a model rather than a guaranteed outcome.",
+      "objective_i18n": {
+        "en-US": "Identify why a constant-return projection is a model rather than a guaranteed outcome.",
+        "es-MX": "Identificar por qué una proyección con rendimiento constante es un modelo y no una garantía de resultado.",
+        "pt-BR": "Identificar por que uma projeção com retorno constante é um modelo e não uma garantia de resultado."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-01",
+      "skill_id": "prod.debt-recovery.01",
+      "objective": "Build a debt inventory containing balances, costs, deadlines and stated consequences.",
+      "objective_i18n": {
+        "en-US": "Build a debt inventory containing balances, costs, deadlines and stated consequences.",
+        "es-MX": "Crear un inventario de deudas con saldos, costos, fechas y consecuencias indicadas.",
+        "pt-BR": "Criar uma lista de dívidas com saldos, custos, datas e efeitos informados."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-08"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-02",
+      "skill_id": "prod.debt-recovery.02",
+      "objective": "Prioritize immediate consequences before applying a simple balance or rate ordering.",
+      "objective_i18n": {
+        "en-US": "Prioritize immediate consequences before applying a simple balance or rate ordering.",
+        "es-MX": "Priorizar consecuencias inmediatas antes de aplicar un orden simple por saldo o tasa.",
+        "pt-BR": "Priorizar efeitos imediatos antes de aplicar uma ordem simples por saldo ou taxa."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-debt-recovery-01",
+        "fe-production-goals-tradeoffs-02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-03",
+      "skill_id": "prod.debt-recovery.03",
+      "objective": "Compare highest-rate-first and smallest-balance-first repayment using the same feasible surplus.",
+      "objective_i18n": {
+        "en-US": "Compare highest-rate-first and smallest-balance-first repayment using the same feasible surplus.",
+        "es-MX": "Comparar pago por mayor tasa primero y menor saldo primero con el mismo excedente viable.",
+        "pt-BR": "Comparar pagamento por maior taxa primeiro e menor saldo primeiro com a mesma sobra viável."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-debt-recovery-01",
+        "fe-production-debt-recovery-02",
+        "fe-production-credit-mechanics-03",
+        "fe-production-cashflow-budget-11"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-04",
+      "skill_id": "prod.debt-recovery.04",
+      "objective": "Identify information to gather before asking a creditor about an unaffordable payment.",
+      "objective_i18n": {
+        "en-US": "Identify information to gather before asking a creditor about an unaffordable payment.",
+        "es-MX": "Identificar información que debe reunirse antes de consultar al acreedor por un pago inviable.",
+        "pt-BR": "Identificar informações que devem ser reunidas antes de consultar o credor sobre um pagamento inviável."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-debt-recovery-01",
+        "fe-production-cashflow-budget-11"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-05",
+      "skill_id": "prod.debt-recovery.05",
+      "objective": "Compare a proposed restructuring using total cost, term and payment feasibility.",
+      "objective_i18n": {
+        "en-US": "Compare a proposed restructuring using total cost, term and payment feasibility.",
+        "es-MX": "Comparar una reestructuración propuesta mediante costo total, plazo y viabilidad de pagos.",
+        "pt-BR": "Comparar uma reestruturação proposta por custo total, prazo e viabilidade dos pagamentos."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-credit-mechanics-06",
+        "fe-production-credit-mechanics-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-06",
+      "skill_id": "prod.debt-recovery.06",
+      "objective": "Check whether consolidation reduces total cost or only lowers the monthly payment.",
+      "objective_i18n": {
+        "en-US": "Check whether consolidation reduces total cost or only lowers the monthly payment.",
+        "es-MX": "Verificar si consolidar reduce costo total o solo baja el pago mensual.",
+        "pt-BR": "Conferir se consolidar reduz custo total ou só baixa o pagamento mensal."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-debt-recovery-05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-07",
+      "skill_id": "prod.debt-recovery.07",
+      "objective": "Detect an upfront-fee debt-relief claim that lacks verifiable terms or authority.",
+      "objective_i18n": {
+        "en-US": "Detect an upfront-fee debt-relief claim that lacks verifiable terms or authority.",
+        "es-MX": "Detectar una promesa de alivio de deuda con anticipo que carece de condiciones o autoridad verificables.",
+        "pt-BR": "Detectar uma promessa de alívio da dívida com adiantamento que não tem regras ou poder que se possa conferir."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-payments-digital-06",
+        "fe-production-payments-digital-07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-08",
+      "skill_id": "prod.debt-recovery.08",
+      "objective": "Find qualified local support when no feasible repayment plan covers essential needs.",
+      "objective_i18n": {
+        "en-US": "Find qualified local support when no feasible repayment plan covers essential needs.",
+        "es-MX": "Localizar apoyo local calificado cuando ningún plan de pagos viable cubre necesidades esenciales.",
+        "pt-BR": "Localizar apoio local qualificado quando nenhum plano de pagamento viável cobre necessidades essenciais."
+      },
+      "prerequisite_lesson_ids": [
+        "fe-production-debt-recovery-02",
+        "fe-production-debt-recovery-04",
+        "fe-production-spending-patterns-10"
+      ]
+    }
+  ],
+  "cross_domain_mapping": "provisional-until-coordinator-reconciliation"
+}

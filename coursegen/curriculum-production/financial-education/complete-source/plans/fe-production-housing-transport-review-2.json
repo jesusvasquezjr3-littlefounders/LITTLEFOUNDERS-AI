@@ -1,0 +1,996 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-3",
+  "lesson_id": "fe-production-housing-transport-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.07",
+    "finance.prod.housing-transport.08",
+    "finance.prod.housing-transport.09",
+    "finance.prod.housing-transport.10",
+    "finance.prod.housing-transport.11",
+    "finance.prod.housing-transport.12",
+    "finance.prod.purchase-decisions.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare housing and vehicle arrangements using full costs, contract endings and essential constraints.",
+  "title": {
+    "en-US": "Housing Mobility",
+    "es-MX": "Compara vivienda y movilidad",
+    "pt-BR": "Compare moradia e mobilidade"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Housing Mobility\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara vivienda y movilidad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare moradia e mobilidade\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.housing-transport.07",
+      "observable_action": "Compare housing and vehicle arrangements using full costs, contract endings and essential constraints.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.02",
+      "prod.housing-transport.04",
+      "prod.investing-foundations.03"
+    ],
+    "retrieval_skills": [
+      "prod.housing-transport.07",
+      "prod.housing-transport.08",
+      "prod.housing-transport.09",
+      "prod.housing-transport.10",
+      "prod.housing-transport.11",
+      "prod.housing-transport.12",
+      "prod.purchase-decisions.02"
+    ],
+    "relevance": "Combine time horizons, vehicle costs and practical access before choosing.",
+    "misconception": "Lowest monthly advertised price implies the cheapest feasible arrangement and ownership outcome.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Different horizons do not answer the same housing question."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.08",
+        "context_id": "housing-transport-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Value lost and running costs both belong in the total."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "A required final payment belongs in total contract payments."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Planned excess use triggers the stated additional charge."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Purchase funding and later servicing are distinct needs."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "B meets the stated budget and timing requirements."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "housing-transport-review-2-practice-07",
+        "supports_from": [],
+        "reasoning": "The required adapter is part of the usable purchase cost."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "The comparison depends on an uncertain future sale value."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Combine time horizons, vehicle costs and practical access before choosing."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Combina horizontes, costos de vehículo y acceso práctico antes de elegir."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Combine prazos, custos de veículo e acesso prático antes de escolher."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be corrected first?",
+          "scene": "Rent is totaled for a short stay; buying for a much longer stay.",
+          "options": [
+            {
+              "label": "Ignore sale costs"
+            },
+            {
+              "label": "Match the stay length"
+            },
+            {
+              "label": "Assume home prices rise"
+            }
+          ],
+          "help": [
+            "Compare the same period with complete relevant costs."
+          ],
+          "feedback": {
+            "met": "Different horizons do not answer the same housing question.",
+            "not_yet": "Compare the same period with complete relevant costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué corregir primero?",
+          "scene": "Renta se suma para estancia corta; compra para estancia mucho mayor.",
+          "options": [
+            {
+              "label": "Ignorar costos de venta"
+            },
+            {
+              "label": "Igualar duración de estancia"
+            },
+            {
+              "label": "Suponer vivienda sube de precio"
+            }
+          ],
+          "help": [
+            "Compara el mismo periodo con costos pertinentes completos."
+          ],
+          "feedback": {
+            "met": "Horizontes distintos no responden la misma pregunta de vivienda.",
+            "not_yet": "Compara el mismo periodo con costos pertinentes completos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que corrigir primeiro?",
+          "scene": "Aluguel é somado para estadia curta; compra para estadia muito maior.",
+          "options": [
+            {
+              "label": "Ignorar custos de venda"
+            },
+            {
+              "label": "Igualar duração da estadia"
+            },
+            {
+              "label": "Supor alta no preço da casa"
+            }
+          ],
+          "help": [
+            "Compare o mesmo período com custos relevantes completos."
+          ],
+          "feedback": {
+            "met": "Prazos distintos não respondem à mesma questão de moradia.",
+            "not_yet": "Compare o mesmo período com custos relevantes completos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the period’s ownership cost?",
+          "scene": "Vehicle value lost: 1500; Complete running costs: 1100; No financing costs.",
+          "options": [
+            {
+              "label": "1500"
+            },
+            {
+              "label": "2600"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Add the costs for the same ownership period."
+          ],
+          "feedback": {
+            "met": "Value lost and running costs both belong in the total.",
+            "not_yet": "Add the costs for the same ownership period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es costo del periodo?",
+          "scene": "Valor perdido del vehículo: 1500; Costos completos de uso: 1100; Sin costos financieros.",
+          "options": [
+            {
+              "label": "1500"
+            },
+            {
+              "label": "2600"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Suma costos del mismo periodo de propiedad."
+          ],
+          "feedback": {
+            "met": "Valor perdido y uso pertenecen al total.",
+            "not_yet": "Suma costos del mismo periodo de propiedad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o custo do período?",
+          "scene": "Valor perdido do veículo: 1500; Custos completos de uso: 1100; Sem custos financeiros.",
+          "options": [
+            {
+              "label": "1500"
+            },
+            {
+              "label": "2600"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Some custos do mesmo período de posse."
+          ],
+          "feedback": {
+            "met": "Valor perdido e uso pertencem ao total.",
+            "not_yet": "Some custos do mesmo período de posse."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1500,
+          1100
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which omitted amount changes financing cost?",
+          "scene": "The advertised total includes deposit and instalments but excludes a required balloon.",
+          "options": [
+            {
+              "label": "Unrelated groceries"
+            },
+            {
+              "label": "Required final balloon"
+            },
+            {
+              "label": "The driver’s preferred route"
+            }
+          ],
+          "help": [
+            "Count every payment required by the financing offer."
+          ],
+          "feedback": {
+            "met": "A required final payment belongs in total contract payments.",
+            "not_yet": "Count every payment required by the financing offer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto omitido cambia el costo?",
+          "scene": "Total anunciado incluye enganche y cuotas pero excluye pago final obligatorio.",
+          "options": [
+            {
+              "label": "Despensa sin relación"
+            },
+            {
+              "label": "Pago final obligatorio"
+            },
+            {
+              "label": "Ruta preferida del conductor"
+            }
+          ],
+          "help": [
+            "Cuenta cada pago exigido por la oferta de financiamiento."
+          ],
+          "feedback": {
+            "met": "Un pago final obligatorio pertenece al total del contrato.",
+            "not_yet": "Cuenta cada pago exigido por la oferta de financiamiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que valor omitido muda o custo?",
+          "scene": "Total anunciado inclui entrada e parcelas mas exclui pagamento final obrigatório.",
+          "options": [
+            {
+              "label": "Compras sem relação"
+            },
+            {
+              "label": "Pagamento final obrigatório"
+            },
+            {
+              "label": "Rota favorita do motorista"
+            }
+          ],
+          "help": [
+            "Conte cada pagamento exigido pela oferta de financiamento."
+          ],
+          "feedback": {
+            "met": "Pagamento final obrigatório pertence ao total do contrato.",
+            "not_yet": "Conte cada pagamento exigido pela oferta de financiamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What could increase this lease cost?",
+          "scene": "The fictional lease charges for travel above its included distance; planned use exceeds that limit.",
+          "options": [
+            {
+              "label": "Automatic free ownership"
+            },
+            {
+              "label": "Guaranteed zero return costs"
+            },
+            {
+              "label": "Excess-distance charge"
+            }
+          ],
+          "help": [
+            "Compare expected distance with the included allowance."
+          ],
+          "feedback": {
+            "met": "Planned excess use triggers the stated additional charge.",
+            "not_yet": "Compare expected distance with the included allowance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué podría aumentar este costo?",
+          "scene": "Arrendamiento ficticio cobra por superar distancia incluida; uso previsto supera el límite.",
+          "options": [
+            {
+              "label": "Propiedad gratis automática"
+            },
+            {
+              "label": "Cero costos de devolución seguros"
+            },
+            {
+              "label": "Cargo por distancia excedida"
+            }
+          ],
+          "help": [
+            "Compara distancia prevista con la incluida."
+          ],
+          "feedback": {
+            "met": "Uso excedente previsto activa el cargo adicional indicado.",
+            "not_yet": "Compara distancia prevista con la incluida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode aumentar esse custo?",
+          "scene": "Arrendamento fictício cobra por superar distância incluída; uso previsto supera o limite.",
+          "options": [
+            {
+              "label": "Posse grátis automática"
+            },
+            {
+              "label": "Zero custos certos na devolução"
+            },
+            {
+              "label": "Cobrança por distância excedida"
+            }
+          ],
+          "help": [
+            "Compare distância prevista com a incluída."
+          ],
+          "feedback": {
+            "met": "Uso excedente previsto ativa a cobrança adicional dada.",
+            "not_yet": "Compare distância prevista com a incluída."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan covers ongoing needs?",
+          "scene": "Purchase cash is ready; scheduled servicing still requires future payment.",
+          "options": [
+            {
+              "label": "Assume purchase cash covers everything"
+            },
+            {
+              "label": "Reserve for servicing separately"
+            },
+            {
+              "label": "Ignore the known due date"
+            }
+          ],
+          "help": [
+            "Plan money for the known future service."
+          ],
+          "feedback": {
+            "met": "Purchase funding and later servicing are distinct needs.",
+            "not_yet": "Plan money for the known future service."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan cubre necesidades continuas?",
+          "scene": "Efectivo de compra listo; servicio programado aún requiere pago futuro.",
+          "options": [
+            {
+              "label": "Suponer compra cubre todo"
+            },
+            {
+              "label": "Reservar aparte para servicio"
+            },
+            {
+              "label": "Ignorar fecha conocida"
+            }
+          ],
+          "help": [
+            "Planea dinero para el servicio futuro conocido."
+          ],
+          "feedback": {
+            "met": "Fondos de compra y servicio posterior son necesidades distintas.",
+            "not_yet": "Planea dinero para el servicio futuro conocido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano cobre necessidades contínuas?",
+          "scene": "Dinheiro da compra pronto; serviço marcado ainda exige pagamento futuro.",
+          "options": [
+            {
+              "label": "Supor compra cobre tudo"
+            },
+            {
+              "label": "Reservar separado para serviço"
+            },
+            {
+              "label": "Ignorar data conhecida"
+            }
+          ],
+          "help": [
+            "Planeje dinheiro para o serviço futuro conhecido."
+          ],
+          "feedback": {
+            "met": "Dinheiro da compra e serviço posterior são necessidades distintas.",
+            "not_yet": "Planeje dinheiro para o serviço futuro conhecido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which location is feasible?",
+          "scene": "Both fit the combined budget; A cannot meet required arrival time, B can.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "Neither because prices differ"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Check non-price constraints alongside combined cost."
+          ],
+          "feedback": {
+            "met": "B meets the stated budget and timing requirements.",
+            "not_yet": "Check non-price constraints alongside combined cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ubicación es viable?",
+          "scene": "Ambas caben en presupuesto combinado; A no cumple hora requerida de llegada, B sí.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "Ninguna porque precios difieren"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Revisa restricciones no monetarias junto con costo combinado."
+          ],
+          "feedback": {
+            "met": "B cumple presupuesto y horario indicados.",
+            "not_yet": "Revisa restricciones no monetarias junto con costo combinado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual local é viável?",
+          "scene": "Ambos cabem no orçamento conjunto; A não cumpre horário exigido de chegada, B sim.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "Nenhum pois preços diferem"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Confira limites além do preço junto com custo conjunto."
+          ],
+          "feedback": {
+            "met": "B atende ao orçamento e horário dados.",
+            "not_yet": "Confira limites além do preço junto com custo conjunto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be paid to use it?",
+          "scene": "Appliance: 180; Required adapter: 20; No other charges.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "160"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Add the required adapter to the appliance price."
+          ],
+          "feedback": {
+            "met": "The required adapter is part of the usable purchase cost.",
+            "not_yet": "Add the required adapter to the appliance price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe pagarse para usarlo?",
+          "scene": "Aparato: 180; Adaptador requerido: 20; Sin otros cargos.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "160"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Suma adaptador requerido al precio del aparato."
+          ],
+          "feedback": {
+            "met": "El adaptador requerido forma parte del costo utilizable.",
+            "not_yet": "Suma adaptador requerido al precio del aparato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto deve pagar para usar?",
+          "scene": "Aparelho: 180; Adaptador exigido: 20; Sem outros custos.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "160"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Some adaptador exigido ao preço do aparelho."
+          ],
+          "feedback": {
+            "met": "O adaptador exigido faz parte do custo de uso.",
+            "not_yet": "Some adaptador exigido ao preço do aparelho."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          20
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes buying look cheaper?",
+          "scene": "The model assumes a high resale price after a brief stay, despite uncertain future prices.",
+          "options": [
+            {
+              "label": "Certain future appreciation"
+            },
+            {
+              "label": "Rent being automatically wasted"
+            },
+            {
+              "label": "An uncertain resale assumption"
+            }
+          ],
+          "help": [
+            "Test other resale outcomes over the same stay."
+          ],
+          "feedback": {
+            "met": "The comparison depends on an uncertain future sale value.",
+            "not_yet": "Test other resale outcomes over the same stay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hace parecer barata la compra?",
+          "scene": "Modelo supone reventa alta tras breve estancia, pese a precios futuros inciertos.",
+          "options": [
+            {
+              "label": "Aumento futuro seguro"
+            },
+            {
+              "label": "Renta desperdiciada automáticamente"
+            },
+            {
+              "label": "Un supuesto incierto de reventa"
+            }
+          ],
+          "help": [
+            "Prueba otros resultados de reventa durante la misma estancia."
+          ],
+          "feedback": {
+            "met": "La comparación depende de un valor futuro de venta incierto.",
+            "not_yet": "Prueba otros resultados de reventa durante la misma estancia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que faz a compra parecer barata?",
+          "scene": "Modelo supõe revenda alta após breve estadia, apesar de preços futuros incertos.",
+          "options": [
+            {
+              "label": "Alta futura certa"
+            },
+            {
+              "label": "Aluguel desperdiçado automaticamente"
+            },
+            {
+              "label": "Uma hipótese incerta de revenda"
+            }
+          ],
+          "help": [
+            "Teste outros resultados de revenda na mesma estadia."
+          ],
+          "feedback": {
+            "met": "A comparação depende de um valor futuro de venda incerto.",
+            "not_yet": "Teste outros resultados de revenda na mesma estadia."
+          }
+        }
+      }
+    }
+  ]
+}

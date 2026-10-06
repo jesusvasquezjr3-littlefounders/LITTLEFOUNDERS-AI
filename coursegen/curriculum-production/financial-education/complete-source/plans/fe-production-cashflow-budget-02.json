@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-1",
+  "lesson_id": "fe-production-cashflow-budget-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a budget category from the account or envelope holding its money.",
+  "title": {
+    "en-US": "Money purposes",
+    "es-MX": "El propósito no es la ubicación",
+    "pt-BR": "Propósito não é localização"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Purpose is not location\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El propósito no es la ubicación\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Propósito não é localização\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.02",
+      "observable_action": "Separate a budget category from the account or envelope holding its money.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.01",
+      "cash.transfer"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A category says what money is for; an account says where it is.",
+    "misconception": "Treating a transfer between containers as new income or assuming all money in one account has one purpose.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-example-01",
+        "supports_from": [],
+        "reasoning": "One account can hold rent and food money. Transferring food money into an envelope changes location, not purpose."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Groceries names the intended use, not the storage place."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The transfer changes location while the rent purpose remains."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-practice-01",
+        "supports_from": [],
+        "reasoning": "A single account can contain money for different uses."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-practice-02",
+        "supports_from": [],
+        "reasoning": "An internal transfer does not create another wage payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Changing a label changes the plan, not the cash total."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.02",
+        "context_id": "fe-production-cashflow-budget-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "One purpose can span multiple storage places."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A category says what money is for; an account says where it is."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una categoría dice para qué es el dinero; una cuenta dice dónde está."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma categoria diz para que serve o dinheiro; uma conta diz onde está."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Where and what for",
+          "line": "One account can hold rent and food money. Transferring food money into an envelope changes location, not purpose."
+        },
+        "es-MX": {
+          "prompt": "Dónde y para qué",
+          "line": "Una cuenta puede guardar dinero de renta y comida. Mover comida a un sobre cambia su ubicación, no su propósito."
+        },
+        "pt-BR": {
+          "prompt": "Onde e para quê",
+          "line": "Uma conta pode guardar dinheiro de aluguel e comida. Mover comida para um envelope muda sua localização, não seu propósito."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which label describes its purpose?",
+          "scene": "Money is in a checking account and reserved for groceries.",
+          "options": [
+            {
+              "label": "Checking account"
+            },
+            {
+              "label": "Groceries"
+            },
+            {
+              "label": "Bank location"
+            }
+          ],
+          "help": [
+            "Ask what this money is intended to pay for."
+          ],
+          "feedback": {
+            "met": "Groceries names the intended use, not the storage place.",
+            "not_yet": "Ask what this money is intended to pay for."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué etiqueta describe su propósito?",
+          "scene": "El dinero está en una cuenta y reservado para comida.",
+          "options": [
+            {
+              "label": "Cuenta"
+            },
+            {
+              "label": "Comida"
+            },
+            {
+              "label": "Ubicación del banco"
+            }
+          ],
+          "help": [
+            "Pregunta qué debe pagar ese dinero."
+          ],
+          "feedback": {
+            "met": "Comida nombra el uso previsto, no dónde se guarda.",
+            "not_yet": "Pregunta qué debe pagar ese dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual etiqueta descreve seu propósito?",
+          "scene": "O dinheiro está numa conta e reservado para comida.",
+          "options": [
+            {
+              "label": "Conta"
+            },
+            {
+              "label": "Comida"
+            },
+            {
+              "label": "Localização do banco"
+            }
+          ],
+          "help": [
+            "Pergunte o que esse dinheiro deve pagar."
+          ],
+          "feedback": {
+            "met": "Comida nomeia o uso previsto, não onde se guarda.",
+            "not_yet": "Pergunte o que esse dinheiro deve pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed?",
+          "scene": "You move reserved rent money into a separate account without changing its purpose.",
+          "options": [
+            {
+              "label": "Whether rent is owed"
+            },
+            {
+              "label": "Where the money is held"
+            },
+            {
+              "label": "The amount earned"
+            }
+          ],
+          "help": [
+            "A transfer is not a new receipt from outside."
+          ],
+          "feedback": {
+            "met": "The transfer changes location while the rent purpose remains.",
+            "not_yet": "A transfer is not a new receipt from outside."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió?",
+          "scene": "Mueves dinero reservado para renta a otra cuenta sin cambiar su propósito.",
+          "options": [
+            {
+              "label": "Si se debe la renta"
+            },
+            {
+              "label": "Dónde se guarda el dinero"
+            },
+            {
+              "label": "El monto ganado"
+            }
+          ],
+          "help": [
+            "Una transferencia no es una entrada externa nueva."
+          ],
+          "feedback": {
+            "met": "La transferencia cambia ubicación conservando el propósito de renta.",
+            "not_yet": "Una transferencia no es una entrada externa nueva."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou?",
+          "scene": "Move dinheiro reservado para aluguel para outra conta sem mudar seu propósito.",
+          "options": [
+            {
+              "label": "Se o aluguel é devido"
+            },
+            {
+              "label": "Onde o dinheiro é guardado"
+            },
+            {
+              "label": "O valor ganho"
+            }
+          ],
+          "help": [
+            "Uma transferência não é uma nova entrada externa."
+          ],
+          "feedback": {
+            "met": "A transferência muda a localização mantendo o propósito de aluguel.",
+            "not_yet": "Uma transferência não é uma nova entrada externa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "How many purposes fit?",
+          "scene": "An account holds both repair reserves and this week’s food allocation.",
+          "options": [
+            {
+              "label": "Both stated purposes"
+            },
+            {
+              "label": "Only one because it is one account"
+            },
+            {
+              "label": "None until two accounts exist"
+            }
+          ],
+          "help": [
+            "Track purpose separately from account location."
+          ],
+          "feedback": {
+            "met": "A single account can contain money for different uses.",
+            "not_yet": "Track purpose separately from account location."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos propósitos puede guardar?",
+          "scene": "Una cuenta guarda reservas de reparación y dinero de comida semanal.",
+          "options": [
+            {
+              "label": "Ambos propósitos indicados"
+            },
+            {
+              "label": "Solo uno por ser una cuenta"
+            },
+            {
+              "label": "Ninguno hasta tener dos cuentas"
+            }
+          ],
+          "help": [
+            "Registra propósito aparte de ubicación."
+          ],
+          "feedback": {
+            "met": "Una cuenta puede contener dinero para usos diferentes.",
+            "not_yet": "Registra propósito aparte de ubicación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantos propósitos pode guardar?",
+          "scene": "Uma conta guarda reservas de conserto e dinheiro de comida semanal.",
+          "options": [
+            {
+              "label": "Ambos os propósitos informados"
+            },
+            {
+              "label": "Só um por ser uma conta"
+            },
+            {
+              "label": "Nenhum até ter duas contas"
+            }
+          ],
+          "help": [
+            "Registre propósito separado da localização."
+          ],
+          "feedback": {
+            "met": "Uma conta pode conter dinheiro para usos diferentes.",
+            "not_yet": "Registre propósito separado da localização."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is wrong here?",
+          "scene": "You transfer between your accounts and record the money as wages again.",
+          "options": [
+            {
+              "label": "Transfers always destroy money"
+            },
+            {
+              "label": "Account labels determine wages"
+            },
+            {
+              "label": "It counts existing money as new income"
+            }
+          ],
+          "help": [
+            "Track the movement without duplicating the outside receipt."
+          ],
+          "feedback": {
+            "met": "An internal transfer does not create another wage payment.",
+            "not_yet": "Track the movement without duplicating the outside receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué está mal en ese registro?",
+          "scene": "Transfieres entre tus cuentas y vuelves a registrarlo como salario.",
+          "options": [
+            {
+              "label": "Las transferencias siempre destruyen dinero"
+            },
+            {
+              "label": "Las etiquetas de cuentas determinan salarios"
+            },
+            {
+              "label": "Cuenta dinero existente como ingreso nuevo"
+            }
+          ],
+          "help": [
+            "Registra el movimiento sin duplicar la entrada externa."
+          ],
+          "feedback": {
+            "met": "Una transferencia interna no crea otro pago de salario.",
+            "not_yet": "Registra el movimiento sin duplicar la entrada externa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está errado nesse registro?",
+          "scene": "Transfere entre suas contas e registra novamente como salário.",
+          "options": [
+            {
+              "label": "Transferências sempre destroem dinheiro"
+            },
+            {
+              "label": "Rótulos de contas determinam salários"
+            },
+            {
+              "label": "Conta dinheiro existente como renda nova"
+            }
+          ],
+          "help": [
+            "Registre o movimento sem duplicar a entrada externa."
+          ],
+          "feedback": {
+            "met": "Uma transferência interna não cria outro pagamento de salário.",
+            "not_yet": "Registre o movimento sem duplicar a entrada externa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed directly?",
+          "scene": "You relabel a savings envelope “holiday,” without receiving or spending any money.",
+          "options": [
+            {
+              "label": "The recorded purpose"
+            },
+            {
+              "label": "Total money held"
+            },
+            {
+              "label": "A completed holiday purchase"
+            }
+          ],
+          "help": [
+            "Separate an allocation decision from a payment."
+          ],
+          "feedback": {
+            "met": "Changing a label changes the plan, not the cash total.",
+            "not_yet": "Separate an allocation decision from a payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió directamente?",
+          "scene": "Cambias la etiqueta de un sobre a «vacaciones», sin recibir ni gastar dinero.",
+          "options": [
+            {
+              "label": "El propósito registrado"
+            },
+            {
+              "label": "El dinero total disponible"
+            },
+            {
+              "label": "Una compra de vacaciones realizada"
+            }
+          ],
+          "help": [
+            "Separa una asignación de un pago."
+          ],
+          "feedback": {
+            "met": "Cambiar una etiqueta cambia el plan, no el efectivo total.",
+            "not_yet": "Separa una asignación de un pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou diretamente?",
+          "scene": "Muda o rótulo de um envelope para «férias», sem receber nem gastar dinheiro.",
+          "options": [
+            {
+              "label": "O propósito registrado"
+            },
+            {
+              "label": "O dinheiro total disponível"
+            },
+            {
+              "label": "Uma compra de férias concluída"
+            }
+          ],
+          "help": [
+            "Separe uma destinação de um pagamento."
+          ],
+          "feedback": {
+            "met": "Mudar um rótulo muda o plano, não o dinheiro total.",
+            "not_yet": "Separe uma destinação de um pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "copy": {
+        "en-US": {
+          "prompt": "How to track its purpose?",
+          "scene": "A care fund spans cash and an account; both serve the same need.",
+          "options": [
+            {
+              "label": "Only the cash portion counts"
+            },
+            {
+              "label": "Two unrelated incomes"
+            },
+            {
+              "label": "One purpose across both locations"
+            }
+          ],
+          "help": [
+            "Combine by purpose without counting a transfer twice."
+          ],
+          "feedback": {
+            "met": "One purpose can span multiple storage places.",
+            "not_yet": "Combine by purpose without counting a transfer twice."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo registrar su propósito?",
+          "scene": "Un fondo de cuidados se divide entre efectivo y cuenta; ambas partes cubren la misma necesidad.",
+          "options": [
+            {
+              "label": "Solo cuenta la parte en efectivo"
+            },
+            {
+              "label": "Dos ingresos distintos"
+            },
+            {
+              "label": "Un propósito en ambas ubicaciones"
+            }
+          ],
+          "help": [
+            "Agrupa por propósito sin duplicar transferencias."
+          ],
+          "feedback": {
+            "met": "Un propósito puede abarcar varios lugares donde guardar dinero.",
+            "not_yet": "Agrupa por propósito sin duplicar transferencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como registrar seu propósito?",
+          "scene": "Um fundo de cuidados se divide entre dinheiro e conta; ambas as partes cobrem a mesma necessidade.",
+          "options": [
+            {
+              "label": "Só conta a parte em dinheiro"
+            },
+            {
+              "label": "Duas rendas diferentes"
+            },
+            {
+              "label": "Um propósito em ambas as localizações"
+            }
+          ],
+          "help": [
+            "Agrupe por propósito sem duplicar transferências."
+          ],
+          "feedback": {
+            "met": "Um propósito pode abranger vários lugares onde guardar dinheiro.",
+            "not_yet": "Agrupe por propósito sem duplicar transferências."
+          }
+        }
+      }
+    }
+  ]
+}

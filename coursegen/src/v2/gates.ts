@@ -50,6 +50,7 @@ import { countWords, tokens } from '../contentGates/text.js';
 import { hasNeutralPayload, isNonCopyKey, V2_MENTOR_VOICE_TYPES, type V2AgeBand } from './contract.js';
 import type { V2LessonPlan } from './plan.js';
 import { checkLessonDesign, type LessonDesignOptions } from './lessonDesign.js';
+import { checkInstructionalContract } from './instructionalContract.js';
 import { runV2CarriedGates } from './carriedGates.js';
 import { horizontePieceGates } from './horizonte/index.js';
 import './solvabilityPacks.js';
@@ -108,7 +109,8 @@ export function v2WorkingMemoryBand(ageBand: V2AgeBand | unknown): WorkingMemory
 function roleForPayloadKey(key: string): CopyRole {
   // GAP-FIX-R1: the new families' learner-visible fields keep their Bible 06 roles.
   if (key === 'line' || key === 'setup' || key === 'misjudgment' || key === 'recovery') return 'mentor';
-  if (key === 'scene') return 'detail';
+  // StoryChoiceBoard renders this immediately as narrative, not behind a help tap.
+  if (key === 'scene') return 'narrative';
   if (key === 'rule' || key === 'prompt') return 'prompt';
   if (key === 'text') return 'body';
   if (key === 'label' || key === 'face') return 'option';
@@ -148,6 +150,9 @@ export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
     const feedback = segment.feedback as Record<string, unknown> | undefined;
     if (feedback && typeof feedback === 'object') for (const key of ['met', 'not_yet']) {
       if (typeof feedback[key] === 'string') blocks.push({ segmentId, path: `feedback.${key}`, role: 'body', text: feedback[key] as string });
+    }
+    if (feedback?.choice_hints && typeof feedback.choice_hints === 'object') for (const [key, text] of Object.entries(feedback.choice_hints)) {
+      if (typeof text === 'string') blocks.push({ segmentId, path: `feedback.choice_hints.${key}`, role: 'body', text });
     }
     const strings: Array<{ path: string; key: string; text: string }> = [];
     // A Horizonte kind's payload is ids, enums and numbers; its names are the labels.
@@ -294,6 +299,7 @@ export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loa
 
   // Gate 14 also carries the examples-first lesson-design checks (lessonDesign.ts).
   findings.push(...checkLessonDesign(plan, design));
+  findings.push(...checkInstructionalContract(plan));
 
   // Gate 15 — B.11: a flagged episode is staged by a Mentor-voiced episode segment.
   if (plan.mentor_misjudgment && !plan.segments.some((segment) => segment.type === 'voice.mentor-episode.v2')) {

@@ -1,0 +1,773 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-02-a-plan-that-fits",
+  "lesson_id": "fe-solid-07-a-week-of-real-payments",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.received",
+    "finance.cash.direction",
+    "finance.cash.balance",
+    "finance.cash.reserved",
+    "finance.cash.dates"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Use payment status, direction, running balance, reserved money and deadlines together in a new week of decisions.",
+  "title": {
+    "en-US": "A week of real payments",
+    "es-MX": "Una semana de pagos reales",
+    "pt-BR": "Uma semana de pagamentos"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A week of real payments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Una semana de pagos reales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Uma semana de pagamentos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.received",
+      "observable_action": "Use payment status, direction, running balance, reserved money and deadlines together in a new week of decisions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction"
+    ],
+    "retrieval_skills": [
+      "cash.direction",
+      "cash.received",
+      "cash.balance",
+      "cash.reserved",
+      "cash.dates"
+    ],
+    "relevance": "Use the tools together in a new week. Read each situation on its own; the facts change between decisions.",
+    "misconception": "Keeping separate definitions without using them together when deciding what can be spent.",
+    "numeracy_support": "Use previously taught addition, subtraction and date order with small whole amounts.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.direction",
+        "context_id": "a-week-of-real-payments-practice-01",
+        "supports_from": [],
+        "reasoning": "The refund goes to Luis, so his money increases."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.balance",
+        "context_id": "a-week-of-real-payments-practice-02",
+        "supports_from": [],
+        "reasoning": "You included the starting amount and both completed changes."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.reserved",
+        "context_id": "a-week-of-real-payments-practice-03",
+        "supports_from": [],
+        "reasoning": "The purchase fits after the stated bill amount is protected."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "cash.dates",
+        "context_id": "a-week-of-real-payments-practice-04",
+        "supports_from": [],
+        "reasoning": "The arrival is after the stated deadline."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "cash.received",
+        "context_id": "a-week-of-real-payments-practice-05",
+        "supports_from": [],
+        "reasoning": "A scheduled instruction is not a completed receipt."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.received",
+        "context_id": "a-week-of-real-payments-transfer-01",
+        "supports_from": [],
+        "reasoning": "An agreed sale does not mean its payment has arrived."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.received",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use the tools together in a new week. Read each situation on its own; the facts change between decisions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa las herramientas juntas en otra semana. Lee cada situación por separado; los datos cambian entre decisiones."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use as ferramentas juntas em outra semana. Leia cada situação separadamente; os fatos mudam entre decisões."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.direction",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to Luis money?",
+          "scene": "A store returns money to Luis after he returns a defective lamp.",
+          "options": [
+            {
+              "label": "Nothing changes"
+            },
+            {
+              "label": "Money leaves Luis"
+            },
+            {
+              "label": "Money enters Luis balance"
+            }
+          ],
+          "help": [
+            "Follow the money, not the lamp."
+          ],
+          "feedback": {
+            "met": "The refund goes to Luis, so his money increases.",
+            "not_yet": "Follow the money, not the lamp."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero de Luis?",
+          "scene": "Una tienda devuelve dinero a Luis cuando él regresa una lámpara defectuosa.",
+          "options": [
+            {
+              "label": "Nada cambia"
+            },
+            {
+              "label": "Sale dinero de Luis"
+            },
+            {
+              "label": "Entra dinero al saldo de Luis"
+            }
+          ],
+          "help": [
+            "Sigue el dinero, no la lámpara."
+          ],
+          "feedback": {
+            "met": "La devolución llega a Luis, así que su dinero aumenta.",
+            "not_yet": "Sigue el dinero, no la lámpara."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro de Luis?",
+          "scene": "Uma loja devolve dinheiro a Luis quando ele devolve uma luminária com defeito.",
+          "options": [
+            {
+              "label": "Nada muda"
+            },
+            {
+              "label": "Sai dinheiro de Luis"
+            },
+            {
+              "label": "Entra dinheiro no saldo de Luis"
+            }
+          ],
+          "help": [
+            "Acompanhe o dinheiro, não a luminária."
+          ],
+          "feedback": {
+            "met": "O reembolso chega a Luis, então seu dinheiro aumenta.",
+            "not_yet": "Acompanhe o dinheiro, não a luminária."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains?",
+          "scene": "You have 70, receive 20, then pay 30.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Add what arrived and subtract what was paid."
+          ],
+          "feedback": {
+            "met": "You included the starting amount and both completed changes.",
+            "not_yet": "Add what arrived and subtract what was paid."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda?",
+          "scene": "Tienes 70, recibes 20 y después pagas 30.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Suma lo recibido y resta lo pagado."
+          ],
+          "feedback": {
+            "met": "Incluiste el monto inicial y ambos cambios realizados.",
+            "not_yet": "Suma lo recibido y resta lo pagado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta?",
+          "scene": "Você tem 70, recebe 20 e depois paga 30.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Some o que chegou e subtraia o que foi pago."
+          ],
+          "feedback": {
+            "met": "Você incluiu o valor inicial e as duas mudanças realizadas.",
+            "not_yet": "Some o que chegou e subtraia o que foi pago."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          70,
+          20,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purchase protects the bill?",
+          "scene": "You have 90; 60 covers the only bill before new income.",
+          "options": [
+            {
+              "label": "Spend 30"
+            },
+            {
+              "label": "Spend 90"
+            },
+            {
+              "label": "Spend 60"
+            }
+          ],
+          "help": [
+            "Reserved money remains visible, but already has a planned use."
+          ],
+          "feedback": {
+            "met": "The purchase fits after the stated bill amount is protected.",
+            "not_yet": "Reserved money remains visible, but already has a planned use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué compra conserva lo del recibo?",
+          "scene": "Tienes 90; apartaste 60 para un recibo. No hay otros pagos antes de la próxima entrada.",
+          "options": [
+            {
+              "label": "Una compra de 30"
+            },
+            {
+              "label": "Una compra de 90"
+            },
+            {
+              "label": "Una compra de 60"
+            }
+          ],
+          "help": [
+            "El monto apartado sigue en el saldo, pero ya tiene un propósito."
+          ],
+          "feedback": {
+            "met": "La compra cabe después de proteger el monto del recibo.",
+            "not_yet": "El monto apartado sigue en el saldo, pero ya tiene un propósito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual compra preserva o dinheiro da conta?",
+          "scene": "Você tem 90; reservou 60 para uma conta. Não há outros pagamentos antes da próxima entrada.",
+          "options": [
+            {
+              "label": "Uma compra de 30"
+            },
+            {
+              "label": "Uma compra de 90"
+            },
+            {
+              "label": "Uma compra de 60"
+            }
+          ],
+          "help": [
+            "O valor reservado ainda está no saldo, mas já tem um propósito."
+          ],
+          "feedback": {
+            "met": "A compra cabe depois de proteger o valor da conta.",
+            "not_yet": "O valor reservado ainda está no saldo, mas já tem um propósito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "What blocks this plan?",
+          "scene": "A bill is due Wednesday; your only income arrives Thursday.",
+          "options": [
+            {
+              "label": "Money arrives too late"
+            },
+            {
+              "label": "Income exceeds monthly spending"
+            },
+            {
+              "label": "The bill is recorded"
+            }
+          ],
+          "help": [
+            "Check the order before comparing the monthly total."
+          ],
+          "feedback": {
+            "met": "The arrival is after the stated deadline.",
+            "not_yet": "Check the order before comparing the monthly total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide este plan?",
+          "scene": "Un recibo vence el miércoles. El único ingreso disponible llega el jueves.",
+          "options": [
+            {
+              "label": "El dinero llega demasiado tarde"
+            },
+            {
+              "label": "El ingreso no tiene propósito"
+            },
+            {
+              "label": "El recibo no se puede registrar"
+            }
+          ],
+          "help": [
+            "Revisa el orden antes de comparar el total mensual."
+          ],
+          "feedback": {
+            "met": "La entrada ocurre después del vencimiento indicado.",
+            "not_yet": "Revisa el orden antes de comparar el total mensual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede este plano?",
+          "scene": "Uma conta vence na quarta. A única renda disponível chega na quinta.",
+          "options": [
+            {
+              "label": "O dinheiro chega tarde demais"
+            },
+            {
+              "label": "A renda não tem propósito"
+            },
+            {
+              "label": "A conta não pode ser registrada"
+            }
+          ],
+          "help": [
+            "Confira a ordem antes de comparar o total mensal."
+          ],
+          "feedback": {
+            "met": "A entrada ocorre depois do vencimento informado.",
+            "not_yet": "Confira a ordem antes de comparar o total mensal."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Which receipt is usable today?",
+          "scene": "One transfer is marked completed and usable. Another is only scheduled.",
+          "options": [
+            {
+              "label": "The scheduled one"
+            },
+            {
+              "label": "The completed one"
+            },
+            {
+              "label": "Both automatically"
+            }
+          ],
+          "help": [
+            "Check whether the money is actually available."
+          ],
+          "feedback": {
+            "met": "A scheduled instruction is not a completed receipt.",
+            "not_yet": "Check whether the money is actually available."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entrada puedes usar hoy?",
+          "scene": "Una transferencia figura completada y disponible. Otra solo está programada.",
+          "options": [
+            {
+              "label": "La programada"
+            },
+            {
+              "label": "La completada"
+            },
+            {
+              "label": "Ambas automáticamente"
+            }
+          ],
+          "help": [
+            "Comprueba si el dinero realmente está disponible."
+          ],
+          "feedback": {
+            "met": "Una instrucción programada no es una entrada realizada.",
+            "not_yet": "Comprueba si el dinero realmente está disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual entrada pode usar hoje?",
+          "scene": "Uma transferência consta como concluída e disponível. Outra só está agendada.",
+          "options": [
+            {
+              "label": "A agendada"
+            },
+            {
+              "label": "A concluída"
+            },
+            {
+              "label": "As duas automaticamente"
+            }
+          ],
+          "help": [
+            "Confira se o dinheiro está realmente disponível."
+          ],
+          "feedback": {
+            "met": "Uma instrução agendada não é uma entrada concluída.",
+            "not_yet": "Confira se o dinheiro está realmente disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "What funds a purchase today?",
+          "scene": "You have no usable money; a buyer promises payment after delivery.",
+          "options": [
+            {
+              "label": "The buyer promise"
+            },
+            {
+              "label": "The agreed selling price"
+            },
+            {
+              "label": "No received payment yet"
+            }
+          ],
+          "help": [
+            "Separate agreement, delivery and completed payment."
+          ],
+          "feedback": {
+            "met": "An agreed sale does not mean its payment has arrived.",
+            "not_yet": "Separate agreement, delivery and completed payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respalda una compra hoy?",
+          "scene": "No tienes dinero disponible. Un comprador promete pagar tras la entrega, pero aún no paga.",
+          "options": [
+            {
+              "label": "La promesa del comprador"
+            },
+            {
+              "label": "El precio de venta acordado"
+            },
+            {
+              "label": "Todavía no hay pago recibido"
+            }
+          ],
+          "help": [
+            "Separa acuerdo, entrega y pago realizado."
+          ],
+          "feedback": {
+            "met": "Una venta acordada no significa que el pago haya llegado.",
+            "not_yet": "Separa acuerdo, entrega y pago realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sustenta uma compra hoje?",
+          "scene": "Você não tem dinheiro disponível. Um comprador promete pagar após a entrega, mas ainda não pagou.",
+          "options": [
+            {
+              "label": "A promessa do comprador"
+            },
+            {
+              "label": "O preço de venda combinado"
+            },
+            {
+              "label": "Ainda não há pagamento recebido"
+            }
+          ],
+          "help": [
+            "Separe acordo, entrega e pagamento realizado."
+          ],
+          "feedback": {
+            "met": "Uma venda combinada não significa que o pagamento chegou.",
+            "not_yet": "Separe acordo, entrega e pagamento realizado."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "draft; not accepted or released",
+  "authoring": "direct agent, no paid generation",
+  "baseline": "No forced graded pretest. No pre/post learning gain is claimed.",
+  "duration": "3–5 minute design target; unmeasured",
+  "lessons": [
+    {
+      "lesson_id": "fe-recovery-adult-01-money-moves",
+      "objective": "Classify a described completed payment as money entering, leaving, or not moving for the named person.",
+      "prerequisites": [],
+      "misconception": "Confusing the payer with the recipient, or treating a price as a completed payment.",
+      "exercises": 6,
+      "status": "authored; not accepted; not published"
+    },
+    {
+      "lesson_id": "fe-recovery-adult-02-received-not-promised",
+      "objective": "Decide whether a described inflow can be counted as money available today.",
+      "prerequisites": [
+        "fe-recovery-adult-01-money-moves"
+      ],
+      "misconception": "Counting promised income or an approved but unpaid refund as money available now.",
+      "exercises": 6,
+      "status": "authored; not accepted; not published"
+    },
+    {
+      "lesson_id": "fe-recovery-adult-03-protect-committed-money",
+      "objective": "Given available money and one committed expense, decide whether a proposed purchase preserves that expense.",
+      "prerequisites": [
+        "fe-recovery-adult-01-money-moves",
+        "fe-recovery-adult-02-received-not-promised"
+      ],
+      "misconception": "Treating the account balance as entirely free to spend.",
+      "arithmetic_support": "The pilot shows a worked subtraction but does not teach subtraction from zero. Check numeracy separately; add a supported arithmetic bridge before release for learners who cannot perform the operation.",
+      "exercises": 6,
+      "status": "authored; not accepted; not published"
+    }
+  ]
+}

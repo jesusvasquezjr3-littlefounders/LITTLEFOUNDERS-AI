@@ -1,0 +1,905 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-1",
+  "lesson_id": "fe-production-credit-mechanics-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a payment’s interest component from its principal reduction.",
+  "title": {
+    "en-US": "Payment allocation",
+    "es-MX": "A dónde va el pago",
+    "pt-BR": "Para onde vai a parcela"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Where the payment goes\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"A dónde va el pago\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Para onde vai a parcela\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.04",
+      "observable_action": "Separate a payment’s interest component from its principal reduction.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.03",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Paying money does not always reduce the borrowed amount by that much.",
+    "misconception": "Every part of a payment reduces principal even when interest or fees consume part of it.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-example-01",
+        "supports_from": [],
+        "reasoning": "A payment of 30 covers interest of 8 first. The remaining 22 reduces principal; interest does not reduce principal."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Subtract the interest from the payment to find principal reduction."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Interest consumes the whole payment, leaving no principal reduction."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Only the amount left after interest reduces principal."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-practice-04",
+        "supports_from": [],
+        "reasoning": "Both stated charges must be paid before principal reduction."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-practice-05",
+        "supports_from": [],
+        "reasoning": "With no charges, the whole payment reduces principal."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.04",
+        "context_id": "fe-production-credit-mechanics-04-transfer-06",
+        "supports_from": [],
+        "reasoning": "Add the extra principal payment after separating regular-payment interest."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Paying money does not always reduce the borrowed amount by that much."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Pagar no siempre reduce en esa misma cantidad lo que pediste prestado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pagar nem sempre reduz nessa mesma quantia o que você tomou emprestado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A payment of 30 covers interest of 8 first. The remaining 22 reduces principal; interest does not reduce principal."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Un pago de 30 cubre primero 8 de interés. Los 22 restantes reducen capital; el interés no reduce capital."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Uma parcela de 30 cobre primeiro 8 de juros. Os 22 restantes reduzem o principal; juros não reduzem principal."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Principal reduction?",
+          "scene": "Payment 40; interest 10; no fees. The remainder reduces principal.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "The interest part pays a charge, not borrowed principal."
+          ],
+          "feedback": {
+            "met": "Subtract the interest from the payment to find principal reduction.",
+            "not_yet": "The interest part pays a charge, not borrowed principal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reducción de capital?",
+          "scene": "Pago 40; interés 10; sin comisiones. El resto reduce capital.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "La parte de interés paga un cargo, no capital prestado."
+          ],
+          "feedback": {
+            "met": "Resta el interés al pago para hallar la reducción de capital.",
+            "not_yet": "La parte de interés paga un cargo, no capital prestado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Redução do principal?",
+          "scene": "Parcela 40; juros 10; sem tarifas. O restante reduz o principal.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "A parte dos juros paga um encargo, não o principal."
+          ],
+          "feedback": {
+            "met": "Subtraia os juros da parcela para achar a redução do principal.",
+            "not_yet": "A parte dos juros paga um encargo, não o principal."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Principal reduction?",
+          "scene": "Payment 25; interest 25; no fees. Only any remainder reduces principal.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtract the full interest charge before crediting principal."
+          ],
+          "feedback": {
+            "met": "Interest consumes the whole payment, leaving no principal reduction.",
+            "not_yet": "Subtract the full interest charge before crediting principal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reducción de capital?",
+          "scene": "Pago 25; interés 25; sin comisiones. Solo el sobrante reduce capital.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Resta todo el interés antes de abonar al capital."
+          ],
+          "feedback": {
+            "met": "El interés consume todo el pago; no se reduce capital.",
+            "not_yet": "Resta todo el interés antes de abonar al capital."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Redução do principal?",
+          "scene": "Parcela 25; juros 25; sem tarifas. Só a sobra reduz o principal.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtraia todos os juros antes de abater o principal."
+          ],
+          "feedback": {
+            "met": "Os juros consomem toda a parcela; o principal não diminui.",
+            "not_yet": "Subtraia todos os juros antes de abater o principal."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Principal reduction?",
+          "scene": "Payment 60 pays interest 15 first. No other charges.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Separate payment size from its principal component."
+          ],
+          "feedback": {
+            "met": "Only the amount left after interest reduces principal.",
+            "not_yet": "Separate payment size from its principal component."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reducción de capital?",
+          "scene": "Pago 60; cubre primero interés 15. Sin otros cargos.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Distingue el tamaño del pago de su parte de capital."
+          ],
+          "feedback": {
+            "met": "Solo lo que queda después del interés reduce capital.",
+            "not_yet": "Distingue el tamaño del pago de su parte de capital."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Redução do principal?",
+          "scene": "Parcela 60; cobre primeiro juros 15. Sem outros encargos.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Separe o tamanho da parcela da parte que abate principal."
+          ],
+          "feedback": {
+            "met": "Só o que sobra após os juros reduz o principal.",
+            "not_yet": "Separe o tamanho da parcela da parte que abate principal."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          15
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Principal reduction?",
+          "scene": "Payment 50 covers interest 12 and fee 3 first.",
+          "options": [
+            {
+              "label": "35"
+            },
+            {
+              "label": "38"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Remove interest and the fee from the payment."
+          ],
+          "feedback": {
+            "met": "Both stated charges must be paid before principal reduction.",
+            "not_yet": "Remove interest and the fee from the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reducción de capital?",
+          "scene": "Pago 50; cubre primero interés 12 y comisión 3.",
+          "options": [
+            {
+              "label": "35"
+            },
+            {
+              "label": "38"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Resta interés y comisión del pago."
+          ],
+          "feedback": {
+            "met": "Ambos cargos se pagan antes de reducir capital.",
+            "not_yet": "Resta interés y comisión del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Redução do principal?",
+          "scene": "Parcela 50; cobre primeiro juros 12 e tarifa 3.",
+          "options": [
+            {
+              "label": "35"
+            },
+            {
+              "label": "38"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtraia juros e tarifa da parcela."
+          ],
+          "feedback": {
+            "met": "Ambos os encargos são pagos antes de reduzir o principal.",
+            "not_yet": "Subtraia juros e tarifa da parcela."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          12,
+          3
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Principal reduction?",
+          "scene": "Payment 18. Interest 0. No fees; all remaining payment reduces principal.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Use the stated charges rather than assuming interest always exists."
+          ],
+          "feedback": {
+            "met": "With no charges, the whole payment reduces principal.",
+            "not_yet": "Use the stated charges rather than assuming interest always exists."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reducción de capital?",
+          "scene": "Pago 18. Interés 0. Sin comisiones; todo el resto reduce capital.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Usa los cargos indicados; no supongas que siempre hay interés."
+          ],
+          "feedback": {
+            "met": "Sin cargos, todo el pago reduce capital.",
+            "not_yet": "Usa los cargos indicados; no supongas que siempre hay interés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Redução do principal?",
+          "scene": "Parcela 18. Juros 0. Sem tarifas; todo o restante reduz o principal.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Use os encargos indicados; não suponha que sempre há juros."
+          ],
+          "feedback": {
+            "met": "Sem encargos, toda a parcela reduz o principal.",
+            "not_yet": "Use os encargos indicados; não suponha que sempre há juros."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          18,
+          0
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Total principal reduction?",
+          "scene": "Regular payment 30 includes interest 8. Extra payment 12 goes entirely to principal; no fees.",
+          "options": [
+            {
+              "label": "22"
+            },
+            {
+              "label": "34"
+            },
+            {
+              "label": "42"
+            }
+          ],
+          "help": [
+            "Only the regular payment contains interest in this scenario."
+          ],
+          "feedback": {
+            "met": "Add the extra principal payment after separating regular-payment interest.",
+            "not_yet": "Only the regular payment contains interest in this scenario."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reducción total de capital?",
+          "scene": "Pago regular 30 incluye interés 8. Pago extra 12 va íntegro al capital; sin comisiones.",
+          "options": [
+            {
+              "label": "22"
+            },
+            {
+              "label": "34"
+            },
+            {
+              "label": "42"
+            }
+          ],
+          "help": [
+            "Solo el pago regular contiene interés en esta situación."
+          ],
+          "feedback": {
+            "met": "Añade el pago extra tras separar el interés del regular.",
+            "not_yet": "Solo el pago regular contiene interés en esta situación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Redução total do principal?",
+          "scene": "Parcela regular 30 inclui juros 8. Pagamento extra 12 abate só principal; sem tarifas.",
+          "options": [
+            {
+              "label": "22"
+            },
+            {
+              "label": "34"
+            },
+            {
+              "label": "42"
+            }
+          ],
+          "help": [
+            "Só a parcela regular contém juros nesta situação."
+          ],
+          "feedback": {
+            "met": "Some o pagamento extra após separar os juros da parcela.",
+            "not_yet": "Só a parcela regular contém juros nesta situação."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          8,
+          12
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -184,7 +184,8 @@ export interface TopicRow {
   slug: string;
   title: Localized;
   learning_objective: Localized;
-  kind: 'teaching';
+  kind: 'teaching' | 'review_spaced' | 'review_interleaved' | 'review_quest';
+  review_of?: string[];
   status: 'draft';
 }
 export interface LessonRow { id: string; topic_id: string; position: number; slug: string; title: Localized; status: 'review' }
@@ -216,11 +217,13 @@ export function ageTierFor(stage: PathwayStage, minimumAge: number): AgeTier {
   return 'tier4';
 }
 
-export function buildHierarchy(input: { structure: V2Structure; plans: readonly V2LessonPlan[]; kcs: Readonly<Record<string, KcInfo>> }): Hierarchy {
+export function buildHierarchy(input: { structure: V2Structure; plans: readonly V2LessonPlan[]; kcs: Readonly<Record<string, KcInfo>>; metadata?: CourseMetadata }): Hierarchy {
   const { structure, plans, kcs } = input;
   const problems: string[] = [];
   const course = structure.course_id;
-  const meta = COURSE_METADATA[course];
+  const meta = input.metadata ?? COURSE_METADATA[course];
+  const instructional = plans.some(plan => plan.instruction);
+  const teachingPaths = new Map(plans.filter(plan => plan.instruction?.kind === 'teach').map(plan => [plan.instruction!.objective.skill_id, `${plan.chapter_id}/${plan.chapter_id}/${plan.lesson_id}`]));
   if (!meta) problems.push(`no course metadata for "${course}" in COURSE_METADATA; add it before generating a course row`);
 
   const planById = new Map<string, V2LessonPlan>();
@@ -273,14 +276,17 @@ export function buildHierarchy(input: { structure: V2Structure; plans: readonly 
         ids[slug] = lessonId;
         rows.topics.push({
           id: topicId, saga_id: sagaId, position: index + 1, slug, title: plan.title,
-          learning_objective: primary ? primary.objective : plan.title, kind: 'teaching', status: 'draft',
+          learning_objective: primary ? primary.objective : plan.title,
+          kind: plan.instruction?.kind === 'capstone' ? 'review_quest' : plan.instruction?.kind === 'consolidate' ? 'review_interleaved' : 'teaching', status: 'draft',
+          ...(instructional ? { review_of: [...new Set((plan.instruction?.retrieval_skills ?? []).flatMap(skill => teachingPaths.get(skill) ? [teachingPaths.get(skill)!] : []))] } : {}),
         });
         rows.lessons.push({ id: lessonId, topic_id: topicId, position: 1, slug, title: plan.title, status: 'review' });
         keys.forEach((key, position) => {
           const isPrimary = position === 0;
+          const reviewOnly = plan.instruction?.kind === 'consolidate' || plan.instruction?.kind === 'capstone';
           rows.topic_knowledge_components.push({
-            topic_id: topicId, kc_key: key, role: isPrimary || plan.new_concepts.includes(key) ? 'teaches' : 'reviews',
-            is_primary: isPrimary, map_version: KC_MAP_VERSION,
+            topic_id: topicId, kc_key: key, role: !reviewOnly && (isPrimary || plan.new_concepts.includes(key)) ? 'teaches' : 'reviews',
+            is_primary: isPrimary && !reviewOnly, map_version: KC_MAP_VERSION,
           });
         });
       });

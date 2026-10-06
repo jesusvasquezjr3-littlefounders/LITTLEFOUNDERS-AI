@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-1",
+  "lesson_id": "fe-production-credit-products-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Read a fictional card statement’s balance, minimum payment and due date.",
+  "title": {
+    "en-US": "Statement Fields",
+    "es-MX": "Lee estado de tarjeta",
+    "pt-BR": "Leia extrato do cartão"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Statement Fields\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee estado de tarjeta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia extrato do cartão\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.01",
+      "observable_action": "Read a fictional card statement’s balance, minimum payment and due date.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04",
+      "prod.credit-mechanics.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A statement separates the cycle balance, minimum due and payment deadline; each field answers a different payment question.",
+    "misconception": "The minimum due equals the whole debt or the statement balance is available owned money.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-example-01",
+        "supports_from": [],
+        "reasoning": "Balance shows the stated debt; minimum shows the required floor; due date shows the payment deadline. Read their labels separately."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The labeled balance states the cycle debt."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The minimum is the stated floor for the due payment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-practice-01",
+        "supports_from": [],
+        "reasoning": "The payment due field specifies the deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-practice-02",
+        "supports_from": [],
+        "reasoning": "A payment smaller than the balance leaves debt unpaid."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Debt and unused borrowing capacity are not owned cash."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The summary preserves each labeled amount and the deadline."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A statement separates the cycle balance, minimum due and payment deadline; each field answers a different payment question."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Estado separa saldo del periodo, mínimo y fecha de pago; cada dato responde una pregunta distinta."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Extrato separa saldo do período, mínimo e data de pagamento; cada dado responde uma pergunta distinta."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three fields, three meanings",
+          "line": "Balance shows the stated debt; minimum shows the required floor; due date shows the payment deadline. Read their labels separately."
+        },
+        "es-MX": {
+          "prompt": "Tres datos, tres significados",
+          "line": "Saldo muestra deuda indicada; mínimo muestra piso exigido; fecha de pago muestra límite. Lee sus etiquetas por separado."
+        },
+        "pt-BR": {
+          "prompt": "Três dados, três sentidos",
+          "line": "Saldo mostra dívida dada; mínimo mostra piso exigido; vencimento mostra prazo. Leia seus nomes em separado."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which field gives the cycle debt?",
+          "scene": "Fictional statement: balance 600; minimum 30; payment due June 18.",
+          "options": [
+            {
+              "label": "Balance 600"
+            },
+            {
+              "label": "June 18"
+            },
+            {
+              "label": "Minimum 30"
+            }
+          ],
+          "help": [
+            "Read the label rather than choosing the smallest number."
+          ],
+          "feedback": {
+            "met": "The labeled balance states the cycle debt.",
+            "not_yet": "Read the label rather than choosing the smallest number."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato da deuda del periodo?",
+          "scene": "Estado ficticio: saldo 600; mínimo 30; pago vence 18 de junio.",
+          "options": [
+            {
+              "label": "Saldo 600"
+            },
+            {
+              "label": "18 de junio"
+            },
+            {
+              "label": "Mínimo 30"
+            }
+          ],
+          "help": [
+            "Lee etiqueta sin elegir cifra más pequeña."
+          ],
+          "feedback": {
+            "met": "Saldo etiquetado indica deuda del periodo.",
+            "not_yet": "Lee etiqueta sin elegir cifra más pequeña."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dado mostra dívida do período?",
+          "scene": "Extrato fictício: saldo 600; mínimo 30; pagamento vence 18 de junho.",
+          "options": [
+            {
+              "label": "Saldo 600"
+            },
+            {
+              "label": "18 de junho"
+            },
+            {
+              "label": "Mínimo 30"
+            }
+          ],
+          "help": [
+            "Leia nome sem escolher menor valor."
+          ],
+          "feedback": {
+            "met": "Saldo nomeado indica dívida do período.",
+            "not_yet": "Leia nome sem escolher menor valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which field gives the required floor?",
+          "scene": "Fictional statement: balance 600; minimum 30; payment due June 18.",
+          "options": [
+            {
+              "label": "Minimum 30"
+            },
+            {
+              "label": "June 18"
+            },
+            {
+              "label": "Balance 600"
+            }
+          ],
+          "help": [
+            "A required minimum is not the full balance."
+          ],
+          "feedback": {
+            "met": "The minimum is the stated floor for the due payment.",
+            "not_yet": "A required minimum is not the full balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato da piso exigido?",
+          "scene": "Estado ficticio: saldo 600; mínimo 30; pago vence 18 de junio.",
+          "options": [
+            {
+              "label": "Mínimo 30"
+            },
+            {
+              "label": "18 de junio"
+            },
+            {
+              "label": "Saldo 600"
+            }
+          ],
+          "help": [
+            "Mínimo exigido no es saldo completo."
+          ],
+          "feedback": {
+            "met": "Mínimo es piso indicado del pago exigido.",
+            "not_yet": "Mínimo exigido no es saldo completo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dado mostra piso exigido?",
+          "scene": "Extrato fictício: saldo 600; mínimo 30; pagamento vence 18 de junho.",
+          "options": [
+            {
+              "label": "Mínimo 30"
+            },
+            {
+              "label": "18 de junho"
+            },
+            {
+              "label": "Saldo 600"
+            }
+          ],
+          "help": [
+            "Mínimo exigido não é saldo completo."
+          ],
+          "feedback": {
+            "met": "Mínimo é piso dado do pagamento exigido.",
+            "not_yet": "Mínimo exigido não é saldo completo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "When is this payment due?",
+          "scene": "Fictional statement: closes July 2; payment due July 24.",
+          "options": [
+            {
+              "label": "July 24"
+            },
+            {
+              "label": "Any day in July"
+            },
+            {
+              "label": "July 2"
+            }
+          ],
+          "help": [
+            "Do not substitute another date on the statement."
+          ],
+          "feedback": {
+            "met": "The payment due field specifies the deadline.",
+            "not_yet": "Do not substitute another date on the statement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo vence este pago?",
+          "scene": "Estado ficticio: corte 2 de julio; pago vence 24 de julio.",
+          "options": [
+            {
+              "label": "24 de julio"
+            },
+            {
+              "label": "Cualquier día de julio"
+            },
+            {
+              "label": "2 de julio"
+            }
+          ],
+          "help": [
+            "No sustituyas por otra fecha del estado."
+          ],
+          "feedback": {
+            "met": "Dato de vencimiento indica fecha límite.",
+            "not_yet": "No sustituyas por otra fecha del estado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando vence este pagamento?",
+          "scene": "Extrato fictício: fecha 2 de julho; pagamento vence 24 de julho.",
+          "options": [
+            {
+              "label": "24 de julho"
+            },
+            {
+              "label": "Qualquer dia de julho"
+            },
+            {
+              "label": "2 de julho"
+            }
+          ],
+          "help": [
+            "Não troque por outra data do extrato."
+          ],
+          "feedback": {
+            "met": "Dado de vencimento indica prazo.",
+            "not_yet": "Não troque por outra data do extrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does paying the minimum clear this balance?",
+          "scene": "Fictional statement balance exceeds its minimum; no other payment or credit occurs.",
+          "options": [
+            {
+              "label": "Yes, due date clears it"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, minimum means all debt"
+            }
+          ],
+          "help": [
+            "Compare the payment with the actual balance."
+          ],
+          "feedback": {
+            "met": "A payment smaller than the balance leaves debt unpaid.",
+            "not_yet": "Compare the payment with the actual balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pagar mínimo liquida este saldo?",
+          "scene": "Saldo ficticio supera mínimo; no hay otro pago ni abono.",
+          "options": [
+            {
+              "label": "Sí, fecha borra deuda"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, mínimo significa toda deuda"
+            }
+          ],
+          "help": [
+            "Compara pago con saldo real."
+          ],
+          "feedback": {
+            "met": "Pago menor al saldo deja deuda sin pagar.",
+            "not_yet": "Compara pago con saldo real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagar mínimo quita este saldo?",
+          "scene": "Saldo fictício supera mínimo; não há outro pagamento nem crédito.",
+          "options": [
+            {
+              "label": "Sim, data apaga dívida"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, mínimo significa toda dívida"
+            }
+          ],
+          "help": [
+            "Compare pagamento com saldo real."
+          ],
+          "feedback": {
+            "met": "Pagamento menor que saldo deixa dívida sem pagar.",
+            "not_yet": "Compare pagamento com saldo real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which figure is owned cash here?",
+          "scene": "Card statement shows debt balance and unused credit; no deposit-account money is shown.",
+          "options": [
+            {
+              "label": "Neither card figure"
+            },
+            {
+              "label": "Unused credit automatically"
+            },
+            {
+              "label": "The debt balance"
+            }
+          ],
+          "help": [
+            "Identify what each displayed amount actually represents."
+          ],
+          "feedback": {
+            "met": "Debt and unused borrowing capacity are not owned cash.",
+            "not_yet": "Identify what each displayed amount actually represents."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cifra es efectivo propio aquí?",
+          "scene": "Estado de tarjeta muestra deuda y crédito sin usar; no muestra dinero de cuenta de depósito.",
+          "options": [
+            {
+              "label": "Ninguna cifra de tarjeta"
+            },
+            {
+              "label": "Crédito sin usar automáticamente"
+            },
+            {
+              "label": "Saldo de deuda"
+            }
+          ],
+          "help": [
+            "Identifica qué representa cada monto mostrado."
+          ],
+          "feedback": {
+            "met": "Deuda y capacidad de préstamo no son efectivo propio.",
+            "not_yet": "Identifica qué representa cada monto mostrado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que valor é dinheiro próprio aqui?",
+          "scene": "Extrato do cartão mostra dívida e crédito sem uso; não mostra dinheiro de conta de depósito.",
+          "options": [
+            {
+              "label": "Nenhum valor do cartão"
+            },
+            {
+              "label": "Crédito sem uso automaticamente"
+            },
+            {
+              "label": "Saldo de dívida"
+            }
+          ],
+          "help": [
+            "Identifique o que representa cada valor mostrado."
+          ],
+          "feedback": {
+            "met": "Dívida e capacidade de empréstimo não são dinheiro próprio.",
+            "not_yet": "Identifique o que representa cada valor mostrado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which summary matches this statement?",
+          "scene": "Fictional statement: balance 900; minimum 45; due August 9.",
+          "options": [
+            {
+              "label": "Debt 900; floor 45; due August 9"
+            },
+            {
+              "label": "Debt 45; due anytime"
+            },
+            {
+              "label": "Owned cash 900; no payment"
+            }
+          ],
+          "help": [
+            "Read balance, minimum and due date without swapping their roles."
+          ],
+          "feedback": {
+            "met": "The summary preserves each labeled amount and the deadline.",
+            "not_yet": "Read balance, minimum and due date without swapping their roles."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué resumen coincide con estado?",
+          "scene": "Estado ficticio: saldo 900; mínimo 45; vence 9 de agosto.",
+          "options": [
+            {
+              "label": "Deuda 900; piso 45; vence 9 de agosto"
+            },
+            {
+              "label": "Deuda 45; vence cuando sea"
+            },
+            {
+              "label": "Efectivo propio 900; sin pago"
+            }
+          ],
+          "help": [
+            "Lee saldo, mínimo y vencimiento sin cambiar sus funciones."
+          ],
+          "feedback": {
+            "met": "Resumen conserva cada monto etiquetado y fecha límite.",
+            "not_yet": "Lee saldo, mínimo y vencimiento sin cambiar sus funciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que resumo coincide com extrato?",
+          "scene": "Extrato fictício: saldo 900; mínimo 45; vence 9 de agosto.",
+          "options": [
+            {
+              "label": "Dívida 900; piso 45; vence 9 de agosto"
+            },
+            {
+              "label": "Dívida 45; vence quando quiser"
+            },
+            {
+              "label": "Dinheiro próprio 900; sem pagamento"
+            }
+          ],
+          "help": [
+            "Leia saldo, mínimo e vencimento sem trocar suas funções."
+          ],
+          "feedback": {
+            "met": "Resumo preserva cada valor nomeado e prazo.",
+            "not_yet": "Leia saldo, mínimo e vencimento sem trocar suas funções."
+          }
+        }
+      }
+    }
+  ]
+}

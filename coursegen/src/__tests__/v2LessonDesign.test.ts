@@ -135,6 +135,16 @@ describe('v2 writing skills', () => {
     expect(prompt).not.toContain('role pre:');
   });
 
+  it('treats adult beginners as novices without imposing a child narrative', () => {
+    const adult = { ...withRoles, age_band: 'adult' as const, eligibility: { minimum_age: 18, maximum_age: 119 } };
+    const prompt = writingSkillsPrompt(adult).join('\n');
+    expect(prompt).toContain('Adult age does not imply knowledge of payslips');
+    expect(prompt).toContain('same explicit teaching support as any novice');
+    expect(prompt).toContain('without requiring a fictional cast');
+    expect(prompt).not.toContain('one example, then straight to their own numbers');
+    expect(prompt).not.toContain('role practice: reaffirm only. The move just shown and practised, a fresh instance, no new idea. `met` names the action the child');
+  });
+
   it('gives every Mentor a distinct voice and the market styles differ', () => {
     const voices = Object.values(MENTOR_VOICES).map((entry) => entry.teachesBy);
     expect(new Set(voices).size).toBe(4);

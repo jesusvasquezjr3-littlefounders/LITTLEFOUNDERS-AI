@@ -27,7 +27,9 @@ import { horizonteGuidanceFor } from './horizonte/index.js';
 import { emitV2Lesson } from './emit.js';
 import { v2LessonPlanSchema, type V2LessonPlan } from './plan.js';
 import { writingSkillsPrompt } from './writingSkills.js';
+import { SHARED_INSTRUCTIONAL_RULES } from './instructionalContract.js';
 import type { GateNumber } from '../pipeline/gates.js';
+import type { CourseBlueprint } from './courseBlueprint.js';
 
 export type V2Responder = (request: ChatCompleteRequest, options: CompleteOptions) => Promise<ChatCompleteResult>;
 
@@ -58,26 +60,42 @@ const authoredSchema = z.object({
   copy: z.record(z.string(), z.object({ 'en-US': z.unknown(), 'es-MX': z.unknown(), 'pt-BR': z.unknown() }).strict()),
 }).strict();
 
-export function authoringMessages(skeleton: V2Skeleton, problems: string[] = []): ChatCompleteRequest['messages'] {
+export function authoringCourseContext(course: CourseBlueprint, lessonId: string) {
+  const lesson = course.lessons.find(item => item.lesson_id === lessonId);
+  const skill = course.skills.find(item => item.id === lesson?.primary_skill);
+  const relevant = new Set([lesson?.primary_skill, ...skill?.prerequisites ?? [], ...lesson?.retrieve_skills ?? []]);
+  return { publicationIntent: course.publication_intent ?? 'unclassified', scope: course.scope, excludedScope: course.excluded_scope, sources: course.sources,
+    unit: course.units.find(unit => unit.id === lesson?.unit_id),
+    skills: course.skills.filter(item => relevant.has(item.id)),
+    lesson, laterRetrieval: course.lessons.filter(item => item.retrieve_skills.includes(lesson?.primary_skill ?? '')).map(item => item.lesson_id),
+  };
+}
+export type AuthoringCourseContext = ReturnType<typeof authoringCourseContext>;
+
+export function authoringMessages(skeleton: V2Skeleton, problems: string[] = [], courseContext?: AuthoringCourseContext): ChatCompleteRequest['messages'] {
   const shape = {
     title: skeleton.title,
     copy: Object.fromEntries(skeleton.segments.map((segment) => [segment.id, segment.copy])),
   };
   const kinds = skeleton.segments.map((segment) => `${segment.id}: ${segment.type} (${segment.teaching_role ? `${segment.teaching_role}, ` : ''}${segment.grading === 'server' ? 'graded on Core' : 'explored'})`).join('; ');
   const system = [
-    'You author learner-visible copy for one LittleFounders financial-literacy lesson in the v2 lesson format.',
+    'You author learner-visible copy for one LittleFounders lesson in the v2 format. Follow the declared course scope and instructional objective; do not invent prerequisites or change subjects.',
     `Audience: ages ${skeleton.eligibility.minimum_age}-${skeleton.eligibility.maximum_age} (pathway ${skeleton.age_band}). Author in Mexican Spanish (es-MX) first, then adapt, never literally translate, into US English (en-US) and Brazilian Portuguese (pt-BR).`,
-    'Fill EVERY empty string in the JSON shape you are given and nothing else: same keys, same array lengths, no new fields. Numbers, ids and rubrics are fixed by the skeleton and are never written in the copy.',
+    'Fill EVERY empty string in the JSON shape you are given and nothing else: same keys, same array lengths, no new fields. Structural numbers, ids and rubrics are fixed. Explain the visible inputs accurately, with their stated units; never invent new inputs or expose private answer keys in a prompt, example attached to that assessment, or hint.',
     'Never state or hint the answer of a graded segment in its prompt. Prompts are one or two short sentences; option labels are a few words; Mentor lines are at most two short sentences.',
-    'Law 2 tone: speak like a mentor, never like a bank; no hype, urgency, shame, loss or "lives". The in-app currency is coins.',
+    'Law 2 tone: speak like a mentor, never like a bank; no hype, fabricated urgency, shame or "lives". Explain real financial losses calmly. Use local currency when the payload says local; use coins only when explicitly specified.',
     ...writingSkillsPrompt(skeleton),
+    ...SHARED_INSTRUCTIONAL_RULES,
     glossaryPromptLines('es-MX'), glossaryPromptLines('en-US'), glossaryPromptLines('pt-BR'),
     ...horizonteGuidanceFor(skeleton.segments.map((segment) => segment.type)),
     'Output ONLY the JSON object {"title": {...}, "copy": {...}} with every string filled.',
   ].join('\n');
   const user = [
-    `Lesson brief (es-MX): ${skeleton.brief}`,
+    `Lesson brief: ${skeleton.brief}`,
+    ...(courseContext ? [`Curriculum context: ${JSON.stringify(courseContext)}`] : []),
+    ...(skeleton.instruction ? [`Instructional contract (preserve the objective and teach every listed skill): ${JSON.stringify(skeleton.instruction)}`] : []),
     `Segments: ${kinds}.`,
+    `Exercise facts for the author only (private rubrics must never appear in learner copy): ${JSON.stringify(skeleton.segments.map(segment => ({ id: segment.id, type: segment.type, visual: segment.visual, payload: segment.payload, rubric: segment.rubric, rubric_by_locale: segment.rubric_by_locale, numeric_proof: segment.numeric_proof, notation: segment.notation })))}`,
     `Shape to fill: ${JSON.stringify(shape)}`,
     ...(problems.length ? [`Your previous draft was blocked by the content gates; fix exactly these problems: ${problems.slice(0, 12).join(' | ')}`] : []),
   ].join('\n');
@@ -135,13 +153,13 @@ export function firstSubmissionOf(outcome: { unparseable: true } | { unparseable
  * DeepSeek chokepoint under a ledger, or the fixture responder) and the spend
  * ceiling refusal.
  */
-export async function authorV2Plan(skeleton: V2Skeleton, responder: V2Responder, options: CompleteOptions & { maxRounds?: number }): Promise<V2AuthorResult> {
+export async function authorV2Plan(skeleton: V2Skeleton, responder: V2Responder, options: CompleteOptions & { maxRounds?: number; courseContext?: AuthoringCourseContext }): Promise<V2AuthorResult> {
   const rounds = options.maxRounds ?? 3;
   let problems: string[] = [];
   // Recorded once, from round 1 only: a corrective round is not a first submission.
   let firstSubmission: V2FirstSubmission[] = [];
   for (let attempt = 1; attempt <= rounds; attempt += 1) {
-    const reply = await responder({ messages: authoringMessages(skeleton, problems), temperature: 0.4, jsonMode: true }, { operation: 'v2-author', ledger: options.ledger });
+    const reply = await responder({ messages: authoringMessages(skeleton, problems, options.courseContext), temperature: 0.4, jsonMode: true }, { operation: 'v2-author', ledger: options.ledger });
     const merged = mergeAuthoredCopy(skeleton, reply.content);
     if (!merged.plan) {
       if (attempt === 1) firstSubmission = firstSubmissionOf({ unparseable: true });

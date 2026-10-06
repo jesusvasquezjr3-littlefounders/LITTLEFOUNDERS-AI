@@ -30,10 +30,14 @@ import { UsageLedger } from '../providers/usage.js';
 import { spendCeilingRefusal } from '../pipeline/spendGuard.js';
 import { getConfig } from '../env.js';
 import { GateSubmissionLog, formatFirstSubmissionPassRates } from '../pipeline/gateSubmissionLog.js';
-import { authorV2Plan, fixtureResponder, skeletonOf, type V2FirstSubmission, type V2Responder } from './author.js';
+import { authorV2Plan, authoringCourseContext, fixtureResponder, skeletonOf, type AuthoringCourseContext, type V2FirstSubmission, type V2Responder } from './author.js';
 import { applyLessonIds, HierarchyError, parseLessonIds } from './hierarchy.js';
 import { loadV2Plans, v2LessonPlanSchema } from './plan.js';
 import { releaseV2Lessons } from './release.js';
+import { courseBlueprintSchema, checkCourseBlueprint } from './courseBlueprint.js';
+import { checkInstructionalContract } from './instructionalContract.js';
+import { loadCourseReleaseSource } from './courseReleaseSource.js';
+import { verifyV2Course } from './verifyCourse.js';
 
 export type Args = Record<string, string | true>;
 export function parse(argv: string[]): Args {
@@ -73,6 +77,21 @@ export async function author(args: Args, responderOverride?: V2Responder): Promi
   if (refusal) { console.error(refusal.replace('generate:', 'v2:author:')); return 2; }
   if (typeof args.skeleton !== 'string' || typeof args.out !== 'string') { console.error('v2:author: --skeleton <plan.json> and --out <plan.json> are required'); return 2; }
   const source = v2LessonPlanSchema.parse(JSON.parse(readFileSync(path.resolve(args.skeleton), 'utf8')));
+  let courseContext: AuthoringCourseContext | undefined;
+  if (!dryRun) {
+    const problems = checkInstructionalContract(source, true);
+    if (problems.length) { for (const problem of problems) console.error(`v2:author: ${problem.message}`); return 2; }
+    if (typeof args.blueprint !== 'string') { console.error('v2:author: paid authoring requires --blueprint <file> before spending.'); return 2; }
+  }
+  if (typeof args.blueprint === 'string') {
+    const blueprint = courseBlueprintSchema.parse(JSON.parse(readFileSync(path.resolve(args.blueprint), 'utf8')));
+    const graphFile = fileURLToPath(new URL('../../../database/seeds/kc_graph.v1.json', import.meta.url));
+    const graph = JSON.parse(readFileSync(graphFile, 'utf8')) as { kcs: Array<{ key: string }>; edges: string[][] };
+    // Other lessons need not have copy yet; the complete skill graph and this skeleton must already agree.
+    const findings = checkCourseBlueprint(blueprint, [source], new Set(graph.kcs.map(kc => kc.key)), graph.edges).filter(finding => finding.code !== 'missing-plan');
+    if (findings.length) { for (const finding of findings) console.error(`v2:author: ${finding.code}: ${finding.message}`); return 2; }
+    courseContext = authoringCourseContext(blueprint, source.lesson_id);
+  }
   const skeleton = skeletonOf(source);
   const reference = typeof args.reference === 'string' ? v2LessonPlanSchema.parse(JSON.parse(readFileSync(path.resolve(args.reference), 'utf8'))) : source;
   let ledger: UsageLedger | undefined;
@@ -81,7 +100,7 @@ export async function author(args: Args, responderOverride?: V2Responder): Promi
     const config = getConfig();
     await ledger.hydrate({ maxTokens: config.FORGE_MAX_TOKENS_PER_RUN, maxUsd: Math.min(config.FORGE_MAX_USD_PER_RUN, maxUsd!) });
   }
-  const result = await authorV2Plan(skeleton, responderOverride ?? (dryRun ? fixtureResponder(reference) : completeDeepSeek), { operation: 'v2-author', ledger });
+  const result = await authorV2Plan(skeleton, responderOverride ?? (dryRun ? fixtureResponder(reference) : completeDeepSeek), { operation: 'v2-author', ledger, courseContext });
   // Appendix C Part 1.3 (GAP-FIX-R7): the first draft's gates, per market, blocked or not, dry run included. A log failure never fails the stage.
   const runDir = v2AuthorRunDir(args);
   try {
@@ -108,6 +127,23 @@ export async function publish(args: Args): Promise<number> {
   const loaded = loadV2Plans(path.resolve(args.plans));
   const broken = loaded.filter((entry) => entry.errors.length);
   if (broken.length) { for (const entry of broken) console.error(`v2:publish: ${entry.file}: ${entry.errors.join('; ')}`); return 1; }
+  // Check the source curriculum before UUID mapping, environment access or any production request.
+  if (!dryRun && typeof args.blueprint !== 'string') {
+    console.error('v2:publish: live publication requires --blueprint <file>; an isolated set of technically valid lessons is not a verified course.');
+    return 2;
+  }
+  if (typeof args.blueprint === 'string') {
+    const blueprint = courseBlueprintSchema.parse(JSON.parse(readFileSync(path.resolve(args.blueprint), 'utf8')));
+    if (blueprint.course_id !== args.course) { console.error('v2:publish: blueprint course differs from --course'); return 1; }
+    const graphFile = fileURLToPath(new URL('../../../database/seeds/kc_graph.v1.json', import.meta.url));
+    const graph = JSON.parse(readFileSync(graphFile, 'utf8')) as { kcs: Array<{ key: string }>; edges: string[][] };
+    const findings = checkCourseBlueprint(blueprint, loaded.map(entry => entry.plan!), new Set(graph.kcs.map(kc => kc.key)), graph.edges);
+    if (findings.length) { for (const finding of findings) console.error(`v2:publish: ${finding.code}: ${finding.lessonId ?? ''} ${finding.message}`); return 1; }
+  }
+  const releaseSource = typeof args.blueprint === 'string' && typeof args['lesson-ids'] === 'string'
+    ? { blueprint: path.resolve(args.blueprint), plans: path.resolve(args.plans), lessonIds: path.resolve(args['lesson-ids']) } : undefined;
+  if (!dryRun && !releaseSource) { console.error('v2:publish: live publication requires --lesson-ids for the reviewed blueprint.'); return 2; }
+  if (releaseSource) loadCourseReleaseSource(args.course, releaseSource, { allowCalibration: dryRun });
   const config = dryRun ? undefined : getConfig();
   const rpc = dryRun ? undefined : async (fn: string, body: Record<string, unknown>) => {
     const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = config!;
@@ -144,9 +180,14 @@ export async function publish(args: Args): Promise<number> {
     }
   }
   const result = await releaseV2Lessons(plans, {
-    runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun, deps: rpc ? { rpc } : {}, initialCourse,
+    runId: args['run-id'], outDir: path.resolve(args.out), courseSlug: args.course, dryRun,
+    deps: rpc ? { rpc, verifyCourse: async course => ({
+      ok: await verifyV2Course(course, { url: config!.SUPABASE_URL, key: config!.SUPABASE_SERVICE_ROLE_KEY, source: releaseSource }) === 0,
+      output: 'Exact-source course verification; see the verification report.',
+    }) } : {}, initialCourse,
     audioManifest, requireNarrationAudio: args['require-narration-audio'] === true,
     coreServesHorizonte: args['core-has-horizonte'] === true,
+    coreServesInstructionalFields: args['core-has-instructional-fields'] === true,
     requireLessonDesign: args['require-lesson-design'] === true,
   });
   if (!result.ok) { console.error(`v2:publish: stopped at ${result.stage}:\n  ${result.problems.join('\n  ')}`); return 1; }
