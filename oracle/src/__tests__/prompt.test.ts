@@ -221,6 +221,18 @@ describe('a diagnostic session\'s "check" step probes, it does not confirm', () 
 
     expect(message).toContain('Ask them to USE the idea or explain it back in their own words');
   });
+
+  it("names the learner's current lesson in the topic when Core resolved it (OD-43)", () => {
+    const message = buildContextMessage({
+      ...BASE_CONTEXT,
+      intent: 'course_topic',
+      courseContext: {
+        courseId: null, courseTitle: 'Dinero', topicId: null, topicTitle: 'Ahorro',
+        lesson: { lessonId: '11111111-1111-4111-8111-111111111111', lessonTitle: 'Mi primera alcancía', step: 2, total: 5 },
+      },
+    });
+    expect(message).toContain('In that topic they are on the lesson "Mi primera alcancía" (lesson 2 of 5).');
+  });
 });
 
 /*

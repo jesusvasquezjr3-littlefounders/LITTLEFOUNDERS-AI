@@ -107,6 +107,15 @@ export const SessionContextSchema = z
         courseTitle: z.string().nullable(),
         topicId: z.uuid().nullable(),
         topicTitle: z.string().nullable(),
+        lesson: z
+          .object({
+            lessonId: z.uuid(),
+            lessonTitle: z.string().min(1).max(160),
+            step: z.number().int().positive(),
+            total: z.number().int().positive(),
+          })
+          .nullable()
+          .optional(),
       })
       .nullable(),
     skillStates: z.array(SkillStateSchema),

@@ -490,7 +490,7 @@ function internalRouter(): Router {
     const states = await getOwnLearnerIntelligence(session.user_id);
     const intelDegraded = states === null;
 
-    let courseContext =
+    let courseContext: CourseContextWire | null =
       session.course_id || session.topic_id
         ? await resolveCourseContext(session.course_id, session.topic_id, session.locale)
         : null;
@@ -531,6 +531,12 @@ function internalRouter(): Router {
       // `buildPlan` rather than refusing an already-running session — a
       // failed or missing lookup here costs a less-readable objective, never
       // the session itself.
+    }
+
+    // OD-43: the current lesson in the topic, so the Mentor can complement the course.
+    if (courseContext?.topicId) {
+      const lesson = await resolveCurrentLesson(session.user_id, courseContext.topicId, session.locale);
+      if (lesson) courseContext = { ...courseContext, lesson };
     }
 
     /*
@@ -3158,6 +3164,51 @@ async function resolveCourseContext(
     topicId: topic?.id ?? null,
     topicTitle: pick(topic?.title),
   };
+}
+
+/** OD-43: the learner's place in the course topic, as the Mentor may see it. */
+interface CourseLessonRef {
+  lessonId: string;
+  lessonTitle: string;
+  step: number;
+  total: number;
+}
+
+type CourseContextWire = {
+  courseId: string | null;
+  courseTitle: string | null;
+  topicId: string | null;
+  topicTitle: string | null;
+  lesson?: CourseLessonRef | null;
+};
+
+/**
+ * OD-43 (owner sign-off, 2026-10-06): the Mentor as a complement to the
+ * course. The learner's CURRENT lesson in a topic — the first published,
+ * non-enrichment lesson they have not passed, in position order — with its
+ * place, so the Mentor can ground its talk in the real lesson and where it
+ * sits. Server-role reads on the session's OWN learner, the same class of
+ * course structure `resolveCourseContext` already reads; it carries OUR
+ * catalog title and a position, never anything the learner typed. Null when
+ * the lesson cannot be resolved, which simply leaves the Mentor topic-level.
+ */
+async function resolveCurrentLesson(userId: string, topicId: string, locale: string): Promise<CourseLessonRef | null> {
+  const lessons = await serviceRest<Array<{ id: string; position: number; title: Record<string, string>; optional_enrichment: boolean | null }>>(
+    `/lessons?topic_id=eq.${encodeURIComponent(topicId)}&status=eq.published&select=id,position,title,optional_enrichment&order=position.asc,id.asc`,
+  );
+  if (!lessons) return null;
+  const ordered = lessons.filter((lesson) => !lesson.optional_enrichment);
+  if (ordered.length === 0) return null;
+  const ids = ordered.map((lesson) => lesson.id);
+  const progress = await serviceRest<Array<{ lesson_id: string; passed: boolean }>>(
+    `/lesson_progress?user_id=eq.${encodeURIComponent(userId)}&lesson_id=in.(${ids.join(',')})&select=lesson_id,passed`,
+  );
+  const passed = new Set((progress ?? []).filter((row) => row.passed).map((row) => row.lesson_id));
+  const index = ordered.findIndex((lesson) => !passed.has(lesson.id));
+  const at = index === -1 ? ordered.length - 1 : index;
+  const lessonTitle = pickTitle(ordered[at]!.title, normalizeLocale(locale));
+  if (!lessonTitle) return null;
+  return { lessonId: ordered[at]!.id, lessonTitle, step: at + 1, total: ordered.length };
 }
 
 /** A friendly word, not a name, for a learner who has not chosen a nickname. */

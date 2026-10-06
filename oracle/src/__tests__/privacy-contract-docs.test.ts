@@ -24,6 +24,10 @@ describe('the tutor context schema stays a closed, deliberate allow-list', () =>
      * the same day (`pedagogy`), → 14 on 2026-08-29 (`openActivity`,
      * `learnerBrief` — the first field derived from the child's own speech,
      * gated by blocking parental approval and append-only ledgered writes).
+     * The top-level count is unchanged since. On 2026-10-06 (OD-43, owner
+     * sign-off) the CONTENT of the existing `courseContext` was widened with a
+     * nested `lesson` (the learner's current lesson in the topic) — it adds no
+     * top-level field, and the value is our catalog title plus a position.
      */
     expect(schemaKeys).toEqual([
       'adaptations',
