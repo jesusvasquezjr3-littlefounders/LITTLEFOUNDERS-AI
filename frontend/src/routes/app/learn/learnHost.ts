@@ -8,7 +8,7 @@ import type { AgeBand } from '@/rebuild/design/copyBudget';
 import type { LearnLinks, LearnNavigate } from '@/rebuild/learning/learnCopy';
 import type { LearnTransport } from '@/rebuild/learning/learnHome';
 import { fetchLearnerRegister, type RegisterState, type RegisterTransport } from '@/rebuild/learning/learnerRegister';
-import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, territoryPath, togetherPath } from './paths';
+import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, playPath, territoryPath, togetherPath } from './paths';
 
 /*
  * W2L: what every rebuilt learner page host needs from the application, in
@@ -30,6 +30,8 @@ export const LEARN_LINKS: LearnLinks = {
   mentor: '/tutor',
   journal: decisionJournalPath(),
   together: togetherPath(),
+  // The game host: KartRush is the only game in v1 (KRV1-CONTRACT §1).
+  play: playPath('kartrush'),
 };
 
 type Reply = Awaited<ReturnType<LearnTransport>>;
@@ -41,11 +43,11 @@ type Reply = Awaited<ReturnType<LearnTransport>>;
  */
 export function useLearnTransport() {
   const { getToken } = useAuth();
-  return useCallback(async (path: string, init?: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE'; body?: unknown }): Promise<Reply> => {
+  return useCallback(async (path: string, init?: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE'; body?: unknown; keepalive?: boolean }): Promise<Reply> => {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return { data: null, error: { code: 'NETWORK' } };
     const token = await getToken();
     if (!token) return { data: null, error: { code: 'UNAUTHORIZED' } };
-    const { data, error } = await api<unknown>(path, { token, method: init?.method, body: init?.body });
+    const { data, error } = await api<unknown>(path, { token, method: init?.method, body: init?.body, keepalive: init?.keepalive });
     if (error) return { data: null, error: error.code === 'INTERNAL' && error.message === 'Network error' ? { code: 'NETWORK' } : error };
     return { data, error: null };
   }, [getToken]);

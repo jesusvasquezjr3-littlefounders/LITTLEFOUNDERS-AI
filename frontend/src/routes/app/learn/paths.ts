@@ -50,6 +50,11 @@ export const DECISION_JOURNAL_ROUTE_PATH = 'learn/journal' as const;
 export const LEARNING_RHYTHM_ROUTE_PATH = 'learn/rhythm' as const;
 /** L-04 (OD-27 (1)): teen cooperative goals. A static segment, like the journal. */
 export const TOGETHER_ROUTE_PATH = 'learn/together' as const;
+/**
+ * A game inside /learn (KRV1-CONTRACT §6): a standalone, full-screen route with its own exit. The static `play`
+ * segment outranks learn/:courseSlug, so a game id is never read as a course slug.
+ */
+export const PLAY_ROUTE_PATH = 'learn/play/:gameId' as const;
 
 export function coursePath(courseSlug: string): string {
   return `/${COURSE_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
@@ -83,6 +88,10 @@ export function learningRhythmPath(): string {
 
 export function togetherPath(): string {
   return `/${TOGETHER_ROUTE_PATH}`;
+}
+
+export function playPath(gameId: string): string {
+  return `/${PLAY_ROUTE_PATH.replace(':gameId', encodeURIComponent(gameId))}`;
 }
 
 /**
